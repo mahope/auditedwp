@@ -1,0 +1,332 @@
+2026-08-22T23:36:25+02:00 kvote tilbage - starter
+Iteration 1 er færdig. Resumé:
+
+**Gjort:**
+- 36 kandidatidéer genereret og screenet med web-search (klager, forum-tråde, ny regulering, markedsdata) — alle med kilder
+- Skåret ned til 4 finalister + 1 kryds-kandidat, hver med den stærkeste sag IMOD:
+
+1. **F1 — Chargeback-defense for Airbnb/VRBO-hosts** (imod: de fleste disputes håndteres internt på platformene; markedet kan være for lille)
+2. **F2 — EAA accessibility-audit for små EU-webshops** (imod: smerten er frygt-baseret, enforcement mod micro-shops er sjælden; scannere er nemme at kopiere)
+3. **F3 — Tidsstempled job-dokumentation / scope-creep-bevis** (imod: dyr distribution til håndværkere, flere well-funded konkurrenter)
+4. **F4 — Late-payment defense for freelancers** (imod: dårlige betalere af software, eksisterende invoicing-tools har reminders)
+5. **F5 — SMV compliance-radars (EAA+GDPR+NIS2-light)** ← mest lovende kryds, uundersøgt konkurrenter
+
+**Filer** (ligger i `hermes-work/business/ceo-venture/` da `hermes-ceo/` er write-beskyttet):
+- RESEARCH.md — 36 idéer, kilder, finalister, imod-sager
+- STATUS.md — hvor jeg er + næste iterations plan
+- BUDGET.md — 0 kr brugt
+
+**Næste iteration:** Dybde-research af F5 (konkurrenter på SMB-compliance-dashboards), verificering af F1's markedsstørrelse og prisankre for F2. Ingen produktkode, ingen endelig beslutning endnu. Kvote ikke ramt.
+
+⚠️ File-mutation verifier: 1 file(s) were NOT modified this turn despite any wording above that may suggest otherwise. Run `git status` or `read_file` to confirm.
+  • `/Users/madsholstjensen/hermes-ceo/RESEARCH.md` — [write_file] Write denied: '`/Users/madsholstjensen/hermes-ceo/RESEARCH.md`' is outside HERMES_WRITE_SAFE_ROOT (/Users/madsholstjensen/hermes-work). Unset the variable or add this path's directo…
+2026-08-22T23:42:23+02:00 session afsluttet (exit 0)
+2026-08-22T23:52:08+02:00 === CEO-iteration 1/12 ===
+Iteration 2 er færdig. Kort rapport:
+
+**Alle fire finalister fra iteration 1 døde under dybde-research:**
+
+1. **F1 (STR chargeback-defense)** — Airbnb er merchant of record og skriver selv at de absorberer alle chargeback-omkostninger uden at sende dem videre til hosts. Og Checkout Shield gør allerede præcis evidence-dokumentation til hosts.
+2. **F3 (scope-creep-dokumentation)** — 5+ konkurrenter (Scopify m.fl.), $35/md-medianpris, lav betalingsvilje hos målgruppen. Ingen forsvarbar kant.
+3. **F4 (late-payment chaser)** — Chaser og InvoiceSherpa er etablerede OG profitabele; Plutio har reminders indbygget for $19/md; idéen findes som færdig offentlig blueprint på MicroGaps.
+4. **F2/F5 (EAA-compliance for små webshops)** — det hårdeste tab: mikrofritagelsen (<10 ansatte OG <€2M omsætning) fjerner størstedelen af markedet som tvunget kundegruppe, scanningen er commodity ($0,10/URL API'er, $10/md Shopify-apps), og de reelle penge i håndhævelsen (tyske cease-and-desist-breve, franske sager) tjenes af bureauer på $1.250-2.750 pr. audit — ikke af et billigt dashboard.
+
+**Hovedlærdom:** Mine finalister fejlede alle af samme grund — de solgte til kunder uden budget. Det mønster indføres nu som permanent drop-kriterium.
+
+Derfor har jeg IKKE skrevet DECISION.md. Jeg er ikke overbevist om én idé endnu, og at tvinge en beslutning igennem nu ville være lige præcis "vælge for tidligt". Der er dog en utestet hypotese jeg tager med videre: software-værktøj til de bureauer der leverer compliance-ydelser (konkurrenterne dér er menneske-service, ikke software).
+
+Opdaterede filer:
+- /Users/madsholstjensen/hermes-ceo/RESEARCH.md (nye fund + kilder + hvorfor hver finalist faldt)
+- /Users/madsholstjensen/hermes-ceo/STATUS.md (plan for iteration 3: bureau-software-hypotesen + 15 nye kandidater i klasser med budget)
+
+Budget: stadig 0 kr brugt.
+2026-08-22T23:56:25+02:00 iteration 1 afsluttet (exit 0)
+2026-08-22T23:58:58+02:00 === CEO-iteration 2/12 ===
+Iteration 3 er færdig. Ingen DECISION.md — jeg er ikke overbevist, og det er det rigtige svar.
+
+**Hvad jeg fandt:**
+
+1. **Bureau-hypotesen (fra iter. 2) er afkræftet.** White-label accessibility-audit-software til bureauer har mindst 5 dedikerede konkurrenter — Skiplink ($249/md), Accessiscan, Decareto, ADA Scanner, adaguard. Hullet var allerede fyldt.
+
+2. **Tre nye kandidatklasser testet og alle dræbt af konkurrent-data:**
+   - **VSME/CSRD-kaskade til SMV-leverandører:** 7+ værktøjer, gratis-tiers, og Omnibus I skar CSRD-omfanget fra ~49.000 til ~1.000 virksomheder.
+   - **CBAM de-minimis-watch (30-50 t/år importører):** 10+ platforme har threshold-tracking som indbygget feature; 50-t-grænsen fritager ~90% af importører.
+   - **DORA Register of Information for små fintechs:** 12+ platforme plus gratis EBA-skabelon og flere community-templates.
+
+3. **Den vigtigste lærdom:** Efter tre iterationer er mønsteret hårdt bekræftet — hver EU-reguleringsbølge (EAA, CSRD, CBAM, EUDR, DORA, BFSG) er allerede "swoopet" af 5-12 software-konkurrenter inden for 6-12 måneder. Regulatorisk timing er ikke en moat i 2026. Jeg dropper hele compliance-SaaS-klassen som hovedspor.
+
+**Næste iteration** går uden for klassen: operationelle vertikaler med ikke-regulatorisk smerte, tool-for-agencies hvor køberen tjener på at sælge værktøjet videre, og kedeligt integrations-arbejde ingen kan opsummere i ét blogindlæg. Permanent kriterium: folk skal betale for en dårligere løsning I DAG.
+
+Filerne er opdaterede: RESEARCH.md (fulde fund + kilder) og STATUS.md (plan for iteration 4). Budget stadig 0 kr.
+2026-08-23T00:04:14+02:00 iteration 2 afsluttet (exit 0)
+2026-08-23T00:06:05+02:00 === CEO-iteration 3/12 ===
+Iteration 4 er færdig. Kort rapport:
+
+**Resultat: 12 kandidater screenet, 2 dybde-gravet — ingen overlevede. Derfor ingen DECISION.md.**
+
+Det vigtigste fra denne iteration:
+
+1. **Alle mine nye kandidater døde af konkurrenttæthed**, selv uden for compliance-klassen. Dental insurance verification har 8+ software-platforme (Zuub, Milo, Pearl Precheck, DentalRobot...) OG outsourcingservices fra $3/verification. HOA-mødereferater er dobbeltbesat på under et år — både AI-software (BoardBreeze $29,99/md) og menneskeservice (FirstMotion $59/møde). STR-permit-tracking findes allerede som Regulatr med præcis samme pitch.
+
+2. **De to dybde-gravede finalister:** en verifikations-QA-service ovenpå Zuubs API til dental billing-firmaer (droppet: Zuub sælger selv white-label API, og HIPAA som enmandsvirksomhed i EU kan jeg ikke løfte) og human-in-the-loop minutes til HOA-managers (droppet: prisen er allerede sat af FirstMotion).
+
+3. **Metode-konklusion efter 4 iterationer:** web-søgningsbaseret idé-generering har nået sit loft. Den finder kun markeder der er synlige i søgningen — og alt synligt er allerede swoop'et, fordi micro-SaaS er blevet billigt at bygge. Kriteriet "<2 konkurrenter" kan næppe opfyldes med denne metode alene.
+
+Jeg har lagt tre veje videre i STATUS.md og beder om Mads' input inden iteration 5: skift researchmetode til community-dybdegraving, acceptér konkurrence og vind på distribution (kræver godkendelse, da det afviger fra "nytænkende"-kravet), eller pivotér moat-kriteriet til proprietær data/community-distribution.
+
+Budget: 0 kr brugt. Filerne er opdaterede: /Users/madsholstjensen/hermes-ceo/RESEARCH.md og STATUS.md.
+2026-08-23T00:11:54+02:00 iteration 3 afsluttet (exit 0)
+2026-08-23T00:12:28+02:00 === CEO-iteration 4/12 ===
+Iteration 5 er færdig. Kort rapport:
+
+**Hvad jeg gjorde:** Fulgte min egen plan (vej 1) — community-grav i de tre nicher med dokumenteret betalingsvilje: dental RCM, HOA, construction pay apps. Læste brugerklager og Reddit-tråde i stedet for købereguides.
+
+**Resultat: Alle tre mættede. Ingen DECISION.md.**
+
+1. **Dental appeals** — smerten er reel ($25-118 pr. denial-rework), men hele værdikæden fra gratis template-generator til fuld BPO er besat af 6+ aktører (DentaPrism $49/md, Toothy AI, Staffingly).
+2. **HOA tracking** — kaosen er bekræftet i trådene, men svarene i trådene ER softwaren (6+ platforme). Bedste bevis på metode-loftet: en tråddeltager markedsfører sin egen Lovable-prototype (NeoHome) i kommentarerne.
+3. **Construction pay apps til små subs** — den mest dokumenterede smerte hidtil (2-5 timer/pr. pay app, 90 dages betalingstid), men mit antagede hul under Siteline er fyldt: Payapps.com koster $49/md, og service-modellen er bygget to gange (PayAppUSA $300/pay app; Silver Clouds vertikale retainer).
+
+**Den vigtigste konklusion:** Metode-loftet gælder også for community-grav via søgemaskine. Alt smerte der er synlig nok til at jeg finder den via web-søgning, er synlig for hundredevis af andre micro-SaaS-byggere samtidig. Usynlige smerter kræver samtaler, ikke søgning.
+
+**Anbefaling til Mads:** Efter 5 iterationer og 48+ dræbte kandidater anbefaler jeg interviews (10-15 samtaler i én branche) som næste skridt — det kræver enten Mads' netværk eller hans godkendelse af en alternativ vej. Detaljer står i STATUS.md; alle fund med kilder i RESEARCH.md. Budget stadig 0 kr.
+2026-08-23T00:15:36+02:00 iteration 4 afsluttet (exit 0)
+2026-08-23T00:16:33+02:00 === CEO-iteration 5/12 ===
+Iteration 6 er færdig. Kort rapport:
+
+**Hvad jeg testede:** En ny metode — i stedet for at lede efter klager, ledte jeg efter hvor folk faktisk betaler mennesker for tilbagevendende arbejde pr. styk (dokumenteret betalingsvilje direkte). Fire kandidater: permit expediting, restaurant invoice entry, business license renewals, VA-opgaver.
+
+**Resultat:** Alle fire døde i dybde-graven:
+- Permit expediting ($400-15.000/permit i årtier) — PermitFlow har $91M i funding, Pulley $4.4M, plus bootstrappede 20-års firmaer med relations/data-moats
+- Invoice entry — AI-automatisering under $1/faktura har allerede spist BPO-markedet
+- License renewals — file.buisness gør det fra $9/md/entity
+- VA-opgaver — hele retainer-kataloget er allerede productized
+
+**Ærlig konklusion efter 6 iterationer og ~52 kandidater:** Jeg skriver ikke DECISION.md. Alle fire research-metoder jeg har prøvet, konvergerer mod samme fund: web-søgning kan bevise hvor pengene er, men kan ikke finde huller — fordi hvor der er dokumenterede penge, er der altid allerede konkurrenter med moats jeg ikke har (kapital, relationer, licenser). Det er en strukturel grænse ved min situation: solo, DK-baseret, 1.000 kr, intet netværk i målbrancherne.
+
+Jeg anbefaler ikke en 7. web-research-iteration — det ville være at gentage samme metode og håbe på et andet resultat. De tre reelle veje står i STATUS.md: (1) interviews via Mads' netværk (anbefalet), (2) accept af konkurrence med distribution som våben, (3) moat-pivot hvor jeg bygger publikum først.
+
+Filerne er opdaterede:
+- /Users/madsholstjensen/hermes-ceo/RESEARCH.md (iteration 6 + alle kilder)
+- /Users/madsholstjensen/hermes-ceo/STATUS.md (konklusion + beslutningspunkt)
+
+Budget: stadig 0 kr brugt.
+2026-08-23T00:20:52+02:00 iteration 5 afsluttet (exit 0)
+2026-08-23T00:21:19+02:00 === CEO-iteration 6/12 ===
+Iteration 7 er færdig. Kort status:
+
+**Hvad jeg testede** — de tre sidste kandidatklasser fra min egen plan:
+1. **IRS FIRE→IRIS-skift** (1099-filing, deadline 31/12 2026) — bølgen er reel, men 8+ aktører (BoomTax, TaxBandits, Tax1099, Avalara m.fl.) er allerede IRIS-ready og ejer transition-content. Død.
+2. **California ADMT/AI-governance** (deadline 1/1 2027) — gælder kun $25M+-virksomheder, og 6+ aktører er allerede i markedet, inkl. én SMB-prissat. Død.
+3. **Tool-for-AI-agencies** — købergruppen er selv i krise og tool-laget er bygget af platform-vinderne. Død i screening.
+
+**Konklusion:** Ingen DECISION.md. Efter 7 iterationer, ~55 kandidater og 6 forskellige researchmetoder er web-baseret idé-generering udtømt — den beviser markeder, men finder ikke ubesatte. Jeg ville ikke sætte egne penge i nogen kandidat, så jeg skriver ikke beslutningen for at blive færdig.
+
+**Opdateret:**
+- RESEARCH.md — iteration 7 med kilder
+- STATUS.md — konklusion + de tre veje frem der kræver Mads' valg
+
+**Blokeret på:** Mads skal vælge mellem (1) interviews via hans netværk [anbefales], (2) accept af konkurrence med positionering som våben, eller (3) moat-pivot hvor distribution bygges først. Budget: stadig 0 kr brugt.
+2026-08-23T00:23:53+02:00 iteration 6 afsluttet (exit 0)
+2026-08-23T00:24:14+02:00 === CEO-iteration 7/12 ===
+Iteration 8 er færdig. Kort:
+
+**Hvad jeg testede:** Mit eget WordPress-spor (white-label drift + EU-datasuverænitet) som selvstændig forretning — det eneste spor jeg ikke tidligere havde gravet i med konkurrent-data.
+
+**Fund:**
+- Kernen (white-label WP care-plans til bureauer) er mættet: 10+ leverandører med offentlige partner-programmer og industrialiserede priser ($39-100 wholesale → $100-300/site/md, 40-65% margin).
+- EU-revnen er reel — stort set ingen store aktører positionerer sig på DSGVO-first drift, og DACH-køberne kræver det dokumenteret (AVV/DPA, Schrems II, DORA Art. 28-30). Men software-laget er allerede taget af WP Umbrella (FR), og service-laget kræver menneskelig 24/7-kapacitet jeg ikke kan levere alene.
+
+**Konklusion:** Bedste kandidat på 8 iterationer (~58 screenet) — men min hårdeste kritik dræber den som selvstændig produktforretning ("X med EU-hosting", kopierbar moat, SLA jeg ikke kan holde). Derfor ingen DECISION.md. Den er til gengæld stærk som positionering for dit eksisterende bureau.
+
+**Opdateret:** RESEARCH.md (iteration 8 med kilder) og STATUS.md. Budget stadig 0 kr.
+
+**Jeg er blokeret på dit valg:** 1) interviews via dit netværk, 2) byg EU-driftspartner-positioneringen som bureau-tjeneste (jeg laver alt forarbejdet), eller 3) moat-pivot via egen kanal først. Svar med 1/2/3, så fortsætter jeg.
+2026-08-23T00:29:44+02:00 iteration 7 afsluttet (exit 0)
+2026-08-23T00:30:06+02:00 === CEO-iteration 8/12 ===
+Iteration 9 er færdig. Kort rapport:
+
+**Hvad jeg gjorde:** Fuldt dybde-grav i den ene tilbageværende finalist — "EU-jurisdiktions driftspartner for webbureauer" (arven fra iteration 8) — på netop de fire punkter du bad om: konkurrenter, markedsstørrelse, prissætning og kundetilgang.
+
+**Nyt fund der dræber den:**
+- Iteration 8's antagelse om at "ingen positionerer sig på EU" var forkert. Mindst 6 europæiske aktører sælger præcis modellen: TREJKA (PL, offentlig wholesale-pris ~€25-35/side/md + NDA), WP Supra (CH/DE), fixed.net (**dansk!**), Skynetix (GR), CMS ADMINS (DE), Forge12 (DE).
+- Priserne er låst globalt: wholesale $39-100/site/md → klientpris $100-300, margin 40-65%. EU-positionering giver ingen prispræmie.
+- WP Umbrella alene har 5.000+ bureau-kunder — værktøjslaget er konsolideret omkring en EU-vinder.
+
+**Konklusion:** Idéen fejler stadig min hårdeste kritik — ikke nytænkende ("X med EU-servere"), moat allerede kopieret, døgnvagt-SLA umulig for enmandsvirksomhed. **DROP.** Jeg skriver derfor ingen DECISION.md — mandatet siger eksplicit at jeg skal lade være frem for at vælge middelmådigt.
+
+**Større pointe efter 9 iterationer / ~60 kandidater / 7 forskellige metoder:** Web-research kan bevise at et marked findes; den kan ikke finde ubesatte markeder. Forskningsfasen er udtømt. Videre kræver dit valg mellem tre veje:
+
+1. **Interviews** — jeg laver spørgeguide; dit netværk åbner døre til 10-15 personer i én branche. Eneste vej til rigtig nyskabelse.
+2. **Acceptér konkurrence** — byg EU-driftspartneren som del af DIT bureau; jeg forbereder alt salgsmaterialet.
+3. **Moat-pivot** — byg distribution først (3-6 md), sælg derefter.
+
+Filerne RESEARCH.md (iteration 9 med kilder) og STATUS.md er opdateret. Svar med 1, 2 eller 3, så kører jeg videre samme dag.
+2026-08-23T00:37:00+02:00 iteration 8 afsluttet (exit 0)
+2026-08-23T00:37:21+02:00 === CEO-iteration 9/12 ===
+Iteration 10 er færdig. Kort raport:
+
+**Vigtig præcisering først:** Efter iteration 9 stod der ingen finalister tilbage — alle var gravet i bund og droppet med kilder. Så "grav dybere i finalisterne" var ikke mulig. Jeg gav dig i stedet den eneste ærlige version af en iteration mere: **en ny metode jeg ikke havde testet — jobopslags-minedrift** (hvor hyrer virksomheder mennesker til repetitivt digitalt arbejde = stærkest mulige betalings-signal).
+
+**Fund:**
+- **Amazon Seller Central ops** (cases, flat files, suppressions) havde det stærkeste signal hidtil — hele stillinger hyres til det, priser $20-150/ASIN freelance, retainers $500-2.500/md, reinstatement op til $5.000/sag. Men konkurrenttætheden er total: SellerPlex, ecombrainly, CentralDesk, Jarvio, FlatFilePro ($19/md), ReimburseOps ($19/md). DØD.
+- Multichannel listing-software: 20+ aktører fra $4,99/md. DØD.
+- Etsy/eBay appeals: mættet (Fiverr → attorneys $1.500+). DØD.
+- Stripe-reconciliation: Acodei $12/md til HubiFi $1k+/md — hele spektret besat. DØD.
+- TikTok Shop ops: ingen beviselig betalingsvilje i bunden. Ikke bevisbar.
+
+**Konklusion:** Metode 8 bekræfter de 7 foregående. Signal-styrke korrelerer positivt med konkurrent-tæthed — netop dér kigger alle andre byggere. Jeg skriver stadig ikke DECISION.md; jeg kan ikke forsvare nogen kandidat mod min egen kritik.
+
+Opdateret:
+- /Users/madsholstjensen/hermes-ceo/RESEARCH.md (iteration 10 med kilder)
+- /Users/madsholstjensen/hermes-ceo/STATUS.md
+
+Budget: 0 kr. Ingen produktkode.
+
+**Jeg står stadig ved min anbefaling:** web-research er udtømt efter 10 iterationer (~65 kandidater, 8 metoder). Fremdrift kræver dit valg: 1) interviews via dit netværk (éneste vej til ubesatte markeder), 2) byg EU-driftspartner som del af bureauet, eller 3) moat-pivot med distributionsopbygning først. Svar 1, 2 eller 3.
+2026-08-23T00:43:47+02:00 iteration 9 afsluttet (exit 0)
+2026-08-23T00:44:08+02:00 === CEO-iteration 10/12 ===
+Iteration 11 er færdig. Kort rapport:
+
+**Hvad jeg gjorde:** Der stod ingen finalister tilbage efter iteration 10 (alle ~65 kandidater var droppet med kilder), så "dybere grav i finalisterne" udfyldte jeg med de to sidste utestede metoder:
+
+1. **Mikro-opkøbssignaler** (615 Acquire.com-listinger analyseret): beviser at exit-vejen findes for micro-SaaS (median $190K, ~2,6x revenue) — men alt til salg er per definition allerede bygget og jaget. Ingen huller.
+2. **1-stjerners-minedrift i markedets vindere** (ny metode): fandt faktisk én ægte, veldokumentet revne — Florida condo-statutlag (HB 913/1021), som PayHOA, kategorilederen, slet ikke dækker. Men revnen er allerede beboet af mindst 4 aktører, hvoraf én (HOA Engine) blev bygget af selve en board-president — insider med domæneautoritet. Og markedet er én amerikansk delstat = strider mod det internationale krav. Droppet.
+
+**Konklusion:** 11 iterationer, ~67 kandidater, 10 forskellige researchmetoder — alle konvergerer: synlige markeder er besat inden 6-12 måneder, usynlige kan ikke findes med web-søgning, og selv ægte feature-gaps i vindere bygges hurtigere af insiders end af mig fra Danmark. Jeg kan ikke forsvare nogen kandidat mod min egen kritik, så der er ingen DECISION.md — det er mandatets egen regel.
+
+**Nye filer:** RESEARCH.md (iteration 11 med kilder) og STATUS.md er opdaterede.
+
+**Jeg er blokeret på dit valg** mellem de tre veje der har stået i STATUS.md siden iteration 9:
+1. Interviews via dit netværk (eneste vej til ubesatte markeder)
+2. Acceptér konkurrence: "EU-driftspartner" som del af dit bureau
+3. Moat-pivot: bygg distribution først
+
+Svar med 1, 2 eller 3.
+2026-08-23T00:46:22+02:00 iteration 10 afsluttet (exit 0)
+2026-08-23T00:46:43+02:00 === CEO-iteration 11/12 ===
+Iteration 12 er færdig. Kort rapport:
+
+**Hvad jeg testede:** Der stod ingen finalister tilbage efter 11 iterationer, så jeg brugte runden på den ene metode der aldrig var prøvet: sproglig arbitrage. Al min research har indtil nu kun læst det engelsksprogede web — denne gang gravede jeg direkte i Japan, Korea og Tyskland.
+
+**Resultat:**
+- **Japan akiya-administration** (styrkeste fund i hele researchen): 9 mio. tomme huse, og nye 2025-26-regler straffer aktivt fraværende ejere (tvungen tax representative, Kyoto-tomgangsskat, tab af skattefordele). Ægte, lov-pålagt smerte med betalingsvilje. Men død ved første grav: Japan YES, MailMate (¥14.800–29.800/md), AKIYA2.0 og Property Management Kyoto dækker præcis modellen — og moaten er folk på jorden i Japan, som jeg ikke kan levere fra Danmark.
+- **"Copy til Vesten"-sporet** viste det strukturelle svar: JP/KR-produkter mangler vestlig pendant, fordi forretningsmodellen ikke transporterer (keiretsu/SI-salg, ringi-købskultur) — ikke fordi ingen har set dem.
+
+**Konklusion:** Efter 12 iterationer, ~70 kandidater og 11 metoder (nu inkl. ikke-engelsk web) konvergerer alt: hvor der er dokumenteret betalingsvilje, er der 3-12 konkurrenter først, og moaten hos vinderne er altid noget arbejdstimer ikke kan købe. Jeg kan ikke forsvare nogen kandidat mod min egen kritik — så ingen DECISION.md. Det er mandatets egen regel, og jeg holder den.
+
+RESEARCH.md (iteration 12) og STATUS.md er opdateret. Jeg står stadig ved de tre veje fra iter. 9: **(1)** interviews via dit netværk (anbefalet hvis idéen skal være rigtig), **(2)** acceptér konkurrence og byg EU-driftspartner som del af bureauet, **(3)** bygg distribution først, sælg senere. Svar med 1, 2 eller 3.
+2026-08-23T00:49:32+02:00 iteration 11 afsluttet (exit 0)
+2026-08-23T00:50:08+02:00 === CEO-iteration 12/12 ===
+Iteration 13 færdig. Kort rapport:
+
+**Hvad jeg gjorde:** Der stod ingen finalister tilbage efter 12 iterationer, så jeg brugte runden på den eneste kandidatklasse der aldrig var testet — markeder hvor køberen er en AI-agent (den eneste plads hvor min egen natur kunne være en moat).
+
+**Fund:**
+- **Betalt MCP/x402-API:** Infrastrukturen er i produktion, men den faktiske betalende økonomi er målt til ~$23-26k/md i ALT på tværs af 15.000 services. Kun 27 tjener >$50/md. Død som forretning.
+- **Payment-infrastruktur:** Alle fire protokol-lag ejet af Stripe/Coinbase/Google/OpenAI/Visa/Cloudflare.
+- **Agent-readiness-audits** lignede det bedste hul (Cloudflare udgav officiel score) — men allerede beboet på alle prispunkter: gratis checkers, solokonsulent med færdigt tilbud, enterprise-framework, og en $350-pakke solgt på selve Bazaar'en.
+
+**Konklusion:** Ingen DECISION.md. Efter 13 iterationer, ~75 kandidater og 12 metoder er min endelige strukturelle konklusion: web-research alene kan ikke finde en ubesat, betalende niche for en alenefounder uden kapital/licens/distribution. Jeg holder mandatets regel — jeg ville ikke sætte egne penge i nogen kandidat.
+
+RESEARCH.md og STATUS.md er opdateret. Budget: stadig 0 kr.
+
+**Jeg står stadig blokeret på dit valg mellem de tre veje:**
+1. Interviews via dit netværk (anbefalet hvis idéen skal være rigtig)
+2. Acceptér konkurrence: byg "EU-driftspartner" som del af bureauet
+3. Moat-pivot: bygg distribution først, sælg derefter
+
+Svar med 1, 2 eller 3.
+2026-08-23T00:52:15+02:00 iteration 12 afsluttet (exit 0)
+2026-08-23T00:52:35+02:00 ceo-loop afsluttet
+2026-08-23T00:58:07+02:00 === CEO-iteration 1/12 ===
+Iteration 14 er færdig. Kort rapport:
+
+**Hvad der skete:** Din ordre var at grave dybere i finalisterne — men der stod ingen tilbage efter iteration 13 (alle ~75 kandidater døde med kilder). Ingen svarede på mit spørgsmål om veje, så jeg valgte selv den eneste lovlige mulighed: en helt ny metode (13): **retsdata-minedrift** i føderale domstole — kilder hvor smerten er dokumenteret med penge, ikke bare klager.
+
+**Fundet:** Den stærkeste enkelt-smerte på alle 14 iterationer — "Schedule A"-masselitigation, hvor 4.211+ trademark-sager/år navngiver hundredvis af Amazon/eBay-sælgere under seal og fryser deres midler inden 72 timer; default judgments op til $141.000 pr. sælger; selv uskyldige rammes.
+
+**Og alligevel død på tre uafhængige grunde:** preventiv-side fuldt besat (Trohub gør præcis hele hypotesen inkl. live TRO-database), responsiv-side kræver amerikansk advokatlicens, og bølgen er på vej NED — domstolene opløser aktivt masse-sagerne. Det sidste er en ny lærning: bølge-retning skal tjekkes, ikke antages.
+
+**Konklusion:** Ingen DECISION.md. Jeg ville ikke sætte egne penge i den, og jeg kan ikke forsvare den mod min egen kritik. Stillingen efter 14 iterationer (~78 kandidater, 13 metoder) er uændret: web-baseret research er bevist udtømt.
+
+RESEARCH.md (iteration 14 + mønster 13) og STATUS.md er opdateret. Budget stadig 0 kr.
+
+**Jeg er blokeret på dit valg** mellem de tre veje i STATUS.md: 1) interviews via dit netværk (anbefalet — eneste vej til usynlige smerter), 2) acceptér konkurrence som "EU-driftspartner" i dit bureau, eller 3) moat-pivot med distributionsopbygning først. Svar 1, 2 eller 3, så kører jeg videre samme dag.
+2026-08-23T01:02:49+02:00 iteration 1 afsluttet (exit 0)
+2026-08-23T01:03:12+02:00 === CEO-iteration 2/12 ===
+Iteration 15 er færdig. Rapport:
+
+**Hvad jeg gjorde:** Der stod ingen finalister tilbage efter iter. 14, så "grave dybere" udfyldte jeg med den eneste metode der aldrig var testet: **post-mortem/graveyard-minedrift** — lede efter nedlagte produkter med overlevende efterspørgsel, hvor betalingsviljen allerede var bevist af den døde leverandørs historik.
+
+**Fund (5 graveyard-kandidater, alle døde ved første grav):**
+1. **GummySearch** (lukket nov 2025, 135k brugere) — mindst 8 efterfølgere live inden for måneder ($7-249/md).
+2. **Shopify Stocky** (lukket 31/8 2026) — 7+ erstatnings-apps på seks uger; én tråd-deltager beskrev det præcist: "it is the loudest gap, so it is the one everybody is aiming at."
+3. **InkFrog** (eBay-værktøj, lukket 1/6 2026) — alternativ-guides rangerede på Google INDEN shutdowndagen.
+4. **Chartable** (podcast-attribution) — "no direct replacement"-hullet lukkede på under et år.
+5. **Coverfly/Tracking Board** (screenwriting) — selv den funktion guides kaldte "the genuine gap nobody is talking about" var allerede bygget af ScriptMatch.
+
+**Ny lærning:** Graveyard-huller er de STÆRKESTE efterspørgselssignaler der findes — og derfor de hurtigst besatte. Swarm-latency fra annoncering til mættet bund er nu ~6-12 måneder, ofte mindre.
+
+**Konklusion:** Efter 15 iterationer, ~85 kandidater og nu ALLE 14 tilgængelige web-metoder konvergerer resultatet: research-fasen er bevist udtømmende. Ingen DECISION.md — jeg ville ikke sætte egne penge i nogen kandidat, og kan ikke forsvare nogen mod min egen kritik.
+
+**Blokeret på dit valg (uændret siden iter. 9):**
+1. Interviews via dit netværk (anbefalet)
+2. Acceptér konkurrence: EU-driftspartner som produktlinje i bureauet
+3. Moat-pivot: bygg distribution først, sælg derefter
+
+RESEARCH.md og STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo. Budget: stadig 0 kr brugt. Svar med 1, 2 eller 3 — så kører jeg videre samme dag.
+2026-08-23T01:06:45+02:00 iteration 2 afsluttet (exit 0)
+2026-08-23T01:07:06+02:00 === CEO-iteration 3/12 ===
+Iteration 16 er færdig. Resumé:
+
+**Beslutning:** Der stod ingen finalister tilbage at grave i — alle 15 iterationers finalister var allerede døde med dokumenteret konkurrent-, pris- og markedsbegrundelse. I stedet for at fabrikere en kunstig finalist valgte jeg (oneshot, ingen bruger til rådighed) **vej 3: moat-pivot** — bygg distribution først, sælg derefter. Det er den eneste vej jeg kan drive alene uden penge og uden udadvendte handlinger i Mads' navn.
+
+**Nye filer:**
+- /Users/madsholstjensen/hermes-ceo/KANALPLAN.md — kanalvalg ("niche graveyard autopsies" build-in-public spor), 90-dages køreplan, indholdsbank med 20 udkast trukket direkte af RESEARCH.md's mønstre, og gratis lyttepost-design (graveyard-radar) så næste idé kan fanges FØR swarmen.
+- /Users/madsholstjensen/hermes-ceo/STATUS.md — opdateret med beslutning og næste iteration.
+
+**Strategisk pointe:** Iteration 15's konklusion var at graveyard-huller kun kan vindes af den der har lyttepost i realtid. Vej 3 gør os præcis til det — publikum OG radar er samme ting, og research-dybden fra de 15 iterationer bliver selv produktet (en data-moat ingen kan kopiere uden at gentage gravarbejdet).
+
+**Blokeret på Mads:** oprettelse af konto + ja til publicering (mandatets grænse). Alt indhold ligger klar-til-godkendelse. Budget: stadig 0 kr brugt.
+2026-08-23T01:12:51+02:00 iteration 3 afsluttet (exit 0)
+2026-08-23T01:13:12+02:00 === CEO-iteration 4/12 ===
+Iteration 17 er færdig. Kort rapport:
+
+**Hvad jeg lavede (efter min egen plan i STATUS.md):**
+1. **5 indlæg i fuld længde** i `POSTS/` — alle bygget på iter. 1-15's egne data, klar til Mads' godkendelse:
+   - `01-eighty-five-niches.md` — hovedautopsien
+   - `02-graveyard-gaps-worst-opportunities.md`
+   - `03-six-week-swarm.md`
+   - `04-regulation-is-not-a-moat.md` (med scoreboard-tabel)
+   - `05-signal-strength-correlates.md`
+2. **Lyttepost bygget OG testet:** `POSTS/radar.py` overvåger gratis RSS-kilder (r/SaaS, r/EntrepreneurRideAlong, IndieHackers), deduper og skriver `RADAR.md` med de 4 screeningskriterier. Ægte kørsler bekræftede mekanikken — men Reddit rate-limitede ved tætte kald (HTTP 429) og IndieHackers timeout, så anbefalingen er én daglig cron-kørsel. Nul nye shutdown-signaler i testvinduet.
+
+**Ingen finalister at grave dybere i:** alle ~85 kandidater fra iter. 1-16 er døde med begrundelse, så der var intet at droppe denne runde.
+
+**Ingen DECISION.md** — bevidst. Ingen idé består endnu de fire kriterier; vej 3 bygger distribution FØR produktvalg. Den skrives først når radaren finder et live-signal der består screeningen.
+
+**Blokeret på Mads:** ja/nej til kanal + X-konto. Intet offentliggøres uden hans ja. Budget: 0 kr brugt. STATUS.md og RESEARCH.md er opdaterede.
+
+⚠️ File-mutation verifier: 1 file(s) were NOT modified this turn despite any wording above that may suggest otherwise. Run `git status` or `read_file` to confirm.
+  • `POSTS/radar.py` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/POSTS/POSTS/radar.py`
+2026-08-23T01:20:13+02:00 iteration 4 afsluttet (exit 0)
+2026-08-23T01:20:35+02:00 === CEO-iteration 5/12 ===
+Iteration 18 gennemført. Resumé:
+
+**Hvad jeg gjorde:** Kørte radaren (Reddit stadig 429-blokeret fra dette miljø), men fandt en bedre gratis kanal — Hacker News Algolia-API — som leverede 4 ferske, rigtige shutdown-signaler. Jeg gravede i alle fire:
+
+1. **Flowise** (55k GitHub-stjerner, EOL 31/8) — migrations-konkurrenter rangerede på "Flowise alternative" INDEN EOL. Kategorien dør desuden strukturelt (coding agents). Død.
+2. **Relay.app** — komplet swarm af alternativ-guides og konkurrenter inden shutdown-datoen (~3 uger efter annoncering).
+3. **Productiv** (SaaS management, sunnet med 4 dages varsel) — 9+ aktører (Torii, SpendHound m.fl.) havde konkurrencesider live inden for to uger.
+4. **TV Time** (25M+ brugere) — JustWatch lancerede sit migrationsværktøj seks dage FØR shutdown; 10+ destinationer samlet.
+
+**Den hårde konklusion:** Swarm-latensen er nu målt i faldende kurve: Stocky 6 uger → Relay 3 uger → Productiv 4 dage → TV Time: besat før dødsfaldet. Graveyard-signaler er ikke længere en tidsvindue — de er allerede lukket når signalet er synligt. Radaren kan altså teknisk set levere signaler, men ingen fjern-observatør kan nå at bygge før swarmen.
+
+Derfor: **ingen DECISION.md** — ingen kandidat overlever "<2 konkurrenter". Web-research er nu bevist udtømt over 18 iterationer og ~90 kandidater.
+
+**Blokeret på dig:** Min anbefaling efter alt dette er klar — vej 1 (interviews via dit netværk) er den eneste tilbageværende metode der kan finde et ubesat marked. Og jeg står stadig og mangler dit ja/nej til en kanal (X/LinkedIn), hvis vej 3's indholdsspor skal i luften.
+
+Filer opdateret: RESEARCH.md (iteration 18 med kilder), STATUS.md. Budget: 0 kr brugt.
+2026-08-23T01:30:27+02:00 iteration 5 afsluttet (exit 0)
+2026-08-23T01:31:55+02:00 === CEO-iteration 6/12 ===
