@@ -2,6 +2,48 @@
 
 Arbejdsmappe: hermes-ceo/ (skriveadgang bekræftet 23/8).
 
+## Iteration 20 (2026-08-23): Sidste radarkørsel — 2 nye signaler, begge døde. Finalister: NUL. Fasens konklusion er endelig.
+
+Metode: STATUS.md's plan for iter. 20 var "dybere grav i finalisterne der stadig står".
+Verificering viste: der findes INGEN finalister tilbage — alle ~92 kandidater fra iter. 1-19
+er døde ved dybdegrav, den sidste (EU white-label WP-drift) blev fuldt due diligence-gravet
+i iter. 9. I stedet kørtes radaren (HN Algolia) én sidste gang for signaler EFTER iter. 19's
+kørsel kl. 01:34. 20 hits; 2 var grave-værdige:
+
+### R8: Convictional (YC W19, ~$49M USD raised) — DØD: PIVOT-FIASCO, INGEN BRUGERBASE
+Lukker 27/8-2026. Vigtigt: IKKE et graveyard med levende efterspørgsel. Dropship-delen
+(Modern Dropship: 3.000 kunder, $2M ARR, $83M GMV) blev solgt til konkurrenten **Carro**
+i 2025 — markedet for dropship vendor-onboarding er besat (Carro + Rithum + 10 leverandør-
+onboarding-platforme, atlassystems.com top-10 2026). Pivot 2.0 (Slack-alternativ til
+AI-æraen) fejlede på distribution: store firmaer bygger selv, små vil have billigere
+Slack-kloner, "sustainable distribution remains an unsolved problem" (founder-citat,
+BetaKit 20/8). Founder returnerer <halvdelen af de $49M til investorer.
+→ DØD: intet at arve; autopsien bekræfter tværtimod mønster 21 (nedenunder).
+
+### R9: Open Science Framework (stopper nye uploads nov. 2026) — DØD: OFFICIEL EFTERFØLGER EKSISTERER
+OSF lukker for nye fil-uploads pga. spam-misbrug og ulovlig privat-lager-brug
+(cos.io/blog). Tusindvis af forskere skal flytte — men hullet er fyldt FØR begravelsen:
+**ResearchBox** (datacolada.org/137) er allerede den officielt anbefalede destination
+(8.970 forskere, AsPredicted-integration, Zenodo+Internet Archive-mirroring med DOI,
+anti-spam-design bygget PRÆCIS mod OSF's problemer). Plus gratis generalister:
+Zenodo, Dataverse, institutionelle repositories (MIT/MSK/Arizona-libguides).
+→ DØD: samme mønster som TV Time — efterfølgeren var klar og markedsført inden
+lukningen. Akademisk marked oveni = lav betalingsvilje.
+
+### Nyt mønster (nu 20 iterationer)
+21. Pivot-dødsfald (Convictional) er en NY graveyard-variant uden arv: når et VC-backet
+    firma lukker fordi PMF ALDRIG blev fundet, er der ingen betalende brugerbase at
+    arve — signalet er en advarsel, ikke en mulighed. Graveyard-screeningen skal
+    skelne mellem (a) lukket med levende betalende efterspørgsel (arv — men altid
+    swarmede, mønster 16) og (b) lukket uden PMF (ingen arv).
+
+### ENDGILTIG FASE-KONKLUSION efter 20 iterationer (~92 kandidater, 14 metoder)
+Alle finalister er gravet, dømt og dokumenteret. Alle live-signaler er swarmede inden
+for dage (målt ned til "før shutdown-datoen"). Web-research kan bevise markeder, ikke
+finde ubesatte. Der findes ikke flere iterationer der kan ændre dette resultat uden
+ny input-type: primærdata (interviews), distributionskanal, eller en strategisk
+beslutning fra Mads. Se STATUS.md.
+
 ## Iteration 1 (2026-08-22/23): 36 kandidater → 4 finalister + F5
 Se git-history eller RESUMÉ nederst for den fulde tabel. Finalister: F1 chargeback-defense
 (STR hosts), F2 EAA-audit for små webshops, F3 job-dokumentation/scope-creep,
@@ -931,3 +973,69 @@ der består screeningen, eller interviews giver primærdata.
 
 **Næste iteration:** afhænger af Mads' ja/nej til kanal + konto (se STATUS.md).
 
+
+## Iteration 21 (2026-08-23): Metode 15 — "tidlig bølge"-hypotesen (regler vedtaget nu, deadline 2027-28) — TESTET OG AFKRÆFTET DØD
+
+STATUS.md's plan ("dybere grav i finalister") var igen umulig: der står NUL finalister.
+I stedet testede jeg den eneste strukturelle luke mine egne mønstre tillader: mønster 1
+siger swoop sker 6-12 mdr EFTER signal. Alle hidtidige bølger var allerede 12+ mdr gamle
+ved første grav. Hypotese: bølger vedtaget I ÅR med deadline 2027-28 skulle teoretisk være
+før-swoop. Kilder: HN Algolia (radar, 7 dage) + web-search pr. bølge.
+
+### Radar (HN, sidste 7 dage): ingen nye grave-værdige graveyard-signaler
+InstantDB-duplikat, macOS hdiutil-deprecation (OS-leverandør-ejet), Tesla Solar Roof
+(hardware), Columbia House (fysisk detail). Intet arveligt.
+
+### T1: Cyber Resilience Act (CRA) — DØD: FULDT SWATMET 15 MDR FØR DEADLINE
+Deadline for full application: 11/12-2027; Art. 14-rapportering starter 11/9-2026 (om 3 uger).
+Fund: Venvera-købereguide "6 Best CRA Compliance Software" (jul 2026); Attestra AI
+(EU-co-funded, modul 1 live NU til sept-deadline); OpenComplAI (OSS CRA/AI Act checks i
+CI/CD, Show HN 14/8); Determinate Secure Packages; ENISA SMV-survey → EU-finansierede
+GRATIS værktøjer (OSCRAT, OCCTET) målrettet netop mikrovirksomheder.
+→ Død: alle tre lag (enterprise, SME, gratis) besat FØR den første rapporteringsfrist.
+
+### T2: Digital Product Passport / ESPR / Battery Reg — DØD: 6+ PLATFORME, GRATIS-TIER LIVE
+Battery-passports obligatoriske 18/2-2027; tekstiler 2027-29. Fund: Traceable.digital
+(fra €15/passport, AI-extraction, EC "Good Practice"-udvalgt); dpp.gs (Sensoneo,
+EU-regulator-IT i 9 lande); SigmaTag (€349/md tier); Tracelia (tekstil-SME);
+OriginPass (6 md gratis mod LOI, Q4 2026-launch); DPP Agent (validator + white-label).
+Plus: EU DPP Registry LIVE siden 20/7-2026, harmoniserede standarder (EN 18216-23)
+publiceret juni 2026 — økosystemet er færdigt før markedet åbner.
+→ Død: samme tredelte besættelse; SME-bunden koster allerede €15/styk.
+
+### T3: PPWR (emballage) — DØD: REGLEN GÆLDER ALLEREDE (12/8-2026) OG MARKEDET ER PAKKET
+Repax (DoC-generering), PAQR, Packgine, Dcycle, Ecoveritas + "8 best tools"-guide.
+→ Død: DoC-artefaktet er allerede et produkt.
+
+### T4: EU AI Act high-risk (dec 2027/aug 2028) — DØD + POLITISK USTABIL
+Compliance-platform-markedet "growing" (€10-30k/år enterprise; gratis checker:
+artificialintelligenceact.eu). Og afgørende: Regulation (EU) 2026/1744 ("Digital Omnibus",
+i kraft 27/7-2026) flyttede lige high-risk-deadlinesne 12-24 md ud — samme politiske
+ustabilitet som CSRD/Omnibus I (iter. 3). En forretning bygget på disse datoer kan blive
+omstødt ved trilogue.
+
+### T5: Forced Labour Regulation (14/12-2027) — DØD I SCREENING
+Assent (AI-native forced labor due diligence, enterprise), TrusTrace (FLR-løsning live),
+Single Portal + risk database bygget af Kommissionen selv.
+→ Død uden dybere grav.
+
+### Bi-fund: EAA EFTER deadlinen (13 måneder inde) — INGEN NY ÅBNING
+Enforcement er fortsat stille i de fleste medlemslande (web60.ie, irsk status ét år efter);
+Carrefour-dommen (daglige bøder trods 71% compliance) viser at håndhævelse rammer STORE
+aktører først. Mikrofritagelsen (<10 ansatte + <€2M) står uændret. Ingen ny indgang for
+iter. 2's døde finalister.
+
+### Mønster (nu 21 iterationer)
+22. "Tidlig bølge"-hypotesen er AFKRÆFTET som død: selv regler vedtaget i 2024 med
+    deadline 2027-28 er fuldt swarmede 12-18 mdr før deadline, på ALLE tre lag (enterprise-
+    platform, SME-prispoint, EU-finansieret gratisværktøj). Swoop'en starter ikke ved
+    signalets offentliggørelse — den starter ved vedtagelsen, ofte før. Web-research kan
+    derfor STRUKTURELT ikke nå nogen regulatorisk bølge i tide: inden en regel er synlig
+    nok til at jeg kan finde den, er dens tooling-market allerede beboet.
+23. Konsekvens: den eneste resterende kilde til ubesatte markeder er information der IKKE
+    er offentlig endnu — altså primærdata via interviews/netværk. Dette er nu bevist, ikke
+    formodet, på tværs af 15 metoder.
+
+### Konklusion iteration 21
+Ingen kandidat består screeningen (<2 konkurrenter ved dybdegrav). Ingen DECISION.md —
+der er intet at forsvare. Budget: 0 kr brugt.

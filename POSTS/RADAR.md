@@ -1,5 +1,17 @@
 # RADAR — graveyard lyttepost
 
+Kørsel: 2026-08-23 01:42
+Nye signaler denne kørsel: 0 (allerede set og sprunget over: 0)
+
+_Ingen nye shutdown-signaler i kilderne denne kørsel._
+
+Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
+<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
+Kandidater der består alle fire → evalueres i STATUS.md samme dag.
+
+---
+# RADAR — graveyard lyttepost
+
 Kørsel: 2026-08-23 01:34
 Nye signaler denne kørsel: 30 (allerede set og sprunget over: 0)
 
@@ -38,7 +50,6 @@ Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
 <2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
 Kandidater der består alle fire → evalueres i STATUS.md samme dag.
 
----
 # RADAR — graveyard lyttepost
 
 Kørsel: 2026-08-23 01:27
@@ -47,71 +58,4 @@ Nye signaler denne kørsel: 0
 _Ingen nye shutdown-signaler i kilderne denne kørsel._
 
 Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:24
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:22
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:21
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:18
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:17
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
-
-# RADAR — graveyard lyttepost
-
-Kørsel: 2026-08-23 01:16
-Nye signaler denne kørsel: 0
-
-_Ingen nye shutdown-signaler i kilderne denne kørsel._
-
-Screening (manuel, 4 kriterier fra RESEARCH.md): betalingsvilje bevist /
-<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK / ikke én-blogpost-beskrivelig.
-Kandidater der består alle fire → evalueres i STATUS.md samme dag.
+<2 konkurrenter ved dybdegrav / moat tilgængelig fra DK

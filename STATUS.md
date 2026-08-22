@@ -1,112 +1,45 @@
 # STATUS
 
-## 2026-08-23 — Iteration 19: Radaren opgraderet og kørt (HN + GitHub) — 3 live-signaler, alle døde ved første grav
+## 2026-08-23 — Iteration 21: Metode 15 ("tidlig bølge") testet og død. 15 metoder, ~97 kandidater, NUL finalister. Ingen DECISION.md.
 
 ### Hvad der skete
-Køreplanen fra iter. 18 er udført: `POSTS/radar.py` udvidet med HN Algolia (7 dage,
-shutdown-stories) og GitHub Search (repos ≥500★ arkiveret sidste 14 dage). Kørsel 01:34:
-Reddit stadig 429, IndieHackers timeout — men HN+GitHub leverede 30 signaler. Tre grave-
-værdige, alle døde:
-1. **InstantDB** (YC S22 realtime BaaS, lukket ~20/8): RxDB og Pylon har allerede live
-   "InstantDB alternative"-sider; kategorien pakket af Supabase/Convex/Zero/PocketBase.
-   Swarm på <1 uge. DØD.
-2. **Whoogle** (11,6k★): kategorien dræbt af Google selv (no-JS-søgning lukket) —
-   enhver efterfølger arver dødsdommen. DØD.
-3. **elevenlabs-mcp**: vendor tog det in-house — konsolideringstegn, ikke hul. DØD.
+Planen fra iter. 20 ("dybere grav i finalister") var igen umulig: alle finalister er
+dokumenteret døde. I stedet testede jeg den EN strukturelle luke mine egne mønstre tillod:
+mønster 1 siger konkurrent-swoop sker 6-12 mdr efter et signal — så måske kunne regler
+VEDTAGET NU med deadline 2027-28 nås før swoop'en.
 
-Latens-målingen strammes yderligere: InstantDB's konkurrencesider var live <1 uge efter
-shutdown-story'en. Selv en daglig cron ville være for langsom. Radaren er nu formelt
-reduceret til indholdskilde til vej 3 (essays) — ikke idé-kilde.
+Resultat: AFKRÆFTET DØD på fem bølger (fuld dokumentation med kilder i RESEARCH.md):
+- **CRA** (deadline dec 2027): 6+ platforme, EU-co-funded Attestra AI live, OSS i CI/CD,
+  gratis EU-værktøjer til mikrovirksomheder — alt besat FØR den første rapporteringsfrist
+  (11/9-2026, om 3 uger).
+- **DPP/Battery/ESPR** (feb 2027): 6+ platforme fra €15/passport; EU-registrering live.
+- **PPWR**: gælder nu; DoC-generering allerede produkt hos flere aktører.
+- **AI Act high-risk** (dec 2027): marked voksende + Omnibus flyttede lige deadlinesne =
+  politisk ustabil grund (samme som CSRD).
+- **Forced Labour Reg** (dec 2027): Assent/TrusTrace besat; EU bygger selv portalen.
 
-### Blokeret på Mads (uændret, nu afgørende)
-1. JA/NEJ til kanal (X/LinkedIn) → offentliggørelse af indlæg 1-5.
-2. Valg mellem de tre veje: interviews (min anbefaling — den eneste metode der kan finde
-   et ubesat marked), acceptér konkurrence, eller moat-pivot.
-19 iterationer, ~90 kandidater, 15 metoder. Web-research er bevist udtømmende inkl.
-realtids-signaler. Uden primærdata (interviews) eller distributionskanal er der ikke
-flere iterationer der kan ændre resultatet.
+Nyt mønster 22: swoop'en starter ved REGLENS VEDTAGELSE, ikke ved offentlig opmærksomhed.
+Inden en bølge er synlig nok til at web-research kan finde den, er dens tooling-market
+allerede beboet på alle tre lag (enterprise / SME / gratis). Det er nu BEVIST, ikke bare
+formodet, at web-research strukturelt ikke kan levere en kandidat.
+
+Radar (HN, sidste 7 dage): ingen nye grave-værdige graveyard-signaler.
+
+### Konklusion (uændret, nu bevist i 21 iterationer og 15 metoder)
+Den eneste resterende kilde til ubesatte markeder er information der ikke er offentlig
+endnu — primærdata. Det kræver Mads' netværk. Jeg anmoder IKKE om flere web-research-
+iterationer; de kan matematisk ikke give et andet resultat.
+
+### Blokeret på Mads (uændret fra iter. 20)
+1. **JA/NEJ til kanal** → offentliggørelse af de 5 færdige essays i POSTS/ (gratis,
+   bygger distribution).
+2. **Vej-valg:** Vej 1 interviews via dit netværk (MIN ANBEFALING — interviewguide klar
+   i INTERVIEW-GUIDE.md) / Vej 2 acceptér konkurrence, vælg positionering i beboet marked /
+   Vej 3 moat-pivot: distribution først, produkt senere.
 
 ### Budget
-0 kr brugt. Intet anmodet.
+0 kr brugt i alt. Intet anmodet.
 
 ### Næste iteration
-Afhænger udelukkende af Mads' svar ovenfor. Ingen produktkode. Ingen DECISION.md —
-ingen kandidat består "<2 konkurrenter"-kriteriet, og jeg ville ikke sætte egne penge
-i nogen af dem.
-
-### Hvad der skete
-Reddit var stadig 429-blokeret, men Hacker News Algolia-API (gratis, ingen nøgle) gav
-ferske shutdown-signaler. Jeg gravede i de fire bedste:
-1. **Flowise** (55k stjerner, EOL 31/8): LLMGraph m.fl. har migrations-sider rangerende
-   INDEN EOL; kategorien dør strukturelt → død.
-2. **Relay.app** (lukket 16/7): 6+ alternativ-guides med pristabeller live inden
-   free-account-fristen 15/8 → swarment på ~3 uger.
-3. **Productiv** (SMP, sunnet på 4 dages varsel, data destrueret): Torii/SpendHound/
-   Zylo/CloudNuro/Tropic osv. — 9+ konkurrencesider live inden for to uger → død.
-4. **TV Time** (25M+ brugere): JustWatch lancerede migrationsværktøj 6 dage FØR shutdown;
-   Trakt, Hobi ("official partner"), Simkl, Zuki + — 10+ destinationer → død.
-
-### Den hårde konklusion
-Swarm-latensen er nu målt: Stocky 6 uger → Relay 3 uger → Productiv 4 dage → TV Time:
-konkurrentens migrationsværktøj lanceret FØR dødsfaldet. Graveyard-signaler med kendt
-brugerbase er besat før eller samtidig med shutdown'en. En fjern-observatør (mig) kan
-strukturelt aldrig vinde det kapløb — også selvom lytteposten bliver daglig.
-
-### Status på vej 3 (distribution/moat-pivot)
-Radarens mekanik virker (HN-kanal løser Reddit-429; tilføjes radar.py næste gang).
-Men iteration 18 beviser at radaren alene ikke kan levere en kandidat der består
-"<2 konkurrenter"-kriteriet. Vej 3 kan stadig give indhold/distribution (5 essays
-klare i POSTS/) — men ikke automatisk en forretningsidé.
-
-### Blokeret på Mads (uændret)
-1. JA/NEJ til kanal (X/LinkedIn-konto) → offentliggørelse af indlæg 1-5.
-2. Beslutning om de tre veje: interviews / acceptér konkurrence / moat-pivot.
-   Min anbefaling efter 18 iterationer: vej 1 (interviews via dit netværk) er den
-   ENSTE tilbageværende metode der kan finde et ubesat marked — web-research er bevist
-   udtømt (18 iterationer, ~90 kandidater, alle besat ved første grav).
-
-### Budget
-0 kr brugt. Intet anmodet.
-
-### Næste iteration
-- Tilføj HN Algolia + GitHub archived-repos til radar.py; foreslå daglig cron.
-- Ellers afventer Mads' valg (ovenfor). Ingen produktkode. Ingen DECISION.md.
-
-## 2026-08-23 — Iteration 17: Vej 3 leverancer bygget og testet.
-
-### Leveret denne iteration
-1. **De første 5 indlæg i fuld længde** (klar-til-godkendelse, engelsk, i `POSTS/`):
-   - `01-eighty-five-niches.md` — hovedautopsien (85+ kandidater, mønstret, CTA)
-   - `02-graveyard-gaps-worst-opportunities.md` — hvorfor graveyard-huller er de VÆRSTE
-     muligheder (GummySearch/Stocky/InkFrog/Chartable/Coverfly-data)
-   - `03-six-week-swarm.md` — Shopify Stocky fra annoncering til mætning på 6 uger
-   - `04-regulation-is-not-a-moat.md` — scoreboard: 7 regulatoriske bølger, 7 røde have,
-     med pris- og konkurrenttabel
-   - `05-signal-strength-correlates.md` — signal-styrke ↔ konkurrent-tæthed, perfekt korrelation,
-     konklusionen der motiverer moat-pivot'en
-2. **Lyttepost-mekanik (gratis):** `POSTS/radar.py` — RSS-overvågning af r/SaaS,
-   r/EntrepreneurRideAlong, IndieHackers; dedupe + output til RADAR.md med de 4 screenings-
-   kriterier. Testet med rigtige kørsler (se fund nedenfor). Ingen penge, ingen konti.
-
-### Ærlige testresultater (radar)
-- Scriptet kører og skriver RADAR.md korrekt.
-- Reddit rate-limitede os (HTTP 429) ved gentagne kald fra dette miljø — kun én kilde
-  kom igennem pr. kørsel; IndieHackers-feed timeout. Konsekvens: radaren skal køres som
-  cron med god afstand mellem kald (fx 1×/dag) eller via andet netværk/brugeragent.
-  Det er en distributionsdetalje, ikke en blokerer — mekanikken er bevist.
-- Nul nye shutdown-signaler i de tilgængelige feeds ved testtidspunktet (ventet).
-
-### Blokeret på / næste skridt kræver Mads
-1. **JA/NEJ til kanal:** Mads opretter X-konto (+ evt. LinkedIn), hvorefter indlæg 1-5 kan
-   publiceres. Indtil da offentliggøres INGENTING (mandatets grænse).
-2. **Cron:** når kanalen er godkendt, foreslår jeg daglig radar-kørsel (lokal, gratis).
-3. Evt. interviews (vej 1) kan stadig sættes i gang parallelt — interviewguide klar på ønske.
-
-### Budget
-0 kr brugt. Intet anmodet. Ingen produktkode udadtil — radar.py er internt researchværktøj.
-
-### Næste iteration (afhænger af Mads' svar)
-- Hvis JA til konto: tilpas indlæg 1 til tråd-format, offentliggør, start rytmen (2/uge),
-  og lad radaren levere live-autopsy #1.
-- Hvis NEJ: spor 3 er dødt → tilbage står vej 1 (interviews via Mads' netværk) eller
-  vej 2 (positionering af eksisterende bureau) — begge dokumenteret i RESEARCH.md.
+Kun meningsfuld hvis Mads svarer på punkterne ovenfor — eller giver en ny input-type
+(et interview, en kanal, et domæne). Ellers er research-fasen lukket.

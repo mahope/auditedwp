@@ -330,3 +330,37 @@ Derfor: **ingen DECISION.md** — ingen kandidat overlever "<2 konkurrenter". We
 Filer opdateret: RESEARCH.md (iteration 18 med kilder), STATUS.md. Budget: 0 kr brugt.
 2026-08-23T01:30:27+02:00 iteration 5 afsluttet (exit 0)
 2026-08-23T01:31:55+02:00 === CEO-iteration 6/12 ===
+Iteration 19 er færdig. Resumé:
+
+**Hvad jeg gjorde (efter min egen køreplan fra iter. 18):**
+1. Opgraderede `POSTS/radar.py` med HN Algolia (7 dages shutdown-stories) og GitHub Search API (repos ≥500★ arkiveret sidste 14 dage). Kørsel bekræftet: 30 signaler fanget.
+2. Gravede i alle tre grave-værdige signaler — alle døde:
+   - **InstantDB** (YC S22, lukket ~20/8): RxDB og Pylon har allerede live "alternative"-sider, og realtime-BaaS-kategorien er pakket af Supabase/Convex/Zero. Swarm på under en uge.
+   - **Whoogle** (11,6k★): kategorien dræbt af Google selv — enhver fork arver dødsdommen.
+   - **elevenlabs-mcp**: vendor tog det in-house — konsolidering, ikke hul.
+3. RESEARCH.md og STATUS.md opdateret med fund, kilder og to nye mønstre; commitet i git.
+
+**Konklusion:** Latens-målingen er nu strammet til <1 uge (InstantDB). Selv en daglig cron-lyttepost ville være for langsom. Jeg er derfor ikke overbevist om nogen idé — ingen DECISION.md, for ingen kandidat kan forsvares mod min egen kritik.
+
+**Ærligt budskab til dig, Mads:** Efter 19 iterationer, ~90 kandidater og 15 metoder er web-research bevist udtømmende. De to ting der stadig kan ændre resultatet ligger hos dig: (1) ja/nej til kanal så indlæg 1-5 kan udsendes, og (2) valg af vej — min anbefaling er interviews via dit netværk, da det er den eneste metode tilbage der kan finde et ubesat marked. Budget: 0 kr brugt.
+2026-08-23T01:36:58+02:00 iteration 6 afsluttet (exit 0)
+2026-08-23T01:37:20+02:00 === CEO-iteration 7/12 ===
+Iteration 20 er færdig. Rapport til Mads:
+
+**Vigtigste fund: Der var ingen finalister tilbage at grave i.** Alle ~92 kandidater fra iteration 1-19 er allerede døde ved dybdegrav — den sidste blev fuldt due diligence-gravet i iteration 9. Din punkt 1 var derfor umulig at udføre som skrevet, og jeg nægter at lave som om.
+
+**Hvad jeg gjorde i stedet:**
+1. Kørte radaren én sidste gang (HN Algolia, signaler efter iter. 19). 20 hits, 2 grave-værdige:
+   - **Convictional** (YC W19, ~$49M raised, lukker 27/8) — dropship-delen solgt til konkurrenten Carro i 2025; pivotten fejlede på distribution. Intet at arve. DØD.
+   - **OSF** (stopper nye uploads nov. 2026) — ResearchBox er allerede den officielt anbefalede efterfølger + Zenodo/Dataverse gratis. Hullet fyldt før begravelsen. DØD.
+2. Dokumenterede mønster 21: pivot-lukninger uden PMF har ingen brugerbase at arve.
+3. Opdaterede RESEARCH.md og STATUS.md med fund, kilder og den endelige fase-konklusion.
+4. Byggede INTERVIEW-GUIDE.md — komplet guide til vej 1 (10 spørgsmål, signal-scoring A/B/C, logistik), så interviews kan starte med det samme.
+
+**Ingen DECISION.md — bevidst.** Jeg ville ikke sætte egne penge i nogen af de 92 kandidater, og at skrive dokumentet for at være "færdig" ville være at lyve til min investor.
+
+**Den strukturelle konklusion er nu bevist i 20 runder:** web-research kan bevise markeder, ikke finde ubesatte. Alle moats hos vinderne er ting der ikke kan købes med arbejdstimer. Flere iterationer på samme metode kan matematisk ikke ændre resultatet.
+
+**Jeg blokerer på dig for:** (1) ja/nej til kanal → offentliggørelse af de 5 færdige essays i POSTS/, og (2) valg mellem interviews (min anbefaling — guiden er klar), acceptér konkurrence, eller moat-pivot. Budget: 0 kr brugt.
+2026-08-23T01:40:50+02:00 iteration 7 afsluttet (exit 0)
+2026-08-23T01:41:13+02:00 === CEO-iteration 8/12 ===
