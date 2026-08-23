@@ -1368,3 +1368,54 @@ Ny flade: **/nis2-checklist/** — interaktiv NIS2-checkliste med 24 punkter i 6
 Blokering uændret: første krone kræver stadig Mads' Gumroad-konto — alt checkout-indhold står klar. Budget: 0 kr brugt.
 2026-08-23T11:54:18+02:00 iteration 5 afsluttet (exit 0)
 2026-08-23T11:54:39+02:00 === iteration 6/15 ===
+Iteration 63 færdig og deployet.
+
+**Punkt 1 (universalitet): BESTÅET.** Vurderingen var allerede lavet i iteration 62 med live-bevis — scanner-kernen (Worker) tog Shopify, Webflow, Squarespace og Nuxt med 6/6 checks og uden CMS-forudsætning. WP-plugin og Chrome-extension er indpakninger. Intet behøver trækkes ud; vurderingen står i STATUS.md.
+
+**Punkt A: Beslutningen holder under pengekriteriet** — EUComply er bygget, live, koster 0 kr/md, og alle betalingskanaler kræver Mads' konti uanset produkt, så et pivot kan ikke nå $1 hurtigere.
+
+**Punkt B: Bygget denne iteration** — betaling er stadig blokeret på Mads' Gumroad, så jeg arbejdede på prioritet 3 (det der trækker folk til):
+
+- **Ny side /eaa-checklist/** — interaktiv European Accessibility Act-checkliste: 28 punkter i 6 kategorier mappet til Directive (EU) 2019/882 + EN 301 549 / WCAG 2.1 AA, live score-meter, prioriteret gap-liste, FAQPage-schema, disclaimer. EAA-målgruppen (alle der sælger forbrugertjenester i EU) har hård, aktualiseret smerte — loven har været i kraft siden 28. juni 2025.
+- Intern linkning fra den eksisterende EAA-guide i bloggen → checkliste (guiden havde ingen checkliste-link), plus blog-index kort, forside-nav, checkliste-nav og sitemap (priority 0.9).
+
+**Verificeret live:** /eaa-checklist/ svarer 200 med "0 / 28" og præcis 28 checkboxes; alle berørte undersider 200; sitemap og blog-index indeholder de nye links. Rettede undervejs en tællefejl (tekst sagde 24, der var 28 punkter). Commit 89d305e pushet.
+
+Budget: 0 kr brugt. Blokering uændret: Mads' konti (Gumroad ~10 min åbner første salg samme dag).
+2026-08-23T12:01:33+02:00 iteration 6 afsluttet (exit 0)
+2026-08-23T12:01:54+02:00 === iteration 7/15 ===
+Iteration 64 færdig. Opsummering:
+
+**Universality-vurdering (opgave A):** BESTÅET. Kernen tager en almindelig URL og er CMS-uafhængig — beviset ligger i iteration 62s live-scans mod Shopify, Webflow, Squarespace og Nuxt. WP-plugin og Chrome-extension er allerede positioneret som indpakninger. Intet behøver trækkes ud. Vurderingen står i STATUS.md.
+
+**Beslutningen:** Holder under pengekriteriet — EUComply er bygget, live, koster 0 kr/md og kan tjene penge timer efter Mads' Gumroad-konto findes. Ingen grund til at revurdere.
+
+**Bygget (opgave B):**
+- **/cookie-policy-generator/** — interaktiv generator: 5 spørgsmål → skræddersyet GDPR/ePrivacy-cookie-policy med kategoritabeller, consent-afsnit, FAQ-schema og disclaimer. Copy/download-knapper, kører 100 % lokalt. Det var planlagt som næste skridt fra sidste iteration: højt-volumen keyword med direkte købsintent, feeder $29–149 templates.
+- Intern linkning: nav på forsiden, blog-index-kort, inline-link fra cookie-guiden, sitemap opdateret.
+- Deployet og verificeret live: 200, korrekt titel, alle links på plads.
+
+**Budget:** 0 kr brugt / 1.000 kr.
+
+**Blokering (uændret):** Mads' konti — Gumroad (~10 min), CWS ($5), npm. Alt andet venter på det, så jeg bygger videre på trafik- og konverteringssiden indtil da.
+
+Næste iteration: "privacy policy generator"- og "terms of service generator"-landinger + mobil-gennemgang af de nye værktøjer.
+2026-08-23T12:06:22+02:00 iteration 7 afsluttet (exit 0)
+2026-08-23T12:06:44+02:00 === iteration 8/15 ===
+Iteration 65 færdig. Resumé:
+
+**Punkt 1 (universalitet): BESTÅET — intet at trække ud.** Kernen (scan-Worker) tager en almindelig URL og er CMS-uafhængig; WP-pluginet og Chrome-extensionen er allerede indpakninger, ikke produktet. Vurderingen står i STATUS.md.
+
+**Beslutningen holder under pengekriteriet** — EUComply har kortest vej til første betaling (timer efter Mads' Gumroad-konto), $79/år recurring, 0 kr drift. Så jeg byggede videre efter prioritet 3:
+
+**Nyt: /privacy-policy-generator/ — live og verificeret på https://auditedwp.pages.dev/privacy-policy-generator/**
+- Interaktiv generator: 6 spørgsmål → Article 13-dækkende privacy policy (juridiske hjemler, tredjeparter, internationale overførsler, retention, alle brugerrettigheder), FAQPage-schema, disclaimer, copy/download
+- "Privacy policy generator" er et af de højest-volumen compliance-keywords med direkte købsintent → feeder template-salget ($29–149) og scanneren
+- Intern linkning: nav på forsiden, kort på blog-index, krydslink fra cookie-generatoren, sitemap opdateret
+- Deployet og verificeret: 200 + korrekt titel + link fundet på forsiden og i sitemap
+
+**Blokering uændret:** Mads' konti (Gumroad ~10 min, CWS $5) er den eneste flaskehals for revenue. Alt checkout-indhold står klar.
+
+Budget: stadig 0 kr brugt. STATUS.md er opdateret med porteføljen (nu 10 flader) og næste skridt (mobil-gennemgang, "terms of service generator" som næste indgang).
+2026-08-23T12:11:31+02:00 iteration 8 afsluttet (exit 0)
+2026-08-23T12:12:53+02:00 === iteration 9/15 ===
