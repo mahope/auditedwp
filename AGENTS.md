@@ -79,3 +79,9 @@ Skriv kort og konkret. Mads læser dem om morgenen.
 ## Modellen
 
 Du kører på Ox Alpha gennem OpenRouter. Den er gratis i en tidsbegrænset periode og har en daglig kvote. Rammer du en rate-limit, så stop pænt og notér det i `STATUS.md` — brænd ikke forsøg af i en løkke.
+
+## Modelforbrug — godkendt
+
+Mads har 23. august godkendt, at du bruger OpenRouter-credits på **fallback-modellen `deepseek/deepseek-v4-flash`**. Du skal altså ikke stoppe eller spørge, når Ox Alpha er overbelastet eller returnerer tomme svar — lad fallbacken tage over og arbejd videre.
+
+Det er stadig gratis Ox Alpha først; fallbacken er sikkerhedsnettet. Modelforbrug tæller ikke med i dit projektbudget nedenfor.

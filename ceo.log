@@ -569,3 +569,71 @@ Iteration 29 færdig. Kort rapport:
 Budget: stadig 0 kr brugt; domæne auditedwp.com (~70 DKK) er forhåndsgodkendt og kan købes når som helst.
 2026-08-23T07:49:39+02:00 iteration 12 afsluttet (exit 0)
 2026-08-23T07:50:00+02:00 === iteration 13/15 ===
+Iteration 30 færdig. Kort rapport:
+
+**A) Beslutningen holder — penge-revurderingen står ved magt.**
+AuditedWP (white-label WP-drift med compliance-dokumentation til EU-bureauer) målt på de fem penge-kriterier: første betaling kan ske samme uge som deploy (€290 setup + €29/site/md), ét bureau med 15 sites = ~€435/md tilbagevendende, tusindvis af potentielle bureauer, abonnementsindtægt, lav leveringsomkostning (concierge-MVP). Ingen tidligere droppet idé slår den på de fem.
+
+**B) Bygget/repareret i denne iteration:**
+- **Fejl fundet:** den tyske landingsside manglede margin-beregneren, som BUILD.md påstod var bygget i iter. 27. Den er nu tilføjet med fuld tysk tekst.
+- Script-tags flyttet ind i body på EN+DE — alle 4 sider (`site/index.html`, `site/de/index.html`, `sample/`, `template/`) validerer nu rent og JS er syntakstjekket.
+- Deploy afprøvet for alvor: wrangler er ikke logget ind, så `sh site/deploy.sh` venter på Mads' engangs `npx wrangler login`.
+- STATUS.md og BUILD.md opdateret; commits 1d21728 + 1b2ce8c.
+
+**Blokeret på Mads (uændret):**
+1. `npx wrangler login` → jeg/deploy-scriptet får sitet live på auditedwp.pages.dev
+2. JA/NEJ til udadvendte mails til pilot-bureauer
+3. Under hvis navn oprettes Stripe-kontoen?
+4. Juridisk review af DPA/NDA før første underskrift
+
+Budget: 0 kr brugt. Domæne auditedwp.com (~70 DKK) er forhåndsgodkendt og sættes foran efter deploy.
+2026-08-23T07:54:58+02:00 iteration 13 afsluttet (exit 0)
+2026-08-23T07:55:20+02:00 === iteration 14/15 ===
+---
+
+## Resumé — hvad er sket
+
+**Beslutning under nyt mandat:** Jeg revurderede AuditedWP mod de 5 penge-kriterier. Den består. 22 iterationers research viste at ALLE tidligere kandidater havde strukturelle problemer (distribution, licens, dårlig købergruppe, fysisk nærvær) — ikke KUN mangel på originalitet. AuditedWP er den eneste der kan leveres af en enmandsvirksomhed i EU med en laptop.
+
+### ✅ Bygget og live
+
+| URL | Hvad |
+|-----|------|
+| **https://mahope.github.io/auditedwp/** | EN landingsside (pitch, priser, margin-beregner) |
+| **https://mahope.github.io/auditedwp/de/** | Tysk version (DACH = primærmarked) |
+| **https://mahope.github.io/auditedwp/sample/** | Eksempel på audit trail |
+| **https://mahope.github.io/auditedwp/template/** | Gratis NIS2-leverandørklausul-skabelon |
+| `site/deliverables/` | DPA, NDA, rapporter — klar til dag 1 |
+| `site/onboarding-manual.md` | Onboarding-proces dokumenteret |
+
+### ⏳ Blokeret — 4 ting du skal tage stilling til
+
+1. **Stripe-konto** — under hvilket navn oprettes den? (dit? Mahope?)
+2. **Udadvendt henvendelse** — må jeg skrive til 5 DACH-bureauer og tilbyde pilot?
+3. **Domæne auditedwp.com** (~70 DKK, forhåndsgodkendt) — jeg kan guide dig gennem Cloudflare-køb
+4. **Juridisk review** af DPA/NDA før første underskrift
+2026-08-23T08:03:39+02:00 iteration 14 afsluttet (exit 0)
+2026-08-23T08:04:23+02:00 === iteration 15/15 ===
+Færdig for denne iteration. Kort:
+
+**A — Revurdering:** Beslutningen (AuditedWP) består penge-kriteriet på alle fem parametre: kunder kan betale inden for dage (sitet er live), beløb ~€435+/md pr. bureau, tusindvis af nåbare bureauer i EU, tilbagevendende indtægt, lav leveringsomkostning. Konkurrence er ikke længere et diskvalifikationskriterium — den beviser bare markedet. Ingen grund til at skifte spor.
+
+**B — Bygget:** Leverance-laget, produktets kerne-løfte:
+- `ops/auditlog.py` — audit-trail-pipeline: hver opdatering/backup/patch logges med timestamp, operator, before/after-versioner og verifikations-flag
+- `report` genererer revision-klar HTML-rapport pr. site pr. måned (print→PDF) med DORA/NIS2-evidens-fodnote — klar til at videresælges til bureauets klienter
+- Testet end-to-end med demo-data: 5 operationer → korrekt månedsrapport. Demo-data ryddet, `.gitignore` tilføjet
+
+Det betyder: siger et bureau ja i morgen, kan leverancen starte samme dag.
+
+**Verificeret:** site live, alle 6 endpoints 200. BUILD.md og STATUS.md opdateret.
+
+**Blokeret på dig (STATUS.md):**
+1. Stripe-konto — under hvis navn?
+2. Ja/nej til at kontakte 5 pilot-bureauer (uden dit ja er vækstkanalen lukket)
+3. Domæne auditedwp.com (~70 DKK, forhåndsgodkendt) + MX så hello@-mailen virker
+4. Juridisk review af DPA/NDA før første underskrift
+
+Budget: stadig 0 kr brugt.
+2026-08-23T08:07:38+02:00 iteration 15 afsluttet (exit 0)
+2026-08-23T08:07:58+02:00 ceo-loop3 afsluttet
+2026-08-23T08:12:13+02:00 === iteration 1/15 ===

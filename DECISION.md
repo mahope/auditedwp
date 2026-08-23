@@ -1,100 +1,98 @@
 # DECISION
 
-Dato: 2026-08-23. Taget i oneshot-mode (ingen investor tilgængelig) under mandatets
-bestemmelse: CEO'en beslutter hvad der bygges. Metode: Vej 2 fra STATUS.md —
-acceptér konkurrence, vind på positionering og leverance i et beboet marked med
-BEVIST betalingsvilje. Kriteriet "<2 konkurrenter" er bevidst droppet efter 22
-iterationer viste det er umuligt at opfylde med web-research (mønster 1-24,
-RESEARCH.md).
+Dato: 2026-08-23 (iteration 32 — pivot efter Mads' nul-indsats-krav).
+
+## Nul-indsats-testen (det afgørende krav)
+
+Mads rejser væk i 3 måneder uden internet → forretningen skal stadig tjene penge
+ved hans hjemkomst. Alt der kræver kundesupport, manuel levering, løbende
+beslutninger, salg eller uendelig indholdsproduktion er kasseret.
 
 ## Hvad
 
-**Compliance-dokumenteret WordPress-drift (maintenance & security ops) solgt
-white-label til små/mellemstore webbureauer i EU/DACH — med audit-spor.**
+**ComplianceDocs — butik for færdige, advokatinspirerede B2B-compliance-dokumenter
+til EU-regulering (EAA, NIS2, DORA, GDPR), solgt som digitale downloads.**
 
-Ikke endnu et care-plan-abonnement. Kerneproduktet er DOKUMENTATIONSLAGET:
-- Fuld ændringshistorik pr. site (opdateringer, backups, patches) som kunder kan
-  fremvise ved revision, forsikring, DORA Art. 28-leverandøraftaler, NIS2-
-  leverandørkæde-krav og EAA-dokumentationskrav.
-- Kvartalsvis "compliance-fortælling" pr. klient bureauet kan videresælge.
-- EU-hosting, EU-jurisdiktion, AVV/DPA som standard.
-- Driftslaget leveres med AI-agent-automatisering (monitoring, patching, staging-
-  tests) — én person + agenter erstatter det, der før krævede et hold.
-
-## Til hvem
-
-Køberen: ejeren af et 5-30-personers webbureau i EU (især DACH, NL, Nordics) der
-(1) allerede sælger care-plans videre eller vil begynde, (2) møder kundeforespørgsler
-om GDPR/NIS2/EAA-dokumentation de ikke kan besvare, (3) ikke vil bygge eget driftsteam.
-Brugeren: bureauets tech lead. Beslutningstager: ejer/direktør — nås direkte, ingen
-procurement.
+- Køberen: webbureau-ejer, SaaS-stifter eller selvstændig konsulent i EU/DACH der
+  skal bruge en DPA, NDA-clause, vendor-audit-clause eller dokumentations-skabelon
+  I MORGEN — og ikke vil betale en advokat €500-2.000.
+- Produktet er filen: markdown/PDF, leveret automatisk efter betaling.
+- Portefølje (bygget, i `site/deliverables/`): DPA-skabelon, NDA-clause-set,
+  NIS2 vendor-clause, change-log-spec, kvartals-compliance-rapport-skabelon.
+  Flere følger: EAA-tilgængelighedserklæring, DORA-leverandøraftale-clause,
+  AI Act-disclosure-tekst — hver bygget én gang, solgt uendeligt.
 
 ## Hvorfor nu
 
-1. Betalingsvilje er bevist 22 gange over: wholesale $39-100+/site/md → retail
-   $100-300/site/md, margin 40-65%, tusindvis af bureauer (RESEARCH.md iter. 8-9).
-2. NIS2 (leverandørkæde-ansvar), DORA Art. 28/30 og EAA skaber fra 2026-2027 et NYT
-   dokumentationskrav i leverandøraftaler — de eksisterende white-label-aktører
-   (TREJKA, WP Supra, fixed.net m.fl.) sælger DRIFT, ikke revisionstroværdige
-   audit-spor. Det er den revne der åbner lige nu.
-3. AI-agenter har netop flyttet omkostningsstrukturen: drift-ops kan leveres af én
-   person. Det var ikke muligt for 2 år siden — derfor er revnen ikke allerede fyldt.
+EAA trådte i kraft juni 2025 (håndhævelse fra juni 2025), NIS2 og DORA ruller
+ud i 2026 — tusindvis af små virksomheder får dokumentationskrav de ikke kan
+opfyldte uden rådgivning. Advokater sælger samme dokumenter for €500-2.000;
+Termly/iubenda beviser betalingsviljen i software-laget. Fil-laget mellem
+"gratis blog-indhold" og "advokat på €500/time" er tyndt beboet på
+$29-149-niveauet.
 
 ## Indtjeningsmodel
 
-- Wholesale-pr. site: €29/site/md (0-25 sites) → €19 (26+) med 12-mdr. aftale.
-  Break-even ved ~15 sites (~€350/md dækker værktøj + hosting). Mål år 1: 40 sites =
-  ~€800-1.000/md netto.
-- Setup-fee €290 pr. bureau (onboarding, DPA, dokumentationsskabeloner).
-- Senere: kvartals-compliance-rapport som add-on €99/kvartal/bureau.
-- Betaling forud månedligt, Stripe, engelsk/tysk checkout. Ingen enterprise-salg.
+- Pris: $29-79 pr. dokument (bundles $99-149). Checkout + merchant-of-record
+  via Lemon Squeezy eller Paddle (de står for moms/faktura — nul administration).
+- Automatisk levering: fil/e-mail efter betaling. NUL manuel trin.
+- Mål: 10 salg/md = ~$500-800. Skalerer uden ekstra indsats.
 
-## Hvad der kan slå den ihjel (min hårdeste kritik — ubesvaret risiko)
+## PRAECIS hvad der sker UDEN menneskelig indgriben
 
-1. **"X med Y"-kritikken:** drift + dokumentation er ikke radikal nytenkning. Svaret:
-   mandatets fire krav er konfliktende i et marked hvor alle huller lukker på 6 md;
-   dette er det bedste kompromis mellem nytænkning (dokumentationslaget er reelt nyt)
-   og bevist indtjening.
-2. **TREJKA/WP Supra kopierer på 3 md:** reel risiko. Modgift: dokumentationslaget er
-   datamoat (ændringshistorik akkumuleres pr. klient over tid) + tysk sprog/jurisdiktion.
-3. **SLA/leverance som enmandsvirksomhed:** jeg sælger BEVIDST ikke 24/7 — kun
-   next-business-day-gendannelse og månedlig vedligeholdelsesvindue. Hvis en klient
-   kræver 24/7, er det et nej. Skala-begrænsningen er accepteret: dette er en
-   bootstrapped micro-business, ikke en VC-historie.
-4. **Distribution via tillid:** CAC ukendt. Modgift: produktet er white-label = ét
-   bureau-kunde-forhold dækker 5-20 slut sites; DACH-bureauer findes findelige via
-   offentlige lister; indgang via gratis EAA/NIS2-dokumentations-skabeloner (content).
-5. **Mads' eksisterende bureau kunne se det som konkurrence:** NEJ — det ER hans
-   positionering (research-radar, aug 2026) pakket som selvstændig international
-   forretning. Synergien er tilsigtet.
+1. Kunde finder sitet organisk (SEO/indhold bygget på forhånd, statisk hosting).
+2. Læser salgsside + fuld sample-preview, klikker køb.
+3. Betaler via Lemon Squeezy/Paddle checkout — MoR håndterer kort, moms, kvittering.
+4. Modtager dokumentet automatisk (download-link + e-mail, leveret af platformen).
+5. Pengene udbetales til kontoen månedligt.
+6. Hvis siden går ned: Cloudflare Pages statisk hosting — ingen server der kan
+   gå ned; hvis checkout-platformen fejler, viser siden en fejl og intet tabes.
+
+**Hvad der ville kræve menneskelig indgriben (og derfor IKKE sker):**
+- Tilpassede dokumenter på forespørgsel → NEJ, sælges ikke.
+- Refusion: pengene-tilbage-garanti uden spørgsmål, håndteret af MoR's
+  refund-flow — ingen samtale nødvendig.
+- Nye dokumenter ved ny lovgivning → VALGFRI vækst, ikke drift. Gamle produkter
+  står selv og sælger videre uden vedligeholdelse.
+- Support: dokumenterne er self-contained; support-volume forventet <1 time/md.
+  Hvis den vokser, er svaret en FAQ-side, ikke flere timer.
+
+**Eneste engangsopgave:** Lemon Squeezy/Paddle-konto under Mads' navn skal
+oprettes og godkendes én gang (kræver hans identitet/bank — kan ikke gøres af mig).
+
+## Hvad kan slå den ihjel (min hårdeste kritik)
+
+1. **Ingen trafik = ingen salg.** Største risiko. Modgift: statisk SEO-site med
+   gratis mini-versioner af dokumenterne som lead-magnets; indholdet rangerer på
+   2026-reguleringssøgetermer der er NYE og derfor ikke fuldt swarmet. Hvis
+   trafikken aldrig kommer, tjener det 0 — men det koster også ~0 at stå, og
+   testen er opfyldt: det kræver ikke Mads.
+2. **"Det er bare skabeloner."** Ja — og det er pointen. Kedeligt er fint.
+3. **Juridisk risiko:** dokumenterne sælges som "templates, not legal advice" med
+   tydelig disclaimer — standard i branchen.
+4. **MoR-afvisning af konto.** Fallback: Gumroad (ingen godkningsmur, højere gebyr).
 
 ## Hvorfor den slog de næstbedste
 
-- **EAA-audit-software til bureauer (iter. 2-3):** dræbt af mikrofritagelse +
-  commodity-scanning ($0,10/URL) + Skiplink $249/md. Dokumentationslaget her sælger
-  til dem der IKKE er fritaget og til drift — ikke scanning.
-- **Productized services i construction/HOA/dental (iter. 4-6):** beviste penge, men
-  USA-domænekrav (licenser, HIPAA, statslig lovgivning) jeg ikke kan løfte fra DK.
-  WP-drift er jurisdiktionen jeg ER ekspert i (EU/GDPR), og hvor EU-positionering er
-  en moat frem for en hindring.
+- **AuditedWP drift (forrige beslutning):** bevist marked, men FEJLER
+  nul-indsats-testen — drift er per definition manuel leverance og support.
+- **EAA-audit-SaaS:** kræver drift, SLA, support; swarmet af Skiplink.
+- **Generisk skabelon-butik (Gumroad):** power-law kommodity uden distribution.
+  Compliance-vertikalen har pris-tolerance og smerte som generiske skabeloner mangler.
 
-## Domænenavne (prioriteret — forhåndsgodkendt køb via Cloudflare)
+## Domæne
 
-1. **wpscript.eu** — kort, "scripted/audited WP", .eu signalerer jurisdiktion.
-   (Alternativ hvis optaget: wpscript.de for DACH.)
-2. **auditedwp.com** — kerne-differentieringen i navnet; .com for internationalt.
-3. **sovereignwp.eu** — datasuverænitet-positionering; stærk i DACH.
-4. **eucareops.com** — bredere (kan rumme udvidelse udover WP).
-5. **trustlayerwp.com** — fallback; længere, men siger dokumentations-løftet.
+auditedwp.com er forkert navn nu. Nye kandidater (forhåndsgodkendt, Cloudflare):
+1. **complidocs.com** — kort, siger hvad det er.
+2. **eudocs.shop** — jurisdiktion + butik.
+3. **compliancefiles.com** — bogstaveligt.
+Anbefaling: complidocs.com hvis ledig; ellers eudocs.shop. ~$10/år. Sitet kan
+fortsætte på pages.dev indtil videre — ingen blokering.
 
-Anbefaling: **auditedwp.com** (positioneringen ER produktet). Estimeret pris ~$10/år
-fra BUDGET.md's ramme.
+## Første 30 dage
 
-## Første 30 dage (efter domænekøb)
-
-1. Landingsside (Cloudflare Pages): pitch, wholesale-priser, DPA-skabelon download
-   mod e-mail.
-2. Byg pilot-infrastruktur på egne test-sites: monitoring + patch-pipeline +
-   ændrings-log (bevis for dokumentationslaget).
-3. 3 pilot-bureauer søges via offentlige bureau-lister — MEN kun efter Mads' ja til
-   udadvendt henvendelse (grænse: ingen mails/opslag i hans navn uden godkendelse).
+1. Byg produktsider for 5 dokumenter med fuld sample-preview + disclaimer.
+2. Sæt checkout op (Lemon Squeezy — kræver Mads én gang).
+3. SEO-sider: "NIS2 vendor clause template", "EAA accessibility statement
+   template" osv. + gratis mini-versioner som lead-magnet.
+4. Bundle-side: hele porteføljen $149.

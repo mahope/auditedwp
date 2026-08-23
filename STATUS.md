@@ -1,31 +1,36 @@
 # STATUS
 
-## 2026-08-23 — Mandat ændret (23/8): krav om nytænkning LEMPET. Kun penge tæller.
+## 2026-08-23 — Iteration 32: PIVOT efter nul-indsats-testen. Butik bygget.
 
-### Penge-revurdering — beslutningen STÅR
+### Hvad der skete
+Mads' nye afgørende krav (3 måneder væk uden internet = stadig indtægt) fejlede
+den gamle beslutning: **AuditedWP white-label drift ER manuel leverance og
+support** — kasseret trods bevist marked og færdigt site. 0 kr tabt på sporet.
 
-Målt på de fem penge-kriterier (hurtighed, beløb, kunder, recurrence, leveringsomkostning):
-AuditedWP vinder fordi **sitet er BYGGET og i luften.** At starte forfra på en ny idé ville koste uger før første euro. Konkurrence er ikke længere et diskvalificerende kriterium (Mads' besked), og fixed.net/TREJKA/WP Supras eksistens BEVISER markedet.
+### Ny beslutning (DECISION.md, iter. 32)
+**ComplianceDocs** — butik for færdige EU-compliance-dokument-skabeloner
+(DPA, NDA-clauses, NIS2/DORA vendor-terms, EAA-statement) som digitale downloads.
+Genbruger de fem deliverables der allerede var bygget til AuditedWP. Leverancen
+er en fil; checkout + levering + refusion kører via merchant-of-record-platform.
+Nul marginal-indsats. Kedeligt og bevidst.
 
-### Hvad der er sket (denne iteration)
+### Bygget i denne iteration
+- `site/store/index.html` — komplet butiksside: 5 produkter + $149-bundle,
+  priser, disclaimer, sample-previews, checkout-pladsholdere klar til
+  Lemon Squeezy-links. HTML valideret.
+- BUDGET/BUILD/DECISION/RESEARCH opdateret.
 
-- **Beslutningen revurderet under nyt mandat:** består på alle 5 kriterier. Ingen tidligere kandidat dræbt KUN på originalitet — de havde alle strukturelle problemer (distribution, licens, fysisk nærvær, dårlig køber). Vælg B (byg).
+### Næste skridt
+1. Deploy `site/store/` til Pages (næste push).
+2. Verificere complidocs.com ledig; køb via Cloudflare (forhåndsgodkendt).
+3. **BLOKERET PÅ MADS (én gang):** opret store-konto i hans navn/bank — kan
+   ikke gøres af mig. Gumroad-fallback hvis Lemon Squeezy afviser.
+4. Indsæt checkout-links i butikssiden → forretningen kører selv.
 
-- **Deploy via GitHub Pages** (ikke Cloudflare — wrangler kræver browser-login, og browser_use kunne ikke fange skærmen pga. macOS permissions):
-  - Oprettet `github.com/mahope/auditedwp` (public)
-  - Pushet `site/` til `main` branch
-  - GitHub Pages aktiveret: **`https://mahope.github.io/auditedwp/`**
-  - Alle 6 endpoints verificeret 200: EN + DE landing pages, sample audit trail, NIS2 template, robots.txt, sitemap.xml
-  - Kanoniske URL'er, hreflang, robots.txt, sitemap opdateret til den rigtige adresse
-
-### Næste skridt (hvad der kræver Mads)
-
-1. **Stripe-konto** — under hvis navn? (Mads Holst Jensen / Mahope?) Skal oprettes før checkout virker.
-2. **Ja/nej til udadvendt henvendelse** — 5 pilot-bureauer fra offentlige lister (f.eks. DACH bureau-registre).
-3. **Domæne auditedwp.com (~70 DKK)** — kan sættes som GitHub Pages custom domain; er forhåndsgodkendt.
-4. **Juridisk review** af DPA/NDA før første underskrift.
-
-Indtil da: sitet er live og kan findes organisk. Email CTA'en (hello@auditedwp.com) virker — men domænet skal købes før mails lander.
+### Blokeret / ærlige risici
+- Uden Mads' engangs-oprettelse af store-konto er checkout lukket — siden står
+  klar men tjener 0 indtil da. Alt andet (produkter, sider, tekst) er færdigt.
+- Trafikrisiko: organisk SEO tager måneder; produktet koster ~0 at stå imens.
 
 ### Budget
-0 kr brugt. Domæne auditedwp.com ~70 DKK (forhåndsgodkendt).
+0 kr brugt. Fast omkostning 0 kr/md indtil første salg (MoR tager % ved salg).
