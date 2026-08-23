@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditedWP — White-label WordPress maintenance with a real audit trail. For EU agencies.</title>
+<meta name="description" content="Wholesale WordPress maintenance for web agencies, with revision-ready change documentation, EU hosting and DPA as standard. You bill the client; we run the ops.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/">
+<link rel="alternate" hreflang="en" href="https://auditedwp.pages.dev/">
+<link rel="alternate" hreflang="de" href="https://auditedwp.pages.dev/de/">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--bg:#fff;--soft:#f9fafb;
+        --accent:#175cd3;--accent-dark:#084cad;--ok:#067647;--warn:#b54708;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);padding:18px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:24px;font-size:15px}
+  nav a.cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-weight:600}
+  .hero{text-align:center;padding:72px 0 48px}
+  .badge{display:inline-block;background:#eff8ff;color:var(--accent);border:1px solid #b2ddff;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
+  h1{font-size:44px;line-height:1.15;letter-spacing:-.03em;max-width:840px;margin:0 auto 18px}
+  h1 em{font-style:normal;color:var(--accent)}
+  .sub{font-size:19px;color:var(--muted);max-width:720px;margin:0 auto 32px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:17px}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid #b2ddff;margin-left:12px}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  h2{font-size:30px;letter-spacing:-.02em;margin-bottom:8px}
+  .lede{color:var(--muted);max-width:680px;margin-bottom:36px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)}
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{font-size:14.5px;color:var(--muted)}
+  .vs{background:#fffcf5;border-color:#fedf89}
+  .vs h3{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+  th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  td b{font-size:16px}
+  .price-note{font-size:13px;color:var(--muted);margin-top:10px}
+  ol.steps{max-width:680px;margin:24px auto 0;counter-reset:s;list-style:none}
+  ol.steps li{position:relative;padding:0 0 22px 52px;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps li strong{display:block}
+  ol.steps li span{color:var(--muted);font-size:15px}
+  .faq details{border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;background:var(--bg)}
+  .faq summary{font-weight:600;cursor:pointer}
+  .faq p{color:var(--muted);font-size:15px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:800px){h1{font-size:32px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">Audited<span>WP</span></div>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="/de/">DE</a>
+      <a class="cta" href="#pricing">See wholesale pricing</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="badge">White-label · EU hosting &amp; jurisdiction · DPA included</div>
+  <h1>WordPress maintenance your agency resells — <em>with an audit trail you can actually show.</em></h1>
+  <p class="sub">You keep the client and the margin. We run the updates, backups and security patches — and document every single change so you can answer the question other care plans can't: <strong>"show me what was done, when, by whom."</strong></p>
+  <a class="btn" href="#pricing">Check wholesale pricing</a>
+  <a class="btn ghost" href="#template">Get the free NIS2 vendor-clause template ↓</a>
+  <p class="note">No 24/7 promises we can't keep. Next-business-day restore, monthly maintenance windows, full change history.</p>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Why agencies choose us over generic white-label care plans</h2>
+    <p class="lede">Generic wholesale maintenance is a commodity — dozens of providers sell it. What's new in 2026–27 is that your clients' procurement, insurers and auditors (DORA Art. 28, NIS2 supply-chain, EAA documentation) increasingly ask for <em>evidence</em>, not assurances. We're built for that from day one.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Revision-ready change log</h3>
+        <p>Every update, patch, backup and restore recorded per site — timestamped, attributable, exportable. Hand it to your client's auditor or insurer instead of writing reports yourself.</p>
+      </div>
+      <div class="card">
+        <h3>EU-only infrastructure &amp; contracts</h3>
+        <p>EU-hosted backups, EU jurisdiction, GDPR data-processing agreement (DPA) as standard. Built to survive Schrems-II questions in client contracts.</p>
+      </div>
+      <div class="card">
+        <h3>You own the client relationship</h3>
+        <p>Fully anonymous white-label operation under NDA. We never contact your clients. You invoice them €100–300/site/month; our wholesale price is a fraction of that.</p>
+      </div>
+      <div class="card">
+        <h3>Quarterly compliance narrative</h3>
+        <p>A plain-language quarterly summary per client you can forward as-is: what changed, what risks were closed, what's planned. Your name on it.</p>
+      </div>
+      <div class="card vs">
+        <h3>Honest SLA — no fake 24/7</h3>
+        <p>We deliberately don't sell round-the-clock firefighting. You get next-business-day recovery, scheduled maintenance windows and a documented process. Clients who need 24/7 are not our market.</p>
+      </div>
+      <div class="card">
+        <h3>Built by operators, priced for resellers</h3>
+        <p>Maintenance delivered with modern automation (one operator + agents), so our costs stay low and your margins stay at 60%+.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Pick your tier</strong><span>Tell us how many sites you want covered. Monthly, cancel per tier rules — no enterprise procurement dance.</span></li>
+      <li><strong>Onboarding call + DPA signing</strong><span>We sign your DPA/NDA, set up the audit-log structure and give you the white-label report templates. One-time setup fee covers this.</span></li>
+      <li><strong>Hand over site access</strong><span>We onboard each site: baseline audit, backup snapshot, update policy agreed with you. Usually done within 3 business days per batch.</span></li>
+      <li><strong>We operate; you resell</strong><span>Updates, monitoring, patching and restores happen under your brand. You get the change log and the quarterly narrative to forward. <a href="/sample/">See a sample audit trail →</a></span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Wholesale pricing</h2>
+    <table>
+      <tr><th></th><th>Starter</th><th>Growth</th><th>Scale</th></tr>
+      <tr><td>Sites included</td><td><b>1–10</b></td><td><b>11–25</b></td><td><b>26+</b></td></tr>
+      <tr><td>Price per site / month</td><td><b>€29</b></td><td><b>€29</b></td><td><b>€19</b></td></tr>
+      <tr><td>Term</td><td>Rolling monthly</td><td>Rolling monthly</td><td>12 months</td></tr>
+      <tr><td>Change log &amp; audit export</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>DPA + NDA onboarding</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>Quarterly compliance narrative</td><td>—</td><td>Add-on €99/qtr</td><td>Included</td></tr>
+    </table>
+    <p class="price-note">One-time setup fee: <strong>€290 per agency</strong> (onboarding, DPA, white-label templates). Example: an agency covering 15 sites pays €435/mo wholesale and typically bills clients €150–300/site/month — a documented margin of 60%+.</p>
+    <p style="margin-top:28px"><a class="btn" href="mailto:hello@auditedwp.com?subject=Wholesale%20onboarding&body=Agency%20name:%0ANumber%20of%20sites:%0ACountry:%0ABest%20time%20for%20a%20call:">Start onboarding → email hello@auditedwp.com</a></p>
+    <p class="note">Payment via Stripe after the onboarding call. Invoicing in EUR or USD.</p>
+
+    <div style="margin-top:40px;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)" id="calc">
+      <h3 style="font-size:18px;margin-bottom:6px">Your margin, in numbers</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Drag the sliders. This is what white-labeling with us looks like at your scale.</p>
+      <label style="display:block;font-size:14px;font-weight:600">Sites you cover: <span id="sitesVal">10</span></label>
+      <input type="range" id="sites" min="1" max="60" value="10" style="width:100%;accent-color:var(--accent)">
+      <label style="display:block;margin-top:14px;font-size:14px;font-weight:600">Your retail price per site/month (€): <span id="retailVal">150</span></label>
+      <input type="range" id="retail" min="50" max="300" step="5" value="150" style="width:100%;accent-color:var(--accent)">
+      <div id="calcOut" style="margin-top:18px;font-size:15px;line-height:1.9"></div>
+    </div>
+  </div>
+</section>
+
+<section id="template">
+  <div class="wrap">
+    <h2>Free template: NIS2/DORA vendor clauses for your client contracts</h2>
+    <p class="lede">Not sure whether your current care-plan provider could pass a DORA Art. 28 review? Download our free clause checklist — what a regulated client will demand from its website-maintenance vendor in 2026–27. No strings attached.</p>
+    <p style="margin-top:24px"><a class="btn" href="/template/">Read the checklist online — free, no signup →</a></p>
+    <p class="note">Prefer a copy? <a href="mailto:hello@auditedwp.com?subject=Send%20me%20the%20NIS2%20vendor-clause%20template">Email me the PDF version</a>.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap faq">
+    <h2>FAQ</h2>
+    <details open>
+      <summary>Are you really fully white-label?</summary>
+      <p>Yes. We work under NDA and never contact your clients. Reports, dashboards and communication carry your branding; templates are provided at onboarding.</p>
+    </details>
+    <details>
+      <summary>What exactly does the "audit trail" contain?</summary>
+      <p>Per site: every plugin/core/theme update applied (before/after versions), every backup taken and tested, every security patch, every restore — timestamped with operator identity. Exportable as PDF/CSV for audits, insurers or client reviews. <a href="/sample/">See a worked example →</a></p>
+    </details>
+    <details>
+      <summary>Where is data hosted?</summary>
+      <p>All operational data and backups reside within the EU under EU jurisdiction. A standard DPA is signed during onboarding.</p>
+    </details>
+    <details>
+      <summary>Do you offer 24/7 emergency response?</summary>
+      <p>No — deliberately. We offer next-business-day recovery and scheduled maintenance windows with a documented process. If your clients require 24/7 incident response, we're not the right partner, and we'd rather say that upfront.</p>
+    </details>
+    <details>
+      <summary>Which platforms do you cover?</summary>
+      <p>WordPress (single sites and multisite), including WooCommerce. Not a WordPress shop? Ask — we take a limited number of non-WP CMS engagements.</p>
+    </details>
+    <details>
+      <summary>Can we start with just one site to test you?</summary>
+      <p>Yes — the Starter tier exists precisely for that. Most agencies pilot with one high-visibility client site before moving their whole portfolio.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>AuditedWP — white-label WordPress operations for EU agencies.<br>Contact: hello@auditedwp.com</div>
+    <div>EU-based operations · GDPR-compliant processing · © 2026</div>
+  </div>
+</footer>
+
+
+<script>
+(function(){
+  var s=document.getElementById('sites'),r=document.getElementById('retail');
+  function fmt(n){return '€'+n.toLocaleString('en-IE')}
+  function upd(){
+    var n=+s.value,p=+r.value;
+    var ws=n>=26?19:29, setup=290;
+    document.getElementById('sitesVal').textContent=n;
+    document.getElementById('retailVal').textContent=p;
+    var cost=ws*n+setup, rev=p*n, mrr=rev-cost;
+    var pct=rev?Math.round(mrr/rev*100):0;
+    document.getElementById('calcOut').innerHTML=
+      'Your revenue: <b>'+fmt(rev)+'/mo</b><br>'+
+      'Our wholesale ('+fmt(ws)+'/site'+(n>=26?' + one-time setup '+fmt(setup):'')+') + setup fee: <b>'+fmt(cost)+'</b><br>'+
+      '<span style="color:var(--ok);font-size:17px"><b>Your margin: '+fmt(mrr)+'/month ('+pct+'%)</b></span>';
+  }
+  s.addEventListener('input',upd);r.addEventListener('input',upd);upd();
+})();
+</script>
+</body>
+</html>

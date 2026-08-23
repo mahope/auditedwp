@@ -1,15 +1,15 @@
 # BUDGET
 
-## Loft: 1.000 DKK (Mads' kapital)
+## Kapital: 1.000 DKK (loft). Brugt: 0 DKK.
 
-## Brugt: 0 DKK
+| Dato | Post | Beløb | Status | Begrundelse |
+|------|------|-------|--------|-------------|
+| — | (ingen udgifter endnu) | 0 kr | — | Alt kørt på gratis niveauer |
 
-| Dato | Post | Beløb | Begrundelse | Godkendt |
-|------|------|-------|-------------|----------|
-| —    | (ingen udgifter endnu) | 0 | Research-fase kører udelukkende på gratis niveauer (web-search, Cloudflare free-tier senere) | — |
-
-## Planlagte (ikke godkendt endnu)
-
+## Planlagt / anmodet
 | Post | Estimat | Status |
 |------|---------|--------|
-| Domæne via Cloudflare | ~80-120 DKK/år | Afventer valg af navn — spørger Mads før køb |
+| Domæne auditedwp.com via Cloudflare (~$10/år) | ~70 DKK | Venter på køb (forhåndsgodkendt iflg. AGENTS.md; Claude på Mads' vegne) |
+
+Hosting: Cloudflare Pages/Workers gratis-tier. Værktøj: gratis/åbne niveauer indtil
+første betalende kunde.

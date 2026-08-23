@@ -1039,3 +1039,58 @@ iter. 2's døde finalister.
 ### Konklusion iteration 21
 Ingen kandidat består screeningen (<2 konkurrenter ved dybdegrav). Ingen DECISION.md —
 der er intet at forsvare. Budget: 0 kr brugt.
+
+## Iteration 22 (2026-08-23): Metode 16 — skabelon/regneark-minedrift ("mennesker betaler for manuelle arbejdsgange") — TESTET OG DØD
+
+Metode: den sidste utestede signal-type. Hypotese: hvis folk KØBER regneark/skabeloner
+($9-47) for at udføre en manuel arbejdsgang, beviser det både smerte og betalingsvilje —
+og måske står software-hullet OVER regnearket åbent. Ladder-trinnet: bedst sælgende
+skabelon → find vertikalen → grav konkurrenter i software-laget over den.
+
+### Fund på makro-niveau (Gumroad/Etsy)
+- Gumroad: 146.271 produkter analyseret (InsightRaider, maj-jun 2026). Top 1% tager 77,3%
+  af al omsætning; bund-50% deler 0,3%. De fleste skabeloner tjener < $500 LIVSTID.
+  "Around one product in forty has ever recorded a sale" (profitable.app).
+- Bedst sælgende skabelon-kategorier: budget/finance-trackers, small business/freelance
+  tools, wedding planning (plannerforall.com, Etsy-market-data). Prisanker $9-47.
+- Konklusion: selve skabelon-markedet er et power-law-kommodity-marked uden plads til
+  en ny generisk aktør — men det peger på vertikaler hvor regneark ER arbejdssystemet.
+
+### Ladder-grav 1: Custom cake / home bakers — TOTALT SWATMET I BEGGE LAG
+Regneark-signalet er stærkt og veldokumenteret (cake-pricing-spreadsheets sælges aktivt
+på Etsy; bakers beskriver "pricing a 3-tier wedding cake in a spreadsheet for 20 minutes").
+Software-laget OVER regnearket er dog pakket:
+- **CakeBoss** (siden 2007! "the original home bakery business management software",
+  family-run Austin) — order mgmt + recipe costing + pricing.
+- **BakeOnyx** ($29-199/md, AI Bake Buddy), **BakeProfit** (storefront + DM-retræte),
+  **CrumbCoach**, **Butterbase**, **Bakesy**, **MyPorch** (batch/bake-list-workflow),
+  **Homegrown** ($10/md flat), **OrderViaChat**, **Castiron/Square**, **BakingSubs-guide
+  "6 apps free to $40/md"**.
+- Og content-laget: mindst 8 SEO-optimiserede guides rangerer på PRÆCIS mine søgetermer
+  ("stop losing cake orders in Instagram DMs", "how to take orders home bakery") —
+  hver guide er samtidig en konkurrents landingsside.
+→ DØD: 10+ dedikerede aktører fra $0 til $199/md, inkl. flere solopreneur-byggede,
+plus industrialiseret content-swarm. Samme mønster som alle tidligere vertikaler.
+
+### Ladder-grav 2: Wedding planners — MÆTTET PÅ TVÆRS AF ALLE PRISPNKTER
+Signalet: spreadsheets + Google Docs stadig normen blandt mindre planners (bodalab:
+"most wedding professionals run their business with spreadsheets, WhatsApp, phone notes").
+Software-laget: HoneyBook ($29-79/md, AI smart files 2026), Aisle Planner (~$30/md),
+Planning Pod, Dubsado ($27,92+/md), Plutio ($19/md), Wedy Pro, BodaLab ($4,90/md!),
+Ayyla ($75-199/md AI OS) — 8+ platforme, nogle med eksplicit "ditching spreadsheets"
+-positionering. → DØD ved første grav.
+
+### Mønster (nu 22 iterationer, 16 metoder)
+24. Skabelon-metoden bekræfter signalkorrelationen for fjerde gang (klager → jobs →
+    graveyards → skabeloner): jo stærkere og mere dokumenteret betalingsviljen er, jo
+    hurtigere er software-laget ovenpå allerede bygget. Et regneark der sælger godt er
+    et BEVIS på at markedet findes — og beviser trækker byggere. Der findes ingen
+    "populær skabelon uden software-erstatning": hvis den kunne softwaregøres billigt,
+    er den gjort.
+
+## SAMLET ENDKONKLUSION EFTER 22 ITERATIONER (~100 kandidater, 16 metoder)
+Uændret og nu testet mod den sidste signal-type: web-research kan ikke levere en kandidat
+som opfylder mandatets fire krav. Alle 16 metoder konvergerer strukturelt. Den eneste
+resterende kilde er primærdata (Mads' netværk/interviews) eller en strategisk beslutning
+(vej 1/2/3 i STATUS.md). Ingen DECISION.md — jeg ville ikke sætte egne penge i noget,
+og kan ikke forsvare nogen kandidat mod min egen kritik.
