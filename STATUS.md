@@ -1,28 +1,28 @@
-# STATUS — Iteration 111 (26. august 2026)
+# STATUS — Iteration 113 (23. august 2026, nat)
 
 ## 1. Universitets-vurdering (punkt 1) — DEVNOTIFY
 
-DevNotify er IKKE platform-bundet på den måde AGENTS.md mener. Det er en desktop-app
-mod GitHub REST API — der er intet CMS-afhængigt. Kernen er: notifications-API →
-normaliseret liste → menu bar UI + polling. GitHub-integrationen er én adapter;
-senere kan GitLab/Linear/Jira adapters lægges ind uden ændring af kernen.
-**Konklusion: bestået — ingen udtrækning nødvendig.**
+DevNotify er IKKE platform-bundet i den forstand AGENTS.md mener. Kernen er
+notifications-API → normaliseret liste → menu bar UI + polling. GitHub-integrationen
+er én adapter; GitLab/Linear/Jira kan lægges ind uden ændring af kernen.
+**Konklusion: bestået — ingen udtrækning nødvendig.** (Verificeret iter. 111.)
 
-## 2. Færdigt denne iteration: DevNotify landingsside + download — LIVE
+## 2. Færdigt denne iteration: synligheds-hul lukket (mellem besøgende og betaling)
+
+Fandt og rettede et reelt problem: rodsidens sitemap.xml (den eneste robots.txt
+peger på) indeholdt INGEN DevNotify-URL'er, og intet sted på rodsitet linkede
+til /devnotify/. Søgemaskiner kunne altså ikke finde produktet.
 
 | Ting | Status |
 |------|--------|
-| Landingsside (hvad/hvem/pris/køb) | ✅ https://auditedwp.pages.dev/devnotify/ |
-| DMG-build (4,2 MB) via hdiutil | ✅ verificeret byte-identisk online |
-| Download-knap → rigtig fil | ✅ 200, 4.421.222 bytes, hash matcher |
-| Terms + Privacy | ✅ live |
-| Sitemap + _headers (rigtig content-type på .dmg) | ✅ |
-| Rodsitet (EUComply) gendannet efter fejldeploy | ✅ |
+| DevNotify + /vs/gitify/ tilføjet rodsitemap | ✅ verificeret live (2 hits) |
+| Footer-link til /devnotify/ på rodsitet (intern linking) | ✅ verificeret live |
+| Iteration 112-arbejde committed (var ucommit'et) | ✅ a898a0a |
+| Alle sider 200: /devnotify/, /devnotify/vs/gitify/, download, terms/privacy | ✅ |
 
-Fejl jeg fandt og rettede: `wrangler pages deploy <mappe>` uploader mappe-indholdet
-på roden — første deploys lå derfor på /index.html i stedet for /devnotify/, og
-/devnotify/* faldt tilbage til forsiden (SPA-fallback). Løsning: publish/-mappe med
-devnotify/-undermappe.
+Kontekst: Gitify har 5.325 stjerner og dominerer "github notifications menu bar".
+Vores /vs/gitify/-side er ærlig (Gitify vinder pris/platforme) — det er den rigtige
+SEO-indgang, nu også findes den via sitemap.
 
 ## 3. Traction (ærligt)
 
@@ -30,22 +30,19 @@ devnotify/-undermappe.
 
 ## 4. Budget
 
-| Post | Beløb |
-|------|-------|
-| Brugt | **0 kr** |
-| Domæne (getdevnotify.com ~12 USD) | Forhåndsgodkendt, venter på køb |
-| Tilbage | ~910 kr |
+Brugt: **0 kr**. Domæne getdevnotify.com forhåndsgodkendt, venter på køb.
 
 ## 5. Venter på Mads
 
 | Hvad | Blokerer |
 |------|----------|
-| Lemon Squeezy API-nøgle (Bitwarden) | Checkout-knap + licensnøgler — ENESTE blokering for revenue |
-| Domænekøb getdevnotify.com | Ordentlig URL (forhåndsgodkendt) |
+| Lemon Squeezy API-nøgle (Bitwarden, ventes 24/8) | Checkout-knap + licensnøgler — ENESTE revenue-blokering |
+| Domænekøb getdevnotify.com (~12 USD) | Ordentlig URL |
 | Ja/nej til 3 færdige Product Hunt/Reddit-posts i POSTS/ | Udvendig marketing |
 
 ## Næste iteration
 
-1. LS-nøgle → opret produkt $19 via API → indsæt checkout-URL i index.html → genudgiv
+1. LS-nøgle → opret produkt $19 via API → checkout-URL ind i buy-btn → genudgiv
 2. Licensvalidering i app'en mod LS API
-3. GitLab-adapter til kernen (bredden, efter betaling virker)
+3. Mere SEO-indhold: "gitify alternative", "github notifications mac" vinkler
+4. GitLab-adapter (efter betaling virker)
