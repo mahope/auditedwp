@@ -12,7 +12,7 @@ TRIN   HVAD                          STATUS
  4     Pro Dashboard                 ✅ LIVE (/pro/dashboard/)
  5     Daily monitoring Worker       ✅ LIVE (eucomply-watch)
  6     Blog/SEO (17 artikler)        ✅ LIVE
- 7     Gumroad-konto (Mads, 10 min)  ❌ ENESTE BLOKERING
+ 7     Checkout via Lemon Squeezy      ❌ Venter på LS API-nøgle (Bitwarden)
  8     Første betalende kunde        ⏳ Timer efter trin 7
 ```
 
@@ -22,18 +22,19 @@ TRIN   HVAD                          STATUS
 2. Scanner sit site → får sin egen score + fejl-liste
 3. Resultat-CTA er **personlig**: nævner antal fundne problemer og hvad Pro gør ved netop dem
 4. Klik til /pro/ → pris på 5 sekunder ($79/yr), sammenligningstabel, live dashboard-demo
-5. "Buy Pro" → Gumroad checkout (venter på Mads' konto; link indsættes i én variabel)
+5. "Buy Pro" → Lemon Squeezy checkout (via CHECKOUT_URL secret på workeren)
 
-## Når Mads har Gumroad-klart
+## Når LS-nøglen ligger i Bitwarden
 
-Én ændring i `site/pro/index.html`:
+Pro-siden henter allerede checkout-URL'en fra workeren. Én handling:
 
-```js
-var GUMROAD_PRODUCT_URL = 'https://<mads>.gumroad.com/l/eucomply-pro';
+```bash
+wrangler secret put CHECKOUT_URL --name eucomply-scan   # = LS checkout-link
 ```
 
 Knappen skifter automatisk fra waitlist-fallback til direkte checkout.
-Samme dag kan første kunde betale.
+Samme dag kan første kunde betale. (Alternativt oprettes produktet selv via
+LS write-API, når nøglen kan læses.)
 
 ## Ikke bygget endnu (bevidst)
 

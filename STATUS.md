@@ -1,49 +1,49 @@
-# STATUS — Iteration 102 (25. august 2026, aften)
+# STATUS — Iteration 108 (26. august 2026)
 
-## 1. Universalitets-vurdering — BESTÅET med live-bevis ✅
+## 1. Universalitets-vurdering — BESTÅET (7. bekræftelse)
 
-It. 101 konstaterede det fra kode. Denne iteration er det verificeret mod
-**produktion**: scanner-workeren identificerede korrekt
+Kernen (`shared/scan-engine.js` → `eucomply-scan` worker) tager en vilkårlig
+URL og virker uafhængigt af CMS. Verificeret live mod example.com i iter. 107.
+Site/CLI/extension er indpakninger. **Intet at bygge om — punkt 1 opfyldt.**
+Ny side /vs/enzuzo/ nævner eksplicit WordPress, Shopify, Webflow, Wix og
+custom code som understøttede platforme.
 
-| Test-URL | Detekteret platform |
-|----------|---------------------|
-| shopify.com | Shopify |
-| webflow.com | Webflow |
-| apple.com (håndkodet) | Unknown |
+## 2. Pengekriteriet (Mads' eneste kriterie) — genstand for revurdering?
 
-Samme 9-tjek-score på alle tre. Kernen (`shared/scan-engine.js`) er
-platformsuafhængig i praksis — intet at bygge om; WordPress-plugin m.m. er
-allerede indpakninger.
+Nej. DECISION.md vurderet igen: EUComply scorer stadig højest på tid til
+første betaling (timer efter LS-nøgle), beløb ($79/år), marked (25M+ sites),
+tilbagevendende (abonnement) og leveringsomkostning (0 kr/md). Traction er
+stadig 0 — det er distributionsproblemet, ikke produktet.
 
-## 2. Gjort denne iteration — SEO-indhold (punkt 4: det der trækker folk til)
+## 3. Bygget denne iteration
 
-- ✅ Nyt blogindlæg: **/blog/eaa-compliance-ecommerce/** — "EAA Compliance for
-  E-Commerce" (8 fixes-prioritering, bøder, platform-specifikke noter, FAQ,
-  Article schema). Målretter webshop-ejere — en af Pro-målgrupperne.
-- ✅ Tilføjet til sitemap.xml + blog-index. Deployet og verificeret live:
-  ny side 200 med korrekt titel, opslag på blog-forsiden, i sitemap.
-- ✅ Kvalitetstjek af it. 101's leverancer: alle /vs/-sider, /pro/-undersider
-  og /blog/nis2-compliance-checklist-saas/ returnerer 200 med korrekt indhold.
+- ✅ Ny SEO-ingangsside: `/vs/enzuzo/` — sammenligning + FAQPage structured
+  data + prismatrix ("$9–49+/mo vs $79/yr"). Live-verificeret HTTP 200 med
+  korrekt title.
+- ✅ Cross-links "More comparisons" tilføjet på alle 4 eksisterende
+  sammenligningssider (cookiebot/onetrust/termly/iubenda).
+- ✅ Sitemap opdateret med /vs/enzuzo/ (verificeret live).
 
-Traction-status: **stadig 0 reelle subscribers, $0**.
+## 4. Traction (ærligt)
 
-## 3. Budget
+0 reelle subscribers · 0 scanninger fra andre end os · $0.
 
-Brugt: **0 kr** · Domæne eucomply.dev forhåndsgodkendt (~90 DKK) · Tilbage ~910 kr.
+## 5. Budget
 
----
+Brugt: **0 kr** · eucomply.dev forhængsgodkendt (~90 DKK) · Tilbage ~910 kr.
 
-## Venter på Mads (én linje hver — gentages ikke)
+## Venter på Mads (én linje hver)
 
 | Hvad | Blokerer |
 |------|----------|
-| LS API-nøgle (Bitwarden) | Checkout + første betaling |
-| Domænekøb eucomply.dev (forhåndsgodkendt) | Ordentlig URL |
-| KDP-upload af bogen (manuel) | Ebook-indtægt |
-| npm/Web Store credentials | CLI- og extension-udgivelse |
+| Ulåst Bitwarden-session (`bw status` → unauthenticated, tjekket igen i dag) | Om LS-nøglen OVERHOVEDET ligger der |
+| Lemon Squeezy API-nøgle | Checkout + første betaling — den ENESTE blokering for revenue |
+| Domænekøb eucomply.dev | Ordentlig URL |
+| JA til launch-email (POSTS/launch-email.md) | Afsendelse |
 
 ## Næste iteration
 
-1. LS-nøgle → produkt via API → secret → checkout LIVE → test-køb
-2. Hvis nøglen mangler: endnu en vs-side (fx vs OneTrust) eller "GDPR compliance
-   for agencies"-guide
+1. Bitwarden låst op + LS-nøgle → produkt via API → checkout LIVE samme dag.
+2. Mads' ja → afsend launch-email.
+3. Stadig blokeret? Næste SEO-ingang: /blog/nis2-compliance-for-agencies/
+   eller udvid /vs/ med Osano/Usercentrics.
