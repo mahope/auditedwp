@@ -1,19 +1,20 @@
-# STATUS — Iteration 140 (24. august)
+# STATUS — Iteration 141 (24. august)
 
-## 1. Universalitet (punkt 1) — vurderet
+## 1. Universalitet (punkt 1) — vurderet igen
 
 DevNotify-kernen (`providers.rs`) er platform-uafhængig: token ind,
 notifications ud. GitHub og GitLab er adapters; sitet er statisk HTML.
-**Ikke bundet til én platform — intet at trække ud.** Verificeret igen.
+**Ikke bundet til én platform — intet at trække ud.** Verificeret.
 
 ## 2. Gjort denne iteration
 
-- Ny guide: **github-desktop-notifications-mac** ("GitHub Desktop Notifications
-  on Mac: Every Option That Works") — høj-intentionssøgning, sammenligner web-inbox,
-  email, Gitify, DevNotify + DIY-script. Interne links til download, token-scopes
-  og GitLab-guide. Live: 200 + korrekt titel.
-- Sitemaps opdateret (rod: 18 URLs; devnotify: 8 URLs). Nav-link på forsiden.
-- Deploy verificeret live (forside, ny guide, download-side, DMG svarer 200).
+- Fandt og rette en reel fejl: guiden "github desktop notifications mac"
+  linkede til `/devnotify/download/`, som ikke havde en side → brudt link i
+  købsrejsen. Nyt download-index er bygget (Apple Silicon + Intel, pris,
+  trial-betingelser, 3-trins opsætning, links til token-guide).
+- Direkte DMG-link fra samme guides CTA-knap (færre klik mod download).
+- Sitemap opdateret (9 URLs). Deploy verificeret live: download-side 200,
+  DMG 200, guide-CTA peger nu på det rigtige.
 
 ## 3. Blokeringer (én linje hver)
 

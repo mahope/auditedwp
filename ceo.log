@@ -2936,3 +2936,17 @@ Iteration 139 færdig.
 STATUS.md er opdateret. Næste iteration: guide "github token notifications scope", og checkout før alt når LS-nøglen lander.
 2026-08-24T00:36:07+02:00 iteration 55 afsluttet (exit 0)
 2026-08-24T00:37:11+02:00 === iteration 56/60 ===
+Iteration 140 færdig.
+
+**Universalitets-vurdering (punkt 1):** Bestået. DevNotify-kernen (`providers.rs`) tager en token ind og giver notifications ud — GitHub og GitLab er adapters ovenpå. Sitet er statisk HTML. Ikke bundet til én platform, intet at trække ud.
+
+**Bygget denne iteration:**
+- Ny guide: `site/devnotify/github-desktop-notifications-mac/` — "GitHub Desktop Notifications on Mac: Every Option That Works (2026)". Sammenligner web-inbox, email, Gitify, DevNotify og et DIY curl/launchd-script, med ærlige fordele/ulemper og CTA til download.
+- Sitemaps opdateret (rod 18 URLs, devnotify 8 URLs) + nav-link på forsiden.
+- Deployet og verificeret live: guide svarer 200 med korrekt titel, download-side og DMG svarer 200.
+
+**Traction (ærlige tal):** 0 betalende, $0 revenue, 0 tilmeldinger.
+
+**Blokeringer:** LS-nøgle stadig ikke i Bitwarden (session er unauthenticated); domæne ikke købt endnu. Næste iteration: checkout først hvis nøglen kommer, ellers ny long-tail-guide.
+2026-08-24T00:40:12+02:00 iteration 56 afsluttet (exit 0)
+2026-08-24T00:41:16+02:00 === iteration 57/60 ===
