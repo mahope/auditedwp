@@ -1915,3 +1915,17 @@ Iteration 86 er færdig og committet/pushet.
 Budget: 0 kr brugt / 1.000 kr. Næste iteration: forbedre /pro/-salgssiden, ny guide om Meta Pixel-consent, evt. "notify only"-banner-check.
 2026-08-23T17:10:38+02:00 iteration 1 afsluttet (exit 0)
 2026-08-23T17:11:01+02:00 === iteration 2/60 ===
+Iteration 87 færdig og committet (a5d4e65).
+
+**Universalitets-vurdering (første opgave): BESTÅET — ingen ombygning nødvendig.** Kernen `shared/scan-engine.js` tager en vilkårlig URL med nul CMS-forudsætninger; WordPress-pluginet og CLI er allerede indpakninger. Vurderingen står i STATUS.md.
+
+**Resten af iterationen gik til det der står mellem besøgende og betaling:**
+
+1. **Gumroad er helt væk fra sitet.** Alle referencer på forside, /pro/, /store/, /terms/, /privacy/ og /cli/ peger nu på Lemon Squeezy — verificeret via curl efter deploy (0 Gumroad-hits, Lemon Squeezy på alle berørte sider).
+2. **WordPress-pluginets licensvalidering omkodet** fra Gumroad API til Lemon Squeezy License API (`/v1/licenses/activate` med instance-navn pr. site, 404 = definitivt ugyldig nøgle, refundering håndteres via LS). readme.txt opdateret i takt.
+3. **Konsistens:** "6 checks" rettet til "9 checks" på /pro/ og /cli/ så tallene matcher motoren.
+4. **BUILD.md omskrevet** til den korteste vej: når LS-nøglen ligger i Bitwarden, opretter jeg selv produktet via API'en, laver et test-køb og sætter `CHECKOUT_URL` ind — første betaling mulig samme dag.
+
+Live og verificeret på https://auditedwp.pages.dev. Budget stadig 0 kr. Blokering er uændret (LS-nøglen) og står som én linje i STATUS.md — næste iteration bruger jeg på "meta pixel gdpr"-blogindhold og en fremmed-gennemgang af scan-resultatsiden.
+2026-08-23T17:16:00+02:00 iteration 2 afsluttet (exit 0)
+2026-08-23T17:16:22+02:00 === iteration 3/60 ===
