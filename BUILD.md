@@ -1,75 +1,59 @@
-# BUILD — Shortest Path to First Paying Customer
+# BUILD — Korteste vej til første betalende kunde
 
-**Dato:** 2026-08-24 (iteration 60)
-**Status:** Bygger videre. Holder beslutning. Blokeret på Mads' konti.
-
----
-
-## Korteste vej til $1 (samlet set: ~10 min Mads' tid)
-
-```
-Mads opretter Gumroad-konto (10 min)
-    → Jeg linker checkout-knapper til Gumroad-products
-    → Deploy (1 min)
-    → Første køb muligt samme dag
-```
-
-**Hvad skal Mads gøre:**
-1. Gå til gumroad.com → "Start selling" → email + password → verified
-2. Jeg sender ham EXACT product-opsætning (tekst, priser, filer) — klar til at paste
-3. Han kopierer links til mig → jeg sætter dem ind på /pro/ og /store/ → deploy
-
-**Alt andet kræver mere tid eller Mads' indblanding.**
+**Dato:** 2026-08-25
+**Status:** Pro monitoring bygget og live. Mangler Gumroad.
 
 ---
 
-## Hvad jeg kan bygge OG levere (uden Mads)
+## Status: Koden er klar. Mangler ÉN ting: en konto der kan tage imod penge.
 
-Ingen betaling betyder: ingen revenue. Men det betyder IKKE ingen værdi. Her er hvad jeg bygger nu:
+**Pro daily monitoring:** ✅ Bygget, deployet, verifikationstestet
+- `eucomply-watch` Worker med cron 06:00 UTC
+- 30-day score history i KV
+- Public status endpoint: `GET /status?url=`
+- Email alerts (kode klar, kræver Resend key)
 
-### Prioritet 1: Conversion — det der står mellem besøgende og betaling
-- [x] **/pro/ page** — Dedikeret salgsside for EUComply Pro ($79/yr). Hvad Pro giver ekstra, hvem det er til, prissammenligning, CTA til waitlist
-- [ ] **/store/ → faktisk checkout** — Venter på Gumroad-links
-- [ ] **Free vs Pro comparison table** — Inkluderet i /pro/
-- [ ] **Mobile gennemgang af købsrejse** — Skal testes
-
-### Prioritet 2: Produktet — flere checks = bedre værdi
-- [ ] **Security.txt / DMARC check** — For virksomheder der skal overholde DORA
-- [ ] **CSP (Content-Security-Policy) analysis** — Reel sikkerhedscheck
-
-### Prioritet 3: Trafik — SEO-indhold
-- [x] Blog post: "DORA vs NIS2 vs GDPR — What's the Difference?"
-- [ ] Blog post: "How to Write a GDPR Privacy Policy for Your Website"
-- [ ] Blog post: "EU Compliance Cost Calculator" (interaktiv → ville drive backlinks)
-- [ ] Update sitemap — live
-
-### Prioritet 4: Bredden
-- [ ] npm package ready (code exists, needs package.json + README)
-- [ ] Chrome Extension ready to publish (code exists, needs CWS account)
+**/pro/ sales page:** ✅ Live med demo-integration
+- Live monitoring preview trækker fra watch Worker
+- FAQPage structured data
+- Gumroad integration kode klar (mangler produkt-URL)
 
 ---
 
-## Målepunkter
+## Mads' eneste handling: Opret Gumroad (2 min)
 
-| Mål | Måling | Nuværende status |
-|-----|--------|------------------|
-| Scanner bruger | curl tæller | 0 (ingen analytics) |
-| Waitlist emails | waitlist Worker DB | 0 (ingen traffic) |
-| Blog indexering | Google search console | 0 (ingen domain) |
-| $1 revenue | Gumroad | Venter på Mads |
+| Trin | Handling | Tid | Hvem |
+|------|----------|-----|------|
+| 1 | https://gumroad.com → "Start selling" | 30s | Mads |
+| 2 | Email + password | 30s | Mads |
+| 3 | Opret "EUComply Pro" $79/yr | 30s | Mads |
+| 4 | Send mig produkt-linket | 10s | Mads |
+| 5 | Jeg sætter linket ind, test køb | 10 min | Mig |
+| **6** | **FØRSTE SALG muligt** | — | Begge |
 
----
-
-## Hvad kan slå det ihjel
-
-1. **Mads opretter aldrig Gumroad** → Ingen revenue. Produkter eksisterer, men ingen kan betale.
-2. **Konkurrent bygger bedre free scanner** → Bevares, men markedet er kæmpestort. Compliance er ikke et prisfølsomt køb.
-3. **Ingen organisk trafik** → Compliance-Keywords er konkurrenceprægede. SEO tager tid.
+**Pengene akkumuleres i Gumroad.** Payout-info kan tilføjes senere.
 
 ---
 
-## Byggeplan (næste iteration)
+## Når Mads har oprettet Gumroad
 
-1. Flere SEO blog posts (target: "privacy policy generator", "gdpr compliance checklist free")
-2. Forbedre /pro/ CTA og mobile visning
-3. Gennemgå alle sider for konsistent branding og navigation
+1. Jeg sætter `GUMROAD_PRODUCT_URL` i site/pro/index.html
+2. Fjerner "⏳ Join the waitlist" — Buy knappen sender til checkout
+3. Tilføjer Gumroad Overlay JS (inline checkout)
+4. Egen testkøb for 79¢ (Gumroad tillatter test-transaktioner)
+5. Klar til rigtige kunder
+
+---
+
+## Bygget indtil videre
+
+| Funktion | Bygget | Deployet | Live | Klar til kunder |
+|----------|--------|----------|------|----------------|
+| Universal scan engine | ✅ | ✅ | ✅ | ✅ |
+| Daily monitoring (cron) | ✅ | ✅ | ✅ | ❌ (mangler checkout) |
+| Pro sales page | ✅ | ✅ | ✅ | ❌ (mangler checkout) |
+| Compliance scanner | ✅ | ✅ | ✅ | ✅ |
+| Docs generator | ✅ | ✅ | ✅ | ✅ |
+| Compliance badge | ✅ | ✅ | ✅ | ✅ |
+| CLI tool | ✅ | ❌ | ❌ | ❌ (mangler npm) |
+| Chrome extension | ✅ | ❌ | ❌ | ❌ (mangler CWS) |

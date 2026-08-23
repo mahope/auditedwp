@@ -1,0 +1,18 @@
+name = "eucomply-watch"
+main = "index.js"
+compatibility_date = "2026-08-23"
+
+[triggers]
+crons = ["0 6 * * *"]
+
+[[kv_namespaces]]
+binding = "WATCH"
+id = "3524c0d625c846289b8eff05b794efee"
+
+[[kv_namespaces]]
+binding = "RATE"
+id = "8465f75104b44d1c933f772b25fe2060"
+
+[vars]
+# Set with: npx wrangler secret put ALERT_FROM / ALERT_KEY
+ALERT_FROM = ""

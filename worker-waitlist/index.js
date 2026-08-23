@@ -9,16 +9,40 @@ function handleOptions(request) {
   return new Response(null, {
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
+}
+
+// ── GET handler: returns waitlist count (social proof for sales pages) ──
+async function handleGetCount(env) {
+  try {
+    const list = await env.WAITLIST.list({ prefix: "by_time:" });
+    const count = list.keys.length;
+    return new Response(JSON.stringify({ count, status: "ok" }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=60",  // 1 min cache — fresh enough for live display
+      },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ count: 0, status: "error", detail: err.message }), {
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    });
+  }
 }
 
 export default {
   async fetch(request, env) {
     // CORS preflight
     if (request.method === "OPTIONS") return handleOptions(request);
+
+    // GET request → return waitlist count (social proof)
+    if (request.method === "GET") {
+      return handleGetCount(env);
+    }
 
     // Only accept POST
     if (request.method !== "POST") {

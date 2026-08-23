@@ -23,7 +23,13 @@
     "url": "https://github.com/mahope/eucomply-cli"
   },
   "homepage": "https://auditedwp.pages.dev",
+  "files": [
+    "bin/"
+  ],
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

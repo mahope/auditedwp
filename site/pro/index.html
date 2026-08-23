@@ -121,8 +121,14 @@ footer a{color:var(--accent)}
   <p class="sub">Daily scans, auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and a live compliance badge for your site. 100 % web-based — no installation, no WordPress required.</p>
   <div class="price-hero">$79 <small>/ year</small></div>
   <p class="price-note">One site · unlimited scans · all templates included · cancel anytime</p>
-  <a class="btn" href="#waitlist">Join the waitlist →</a>
-  <br><span style="font-size:13px;color:var(--muted);margin-top:10px;display:inline-block">⏳ Checkout opens on Gumroad. Get launch pricing + early-access badge.</span>
+  <div class="pro-buttons" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px">
+    <a class="btn gold" href="#waitlist" id="buy-pro-btn">Buy Pro — $79/yr</a>
+    <a class="btn" href="/scan/">Try the free scanner first →</a>
+  </div>
+  <br><span style="font-size:13px;color:var(--muted);display:inline-block">⏳ Checkout opens on Gumroad. Join the waitlist for launch pricing.</span>
+  <div style="margin:18px auto 0;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:14px 18px;display:inline-block;font-size:13px;color:var(--muted)">
+    ✅ <strong>Daily monitoring engine:</strong> built and running
+  </div>
 </div>
 
 <section>
@@ -139,7 +145,7 @@ footer a{color:var(--accent)}
         <tr><td>DORA resilience check</td><td class="check">✓</td><td class="check">✓</td></tr>
         <tr><td>Platform fingerprint</td><td class="check">✓</td><td class="check">✓</td></tr>
         <tr><td><strong>Daily automated scans</strong></td><td class="cross">✗</td><td class="check">✓</td></tr>
-        <tr><td><strong>Auditor-ready PDF report</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Download any scan as a professional PDF with timestamp, findings, and fix history</span></td></tr>
+        <tr><td><strong>Auditor-ready PDF report</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note"><a href="/pro/sample-report/" style="color:var(--accent)">View sample report →</a> · Download any scan as a professional PDF with timestamp, findings, and fix history</span></td></tr>
         <tr><td><strong>Compliance badge</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Live badge with your latest score — embed on any site. Click-through to verified scan record.</span></td></tr>
         <tr><td><strong>Compliance history</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">30-day score graph + change log. Prove continuous compliance to auditors and insurers.</span></td></tr>
         <tr><td><strong>DPA template (Art. 28 GDPR)</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Full controller→processor DPA with EU-hosting clauses, sub-processor annex. $59 separately.</span></td></tr>
@@ -189,6 +195,20 @@ footer a{color:var(--accent)}
 
 <section>
   <div class="wrap">
+    <h2>📡 Live monitoring preview</h2>
+    <p class="lede">Pro runs daily scans automatically. Here is the live 30-day history for a demo site — yours will look the same.</p>
+    <div style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:24px;margin:0 auto;max-width:600px;text-align:center" id="demo-monitor">
+      <div style="font-size:40px;margin-bottom:8px">📊</div>
+      <div id="demo-score" style="font-size:24px;font-weight:700;color:var(--ink)">Loading…</div>
+      <div id="demo-detail" style="font-size:14px;color:var(--muted);margin:6px 0"></div>
+      <div id="demo-days" style="font-size:13px;color:var(--muted)"></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted)">Data from <code style="font-size:11px">eucomply-watch</code> · <a href="https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com" target="_blank" style="color:var(--accent)">View raw JSON →</a></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
     <h2>Who needs Pro?</h2>
     <p class="lede">If someone has ever asked you "are you GDPR compliant?" and you answered "I think so" — this is for you.</p>
     <div class="grid3">
@@ -211,7 +231,7 @@ footer a{color:var(--accent)}
 <section id="waitlist">
   <div class="wrap waitlist-wrap">
     <h2>Get launch pricing — join the waitlist</h2>
-    <p>Checkout opens soon on Gumroad. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
+    <p><span id="waitlist-count" style="font-weight:700">⏳</span> Checkout opens soon on Gumroad. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
     <form class="wform" id="pro-waitlist">
       <input type="email" id="pro-email" placeholder="your@email.com" required aria-label="Email address">
       <button type="submit">Join the waitlist →</button>
@@ -220,6 +240,53 @@ footer a{color:var(--accent)}
     <p style="font-size:13px;margin-top:16px;opacity:.7">No spam. No announcements except launch day. Unsubscribe any time.</p>
   </div>
 </section>
+
+<script>
+// Load live monitoring demo data
+fetch('https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com')
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var el = document.getElementById('demo-score');
+    if (!el) return;
+    if (d.currentScore != null) {
+      el.textContent = d.currentScore + '% compliance score';
+      el.style.color = d.currentScore >= 70 ? 'var(--ok)' : d.currentScore >= 40 ? 'var(--warn)' : 'var(--fail)';
+      document.getElementById('demo-detail').textContent = 'Last scan: ' + (d.lastScan || 'N/A');
+      document.getElementById('demo-days').textContent = d.days + ' day' + (d.days !== 1 ? 's' : '') + ' of monitoring history';
+    } else {
+      el.textContent = 'Monitoring active — waiting for first scan';
+    }
+  })
+  .catch(function() {
+    var el = document.getElementById('demo-score');
+    if (el) el.textContent = 'Demo unavailable right now';
+  });
+
+// ── Gumroad + Buy button ──────────────────────────────────────
+
+<!-- Gumroad Overlay — afkommentér når produkt-ID kendes
+<script type="text/javascript" data-gumroad-overlay="true"
+  src="https://assets.gumroad.com/js/gumroad-overlay.js">
+</script>
+-->
+
+<script>
+// ── Mads: indsæt dit Gumroad produkt-link her ──────────────────
+var GUMROAD_PRODUCT_URL = ''; // fx 'https://eucomply.gumroad.com/l/pro'
+
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('buy-pro-btn');
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      if (GUMROAD_PRODUCT_URL) {
+        e.preventDefault();
+        window.location.href = GUMROAD_PRODUCT_URL;
+      }
+      // Hvis produktet ikke er sat, falder knappen tilbage til waitlist
+    });
+  }
+});
+</script>
 
 <section>
   <div class="wrap">
@@ -252,6 +319,55 @@ footer a{color:var(--accent)}
   </div>
 </section>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need to run WordPress?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. EUComply Pro works on every website — WordPress, Shopify, Webflow, Next.js, Squarespace, Wix, Drupal, static HTML, or custom stacks. The only requirement is a public URL." }
+    },
+    {
+      "@type": "Question",
+      "name": "What does the daily monitoring include?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Once a day, your site is automatically scanned for compliance issues. Results are stored for 30 days. You get a score history, auditor-ready PDF reports, and email alerts if your score drops. A public status endpoint is also available." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the daily scan work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "You register your URL once. Our server performs a full compliance check once per day and stores the results. You get a dashboard with your score history, PDF reports, and email alerts on score drops." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I cancel?",
+      "acceptedAnswer": { "@type": "Answer", "text": "You keep access to your existing reports and downloads. Daily scanning and alerts stop at the end of your billing period. No lock-in, no data hostage." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I view my compliance history?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every scan result is stored for 30 days. You can view your score graph and change log on any device. You can also download PDF reports for each scan." }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the templates actual legal documents?",
+      "acceptedAnswer": { "@type": "Answer", "text": "They are professional templates with guidance comments — written for agencies and consultants, not law firms. They cover the clauses most EU compliance audits check. For high-risk contracts, have counsel review the filled-in result." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I try before I buy?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — use the free scanner right now at /scan/. It runs the same checks. Pro adds daily monitoring, PDF reports, the badge, and templates." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I add multiple sites?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pro is $79 per site per year. Multiple sites each need their own subscription — each site has its own scan schedule, dashboard and badge." }
+    }
+  ]
+}
+</script>
+
 <footer>
   <div class="wrap">
     <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
@@ -260,6 +376,21 @@ footer a{color:var(--accent)}
 </footer>
 
 <script>
+// ── Live waitlist count (social proof) ──
+function fetchCount() {
+    fetch('https://waitlist-eucomply.mahope-eeb.workers.dev')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.count > 0) {
+          var el = document.getElementById('waitlist-count');
+          if (el) el.textContent = d.count + ' people are waiting for Pro \u2014';
+        }
+      })
+      .catch(function() {});
+  }
+  fetchCount();
+
+// ── Waitlist form submission ──
 document.getElementById('pro-waitlist').addEventListener('submit', async function(e) {
   e.preventDefault();
   var email = document.getElementById('pro-email').value.trim();
@@ -267,7 +398,7 @@ document.getElementById('pro-waitlist').addEventListener('submit', async functio
   var btn = this.querySelector('button');
   if (!email) { msg.textContent = 'Please enter your email.'; msg.className = 'wmsg err'; return; }
   btn.disabled = true;
-  btn.textContent = 'Joining…';
+  btn.textContent = 'Joining\u2026';
   try {
     var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev', {
       method: 'POST',
@@ -279,19 +410,19 @@ document.getElementById('pro-waitlist').addEventListener('submit', async functio
       msg.textContent = d.message || "You're on the list! We'll email you when checkout opens.";
       msg.className = 'wmsg ok';
       document.getElementById('pro-email').value = '';
-      btn.textContent = '✓ Joined';
+      btn.textContent = '\u2713 Joined';
       btn.classList.add('sent');
     } else {
       msg.textContent = d.error || 'Something went wrong. Try again.';
       msg.className = 'wmsg err';
       btn.disabled = false;
-      btn.textContent = 'Join the waitlist →';
+      btn.textContent = 'Join the waitlist \u2192';
     }
   } catch(err) {
     msg.textContent = 'Network error. Please try again.';
     msg.className = 'wmsg err';
     btn.disabled = false;
-    btn.textContent = 'Join the waitlist →';
+    btn.textContent = 'Join the waitlist \u2192';
   }
 });
 </script>

@@ -1,50 +1,43 @@
-# DECISION (iteration 71 — 25. august 2026)
+# DECISION — Iteration 78 (25. august 2026)
 
-**Status:** Holder under pengekriteriet. Fortsætter med at forbedre eksisterende portefølje.
-**Ny i denne iteration:** hreflang på alle sider, further reading på blog, scanner CTAs på generatorer.
-**Strukturel blokering:** Mads' konti — rammer ALLE produkter.
+**Status:** HOLDER. Universality-vurdering bestået med live-bevis. Falsk-positiv rettet (form-detektion). Samme blokering (Mads' konti).
 
-## Beslutning: Fortsæt med EUComply — forbedr portefølje
+---
 
-Under det nye mandat (23. august) hvor KUN pengekriteriet tæller:
+## Beslutning: EUComply — universal compliance platform
 
-| Faktor | EUComply | Hvorfor |
-|--------|----------|---------|
-| Tid til 1. kunde | ⭐⭐⭐⭐⭐ | Timer efter Mads' Gumroad — alt bygget |
-| Beløb pr. kunde | $79/år | Årligt abonnement, B2B |
-| Markedsstørrelse | Alle websites med EU-besøgende | 25M+ websites globalt |
-| Tilbagevendende indtægt | Årligt abonnement | Recurring, compounding |
-| Omkostning | 0 kr/md | Cloudflare gratis-tier |
-| **Strukturel blokering** | Mads' konti | Samme for ALLE produkter |
+| Faktor | EUComply | Score |
+|--------|----------|-------|
+| Tid til 1. kunde | Timer efter Mads' Gumroad | ⭐⭐⭐⭐⭐ |
+| Beløb pr. kunde | $79/år (B2B, bevist marked) | ⭐⭐⭐⭐ |
+| Markedsstørrelse | 25M+ websites (nu med Shopify-fokus) | ⭐⭐⭐⭐⭐ |
+| Tilbagevendende | Årligt abonnement | ⭐⭐⭐⭐⭐ |
+| Omkostning | 0 kr/md — Cloudflare gratis-tier | ⭐⭐⭐⭐⭐ |
+| Traction | 6 waitlist signups | ⭐⭐ |
 
-## Hvorfor IKKE pivotere
+**Strukturel blokering fortsat:** Mads' Gumroad. Gælder alle produkter.
 
-Ærlig gennemgang:
-- Alle betalingskanaler kræver Mads' juridiske person (Gumroad, Stripe, CWS, LemonSqueezy)
-- EUComply er ALLEREDE bygget, live, verificeret, universel, 0 kr/md
-- Intet andet produkt kan nå $1 hurtigere — fordi ALLE kræver Mads' konti i sidste ende
-- Korrekt træk: maksimér værdi indtil konti findes, så compounding starter dag 1
+---
 
-## Hvad kan slå det ihjel
+## Hvad er bygget i iteration 78
 
-1. **Mads opretter ikke konti** ⚠️ ⚠️ ⚠️ **Reel risiko — 7+ iterationers blokering**
-2. **Konkurrence bygger bedre produkt** — Lav risiko. Markedet er stort nok
-3. **Ingen køber** — Medium risiko. Compliance er reel smerte med bevist betalingsmarked
-4. **Chrome Web Store afviser extension** — Lav risiko. Simple API-call
+1. ✅ **Waitlist count endpoint** (GET) — social proof live på /pro/
+2. ✅ **Sample PDF report** — `/pro/sample-report/` — viser konkret værdi før køb
+3. ✅ **Rettet broken JS** på /pro/ (event listener manglede)
+4. ✅ **Ny SEO-blog:** "Shopify GDPR Compliance Guide 2026" — high-intent målgruppe
+5. ✅ **Sitemap:** 39 URLs (+2 nye)
+6. ✅ **Alle deployet og verifikationstestet**
 
-## Porteføljeoversigt
+---
 
-| # | Produkt | Modenhed | Næste skridt |
-|---|---------|----------|-------------|
-| 1 | EUComply Scanner | ✅ Bygget, live, universel | Payment integration (venter Mads) |
-| 2 | ComplianceDocs Generator | ✅ Bygget, live | Payment integration (venter Mads) |
-| 3 | Chrome Extension | ✅ Kode klar | CWS publicering (venter Mads) |
-| 4 | Compliance Badge | ✅ Bygget, live | Backlinks → SEO (passiv) |
-| 5 | EUComply Pro (/pro/) | ✅ Sales page live | Payment integration (venter Mads) |
-| 6 | 5 generators + scanner CTAs | ✅ Live | Flere trafikkanaler |
-| 7 | 11 blog posts + 1 tysk | ✅ Live | Flere keywords |
+## Hvorfor ikke skifte idé under pengekriteriet
 
-## Fokus i næste iteration
-- Byg CLI-værktøj (Node.js wrapper om scan-API) — ny distributionskanal
-- Flere SEO-artikler — dæk huller i keyword-dækning (HSTS, cookie patterns)
-- Forbered udgivelse af CLI på npm (venter Mads' konto)
+EUComply opfylder alle fem pengekriterier bedre end nogen alternativ idé. 0 kr driftsomkostning, $79/år pr. kunde, 25M+ adresserbart marked, timer til betaling når Gumroad findes. Konkurrenter (Qualys, Sucuri, Cookiebot) koster $100–$600/md og er segmenterede — EUComply er universel og billigere. Ikke nyskabende? Ligegyldigt når kriteriet er penge.
+
+---
+
+## Mads' eneste handling for $1
+
+1. https://gumroad.com → "Start selling" (email + password, 0 kr)
+2. Opret produkt "EUComply Pro" til $79/yr
+3. Send mig produkt-linket → jeg linker det på /pro/ → **første salg muligt**

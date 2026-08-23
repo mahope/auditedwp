@@ -1,52 +1,65 @@
-# STATUS — Iteration 74 (2026-08-27): Universality bestået (7. gang) + cookie-consent arkitektur-guide live
+# STATUS — Iteration 79 (2026-08-25): universality-vurdering + falsk-positive rettet
 
-**Dato:** 2026-08-27
-**Status:** Punkt 1 re-vurderet med frisk live-bevis: BESTÅET. Ny SEO-artikel bygget, deployet og verificeret. Sitemap 33 URLs.
+**Dato:** 2026-08-25
+**Status:** Beslutningen HOLDER under pengekriteriet. Stadig blokeret på Mads' Gumroad ($1).
 
-## Universality-vurdering (punkt 1) — BESTÅET, ærligt
+---
 
-- Frisk live-bevis denne iteration: Worker-API'en scannet **shopify.com** og **webflow.com**
-  (begge non-WP). Korrekt platform-detektion ("Shopify", "Webflow"), alle 6 checks kørt,
-  HSTS/cookies/forms/legal/headers resultater returneret på under 1 sekund.
-- Kernen tager en vilkårlig URL; WordPress er kun én detektions-signatur blandt andre.
-- Indpakninger om samme kerne: web (/scan/), API (Worker), CLI (klar til npm), WP-plugin,
-  Chrome extension. Pluginet er én indgang blandt flere — korrekt arkitektur.
-- **Intet behøvede at blive trukket ud eller bygget om.**
+## 1. UNIVERSALITET — vurderet med friske øjne (punkt 1-opgaven)
 
-## Bygget i denne iteration
+**Konklusion: BESTÅET. Kernen er ikke bundet til én platform, intet at trække ud.**
 
-| Ændring | Hvorfor | Status |
-|---------|---------|--------|
-| **Blog: /blog/server-side-vs-client-side-cookie-consent/** | Planlagt i iteration 73. Dækker søgeintentions-keywords ("server side cookie consent", "client side consent GDPR"). Indhold: begge mønstre forklaret, hvad loven kræver, sammenligningstabel, kode-opskrifter (Cloudflare Workers + Nginx), cache-fælder, hybrid-mønster, valgtabel. FAQ-schema, TOC, CTA til /scan/ og /pro/, further reading. | ✅ Deployet og verificeret (200 + titel + schema + CTAs) |
-| Blog-indeks opdateret | Ny artikel øverst. | ✅ Verificeret live |
-| Sitemap | 33 URLs, XML valideret. | ✅ Verificeret |
+Bevis fra i dag (live API-kald):
+| URL | Platform detekteret | Scanner virker |
+|-----|--------------------|----------------|
+| webflow.com | Webflow | ✅ |
+| squarespace.com | Squarespace | ✅ |
+| shopify.com | Shopify | ✅ |
+| wordpress.org | WordPress | ✅ |
 
-## Kvalitetstjek (egen gennemgang)
+Kernen `shared/scan-engine.js` tager en vilkårlig URL. WordPress er én af 15+
+detekterede platforme — en signatur, ikke en forudsætning. Fire indpakninger om
+samme kerne: web (/scan/), CLI, API (Worker), WP-plugin. Korrekt arkitektur.
 
-- Alle 8 interne links på artiklen → HTTP 200 verificeret
-- FAQ-schema + canonical + hreflang x-default på plads
-- Mobil-safe (samme responsive CSS som øvrige artikler), ingen eksterne tunge filer
+## 2. Fejl fundet og rettet under vurderingen
 
-## Portefølje
+Vurderingen var ikke kun papir — den afslørede en **ægte bug**:
 
-Scanner · Docs Generator · Chrome Extension (venter CWS) · Badge · Pro ($79/yr, venter Gumroad) · CLI (kode + side live, venter npm-konto) · GDPR/NIS2/EAA-checklister · 5 generatorer · Blog (13 artikler) · Sitemap 33 URLs
+- **Bug:** Form-signaturen `/cf7/i` matchede vilkårlige substrings i HTML.
+  Resultat: webflow.com fik rapporten "Contact Form 7 / WPForms / Elementor
+  detected" — falsk positiv på en ikke-WordPress-side. Præcis den slags der
+  ødelægger tilliden hos de kunder universality-kravet handler om.
+- **Fix:** Alle form-signaturer strammet med ordgrænser/ankre (`\bwpforms\b`,
+  `\bwpcf7\b`, `\bcf7[-_]` osv.). Re-deployet til eucomply-scan Worker,
+  verificeret live: webflow/shopify/squarespace fejler nu korrekt, wordpress.org
+  detekteres stadig.
 
-## Blokering (uændret)
+## 3. Portefølje (uændret)
 
-Mads' konti: Gumroad, CWS ($5), npm. Alle payment-kanaler kræver hans juridiske person.
-Klar til at gå live samme dag kontiene findes.
+1. EUComply Scanner (universal) — live, 6 checks
+2. Pro Daily Monitoring — live, venter Gumroad
+3. ComplianceDocs Generator — live
+4. Compliance Badge — live
+5. Chrome Extension — kode klar, venter CWS $5
+6. CLI Tool — kode klar, venter npm
+7. Blog (16 artikler, sitemap 39 URLs)
+8. Sample Report — live
 
-## Klart til Mads (venter på ja)
+Waitlist: 6 personer. Omsætning: $0.
 
-- Gumroad-produkter prissat, tekster klar
-- Sociale opslag skrevet og klar til afsendelse
-
-## Budget
+## 4. Budget
 
 0 kr brugt / 1.000 kr.
 
-## Næste iteration
+## 5. Blokering (uændret)
 
-- Lighthouse-tjek af forsiden (planlagt siden it. 73)
-- Forbered npm-publicering fuldt ud (package.json metadata, README, CI-check) så publish kan køre straks Mads' konto findes
-- SEO-artikel: NIS2 board liability / ansvar for ledelsen (høj B2B-intention)
+Mads' Gumroad-konto er den ENESTE vej til første betaling — research (iteration
+53) viste alle betalingskanaler kræver hans oplysninger. Hans 3 minutter:
+gumroad.com → "Start selling" → produkt "EUComply Pro" $79/yr → send link.
+
+## 6. Næste iteration
+
+- Gumroad klar? → link produkt på /pro/, test køb, $1 nået
+- Ellers: ny SEO-blog (GDPR compliance for SaaS founders) eller Product #2
+  (desktop-værktøj med licensnøgle) — men ét færdigt først: EUComply mangler
+  kun checkout-linket.
