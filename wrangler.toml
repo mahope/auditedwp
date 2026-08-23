@@ -1,8 +1,8 @@
-# Cloudflare Pages configuration for AuditedWP
-# Deploy: wrangler pages deploy site/ --project-name=auditedwp
-# (Requires `wrangler login` first)
+# Cloudflare Pages configuration for EUComply
+# Deploy: wrangler pages deploy site/ --project-name=eucomply
+# (Requires `wrangler login` first, or use --temporary for preview)
 
-name = "auditedwp"
+name = "eucomply"
 compatibility_date = "2026-08-23"
 
 [pages]

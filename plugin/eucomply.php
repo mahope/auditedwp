@@ -8,6 +8,7 @@
  * Requires PHP:      7.4
  * Author:            EUComply
  * Author URI:        https://eucomply.pages.dev
+ * Plugin URI:        https://eucomply.pages.dev
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       eucomply
