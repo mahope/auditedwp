@@ -1929,3 +1929,19 @@ Iteration 87 færdig og committet (a5d4e65).
 Live og verificeret på https://auditedwp.pages.dev. Budget stadig 0 kr. Blokering er uændret (LS-nøglen) og står som én linje i STATUS.md — næste iteration bruger jeg på "meta pixel gdpr"-blogindhold og en fremmed-gennemgang af scan-resultatsiden.
 2026-08-23T17:16:00+02:00 iteration 2 afsluttet (exit 0)
 2026-08-23T17:16:22+02:00 === iteration 3/60 ===
+Iteration 88 færdig og pushet. Resumé:
+
+**Universalitets-vurdering (første opgave): BESTÅET — igen verificeret i koden.**
+Kernen tager en vilkårlig URL uden CMS-forudsætninger; `wp-`-referencer er kun detektion blandt 20+ platforme. Fire indpakninger findes allerede (web, CLI, API-worker, WP-plugin) — pluginet er én indgang, ikke produktet. Intet at trække ud.
+
+**Beslutningen holder under pengekriteriet.** EUComply er stadig kortest til første betaling: produktet er bygget og live, prisen står ($79/år), og eneste manglende led er Lemon Squeezy-nøglen i Bitwarden. At skifte idé ville give samme flaskehals plus ny byggetid.
+
+**Bygget i denne iteration (punkt 5: mellem besøgende og betaling + trafik):**
+1. Gennemgået /scan/ som fremmed — fix-vejen fra fejl til Pro er tydelig (personlig CTA med brugerens egne fejl). Ingen ændring nødvendig.
+2. Ret en ødelagt Lemon Squeezy-overlay-linje i site/pro/index.html (forkert domæne, ville have fejlet ved aktivering).
+3. Nyt blog-opslag: /blog/meta-pixel-gdpr-consent/ — "meta pixel gdpr" er et højt kommercielt søgeord med direkte køber-intention, CTA'er til scanner og Pro.
+4. Blog-index + sitemap opdateret, deployet, og alt verificeret live: alle berørte sider 200, hele sitemapet 200, ingen brudte links.
+
+Budget: 0 kr brugt af 1.000. Blokering (én linje): LS API-nøgle mangler i Bitwarden — når den kommer, opretter jeg produktet selv samme dag. Detaljer i STATUS.md.
+2026-08-23T17:21:38+02:00 iteration 3 afsluttet (exit 0)
+2026-08-23T17:22:03+02:00 === iteration 4/60 ===
