@@ -2436,3 +2436,39 @@ Skal jeg vælge et domæne og skrive det i BUDGET.md, så det kan købes via Clo
 3. **notifymenu.com** (~$12)
 2026-08-23T20:12:55+02:00 iteration 26 afsluttet (exit 0)
 2026-08-23T20:13:17+02:00 === iteration 27/60 ===
+Iteration 111 færdig. Resumé:
+
+**1. Universitets-vurdering (punkt 1): BESTÅET.** DevNotify er en desktop-app mod GitHub REST API — intet CMS-afhængigt. Kernen (notifications-API → normaliseret liste → menu bar UI) tager en adapter; GitHub er én af flere mulige. Vurderingen står i STATUS.md.
+
+**2. Bygget og live denne iteration:**
+- Landingsside der sælger: https://auditedwp.pages.dev/devnotify/ — hvad det er, hvem det er til, $19 pris, features, FAQ, how-it-works
+- DMG bygget (4,2 MB, Tauri-bundling fejlede på Apples script, så jeg lavede den med hdiutil direkte)
+- Download-knap → rigtig fil, verificeret byte-identisk online (hash-match)
+- Terms, Privacy, sitemap og _headers på plads
+- BUILD.md opdateret med korteste vej til første betaling
+
+**3. Fejl jeg fandt og rettede:** `wrangler pages deploy` uploader mappe-indholdet på roden — mine første deploys lå derfor på /index.html i stedet for /devnotify/, så /devnotify/* svarede med forsiden (200 men forkert indhold). Løst med en publish/-struktur. Rodsitet (EUComply) blev midlertidigt overskrevet undervejs og er verificeret gendannet.
+
+**Traction: 0 kunder, 0 downloads, $0.**
+
+**Eneste blokering for revenue:** Lemon Squeezy-nøglen i Bitwarden. Når den kommer, opretter jeg produktet via API og indsætter checkout-URL'en — så er DevNotify reelt i stand til at tjene penge.
+
+3 Product Hunt/Reddit-posts kan skrives færdige til næste iteration, hvis du vil have dem liggende klar til dit ja.
+2026-08-23T20:25:08+02:00 iteration 27 afsluttet (exit 0)
+2026-08-23T20:25:31+02:00 === iteration 28/60 ===
+Iteration 112 færdig. Resumé:
+
+**Universitets-vurdering (punkt 1):** DevNotify består — kernen er notifications-API → normaliseret liste → menu bar UI, helt uafhængig af platform. GitHub er én adapter; GitLab/Linear kan tilføjes uden kernerelaterede ændringer. Ingen udtrækning nødvendig.
+
+**Bygget denne iteration** (LS-nøglen mangler stadig — Bitwarden-session er unauthenticated — så jeg arbejdede på det der står mellem besøgende og betaling):
+
+- Rettede en uærlighed på landingssiden: FAQ lovede "Apple Silicon **and Intel**", men der findes kun et aarch64-build. Står nu korrekt: Apple Silicon only.
+- Tilføjede Open Graph/Twitter-meta og JSON-LD SoftwareApplication med $19-offer til forsiden.
+- Ny SEO-side `/devnotify/vs/gitify/` — en ærlig sammenligning der også siger hvornår Gitify (den gratis konkurrent) er det bedre valg. Det bygger tillid og rammer folk der søger alternativer.
+- Cross-link i nav + sitemap. Alt deployet med `./deploy.sh devnotify-site/publish` (scriptets default tog den forkerte mappe — noteret i STATUS) og verificeret live: meta-tags på plads, vs-gitify 200, DMG og EUComply-rodsiden urørt.
+
+**Traction:** 0 kunder · 0 downloads · $0 — som det skal rapporteres.
+
+**Eneste revenue-blokering:** Lemon Squeezy-nøglen i Bitwarden (ventes 24/8). Når den kommer, opretter jeg produktet via API og sætter checkout ind samme iteration. STATUS.md er opdateret.
+2026-08-23T20:29:35+02:00 iteration 28 afsluttet (exit 0)
+2026-08-23T20:29:57+02:00 === iteration 29/60 ===
