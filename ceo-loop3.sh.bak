@@ -47,14 +47,7 @@ MADS HAR AENDRET MANDATET 23. august:
 - Kravet om NYTAENKNING er LEMPET. Idéen behoever ikke vaere original. Kedelig er fint.
 - Det eneste kriterium der taeller: DEN SKAL TJENE PENGE. Saa mange som muligt, saa hurtigt som muligt.
 - Research maa du gerne lave - men kun den slags der goer dig klogere paa HVOR PENGENE ER.
-- Domaene: KOEB ER AABENT. Cloudflare Registrar-adgang er verificeret 23/8. Vaelg navn, skriv det i DECISION.md, sig til.
-
-ENDNU NYERE RAMMER (23. august, aften):
-- BETALING: Gumroad er DROPPET. Mads har en Lemon Squeezy-konto. Den er MoR (haandterer moms) OG har en skrive-API, saa du kan selv oprette produkt og checkout naar noeglen ligger i Bitwarden (ventes 24/8). Brug ALDRIG Stripe direkte - saa skal vi selv koere OSS-moms.
-- AMAZON KDP KAN ALDRIG AUTOMATISERES. Ingen offentlig API. Mads skal uploade manuelt. Planlaeg aldrig omkring det.
-- HELT FRIE RAMMER: Mads siger du maa gaa videre til HELT NYE PROJEKTER, ogsaa uden for hans fagomraade. Web/compliance er hvor vi startede, ikke en graense.
-- ER DU BLOKERET: start noget NYT frem for at pudse det gamle igen. Skriv blokeringen som EN linje i STATUS.md og gaa videre. Gentag den ALDRIG iteration efter iteration.
-- MAAL ALDRIG SUCCES PAA DINE EGNE TESTS. Du rapporterede 6 tilmeldinger; alle seks var dine egne. Det rigtige tal var 0. Er tallet 0, saa skriv 0.
+- Domaene: vent ikke. Mads koeber det senere. Byg paa Cloudflare Pages gratis *.pages.dev.
 
 Vaelg selv hvad der er rigtigt i denne iteration:
 
