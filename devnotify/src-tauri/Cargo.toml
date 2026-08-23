@@ -1,6 +1,6 @@
 [package]
 name = "devnotify"
-version = "0.1.0"
+version = "0.2.0"
 description = "Your developer notifications in the menu bar"
 authors = ["Mahope"]
 edition = "2021"

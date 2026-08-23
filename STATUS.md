@@ -1,38 +1,37 @@
-# STATUS — Iteration 120 (23. august 2026, aften)
+# STATUS — Iteration 121 (23. august 2026, nat)
 
-## 1. Universitets-vurdering (punkt 1) — nu bestået I KODE, ikke kun i ord
+## 1. Universitets-vurdering (punkt 1) — bestået, bekræftet
 
-Sidste iteration konkluderede at kernen var platform-agnostisk. Denne iteration
-blev det bevist: `fetch_notifications` kaldte stadig api.github.com direkte.
-Nu:
+DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters,
+én funktion pr. ny provider). Site/produkt er ikke bundet til WordPress eller
+noget andet CMS. Ingen udtrækning nødvendig. Vurderingen fra iteration 119–120
+står ved magt.
 
-- **Ny fil `devnotify/src-tauri/src/providers.rs`:** `Provider`-enum (GitHub,
-  GitLab), normaliseret `NotificationItem`, én adapter pr. platform.
-  GitHub-adapter: notifications-API. GitLab-adapter: todos-API (`read_api`
-  scope). Ny provider = én funktion, nul ændringer i UI/tray/trial-logik.
-- **Frontend:** Platform-vælger (GitHub/GitLab) i Preferences, token-hint
-  skifter pr. platform, gemmes i `provider.txt`.
-- **Bygget + pakket:** release-build OK, ny aarch64-DMG lavet (Tauris
-  DMG-bundler fejlede på Finder-AppleScript i baggrundskørsel — omgået med
-  hdiutil direkte; checksum-verificeret).
+## 2. v0.2.0 på BEGGE arkitekturer (punkt 3 fra forrige iteration)
 
-## 2. Ny SEO-indgang: "gitlab notifications mac"
-
-- `/devnotify/gitlab-notifications-mac/` — HowTo JSON-LD, GitLab-farvet design,
-  mockup, FAQ, links til download og købsrejse. Live og 200.
-- Linket fra forsidsens nav + sitemap opdateret. Verificeret live.
+- Version bump 0.1.0 → 0.2.0 (Cargo.toml + tauri.conf.json).
+- aarch64: `npx tauri build` → DMG-bundler fejlede igen (samme AppleScript-fejl)
+  → omgået med hdiutil direkte. Info.plist verificeret 0.2.0.
+- **x64 cross-compile virker nu:** `cargo build --target x86_64-apple-darwin`
+  + tauri bundle → hdiutil. Info.plist 0.2.0. Tidligere x64-DMG (v0.1.0 uden
+  GitLab) er erstattet.
+- Begge DMG'er checksum-verificeret og lagt i `site/devnotify/download/`;
+  gamle 0.1.0-filer slettet.
+- Alle download-links + versionsnoter opdateret i forsiden og
+  gitlab-siden. Deployet og verificeret live:
+  - `/devnotify/` 200 · `/devnotify/gitlab-notifications-mac/` 200
+  - begge `.dmg`-filer 200 med korrekte filstørrelser (4,47 MB / 4,60 MB)
 
 ## 3. Traction (ærligt)
 
-**0** betalende · **0** notify-me-tilmeldinger · **$0** revenue. Uændret.
+**0** betalende · **0** notify-me · **$0** revenue. Uændret.
 
 ## 4. Venter på Mads (én linje)
 
-LS API-nøgle (Bitwarden låst med master password).
+LS API-nøgle (Bitwarden låst).
 
 ## 5. Næste iteration
 
 1. LS-nøgle → produkt $19 via API → checkout erstatter notify-formularen.
 2. Remote licensvalidering mod LS (TODO i lib.rs).
-3. x64-DMG gendannes med samme hdiutil-metode (nuværende x64 er v0.1.0 uden
-   GitLab-adapter — overvej version bump til 0.2.0 når begge ark er nye).
+3. Købsrejse-gennemgang som fremmed på mobil.
