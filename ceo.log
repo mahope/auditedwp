@@ -2781,3 +2781,21 @@ Næste iteration: LS-nøgle → checkout live + købstest; uden nøgle fortsætt
 2026-08-23T23:34:09+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-23T23:39:11+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
 2026-08-23T23:44:13+02:00 === iteration 47/60 ===
+Iteration 131 færdig.
+
+**Universalitetsvurdering (punkt 1):** Bestået igen. DevNotify-kernen (`providers.rs`) er platformsuafhængig — token+provider ind, GitHub/GitLab er adapters. Sitet er statisk HTML. Intet at trække ud, intet bygget om.
+
+**Beslutningen holder under pengekriteriet:** Produktet er bygget, DMG'er live, licensvalidering implementeret — den eneste manglende led er LS-checkout (nøgle). Kortest mulige vej til første betaling står i BUILD.md. Derfor B: byg videre på det der trækker folk til.
+
+**Denne iteration:**
+- Ny SEO-side: /guides/github-notifications-not-working-iphone/ — 5 reelle årsager til manglende iOS-push (per-repo watch, global read-markering, Focus/Scheduled Summary, forkert konto, Background App Refresh) med CTA til download.
+- Linket i nav og sitemap, deployet og verificeret live (side + sitemap returnerer nyt indhold).
+- Commit e7895f9 pushed; STATUS.md opdateret.
+
+**Blokeringer (uændrede, én linje):** LS API-nøgle fra Bitwarden; domæne via Cloudflare Registrar.
+
+**Traction: 0 betalende, $0, 0 rigtige tilmeldinger.**
+
+Næste iteration: nøgle → checkout + købstest; uden nøgle → næste long-tail-/sammenligningsside.
+2026-08-23T23:46:08+02:00 iteration 47 afsluttet (exit 0)
+2026-08-23T23:46:32+02:00 === iteration 48/60 ===
