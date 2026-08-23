@@ -1,6 +1,6 @@
 === EUComply — EU Compliance Audit ===
 Contributors: mahope
-Donate link: https://mahope.github.io/auditedwp
+Donate link: https://auditedwp.pages.dev
 Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl, backup, imprint, legal, accessibility
 Requires at least: 5.8
 Tested up to: 6.8
