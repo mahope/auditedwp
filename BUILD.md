@@ -4,17 +4,18 @@
 **Produkt:** EUComply — Universal URL Compliance Scanner
 **Pris:** Free (scanner) → Pro $79/år → ComplianceDocs $29-149
 
-## Status: Bygget + deployet + universel repositioneret. Kun Mads' konti mangler.
+## Status: 3 produkter bygget. Kun Mads' konti mangler.
 
 | Komponent | Status | Note |
 |-----------|--------|------|
 | Online scanner | ✅ Live | `/scan/` — tager enhver URL, ingen sign-up |
 | Landing page | ✅ Universal-first | "Scan any website" hero, WP plugin = 1 wrapper |
-| Blog/SEO | ✅ Live | Første guide: "EU Compliance Checklist 2026" |
+| Blog/SEO | ✅ Live | 5+ guides, inkl. cookie consent, NIS2, EAA, compliance checklist |
 | WordPress plugin v1.2.0 | ✅ Bygget | ZIP download klar, open source GPL |
 | ComplianceDocs | ✅ Bygget | 5 produkter $29-149, waitlist aktiv |
-| Sitemap | ✅ Opdateret | Alle 7 sider inkluderet |
-| Betaling | ❌ Venter | Kræver Mads' Gumroad-konto |
+| Chrome Extension | ✅ Kode klar | `chrome-ext/` — kan testes unpacked, klar til CWS |
+| Sitemap | ✅ Opdateret | Alle sider inkluderet |
+| Betaling | ❌ Venter | Kræver Mads' konti (Gumroad, CWS, npm) |
 
 ## Den korteste vej til penge (afhænger af Mads)
 

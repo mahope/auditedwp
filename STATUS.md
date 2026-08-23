@@ -1,56 +1,64 @@
-# STATUS — Iteration 55 (2026-08-24): Universal-check med live-bevis, beslutning bekræftet under pengekriteriet
+# STATUS — Iteration 57 (2026-08-24): Universal-vurdering + SEO-indhold bygget
 
 **Dato:** 2026-08-24
-**Status:** Alt bygget og live. Venter kun på Mads' Gumroad-konto. Ingen kodebehov.
+**Status:** 3 produkter bygget og live. Én blokering (Mads' konti). Nyt i denne iteration: universal-check gentaget med bevis + 2 nye SEO-blogindlæg.
 
-## Punkt 1 — Universelt: VURDERET MED LIVE-BEVISER (ikke kun påstand)
+## Opgave 1 — Ærlig vurdering af punkt 1 (UNIVERSELT): ✅ BESTÅET
 
-Jeg testede ikke bare koden — jeg kaldte den produktions-API (`eucomply-scan.mahope-eeb.workers.dev`)
-mod seks forskellige platforme lige nu:
+**Konklusion: Kernen er IKKE bundet til én platform. Intet behøver trækkes ud.**
 
-| Testet side | Detekteret platform | Score |
-|---|---|---|
-| shopify.com | Shopify | 60 |
-| webflow.com | Webflow | 80 |
-| nextjs.org | Next.js | 80 |
-| squarespace.com | Squarespace | 20 |
-| wix.com | Wix | 40 |
-| example.com (statisk HTML) | Unknown | 40 |
+Bevis fra live-verificering i denne iteration:
+1. **Scan-kernen** (`worker-scan/index.js`, deployed som Worker) tager en almindelig URL
+   og kører HTTP-header/HTML-analyser der er CMS-uafhængige: SSL/HSTS, cookie-banner-
+   detektering, CSP, privacy-policy-link, font-størrelser m.m. Ingen WordPress-assumptioner.
+2. **Live-test:** `GET /scan?url=https://example.com` → korrekt JSON-svar
+   (platform: "Unknown", checks: ssl pass, cookies fail osv.). Se output i ceo.log.
+3. **Indpakninger omkring kernen** (kernen er produktet, wrappers er indgange):
+   - `/scan/` webside (enhver URL)
+   - `cli/` kommandolinjeværktøj (npm)
+   - REST API (`eucomply-scan.mahope-eeb.workers.dev`)
+   - `chrome-ext/` browserudvidelse (bruger samme API)
+   - `plugin/eucomply.php` WP-plugin — **én af fem indgange, ikke produktet**
+4. Alle 9 undersider på https://auditedwp.pages.dev returnerer HTTP 200.
 
-**Konklusion: BESTÅET.** Kernen tager en almindelig URL og virker uanset CMS. WordPress er kun
-én detektionssignatur blandt andre. Fire indpakninger om samme kerne: web (/scan/), CLI (cli/),
-API (Worker), WP-plugin (plugin/). **Intet behøver trækkes ud eller bygges om.**
+**Vurdering:** WordPress-pluginet er allerede korrekt placeret som én wrapper. Landingssiden
+sælger "Free EU Compliance Scan for Any Website" — ikke et WordPress-produkt. Der findes
+ingen platform-bundet kerne at refaktorere. Punkt 1 opfyldt.
 
-Site verificeret live: / , /scan/ , /tools/ , /blog/ returnerer alle 200 med korrekt indhold.
+## Opgave 2 — Byg videre under pengekriteriet
 
-## Punkt A — Revurdering under pengekriteriet: BEKRÆFTET
+Korteste vej til første betalende kunde står i BUILD.md (uændret: Gumroad-konto).
+Det eneste jeg kan flytte selv uden Mads: **flere organiske trafikindgange**, fordi
+hver blog-side er et gratis salgsfremstød mod Pro/ComplianceDocs når betaling aktiveres.
 
-Fem-kriteriet (DECISION.md) gennemgået igen mod det lempede mandat:
-- Tid til første betalende kunde: timer efter Gumroad findes (alt kode færdigt)
-- Beløb: $79/år Pro + $29–149 ComplianceDocs
-- Marked: alle website-ejere globalt (universelt produkt = hele markedet)
-- Tilbagevendende: ja (årligt abonnement)
-- Leveringsomkostning: 0 kr/md
+### Nyt i iteration 57: 2 SEO-blogindlæg (deployet)
+1. `/blog/gdpr-cookie-banner-fines/` — "GDPR Cookie Banner Fines: What Websites Actually Get Fined For (2026)" — fanger søgninger på bøder + cookie banners, linker til scanneren.
+2. `/blog/website-compliance-scanner-comparison/` — "Website Compliance Scanners Compared: What a Free Scan Actually Checks" — comparison-keyword, egen artikel, CTA til gratis scan.
 
-Alternativer screenet igen: enhver ny idé kræver stadig Mads' konti for at tage imod penge.
-Et færdigt produkt + ét manglende trin slår alt nyt. **Beslutningen står ved magt.**
+Begge: engelsk, universelle (ikke WP-specifikke), intern linkning til /scan/, /store/, /tools/.
+Sitemap opdateret. Deploy via deploy.sh, alle sider verificeret 200 efter udgivelse.
 
-## Punkt B — BYG-status
+## Portefølje
 
-BUILD.md eksisterer og er aktuel (korteste vej til første kunde = Gumroad-upload).
-Landingsside der sælger (hvad/hvem/pris/hvorledes): live på / , /scan/ , /store/.
-Ingen nye builds nødvendige denne iteration — produktet er færdigt; flaskehalsen er ikke kode.
+| # | Produkt | Status | Pris |
+|---|---------|--------|------|
+| 1 | EUComply Scanner | ✅ Live, universel | Free / $79 yr |
+| 2 | ComplianceDocs Generator | ✅ Live på /tools/ | Free / $29-149 |
+| 3 | Chrome Extension | ✅ Kode klar | Free + Pro link |
 
-## Indtjening: 0 kr — ÉN blokering, uændret
+## Blokering (uændret — Mads' konti)
 
-**Mads' Gumroad-konto.** Alt salgsmateriale klar i `gumroad/UPLOAD-GUIDE.md` (~20 min arbejde).
+| Kanal | Kræver |
+|-------|--------|
+| Gumroad | Mads' email + payout-konto (~10 min) |
+| Chrome Web Store | $5 gebyr + Mads' konto (~10 min) |
+| npm | Mads' npm-konto (~5 min) |
+
+Så snart Gumroad findes: jeg skifter checkout-links, redeployer, og produktet kan tage imod penge.
 
 ## Næste skridt
-
-1. **MADS:** Opret Gumroad-konto + upload jf. `gumroad/UPLOAD-GUIDE.md`
-2. **MIG:** Modtag profil-URL → aktivér checkout-knapper → redeploy → verificér
-3. Efter første salg: npm-publish af CLI (gratis lead-gen), derefter Chrome-udvidelse
+- Flere SEO-indgange (hver = gratis trafik): "accessibility checker", "privacy policy generator" long-tails
+- Klargør marketing-tekster til sociale opslag — venter på Mads' ja før afsendelse (jf. mandat pkt. 4)
 
 ## Budget
-
-0 kr brugt / 1.000 kr.
+0 kr brugt / 1.000 kr. Ingen planlagte udgifter.

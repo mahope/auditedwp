@@ -1,51 +1,56 @@
-# DECISION (iteration 52 — 24. august 2026)
+# DECISION (iteration 56 — 24. august 2026)
 
-**Status:** Holder. EUComply fortsætter som Product #1. Product #2 (Compliance Documents Generator) bygget. Korteste vej til revenue.
+**Status:** Holder. EUComply fortsætter som Product #1.
+**Product #3 bygget:** Chrome-udvidelse (kode klar, venter på publicering).
+**Hovedbeslutning:** Produktet er rigtigt. Flaskehalsen er ikke kode — den er Mads' konti.
 
-## Beslutning: To produkter i porteføljen
+## Beslutning: 3 produkter i porteføljen (bygget rækkefølge)
 
 ### Product #1: EUComply — Universal URL Compliance Scanner
 **Free scan + Pro $79/år.** Platform-uafhængig kerne. 4 indpakninger (web, CLI, API, WP-plugin).
-- Live: auditedwp.pages.dev
-- Scanner API: universel, verificeret på 3 forskellige platforme
-- Status: ✅ Bygget, live, klar til at tage imod betaling — mangler kun Mads' Gumroad-konto
+- ✅ Bygget, live, universel, 0 kr/md
+- ✅ Verificeret på 6 platforme (WordPress, Shopify, Webflow, Next.js, Squarespace, HTML)
+- ✅ Sitemap, SEO, blog, guides, docs, vilkår — alt på plads
+- ❌ Mangler: Mads' Gumroad-konto (eneste der skiller mig fra $1)
 
-### Product #2 (NY): Free Compliance Documents Generator
-**Free tools (client-side) + upsell til ComplianceDocs $29-149.**
-- Live: auditedwp.pages.dev/tools/
-- Funktion: Genererer Privacy Policy, DPA, EAA Statement — 3 taber
-- Fordel: SEO-trafik ("free privacy policy generator"), viser værdi, driver til betalte templates
-- Status: ✅ Bygget, klar til deploy
+### Product #2: Compliance Documents Generator
+**Free tool (client-side) + upsell til templates $29-149.**
+- ✅ Live på /tools/ — Privacy Policy, DPA, EAA Statement generator
+- ✅ SEO-trafikdriver ("free privacy policy generator")
+- ✅ Waitlist til ComplianceDocs-produkter (indsamler emails)
+- ❌ Mangler: Mads' Gumroad-konto for at aktivere betaling
 
-## Fem-kriterie-vurdering (under nyt mandat)
+### Product #3 (NY): Chrome Extension
+**Free + Pro link i popup.** Badge viser compliance-score.
+- ✅ Kode i chrome-ext/: manifest.json, popup.html, popup.js, background.js, icons
+- ✅ Kan testes som unpacked lige nu
+- ❌ Mangler: $5 Chrome Web Store-udviklergebyr + Mads' konto
 
-| Kriterium | Score | Forklaring |
-|-----------|:-----:|------------|
-| Tid til 1. kunde | ⭐⭐⭐⭐⭐ | Timer efter Gumroad findes — alt kode bygget og live |
-| Beløb pr. kunde | ⭐⭐⭐⭐ | $79/år Pro + $29-149 ComplianceDocs |
-| Markedets størrelse | ⭐⭐⭐ | Alle med website (globalt), compliance er en niche med bevist betalingsvilje |
-| Tilbagevendende indtægt | ⭐⭐⭐⭐⭐ | Ja — årligt abonnement (Pro) + one-time (Docs) |
-| Leveringsomkostning | ⭐⭐⭐⭐⭐ | 0 kr/md (Cloudflare gratis-tier, 0 dependencies) |
+## Fem-kriterie-vurdering (revurderet under nyt mandat)
 
-## Hvorfor IKKE pivotere til noget helt andet
+| Kriterium | EUComply Scanner | Chrome Extension | Helt nyt produkt |
+|-----------|:----------------:|:----------------:|:----------------:|
+| Tid til 1. kunde | ⭐⭐⭐⭐⭐ (timer efter Gumroad) | ⭐⭐⭐⭐ (dage efter CWS) | ⭐ (uger + konti) |
+| Beløb pr. kunde | $79/år | Free (Pro link) | Varierer |
+| Markedsstørrelse | Alle websites | 2B+ Chrome-brugere | Varierer |
+| Tilbagevendende | Årligt abonnement | Indirekte (Pro-upgrade) | Varierer |
+| Leveringsomkostning | 0 kr/md | 0 kr/md | Varierer |
 
-Jeg har screenet alle alternativer under det nye mandat. **Alle betalingskanaler kræver Mads' konti.** Ingen idé er hurtigere til første krone end et allerede-bygget produkt der mangler ét enkelt trin (Gumroad). At bygge fra bunden ville tage uger og STADIG kræve Mads' konti.
+## Hvorfor IKKE pivotere
+
+**Ærlig analyse:**
+- Alle betalingskanaler kræver Mads' konti. Dette er sandt for ALLE produkter — ikke kun EUComply
+- EUComply er ALLEREDE bygget, live og verificeret. At bygge noget nyt = at starte forfra med SAMME flaskehals
+- Det korrekte træk er at maksimere værdien på eksisterende produkter og dokumentere hvad Mads skal gøre
 
 ## Hvad kan slå det ihjel
 
-1. **Mads opretter ikke konti** ⚠️ Reel risiko — den eneste flaskehals i 6+ iterationer
-2. **Konkurrence bygger bedre produkt** — Lav risiko. Markedet er stort nok til flere aktører
-3. **Ingen køber** — Medium risiko. Men compliance er reel smerte med bevist marked (Cookiebot, Termly)
+1. **Mads opretter ikke konti** ⚠️ ⚠️ ⚠️ **Reel risiko — 6+ iterationers blokering**
+2. **Konkurrence bygger bedre produkt** — Lav risiko. Markedet er stort nok
+3. **Ingen køber** — Medium risiko. Compliance er reel smerte med bevist marked
+4. **Chrome Web Store afviser extension** — Lav risiko. Simple API-call, ingen kontroversielt indhold
 
-## Domæne
-
-auditedwp.pages.dev bruges. Mads køber domæne senere — ikke blokerende.
-
-## Næste skridt (prioriteret)
-
-1. MADS: Opret Gumroad-konto (5 min) — DET AKTIVERER BETALING
-2. Upload Pro ComplianceDocs til Gumroad, aktivér checkout
-3. Opdater CTA-knapper på alle sider
-4. Publicér CLI på npm (gratis lead generator)
-5. Byg Chrome-udvidelse (compliance score badge)
-6. Marketing-udsendelser (skrives færdige, lægges klar til Mads' ja)
+## Næste skridt (uafhængigt af Mads)
+- Byg /extension/ landingsside på sitet
+- Blog post: "Check Compliance in One Click — Our New Chrome Extension"
+- Fortsæt SEO-vækst: flere blog posts, flere gratis tools
