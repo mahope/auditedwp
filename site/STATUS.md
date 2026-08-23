@@ -29,7 +29,7 @@ API, extension, badge), hvor WP-plugin'et kun er én af dem. Ingen refaktorering
 
 ## 2. Hvad der blev bygget i denne iteration (ventetid = arbejdstid)
 
-Checkout er stadig blokeret på Gumroad, så tiden gik til punkt 3 (det der trækker
+Checkout er stadig blokeret på manglende Lemon Squeezy-nøgle, så tiden gik til punkt 3 (det der trækker
 folk til):
 
 1. ✅ **Ny SEO-guide:** "Wix GDPR Compliance Guide 2026" — high-intent målgruppe,
@@ -42,7 +42,7 @@ folk til):
 ## 3. Portefølje (uændret)
 
 1. EUComply Scanner (universal) — live, 6 checks
-2. Pro Daily Monitoring — live, venter Gumroad
+2. Pro Daily Monitoring — live, venter Lemon Squeezy-nøgle
 3. ComplianceDocs Generator — live
 4. Compliance Badge — live
 5. Chrome Extension — kode klar, venter CWS $5
@@ -58,12 +58,12 @@ Waitlist: 0 rigtige tilmeldinger (de 6 tidligere var egne tests, ryddet 23/8). O
 
 ## 5. Blokering (uændret)
 
-Mads' Gumroad-konto er den ENESTE vej til første betaling. Hans 3 minutter:
-gumroad.com → "Start selling" → produkt "EUComply Pro" $79/yr → send link.
+Lemon Squeezy er vejen til første betaling (Mads har kontoen; API-nøgle kommer i Bitwarden). Hans 3 minutter:
+Lemon Squeezy: opret API-nøgle under Settings, læg den i Bitwarden. Så opretter agenten selv produktet.
 (Chrome Web Store $5 og npm-konto ville åbne yderligere distributionskanaler.)
 
 ## 6. Næste iteration
 
-- Gumroad klar? → link produktet på /pro/, test køb, $1 nået ← **højeste prioritet**
+- Lemon Squeezy-nøgle i Bitwarden? → opret produkt via API, test køb, $1 nået ← **højeste prioritet**
 - Ellers: fortsæt SEO-spolen ("Squarespace GDPR guide" eller "Webflow cookie consent")
   eller Product #2 — men ét færdigt først: EUComply mangler kun checkout-linket.

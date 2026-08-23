@@ -26,11 +26,11 @@
 
 ## 4. Blokering (uændret)
 
-**Eneste blokering:** Mads' Gumroad-konto. GUMROAD_PRODUCT_URL i site/pro/index.html venter på link. Første betaling mulig **samme dag** linket indsættes.
+**Blokering:** Lemon Squeezy API-nøgle mangler i Bitwarden (ventes 24/8). GUMROAD_PRODUCT_URL i site/pro/index.html venter på link. Første betaling mulig **samme dag** linket indsættes.
 
 ## 5. Venter på Mads' ja
 
-Gumroad-konto · betalte annoncer (klar) · kold mail-række til agencies (klar) · ProductHunt · LinkedIn/Reddit-opslag
+Lemon Squeezy-nøgle · betalte annoncer (klar) · kold mail-række til agencies (klar) · ProductHunt · LinkedIn/Reddit-opslag
 
 ## 6. Budget
 
@@ -41,4 +41,4 @@ Gumroad-konto · betalte annoncer (klar) · kold mail-række til agencies (klar)
 Prioriteret:
 1. Flere blog-opslag (målret "iab tcf framework", "transparency consent framework check")
 2. Flere nyttige scanner-checks (GDPR repræsentant detection, consent banner text quality)
-3. Forbedr Pro-siden (klar til Gumroad-link)
+3. Forbedr Pro-siden (klar til Lemon Squeezy-link)

@@ -125,7 +125,7 @@ footer a{color:var(--accent)}
     <a class="btn gold" href="#waitlist" id="buy-pro-btn">Buy Pro — $79/yr</a>
     <a class="btn" href="/scan/">Try the free scanner first →</a>
   </div>
-  <br><span style="font-size:13px;color:var(--muted);display:inline-block">⏳ Checkout opens on Gumroad. Join the waitlist for launch pricing.</span>
+  <br><span style="font-size:13px;color:var(--muted);display:inline-block">⏳ Checkout opens on Lemon Squeezy. Join the waitlist for launch pricing.</span>
   <div style="margin:18px auto 0;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:14px 18px;display:inline-block;font-size:13px;color:var(--muted)">
     ✅ <strong>Daily monitoring engine:</strong> built and running
   </div>
@@ -253,7 +253,7 @@ footer a{color:var(--accent)}
 <section id="waitlist">
   <div class="wrap waitlist-wrap">
     <h2>Get launch pricing — join the waitlist</h2>
-    <p><span id="waitlist-count" style="font-weight:700">⏳</span> Checkout opens soon on Gumroad. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
+    <p><span id="waitlist-count" style="font-weight:700">⏳</span> Checkout opens soon on Lemon Squeezy. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
     <form class="wform" id="pro-waitlist">
       <input type="email" id="pro-email" placeholder="your@email.com" required aria-label="Email address">
       <button type="submit">Join the waitlist →</button>
@@ -285,21 +285,21 @@ fetch('https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com')
   });
 </script>
 
-<!-- Gumroad Overlay: activate after product ID is known -->
-<!-- Activate: uncomment the script line below and set src to your Gumroad product -->
-<!-- <script src="https://assets.gumroad.com/js/gumroad-overlay.js"></script> -->
+<!-- Lemon Squeezy Overlay: activate after product ID is known -->
+<!-- Activate: uncomment the script line below and set src to your Lemon Squeezy product -->
+<!-- <script src="https://assets.Lemon Squeezy.com/js/Lemon Squeezy-overlay.js"></script> -->
 
 <script>
-// ── Mads: indsæt dit Gumroad produkt-link her ──────────────────
-var GUMROAD_PRODUCT_URL = ''; // fx 'https://eucomply.gumroad.com/l/pro'
+// ── Mads: indsæt dit Lemon Squeezy produkt-link her ──────────────────
+var CHECKOUT_URL = ''; // Lemon Squeezy checkout-URL, fx https://mahope.lemonsqueezy.com/buy/xxxx
 
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('buy-pro-btn');
   if (btn) {
     btn.addEventListener('click', function(e) {
-      if (GUMROAD_PRODUCT_URL) {
+      if (CHECKOUT_URL) {
         e.preventDefault();
-        window.location.href = GUMROAD_PRODUCT_URL;
+        window.location.href = CHECKOUT_URL;
       }
       // Hvis produktet ikke er sat, falder knappen tilbage til waitlist
     });
