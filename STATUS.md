@@ -1,40 +1,35 @@
-# STATUS — Iteration 138 (24. august)
+# STATUS — Iteration 140 (24. august)
 
 ## 1. Universalitet (punkt 1) — vurderet
 
 DevNotify-kernen (`providers.rs`) er platform-uafhængig: token ind,
 notifications ud. GitHub og GitLab er adapters; sitet er statisk HTML.
-**Ikke bundet til én platform — intet at trække ud.** (Verificeret it.
-135–137, bekræftet igen.)
+**Ikke bundet til én platform — intet at trække ud.** Verificeret igen.
 
-## 2. Beslutningen — holder under pengekriteriet
+## 2. Gjort denne iteration
 
-Færdig Tauri-app, $19 lifetime, 0 kr/md drift, DMG live. Eneste blokering
-for indtjening er LS-nøglen. DECISION.md uændret.
+- Ny guide: **github-desktop-notifications-mac** ("GitHub Desktop Notifications
+  on Mac: Every Option That Works") — høj-intentionssøgning, sammenligner web-inbox,
+  email, Gitify, DevNotify + DIY-script. Interne links til download, token-scopes
+  og GitLab-guide. Live: 200 + korrekt titel.
+- Sitemaps opdateret (rod: 18 URLs; devnotify: 8 URLs). Nav-link på forsiden.
+- Deploy verificeret live (forside, ny guide, download-side, DMG svarer 200).
 
-## 3. Gjort denne iteration
-
-- Ny guide: **github-notifications-on-windows** (5 options, Windows-vinkel —
-  ny søgeindgang uden for Mac-markedet). Live: 200 + korrekt titel.
-- Sitemap opdateret til 14 URLs (alle verificeret gyldige formatmæssigt).
-- Nav-link "Windows" tilføjet på forsiden, deployet og verificeret live.
-- Commit + push (c7b7c6c).
-
-## 4. Blokeringer (én linje hver)
+## 3. Blokeringer (én linje hver)
 
 1. LS API-nøgle: Bitwarden `unauthenticated` → checkout kan ikke åbnes endnu.
 2. Domæne getdevnotify.com: ikke købt via Cloudflare Registrar endnu.
 
-## 5. Traction (ærlige tal)
+## 4. Traction (ærlige tal)
 
 **0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
 
-## 6. Venter på Mads
+## 5. Venter på Mads
 
 1. LS-nøgle i Bitwarden → LS-produkt via API + live checkout + købstest.
 2. Domænekøb getdevnotify.com.
 
-## 7. Næste iteration
+## 6. Næste iteration
 
-Ny long-tail-guide (kandidater: "github token notifications scope",
-"octobox alternative" som guide-vinkel). LS-nøglen kommer: checkout før alt.
+LS-nøglen kommer: checkout før alt. Ellers ny guide ("github notifications
+slack integration" eller "gitlab desktop app alternative").
