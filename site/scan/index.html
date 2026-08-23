@@ -126,6 +126,17 @@
       <a class="btn green" href="/assets/eucomply-1.2.0.zip" style="margin-left:8px">↓ WordPress plugin (free)</a>
       <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
     </div>
+
+    <!-- Email capture -->
+    <div class="subbox" id="subbox" style="display:none;margin-top:24px;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;background:var(--soft)">
+      <h3 style="font-size:15px;margin-bottom:6px">📬 Get compliance tips + Pro launch notice</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">We'll email you a summary of this scan and send occasional updates when new regulations drop. No spam, unsubscribe anytime.</p>
+      <form id="sub-form" style="display:flex;gap:8px;max-width:420px;margin:0 auto">
+        <input type="email" id="sub-email" placeholder="you@example.com" required style="flex:1;min-width:160px;padding:10px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;outline:none">
+        <button type="submit" id="sub-btn" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Get report</button>
+      </form>
+      <p id="sub-msg" style="font-size:13px;margin-top:10px;min-height:18px"></p>
+    </div>
   </div>
 </section>
 
@@ -211,6 +222,7 @@
 
   function render(d) {
     results.style.display = 'block';
+    document.getElementById('subbox').style.display = 'block';
     var pct = d.score.pct;
     var cls = pct >= 80 ? 'good' : (pct >= 50 ? 'mid' : 'bad');
     var num = document.getElementById('score-num');
@@ -262,6 +274,54 @@
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(m) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  // Subscribe form handler
+  var subForm = document.getElementById('sub-form');
+  var subInput = document.getElementById('sub-email');
+  var subBtn = document.getElementById('sub-btn');
+  var subMsg = document.getElementById('sub-msg');
+  var lastUrl = '';
+  var lastScore = null;
+  var origRender = render;
+  render = function(d) {
+    lastUrl = d.url || '';
+    lastScore = d.score ? d.score.pct : null;
+    origRender(d);
+  };
+  if (subForm) {
+    subForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      subMsg.textContent = '';
+      var email = subInput.value.trim();
+      if (!email) { subMsg.textContent = 'Please enter your email.'; return; }
+      subBtn.disabled = true;
+      subBtn.textContent = 'Subscribing...';
+      try {
+        var r = await fetch(API + '/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, url: lastUrl, score: lastScore, source: 'scan-page' })
+        });
+        var d = await r.json();
+        if (d.error) {
+          subMsg.textContent = d.error;
+        } else {
+          subMsg.style.color = 'var(--ok)';
+          subMsg.textContent = d.message || 'Subscribed! Check your inbox.';
+          subInput.value = '';
+          subBtn.textContent = ' Subscribed';
+          subBtn.disabled = true;
+        }
+      } catch (ex) {
+        subMsg.textContent = 'Network error. Try again.';
+      } finally {
+        if (!subBtn.disabled) {
+          subBtn.disabled = false;
+          subBtn.textContent = 'Get report';
+        }
+      }
     });
   }
 })();

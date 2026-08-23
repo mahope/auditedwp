@@ -1,43 +1,59 @@
-# DECISION — Iteration 92 (29. august 2026)
+# DECISION — Iteration 98 (24. august 2026)
 
-**Status:** HOLDER under pengekriteriet. Universalitet bestået (re-verificeret i kode, iteration 91). Betalingskanal skiftet fra Gumroad til **Lemon Squeezy** (Mads' konto, MoR, fuld skrive-API — nøgle ventes i Bitwarden 24/8).
+**Status:** HOLDER under pengekriteriet. Email-capture bygget + SEO-sammenligningssider
++ Cookiebot-alternative blogindlæg. LS-nøgle er stadig eneste blokering for revenue.
 
 ---
 
-## Beslutning: EUComply — universal compliance platform
+## Primært produkt: EUComply — Universal Website Compliance Platform
+
+### Pengekriterie-vurdering (24. august, revideret)
 
 | Faktor | EUComply | Score |
 |--------|----------|-------|
 | Tid til 1. kunde | Timer efter LS-nøgle i Bitwarden | ⭐⭐⭐⭐⭐ |
 | Beløb pr. kunde | $79/år (B2B, impulse-buy niveau) | ⭐⭐⭐⭐ |
-| Markedsstørrelse | 25M+ websites med EU-trafik | ⭐⭐⭐⭐⭐ |
+| Markedsstørrelse | 25M+ websites, universel kerne | ⭐⭐⭐⭐⭐ |
 | Tilbagevendende | Årligt abonnement | ⭐⭐⭐⭐⭐ |
 | Omkostning | 0 kr/md — Cloudflare gratis-tier | ⭐⭐⭐⭐⭐ |
-| Traction | 6 waitlist signups | ⭐⭐ |
+| Traction | 0 reelle tilmeldinger, 0 scanninger, $0 | ⭐ |
 
-**Blokering (én linje):** Lemon Squeezy API-nøgle mangler i Bitwarden; når den ligger der, opretter jeg produkt og checkout selv samme dag.
+**Konklusion:** Beslutningen holder. Fem af seks kategorier er top-score.
+Traction (0) er et distributionsproblem — denne iteration har adresseret det
+med email-capture + SEO-sammenligningssider + Cookiebot-indhold.
 
----
+### Nye aktiver denne iteration
+- ✅ Email-capture: POST /subscribe worker + KV namespace + formular på scan-siden
+- ✅ Sammenligningsside: /vs/cookiebot/ — målretter "Cookiebot alternative" (massiv søgetrafik)
+- ✅ Sammenligningsside: /vs/termly/ — compliance scanner vs policy generator
+- ✅ Sammenligningsside: /vs/iubenda/ — scanner vs legal document hub
+- ✅ Blogindlæg: /blog/cookiebot-alternative-2026/ — SEO-indhold
+- ✅ Sitemap + blog index opdateret
+- ✅ Worker deployet med SUBSCRIBERS KV
 
-## Hvad er bygget i iteration 82
-
-1. ✅ **Pro Dashboard (`/pro/dashboard/`)** — full-feature compliance dashboard med live score (trækker fra eksisterende Worker), 30-dages historikgraf, scan-log med status, quick actions (PDF, badge, templates), email alert-indstillinger, setup guide. Statisk HTML — 0 kr, ingen auth.
-2. ✅ **Link fra Pro-side** — "View live dashboard →" i monitoring preview-sektionen
-3. ✅ **Sitemap opdateret** — 41 stier
-4. ✅ **Deployet og verificeret** — alle sider 200
-
----
-
-## Hvorfor ikke skifte idé under pengekriteriet
-
-EUComply opfylder alle fem pengekriterier bedre end nogen alternativ idé. 0 kr driftsomkostning, $79/år pr. kunde, 25M+ adresserbart marked, timer til betaling når LS-nøglen ligger i Bitwarden. At skifte til en anden idé ville stadig kræve Mads' konto før betaling — samme flaskehals, ny byggetid.
-
-Konkurrenter (Qualys $599/mo+, Sucuri WordPress-only) koster 6-60× mere og/eller er platforms-bundet. EUComply er universel, billigere og allerede bygget.
+### Venter på
+- **Lemon Squeezy API-nøgle** i Bitwarden (forventet 24/8)
+- **Domæne: eucomply.dev** køb (forhåndsgodkendt, ~$12)
 
 ---
 
-## Mads' eneste handling for $1 (opdateret 29/8: Lemon Squeezy, ikke Gumroad)
+## Parallelt spor: Amazon KDP ebook (ikke blokeret på LS)
 
-Ingen manuel handling længere — LS har fuld skrive-API. Når API-nøglen ligger i Bitwarden:
-1. Opret "EUComply Pro" ($79/år) via API'et → få checkout-URL
-2. Sæt `CHECKOUT_URL` i site/pro/index.html → første salg muligt samme dag
+**Status:** Skrevet, klar til upload. Kræver Mads uploader manuelt på KDP.
+
+---
+
+## Domæne: eucomply.dev
+
+Valgt, ledig, forhåndsgodkendt til køb via Cloudflare Registrar. Koster ~$12/år.
+**Sig til:** når Mads godkender, købes domænet og sættes foran pages.dev.
+
+---
+
+## Næste iteration
+
+1. **LS-nøgle:** Samme dag den ligger i Bitwarden — opret produkt via API, deploy CHECKOUT_URL, første betaling
+2. **Domæne:** eucomply.dev købes, sættes foran pages.dev
+3. **Email capture:** Hvis subscribers findes, send launch notice
+4. **Chrome extension:** Udgiv via Web Store API (når credentials ligger i Bitwarden)
+5. **Blog:** Fortsæt 1/uge — næste: "NIS2 Compliance Checklist for SaaS"

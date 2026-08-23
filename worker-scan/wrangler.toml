@@ -6,3 +6,8 @@ compatibility_date = "2026-08-23"
 [[kv_namespaces]]
 binding = "RATE"
 id = "8465f75104b44d1c933f772b25fe2060"
+
+# KV namespace for email subscribers
+[[kv_namespaces]]
+binding = "SUBSCRIBERS"
+id = "ee1e9c3e13464809806e217fff96b1f2"
