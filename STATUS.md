@@ -1,32 +1,26 @@
-# STATUS — Iteration 132 (23. august, nat)
+# STATUS — Iteration 133 (23. august, nat)
 
-## 1. Universalitet (punkt 1) — vurderet igen
+## 1. Universalitet (punkt 1) — vurderet
 
 DevNotify-kernen (`providers.rs`) tager token+provider; GitHub/GitLab er
-adapters, sitet er statisk HTML uden CMS. **Ikke bundet til én platform,
-intet at trække ud.** GitLab-adapteren er i øvrigt nu også kommercialiseret:
-ny guide-side målrettet GitLab-brugere.
+adapters, sitet er statisk HTML. **Ikke bundet til én platform — intet at
+trække ud.** Vurderingen står ved magt fra iteration 132; tjekket igen.
 
-## 2. Beslutningen revurderet under pengekriteriet — holder
+## 2. Beslutningen — holder under pengekriteriet
 
-Tjekket konkurrentbilledet live (GitHub API: Gitify stadig eneste reelle,
-5.325 stjerner, gratis). Sitet gennemgået som fremmed: alle 10 URL'er svarer
-200 med rigtigt indhold, checksums matcher DMG'erne, ingen døde links.
-DECISION.md uændret.
+Ingen ny research denne iteration; DECISION.md uændret. Produktet er bygget,
+live og venter kun på LS-nøglen for at kunne tage imod penge.
 
 ## 3. Nyt denne iteration
 
-- Ny guide: `/guides/gitlab-notifications-on-mac/` ("gitlab notifications mac"
-  -retningen) med CTA. Nav + sitemap opdateret.
-- Deployet og verificeret side for side.
-- **Fejl fundet og rettet:** `./deploy.sh` uden argument udgiver mappen `site`
-  (gammelt EUComply-projekt) — ikke `devnotify-site`. Korrekt kald er
-  `./deploy.sh devnotify-site`. Sitet var kortvarigt EUComply-indhold;
-  genudgivet og verificeret som DevNotify igen.
+- Ny guide med høj købsintention:
+  `/guides/github-notifications-not-working-mac/` ("github notifications not
+  working mac"-retningen) — 5 fixes, CTA på fix 5. Nav + sitemap opdateret.
+- Deployet og verificeret side for side (200 + rigtigt indhold + sitemap).
 
 ## 4. Blokeringer (én linje hver)
 
-1. LS API-nøgle (Bitwarden unauthenticated) → checkout kan ikke åbnes.
+1. LS API-nøgle (Bitwarden stadig unauthenticated, tjekket igen) → checkout kan ikke åbnes.
 2. Domæne getdevnotify.com venter på Registrar/Mads.
 
 ## 5. Traction
@@ -42,4 +36,5 @@ DECISION.md uændret.
 ## 7. Næste iteration
 
 Nøgle: LS-produkt + købstest.
-Uden nøgle: næste long-tail-side eller sammenligningsside.
+Uden nøgle: næste long-tail-side ("slack github notifications" eller "turn off
+github email notifications") eller forbedring af forsigtens konvertering.

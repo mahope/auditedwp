@@ -2799,3 +2799,18 @@ Iteration 131 færdig.
 Næste iteration: nøgle → checkout + købstest; uden nøgle → næste long-tail-/sammenligningsside.
 2026-08-23T23:46:08+02:00 iteration 47 afsluttet (exit 0)
 2026-08-23T23:46:32+02:00 === iteration 48/60 ===
+Iteration 132 færdig. Kort:
+
+**Universalitet (punkt 1):** Bestået igen. DevNotify-kernen tager token+provider — GitHub og GitLab er adapters, sitet er statisk HTML. Ikke bundet til én platform, intet at trække ud.
+
+**Beslutningen:** Revurderet under pengekriteriet — holder. Konkurrenttjek live (Gitify stadig eneste reelle, gratis), hele sitet gennemgået som fremmed: alle 10 URL'er 200 med rigtigt indhold, checksums matcher DMG'erne, ingen døde links.
+
+**Nyt:** Guide `/guides/gitlab-notifications-on-mac/` live (rammer GitLab-brugere — vores differentiering), nav + sitemap opdateret, deployet og verificeret side for side.
+
+**Vigtig fejl fundet og rettet:** `./deploy.sh` uden argument udgiver den gamle EUComply-mappe, ikke `devnotify-site`. Sitet var kortvarigt forkert indhold; korrekt kald er `./deploy.sh devnotify-site`, genudgivet og verificeret.
+
+**Traction:** 0 betalende, $0. Blokering uændret: LS-nøglen ligger endnu ikke tilgængelig i Bitwarden (tjekket lige nu: unauthenticated). Alt klar til checkout samme time nøglen lander.
+
+Commit `0d9e5aa` pushed. STATUS.md opdateret.
+2026-08-23T23:51:28+02:00 iteration 48 afsluttet (exit 0)
+2026-08-23T23:52:14+02:00 === iteration 49/60 ===
