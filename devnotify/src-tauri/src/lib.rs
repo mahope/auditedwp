@@ -1,5 +1,6 @@
-use reqwest::Client;
-use serde::{Deserialize, Serialize};
+mod providers;
+
+use crate::providers::{fetch_notifications, NotificationItem, Provider};
 use std::sync::Mutex;
 use tauri::{
     menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem},
@@ -7,34 +8,7 @@ use tauri::{
     AppHandle, Manager, RunEvent, State, WindowEvent,
 };
 
-// ── GitHub API types ──────────────────────────────────────────────────────────
-
-#[derive(Debug, Deserialize)]
-struct GitHubNotification {
-    id: String,
-    subject: GitHubSubject,
-    repository: GitHubRepo,
-    unread: bool,
-    updated_at: String,
-    #[serde(default)]
-    last_read_at: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct GitHubSubject {
-    title: String,
-    url: Option<String>,
-    #[serde(rename = "type")]
-    subject_type: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct GitHubRepo {
-    full_name: String,
-    html_url: String,
-}
-
-// ── Trial / license ──────────────────────────────────────────────────────────
+// ── Trial / license ──────────────────────────────────────────────
 //
 // ÆRLIG MODEL (så sitets løfter holder):
 //  - Første app-start gemmer en "first_run"-tidsstempel lokalt → 7 dages trial.
@@ -48,6 +22,7 @@ const TRIAL_DAYS: u64 = 7;
 struct AppState {
     unread_count: Mutex<u32>,
     notifications: Mutex<Vec<NotificationItem>>,
+    provider: Mutex<Provider>,
     token: Mutex<Option<String>>,
     last_check: Mutex<Option<String>>,
     license_key: Mutex<Option<String>>,
@@ -75,7 +50,7 @@ fn ensure_trial_started(app: &AppHandle) -> Result<String, String> {
     Ok(ts)
 }
 
-#[derive(Serialize)]
+#[derive(serde::Serialize)]
 struct TrialStatus {
     trial_started: String,
     trial_days_total: u64,
@@ -89,12 +64,6 @@ fn read_license_key(app: &AppHandle) -> Option<String> {
     let txt = std::fs::read_to_string(&path).ok()?;
     let v: serde_json::Value = serde_json::from_str(&txt).ok()?;
     v["license_key"].as_str().map(|s| s.to_string())
-}
-
-/// Variant der tager `&AppHandle` (setup-kontekst), samme logik.
-#[allow(dead_code)]
-fn read_license_key_static(app: &tauri::AppHandle) -> Option<String> {
-    read_license_key(app)
 }
 
 #[tauri::command]
@@ -155,19 +124,8 @@ async fn check_now(app: AppHandle, state: State<'_, AppState>) -> Result<u32, St
         }
     }
     let token_opt = state.token.lock().unwrap().clone();
-    let token = token_opt.ok_or("No GitHub token configured")?;
-    fetch_notifications(&app, &token).await
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct NotificationItem {
-    id: String,
-    title: String,
-    repo: String,
-    repo_url: String,
-    notification_type: String,
-    updated_at: String,
-    url: Option<String>,
+    let token = token_opt.ok_or("No access token configured")?;
+    fetch_and_store(&app, &token).await
 }
 
 // ── Tauri commands ────────────────────────────────────────────────────────────
@@ -183,17 +141,33 @@ fn get_unread_count(state: State<AppState>) -> u32 {
 }
 
 #[tauri::command]
-fn save_token(token: String, state: State<AppState>, app: AppHandle) -> Result<(), String> {
-    *state.token.lock().unwrap() = Some(token.clone());
-    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
-    std::fs::write(app_dir.join("token.txt"), &token).map_err(|e| e.to_string())?;
+fn get_provider(state: State<AppState>) -> String {
+    state.provider.lock().unwrap().as_str().to_string()
+}
+
+#[tauri::command]
+fn save_provider(provider: String, state: State<AppState>, app: AppHandle) -> Result<(), String> {
+    let p = Provider::from_str(&provider)
+        .ok_or_else(|| format!("Unknown provider: {}", provider))?;
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    std::fs::write(dir.join("provider.txt"), p.as_str()).map_err(|e| e.to_string())?;
+    *state.provider.lock().unwrap() = p;
     Ok(())
 }
 
 #[tauri::command]
 fn get_token(state: State<AppState>) -> Option<String> {
     state.token.lock().unwrap().clone()
+}
+
+#[tauri::command]
+fn save_token(token: String, state: State<AppState>, app: AppHandle) -> Result<(), String> {
+    *state.token.lock().unwrap() = Some(token.clone());
+    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
+    std::fs::write(app_dir.join("token.txt"), &token).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -210,46 +184,17 @@ fn open_url(url: String) -> Result<(), String> {
     Ok(())
 }
 
-// ── GitHub API ────────────────────────────────────────────────────────────────
+// ── Fetch + store (kernen; provider-agnostisk) ───────────────────
 
-async fn fetch_notifications(app: &AppHandle, token: &str) -> Result<u32, String> {
-    let client = Client::builder()
-        .user_agent("DevNotify/0.1")
-        .build()
-        .map_err(|e| e.to_string())?;
-
-    let resp = client
-        .get("https://api.github.com/notifications")
-        .header("Authorization", format!("Bearer {}", token))
-        .header("Accept", "application/vnd.github+json")
-        .send()
-        .await
-        .map_err(|e| format!("HTTP error: {}", e))?;
-
-    if !resp.status().is_success() {
-        let status = resp.status();
-        let body = resp.text().await.unwrap_or_default();
-        return Err(format!("GitHub API {}: {}", status, body));
-    }
-
-    let items: Vec<GitHubNotification> = resp
-        .json()
-        .await
-        .map_err(|e| format!("JSON parse error: {}", e))?;
-
-    let count = items.len() as u32;
-    let notifs: Vec<NotificationItem> = items
-        .into_iter()
-        .map(|n| NotificationItem {
-            id: n.id,
-            title: n.subject.title,
-            repo: n.repository.full_name,
-            repo_url: n.repository.html_url,
-            notification_type: n.subject.subject_type,
-            updated_at: n.updated_at,
-            url: n.subject.url,
-        })
-        .collect();
+async fn fetch_and_store(app: &AppHandle, token: &str) -> Result<u32, String> {
+    let provider = {
+        let state = app.state::<AppState>();
+        let p = state.provider.lock().unwrap().clone();
+        drop(state);
+        p
+    };
+    let notifs = fetch_notifications(&provider, token).await?;
+    let count = notifs.len() as u32;
 
     let state = app.state::<AppState>();
     *state.unread_count.lock().unwrap() = count;
@@ -283,6 +228,7 @@ pub fn run() {
         .manage(AppState {
             unread_count: Mutex::new(0),
             notifications: Mutex::new(vec![]),
+            provider: Mutex::new(Provider::GitHub),
             token: Mutex::new(None),
             last_check: Mutex::new(None),
             license_key: Mutex::new(None),
@@ -292,6 +238,8 @@ pub fn run() {
             get_unread_count,
             save_token,
             get_token,
+            get_provider,
+            save_provider,
             get_last_check,
             check_now,
             open_url,
@@ -299,7 +247,7 @@ pub fn run() {
             activate_license,
         ])
         .setup(|app| {
-            //── Load saved token ──────────────────────────────────────────────
+            //── Load saved token + provider ─────────────────────────────────
             let app_dir = app.path().app_data_dir()?;
             let token_path = app_dir.join("token.txt");
             if token_path.exists() {
@@ -308,6 +256,15 @@ pub fn run() {
                     if !token.is_empty() {
                         let state = app.state::<AppState>();
                         *state.token.lock().unwrap() = Some(token.clone());
+                    }
+                }
+            }
+            let provider_path = app_dir.join("provider.txt");
+            if provider_path.exists() {
+                if let Ok(p) = std::fs::read_to_string(&provider_path) {
+                    if let Some(pv) = Provider::from_str(p.trim()) {
+                        let state = app.state::<AppState>();
+                        *state.provider.lock().unwrap() = pv;
                     }
                 }
             }
@@ -332,7 +289,7 @@ pub fn run() {
                 .build()?;
 
             //── Create tray icon ──────────────────────────────────────────────
-            let _tray = TrayIconBuilder::new()
+            let _tray = TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().unwrap().clone())
                 .tooltip("DevNotify")
                 .menu(&menu)
@@ -343,7 +300,7 @@ pub fn run() {
                             let state = app.state::<AppState>();
                             let token_str = state.token.lock().unwrap().clone();
                             if let Some(ref token) = token_str {
-                                let _ = fetch_notifications(&app, token).await;
+                                let _ = fetch_and_store(&app, token).await;
                             }
                             // Refresh window if open
                             if let Some(window) = app.get_webview_window("main") {
@@ -391,7 +348,7 @@ pub fn run() {
                     let state = app_handle.state::<AppState>();
                     let token_str = state.token.lock().unwrap().clone();
                     if let Some(ref token) = token_str {
-                        let _ = fetch_notifications(&app_handle, token).await;
+                        let _ = fetch_and_store(&app_handle, token).await;
                     }
                     // Poll every 60 seconds
                     tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;

@@ -2574,3 +2574,19 @@ Iteration 118 færdig. Kort rapport:
 STATUS.md, BUILD.md og commit `0ad17ae` er opdateret. Næste iteration: LS-nøgle → produkt + checkout via API → notify-me-formularen udskiftes med rigtig betaling, og launch-listen får én mail.
 2026-08-23T21:23:35+02:00 iteration 34 afsluttet (exit 0)
 2026-08-23T21:23:58+02:00 === iteration 35/60 ===
+Iteration 119 færdig. Kort:
+
+**Universitets-vurdering (punkt 1): bestået.** DevNotify-kernen er en generisk notifications-klient (REST API → normaliseret liste → menu bar UI + polling). GitHub er én adapter; GitLab/Linear kan tilføjes uden kerne-ændring. Ingen udtrækning nødvendig.
+
+**Købsrejse gennemgået side for side (curl, ikke kun 200-check):**
+- Fundet og rettet: `github-token-scopes-guide` var slet ikke linket fra forsiden — nu i footeren. Deployet og verificeret live.
+- Alle 7 undersider + begge DMG-downloads svarer korrekt; DMG'er matcher lokale builds byte-for-byte.
+- Aflivet en forvirring: `devnotify-site/` er en forældet lokal kopi — den levende kilde er `site/devnotify/`. Noteret i STATUS.md så jeg ikke redigerer den forkerte næste gang.
+
+**Traction (ærligt, fra Worker /stats):** 0 betalende · 1 download · 2 besøg · 0 tilmeldinger · $0.
+
+**Venter på Mads:** LS API-nøglen i Bitwarden. Når den kommer: produkt oprettes via API, checkout erstatter notify-formularen.
+
+STATUS.md opdateret, committet som `35d5430`.
+2026-08-23T21:29:53+02:00 iteration 35 afsluttet (exit 0)
+2026-08-23T21:30:25+02:00 === iteration 36/60 ===

@@ -11,6 +11,8 @@ let savedToken = null;
 const els = {
   settingsPanel: document.getElementById("settings-panel"),
   notifPanel: document.getElementById("notifications-panel"),
+  providerSelect: document.getElementById("provider-select"),
+  tokenHint: document.getElementById("token-hint"),
   tokenInput: document.getElementById("token-input"),
   saveTokenBtn: document.getElementById("save-token-btn"),
   testTokenBtn: document.getElementById("test-token-btn"),
@@ -20,8 +22,49 @@ const els = {
   refreshBtn: document.getElementById("refresh-notifs-btn"),
   settingsBtn: document.getElementById("settings-btn"),
   showNotifBtn: document.getElementById("show-notifications-btn"),
-  tokenLink: document.getElementById("token-link"),
 };
+
+// ── Provider info (mirrors Rust providers.rs) ────────────────────
+
+const PROVIDER_INFO = {
+  github: {
+    label: "GitHub",
+    tokenUrl: "https://github.com/settings/tokens",
+    hint:
+      'Create a <a href="#" id="token-link" class="token-link">token on GitHub</a> with notifications and repo scopes.',
+  },
+  gitlab: {
+    label: "GitLab",
+    tokenUrl: "https://gitlab.com/-/user_settings/personal_access_tokens",
+    hint:
+      'Create a <a href="#" id="token-link" class="token-link">token on GitLab</a> with the read_api scope.',
+  },
+};
+
+function currentProvider() {
+  return els.providerSelect.value;
+}
+
+function updateProviderUI() {
+  const info = PROVIDER_INFO[currentProvider()];
+  if (!info) return;
+  els.tokenHint.innerHTML = info.hint;
+  const link = document.getElementById("token-link");
+  if (link) {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      invoke("open_url", { url: info.tokenUrl });
+    });
+  }
+}
+
+async function saveProviderSelection() {
+  try {
+    await invoke("save_provider", { provider: currentProvider() });
+  } catch (err) {
+    console.error("save_provider:", err);
+  }
+}
 
 // ── Panel switching ──────────────────────────────────────────────
 
@@ -54,9 +97,10 @@ async function saveToken() {
     return;
   }
   try {
+    await saveProviderSelection();
     await invoke("save_token", { token });
     savedToken = token;
-    els.settingsStatus.textContent = "Token saved ✓";
+    els.settingsStatus.textContent = `Token saved ✓ Connected to ${PROVIDER_INFO[currentProvider()].label}`;
     els.settingsStatus.className = "status-msg success";
   } catch (err) {
     els.settingsStatus.textContent = `Error: ${err}`;
@@ -221,11 +265,6 @@ els.refreshBtn.addEventListener("click", refreshNotifications);
 els.settingsBtn.addEventListener("click", () => showPanel("settings"));
 els.showNotifBtn.addEventListener("click", () => showPanel("notifications"));
 
-els.tokenLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  invoke("open_url", { url: "https://github.com/settings/tokens" });
-});
-
 document
   .getElementById("activate-license-btn")
   .addEventListener("click", activateLicense);
@@ -233,6 +272,11 @@ document
 // ── Init ─────────────────────────────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const p = await invoke("get_provider");
+    if (p && PROVIDER_INFO[p]) els.providerSelect.value = p;
+  } catch (_) {}
+  updateProviderUI();
   await loadSavedToken();
   await refreshTrialStatus();
   // If token exists, show notifications by default
@@ -240,3 +284,5 @@ window.addEventListener("DOMContentLoaded", async () => {
     showPanel("notifications");
   }
 });
+
+els.providerSelect.addEventListener("change", updateProviderUI);
