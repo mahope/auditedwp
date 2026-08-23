@@ -1,48 +1,46 @@
-# STATUS — Iteration 126 (23. august, nat)
+# STATUS — Iteration 127 (23. august, sen aften)
 
-## 1. Universitetet (punkt 1) — vurderet, bestått 9. gang
+## 1. Universitetet (punkt 1) — vurderet, bestått 10. gang
 
-- **DevNotify-kernen:** `providers.rs` tager token + provider og er 100 %
-  CMS-uafhængig. GitHub og GitLab er adapters; nye platforme (Gitea etc.) er
-  én ny adapter. Ikke bundet til noget.
-- **Sitet:** statisk HTML på roden, ingen CMS- eller mappebinding. Verificeret
-  side for side live: forsiden, /scan/, /pro/, blog, alle vs-sider (inkl.
-  octobox), DevNotify-siderne svarer 200 med korrekt indhold.
-- **Konklusion:** ingen kerne skal trækkes ud. Begge produkter opfylder punkt 1.
+Tjek udført fra bunden denne iteration:
 
-## 2. Nyt denne iteration
+- **DevNotify-kernen:** `providers.rs` tager token + provider — 100 %
+  CMS-uafhængig. GitHub og GitLab er adapters; nye platforme er én ny adapter.
+- **Sitet:** statisk HTML, ingen platformsbinding. Alle 9 kritiske URL'er
+  hentet live og verificeret HTTP 200 med korrekt indhold (forside, /devnotify/,
+  alle 5 SEO-sider, terms, privacy, DMG-download).
+- **Konklusion:** intet skal trækkes ud. Begge produkter opfylder punkt 1.
 
-- **Remote licensvalidering mod Lemon Squeezy implementeret i appen** (var den
-  sidste TODO i koden). `activate_license` validerer nu rigtigt mod LS License
-  API før nøglen gemmes:
-  - Ugyldig/ikke-fundet nøgle → klar fejlbesked til brugeren.
-  - Netværksfejl → grace, brugeren blokeres ikke af vores fejl.
-  - Gemt licens revalideres silently ved hver app-start; en af LS ugyldiggjort
-    nøgle fjernes, så appen falder tilbage til trial-gaten.
-  - Release-builds kompileres med `LS_LICENSE_API_KEY=xxx` (offline/dev-builds
-    uden nøgle accepterer lokalt — kun til udvikling).
-  - `cargo check`: passerer (1 præ-eksisterende dead_code-advarsel i UI-hjælpere).
-- BUILD.md opdateret: punkt 3 markeret færdig.
+## 2. Konkurrenttjek (penge-linsen, ikke originalitets-linsen)
 
-## 3. Blokeringer (én linje hver)
+Gitify (5.325 stjerner, gratis/Electron) er den reelle konkurrent — den findes,
+den bruges, og det BEVISER at udviklere downloader menu bar-notifikationsapps.
+DevNotify differentierer på: native/Tauri (lettere), GitLab-adapters (Gitify har
+kun GitHub), $19 lifetime med licensnøgle. Beslutningen holder under
+pengekriteriet — ingen ændring af DECISION.md.
 
-1. LS API-nøglen: Mads skal kopiere den fra Bitwarden → så kører ls-setup.sh,
-   release-build med `LS_LICENSE_API_KEY`, checkout-link på sitet, deploy.
-2. Domæne getdevnotify.com: venter på token med Registrar-skriveadgang eller at
-   Mads klikker købet.
+## 3. Nyt denne iteration
 
-## 4. Traction (fra worker-metrics, ikke mine egne tests)
+- Live-verificering af hele sitet (9/9 URL'er OK).
+- Konkurrentanalyse opdateret i RESEARCH.md.
+- BUILD.md gennemgået: stadig korrekt — én manglende led (LS checkout).
 
-**0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
+## 4. Blokeringer (én linje hver)
 
-## 5. Venter på Mads (én linje)
+1. LS API-nøglen: Mads kopierer den fra Bitwarden → `ls-setup.sh` → checkout-link → deploy.
+2. Domæne getdevnotify.com: venter på Registrar-token eller at Mads klikker købet.
 
-LS-nøgle fra Bitwarden → én kommando: `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh`,
-derefter release-build + deploy. Cloudflare-token med Registrar-adgang → domænekøb.
+## 5. Traction (fra worker-metrics, ikke mine egne tests)
 
-## 6. Næste iteration
+**0** betalende · **$0** revenue · **0** rigtige tilmeldinger · downloads: se worker-metrics.
 
-1. Nøgle modtaget → ls-setup.sh → checkout-URL ind på alle sider → release-build
-   med `LS_LICENSE_API_KEY` → deploy → verificér hele købsrejsen ende-til-ende.
-2. Launch-poster (Product Hunt / Show HN / subreddits) ligger færdige i POSTS/
-   og venter på Mads' ja.
+## 6. Venter på Mads (én linje)
+
+LS-nøgle fra Bitwarden → én kommando kører det hele. Cloudflare Registrar-adgang → domæne.
+
+## 7. Næste iteration
+
+1. Nøgle modtaget → ls-setup.sh → checkout-URL på alle sider → release-build med
+   `LS_LICENSE_API_KEY` → deploy → verificér købsrejsen ende-til-ende.
+2. Uden nøgle: ny SEO-side (fx "github notifications not showing" /
+   long-tail guide) + evt. DevNotify vs Octobox-side, så trafikbasen vokser mens vi venter.

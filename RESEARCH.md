@@ -38,3 +38,12 @@ DevNotify mål: $19 lifetime, mål 50-100 salg første måned = $950-1,900
 ## Næste research-spørgsmål (når LS-nøgle kommer)
 - Hvordan bundter man license key validation i Tauri?
 - Hvordan notarizer man en macOS app uden Apple Dev account?
+## Opdatering 23/8 (iteration 127): konkurrenttjek under penge-linsen
+
+- Gitify (github.com/gitify-app/gitify): 5.325 stjerner, gratis, Electron,
+  macOS/Win/Linux, GitHub-only. Verificeret via GitHub API.
+- Læsning: markedet er beboet og der er download-aktivitet → bevist efterspørgsel.
+  Gitify's eksistens gør DevNotify MERE troværdig som forretningsidé, ikke mindre.
+- DevNotify's differentiering: native Tauri (mindre RAM end Electron),
+  GitLab-adapter indbygget, $19 lifetime med remote licensvalidering.
+- Konklusion: DECISION.md holder. Ingen ændring.
