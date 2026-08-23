@@ -82,6 +82,11 @@ The plugin continues in Free mode — dashboard and weekly scans remain active. 
 
 == Changelog ==
 
+= 1.1.0 =
+* Pro features now functional: generate DPA, NIS2/DORA clause set, EAA statement, and quarterly report from the dashboard.
+* License keys verified against the Gumroad license API (daily re-check; refunded keys revert to Free).
+* Download links updated to v1.1.0.
+
 = 1.0.0 =
 * Initial release on wp.org.
 * Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.

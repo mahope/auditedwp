@@ -22,18 +22,21 @@ TRIN   TID         UDEN MADS?     STATUS
 - `index.html` — kopi til GitHub Pages (root)
 - Hostes på GitHub Pages: `mahope.github.io/auditedwp/`
 
-### ✅ Trin 2: Plugin Free-version — KLAR (761 linjer)
+### ✅ Trin 2: Plugin Free-version — KLAR (opdateret 23/8)
 - `plugin/eucomply.php` — PHP-plugin til WordPress
 - Scanner: SSL, cookies, forms, backups, plugin health, legal pages
 - Admin dashboard i WordPress med resultater
 - Singleton, en klasse, 6 checks
+- **v1.1.0:** Pro-dokumenter er nu RIGTIG kode (se trin 3)
 
-### 🔄 Trin 3: Plugin Pro-version — KLAR (defineret, kode klar)
-- DPA-generator (bruger ComplianceDocs DPA-template)
-- NIS2 vendor clause kit
-- EAA statement generator
-- Kvartalsrapport
-- E-mail-notifikation
+### ✅ Trin 3: Plugin Pro-version — KLAR SOM KODE (v1.1.0)
+- DPA-generator (GDPR Art. 28 fuld tekst med signaturblok)
+- NIS2/DORA vendor clause kit (5 klausuler A-E)
+- EAA accessibility statement
+- Kvartalsrapport bygget fra seneste scan (pass/fail + anbefalinger)
+- Download som .html (åbnes i Word / printes til PDF)
+- Licensvalidering mod Gumroad license API — døgnlig gen-tjek,
+  refunderede/chargebacked nøgler falder automatisk tilbage til Free
 
 ### ⏳ Trin 4-6: Venter på Mads
 - wp.org-konto til plugin-upload
