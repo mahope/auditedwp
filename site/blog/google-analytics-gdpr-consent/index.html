@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Google Analytics and GDPR: Is Your Tracking Legal in 2026?</title>
+<meta name="description" content="Google Analytics can be GDPR-legal — but only with consent before the script loads. How to check your site, what the fines look like, and how to fix it. Free scanner included.">
+<meta property="og:title" content="Google Analytics and GDPR: Is Your Tracking Legal in 2026?">
+<meta property="og:description" content="Loading Google Analytics before consent breaches GDPR Art. 6 and the ePrivacy Directive. Check any site free.">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/google-analytics-gdpr-consent/">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/google-analytics-gdpr-consent/">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;padding:0}
+.wrap{max-width:750px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:16px 0;position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);z-index:10}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+h1{font-size:32px;line-height:1.25;letter-spacing:-.025em;margin:40px 0 12px}
+h2{font-size:23px;margin:36px 0 10px;letter-spacing:-.015em}
+h3{font-size:18px;margin:24px 0 8px}
+p,li{color:var(--muted);font-size:15.5px;margin-bottom:14px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{margin-bottom:6px}
+a{color:var(--accent)}
+code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#0d1522;color:#dbe6f5;border-radius:8px;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.55;margin:16px 0}
+.infobox{border:1px solid var(--line);border-radius:8px;padding:20px;background:var(--soft);margin:24px 0}
+.infobox h3{margin-top:0}
+.cta{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;margin:12px 0}
+.cta:hover{background:var(--accent-dark)}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}.fail{color:var(--fail);font-weight:600}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;color:var(--muted)}
+th{background:var(--soft);color:var(--ink)}
+footer{border-top:1px solid var(--line);padding:28px 0;margin-top:48px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}
+@media(max-width:600px){h1{font-size:26px}nav a:not(.cta){display:none}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+<a href="/pro/">Pro</a>
+<a href="/scan/">Scan</a>
+<a href="/store/">Templates</a>
+<a href="/blog/">Guides</a>
+<a class="cta" href="/scan/">Free scan →</a>
+</nav>
+</div>
+</header>
+
+<div class="wrap">
+
+<h1>Google Analytics and GDPR: Is Your Tracking Legal?</h1>
+
+<p><strong>Updated August 2026.</strong> Google Analytics is on millions of websites — and it is one of the most common sources of GDPR problems for small businesses. The short answer to "is Google Analytics GDPR-compliant?" is: <strong>it can be, but only if visitors consent before the script loads.</strong> Most sites get this wrong.</p>
+
+<h2>The rule: consent comes first</h2>
+
+<p>Two pieces of EU law apply:</p>
+
+<ul>
+<li><strong>GDPR Art. 6</strong> — processing personal data (and IP addresses are personal data) requires a legal basis. For marketing analytics, that basis is almost always consent.</li>
+<li><strong>ePrivacy Directive (the "cookie law")</strong> — storing or accessing information on a user's device requires prior consent, except strictly necessary cookies. Analytics cookies are not strictly necessary.</li>
+</ul>
+
+<p>Together they mean: <span class="fail">the GA tag must not fire until the visitor clicks "Accept."</span> A cookie banner that appears at the same time as the tracking script — or after it — does not count. The data was already collected.</p>
+
+<h2>What happens when you get it wrong</h2>
+
+<p>This is not theoretical:</p>
+
+<table>
+<tr><th>Case</th><th>Issue</th><th>Outcome</th></tr>
+<tr><td>Austrian DSB rulings (2021–)</td><td>GA transfers IP data to the US without adequate safeguards</td><td>Dozens of sites found non-compliant</td></tr>
+<tr><td>Danish Datatilsynet (2024–2026 practice)</td><td>Analytics tags firing before consent</td><td>Orders to block scripts until consent</td></tr>
+<tr><td>French CNIL guidance</td><td>Same — consent required before measurement cookies</td><td>Fines up to €20M / 4% turnover under GDPR</td></tr>
+</table>
+
+<p>Regulators have focused on large sites first, but enforcement against small and mid-sized businesses is growing — and a competitor complaint is enough to trigger an audit of any site.</p>
+
+<h2>How to check your own site (2 minutes)</h2>
+
+<ol>
+<li><strong>Open your homepage in an incognito window with DevTools open</strong> (Network tab). If requests to <code>google-analytics.com</code>, <code>googletagmanager.com/gtm.js</code>, <code>connect.facebook.net</code>, or similar fire <em>before</em> you accept cookies — your tracking loads without consent.</li>
+<li><strong>Check your consent platform.</strong> A CMP like Cookiebot, Usercentrics, CookieYes or Complianz must be present AND configured to actually block these tags until consent. Many CMPs are installed but set to "notify only."</li>
+<li><strong>Run a free automated check.</strong> Our scanner detects 12 common trackers and whether a working consent platform is present — no installation needed.</li>
+</ol>
+
+<div class="infobox">
+<h3>Check any site free</h3>
+<p>Enter a URL and see which trackers load and whether consent is handled — works on WordPress, Shopify, Wix, Squarespace, Webflow, custom HTML, anything.</p>
+<a class="cta" href="/scan/">Run the free scan →</a>
+</div>
+
+<h2>If you fail: how to fix it</h2>
+
+<ol>
+<li><strong>Install a CMP that blocks by default.</strong> Configure it so analytics/marketing tags are held back until explicit consent. In Google Tag Manager, use Consent Mode v2 with default state <code>denied</code>.</li>
+<li><strong>Set Consent Mode v2 defaults correctly.</strong> This code goes <em>before</em> every tag:
+<pre>&lt;script&gt;
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'analytics_storage': 'denied'
+});
+&lt;/script&gt;</pre>
+Only after the visitor accepts do you call <code>gtag('consent', 'update', {...'granted'})</code>.</li>
+<li><strong>Consider consent-less alternatives.</strong> Tools like Plausible or Fathom use no cookies and don't collect personal data, so they need no consent banner. Matomo can be configured cookieless too.</li>
+<li><strong>Anonymize where possible.</strong> Enable IP anonymization and keep data-retention periods short (14 months max is a defensible default).</li>
+</ol>
+
+<h2>Common mistakes we see in scans</h2>
+
+<ul>
+<li><span class="fail">Banner exists, but GTM loads anyway</span> — the CMP is installed but not connected to the tags.</li>
+<li><span class="fail">"Necessary only" still fires Meta Pixel</span> — misconfigured tag categories.</li>
+<li><span class="warn">Consent works on desktop but not mobile</span> — responsive bugs in the banner mean mobile visitors never see it while trackers run.</li>
+<li><span class="fail">No consent platform at all</span> — the most serious finding, and the one our scan flags hardest.</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<h3>Is Google Analytics banned in Europe?</h3>
+<p>No. But loading it without prior consent violates GDPR and ePrivacy. With a proper CMP and Consent Mode v2, it is legal.</p>
+
+<h3>Do I need consent for anonymous analytics?</h3>
+<p>Cookieless tools that don't store device identifiers generally fall outside the ePrivacy consent requirement. Standard Google Analytics is not anonymous.</p>
+
+<h3>Does this apply outside the EU?</h3>
+<p>If your site serves visitors from the EU — even from a US company — GDPR applies to those visitors. Location-based consent gating is possible but adds complexity; applying consent EU-wide is simpler and safer.</p>
+
+<h3>How do I prove compliance?</h3>
+<p>Keep consent logs (your CMP does this), document your configuration, and re-scan regularly. EUComply Pro includes monitoring that alerts you when a new tracker appears on your site without consent coverage.</p>
+
+<p style="margin-top:32px"><a class="cta" href="/scan/">Scan your site now — free, no sign-up</a></p>
+
+</div>
+
+<footer>
+<div class="wrap">
+EUComply — EU compliance scanning for every website.<br>
+⚖️ Automated technical checks only. Not legal advice.<br>
+<a href="/blog/">All guides</a> · <a href="/pro/">Pro monitoring $79/yr</a> · <a href="/privacy/">Privacy</a>
+</div>
+</footer>
+
+</body>
+</html>

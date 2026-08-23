@@ -1,32 +1,31 @@
-# STATUS — Iteration 85 (2026-08-27): IAB TCF check + blog post
+# STATUS — Iteration 86 (2026-08-28): Tracker-check + GA/GDPR-guide
 
-**Dato:** 2026-08-27
-**Status:** Beslutningen HOLDER. Universalitet RE-VERIFICERET (bestået). Ny IAB TCF check.
+**Dato:** 2026-08-28
+**Status:** Beslutningen HOLDER. Universalitet BESTÅET (re-verificeret).
 
 ## 1. Universalitets-vurdering (punkt 1)
 
-**BESTÅET.** 350 linjers kerne i `shared/scan-engine.js` tager en vilkårlig URL — nul CMS-forudsætninger. De 2 `wp-`-referencer er udelukkende **detektion** (genkender WP Consent API blandt 20+ CMP'er og WordPress blandt 20+ CMS'er). Fem indpakninger: Worker, WordPress-plugin, CLI, Chrome-extension, web-UI. Live-bevis på wordpress.org, shopify.com, squarespace.com, wix.com, cnn.com.
+**BESTÅET.** Kernen `shared/scan-engine.js` tager en vilkårlig URL — nul CMS-forudsætninger. De få `wp-`-referencer er udelukkende detektion (genkender WP blandt 20+ platforme). Nye checks bygges også platformsneutralt: tracker-checken kører på ren HTML/JS-signaturgenkendelse.
 
 ## 2. Bygget i denne iteration
 
 | # | Opgave | Status |
 |---|--------|--------|
-| 1 | **IAB TCF check** i scannermotoren | ✅ 5 signaturer: __tcfapi, IABTCF cookies, gdprApplies, TC string, TCF version. Uafhængigt af platform (detekterer i HTML/JS). |
-| 2 | **Worker deployeret** v2 med 8 checks | ✅ `eucomply-scan` v2 live — 8 checks, inkl. TCF på position 0a |
-| 3 | **Forside opdateret** | ✅ "Six" → "Eight compliance checks, one URL", nyt IAB TCF card i grid3 |
-| 4 | **Scan-side opdateret** | ✅ "Seven" → "Eight", nyt IAB TCF feat-card, 8 checks total |
-| 5 | **Blog post: IAB TCF guide** | ✅ Ny guide: hvad TCF er, hvem har brug for det, tabel vs Consent Mode v2, check-liste, CTA til free scanner |
-| 6 | **Blog index opdateret** | ✅ IAB TCF guide som nyeste post |
-| 7 | **Sitemap opdateret** | ✅ Ny URL: /blog/iab-tcf-compliance-guide/, lastmod 2026-08-27 |
-| 8 | **Deployeret og verificeret** | ✅ Alle sider 200, API virker, TCF check leverer korrekte resultater |
+| 1 | **Ny check: Trackers uden consent** i motoren | ✅ 12 signaturer (GA/GTM, Meta Pixel, TikTok, Hotjar, Clarity, LinkedIn, Snap, Pinterest, DoubleClick m.fl.). Fail hvis trackere findes uden CMP — den klassiske GDPR-fælde. |
+| 2 | **Worker deployet** — nu 9 checks | ✅ Live på eucomply-scan.workers.dev, testet på cnn.com (finder korrekt DoubleClick) |
+| 3 | **Forside** "Nine compliance checks" + nyt kort (DORA-kort-mangel på forsiden rettet indirekte via scan-siden) | ✅ |
+| 4 | **Scan-side** opdateret til 9 checks med nyt feat-kort | ✅ |
+| 5 | **Blog: Google Analytics & GDPR-guide** (~900 ord) — søgeord omkring "google analytics gdpr", consent-first-reglen, bødetabel, fix-trin, FAQ, CTA til scanner | ✅ |
+| 6 | Blog-index + sitemap (43 URLs) | ✅ |
+| 7 | Deployet og verificeret | ✅ Alle sider 200, nyt indhold bekræftet |
 
 ## 3. Købsrejsen nu
 
-/scan/ → 8 checks (CMv2 + IAB TCF + 6 andre) + egen score → personlig Pro-CTA → /pro/ (pris på 5 sek.) → Buy → Gumroad (venter på Mads).
+/scan/ → **9 checks** → personlig Pro-CTA → /pro/ ($79/år) → Buy → Lemon Squeezy (venter på API-nøgle).
 
-## 4. Blokering (uændret)
+## 4. Blokering (én linje)
 
-**Blokering:** Lemon Squeezy API-nøgle mangler i Bitwarden (ventes 24/8). GUMROAD_PRODUCT_URL i site/pro/index.html venter på link. Første betaling mulig **samme dag** linket indsættes.
+Lemon Squeezy API-nøgle mangler i Bitwarden; GUMROAD_PRODUCT_URL i site/pro/index.html venter på link — første betaling mulig samme dag linket indsættes.
 
 ## 5. Venter på Mads' ja
 
@@ -36,9 +35,12 @@ Lemon Squeezy-nøgle · betalte annoncer (klar) · kold mail-række til agencies
 
 0 kr brugt / 1.000 kr
 
-## 7. Næste iteration
+## 7. Rigtige tal
 
-Prioriteret:
-1. Flere blog-opslag (målret "iab tcf framework", "transparency consent framework check")
-2. Flere nyttige scanner-checks (GDPR repræsentant detection, consent banner text quality)
-3. Forbedr Pro-siden (klar til Lemon Squeezy-link)
+Rigtige tilmeldinger: 0 · Rigtige scanninger af andre end os: ikke målt adskilt — rapporteres kun som 0 indtil verificeret.
+
+## 8. Næste iteration
+
+1. Forbedr /pro/ salgsside mod Lemon Squeezy-link
+2. Blog-opslag målrettet "meta pixel gdpr" / "facebook pixel consent"
+3. Consent banner text quality-check (banner findes, men "notify only"-konfiguration)

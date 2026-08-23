@@ -7,6 +7,7 @@
  * Checks (header/HTML based, no CMS assumptions):
  *   0.  consent_mode_v2 — Google Consent Mode v2 signatures
  *   0a. tcf            — IAB Transparency & Consent Framework
+ *   0b. trackers       — third-party trackers loaded without consent signals
  *   1.  ssl            — HTTPS + HSTS header
  *   2.  cookies        — cookie banner / consent platform detection in HTML
  *   3.  forms          — form markup + privacy-policy link presence
@@ -64,6 +65,21 @@ const CONSENT_SIGNATURES = [
   { re: /webtoffee|gdpr[_-]?cookie[_-]?consent/i, name: "WebToffee GDPR" },
   { re: /quantcast[_-]?choice/i, name: "Quantcast Choice" },
   { re: /analytics[_-]?cat/i, name: "Analytify/CAOS" },
+];
+
+const TRACKER_SIGNATURES = [
+  { re: /google-analytics\.com|googletagmanager\.com\/gtm\.js|gtag\(/i, name: "Google Analytics / GTM" },
+  { re: /connect\.facebook\.net|fbq\(['"]/i, name: "Meta (Facebook) Pixel" },
+  { re: /static\.hotjar\.com|hj\(['"]/i, name: "Hotjar" },
+  { re: /clarity\.ms/i, name: "Microsoft Clarity" },
+  { re: /snap\.licdn\.com|_linkedin_partner_id/i, name: "LinkedIn Insight Tag" },
+  { re: /sc-static\.net|snaptr\(['"]/i, name: "Snapchat Pixel" },
+  { re: /static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
+  { re: /matomo|piwik\.js/i, name: "Matomo / Piwik" },
+  { re: /plausible\.io\/js/i, name: "Plausible" },
+  { re: /cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
+  { re: /googleadservices\.com|google_conversion/i, name: "Google Ads remarketing" },
+  { re: /doubleclick\.net|googlesyndication/i, name: "DoubleClick / AdSense" },
 ];
 
 const DORA_SIGNATURES = [
@@ -217,6 +233,29 @@ export async function runScan(url) {
       tcfMatches.length === 1
         ? "Partial TCF implementation detected. Ensure __tcfapi is available and IAB consent strings are properly stored."
         : "If you run programmatic ads in the EEA, implement IAB TCF through your CMP. See https://iabeurope.eu/tcf/.";
+  }
+
+  // 0b. Trackers without consent (GDPR/ePrivacy — the classic enforcement target)
+  const trackerMatches = [];
+  for (const sig of TRACKER_SIGNATURES) {
+    if (sig.re.test(html)) trackerMatches.push(sig.name);
+  }
+  const hasConsentPlatform = CONSENT_SIGNATURES.some(s => s.re.test(html));
+  checks.trackers = {
+    pass: trackerMatches.length === 0 || hasConsentPlatform,
+    warn: trackerMatches.length > 0 && hasConsentPlatform && !/consent[_-]?mode|__tcfapi/i.test(html),
+    label: trackerMatches.length === 0
+      ? "No third-party trackers detected"
+      : hasConsentPlatform
+        ? `${trackerMatches.length} tracker(s) detected, consent platform present`
+        : `${trackerMatches.length} tracker(s) with NO consent platform`,
+    detail: trackerMatches.length > 0
+      ? `Trackers found in page markup: ${trackerMatches.join(", ")}. ${hasConsentPlatform ? "A consent platform was also detected." : "No consent management platform was found — these trackers likely fire before consent."}`
+      : "No third-party marketing/analytics trackers found in the served HTML.",
+  };
+  if (trackerMatches.length > 0 && !hasConsentPlatform) {
+    checks.trackers.fix =
+      "EU ePrivacy rules and GDPR Art. 6 require consent BEFORE loading non-essential trackers. Install a CMP that blocks Google Analytics/Meta Pixel etc. until the visitor consents.";
   }
 
   const hsts = resp.headers.get("Strict-Transport-Security") || "";
