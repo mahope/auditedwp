@@ -45,6 +45,22 @@ const CONSENT_SIGNATURES = [
   { name: "WP Consent API", re: /wp-consent-api|wp_consent/i },
 ];
 
+// DORA / Operational Resilience signals (Jan 2025 regulation, financial & ICT entities).
+const DORA_SIGNATURES = [
+  // Explicit DORA / resilience mentions
+  { key: "dora_mention", label: "DORA / resilience framework mentioned", re: /digital\s*operational\s*resilience|DORA\s+regulation|operational\s*resilience\s+act/i },
+  // Incident reporting
+  { key: "incident_report", label: "ICT incident reporting process", re: /incident\s*report|report\s+(an\s+)?incident|ict\s+incident|security\s+incident\s+report|inform.*breach/i },
+  // Business continuity / disaster recovery
+  { key: "business_continuity", label: "Business continuity / disaster recovery", re: /business\s+continuity|disaster\s+recovery|BCP|DR\s+plan|continuity\s+plan|resilience\s+plan/i },
+  // ICT risk management
+  { key: "ict_risk", label: "ICT risk management mentioned", re: /ict\s+risk|information\s+security\s+risk|it\s+risk\s+management|risk\s+framework|risk\s+assessment/i },
+  // Third-party / supply chain risk
+  { key: "third_party_risk", label: "Third-party / supply chain risk", re: /third.party\s+risk|supply\s+chain\s+risk|vendor\s+risk|outsource.*risk/i },
+  // Testing / penetration testing
+  { key: "resilience_testing", label: "Resilience / penetration testing", re: /penetration\s+test|security\s+test|vulnerability\s+scan|red\s+team|threat\s+led|resilience\s+test/i },
+];
+
 const FORM_PLUGIN_SIGNATURES = [
   { name: "Contact Form 7", re: /wpcf7|contact-form-7/i },
   { name: "WPForms", re: /wpforms/i },
@@ -197,7 +213,33 @@ async function runScan(url) {
       : { pass: true, label: "All 4 security headers present", detail: "CSP, X-Content-Type-Options, Referrer-Policy and frame protection all set." };
   }
 
-  // 6. Tech fingerprint (informational)
+  // 6. DORA / Operational Resilience (new Jan 2025 — informational but flags gaps)
+  if (html) {
+    const found = DORA_SIGNATURES.filter(s => s.re.test(html)).map(s => s.label);
+    let warn, fix;
+    let label, detail, pass;
+    if (found.length >= 3) {
+      pass = true; warn = false;
+      label = `${found.length} resilience signals found`;
+      detail = `Detected: ${found.slice(0, 4).join(", ")}. DORA applies to financial entities and critical ICT providers.`;
+    } else if (found.length >= 1) {
+      pass = true; warn = true;
+      label = `${found.length} resilience signal${found.length > 1 ? "s" : ""} found`;
+      detail = `Found: ${found.join(", ")}. Not all DORA-required disclosures detected on this page — entity-specific requirements vary.`;
+    } else {
+      pass = false; warn = true;
+      label = "No DORA / resilience disclosures detected";
+      detail = "No mentions of DORA, incident reporting, business continuity, or ICT risk management found in the page HTML. Most financial entities under DORA must publish certain operational resilience information.";
+      fix = "Review DORA requirements (EU 2022/2554) — if your entity falls in scope, publish incident reporting, business continuity, and ICT risk management information on your site.";
+    }
+    checks.resilience = { pass, label, detail };
+    if (warn) checks.resilience.warn = true;
+    if (fix) checks.resilience.fix = fix;
+  } else if (!fetchError) {
+    checks.resilience = { pass: false, warn: true, label: "No HTML to check for DORA signals", detail: "Response was not HTML — DORA/resilience check skipped.", fix: "Verify manually whether your site addresses digital operational resilience if DORA-scoped." };
+  }
+
+  // 7. Tech fingerprint (informational)
   let platform = "Unknown";
   if (html) {
     const hit = PLATFORM_SIGNATURES.find(s => s.re.test(html));

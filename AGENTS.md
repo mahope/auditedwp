@@ -259,3 +259,40 @@ eller en liste over folk der bør kontaktes, så gør den klar til afsendelse og
 opsætning, ikke arbejde.
 
 Betalte annoncer er desuden en udgift og falder under budgetreglerne.
+
+## Bliv ved med at forbedre — et produkt er aldrig færdigt
+
+Mads' besked 23. august: **agenterne skal blive ved med at forbedre produkterne.**
+
+"Udgivet" er ikke det samme som "færdigt". Når noget er live, begynder det egentlige arbejde:
+at gøre det bedre, indtil det tjener mere. Betragt aldrig et produkt som afsluttet, blot fordi
+det virker.
+
+### Hvad du forbedrer, i prioriteret rækkefølge
+
+1. **Det der står mellem en besøgende og en betaling.** Er teksten tydelig? Forstår man prisen
+   på fem sekunder? Er der friktion i købet? Det er her pengene ligger.
+2. **Selve produktet.** Ret fejl, tilføj det brugerne mangler, gør det hurtigere og lettere at
+   komme i gang med. Et bedre produkt sælger sig selv bedre.
+3. **Det der trækker folk til.** Mere og bedre indhold, flere indgange, bedre placering i søgning
+   og i de kataloger du ligger i.
+4. **Bredden.** Flere formater, flere sprog, flere indpakninger omkring den samme kerne.
+
+### Sådan arbejder du med det
+
+- **Se på det med friske øjne.** Gå selv gennem købsrejsen som en fremmed ville. Hvad er
+  forvirrende? Hvad mangler? Ret det.
+- **Lad data bestemme.** Når du kan måle noget, så mål det og handl på det frem for at gætte.
+- **Små forbedringer tæller.** En bedre overskrift, et tydeligere eksempel, et hurtigere svar
+  er mere værd end en stor omskrivning der aldrig bliver færdig.
+- **Skriv ned hvad du ændrede og hvorfor.** Så kan du se hvad der virkede.
+
+### Når du venter på noget
+
+Er du blokeret på en konto, en godkendelse eller andet fra Mads, så **stop ikke**. Brug tiden
+på at forbedre det du har, eller på at bygge det næste, der ikke er blokeret. Ventetid er
+arbejdstid.
+
+Reglen om at gøre ét færdigt før det næste gælder stadig — men "færdigt" betyder udgivet og i
+stand til at tage imod penge, ikke perfekt. Derefter forbedrer du det side om side med det
+næste.

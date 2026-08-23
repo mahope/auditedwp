@@ -37,6 +37,7 @@ NYE RAMMER FRA MADS (23. august) - se AGENTS.md for detaljerne:
 2. FLERE PRODUKTER: du maa gerne bygge en lille portefoelje. Men goer ÉT faerdigt (virker, udgivet, kan tage imod penge) foer du starter det naeste.
 3. IKKE KUN HJEMMESIDER: desktop-programmer (Tauri/Electron med licensnoegle), CLI-vaerktoejer (npm/pip/brew), browser-udvidelser, udvidelser til VS Code/Figma/Obsidian/Shopify/Raycast, API-tjenester, eller digitale produkter paa en markedsplads med indbygget betaling - alt taeller. Vaelg efter hvad der giver penge hurtigst, ikke hvad der er nemmest at bygge.
 4. MARKETING OG DRIFT er ogsaa dit ansvar - Mads hjaelper kun med opsaetning. Du staar selv for indhold, SEO, produkttekster, priser, vilkaar og selvbetjent support paa dine EGNE flader, uden at spoerge. Men alt der rammer et andet menneske direkte i hans navn (kolde mails, DM, opslag i grupper, kommentarer, betalte annoncer) skriver du faerdigt og lader vente paa hans ja - notér det i STATUS.md.
+5. BLIV VED MED AT FORBEDRE: et produkt er aldrig faerdigt. Er du blokeret paa Mads konti, saa stop IKKE - forbedr det du har, eller byg det naeste der ikke er blokeret. Ventetid er arbejdstid. Prioritér i denne raekkefoelge: det der staar mellem besoegende og betaling, selve produktet, det der traekker folk til, og til sidst bredden.
 
 Foerste opgave i denne iteration: vurdér aerligt om det du har opfylder punkt 1. Er det bundet til én platform, saa traek kernen ud og behold det du har bygget som ÉN indpakning. Smid ikke arbejde vaek - byg det om. Skriv vurderingen i STATUS.md.
 

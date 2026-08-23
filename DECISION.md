@@ -1,56 +1,48 @@
-# DECISION (iteration 56 — 24. august 2026)
+# DECISION (iteration 60 — 24. august 2026)
 
-**Status:** Holder. EUComply fortsætter som Product #1.
-**Product #3 bygget:** Chrome-udvidelse (kode klar, venter på publicering).
-**Hovedbeslutning:** Produktet er rigtigt. Flaskehalsen er ikke kode — den er Mads' konti.
+**Status:** Holder under pengekriteriet. Bygger videre. Universality verificeret.
+**Ny i denne iteration:** /pro/ sales page + SEO blog post "DORA vs NIS2 vs GDPR — What's the Difference?".
+**Strukturel blokering:** Mads' konti — rammer ALLE produkter, ikke kun EUComply.
 
-## Beslutning: 3 produkter i porteføljen (bygget rækkefølge)
+## Beslutning: Fortsæt med EUComply — byg portefølje
 
-### Product #1: EUComply — Universal URL Compliance Scanner
-**Free scan + Pro $79/år.** Platform-uafhængig kerne. 4 indpakninger (web, CLI, API, WP-plugin).
-- ✅ Bygget, live, universel, 0 kr/md
-- ✅ Verificeret på 6 platforme (WordPress, Shopify, Webflow, Next.js, Squarespace, HTML)
-- ✅ Sitemap, SEO, blog, guides, docs, vilkår — alt på plads
-- ❌ Mangler: Mads' Gumroad-konto (eneste der skiller mig fra $1)
+Under det nye mandat (23. august) hvor KUN pengekriteriet tæller:
 
-### Product #2: Compliance Documents Generator
-**Free tool (client-side) + upsell til templates $29-149.**
-- ✅ Live på /tools/ — Privacy Policy, DPA, EAA Statement generator
-- ✅ SEO-trafikdriver ("free privacy policy generator")
-- ✅ Waitlist til ComplianceDocs-produkter (indsamler emails)
-- ❌ Mangler: Mads' Gumroad-konto for at aktivere betaling
-
-### Product #3 (NY): Chrome Extension
-**Free + Pro link i popup.** Badge viser compliance-score.
-- ✅ Kode i chrome-ext/: manifest.json, popup.html, popup.js, background.js, icons
-- ✅ Kan testes som unpacked lige nu
-- ❌ Mangler: $5 Chrome Web Store-udviklergebyr + Mads' konto
-
-## Fem-kriterie-vurdering (revurderet under nyt mandat)
-
-| Kriterium | EUComply Scanner | Chrome Extension | Helt nyt produkt |
-|-----------|:----------------:|:----------------:|:----------------:|
-| Tid til 1. kunde | ⭐⭐⭐⭐⭐ (timer efter Gumroad) | ⭐⭐⭐⭐ (dage efter CWS) | ⭐ (uger + konti) |
-| Beløb pr. kunde | $79/år | Free (Pro link) | Varierer |
-| Markedsstørrelse | Alle websites | 2B+ Chrome-brugere | Varierer |
-| Tilbagevendende | Årligt abonnement | Indirekte (Pro-upgrade) | Varierer |
-| Leveringsomkostning | 0 kr/md | 0 kr/md | Varierer |
+| Faktor | EUComply | Hvorfor |
+|--------|----------|---------|
+| Tid til 1. kunde | ⭐⭐⭐⭐⭐ | Timer efter Mads' Gumroad — alt bygget |
+| Beløb pr. kunde | $79/år | Årligt abonnement, B2B |
+| Markedsstørrelse | Alle websites med EU-besøgende | 25M+ websites globalt |
+| Tilbagevendende indtægt | Årligt abonnement | Recurring, compounding |
+| Omkostning | 0 kr/md | Cloudflare gratis-tier |
+| **Strukturel blokering** | Mads' konti | Samme for ALLE produkter |
 
 ## Hvorfor IKKE pivotere
 
-**Ærlig analyse:**
-- Alle betalingskanaler kræver Mads' konti. Dette er sandt for ALLE produkter — ikke kun EUComply
-- EUComply er ALLEREDE bygget, live og verificeret. At bygge noget nyt = at starte forfra med SAMME flaskehals
-- Det korrekte træk er at maksimere værdien på eksisterende produkter og dokumentere hvad Mads skal gøre
+Ærlig gennemgang:
+- Alle betalingskanaler kræver Mads' juridiske person (Gumroad, Stripe, CWS, LemonSqueezy)
+- EUComply er ALLEREDE bygget, live, verificeret, universel, 0 kr/md
+- Intet andet produkt kan nå $1 hurtigere — fordi ALLE kræver Mads' konti i sidste ende
+- Korrekt træk: maksimér værdi indtil konti findes, så compounding starter dag 1
 
 ## Hvad kan slå det ihjel
 
-1. **Mads opretter ikke konti** ⚠️ ⚠️ ⚠️ **Reel risiko — 6+ iterationers blokering**
+1. **Mads opretter ikke konti** ⚠️ ⚠️ ⚠️ **Reel risiko — 7+ iterationers blokering**
 2. **Konkurrence bygger bedre produkt** — Lav risiko. Markedet er stort nok
-3. **Ingen køber** — Medium risiko. Compliance er reel smerte med bevist marked
-4. **Chrome Web Store afviser extension** — Lav risiko. Simple API-call, ingen kontroversielt indhold
+3. **Ingen køber** — Medium risiko. Compliance er reel smerte med bevist betalingsmarked
+4. **Chrome Web Store afviser extension** — Lav risiko. Simple API-call
 
-## Næste skridt (uafhængigt af Mads)
-- Byg /extension/ landingsside på sitet
-- Blog post: "Check Compliance in One Click — Our New Chrome Extension"
-- Fortsæt SEO-vækst: flere blog posts, flere gratis tools
+## Porteføljeoversigt
+
+| # | Produkt | Modenhed | Næste skridt |
+|---|---------|----------|-------------|
+| 1 | EUComply Scanner | ✅ Bygget, live, universel | Payment integration (venter Mads) |
+| 2 | ComplianceDocs Generator | ✅ Bygget, live | Payment integration (venter Mads) |
+| 3 | Chrome Extension | ✅ Kode klar | CWS publicering (venter Mads) |
+| 4 | Compliance Badge | ✅ Bygget, live | Backlinks → SEO (passiv) |
+| 5 | EUComply Pro (/pro/) | ✅ Sales page live | Payment integration (venter Mads) |
+
+## Fokus i næste iteration
+- Flere SEO-artikler — dæk huller i keyword-dækning
+- Forbedre /pro/ conversion-rate (A/B klar, mangler traffic)
+- Gennemgå alle sider for konsistent navigation

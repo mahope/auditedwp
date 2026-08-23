@@ -1,54 +1,75 @@
-# BUILD — Den korteste vej til første betalende kunde
+# BUILD — Shortest Path to First Paying Customer
 
-**Dato:** 2026-08-23 (iteration 49)
-**Produkt:** EUComply — Universal URL Compliance Scanner
-**Pris:** Free (scanner) → Pro $79/år → ComplianceDocs $29-149
+**Dato:** 2026-08-24 (iteration 60)
+**Status:** Bygger videre. Holder beslutning. Blokeret på Mads' konti.
 
-## Status: 3 produkter bygget. Kun Mads' konti mangler.
+---
 
-| Komponent | Status | Note |
-|-----------|--------|------|
-| Online scanner | ✅ Live | `/scan/` — tager enhver URL, ingen sign-up |
-| Landing page | ✅ Universal-first | "Scan any website" hero, WP plugin = 1 wrapper |
-| Blog/SEO | ✅ Live | 5+ guides, inkl. cookie consent, NIS2, EAA, compliance checklist |
-| WordPress plugin v1.2.0 | ✅ Bygget | ZIP download klar, open source GPL |
-| ComplianceDocs | ✅ Bygget | 5 produkter $29-149, waitlist aktiv |
-| Chrome Extension | ✅ Kode klar | `chrome-ext/` — kan testes unpacked, klar til CWS |
-| Sitemap | ✅ Opdateret | Alle sider inkluderet |
-| Betaling | ❌ Venter | Kræver Mads' konti (Gumroad, CWS, npm) |
+## Korteste vej til $1 (samlet set: ~10 min Mads' tid)
 
-## Den korteste vej til penge (afhænger af Mads)
+```
+Mads opretter Gumroad-konto (10 min)
+    → Jeg linker checkout-knapper til Gumroad-products
+    → Deploy (1 min)
+    → Første køb muligt samme dag
+```
 
-### Step 1: Mads opretter Gumroad-konto (10 min)
-- gumroad.com → Sign up (gratis), brugernavn: eucomply
-- Shop på eucomply.gumroad.com
+**Hvad skal Mads gøre:**
+1. Gå til gumroad.com → "Start selling" → email + password → verified
+2. Jeg sender ham EXACT product-opsætning (tekst, priser, filer) — klar til at paste
+3. Han kopierer links til mig → jeg sætter dem ind på /pro/ og /store/ → deploy
 
-### Step 2: Mads uploader produkter (15 min)
-- "EUComply Pro — Annual License" $79/år (med licensnøgler)
-- 5 ComplianceDocs som PDF/Markdown downloads
+**Alt andet kræver mere tid eller Mads' indblanding.**
 
-### Step 3: Jeg opdaterer links og deployer (10 min)
-- Alle "Get Pro"-knapper peger nu til Gumroad checkout i stedet for /store/
-- Waitlist-CTA skiftes til Buy-knapper på /store/
+---
 
-### Step 4: Første salg (timer-dage)
-- Organisk trafik fra blog + scanner → Pro upsell
-- Ingen annonceudgift nødvendig for første salg
+## Hvad jeg kan bygge OG levere (uden Mads)
 
-## Indtjeningsprognose
+Ingen betaling betyder: ingen revenue. Men det betyder IKKE ingen værdi. Her er hvad jeg bygger nu:
 
-| Spor | Pris | Kunder/år | Årlig indtægt | Type |
-|------|------|-----------|---------------|------|
-| EUComply Pro | $79/år | 10-100 | $790-$7,900 | Passiv recurring |
-| ComplianceDocs | $29-149 | 5-30 | $145-$4,470 | Passiv one-time |
-| **Total** | | | **$935-$12,370/år** | Passiv |
+### Prioritet 1: Conversion — det der står mellem besøgende og betaling
+- [x] **/pro/ page** — Dedikeret salgsside for EUComply Pro ($79/yr). Hvad Pro giver ekstra, hvem det er til, prissammenligning, CTA til waitlist
+- [ ] **/store/ → faktisk checkout** — Venter på Gumroad-links
+- [ ] **Free vs Pro comparison table** — Inkluderet i /pro/
+- [ ] **Mobile gennemgang af købsrejse** — Skal testes
 
-## Kvalitetscheck (før produktet kaldes færdigt)
+### Prioritet 2: Produktet — flere checks = bedre værdi
+- [ ] **Security.txt / DMARC check** — For virksomheder der skal overholde DORA
+- [ ] **CSP (Content-Security-Policy) analysis** — Reel sikkerhedscheck
 
-- ✅ Design: Professionelt, ensartet typografi, bevidst farvevalg
-- ✅ Responsivt: Fungerer på mobil/tablet/desktop
-- ✅ Alt virker: Alle links, knapper, downloads, sitemap — HTTP 200
-- ✅ Læsbart: Engelsk, ingen stavefejl
-- ✅ Sitemap: Opdateret med alle sider
-- ✅ SEO: Titel, description, canonical, OG tags på alle sider
-- ❌ Betaling: Kræver Mads' konti
+### Prioritet 3: Trafik — SEO-indhold
+- [x] Blog post: "DORA vs NIS2 vs GDPR — What's the Difference?"
+- [ ] Blog post: "How to Write a GDPR Privacy Policy for Your Website"
+- [ ] Blog post: "EU Compliance Cost Calculator" (interaktiv → ville drive backlinks)
+- [ ] Update sitemap — live
+
+### Prioritet 4: Bredden
+- [ ] npm package ready (code exists, needs package.json + README)
+- [ ] Chrome Extension ready to publish (code exists, needs CWS account)
+
+---
+
+## Målepunkter
+
+| Mål | Måling | Nuværende status |
+|-----|--------|------------------|
+| Scanner bruger | curl tæller | 0 (ingen analytics) |
+| Waitlist emails | waitlist Worker DB | 0 (ingen traffic) |
+| Blog indexering | Google search console | 0 (ingen domain) |
+| $1 revenue | Gumroad | Venter på Mads |
+
+---
+
+## Hvad kan slå det ihjel
+
+1. **Mads opretter aldrig Gumroad** → Ingen revenue. Produkter eksisterer, men ingen kan betale.
+2. **Konkurrent bygger bedre free scanner** → Bevares, men markedet er kæmpestort. Compliance er ikke et prisfølsomt køb.
+3. **Ingen organisk trafik** → Compliance-Keywords er konkurrenceprægede. SEO tager tid.
+
+---
+
+## Byggeplan (næste iteration)
+
+1. Flere SEO blog posts (target: "privacy policy generator", "gdpr compliance checklist free")
+2. Forbedre /pro/ CTA og mobile visning
+3. Gennemgå alle sider for konsistent branding og navigation
