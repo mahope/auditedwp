@@ -3,217 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuditedWP — White-Label WordPress-Wartung mit revisionssicherem Änderungsprotokoll. Für Agenturen.</title>
-<meta name="description" content="Wholesale-WordPress-Wartung für Web-Agenturen mit prüffähiger Änderungsdokumentation, EU-Hosting und AVV als Standard. Sie fakturieren den Kunden, wir betreiben die Technik.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<title>EUComply — Kostenloses DSGVO/NIS2/EAA WordPress-Plugin</title>
+<meta name="description" content="Kostenloses WordPress-Plugin, das Ihre Seite auf DSGVO-, NIS2-, DORA- und EAA-Compliance-Lücken scannt. 6 Checks: SSL, Cookies, Backups, Plugins, Rechtstexte. Pro-Version ($79/Jahr) erstellt AVV, NIS2-Klauseln und BFSG-Erklärung.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
 <link rel="canonical" href="https://mahope.github.io/auditedwp/de/">
 <link rel="alternate" hreflang="en" href="https://mahope.github.io/auditedwp/">
 <link rel="alternate" hreflang="de" href="https://mahope.github.io/auditedwp/de/">
 <style>
-  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--bg:#fff;--soft:#f9fafb;
-        --accent:#175cd3;--accent-dark:#084cad;--ok:#067647;--warn:#b54708;}
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;}
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header{border-bottom:1px solid var(--line);padding:18px 0}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
   header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em}
   .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:24px;font-size:15px}
-  nav a.cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-weight:600}
-  .hero{text-align:center;padding:72px 0 48px}
-  .badge{display:inline-block;background:#eff8ff;color:var(--accent);border:1px solid #b2ddff;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
-  h1{font-size:44px;line-height:1.15;letter-spacing:-.03em;max-width:840px;margin:0 auto 18px}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  .hero{text-align:center;padding:56px 0 32px}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;max-width:720px;margin:0 auto 12px}
   h1 em{font-style:normal;color:var(--accent)}
-  .sub{font-size:19px;color:var(--muted);max-width:720px;margin:0 auto 32px}
-  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:17px}
+  .sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto 24px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
   .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid #b2ddff;margin-left:12px}
-  .note{font-size:13px;color:var(--muted);margin-top:14px}
-  section{padding:56px 0;border-top:1px solid var(--line)}
-  h2{font-size:30px;letter-spacing:-.02em;margin-bottom:8px}
-  .lede{color:var(--muted);max-width:680px;margin-bottom:36px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .card{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)}
-  .card h3{font-size:17px;margin-bottom:8px}
-  .card p{font-size:14.5px;color:var(--muted)}
-  .vs{background:#fffcf5;border-color:#fedf89}
-  .vs h3{color:var(--warn)}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
-  th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-  td b{font-size:16px}
-  ol.steps{max-width:680px;margin:24px auto 0;counter-reset:s;list-style:none}
-  ol.steps li{position:relative;padding:0 0 22px 52px;counter-increment:s}
-  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
-  ol.steps li strong{display:block}
-  ol.steps li span{color:var(--muted);font-size:15px}
-  .faq details{border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;background:var(--bg)}
-  .faq summary{font-weight:600;cursor:pointer}
-  .faq p{color:var(--muted);font-size:15px;margin-top:8px}
-  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-  @media(max-width:800px){h1{font-size:32px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
+  .btn.ghost:hover{border-color:var(--accent)}
+  .btn.green{background:var(--ok)}
+  .btn.green:hover{background:#146336}
+  .note{font-size:12.5px;color:var(--muted);margin-top:10px}
+  .note a{color:var(--accent)}
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
+  .lede{color:var(--muted);max-width:640px;margin-bottom:28px;font-size:15px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .checks{list-style:none;margin:16px 0}
+  .checks li{padding:5px 0 5px 24px;position:relative;font-size:14px;color:var(--ink);border-bottom:1px solid var(--soft)}
+  .checks li:last-child{border:0}
+  .checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+  .pricing-card{background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:28px;text-align:center}
+  .pricing-card.featured{border-color:var(--accent);background:#f8faff}
+  .pricing-card h3{font-size:18px;margin-bottom:4px}
+  .pricing-card .price{font-size:36px;font-weight:800;color:var(--accent);margin:12px 0 4px}
+  .pricing-card .price span{font-size:16px;font-weight:400;color:var(--muted)}
+  .pricing-card .per{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .pricing-card ul{list-style:none;text-align:left;margin:16px 0;font-size:14px}
+  .pricing-card ul li{padding:6px 0 6px 22px;position:relative}
+  .pricing-card ul li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+  .pricing-card ul li.missing{color:var(--muted)}
+  .pricing-card ul li.missing::before{content:"—";color:var(--line)}
+  .faq details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:8px;background:var(--bg)}
+  .faq summary{font-weight:600;cursor:pointer;font-size:15px}
+  .faq p{color:var(--muted);font-size:14px;margin-top:6px}
+  .steps{max-width:640px;margin:24px auto 0;counter-reset:s;list-style:none}
+  .steps li{position:relative;padding:0 0 18px 44px;counter-increment:s;font-size:14px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .steps li strong{display:block;font-size:15px}
+  .steps li span{color:var(--muted)}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:28px}.grid2,.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap">
-    <div class="logo">Audited<span>WP</span></div>
+    <div class="logo">EU<span>Comply</span></div>
     <nav>
-      <a href="#how">So funktioniert es</a>
+      <a href="#checks">Prüfungen</a>
       <a href="#pricing">Preise</a>
       <a href="#faq">FAQ</a>
-      <a href="/store/">Vorlagen</a>
       <a href="/">EN</a>
-      <a class="cta" href="#pricing">Großhandelspreise ansehen</a>
+      <a class="cta" href="#pricing">Pro kaufen $79/Jahr</a>
     </nav>
   </div>
 </header>
 
 <div class="wrap hero">
-  <div class="badge">White-Label · EU-Hosting &amp; EU-Jurisdiktion · AVV inklusive</div>
-  <h1>WordPress-Wartung für Ihre Agentur — <em>mit einem Prüfspuren-Nachweis, den Sie wirklich zeigen können.</em></h1>
-  <p class="sub">Sie behalten Kunde und Marge. Wir übernehmen Updates, Backups und Security-Patches — und dokumentieren jede einzelne Änderung, damit Sie die Frage beantworten können, die andere Care-Plans nicht beantworten können: <strong>„Zeigen Sie mir, was wann von wem gemacht wurde."</strong></p>
-  <a class="btn" href="#pricing">Großhandelspreise ansehen</a>
-  <a class="btn ghost" href="/template/">Kostenlose NIS2-Auftragsverarbeiter-Klauseln ↓</a>
-  <p class="note">Keine 24/7-Versprechen, die wir nicht halten können. Wiederherstellung am nächsten Werktag, monatliche Wartungsfenster, vollständige Änderungshistorie.</p>
+  <div class="badge">Kostenloses WordPress-Plugin · DSGVO/NIS2/DORA/EAA · 30-Sekunden-Scan</div>
+  <h1>Scannen Sie Ihre WordPress-Seite auf <em>DSGVO-, NIS2-, DORA- &amp; EAA-Lücken</em> — direkt aus dem Admin-Bereich.</h1>
+  <p class="sub">Ein Klick prüft SSL, Cookies, Formulare, Backups, Plugin-Health und Rechtstexte. Gratis-Report im Dashboard. Pro ($79/Jahr) erstellt automatisch Auftragsverarbeitungsvertrag (AVV), NIS2-Klauseln, BFSG-Erklärung und vierteljährliche Audit-Reports.</p>
+  <a class="btn" href="#pricing">Pro kaufen — $79/Jahr</a>
+  <a class="btn ghost" href="../assets/eucomply-1.2.0.zip">Kostenlose Version herunterladen ↓</a>
+  <p class="note">⚡ Funktioniert mit WordPress 5.8+. Keine externen Dienste — Ihre Daten verlassen nie Ihren Server.</p>
 </div>
 
-<section>
+<section id="checks">
   <div class="wrap">
-    <h2>Warum Agenturen uns statt generischen White-Label-Care-Plans wählen</h2>
-    <p class="lede">Generische Wholesale-Wartung ist ein Commodity — Dutzende Anbieter verkaufen sie. Neu in 2026–27 ist: Einkauf, Versicherer und Prüfer Ihrer Kunden (DORA Art. 28, NIS2-Lieferkette, EAA-Dokumentation) verlangen zunehmend <em>Nachweise</em> statt Zusicherungen. Dafür sind wir von Tag eins gebaut.</p>
+    <h2>Sechs Prüfungen, eine Übersicht</h2>
+    <p class="lede">EUComply prüft Ihre Seite auf die wichtigsten EU-Compliance-Anforderungen. Das Dashboard zeigt sofort, was bestanden wurde und was zu tun ist.</p>
     <div class="grid3">
       <div class="card">
-        <h3>Prüffähiges Änderungsprotokoll</h3>
-        <p>Jedes Update, jeder Patch, jedes Backup und jede Wiederherstellung wird pro Website protokolliert — mit Zeitstempel, Verantwortlichkeit, exportierbar. Geben Sie es dem Prüfer oder der Versicherung Ihres Kunden, statt selbst Berichte zu schreiben.</p>
+        <h3>🔒 SSL &amp; HTTPS</h3>
+        <p>Gültiges Zertifikat? HSTS-Header gesetzt? Gemischte Inhalte? Prüfung auf Basis der tatsächlichen Seiten-URL und Server-Antwort.</p>
       </div>
       <div class="card">
-        <h3>Ausschließlich EU-Infrastruktur &amp; -Verträge</h3>
-        <p>EU-gehostete Backups, EU-Jurisdiktion, GDPR-Auftragsverarbeitungsvertrag (AVV) als Standard. Gebaut, um Schrems-II-Fragen in Kundenverträgen zu bestehen.</p>
+        <h3>🍪 Cookie-Consent</h3>
+        <p>Cookie-Banner aktiv? WP Consent API registriert? Erkennt gängige Consent-Plugins (Complianz, Cookiebot, CookieYes u.a.).</p>
       </div>
       <div class="card">
-        <h3>Sie besitzen die Kundenbeziehung</h3>
-        <p>Vollständig anonymer White-Label-Betrieb unter NDA. Wir kontaktieren Ihre Kunden nie. Sie fakturieren €100–300/Site/Monat; unser Großhandelspreis ist ein Bruchteil davon.</p>
+        <h3>📋 DSGVO-Formulare</h3>
+        <p>Formular-Plugins erkannt? Datenschutz-Seite verlinkt? Einwilligung-Checkbox vorhanden? Grundlage für Art. 6 DSGVO.</p>
       </div>
       <div class="card">
-        <h3>Vierteljährliche Compliance-Einordnung</h3>
-        <p>Eine verständliche Quartalszusammenfassung pro Kunde, die Sie unverändert weiterleiten können: Was hat sich geändert, welche Risiken wurden geschlossen, was ist geplant. Mit Ihrem Namen darauf.</p>
-      </div>
-      <div class="card vs">
-        <h3>Ehrliche SLA — kein fake 24/7</h3>
-        <p>Wir verkaufen bewusst keinen Rund-um-die-Uhr-Notdienst. Sie erhalten Wiederherstellung am nächsten Werktag, geplante Wartungsfenster und einen dokumentierten Prozess. Kunden, die 24/7 brauchen, sind nicht unser Markt.</p>
+        <h3>💾 Backup-Status</h3>
+        <p>Backup-Plugin aktiv? Letztes Backup-Alter? Off-Server-Speicher konfiguriert? Erkennt UpdraftPlus, BackWPup, Jetpack u.a.</p>
       </div>
       <div class="card">
-        <h3>Von Operatoren gebaut, für Reseller bepreist</h3>
-        <p>Die Wartung läuft mit moderner Automatisierung (ein Operator + Agents), unsere Kosten bleiben niedrig — und Ihre Marge bei über 60%.</p>
+        <h3>⚠️ Plugin &amp; Core-Health</h3>
+        <p>Veraltete Plugins? WordPress-Version aktuell? Ungepflegte Erweiterungen mit Sicherheitsrisiken? Prüft Update-Status.</p>
+      </div>
+      <div class="card">
+        <h3>📄 Rechtstexte</h3>
+        <p>Datenschutzerklärung zugewiesen? Impressum vorhanden (TMG §5)? Barrierefreiheitserklärung (BFSG) veröffentlicht? Alle Pflichtseiten auf einen Blick.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="how">
+<section>
   <div class="wrap">
     <h2>So funktioniert es</h2>
     <ol class="steps">
-      <li><strong>Tarif wählen</strong><span>Sagen Sie uns, wie viele Websites abgedeckt werden sollen. Monatlich kündbar nach Tarifregeln — kein Enterprise-Beschaffungsmarathon.</span></li>
-      <li><strong>Onboarding-Gespräch + AVV</strong><span>Wir unterschreiben Ihren AVV/NDA, richten die Audit-Log-Struktur ein und geben Ihnen die White-Label-Berichtsvorlagen. Die einmalige Einrichtungsgebühr deckt das ab.</span></li>
-      <li><strong>Zugänge übergeben</strong><span>Wir nehmen jede Website auf: Baseline-Audit, Backup-Snapshot, mit Ihnen abgestimmte Update-Richtlinie. Üblicherweise innerhalb von 3 Werktagen pro Batch.</span></li>
-      <li><strong>Wir betreiben, Sie verkaufen weiter</strong><span>Updates, Monitoring, Patches und Restores laufen unter Ihrer Marke. Sie erhalten das Änderungsprotokoll und die Quartalszusammenfassung zum Weiterleiten. <a href="/sample/">Beispiel einer Prüfspur ansehen →</a></span></li>
+      <li><strong>Plugin installieren &amp; aktivieren</strong><span>Laden Sie die kostenlose Version herunter oder installieren Sie direkt über wp.org (Suchbegriff: EUComply). Keine Konfiguration nötig.</span></li>
+      <li><strong>Scan starten</strong><span>Gehen Sie zu EUComply in Ihrem WordPress-Admin und klicken Sie auf „Scan jetzt starten". Ergebnisse erscheinen in Sekunden.</span></li>
+      <li><strong>Ergebnisse auswerten</strong><span>Sechs Prüfungen mit Bestanden/Nicht bestanden/Warnung und konkreten Handlungsempfehlungen für jeden Punkt.</span></li>
+      <li><strong>Compliance-Dokumente generieren lassen (Pro)</strong><span>Mit der Pro-Version erstellen Sie auf Knopfdruck einen AVV (Art. 28 DSGVO), NIS2-Klauseln, eine BFSG-Erklärung und vierteljährliche Audit-Reports — alles lokal auf Ihrem Server.</span></li>
     </ol>
   </div>
 </section>
 
 <section id="pricing">
   <div class="wrap">
-    <h2>Großhandelspreise</h2>
-    <table>
-      <tr><th></th><th>Starter</th><th>Growth</th><th>Scale</th></tr>
-      <tr><td>Websites enthalten</td><td><b>1–10</b></td><td><b>11–25</b></td><td><b>26+</b></td></tr>
-      <tr><td>Preis pro Site / Monat</td><td><b>€29</b></td><td><b>€29</b></td><td><b>€19</b></td></tr>
-      <tr><td>Laufzeit</td><td>Monatlich kündbar</td><td>Monatlich kündbar</td><td>12 Monate</td></tr>
-      <tr><td>Änderungsprotokoll &amp; Audit-Export</td><td>✔</td><td>✔</td><td>✔</td></tr>
-      <tr><td>AVV + NDA-Onboarding</td><td>✔</td><td>✔</td><td>✔</td></tr>
-      <tr><td>Quartals-Compliance-Zusammenfassung</td><td>—</td><td>Add-on €99/Quartal</td><td>Enthalten</td></tr>
-    </table>
-    <p style="font-size:13px;color:var(--muted);margin-top:10px">Einmalige Einrichtungsgebühr: <strong>€290 pro Agentur</strong> (Onboarding, AVV, White-Label-Vorlagen). Beispiel: Eine Agentur mit 15 Websites zahlt €435/Monat im Großhandel und fakturiert ihren Kunden typischerweise €150–300/Site/Monat — eine dokumentierte Marge von über 60%.</p>
-    <p style="margin-top:28px"><a class="btn" href="mailto:hello@auditedwp.com?subject=Gro%C3%9Fhandel%20Onboarding&body=Agenturname:%0AAnzahl%20Websites:%0ALand:%0ABester%20Zeitpunkt%20f%C3%BCr%20ein%20Gespr%C3%A4ch:">Onboarding starten → E-Mail an hello@auditedwp.com</a></p>
-    <p class="note">Zahlung per Stripe nach dem Onboarding-Gespräch. Abrechnung in EUR oder USD.</p>
-
-    <div style="margin-top:40px;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)" id="calc">
-      <h3 style="font-size:18px;margin-bottom:6px">Ihre Marge in Zahlen</h3>
-      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Schieberegler bewegen. So sieht White-Labeling mit uns in Ihrer Größenordnung aus.</p>
-      <label style="display:block;font-size:14px;font-weight:600">Abgedeckte Websites: <span id="sitesVal">10</span></label>
-      <input type="range" id="sites" min="1" max="60" value="10" style="width:100%;accent-color:var(--accent)">
-      <label style="display:block;margin-top:14px;font-size:14px;font-weight:600">Ihr Verkaufspreis pro Site/Monat (€): <span id="retailVal">150</span></label>
-      <input type="range" id="retail" min="50" max="300" step="5" value="150" style="width:100%;accent-color:var(--accent)">
-      <div id="calcOut" style="margin-top:18px;font-size:15px;line-height:1.9"></div>
+    <h2>Preise</h2>
+    <p class="lede">Einmaliger Plugin-Kauf. Keine versteckten Kosten. Laufzeit: 1 Jahr mit automatischen Updates.</p>
+    <div class="grid2">
+      <div class="pricing-card">
+        <h3>Free</h3>
+        <div class="price">$0</div>
+        <div class="per">keine Kreditkarte nötig</div>
+        <ul>
+          <li>Compliance-Scan (6 Prüfungen)</li>
+          <li>Bestanden/Nicht bestanden mit Lösungsempfehlungen</li>
+          <li>Wöchentlicher automatischer Scan (WP-Cron)</li>
+          <li>Open Source (GPL v2)</li>
+          <li class="missing">Auto-generierter AVV (Art. 28 DSGVO)</li>
+          <li class="missing">NIS2/DORA-Klausel-Set</li>
+          <li class="missing">BFSG-Barrierefreiheitserklärung</li>
+          <li class="missing">Vierteljährlicher Compliance-Report</li>
+          <li class="missing">Agentur-Branding in Reports</li>
+        </ul>
+        <a class="btn ghost" href="../assets/eucomply-1.2.0.zip">↓ Free v1.2.0 (ZIP)</a>
+        <p class="note">Open Source — manuell via Plugins → Upload installieren.</p>
+      </div>
+      <div class="pricing-card featured">
+        <h3>Pro</h3>
+        <div class="price">$79 <span>/Jahr</span></div>
+        <div class="per">1 Lizenz pro Website · Lizenzschlüssel via E-Mail</div>
+        <ul>
+          <li>Compliance-Scan (6 Prüfungen)</li>
+          <li>Bestanden/Nicht bestanden mit Lösungsempfehlungen</li>
+          <li>Wöchentlicher automatischer Scan (WP-Cron)</li>
+          <li>Auto-generierter AVV (Art. 28 DSGVO) — als HTML/PDF</li>
+          <li>NIS2/DORA-Klausel-Set — 5 Klauseln für Lieferverträge</li>
+          <li>BFSG-Barrierefreiheitserklärung — EU-weit gültig</li>
+          <li>Vierteljährlicher Compliance-Report — prüffähig</li>
+          <li>Agentur-Name in Reports (White-Label)</li>
+        </ul>
+        <a class="btn" href="#">Jetzt kaufen — $79/Jahr</a>
+        <p class="note">Zahlung via Stripe · 30-Tage-Geld-zurück-Garantie · Gumroad-gesichert</p>
+      </div>
     </div>
-  </div>
-</section>
-
-<section id="template">
-  <div class="wrap">
-    <h2>Kostenlose Vorlage: NIS2/DORA-Lieferantenklauseln für Ihre Kundenverträge</h2>
-    <p class="lede">Nicht sicher, ob Ihr aktueller Care-Plan-Anbieter eine DORA-Art.-28-Prüfung bestehen würde? Laden Sie unseren kostenlosen Klausel-Leitfaden herunter — was ein regulierter Kunde 2026–27 von seinem Wartungsdienstleister verlangen wird. Ohne Verpflichtungen.</p>
-    <p style="margin-top:24px"><a class="btn" href="/template/">Leitfaden online lesen — kostenlos, ohne Anmeldung →</a></p>
   </div>
 </section>
 
 <section id="faq">
   <div class="wrap faq">
-    <h2>FAQ</h2>
-    <details open>
-      <summary>Sind Sie wirklich vollständig White-Label?</summary>
-      <p>Ja. Wir arbeiten unter NDA und kontaktieren Ihre Kunden nie. Berichte und Kommunikation tragen Ihr Branding; Vorlagen erhalten Sie beim Onboarding.</p>
+    <h2>FAQ — Häufig gestellte Fragen</h2>
+    <details>
+      <summary>Sendet das Plugin Daten an externe Server?</summary>
+      <p>Nein. Alle Prüfungen laufen lokal auf Ihrer WordPress-Installation. Keine Telemetrie, kein Analytics, keine Datenübertragung an Dritte. Die Pro-Lizenzprüfung sendet lediglich einen Lizenzschlüssel an die Gumroad-API — keine Seiten-Daten.</p>
     </details>
     <details>
-      <summary>Was genau enthält die „Prüfspur"?</summary>
-      <p>Pro Website: jedes Plugin-/Core-/Theme-Update (Vorher-/Nachher-Versionen), jedes durchgeführte und getestete Backup, jeder Security-Patch, jede Wiederherstellung — mit Zeitstempel und Operator-Identität. Exportierbar als PDF/CSV für Prüfungen, Versicherer oder Kundenreviews. <a href="/sample/">Arbeitsbeispiel ansehen →</a></p>
+      <summary>Wo ist der Unterschied zu Complianz, Cookiebot &amp; Co.?</summary>
+      <p>Diese Plugins lösen ein einzelnes Problem (Cookies). EUComply kombiniert sechs Compliance-Dimensionen plus Dokumentengenerierung — ein Plugin statt sechs. Besonders wertvoll für deutsche Agenturen, die gleichzeitig DSGVO, BFSG und NIS2 erfüllen müssen.</p>
     </details>
     <details>
-      <summary>Wo werden Daten gehostet?</summary>
-      <p>Alle operativen Daten und Backups liegen innerhalb der EU unter EU-Jurisdiktion. Ein Standard-AVV wird beim Onboarding unterschrieben.</p>
+      <summary>Ist der generierte AVV rechtsgültig?</summary>
+      <p>Der AVV folgt der Standardstruktur von Art. 28 DSGVO, wie sie von Aufsichtsbehörden und Compliance-Beratern verwendet wird. Wir empfehlen, das ausgefüllte Dokument bei hochwertigen Verträgen von einem Rechtsanwalt prüfen zu lassen. Das Plugin liefert die korrekte Vorlage, keinen Ersatz für Rechtsberatung.</p>
     </details>
     <details>
-      <summary>Bieten Sie 24/7-Notfallreaktion?</summary>
-      <p>Nein — bewusst nicht. Wir bieten Wiederherstellung am nächsten Werktag und geplante Wartungsfenster mit dokumentiertem Prozess. Wenn Ihre Kunden 24/7-Incident-Response benötigen, sind wir nicht der richtige Partner — und sagen das vorab offen.</p>
+      <summary>Hilft das Plugin bei der Barrierefreiheit (BFSG)?</summary>
+      <p>Ja. EUComply prüft, ob eine Barrierefreiheitserklärung auf Ihrer Seite veröffentlicht ist. Die Pro-Version generiert eine vollständige BFSG-konforme Erklärung. Das BFSG (Barrierefreiheitsstärkungsgesetz, Umsetzung der EAA) gilt ab Juni 2025 für die meisten EU-Websites.</p>
     </details>
     <details>
-      <summary>Welche Plattformen decken Sie ab?</summary>
-      <p>WordPress (einzelne Sites und Multisite), inklusive WooCommerce. Kein WordPress? Fragen Sie — wir übernehmen eine begrenzte Anzahl von Engagements mit anderen CMS.</p>
+      <summary>Kann ich die Reports für meine Kunden verwenden?</summary>
+      <p>Ja. Pro-Nutzer stellen in den Einstellungen ihren Agentur-Namen ein — generierte Reports erscheinen mit diesem Namen. Ein reines White-Label-Upgrade (ohne „Generiert von EUComply"-Fußzeile) ist für Agenturen mit 10+ Websites verfügbar.</p>
+    </details>
+    <details>
+      <summary>Kann ich das Plugin auf mehreren Websites nutzen?</summary>
+      <p>Die Free-Version ist unbegrenzt. Jede Pro-Lizenz gilt für eine Website. Agenturen mit 10+ Websites erhalten Rabatt beim Kauf von Volumenlizenzen.</p>
+    </details>
+    <details>
+      <summary>Brauche ich eine Rechtsschutzversicherung?</summary>
+      <p>EUComply gibt Ihnen eine technische Baseline und generiert korrekte Dokumentvorlagen. Für formelle Compliance-Zertifizierungen und hochwertige Verträge empfehlen wir einen qualifizierten Compliance-Berater oder Rechtsanwalt — das Plugin ist das Werkzeug, nicht der Berater.</p>
     </details>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <div>AuditedWP — White-Label WordPress-Betrieb für EU-Agenturen.<br>Kontakt: hello@auditedwp.com · <a href="/store/" style="color:var(--accent)">Compliance-Dokumentvorlagen</a></div>
-    <div>EU-Betrieb · DSGVO-konforme Verarbeitung · © 2026</div>
+    <div>EUComply — kostenloses DSGVO/NIS2/BFSG-Compliance-Audit-Plugin für WordPress.<br>⚖️ Keine Rechtsberatung. Konsultieren Sie einen Fachanwalt für formelle Compliance. · <a href="/store/" style="color:var(--accent)">Compliance-Vorlagen</a></div>
+    <div>Open Source (GPL v2) · <a href="https://github.com/mahope/eucomply" style="color:var(--accent)">GitHub</a></div>
   </div>
 </footer>
 
-
-<script>
-(function(){
-  var s=document.getElementById('sites'),r=document.getElementById('retail');
-  function fmt(n){return '€'+n.toLocaleString('de-DE')}
-  function upd(){
-    var n=+s.value,p=+r.value;
-    var ws=n>=26?19:29, setup=290;
-    document.getElementById('sitesVal').textContent=n;
-    document.getElementById('retailVal').textContent=p;
-    var cost=ws*n+setup, rev=p*n, mrr=rev-cost;
-    var pct=rev?Math.round(mrr/rev*100):0;
-    document.getElementById('calcOut').innerHTML=
-      'Ihr Umsatz: <b>'+fmt(rev)+'/Monat</b><br>'+
-      'Unser Großhandel ('+fmt(ws)+'/Site'+(n>=26?' + einmalige Einrichtung '+fmt(setup):'')+') + Einrichtungsgebühr: <b>'+fmt(cost)+'</b><br>'+
-      '<span style="color:var(--ok);font-size:17px"><b>Ihre Marge: '+fmt(mrr)+'/Monat ('+pct+'%)</b></span>';
-  }
-  s.addEventListener('input',upd);r.addEventListener('input',upd);upd();
-})();
-</script>
 </body>
 </html>
