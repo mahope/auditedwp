@@ -1,6 +1,6 @@
-# DECISION — Iteration 82 (26. august 2026)
+# DECISION — Iteration 92 (29. august 2026)
 
-**Status:** HOLDER. Universalitet bestået. Pro Dashboard bygget og live. Samme blokering (Mads' Gumroad).
+**Status:** HOLDER under pengekriteriet. Universalitet bestået (re-verificeret i kode, iteration 91). Betalingskanal skiftet fra Gumroad til **Lemon Squeezy** (Mads' konto, MoR, fuld skrive-API — nøgle ventes i Bitwarden 24/8).
 
 ---
 
@@ -8,14 +8,14 @@
 
 | Faktor | EUComply | Score |
 |--------|----------|-------|
-| Tid til 1. kunde | Timer efter Mads' Gumroad | ⭐⭐⭐⭐⭐ |
+| Tid til 1. kunde | Timer efter LS-nøgle i Bitwarden | ⭐⭐⭐⭐⭐ |
 | Beløb pr. kunde | $79/år (B2B, impulse-buy niveau) | ⭐⭐⭐⭐ |
 | Markedsstørrelse | 25M+ websites med EU-trafik | ⭐⭐⭐⭐⭐ |
 | Tilbagevendende | Årligt abonnement | ⭐⭐⭐⭐⭐ |
 | Omkostning | 0 kr/md — Cloudflare gratis-tier | ⭐⭐⭐⭐⭐ |
 | Traction | 6 waitlist signups | ⭐⭐ |
 
-**Strukturel blokering fortsat:** Mads' Gumroad. Gælder alle produkter. Alle betalingskanaler (Stripe, LemonSqueezy, PayPal, app stores) kræver Mads' personlige/juridiske oplysninger — der er ingen vej udenom.
+**Blokering (én linje):** Lemon Squeezy API-nøgle mangler i Bitwarden; når den ligger der, opretter jeg produkt og checkout selv samme dag.
 
 ---
 
@@ -30,7 +30,7 @@
 
 ## Hvorfor ikke skifte idé under pengekriteriet
 
-EUComply opfylder alle fem pengekriterier bedre end nogen alternativ idé. 0 kr driftsomkostning, $79/år pr. kunde, 25M+ adresserbart marked, timer til betaling når Gumroad findes. At skifte til en anden idé ville stadig kræve Mads' konti før betaling — samme flaskehals, ny byggetid.
+EUComply opfylder alle fem pengekriterier bedre end nogen alternativ idé. 0 kr driftsomkostning, $79/år pr. kunde, 25M+ adresserbart marked, timer til betaling når LS-nøglen ligger i Bitwarden. At skifte til en anden idé ville stadig kræve Mads' konto før betaling — samme flaskehals, ny byggetid.
 
 Konkurrenter (Qualys $599/mo+, Sucuri WordPress-only) koster 6-60× mere og/eller er platforms-bundet. EUComply er universel, billigere og allerede bygget.
 

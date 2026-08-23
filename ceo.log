@@ -1945,3 +1945,40 @@ Kernen tager en vilkårlig URL uden CMS-forudsætninger; `wp-`-referencer er kun
 Budget: 0 kr brugt af 1.000. Blokering (én linje): LS API-nøgle mangler i Bitwarden — når den kommer, opretter jeg produktet selv samme dag. Detaljer i STATUS.md.
 2026-08-23T17:21:38+02:00 iteration 3 afsluttet (exit 0)
 2026-08-23T17:22:03+02:00 === iteration 4/60 ===
+Iteration 89 færdig.
+
+**Vurdering (punkt 1 — universalitet): BESTÅET.** Kernen tager en vilkårlig URL med nul CMS-forudsætninger; WP-pluginet er kun én af fire indpakninger (web, CLI, API, plugin). Intet at trække ud. Beslutningen revurderet under pengekriteriet: den holder stadig ($79/år, 0 kr drift, kortest vej til betaling).
+
+**Bygget:**
+- Ny sammenligningsside `/pro/vs-termly/` — målrettet køber-intention-søgning ("termly alternative/pricing"). Ærlig side-by-side: hvad Termly gør bedre (consent-platform, dokumentgeneratorer), hvad vi gør bedre (Impressum/NIS2/EAA/DORA-checks, daglig monitorering, PDF-evidence, flad $79/år-pris), plus ærlige begrænsninger og CTA til gratis scan.
+- Link fra /pro/-tabel + indgang på blog-index + sitemap-opdatering.
+- Deployet og verificeret live: /pro/vs-termly/, /pro/, /blog/, /sitemap.xml, /scan/ = alle 200 med korrekt indhold. Commit `c4e8eeb` pushet.
+
+**STATUS.md opdateret.** Blokering står som én linje (LS-nøgle i Bitwarden). Rigtige tal: 0 tilmeldinger, 0 eksterne scanninger. Næste iteration: LS-nøgle → produkt → checkout; evt. en "vs iubenda"-søsterside.
+2026-08-23T17:26:37+02:00 iteration 4 afsluttet (exit 0)
+2026-08-23T17:27:01+02:00 === iteration 5/60 ===
+Iteration 90 færdig.
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Re-verificeret i kildekoden: `worker-core.js` tager en vilkårlig URL og har nul CMS-forudsætninger — WordPress optræder kun som én detektions-signatur blandt flere. Fire indpakninger (web, CLI, API, plugin) ligger allerede om samme kerne. Intet at trække ud, intet at bygge om.
+
+**Beslutningen holder under pengekriteriet** — EUComply scorer stadig højest på alle fem: kortest til betaling (timer efter LS-nøglen), $79/år pr. kunde, stort adresserbart marked, årlig tilbagevendende indtægt, 0 kr drift.
+
+**Bygget i denne iteration:** `/pro/vs-iubenda/` — anden sammenligningsside mod en konkret konkurrent (høj køber-intention-søgning). Samme ærlige format som vs-Termlly med side-by-side tabel, hvad Iubenda gør bedre, hvad vi gør bedre og honest limits. Linket fra /pro/, blog-index og krydslinket fra vs-Termlly. Deployet og verificeret live: alle sider 200 med korrekt indhold, sitemap gyldig XML med 46 URLs.
+
+STATUS.md er opdateret. Næste skridt står der; den eneste blokering er stadig LS-nøglen i Bitwarden (én linje, som aftalt).
+2026-08-23T17:30:32+02:00 iteration 5 afsluttet (exit 0)
+2026-08-23T17:30:54+02:00 === iteration 6/60 ===
+Iteration 91 færdig. Kort rapport:
+
+**1. Universalitets-vurdering (punkt 1): BESTÅET.**
+Læste `worker-core.js` direkte: kernen tager en vilkårlig URL, alle checks er header/HTML-baserede, nul CMS-forudsætninger. WordPress er én af 16 platform-signaturer, kun brugt til informationel feedback. Indpakningerne (web /scan/, CLI, API, WP-plugin) er allerede separate — intet at trække ud.
+
+**2. Beslutningen holder under pengekriteriet** — EUComply scorer stadig højest på alle fem faktorer (timer til betaling når LS-nøglen kommer, $79/år, 25M+ marked, tilbagevendende, 0 kr drift). Ingen grund til at skifte.
+
+**3. Bygget i denne iteration: `/pro/vs-cookiebot/`** — tredje køber-intention-søgeside (Cookiebot er den CMP med størst søgevolume i Europa). Samme ærlige side-by-side format som de to andre. Krydslinket alle tre vs-sider indbyrdes, link fra /pro/ og blog-index, sitemap opdateret til 47 URLs (XML-valideret), deployet og verificeret live: alle berørte sider svarer 200 med korrekt indhold, og /pro/ indeholder det nye link.
+
+**Blokering (én linje, som aftalt):** Lemon Squeezy API-nøgle mangler i Bitwarden — når den ligger der, opretter jeg produktet samme dag.
+
+STATUS.md er opdateret og alt er committet og pushed (d1dbf8e). Budget stadig 0 kr brugt; rigtige tal stadig 0 tilmeldinger / 0 scanninger fra andre.
+2026-08-23T17:34:39+02:00 iteration 6 afsluttet (exit 0)
+2026-08-23T17:35:56+02:00 === iteration 7/60 ===

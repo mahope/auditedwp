@@ -1,27 +1,25 @@
-# STATUS — Iteration 91 (2026-08-29): vs-Cookiebot sammenligningsside
+# STATUS — Iteration 92 (2026-08-29): vs-Osano side + DECISION opdateret
 
-**Status:** Beslutningen HOLDER. Universalitet BESTÅET (punkt 1 re-verificeret i kode, se nedenfor).
+**Status:** Beslutningen HOLDER under pengekriteriet (revurderet med pengelinsen — se DECISION.md, nu opdateret fra Gumroad til Lemon Squeezy).
 
-## Universalitets-vurdering (punkt 1) — BESTÅET, iteration 91
+## Universalitet (punkt 1) — BESTÅET (re-verificeret iteration 91)
 
-Kodelæsning `worker-core.js`: kernen tager en vilkårlig URL, alle checks er
-header/HTML-baserede, nul CMS-forudsætninger. WordPress er én af 16 platform-
-signaturer, kun brugt til informationel feedback. Indpakninger: web (/scan/),
-CLI, API (Worker), WP-plugin — intet at trække ud, kernen er allerede
-selvstændig.
+Kernen (`worker-core.js`) tager en vilkårlig URL, nul CMS-forudsætninger.
+Indpakninger: web (/scan/), CLI, API, WP-plugin. Intet at trække ud.
 
 ## Bygget i denne iteration
 
 | # | Opgave | Status |
 |---|--------|--------|
-| 1 | **`/pro/vs-cookiebot/`** — tredje køber-intention-søgeside ("cookiebot alternative", "cookiebot pricing"). Cookiebot = Europas største CMP, stærkest søgevolume af de tre. Samme ærlige format: side-by-side tabel, "what they do better" / "what we do better", honest limits, CTA til gratis scan og Pro. | ✅ Live, verificeret 200 med korrekt indhold |
-| 2 | Krydslink fra /pro/ + indgang på blog-index | ✅ |
-| 3 | Krydslink fra vs-Termlly ↔ vs-Iubenda ↔ vs-Cookiebot (alle tre peger på hinanden) | ✅ |
-| 4 | Sitemap opdateret (47 URLs, XML-valideret); deployet; alle berørte sider verificeret live | ✅ |
+| 1 | **`/pro/vs-osano/`** — fjerde køber-intention-søgeside. Osano = stor US privacy-platform med CMP; søgevolume på "osano alternative/pricing" er reelt. Samme ærlige format: side-by-side tabel, "what they do better" / "what we do better", honest limits, CTA. | ✅ Live, 200, indhold verificeret |
+| 2 | Krydslink fra alle tre andre vs-sider + pro/index + blog-index (post-card) | ✅ Verificeret live |
+| 3 | Sitemap: 48 URLs, XML-valideret, deployet | ✅ |
+| 4 | **DECISION.md opdateret** — Gumroad-referencer erstattet med Lemon Squeezy; penge-vurderingen bekræftet: 0 kr drift, $79/år/kunde, 25M+ marked, timer til betaling når LS-nøglen ligger klar | ✅ |
 
 ## Købsrejsen nu
 
-Uændret og klar: /scan/ → Pro-CTA → /pro/ ($79/år) → LS-checkout (når CHECKOUT_URL sættes).
+/scan/ → Pro-CTA → /pro/ ($79/år) → LS-checkout (når CHECKOUT_URL sættes).
+Fire vs-sider + blog trækker køber-intention-søgning ind.
 
 ## Blokering (én linje)
 
@@ -42,5 +40,5 @@ Rigtige tilmeldinger: 0 · Rigtige scanninger af andre end os: 0.
 ## Næste iteration
 
 1. LS-nøgle → opret produkt via API → test-køb → CHECKOUT_URL → første betaling mulig
-2. Fjerde vs-side ("vs Osano", "vs Complianz") ELLER skift spor: blog-opslag rettet mod Shopify/Wix-ejere ("cookie consent uden plugin") for at bredden af indgange
-3. Interne links fra eksisterende blog-opslag til de tre vs-sider
+2. Interne links fra eksisterende blog-opslag til de fire vs-sider (de linker stadig ikke tilbage)
+3. Blog-opslag rettet mod Shopify/Wix-ejere ("cookie consent uden plugin") for bredere indgang
