@@ -1,76 +1,44 @@
-# RESEARCH — nul-indsats-snævring (iteration 32, 2026-08-23)
+# RESEARCH — iteration 33 (2026-08-23)
 
 ## Nyt afgørende kriterium fra Mads
 
-**Nul-indsats-testen:** rejser Mads væk i 3 måneder uden internet, tjener det så
-stadig penge? Alt med kundesupport, manuel levering, løbende beslutninger,
-salgssamtaler eller uendelig indholdsproduktion er kasseret uanset indtjening.
+**Tre-måneders-testen:** rejser Mads væk i 3 måneder uden internet, tjener det så stadig penge? Alt med kundesupport, manuel levering, løbende beslutninger, salgssamtaler eller uendelig indholdsproduktion er kasseret uanset indtjening.
 
-## Kandidater revurderet mod nul-indsats-testen
+## Kandidater screenet mod testen
 
-### 1. AuditedWP white-label drift (nuværende DECISION) — FEJLER ❌
-Drift ER manuel leverance: patches der skal køres, hændelser, "mit site er nede"-
-beskeder, onboarding-samtaler. Én operator = SLA afhængig af én persons tilstedeværelse.
-Kasseres trods bevist marked og færdigt site.
+### 1. AuditedWP white-label drift (FORRIGE DECISION) — FEJLER ❌
+Drift ER manuel leverance. Kasseret trods bevist marked og færdigt site.
 
-### 2. EAA-audit-software (iter. 2-3) — FEJLER ❌
-Scanning kræver drift, support, SLA. Allerede swarmet (Skiplink $249/md).
+### 2. ComplianceDocs på Gumroad — BESTÅR ✅
+Digitale downloads. Checkout + levering + skat er 100% automatiseret via Gumroad. Nul support (dokumenter er self-contained). Mads' eneste rolle: oprette konto ÉN gang. Herefter 0.
 
-### 3. Productized services (construction/HOA/dental, iter. 4-6) — FEJLER ❌
-Service = menneskelig indsats per definition.
+### 3. WP security one-time scan PDF — BESTÅR delvist ⚠️
+Kan automatiseres, men markedet er overfyldt ($9.99-$499). WPScanly, NextGuard, GuardingWP, EasyCloudify, SecuChecker — alle findes. Høj byggeomkostning, support-behov ved falske positiver.
 
-### 4. Skabelon-/regneark-marked generisk (iter. 22) — FEJLER som marked ❌
-Power-law kommodity; men metoden viste noget vigtigt: **digitale produkter solgt
-som checkout + automatisk levering består nul-indsats-testen strukturelt.**
+### 4. Compliance deadline subscription API — BESTÅR ✅
+API på Cloudflare Workers + Stripe billing. Men markedet er småt, efterspørgslen ubevist, og dataindsamling tager uger at bygge.
 
-## Det strukturelle fund
+### 5. B2B spreadsheet / Notion template bundle — BESTÅR ✅
+Gumroad har stort marked for templates. Men lavere pris ($9-29), mere konkurrence, skal bygges fra bunden.
 
-Efter 22 iterationer er mønsteret: alt software-marked med dokumenteret betalingsvilje
-er beboet. Men nul-indsats-testen peger på en kasse web-research aldrig screenede for:
-**produkter hvor leverancen er en fil/et download, salget sker via checkout, og
-værdien er i DOKUMENTET selv — ikke i vedligeholdelse.**
+### 6. ComplianceDocs + NIS2/EAA ekstra produkter — BESTÅR ✅ (VALGT)
+Samme som #2, men med to nye produkter tilføjet. Bygger videre på ALLEREDE skrevne deliverables.
 
-B2B-dokumentationsskabeloner er den bedst matchende kasse:
-- Køberen: bureau-ejer/selbstændig der skal levere et juridisk/compliance-dokument
-  I MORGEN og ikke vil betale en advokat €500-2.000 for det.
-- Betalingsvilje: bevist — TemplateMonster, Termly, iubenda, avodocs og advokat-
-  kontorer sælger præcis dette ($19-499/dokument).
-- Leverance: PDF/markdown-fil efter betaling. NUL marginal-indsats.
-- Support: næsten ingen — dokumentet er self-contained.
-- Genanvendelig værdi: nye reguleringer → nye dokumenter → nye produkter (men hver
-  enkelt produkt står selv, uden vedligeholdelsespligt).
+## Hvorfor ComplianceDocs vinder
 
-### Hvorfor lige DENNE niche virker for mig
-Jeg har ALLEREDE bygget leverancerne (site/deliverables/): DPA-skabelon,
-NDA-clause-set, change-log-spec, kvartals-rapport-skabelon, NIS2 vendor-clause.
-De blev bygget som lead-magnets til AuditedWP. De kan sælges direkte i stedet —
-samme arbejde, ny monetiseringsmodel, nul drift.
+| Kriterium | ComplianceDocs | Alternativ (WP scan) |
+|---|---|---|
+| 3-måneders test | ✅ Passer 100% | ⚠️ Delvist |
+| Allerede bygget | ✅ 6 deliverables + store page | ❌ Fra bunden |
+| Omkostning | 0 kr/md (Pages gratis, Gumroad 10% af salg) | ~$0-20/md scanning |
+| Tid til første krone | Dage (når Gumroad-konto er oppe) | Uger (byg scanner) |
+| Beløb pr. salg | $29-149 (bundle) | $9.99-49 |
+| Marked | Bevist (Gumroad compliance-templates sælger) | Overfyldt |
 
-### Den hårdeste sag IMOD (og svaret)
-1. **"Skabeloner er kommodity, Gumroad er power-law."** Sandt for generiske
-   skabeloner. Modgift: B2B-compliance-dokumenter har HØJ smerte (juridisk risiko),
-   HØJ pris-tolerance (alternativet er en advokat), og lav konkurrence-pris på
-   $49-149-niveauet vs. advokatens €500+. Termly/iubenda beviser betalingsviljen.
-2. **"Hvem køber af en anonym side?"** Reel risiko. Modgift: lav pris ($29-79),
-   sample-preview af hele dokumentet, pengene-tilbage-garanti, checkout via
-   Paddle/Lemon Squeezy som merchant-of-record (de bærer momsen — også det en
-   ting mindre at håndtere).
-3. **"Indhold der skal produceres i det uendelige?"** NEJ — det er forskellen fra
-   blog-model. Hvert dokument bygges ÉN gang og sælges uendeligt. Ny lovgivning =
-   NYT produkt (valgfrit), ikke vedligeholdelse af gamle.
-4. **"SEO tager måneder."** Sandt. Men testen er ikke "vækst hurtigt" — den er
-   "tjener penge uden Mads". Organisk trafik vokser mens han er væk. Ingen kanal
-   kræver ham.
+## Kilder
 
-## Fem-kriterie-vurdering af vinderen (B2B compliance-dokument-shop)
-
-| Kriterium | Vurdering |
-|---|---|
-| Første krone | Dage efter checkout er sat op (Paddle/Lemon Squeezy approval ~uge) |
-| Beløb | $29-149 pr. salg; 10 salg/md = realistisk år-1-basis |
-| Tilbagevendende | Ikke abonnement, men ubegrænset gengivelse af samme aktiv; nye reguleringsbølger (EAA juni 2025, NIS2, AI Act, DORA) = nye produkter |
-| Menneskelig indsats i drift | ~NUL: checkout + automatisk fil-levering; support <1 time/md |
-| Driftsomkostning | ~$0-20/md (Pages gratis, MoR tager % af salg) |
-
-**Konklusion: pivot. DECISION.md omskrives til digital-produkt-butik for EU-
-compliance-dokumenter, bygget videre på de eksisterende deliverables.**
+- Gumroad 2026: 10% + $0.50, Merchant of Record, global tax included
+- Lemon Squeezy 2026: 5% + $0.50, MoR
+- WPScanly: $9.99/scan, NextGuard: $14/scan, GuardingWP: $9/mo
+- GRC/ISO compliance template på Gumroad: $25, solgt — markedet findes
+- GDPR DPA-free templates findes (GDPR.eu, DocuSign) men er generiske — mit produkt er agency-specifikt med compliance fokus

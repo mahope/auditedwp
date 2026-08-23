@@ -1,12 +1,19 @@
 #!/bin/sh
-# Deploy AuditedWP site til GitHub Pages.
-# Brug: sh deploy.sh
-# Sitet er live på https://mahope.github.io/auditedwp/
-# Efter push tager GitHub Pages ~30s at bygge/deploye.
+# Deploy site to Cloudflare Pages
+# Requires: wrangler login (done once)
+# Usage: sh deploy.sh
+
+set -e
+
+echo "=== Deploying AuditedWP to Cloudflare Pages ==="
+echo "Project: auditedwp"
+echo "Live URL: https://auditedwp.pages.dev"
+
 cd "$(dirname "$0")"
-git add -A
-git commit -m "site update $(date +%Y-%m-%d_%H:%M)"
-git push origin main
-echo "---"
-echo "Deployet. Tjek https://github.com/mahope/auditedwp/actions for build-status."
-echo "Live URL: https://mahope.github.io/auditedwp/"
+
+wrangler pages deploy . --project-name=auditedwp
+
+echo ""
+echo "=== Done ==="
+echo "Live: https://auditedwp.pages.dev"
+echo "Dashboard: https://dash.cloudflare.com/?to=pages/view/auditedwp"

@@ -4,19 +4,21 @@
 
 | Dato | Post | Beløb | Status | Begrundelse |
 |------|------|-------|--------|-------------|
-| — | (ingen udgifter endnu) | 0 kr | — | Alt kørt på gratis niveauer (GitHub Pages) |
+| — | (ingen udgifter endnu) | 0 kr | — | Alt kørt på gratis niveauer (Cloudflare Pages gratis niveau) |
 
 ## Planlagt / anmodet
+
 | Post | Estimat | Status |
 |------|---------|--------|
-| Domæne complidocs.com via Cloudflare (~$10/år) | ~70 DKK | Forhåndsgodkendt iflg. AGENTS.md; Claude køber på Mads' vegne når navnet er verificeret ledigt. Ikke blokerende — sitet kører på pages.dev. |
+| Domæne **auditedwp.com** via Cloudflare (~$10/år) | ~70 DKK | Forhåndsgodkendt iflg. AGENTS.md; Claude køber på Mads' vegne når navnet er verificeret ledigt. Ikke blokerende — sitet kører på pages.dev. |
 
 ## Løbende driftsomkostninger
-- Hosting: GitHub Pages — gratis.
-- Checkout: Lemon Squeezy eller Paddle — ingen faste gebyrer, % af salg først
-  NÅR der sælges. Gumroad som fallback, samme model.
+
+- Hosting: Cloudflare Pages — gratis niveau (ubegrænsede båndbredde, SSL, CDN).
+- Checkout: Stripe — ingen faste gebyrer, ~2.9% + €0,30 pr. transaktion først NÅR der sælges.
 - Estimeret fast omkostning: 0 kr/md indtil første salg.
 
 ## Ændring fra forrige budget
-auditedwp.com-anmodningen er trukket tilbage: pivot væk fra drift-forretningen
-(DECISION.md iter. 32). Ingen penge er brugt på det gamle spor.
+
+complidocs.com-anmodningen er trukket tilbage (pivot tilbage til AuditedWP).
+Ingen penge er brugt på compliance-sporet.

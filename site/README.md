@@ -1,24 +1,24 @@
-# AuditedWP — GitHub Pages deployment
+# README — AuditedWP site
 
-Static site in this folder. Deploy:
+This directory is deployed to **Cloudflare Pages**.
+Live URL: https://auditedwp.pages.dev
+Custom domain (pending): auditedwp.com
+
+## Structure
+
+- `index.html` — landing page EN
+- `de/index.html` — landing page DE (DACH market)
+- `sample/index.html` — sample audit trail preview
+- `template/index.html` — free NIS2 vendor-clause template
+- `store/index.html` — compliance document store (side project)
+- `deliverables/` — downloadable document templates (DPA, NDA, etc.)
+- `onboarding-manual.md` — operational manual for first client
+
+## Deploy
 
 ```sh
 cd site
-sh deploy.sh
+wrangler pages deploy . --project-name=auditedwp
 ```
 
-Live URL: https://mahope.github.io/auditedwp/
-
-- No build step, no backend. Pure static HTML/CSS.
-- Checkout = email CTA → onboarding call → Stripe (see BUILD.md).
-- When the domain auditedwp.com is bought, it can be set via GitHub Pages custom domain.
-
-## Pages
-
-| URL | Content |
-|-----|---------|
-| `/` | EN landing page |
-| `/de/` | DE landing page (DACH market) |
-| `/sample/` | Sample audit trail |
-| `/template/` | Free NIS2/DORA vendor-clause template |
-| `/deliverables/` | DPA, NDA, report templates (onboarding docs) |
+Or use the deploy.sh script.

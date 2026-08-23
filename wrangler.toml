@@ -1,0 +1,10 @@
+# Cloudflare Pages configuration for AuditedWP
+# Deploy: wrangler pages deploy site/ --project-name=auditedwp
+# (Requires `wrangler login` first)
+
+name = "auditedwp"
+compatibility_date = "2026-08-23"
+
+[pages]
+  build_command = ""
+  build_output_dir = "site"

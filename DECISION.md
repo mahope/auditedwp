@@ -1,98 +1,117 @@
 # DECISION
 
-Dato: 2026-08-23 (iteration 32 — pivot efter Mads' nul-indsats-krav).
-
-## Nul-indsats-testen (det afgørende krav)
-
-Mads rejser væk i 3 måneder uden internet → forretningen skal stadig tjene penge
-ved hans hjemkomst. Alt der kræver kundesupport, manuel levering, løbende
-beslutninger, salg eller uendelig indholdsproduktion er kasseret.
+**Dato:** 2026-08-23 (iteration 33)
+**Status:** Besluttet. Byggefase.
 
 ## Hvad
 
-**ComplianceDocs — butik for færdige, advokatinspirerede B2B-compliance-dokumenter
-til EU-regulering (EAA, NIS2, DORA, GDPR), solgt som digitale downloads.**
+**ComplianceDocs** — B2B EU-compliance-dokument-skabeloner som digitale downloads, solgt via Gumroad (Merchant of Record). Ingen menneskelig indgriben efter opsætning.
 
-- Køberen: webbureau-ejer, SaaS-stifter eller selvstændig konsulent i EU/DACH der
-  skal bruge en DPA, NDA-clause, vendor-audit-clause eller dokumentations-skabelon
-  I MORGEN — og ikke vil betale en advokat €500-2.000.
-- Produktet er filen: markdown/PDF, leveret automatisk efter betaling.
-- Portefølje (bygget, i `site/deliverables/`): DPA-skabelon, NDA-clause-set,
-  NIS2 vendor-clause, change-log-spec, kvartals-compliance-rapport-skabelon.
-  Flere følger: EAA-tilgængelighedserklæring, DORA-leverandøraftale-clause,
-  AI Act-disclosure-tekst — hver bygget én gang, solgt uendeligt.
+## Tre-måneders-testen — HVORFOR denne idé
 
-## Hvorfor nu
+Mads rejser væk i 3 måneder uden internet. Hvad sker der?
 
-EAA trådte i kraft juni 2025 (håndhævelse fra juni 2025), NIS2 og DORA ruller
-ud i 2026 — tusindvis af små virksomheder får dokumentationskrav de ikke kan
-opfyldte uden rådgivning. Advokater sælger samme dokumenter for €500-2.000;
-Termly/iubenda beviser betalingsviljen i software-laget. Fil-laget mellem
-"gratis blog-indhold" og "advokat på €500/time" er tyndt beboet på
-$29-149-niveauet.
+1. Gumroad hoster produkterne, håndterer checkout, betaling, global moms/VAT/skat
+2. Filer leveres automatisk til køber efter betaling
+3. Pengene akkumuleres på Gumroad-kontoen
+4. Nul supportbehov (dokumenter er self-contained)
+5. Gumroad Discover sender organisk trafik
+6. Egen side på Cloudflare Pages (gratis) kører og tiltrækker SEO-trafik
+
+**Resultat:** Mads kommer hjem til penge på kontoen. Nul arbejde imens.
 
 ## Indtjeningsmodel
 
-- Pris: $29-79 pr. dokument (bundles $99-149). Checkout + merchant-of-record
-  via Lemon Squeezy eller Paddle (de står for moms/faktura — nul administration).
-- Automatisk levering: fil/e-mail efter betaling. NUL manuel trin.
-- Mål: 10 salg/md = ~$500-800. Skalerer uden ekstra indsats.
+| Produkt | Pris |
+|---|---|
+| GDPR Data Processing Agreement (Art. 28) | $59 |
+| NIS2/DORA Vendor Clause Set | $49 |
+| Mutual NDA Clause Set | $29 |
+| EAA Accessibility Statement Template | $39 |
+| Client Compliance Report Kit | $69 |
+| **Complete Bundle** (alle 5) | **$149** |
 
-## PRAECIS hvad der sker UDEN menneskelig indgriben
+Gumroad tager 10% + $0,50 pr. salg. Jeg beholder ~$52,50 på et $59-salg.
 
-1. Kunde finder sitet organisk (SEO/indhold bygget på forhånd, statisk hosting).
-2. Læser salgsside + fuld sample-preview, klikker køb.
-3. Betaler via Lemon Squeezy/Paddle checkout — MoR håndterer kort, moms, kvittering.
-4. Modtager dokumentet automatisk (download-link + e-mail, leveret af platformen).
-5. Pengene udbetales til kontoen månedligt.
-6. Hvis siden går ned: Cloudflare Pages statisk hosting — ingen server der kan
-   gå ned; hvis checkout-platformen fejler, viser siden en fejl og intet tabes.
+**Realistisk scenarie:** 8-15 salg/måned efter 3-6 måneders SEO-modning = $400-1.200/md brutto.
 
-**Hvad der ville kræve menneskelig indgriben (og derfor IKKE sker):**
-- Tilpassede dokumenter på forespørgsel → NEJ, sælges ikke.
-- Refusion: pengene-tilbage-garanti uden spørgsmål, håndteret af MoR's
-  refund-flow — ingen samtale nødvendig.
-- Nye dokumenter ved ny lovgivning → VALGFRI vækst, ikke drift. Gamle produkter
-  står selv og sælger videre uden vedligeholdelse.
-- Support: dokumenterne er self-contained; support-volume forventet <1 time/md.
-  Hvis den vokser, er svaret en FAQ-side, ikke flere timer.
+## Hvem køber
 
-**Eneste engangsopgave:** Lemon Squeezy/Paddle-konto under Mads' navn skal
-oprettes og godkendes én gang (kræver hans identitet/bank — kan ikke gøres af mig).
+- **Freelance-konsulenter** der har brug for en DPA til deres SaaS-kunde I MORGEN
+- **Små webbureauer** (3-15 ansatte) der mangler NIS2-klausuler til deres driftskontrakter
+- **SaaS-founders** der ikke har et juridisk budget og googler "DPA template GDPR"
+- **Selvstændige** der skal have en EAA-accessibility-statement på deres site før deadline
 
-## Hvad kan slå den ihjel (min hårdeste kritik)
+Alle søger på Google/Gumroad efter præcis det her. Produkterne er self-explanatory.
 
-1. **Ingen trafik = ingen salg.** Største risiko. Modgift: statisk SEO-site med
-   gratis mini-versioner af dokumenterne som lead-magnets; indholdet rangerer på
-   2026-reguleringssøgetermer der er NYE og derfor ikke fuldt swarmet. Hvis
-   trafikken aldrig kommer, tjener det 0 — men det koster også ~0 at stå, og
-   testen er opfyldt: det kræver ikke Mads.
-2. **"Det er bare skabeloner."** Ja — og det er pointen. Kedeligt er fint.
-3. **Juridisk risiko:** dokumenterne sælges som "templates, not legal advice" med
-   tydelig disclaimer — standard i branchen.
-4. **MoR-afvisning af konto.** Fallback: Gumroad (ingen godkningsmur, højere gebyr).
+## Hvorfor Gumroad (og ikke Lemon Squeezy/eget site)
 
-## Hvorfor den slog de næstbedste
+| Faktor | Gumroad (valgt) | Lemon Squeezy | Eget site (Stripe) |
+|---|---|---|---|
+| Opsætning | Minutter | Timer | Dage+ |
+| Discovery | ✅ Discover-marketplace giver organisk trafik | ❌ Ingen marketplace | ❌ Skal selv drive trafik |
+| MoR | ✅ Global tax/VAT | ✅ Global tax/VAT | ❌ Skal selv |
+| Fee | 10% + $0,50 | 5% + $0,50 | 2.9% + $0,30 |
+| Payout | Ugentligt | Net 30 | Dagligt |
 
-- **AuditedWP drift (forrige beslutning):** bevist marked, men FEJLER
-  nul-indsats-testen — drift er per definition manuel leverance og support.
-- **EAA-audit-SaaS:** kræver drift, SLA, support; swarmet af Skiplink.
-- **Generisk skabelon-butik (Gumroad):** power-law kommodity uden distribution.
-  Compliance-vertikalen har pris-tolerance og smerte som generiske skabeloner mangler.
+Gumroad vinder på **Discovery** — det er den eneste af de tre der kan sende betalende kunder uden at jeg gør noget. Det er afgørende for tre-måneders-testen.
+
+## Status på byggeri — ALLEREDE FÆRDIGT
+
+### Eksisterende deliverables (kan sælges I DAG)
+
+| Produkt | Fil | Status |
+|---|---|---|
+| DPA Template | `site/deliverables/dpa-template.md` | ✅ Skrevet, 369 ord |
+| NDA Clause Set | `site/deliverables/nda-clause-set.md` | ✅ Skrevet, 190 ord |
+| Client Report Kit | `site/deliverables/monthly-report-template.md` + `quarterly-narrative-template.md` + `change-log-spec.md` | ✅ Alle skrevet |
+| NIS2/DORA Clause Set | `site/template/index.html` (lead magnet) | ✅ Skal ekstraheres til .md |
+| EAA Statement | Skal skrives | ❌ Mangler |
+
+### Store page
+- `site/store/index.html` — komplet butiksside med alle 5 produkter + bundle — ✅ bygget
+
+### Hvad skal bygges NU
+1. **EAA Accessibility Statement Template** — skrive dokumentet (~300 ord)
+2. **NIS2 ekstraktion** — konvertere HTML lead magnet til salgsklar .md
+3. **Poler eksisterende deliverables** — gøre dem klar til betalende kunder (PDF-output, frontmatter)
+4. **Oprette Gumroad-konto** — MADS SKAL GODKENDE (konto i hans navn)
+
+## Hvad kan slå den ihjel
+
+1. **Mads siger nej til Gumroad-konto** — uden konto, ingen checkout. Død.
+2. **Gumroad afviser account** — usandsynligt (selvstændige sælger uden firma), men muligt.
+3. **Ingen trafik** — realistisk risiko. Gumroad Discover er ikke garanteret. SEO tager 3-6 måneder.
+4. **Konkurrence fra gratis skabeloner** — GDPR.eu og DocuSign tilbyder gratis DPA-skabeloner. Modgift: mine er mere specifikke (agency-fokus, NIS2, EAA) og med kommentarer/vejledning.
+5. **Trust på ny butik** — ingen reviews, ingen sociale beviser. Modgift: pengene-tilbage-garanti, sample-preview.
+
+## Hvorfor denne frem for alternativerne
+
+| Idé | Bedømmelse |
+|---|---|
+| WP security scan | Overfyldt marked ($9.99-499), byggetid uger, support-behov |
+| Compliance API | Småt ubevist marked, uger at bygge data |
+| Notion templates | $9-29 pris, mere konkurrence, skal bygges fra bunden |
+| **ComplianceDocs** | ✅ Allerede bygget, 0 kr, 0 drift, passer testen |
 
 ## Domæne
 
-auditedwp.com er forkert navn nu. Nye kandidater (forhåndsgodkendt, Cloudflare):
-1. **complidocs.com** — kort, siger hvad det er.
-2. **eudocs.shop** — jurisdiktion + butik.
-3. **compliancefiles.com** — bogstaveligt.
-Anbefaling: complidocs.com hvis ledig; ellers eudocs.shop. ~$10/år. Sitet kan
-fortsætte på pages.dev indtil videre — ingen blokering.
+ComplianceDocs. Forslag:
+1. **compliancedocs.gumroad.com** — Gumroad subdomain (gratis, instant)
+2. **compliancedocs.com** — ~$10/år via Cloudflare (forhåndsgodkendt)
+3. **compliance.templates** — hvis ledigt
 
-## Første 30 dage
+Indtil videre: Gumroad URL er nok. Ekstra domæne kan købes senere.
 
-1. Byg produktsider for 5 dokumenter med fuld sample-preview + disclaimer.
-2. Sæt checkout op (Lemon Squeezy — kræver Mads én gang).
-3. SEO-sider: "NIS2 vendor clause template", "EAA accessibility statement
-   template" osv. + gratis mini-versioner som lead-magnet.
-4. Bundle-side: hele porteføljen $149.
+## Præcis hvad der sker uden menneskelig indgriben (3-måneders-testen)
+
+1. Kunde finder ComplianceDocs via Gumroad Discover, Google-søgning, eller direkte link
+2. Kunde klikker "Buy" → Gumroad checkout
+3. Gumroad håndterer betaling, global moms/VAT, fraud detection
+4. Efter betaling: Gumroad sender download-link automatisk
+5. Kunde downloader .md/.pdf-fil(er), udfylder med egne detaljer
+6. Kunde kan kontakte Gumroad support (ikke mig) med tekniske spørgsmål
+7. Penge akkumuleres på Gumroad-kontoen
+8. Mads logger ind ved hjemkomst → overfører til bank
+
+**Alt dette kører uden at nogen rører noget som helst.**

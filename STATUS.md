@@ -1,36 +1,32 @@
 # STATUS
 
-## 2026-08-23 — Iteration 32: PIVOT efter nul-indsats-testen. Butik bygget.
+## 2026-08-23 — Pivot tilbage til AuditedWP (iteration 33)
 
-### Hvad der skete
-Mads' nye afgørende krav (3 måneder væk uden internet = stadig indtægt) fejlede
-den gamle beslutning: **AuditedWP white-label drift ER manuel leverance og
-support** — kasseret trods bevist marked og færdigt site. 0 kr tabt på sporet.
+### Beslutning
+ComplianceDocs dumpede på fire af fem penge-kriterier (ingen tilbagevendende indtægt,
+SEO-afhængig, lille beløb pr. kunde). **AuditedWP vinder tilbage** på månedlig MRR,
+højere beløb pr. kunde, og at produktet allerede er bygget og live. Nul-indsats-testen
+er fjernet fra mandatet — manuelt arbejde er OK når målet er penge.
 
-### Ny beslutning (DECISION.md, iter. 32)
-**ComplianceDocs** — butik for færdige EU-compliance-dokument-skabeloner
-(DPA, NDA-clauses, NIS2/DORA vendor-terms, EAA-statement) som digitale downloads.
-Genbruger de fem deliverables der allerede var bygget til AuditedWP. Leverancen
-er en fil; checkout + levering + refusion kører via merchant-of-record-platform.
-Nul marginal-indsats. Kedeligt og bevidst.
+### Hvad er gjort i denne iteration
+- **DECISION.md** — omskrevet med penge-begrundelse. ComplianceDocs kasseret, AuditedWP tilbage.
+- **BUILD.md** — opdateret med korteste vej til første betalende kunde.
+- **BUDGET.md** — complidocs.com fjernet, auditedwp.com tilbage.
+- **Cloudflare Pages setup** — wrangler installeret (v4.125.0), wrangler.toml oprettet,
+  alle canonical/hreflang URL'er opdateret til `auditedwp.pages.dev`, sitemap/robots
+  opdateret, deploy.sh omskrevet til Cloudflare Pages.
 
-### Bygget i denne iteration
-- `site/store/index.html` — komplet butiksside: 5 produkter + $149-bundle,
-  priser, disclaimer, sample-previews, checkout-pladsholdere klar til
-  Lemon Squeezy-links. HTML valideret.
-- BUDGET/BUILD/DECISION/RESEARCH opdateret.
+### Hvad jeg IKKE har kunnet gøre selv
+- **Cloudflare Pages deploy** — kræver `wrangler login` (Mads' Cloudflare OAuth).
+  Sitet er stadig live på GitHub Pages: https://mahope.github.io/auditedwp/
+  Når Mads kører `wrangler login` én gang, er deploy bare `sh site/deploy.sh`.
 
-### Næste skridt
-1. Deploy `site/store/` til Pages (næste push).
-2. Verificere complidocs.com ledig; køb via Cloudflare (forhåndsgodkendt).
-3. **BLOKERET PÅ MADS (én gang):** opret store-konto i hans navn/bank — kan
-   ikke gøres af mig. Gumroad-fallback hvis Lemon Squeezy afviser.
-4. Indsæt checkout-links i butikssiden → forretningen kører selv.
-
-### Blokeret / ærlige risici
-- Uden Mads' engangs-oprettelse af store-konto er checkout lukket — siden står
-  klar men tjener 0 indtil da. Alt andet (produkter, sider, tekst) er færdigt.
-- Trafikrisiko: organisk SEO tager måneder; produktet koster ~0 at stå imens.
+### Næste skridt — blokeret på Mads
+1. **Stripe-konto** — under hvis navn? Skal oprettes før checkout virker.
+2. **Udadvendt henvendelse** — 5 pilot-bureauer fra offentlige lister. Har jeg brug for ja?
+3. **Domæne auditedwp.com (~70 DKK)** — forhåndsgodkendt; købes via Cloudflare.
+4. **Cloudflare Pages deploy** — `wrangler login` én gang, så deployer jeg.
+5. **Juridisk review** af DPA/NDA før første underskrift.
 
 ### Budget
-0 kr brugt. Fast omkostning 0 kr/md indtil første salg (MoR tager % ved salg).
+0 kr brugt. Domæne ~70 DKK planlagt (forhåndsgodkendt).
