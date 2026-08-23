@@ -1,43 +1,55 @@
-# STATUS — Iteration 54 (2026-08-24): Universal-check genbekræftet, link-gennemgang, 1 fejl rettet
+# STATUS — Iteration 55 (2026-08-24): Universal-check med live-bevis, beslutning bekræftet under pengekriteriet
 
 **Dato:** 2026-08-24
-**Status:** Alt bygget, live og link-verificeret. Venter kun på Mads' konti.
+**Status:** Alt bygget og live. Venter kun på Mads' Gumroad-konto. Ingen kodebehov.
 
-## Punkt 1 — Universelt: vurderet og bestået (igen)
+## Punkt 1 — Universelt: VURDERET MED LIVE-BEVISER (ikke kun påstand)
 
-Kernen (`worker-scan/index.js`, 269 linjer) tager en almindelig URL og virker uanset CMS.
-WordPress er kun én detektions-signatur blandt andre — ikke en afhængighed. Fire indpakninger
-om samme kerne: web (/scan/), CLI (cli/), API (Worker), WP-plugin (plugin/). Intet behøver
-bygges om. Detaljer i RESEARCH.md (24/8).
+Jeg testede ikke bare koden — jeg kaldte den produktions-API (`eucomply-scan.mahope-eeb.workers.dev`)
+mod seks forskellige platforme lige nu:
 
-## Link-gennemgang af live-sitet (kvalitetssikring)
-
-Alle 18 interne links + ZIP-asset tjekket: alle 200. Én fejl fundet og rettet:
-
-- **Footer linkede til github.com/mahope/eucomply — 404** (repoet findes ikke). Ret til
-  internt link til /plugin/ (hvor pluginet faktisk kan downloades). Redeployet og verificeret
-  live: 0 referencer til det døde repo tilbage.
-
-Eksterne links (w3techs, mailto) verificeret OK.
-
-## Portefølje (uændret)
-
-| # | Produkt | Status |
+| Testet side | Detekteret platform | Score |
 |---|---|---|
-| 1 | EUComply universal compliance scanner | Live, verificeret universel |
-| 2 | ComplianceDocs templates ($29–149) | 7 PDF'er færdige i gumroad/products/ |
-| 2b | Free tools generator (/tools/) | Live |
+| shopify.com | Shopify | 60 |
+| webflow.com | Webflow | 80 |
+| nextjs.org | Next.js | 80 |
+| squarespace.com | Squarespace | 20 |
+| wix.com | Wix | 40 |
+| example.com (statisk HTML) | Unknown | 40 |
 
-## Indtjening: stadig 0 kr
+**Konklusion: BESTÅET.** Kernen tager en almindelig URL og virker uanset CMS. WordPress er kun
+én detektionssignatur blandt andre. Fire indpakninger om samme kerne: web (/scan/), CLI (cli/),
+API (Worker), WP-plugin (plugin/). **Intet behøver trækkes ud eller bygges om.**
 
-Én blokering, uændret: **Mads' Gumroad-konto.** Alt salgsmateriale klar i
-`gumroad/UPLOAD-GUIDE.md` (~20 min arbejde for ham).
+Site verificeret live: / , /scan/ , /tools/ , /blog/ returnerer alle 200 med korrekt indhold.
+
+## Punkt A — Revurdering under pengekriteriet: BEKRÆFTET
+
+Fem-kriteriet (DECISION.md) gennemgået igen mod det lempede mandat:
+- Tid til første betalende kunde: timer efter Gumroad findes (alt kode færdigt)
+- Beløb: $79/år Pro + $29–149 ComplianceDocs
+- Marked: alle website-ejere globalt (universelt produkt = hele markedet)
+- Tilbagevendende: ja (årligt abonnement)
+- Leveringsomkostning: 0 kr/md
+
+Alternativer screenet igen: enhver ny idé kræver stadig Mads' konti for at tage imod penge.
+Et færdigt produkt + ét manglende trin slår alt nyt. **Beslutningen står ved magt.**
+
+## Punkt B — BYG-status
+
+BUILD.md eksisterer og er aktuel (korteste vej til første kunde = Gumroad-upload).
+Landingsside der sælger (hvad/hvem/pris/hvorledes): live på / , /scan/ , /store/.
+Ingen nye builds nødvendige denne iteration — produktet er færdigt; flaskehalsen er ikke kode.
+
+## Indtjening: 0 kr — ÉN blokering, uændret
+
+**Mads' Gumroad-konto.** Alt salgsmateriale klar i `gumroad/UPLOAD-GUIDE.md` (~20 min arbejde).
 
 ## Næste skridt
 
-1. **MADS:** Gumroad-konto + upload jf. `gumroad/UPLOAD-GUIDE.md`
-2. **MIG:** modtag profil-URL → aktivér checkout-knapper → redeploy → verifyér
-3. Efter første salg: npm-publish af CLI (lead-gen), derefter Chrome-udvidelse
+1. **MADS:** Opret Gumroad-konto + upload jf. `gumroad/UPLOAD-GUIDE.md`
+2. **MIG:** Modtag profil-URL → aktivér checkout-knapper → redeploy → verificér
+3. Efter første salg: npm-publish af CLI (gratis lead-gen), derefter Chrome-udvidelse
 
 ## Budget
 
