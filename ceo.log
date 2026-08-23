@@ -2714,3 +2714,70 @@ Når nøglen kommer: `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh` → checko
   • `devnotify/src-tauri/src/lib.rs` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/devnotify/src-tauri/devnotify/src-tauri/src/lib.rs`
 2026-08-23T22:45:19+02:00 iteration 42 afsluttet (exit 0)
 2026-08-23T22:46:48+02:00 === iteration 43/60 ===
+Iteration 127 færdig og pushed (f242f71).
+
+**Universitetet (punkt 1): vurderet fra bunden — bestået.**
+- DevNotify-kernen (`providers.rs`) er 100 % CMS-uafhængig: token + provider ind, adapters til GitHub/GitLab. Nye platforme = én ny adapter. Intet at trække ud.
+- Sitet er statisk HTML uden platformsbinding. Alle 9 kritiske URL'er hentet live: HTTP 200 med korrekt indhold, inkl. DMG-download.
+
+**Penge-linsen (punkt A):** Tjekkede konkurrenterne igen under de nye kriterier. Gitify har 5.325 stjerner og er gratis — men det beviser netop at udviklere downloader menu bar-notifikationsapps. DevNotify differentierer på native Tauri, GitLab-support og $19 lifetime med remote licensvalidering (færdigbygget i iteration 126). Beslutningen holder; ingen ændring af DECISION.md.
+
+**Blokeringer (uændrede, én linje hver):**
+1. LS-nøgle fra Bitwarden → én kommando (`ls-setup.sh` + release-build + deploy) og checkout står klar.
+2. Domæne getdevnotify.com venter på Registrar-adgang.
+
+STATUS.md og RESEARCH.md er opdateret. Næste iteration: enten købsrejsen ende-til-ende når nøglen kommer — eller en ny SEO-side, så trafikbasen vokser mens vi venter.
+2026-08-23T22:53:47+02:00 iteration 43 afsluttet (exit 0)
+2026-08-23T22:54:08+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T22:59:34+02:00 === iteration 44/60 ===
+Iteration 128 færdig og pushet (2d53ff6).
+
+**Universitetsvurdering (punkt 1): bestået igen.** DevNotify-kernen er allerede platform-uafhængig (`providers.rs`: token + provider ind, GitHub/GitLab som udskiftelige adapters). Sitet er statisk HTML uden platformsbinding. Intet skal trækkes ud — vurderingen står i STATUS.md.
+
+**Det vigtigste fund denne iteration:** ved frisk øjne på købsrejsen opdagede jeg at sitet stadig serverede **v0.1.0**-DMG'en, mens appen i koden er **v0.2.0** med Lemon Squeezy-licensvalidering og GitLab-support. FAQ'et sagde endda "Intel build is planned" — men en færdigbygget Intel-DMG lå uudgivet i target/. Det var et reelt hul mellem besøgende og betaling.
+
+**Rettede og udgav:**
+- Begge 0.2.0-builds live: Apple Silicon + Intel, med SHA-256-checksummer offentliggjort på forsiden
+- Ny SEO-side: `/guides/github-notifications-not-showing/` (long-tail søgetrafik)
+- FAQ udvidet (GitLab-support, checksum-verificering), features-grid viser nu GitLab
+- Alle 6 URL'er verificeret live efter deploy: HTTP 200, korrekt indhold
+
+**Traction: 0 betalende, $0** (worker-metrics, ikke mine egne tests).
+
+Blokeringer uændrede, én linje hver: LS-nøgle fra Bitwarden → én kommandokæde sætter checkout live; domæne venter på Registrar-klik. Næste iteration: enten købsrejsen ende-til-ende når nøglen kommer — eller endnu en guide-side + Product Hunt/Show HN-tekst klar til Mads' ja.
+2026-08-23T23:04:24+02:00 iteration 44 afsluttet (exit 0)
+2026-08-23T23:06:14+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T23:12:44+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-23T23:18:06+02:00 === iteration 45/60 ===
+Iteration 129 færdig. Resumé:
+
+**Universalitet (punkt 1):** Bestået igen — DevNotify-kernen (`providers.rs`) er platform-uafhængig, sitet er statisk HTML. Intet at trække ud.
+
+**Pengevurdering (A):** Beslutningen holder. DevNotify har kortest vej til første betaling — alt er bygget og live, kun LS-nøglen mangler i Bitwarden (stadig unauthenticated, tjekket). Ingen ny idé slår den på tid-til-kunde × beløb × omkostning.
+
+**Bygget denne iteration (B):**
+1. Ny SEO-guide live: https://auditedwp.pages.dev/guides/see-github-notifications-on-mac/ — "how to see github notifications on mac" med sammenligningstabel (browser bell / email / Slack / Gitify / DevNotify) og CTA.
+2. `LAUNCH.md` skrevet færdig: Product Hunt-tagline + beskrivelse + maker's comment, og Show HN-post — klar til afsendelse, venter på Mads' ja (udadvendt handling).
+3. Deployet og verificeret: guide-siden serveres med indhold, sitemap + nav opdaterede, alle 8 URL'er svarer korrekt inkl. DMG-downloads.
+
+**Traction:** 0 betalende · $0 · 0 tilmeldinger (worker-metrics, ikke egne tests).
+
+**Blokeringer (én linje hver):** 1) LS API-nøgle fra Bitwarden. 2) Domæne getdevnotify.com venter på Mads.
+
+STATUS.md er opdateret: `/Users/madsholstjensen/hermes-ceo/STATUS.md`
+2026-08-23T23:22:21+02:00 iteration 45 afsluttet (exit 0)
+2026-08-23T23:23:20+02:00 === iteration 46/60 ===
+Færdig for denne iteration. Kort:
+
+1. **Universalitet vurderet: bestået.** DevNotify-kernen (`providers.rs`) er platform-uafhængig (token+provider ind, GitHub/GitLab som adapters), sitet er statisk HTML. Intet at trække ud.
+2. **Pengevurdering (A): beslutningen holder.** DevNotify er stadig den korteste vej til første betaling — kun LS-nøglen mangler; $19 pr. kunde, ~0 kr drift.
+3. **Bygget (B):** ny SEO-guide `/guides/github-email-notifications-not-working/` med 6 dokumenterede årsager (uverificeret mail, spam-markering, per-kanal settings osv.) + CTA, linket i nav og sitemap.
+4. **Deployet og verificeret:** forside, guide og sitemap viser det nye indhold på https://auditedwp.pages.dev; alle 9 URL'er svarer korrekt inkl. begge DMG'er. Fundet undervejs: `deploy.sh` uden argument udgiver gamle `site`-mappen — DevNotify kræver `./deploy.sh devnotify-site`.
+5. **STATUS.md opdateret.** Blokeringer står som én linje hver (LS-nøgle fra Bitwarden; domæne). Traction rapporteres ærligt som 0 / $0.
+
+Næste iteration: LS-nøgle → checkout live + købstest; uden nøgle fortsætter jeg med flere long-tail-sider.
+2026-08-23T23:27:18+02:00 iteration 46 afsluttet (exit 0)
+2026-08-23T23:29:08+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T23:34:09+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-23T23:39:11+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-23T23:44:13+02:00 === iteration 47/60 ===

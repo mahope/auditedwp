@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Email Notifications Not Working? 6 Fixes (2026) — DevNotify</title>
+<meta name="description" content="GitHub email notifications stopped arriving? Six real causes — unverified addresses, blocked senders, per-channel settings, custom notification emails and spam filters — and how to fix each one.">
+<link rel="canonical" href="https://auditedwp.pages.dev/guides/github-email-notifications-not-working/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub email notifications not working? 6 real fixes">
+<meta property="og:description" content="Six actual causes of missing GitHub notification emails — and how to fix each one.">
+<meta property="og:url" href="https://auditedwp.pages.dev/guides/github-email-notifications-not-working/">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">DevNotify</a>
+    <nav><a href="/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub email notifications not working? Here are the 6 real causes</h1>
+<p class="meta">Updated August 2026 · 5 min read</p>
+
+<p>You set everything to "notify me", but the emails never arrive. Before
+blaming GitHub, work through this list — one of these six things explains
+almost every case of missing GitHub notification email.</p>
+
+<h2>1. Your email address isn't verified</h2>
+<p>This is the single most common cause, and it's silent: GitHub
+<strong>stops sending notifications entirely</strong> to an unverified address,
+with no warning banner where you'd expect one. Go to
+<strong>Settings → Emails</strong> and look for an "Unverified" or
+"Undeliverable" tag next to your address. Click <strong>Verify</strong>, open
+the confirmation mail, done.</p>
+
+<h2>2. You (or a colleague) marked GitHub as spam</h2>
+<p>One accidental "report spam" on a notification email can make your mail
+provider file every future one away automatically. Search your mailbox —
+including Archive and Spam — for
+<code>notifications@github.com</code>. If you find notifications sitting in
+Spam, mark them <strong>Not Spam</strong> and add the sender to your contacts.
+In Gmail also check Settings → Filters and Blocked Addresses for a rule that
+deletes or archives GitHub mail.</p>
+
+<h2>3. Email delivery is toggled off for that event type</h2>
+<p>Under <strong>Settings → Notifications</strong>, Web and Email are separate
+switches per category (Participating, Watching, Mentions, CI). A very common
+state: web notifications work, but the <em>Email</em> column is unchecked for
+the category you care about — so the bell fills up while your inbox stays
+empty. Check both columns explicitly.</p>
+
+<h2>4. Your custom notification email points somewhere else</h2>
+<p>If a <strong>Custom routing email</strong> is set in Settings →
+Notifications, GitHub sends <em>all</em> notification email to that address
+instead of your default one. People set it once for an old work account, leave
+the company, and wonder why their personal inbox never sees anything again.
+Either update it or clear it so mail goes to your primary address.</p>
+
+<h2>5. Corporate mail filters eat the messages</h2>
+<p>On a work address, the filter rarely shows you what it dropped. Ask IT (or
+check your quarantine portal) whether mail from
+<code>notifications@github.com</code> is being rejected or quarantined. If you
+control the domain: whitelist the sender, and check that your SPF/DKIM setup
+isn't causing GitHub's mail to fail forwarding rules.</p>
+
+<h2>6. You're expecting push-style mail for pushes</h2>
+<p>GitHub does not email you about <strong>every push</strong>. Notification
+emails cover conversations you participate in or watch: PR reviews, comments,
+issues, mentions, CI results you're subscribed to. Commits landing in a repo
+you watch generate no email unless they trigger one of those events. If what
+you actually want is awareness of repo activity without living in a browser
+tab, that's a client problem, not a settings problem — see below.</p>
+
+<h2>Skip the inbox entirely</h2>
+<p>Email is the slowest possible notification channel. DevNotify puts your
+unread GitHub count directly in the macOS menu bar — one glance, one click to
+open the PR or issue, and your token never leaves your machine. No filters, no
+spam folder, no delay.</p>
+
+<div class="cta">
+<strong>See your GitHub notifications at a glance</strong>
+<br>Native macOS menu bar app · free 7-day trial · $19 lifetime
+<br><a class="btn" href="/">Learn more &amp; download</a>
+</div>
+
+</article>
+
+<footer>
+  <div class="wrap">© 2026 DevNotify · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></div>
+</footer>
+
+</body>
+</html>

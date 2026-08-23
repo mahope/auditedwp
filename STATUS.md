@@ -1,32 +1,26 @@
-# STATUS — Iteration 128 (23. august, nat)
+# STATUS — Iteration 130 (23. august, nat)
 
-## 1. Universitetet (punkt 1) — vurderet igen: bestået
+## 1. Universalitet (punkt 1) — bestået
 
-DevNotify-kernen (`providers.rs`) er platform-uafhængig (token+provider ind,
-GitHub/GitLab som adapters). Sitet er statisk HTML uden binding.
-**Konklusion: intet at trække ud.** Det nye guide-indhold er ligeledes
-generisk (gælder alle GitHub-brugere, ikke et CMS-nichemarked).
+DevNotify-kernen (`providers.rs`) tager token+provider; GitHub/GitLab er
+adapters. Sitet er statisk HTML, ingen CMS-afhængighed. **Intet at trække ud.**
 
-## 2. Nyt denne iteration — hul mellem besøgende og betaling lukket
+## 2. Nyt denne iteration
 
-Fund ved frisk gennemgang af købsrejsen:
-
-- **Sitet serverede stadig v0.1.0-DMG'en**, mens appen var v0.2.0 med
-  LS-licensvalidering og GitLab-support. RETTET: begge 0.2.0-builds
-  (Apple Silicon + **Intel**, som FAQ'et tidligere løgnagtigt kaldte "planned")
-  er nu live med SHA-256-checksummer offentliggjort på siden.
-- Ny SEO-side: `/guides/github-notifications-not-showing/` — long-tail
-  søgetrafik ("github notifications not showing") direkte ind til produktet.
-- FAQ udvidet (GitLab-support, checksum-sikkerhed), features-grid viser nu
-  GitLab, sitemap opdateret.
-
-Alle 6 kritiske URL'er verificeret live efter deploy: HTTP 200, korrekt
-indhold, DMG'er i fulde størrelser (4,47/4,60 MB).
+- Ny SEO-guide: `/guides/github-email-notifications-not-working/`
+  ("github email notifications not working" — 6 reelle årsager: uverificeret
+  mail, spam-markering, per-kanal settings, custom routing-mail, corporate
+  filtre, push-forventning) med CTA. Linket i nav + sitemap.
+- Deployet til Cloudflare Pages og verificeret: forside + ny guide + sitemap
+  viser nyt indhold; alle 9 URL'er svarer korrekt (DMG'er inkluderet).
+- Bemærkning: `deploy.sh` uden argument udgiver mappen `site` (EUComply) —
+  DevNotify deployes med `./deploy.sh devnotify-site`. Rettet ikke i scriptet,
+  bruger bare den korrekte form.
 
 ## 3. Blokeringer (én linje hver)
 
-1. LS API-nøgle fra Bitwarden → `ls-setup.sh` → checkout-URL → deploy → købsrejse testet.
-2. Domæne getdevnotify.com venter på Registrar-token/Mads' klik.
+1. LS API-nøgle fra Bitwarden (session unauthenticated) → checkout live.
+2. Domæne getdevnotify.com venter på Registrar/Mads.
 
 ## 4. Traction (worker-metrics, ikke egne tests)
 
@@ -34,13 +28,13 @@ indhold, DMG'er i fulde størrelser (4,47/4,60 MB).
 
 ## 5. Venter på Mads
 
-LS-nøgle (Bitwarden) → én kommandokæde sætter checkout live.
-Cloudflare Registrar-adgang → domæne.
+1. LS-nøgle (Bitwarden) → én kommandokæde sætter checkout live.
+2. Cloudflare Registrar-adgang → domæne.
+3. Ja/nej til Product Hunt- og Show HN-teksterne i `devnotify-site/LAUNCH.md`.
 
 ## 6. Næste iteration
 
-1. Nøgle modtaget: `ls-setup.sh` + release-build med `LS_LICENSE_API_KEY`
-   + deploy + ende-til-ende købsrejse.
-2. Uden nøgle: ny guide-side (fx "github email notifications not working"
-   eller "how to see github notifications on mac") + klar Product Hunt/Show HN-
-   tekst der venter på Mads' ja.
+1. Nøgle modtaget: LS-produkt via API + checkout-link på `/` + ende-til-ende
+   købstest.
+2. Uden nøgle: næste long-tail-side ("github notifications not working iphone"
+   eller "turn off github email notifications") indtil checkout kan åbne.
