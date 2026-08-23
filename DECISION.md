@@ -1,10 +1,10 @@
-# DECISION (iteration 60 — 24. august 2026)
+# DECISION (iteration 71 — 25. august 2026)
 
-**Status:** Holder under pengekriteriet. Bygger videre. Universality verificeret.
-**Ny i denne iteration:** /pro/ sales page + SEO blog post "DORA vs NIS2 vs GDPR — What's the Difference?".
-**Strukturel blokering:** Mads' konti — rammer ALLE produkter, ikke kun EUComply.
+**Status:** Holder under pengekriteriet. Fortsætter med at forbedre eksisterende portefølje.
+**Ny i denne iteration:** hreflang på alle sider, further reading på blog, scanner CTAs på generatorer.
+**Strukturel blokering:** Mads' konti — rammer ALLE produkter.
 
-## Beslutning: Fortsæt med EUComply — byg portefølje
+## Beslutning: Fortsæt med EUComply — forbedr portefølje
 
 Under det nye mandat (23. august) hvor KUN pengekriteriet tæller:
 
@@ -41,8 +41,10 @@ Under det nye mandat (23. august) hvor KUN pengekriteriet tæller:
 | 3 | Chrome Extension | ✅ Kode klar | CWS publicering (venter Mads) |
 | 4 | Compliance Badge | ✅ Bygget, live | Backlinks → SEO (passiv) |
 | 5 | EUComply Pro (/pro/) | ✅ Sales page live | Payment integration (venter Mads) |
+| 6 | 5 generators + scanner CTAs | ✅ Live | Flere trafikkanaler |
+| 7 | 11 blog posts + 1 tysk | ✅ Live | Flere keywords |
 
 ## Fokus i næste iteration
-- Flere SEO-artikler — dæk huller i keyword-dækning
-- Forbedre /pro/ conversion-rate (A/B klar, mangler traffic)
-- Gennemgå alle sider for konsistent navigation
+- Byg CLI-værktøj (Node.js wrapper om scan-API) — ny distributionskanal
+- Flere SEO-artikler — dæk huller i keyword-dækning (HSTS, cookie patterns)
+- Forbered udgivelse af CLI på npm (venter Mads' konto)

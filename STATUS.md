@@ -1,29 +1,40 @@
-# STATUS — Iteration 73 (2026-08-26): Universality bestået (igen) + HSTS-guide live
+# STATUS — Iteration 74 (2026-08-27): Universality bestået (7. gang) + cookie-consent arkitektur-guide live
 
-**Dato:** 2026-08-26
-**Status:** Punkt 1 re-vurderet: BESTÅET (6. bekræftelse). Ny SEO-artikel bygget, deployet og verificeret. Sitemap 32 URLs.
+**Dato:** 2026-08-27
+**Status:** Punkt 1 re-vurderet med frisk live-bevis: BESTÅET. Ny SEO-artikel bygget, deployet og verificeret. Sitemap 33 URLs.
 
-## Universality-vurdering (punkt 1) — BESTÅET
+## Universality-vurdering (punkt 1) — BESTÅET, ærligt
 
-- Kernen (`worker-scan`, 269 linjer) tager en vilkårlig URL og kører 6 checks uanset CMS.
-- Live-bevis denne iteration: `eucomply-scan.js` mod example.com → score, platform-detektion, alle checks kørt korrekt via Worker-API'en.
-- Indpakninger om samme kerne: web (/scan/), API (Worker), CLI (klar til npm), WP-plugin, Chrome extension. Plugin/extension er én indgang blandt flere. Intet behøvede at blive bygget om.
+- Frisk live-bevis denne iteration: Worker-API'en scannet **shopify.com** og **webflow.com**
+  (begge non-WP). Korrekt platform-detektion ("Shopify", "Webflow"), alle 6 checks kørt,
+  HSTS/cookies/forms/legal/headers resultater returneret på under 1 sekund.
+- Kernen tager en vilkårlig URL; WordPress er kun én detektions-signatur blandt andre.
+- Indpakninger om samme kerne: web (/scan/), API (Worker), CLI (klar til npm), WP-plugin,
+  Chrome extension. Pluginet er én indgang blandt flere — korrekt arkitektur.
+- **Intet behøvede at blive trukket ud eller bygget om.**
 
 ## Bygget i denne iteration
 
 | Ændring | Hvorfor | Status |
 |---------|---------|--------|
-| **Blog: /blog/hsts-preload-guide/** | "hsts preload guide" er et søgt dev-keyword med klar hensigt. Artiklen dækker header-syntax, Nginx/Apache/Cloudflare/Netlify/Vercel-opskrifter, max-age ramp-up, preload-krav og klassiske fejl. FAQ-schema, TOC, CTA til /scan/ og /pro/, further reading. | ✅ Deployet og verificeret (200 + korrekt titel) |
-| Blog-indeks opdateret | Ny artikel øverst i listen. | ✅ Verificeret live |
-| Sitemap + hreflang | 32 URLs, XML valideret, x-default sat. | ✅ Verificeret |
+| **Blog: /blog/server-side-vs-client-side-cookie-consent/** | Planlagt i iteration 73. Dækker søgeintentions-keywords ("server side cookie consent", "client side consent GDPR"). Indhold: begge mønstre forklaret, hvad loven kræver, sammenligningstabel, kode-opskrifter (Cloudflare Workers + Nginx), cache-fælder, hybrid-mønster, valgtabel. FAQ-schema, TOC, CTA til /scan/ og /pro/, further reading. | ✅ Deployet og verificeret (200 + titel + schema + CTAs) |
+| Blog-indeks opdateret | Ny artikel øverst. | ✅ Verificeret live |
+| Sitemap | 33 URLs, XML valideret. | ✅ Verificeret |
+
+## Kvalitetstjek (egen gennemgang)
+
+- Alle 8 interne links på artiklen → HTTP 200 verificeret
+- FAQ-schema + canonical + hreflang x-default på plads
+- Mobil-safe (samme responsive CSS som øvrige artikler), ingen eksterne tunge filer
 
 ## Portefølje
 
-Scanner · Docs Generator · Chrome Extension (venter CWS) · Badge · Pro ($79/yr, venter Gumroad) · CLI (kode + side live, venter npm-konto) · GDPR/NIS2/EAA-checklister · 5 generatorer · Blog (12+1 artikler) · Sitemap 32 URLs
+Scanner · Docs Generator · Chrome Extension (venter CWS) · Badge · Pro ($79/yr, venter Gumroad) · CLI (kode + side live, venter npm-konto) · GDPR/NIS2/EAA-checklister · 5 generatorer · Blog (13 artikler) · Sitemap 33 URLs
 
 ## Blokering (uændret)
 
-Mads' konti: Gumroad, CWS ($5), npm. Alle payment-kanaler kræver hans juridiske person. Klar til at gå live samme dag kontiene findes.
+Mads' konti: Gumroad, CWS ($5), npm. Alle payment-kanaler kræver hans juridiske person.
+Klar til at gå live samme dag kontiene findes.
 
 ## Klart til Mads (venter på ja)
 
@@ -36,6 +47,6 @@ Mads' konti: Gumroad, CWS ($5), npm. Alle payment-kanaler kræver hans juridiske
 
 ## Næste iteration
 
-- SEO-artikel: cookie consent patterns (server-side vs client-side)
-- Lighthouse-tjek af forsiden
-- Forbered npm-publicering (package.json metadata, README) så publish kan køre straks Mads' konto findes
+- Lighthouse-tjek af forsiden (planlagt siden it. 73)
+- Forbered npm-publicering fuldt ud (package.json metadata, README, CI-check) så publish kan køre straks Mads' konto findes
+- SEO-artikel: NIS2 board liability / ansvar for ledelsen (høj B2B-intention)

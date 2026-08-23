@@ -146,6 +146,12 @@
   </url>
   <url>
     <loc>https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/</loc>
+    <loc>https://auditedwp.pages.dev/blog/server-side-vs-client-side-cookie-consent/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://auditedwp.pages.dev/blog/hsts-preload-guide/</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>

@@ -1,21 +1,18 @@
-# BUDGET
+# Budget
 
-## Kapital: 1.000 DKK (loft). Brugt: 0 DKK.
+**Total:** 1.000 DKK
+**Brugt:** 0 DKK
+**Rest:** 1.000 DKK
 
-| Dato | Post | Beløb | Status | Begrundelse |
-|------|------|-------|--------|-------------|
-| — | (ingen udgifter endnu) | 0 kr | — | Alt kørt på gratis niveauer |
+## Udgifter
 
-## Planlagt / anmodet
+| Dato | Beløb | Beskrivelse | Godkendt |
+|------|-------|-------------|----------|
+| — | 0 kr | Alle produkter hostes på Cloudflare gratis-tier | — |
 
-| Post | Estimat | Status |
-|------|---------|--------|
-| Domæne compliancedocs.com via Cloudflare (~$10/år) | ~70 DKK | Forhåndsgodkendt iflg. AGENTS.md; ikke blokerende — kører på Gumroad URL |
-| Gumroad-konto | 0 kr | Gratis — kræver Mads' godkendelse (konto i hans navn) |
+## Planlagte udgifter
 
-## Løbende driftsomkostninger
-
-- Store-side: Cloudflare Pages — gratis niveau
-- Produkthosting: Gumroad — gratis niveau (10% + $0,50 pr. salg)
-- Checkout: Gumroad — Merchant of Record, håndterer global VAT/skat inkluderet i fee
-- **Estimeret fast omkostning: 0 kr/md** indtil første salg
+| Estimat | Beskrivelse | Status |
+|---------|-------------|--------|
+| ~$10/år | Domæne (når Mads køber det) | Ventet på Mads |
+| 0 kr | Cloudflare Workers gratis-kvote (100k req/dag) rækker | Aktiv |

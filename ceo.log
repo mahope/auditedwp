@@ -1419,3 +1419,177 @@ Iteration 65 færdig. Resumé:
 Budget: stadig 0 kr brugt. STATUS.md er opdateret med porteføljen (nu 10 flader) og næste skridt (mobil-gennemgang, "terms of service generator" som næste indgang).
 2026-08-23T12:11:31+02:00 iteration 8 afsluttet (exit 0)
 2026-08-23T12:12:53+02:00 === iteration 9/15 ===
+Færdig. Resumé af iteration 66:
+
+**1. Universality-vurdering (punkt 1): BESTÅET — intet behøver trækkes ud**
+- Kernen (scan-Worker) tager en vilkårlig URL, CMS-uafhængigt (live-bevis fra iteration 62)
+- Alle generatorer kører 100 % i browseren med tekstinput — platform-neutrale
+- WP-plugin og Chrome-extension er indpakninger, aldrig kernen
+- Vurderingen står i STATUS.md
+
+**2. Bygget: /terms-of-service-generator/ — live og verificeret**
+- 7 spørgsmål → 18-sektions ToS: accounts, betaling/fornyelse, refunder, UGC-licens, liability-cap, indemnity, termination, lovvalg (DK/DE/NL/IE/UK/US), ODR-reference
+- Logik testet i Node med DOM-shim: fuld konfiguration og tom form giver begge korrekt output
+- Intern linkning: forsids-nav, privacy- + cookie-generator-nav, blog-index, /tools/-hub, sitemap (0.9)
+- Deployet til https://auditedwp.pages.dev/terms-of-service-generator/ — HTTP 200 + korrekt titel + sitemap-entry verificeret
+- Mobil-tjek af alle generatorer/checklister: media queries på plads, ingen rettelser nødvendige
+
+**Budget:** 0 kr brugt. **Blokering uændret:** Mads' konti (Gumroad er stadig den eneste flaskehals for første kroning). Commit 95623c3 pushed.
+2026-08-23T12:26:47+02:00 iteration 9 afsluttet (exit 0)
+2026-08-23T12:27:09+02:00 === iteration 10/15 ===
+Iteration 67 er færdig. Resumé:
+
+**1. Universality-vurdering (punkt 1): BESTÅET.**
+Gennemgang bekræfter at hele porteføljen allerede er platform-uafhængig: scan-Workeren tager enhver URL, alle fire generatorer kører i browseren på tekstinput, checklisterne er CMS-neutrale, og WP-plugin + Chrome-extension er indpakninger — ikke produktet. Intet behøvede at blive trukket ud.
+
+**2. Beslutningen holder under pengekriteriet → byggede videre (punkt B).**
+
+Nyt produkt #12: **Refund & Return Policy Generator** på `/refund-policy-generator/` — valgt fordi "refund policy generator"/"return policy template" har høj søgevolumen med direkte kommerciel intent og feeder /store/-templates ($29–149) og Pro ($79/år).
+
+- 6 spørgsmål → skræddersyet politik: fysisk/digital/SaaS/mix, retur-window, region (EU/UK/US/global), exemptions
+- Bygger oven på lovpligtige rettigheder (EU Consumer Rights Directive, UK CCR 2013): 14-dages fortrydelsesret, digitale-varer-undtagelser med checkout-consent, fragt-ansvar, chargebacks, abonnements-opsigelse
+- Samme professionelle design som de andre generatorer, FAQPage-schema, disclaimer
+
+**Verificeret:** logik testet med Node DOM-shim i 4 tilfælde (SaaS+subskription, mixed UK med alle exemptions, tom form, XSS-escaping) — alt korrekt. Deployet til https://auditedwp.pages.dev/refund-policy-generator/ og verificeret live via curl: side 200, korrekt titel, intern linkning fra forsiden + /tools/ + footer, sitemap opdateret (25 URLs).
+
+**Budget:** 0 kr brugt af 1.000 kr.
+
+**Blokering uændret:** Mads' konti (Gumroad ~10 min, Chrome Web Store $5, npm) er den eneste flaskehals for første betalende kunde — alt checkout-indhold står klar.
+
+STATUS.md er opdateret med vurderingen og næste skridt (SEO-indlæg om refund policies, evt. impressum-generator til DE-markedet).
+2026-08-23T12:34:02+02:00 iteration 10 afsluttet (exit 0)
+2026-08-23T12:34:23+02:00 === iteration 11/15 ===
+Færdig. Opsummering:
+
+**Universality-vurdering (punkt 1): BESTÅET.** Kernen (scan-Worker) tager en almindelig URL uanset CMS — live-verificeret mod Shopify/Webflow/Nuxt i iteration 62. Alle generatorer kører i browseren på tekstinput alene. WP-plugin og Chrome-extension er indpakninger, ikke produktet. Intet behøver trækkes ud.
+
+**Beslutningen holder under pengekriteriet** — EUComply scorer højest på tid til første betalende kunde (timer efter Mads' Gumroad-konto), recurring $79/år, stort marked og 0 kr/md drift.
+
+**Bygget i denne iteration:**
+- SEO-artikel `/blog/do-you-need-a-refund-policy/` — dækker CRD 2011/83/EU, UK CCR 2013, 12-måneders-fælden, digitale varer og restocking fees. FAQPage-schema. CTA direkte ind i refund-generatoren.
+- Intern linkning: refund-generator → artikel, blog-indeks → artikel, footer-links fra to andre artikler → generator. Sitemap opdateret (26 URLs).
+- Deployet og verificeret live via curl: ny side svarer 200 med schema og links; alle krydslinks bekræftet på produktion.
+
+Budget stadig 0 kr brugt. Eneste revenue-blokering er uændret: Mads' konti (Gumroad ~10 min, CWS $5). STATUS.md er opdateret.
+2026-08-23T12:39:36+02:00 iteration 11 afsluttet (exit 0)
+2026-08-23T12:39:58+02:00 === iteration 12/15 ===
+Iteration 69 færdig. Resumé:
+
+**Punkt 1 (universality) — BESTÅET, intet behøver ombygges:**
+- Kernen (scan-Worker) tager en almindelig URL, CMS-uafhængigt — beviset mod Shopify/Webflow/Nuxt står fra iteration 62
+- Alle 5 generatorer kører 100 % i browseren; WP-plugin og Chrome-extension er allerede kun indpakninger
+
+**Punkt B — byggede videre på pengevejen:**
+- Ny side: /impressum-generator/ — tysk marked, hvor § 5 DDG gør Impressum lovpligtigt, og manglende Impressum koster Abmahnung-breve på €500–2.000. Høj kommerciel søgevolumen. Output på engelsk eller tysk, alle selskabsformer, register/VAT-felter, § 18 MStV-editorial, valgfri ODR-notat, FAQPage-schema.
+- Intern linkning fra ToS- og refund-generatorernes footers; sitemap nu 27 URLs.
+
+**Verificeret live:** impressum-siden 200 med korrekt titel; sitemap indeholder den nye URL (27 locs); Impressum-links bekræftet på refund- og ToS-siderne via curl.
+
+Budget: 0 kr brugt. Blokering uændret — Gumroad-kontoen er stadig den eneste flaskehals for det første salg. STATUS.md er opdateret (/Users/madsholstjensen/hermes-ceo/STATUS.md).
+2026-08-23T12:47:24+02:00 iteration 12 afsluttet (exit 0)
+2026-08-23T12:47:45+02:00 === iteration 13/15 ===
+**Iteration 70 — færdig.**
+
+**Universality (punkt 1):** BESTÅET — allerede bekræftet i iteration 53+62+69. Kernen er CMS-uafhængig (tager enhver URL), generatorer kører i browseren. WP-plugin og extension er indpakninger. Intet ombygget, intet smidt væk.
+
+**Bygget i denne runde:**
+
+1. **Blogindlæg:** "Do Foreign Sellers Need a German Impressum?" → leverer på tysk-marked søgeintent (købsklar målgruppe), FAQPage-schema, 8-punkts § 5 DDG-checkliste, CTA til impressum-generator + scanner
+2. **Intern linkning:** Impressum-generator-links i footers på alle 3 checklister (GDPR/NIS2/EAA) + /store/ + blogforside
+3. **/store/ copy-gennemgang:** Gennemgået — priser synlige, waitlist fungerer. Ingen copy-problemer. Footer opdateret med impressum-link.
+4. **Sitemap:** 28 URLs (+1)
+5. **Deploy:** Verificeret live — alle sider 200, indhold korrekt
+
+**Status:** 14 produkter/flader live, 0 kr brugt. Eneste blokering: Mads' konti (Gumroad/CWS). Klar til første betaling sekunder efter Gumroad-oprettelse.
+2026-08-23T12:55:19+02:00 iteration 13 afsluttet (exit 0)
+2026-08-23T12:55:39+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T13:00:42+02:00 === iteration 14/15 ===
+Iteration 71 færdig. Opsummering:
+
+**1. Universality-vurdering (første opgave): BESTÅET.** Kernen (scan-Worker) tager enhver URL, CMS-uafhængig — verificeret live mod Shopify/Webflow/Nuxt tidligere, og kildekoden indeholder ingen platform-binding (kun universel detektion af WordPress blandt andre). WP-plugin og Chrome-extension er allerede indpakninger omkring kernen. Intet behøver trækkes ud.
+
+**2. Beslutningen holder under pengekriteriet** — EUComply er bygget, live, 0 kr/md, og ALLE betalingskanaler kræver Mads' konti uanset produkt, så pivotering ville ikke fremskynde første kunde. Byggede videre i stedet:
+
+- **Ny tysk SEO-artikel:** /de/was-ist-ein-impressum/ — "Was ist ein Impressum?" er en højvolumen tysk søgning med direkte købsintent (Abmahnung-risiko = reel smerte). FAQPage-schema, § 5 DDG-checkliste, CTA'er til Impressum-generatoren og scanneren.
+- Intern linkning fra blogforsiden og /impressum-generator/-footer; sitemap opdateret til 29 URLs.
+- **Fund og rettet en reel fejl:** site/deploy.sh indeholdt uløste merge-conflict-markers og kunne ikke køre (`syntax error near unexpected token '<<<'`). Ryddet op — deploy-scriptet virker igen.
+
+**3. Verificeret live:** alle tre berørte sider svarer 200 med korrekt indhold, og den nye URL står i den deployede sitemap.
+
+Budget: stadig 0 kr brugt. Blokering uændret: Mads' Gumroad/CWS/npm-konti er den eneste flaskehals for revenue — alt materiale til dem ligger klar. STATUS.md er opdateret.
+2026-08-23T13:07:42+02:00 iteration 14 afsluttet (exit 0)
+2026-08-23T13:08:04+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T13:13:07+02:00 === iteration 15/15 ===
+Iteration 71 færdig. Resumé:
+
+**Punkt 1 (universalitet): BESTÅET — 4. bekræftelse.** Kernen (scan-Worker) tager enhver URL, CMS-uafhængigt, verificeret live mod Shopify/Webflow/Nuxt/WordPress. WP-plugin, CLI og Chrome-extension er indpakninger omkring samme kerne. Intet behøver trækkes ud.
+
+**Punkt A (beslutning): HOLDER.** EUComply vinder på alle fem pengekriterier — bygget og live, $79/år recurring, 0 kr/md i omkostninger. Alle betalingskanaler kræver Mads' konti uanset produkt, så pivotering ændrer ingenting. Byg videre.
+
+**Punkt B (bygget denne iteration):**
+- Ny blogartikel /blog/abmahnung-risk-ecommerce/ — "Abmahnung Risk for E-Commerce" med 6 triggere-tabel, cost breakdowns, forebyggelses-plan og FAQPage-schema. Målrettet højeste købsintent-søgning i tysk marked.
+- Intern linkning fra impressum-artiklen + blogforside, sitemap opdateret til 29 URLs.
+- Forside-CTA gennemgået — priser og købssti er klare; ingen ændringer nødvendige.
+
+**Verificeret live:** alle 5 berørte URLs returnerer 200, artikelindhold og links bekræftet i produktion.
+
+Budget: 0 kr brugt. Blokering uændret: Mads' Gumroad/CWS/npm-konti er den eneste flaskehals for første salg. STATUS.md opdateret.
+2026-08-23T13:18:15+02:00 iteration 15 afsluttet (exit 0)
+2026-08-23T13:18:35+02:00 ceo-loop3 afsluttet
+2026-08-23T13:55:14+02:00 === iteration 1/15 ===
+## Iteration 71 færdig — hvad der er sket
+
+**Universality:** Bestået 4. gang. Intet blev platformsbundet i denne iteration — alt bygget oven på den universelle kerne.
+
+**Deployet og verificeret (live på https://auditedwp.pages.dev):**
+
+1. **hreflang-tags på alle 35 HTML-sider** — 4 sprogpar (en↔de), 26 x-default self-links. Sender Google signal om sprogversionerne.
+2. **"Further reading" på 9 blog-indlæg** — 3 interne links pr. post (til andre blogindlæg, scanner, generatorer, Pro). Forbinder indholdet, spreder SEO-equity.
+3. **Scanner-CTA på alle 5 generator-sider** — blå boks efter hvert genereret dokument: "Already generated your document? Check your site with a free scan."
+4. **Canonical + hreflang på /plugin/** — manglede helt, nu fixet.
+
+**Status:** 30 URLs i sitemap. 0 kr brugt. Blokeret på Mads' konti som altid.
+
+**Næste skridt:** Byg CLI-værktøj (Node.js/npm wrapper om scan-API) — ny distributionskanal til udviklere, der kan bygges og testes lokalt uafhængigt af Gumroad.
+
+---
+
+**Hvad siger du? Skal jeg i næste iteration bygge CLI-værktøjet (npm-pakke), eller prioritere noget andet?**
+2026-08-23T14:04:46+02:00 iteration 1 afsluttet (exit 0)
+2026-08-23T14:06:32+02:00 === iteration 2/15 ===
+Iterationen er færdig og deployet. Resumé:
+
+**1. Universality-vurdering (punkt 1) — BESTÅET**
+- Kernen (worker-scan, 269 linjer) tager en vilkårlig URL. WordPress er kun én af flere detektioner, ingen afhængighed.
+- Live-bevis denne iteration: CLI-scanning af webflow.com → score 67 %, platform "Webflow", alle 6 checks korrekte.
+- Indpakninger om samme universelle kerne: web-scanner, API, CLI, WP-plugin, Chrome extension. Intet behøvede at blive bygget om — arkitekturen er allerede korrekt.
+
+**2. Bygget (valgte B + forbedringer):**
+- **Ny side /cli/** — salgsside for `eucomply-scan` CLI-værktøjet til udviklere: installationskommando, ægte eksempel-output, de 6 checks, Pro-opgraderingssti ($79/yr). Koden er testet og virker.
+- **SEO-hul lukket:** /check-eu-compliance/ manglede i sitemap — tilføjet (nu 32 URLs) + hreflang.
+- **Nav-link til CLI** på forside, /scan/ og /extension/.
+- Link-check: alle interne links svarer 200, ingen 404'ere.
+
+**3. Deployet og verificeret live:** /cli/ → 200 med korrekt titel, sitemap → 32 URLs, forside linker til CLI.
+
+**Blokering uændret:** Gumroad, Chrome Web Store og npm kræver Mads' konti. Det er fortsat den eneste flaskehals for første indtægt — alt indhold og kode står klar til at gå live samme dag.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-23T14:12:57+02:00 iteration 2 afsluttet (exit 0)
+2026-08-23T14:13:31+02:00 === iteration 3/15 ===
+Iteration 73 færdig. Kort rapport:
+
+**Universality-vurdering (punkt 1): BESTÅET — 6. bekræftelse**
+- Kernen (worker-scan) tager en vilkårlig URL og kører 6 checks uanset CMS. Live-bevis denne iteration: CLI'en scannede example.com korrekt via Worker-API'en.
+- Indpakninger om samme kerne: web /scan/, API, CLI, WP-plugin, Chrome extension — plugin/extension er én indgang blandt flere. Intet behøvede at blive bygget om.
+
+**Bygget**
+- Ny SEO-artikel live: https://auditedwp.pages.dev/blog/hsts-preload-guide/ — HSTS preload-guide med header-syntax, opskrifter til Nginx/Apache/Cloudflare/Netlify/Vercel, max-age ramp-up-tabel, preload-krav, FAQ-schema og CTA'er til /scan/ og /pro/.
+- Blog-indeks opdateret, sitemap nu 32 URLs (XML valideret), hreflang sat.
+- Deployet og verificeret: artikel 200 med korrekt titel, linket fra blog-indekset, i sitemap, CTA'er på plads.
+
+**Status:** 0 kr brugt. Blokering uændret — Gumroad/CWS/npm kræver Mads' konti; alt er klar til at gå live samme dag. STATUS.md opdateret, commit 2d7f068.
+
+**Næste iteration:** cookie-consent-patterns artikel, Lighthouse-tjek af forsiden, npm-package-metadata klar til publicering.
+2026-08-23T14:20:00+02:00 iteration 3 afsluttet (exit 0)
+2026-08-23T14:20:24+02:00 === iteration 4/15 ===
