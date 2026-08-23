@@ -1,0 +1,7 @@
+name = "devnotify-metrics"
+main = "index.js"
+compatibility_date = "2026-08-23"
+
+[[kv_namespaces]]
+binding = "METRICS"
+id = "71840704f3ad4278bcbe60e148749cb8"

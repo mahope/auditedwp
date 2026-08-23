@@ -1,52 +1,49 @@
-# STATUS — Iteration 115 (23. august 2026, nat)
+# STATUS — Iteration 116 (23. august 2026, aften)
 
-## 1. Universitets-vurdering (punkt 1) — bestået (bekræftet igen)
+## 1. Universitets-vurdering (punkt 1) — bestået
 
 DevNotify er ikke platform-bundet: kernen er notifications-API → normaliseret
 liste → menu bar UI + polling. GitHub er én adapter; GitLab/Linear/Jira kan
 lægges ind uden kerne-ændring. Ingen udtrækning nødvendig.
 
-## 2. Pengekriteriet (punkt A) — beslutningen holder
+## 2. Pengekriteriet — beslutningen holder stadig
 
-DevNotify scorer stadigt højest på de fem pengefaktorer: bygget færdig
-(leveringsomkostning 0), $19 lifetime, timer til første kunde SO snart
-LS-nøglen ligger i Bitwarden. Ingen af de gamle kasserede idéer slår den på
-"hurtigste vej til betalende kunde", fordi de alle kræver ny udvikling FØR de
-kan tage imod penge. DevNotify er det eneste produkt der allerede kan levere.
+DevNotify er det eneste produkt der allerede kan levere: bygget færdig,
+$19 lifetime, leveringsomkostning 0. Ingen ny idé slår "timer til første
+kunde når LS-nøglen kommer".
 
-## 3. Bygget denne iteration: 3 nye SEO-indgange mellem søgning og købsside
+## 3. Bygget denne iteration: måling — downloads og besøg kan nu tælles
 
-Det største hul var kun ÉN indgang fra Google. Rettet:
+Tidligere stod der "Ingen analytics på DMG-downloads endnu". Rettet:
 
 | Ting | Verificeret |
 |------|--------|
-| /devnotify/best-github-notification-apps-macos/ — "best GitHub notification apps macOS"-siden, ærlig sammenligning af web inbox/email/Gitify/Slack/DevNotify + Article JSON-LD | ✅ 200 live |
-| /devnotify/github-token-scopes-guide/ — "GitHub token scopes"-guide med HowTo JSON-LD (matcher et reelt søgebehov fra DevNotify-brugere) | ✅ 200 live |
-| vs/gitify fik Article JSON-LD + kryds-links til begge nye sider | ✅ 200 live |
-| "Guides" i nav + begge sitemaps opdateret (rod: 4 devnotify-URLs) | ✅ |
-| Rod-deploy verificeret: alle URLs 200, DMG stadig 200 (4.45 MB) | ✅ |
+| Ny Worker `devnotify-metrics` (KV-tæller, ingen cookies, IP-dedupe 1/time) deployeret til devnotify-metrics.mahope-eeb.workers.dev | ✅ /health, /event og /stats testet live |
+| Landingsside sender nu visit-event + download-klik på alle .dmg-links | ✅ script live på auditedwp.pages.dev/devnotify/ |
+| Privacy.html opdateret med ærlig beskrivelse af den anonyme tæller | ✅ 200 live |
+| Feature-tekst rettet fra "no analytics" → "no tracking of your activity" (var ikke længere præcist) | ✅ |
+| Testtællinger nulstillet — tallet starter ærligt på 0 | ✅ |
 
-Købsrejsen selv er urørt og komplet (pris, trial, FAQ, terms/privacy) — intet
-at pudse før LS-checkout kan sættes på knappen.
+Bemærkning: Cloudflare Web Analytics kunne ikke aktiveres (API-tokenet har
+ikke analytics-scope), så jeg byggede i stedet en egen 30-linjers Worker —
+gratis, cookie-fri, og jeg styrer tallene selv.
 
 ## 4. Traction (ærligt)
 
-**0** betalende kunder · **0** downloads · **$0** revenue. Ingen analytics på
-DMG-downloads endnu.
+**0** betalende kunder · **0** downloads · **0** besøg · **$0** revenue.
+Målingen er nu på plads, så næste rapportering bygger på rigtige tal.
 
 ## 5. Budget
 
-Brugt: **0 kr**. getdevnotify.com forhåndsgodkendt (~90 DKK), venter på køb.
+Brugt: **0 kr**. Workers + KV koster intet på gratis-niveauet.
+getdevnotify.com forhåndsgodkendt (~90 DKK), venter på køb.
 
-## 6. Venter på Mads (uændret — nævnes ikke igen før noget bevæger sig)
+## 6. Venter på Mads (én linje, uændret)
 
-LS API-nøgle (Bitwarden) = ENESTE revenue-blokering. Domænekøb + ja til posts
-ligger også klar.
+LS API-nøgle (Bitwarden) = eneste revenue-blokering. Domæne + posts klar.
 
 ## Næste iteration
 
-1. LS-nøgle → opret produkt $19 via API → checkout-URL i buy-btn → remote
-   licensvalidering i app'en → genudgiv.
-2. Cloudflare Web Analytics på devnotify-siderne så download-tallet bliver
-   målbart (gratis, ingen cookies).
-3. Flere søgeindgange ("github notifications widget mac", "tauri menu bar app").
+1. LS-nøgle → opret produkt $19 via API → checkout-URL i buy-btn → genudgiv.
+2. Flere søgeindgange ("github notifications widget mac", "tauri menu bar app").
+3. Overvej Intel-build for at udvide det købende marked.

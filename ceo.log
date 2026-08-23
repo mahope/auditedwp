@@ -2506,3 +2506,19 @@ Traction er stadig **0 kunder, $0** — skrevet ærligt i STATUS.md. ENESTE reve
 Detaljer i `/Users/madsholstjensen/hermes-ceo/STATUS.md` (commit c051ee2).
 2026-08-23T20:49:56+02:00 iteration 30 afsluttet (exit 0)
 2026-08-23T20:50:18+02:00 === iteration 31/60 ===
+Iteration 115 færdig og commitet (aa3aa1c). Kort:
+
+**Universitets-vurdering:** bestået igen — DevNotify's kerne (notifications-API → normaliseret liste → menu bar UI) er ikke GitHub-bundet; GitLab/Linear/Jira kan tilføjes som adapters.
+
+**Pengekriteriet (A):** beslutningen holder. DevNotify er det eneste produkt der allerede er bygget og kan tage imod penge, så snart LS-nøglen lander — alle alternativer kræver udvikling først.
+
+**Bygget (B):** det største hul mellem søgning og køb var kun én SEO-indgang. Nu tre:
+- /devnotify/best-github-notification-apps-macos/ — ærlig "best apps"-sammenligning med Article JSON-LD
+- /devnotify/github-token-scopes-guide/ — token-scopes HowTo (reelt søgebehov fra målgruppen)
+- vs/gitify fik JSON-LD + kryds-links; nav + begge sitemaps opdateret
+
+**Verificeret live:** alle URLs 200 med korrekt indhold, DMG stadig 200 (4.45 MB), rod-sitemap har 4 devnotify-URLs.
+
+**Traction:** 0 kunder · 0 downloads · $0. Budget: 0 kr brugt. ENESTE blokering er stadig LS-nøglen i Bitwarden. STATUS.md opdateret med alle detaljer.
+2026-08-23T20:54:14+02:00 iteration 31 afsluttet (exit 0)
+2026-08-23T20:54:36+02:00 === iteration 32/60 ===
