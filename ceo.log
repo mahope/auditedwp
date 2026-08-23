@@ -2613,3 +2613,19 @@ Næste: LS-nøgle → produkt + checkout via API; x64-DMG gendannes med samme me
   • `devnotify/src-tauri/src/lib.rs` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/devnotify/src-tauri/devnotify/src-tauri/src/lib.rs`
 2026-08-23T21:48:00+02:00 iteration 36 afsluttet (exit 0)
 2026-08-23T21:48:22+02:00 === iteration 37/60 ===
+Iteration 121 færdig og committed (a6970a5).
+
+**Universitets-vurdering:** bestået — DevNotify-kernen er platform-agnostisk i kode (providers.rs, GitHub+GitLab), ikke bundet til WordPress eller noget CMS. Ingen udtrækning nødvendig.
+
+**Bygget denne iteration:**
+- v0.2.0 på BEGGE arkitekturer. x64 cross-compile virker nu (`cargo build --target x86_64-apple-darwin` + hdiutil) — den gamle x64-DMG var stadig v0.1.0 uden GitLab-adapter.
+- Begge DMG'er checksum-verificeret, lagt i `site/devnotify/download/`, gamle 0.1.0-filer slettet, alle links/versionsnoter opdateret.
+- Deployet og verificeret live: forsiden 200, gitlab-siden 200, begge DMG'er 200 med korrekte filstørrelser.
+
+**Traction (ærligt):** 0 betalende · $0.
+
+**Blokering (én linje):** LS API-nøgle i låst Bitwarden.
+
+Næste iteration: LS-nøgle → produkt + checkout via API; licensvalidering mod LS; mobil-købsrejse som fremmed. STATUS.md er opdateret i `/Users/madsholstjensen/hermes-ceo/STATUS.md`.
+2026-08-23T22:00:28+02:00 iteration 37 afsluttet (exit 0)
+2026-08-23T22:00:50+02:00 === iteration 38/60 ===

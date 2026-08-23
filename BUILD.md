@@ -1,37 +1,34 @@
 # BUILD — DevNotify: korteste vej til første betalende kunde
 
-Opdateret 26. august 2026.
+## Hvor vi står (iteration 122)
 
-## Produktet
-macOS menu bar app (Tauri v2), bygget og kompileret: `devnotify/src-tauri/target/release/bundle/macos/DevNotify.app` + DMG.
-$19 lifetime license via Lemon Squeezy (MoR — håndterer moms). Brugeren giver sin egen GitHub PAT; app'en er 100% lokal.
+- Produktet er bygget og udgivet: Tauri v2 macOS menu bar app, v0.2.0,
+  Apple Silicon + Intel DMG'er, checksum-verificeret, downloadbart fra sitet.
+- Landingsside sælger allerede: hvad, hvem, $19, købssektion. 5 SEO-sider live.
+- **Den eneste manglende led:** checkout-knappen viser en notify-me-formular
+  i stedet for en betalingslink.
 
-## Universel kerne
-Kernen er en **notifications-klient**: GitHub REST API → normaliseret notifikationsliste → UI + polling. GitHub-integrationen er én adapter. Senere indpakninger: GitLab, Linear, Jira adapters mod samme UI/kerne.
+## Korteste vej til første betaling
 
-## Vejen til første betaling (rækkefølge)
+1. **LS API-nøgle** (Bitwarden, ventes 24/8) → opret produkt via API:
+   - Navn "DevNotify License", $19 USD one-time.
+   - Test-køb gennemført → test-tilstand slås fra.
+2. Erstat notify-formularen i `site/devnotify/index.html` med LS checkout-URL:
+   - Buy-knap = direkte link. Fjern formularen og dens JS.
+   - Samme på alle 5 sider hvor der henvises til #buy.
+3. Remote licensvalidering i appen mod LS license API (TODO i lib.rs).
+4. Verificér hele købsrejsen som fremmed: landing → buy → checkout →
+   licensnøgle på mail → aktivering i app.
 
-| # | Skridt | Status | Blokering |
-|---|--------|--------|-----------|
-| 1 | Landingsside der sælger (hvad/hvem/pris/køb) | ✅ Bygget denne iteration | — |
-| 2 | DMG uploades som release-asset på GitHub (offentligt repo i mit eget navn er ikke muligt — se blokering) | ⏳ | Venter: repo skal oprettes i Mads' GitHub eller direkte download fra sitet |
-| 3 | Lemon Squeezy: opret produkt $19 + license key via API | ⏳ | LS API-nøgle i Bitwarden (app kører, låst) |
-| 4 | App'en validerer license key mod LS API (gratis trial 7 dage uden key) | ✅ Trial implementeret i binær (iter. 114); remote LS-validering venter nøgle | — |
-| 5 | Checkout-knap på landingsside → LS checkout URL | 🔶 Midlertidigt: buy-knap åbner notify-me-formular (iter. 118) — e-mails samles op i Worker-KV, sendes ved launch | Samme nøgle |
-| 6 | Notify-me-liste live (worker `/subscribe`, test-adresse-afvisning, privacy.html opdateret) | ✅ Iteration 118 | — |
+## Efter første betaling er mulig — trafik (prioriteret)
 
-## Priser
-- $19 lifetime, én licens pr. bruger.
-- Gratis: 7 dages trial fuld funktionalitet.
-- Ingen abonnement før der er betalende kunder.
+1. Flere sammenligningssider (DevNotify vs Octobox/Notifier for GitHub),
+   long-tail søgninger om GitHub notifications.
+2. Produkttekster klar til steder Mads kan godkende: Product Hunt,
+   Hacker News Show HN, relevante subreddits — skrevet færdigt, venter på ja.
+3. Sitemap/robots vedligeholdes ved hver ny side.
 
-## Distribution (uden app store)
-Direkte download af DMG fra landingssiden. Ikke-notarized DMG kræver højreklik → Open første gang; det står i FAQ. Notarization ($99/år Apple Developer) er en fremtidig udgift — beder IKKE om den nu; først når der er revenue.
+## Ikke blokeret på andet
 
-## Marketing (mine egne flader, ingen henvendelser)
-- SEO-tekst på landingssiden ("github notifications mac menubar")
-- Sitemap + robots.txt
-- Product Hunt / Reddit-posts skrevet FÆRDIGE og lagt i POSTS/, venter på Mads' ja
-
-## Definition of "færdigt nok til at tjene penge"
-Landingsside live + DMG downloadbar + LS-checkout aktiv = kan tage imod penge.
+Intet. Alt andet arbejde (flere sider, forbedringer) kan fortsætte mens
+vi venter på nøglen.
