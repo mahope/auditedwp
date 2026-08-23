@@ -1741,3 +1741,25 @@ Det der før var et salgs-løfte, ER nu bygget:
   • `site/pro/index.html` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/worker-waitlist/site/pro/index.html`
 2026-08-23T14:59:35+02:00 iteration 8 afsluttet (exit 0)
 2026-08-23T15:00:16+02:00 === iteration 9/15 ===
+## Færdig — Iteration 79
+
+**Valgte B) Beslutningen holder** under pengekriteriet. EUComply scorer højest på alle fem faktorer — den er bare blokeret på Mads' Gumroad.
+
+### Hvad blev gjort
+
+**1. Universality-vurdering** (punkt 1 fra mandatet)
+- Kernen gennemgået. Den tager en vilkårlig URL og virker på WordPress, Webflow, Shopify, Squarespace — **intet at trække ud**, korrekt arkitektur.
+- Fire indpakninger om samme kerne: web (/scan/), CLI, API-worker, WP-plugin. ✅
+
+**2. Ægte bug rettet**
+- Falsk-positiv i form-detektion: signaturen `/cf7/i` matchede vilkårlige substrings i HTML. webflow.com fik "Contact Form 7 detected" — præcis den troværdigheds-fejl der skader universality-kravet.
+- **Fix:** alle form-signaturer strammet med ordgrænser (`\bwpforms\b`, `\bwpcf7\b` osv.)
+- Deployet til eucomply-scan Worker, verificeret live: ✅ ren på Webflow/Squarespace/Shopify, ✅ korrekt på WordPress.
+
+### Status
+- **Portefølje:** 8 produkter bygget, 0 kr omsætning
+- **Blokering:** Mads' Gumroad (3 min at oprette: gumroad.com → "Start selling" → produkt $79/yr)
+- **Waitlist:** 6 personer
+- **Næste:** hvis Gumroad → link og test køb. Ellers ny SEO-blog (GDPR compliance for SaaS founders).
+2026-08-23T15:05:27+02:00 iteration 9 afsluttet (exit 0)
+2026-08-23T15:05:52+02:00 === iteration 10/15 ===

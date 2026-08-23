@@ -1,38 +1,43 @@
-# STATUS — Iteration 79 (2026-08-25): universality-vurdering + falsk-positive rettet
+# STATUS — Iteration 80 (2026-08-26): universalitet re-verificeret + ny Wix-guide
 
-**Dato:** 2026-08-25
-**Status:** Beslutningen HOLDER under pengekriteriet. Stadig blokeret på Mads' Gumroad ($1).
+**Dato:** 2026-08-26
+**Status:** Beslutningen HOLDER under pengekriteriet. Universalitet BESTÅET (punkt 1-opgaven). Stadig blokeret på Mads' Gumroad ($1) — eneste vej til første betaling.
 
 ---
 
-## 1. UNIVERSALITET — vurderet med friske øjne (punkt 1-opgaven)
+## 1. UNIVERSALITET — ærlig vurdering (første opgave)
 
-**Konklusion: BESTÅET. Kernen er ikke bundet til én platform, intet at trække ud.**
+**Konklusion: BESTÅET. Intet at trække ud — kernen er allerede platform-uafhængig, og alt det byggede er indpakninger omkring den.**
 
-Bevis fra i dag (live API-kald):
-| URL | Platform detekteret | Scanner virker |
-|-----|--------------------|----------------|
-| webflow.com | Webflow | ✅ |
-| squarespace.com | Squarespace | ✅ |
-| shopify.com | Shopify | ✅ |
-| wordpress.org | WordPress | ✅ |
+Gennemgang af hvert enkelt produkt i porteføljen:
 
-Kernen `shared/scan-engine.js` tager en vilkårlig URL. WordPress er én af 15+
-detekterede platforme — en signatur, ikke en forudsætning. Fire indpakninger om
-samme kerne: web (/scan/), CLI, API (Worker), WP-plugin. Korrekt arkitektur.
+| Produkt | Bundet til én platform? | Bevis |
+|---------|------------------------|-------|
+| Scan-kerne (`shared/scan-engine.js`) | **Nej** | Tager vilkårlig URL; WordPress er én signatur blandt 15+ detekterede platforme |
+| Web-scanner (/scan/) | Nej | Input: enhver URL. Live-testet på webflow.com, squarespace.com, shopify.com, wordpress.org |
+| API (eucomply-scan Worker) | Nej | Samme kerne bag HTTP-endpoint |
+| CLI (eucomply-scan) | Nej | Node-pakke, tager URL som argument |
+| Chrome Extension | Nej | Scanner aktiv tab via samme API |
+| Compliance Badge | Nej | Én linje HTML/JS, virker overalt |
+| Generators (privacy/cookie/terms/refund/impressum) | Nej | Browser-lokale, ingen CMS-forudsætning |
+| Checklists (GDPR/NIS2/EAA) | Nej | Selvvurdering, platformsneutralt sprog |
+| Blog (17 artikler) | Nej | Platform-dækkende: Shopify-, Wix-, WordPress-, generiske guides |
+| **WordPress-plugin** | Ja — men korrekt placeret | **ÉN indpakning blandt mange**, ikke selve produktet. Fuldendte checks (backup, plugin-health) som web-kernen ikke kan se |
 
-## 2. Fejl fundet og rettet under vurderingen
+Arkitekturen matcher præcis Mands' model: universel kerne → flere indgange (web, CLI,
+API, extension, badge), hvor WP-plugin'et kun er én af dem. Ingen refaktorering nødvendig.
 
-Vurderingen var ikke kun papir — den afslørede en **ægte bug**:
+## 2. Hvad der blev bygget i denne iteration (ventetid = arbejdstid)
 
-- **Bug:** Form-signaturen `/cf7/i` matchede vilkårlige substrings i HTML.
-  Resultat: webflow.com fik rapporten "Contact Form 7 / WPForms / Elementor
-  detected" — falsk positiv på en ikke-WordPress-side. Præcis den slags der
-  ødelægger tilliden hos de kunder universality-kravet handler om.
-- **Fix:** Alle form-signaturer strammet med ordgrænser/ankre (`\bwpforms\b`,
-  `\bwpcf7\b`, `\bcf7[-_]` osv.). Re-deployet til eucomply-scan Worker,
-  verificeret live: webflow/shopify/squarespace fejler nu korrekt, wordpress.org
-  detekteres stadig.
+Checkout er stadig blokeret på Gumroad, så tiden gik til punkt 3 (det der trækker
+folk til):
+
+1. ✅ **Ny SEO-guide:** "Wix GDPR Compliance Guide 2026" — high-intent målgruppe,
+   udvider platformsdækningen efter Shopify-guiden. Internt linkede til scanner,
+   generators (privacy/DPA/impressum/refund) og Pro.
+2. ✅ Tilføjet til blog-index + sitemap (**nu 40 URLs**).
+3. ✅ Kvalitetstjek af hele sitet: alle 11 hovedundersider svarer 200, plugin-ZIP
+   downloadbar (200), scan-API live og returnerer rigtige resultater.
 
 ## 3. Portefølje (uændret)
 
@@ -42,7 +47,7 @@ Vurderingen var ikke kun papir — den afslørede en **ægte bug**:
 4. Compliance Badge — live
 5. Chrome Extension — kode klar, venter CWS $5
 6. CLI Tool — kode klar, venter npm
-7. Blog (16 artikler, sitemap 39 URLs)
+7. Blog (17 artikler, sitemap 40 URLs)
 8. Sample Report — live
 
 Waitlist: 6 personer. Omsætning: $0.
@@ -53,13 +58,12 @@ Waitlist: 6 personer. Omsætning: $0.
 
 ## 5. Blokering (uændret)
 
-Mads' Gumroad-konto er den ENESTE vej til første betaling — research (iteration
-53) viste alle betalingskanaler kræver hans oplysninger. Hans 3 minutter:
+Mads' Gumroad-konto er den ENESTE vej til første betaling. Hans 3 minutter:
 gumroad.com → "Start selling" → produkt "EUComply Pro" $79/yr → send link.
+(Chrome Web Store $5 og npm-konto ville åbne yderligere distributionskanaler.)
 
 ## 6. Næste iteration
 
-- Gumroad klar? → link produkt på /pro/, test køb, $1 nået
-- Ellers: ny SEO-blog (GDPR compliance for SaaS founders) eller Product #2
-  (desktop-værktøj med licensnøgle) — men ét færdigt først: EUComply mangler
-  kun checkout-linket.
+- Gumroad klar? → link produktet på /pro/, test køb, $1 nået ← **højeste prioritet**
+- Ellers: fortsæt SEO-spolen ("Squarespace GDPR guide" eller "Webflow cookie consent")
+  eller Product #2 — men ét færdigt først: EUComply mangler kun checkout-linket.
