@@ -98,6 +98,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <a href="#faq">FAQ</a>
       <a href="/vs/gitify/">vs Gitify</a>
       <a href="/vs/octobox/">vs Octobox</a>
+      <a href="/guides/github-notifications-not-showing/">Guides</a>
       <a href="#buy">Buy — $19</a>
     </nav>
   </div>
@@ -108,10 +109,11 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h1>Your GitHub notifications,<br><em>in your Mac menu bar.</em></h1>
     <p class="sub">See the unread count at a glance. One click to any pull request, issue or mention — without opening a single browser tab.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="download/DevNotify_0.1.0_aarch64.dmg" download>Download for macOS (Apple Silicon)</a>
+      <a class="btn btn-primary" href="download/DevNotify_0.2.0_aarch64.dmg" download>Download for macOS (Apple Silicon)</a>
+      <a class="btn btn-ghost" href="download/DevNotify_0.2.0_x64.dmg" download>Intel build</a>
       <a class="btn btn-ghost" href="#buy">Buy license — $19</a>
     </div>
-    <p class="price-note"><strong>$19</strong> lifetime · free 7-day trial · your data never leaves your Mac · v0.1.0, macOS 11+, Apple Silicon</p>
+    <p class="price-note"><strong>$19</strong> lifetime · free 7-day trial · your data never leaves your Mac · v0.2.0, macOS 11+ (Apple Silicon &amp; Intel) · <a href="#sha256">SHA-256 checksums</a></p>
 
     <div class="mockup" role="img" aria-label="Screenshot mockup of the DevNotify menu bar popup showing recent GitHub notifications">
       <div class="bar"><span></span><span></span><span></span></div>
@@ -135,6 +137,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <div class="card"><h3>Lives quietly in the tray</h3><p>Closing the window keeps DevNotify in the menu bar. Check Now whenever you want an instant refresh.</p></div>
       <div class="card"><h3>Lightweight native app</h3><p>A small Tauri app — a fraction of the memory of a browser tab left open all day.</p></div>
       <div class="card"><h3>Works with your own token</h3><p>Paste a GitHub personal access token (read-only notifications scope is enough) and you're running in under a minute.</p></div>
+      <div class="card"><h3>GitLab too</h3><p>The same menu bar badge works with your GitLab account — switch provider in Preferences. One app for both.</p></div>
     </div>
   </div>
 </section>
@@ -156,7 +159,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <details><summary>Does my token leave my Mac?</summary><p>No. It is stored locally by the app and used only to call api.github.com directly from your machine.</p></details>
     <details><summary>"App can't be opened" on first launch</summary><p>The DMG isn't signed with an Apple Developer certificate yet. Right-click DevNotify.app → Open → Open. You only have to do this once.</p></details>
     <details><summary>What does the trial include?</summary><p>Everything. Full functionality for 7 days. After that, a $19 lifetime license unlocks it permanently.</p></details>
-    <details><summary>Which Macs are supported?</summary><p>macOS 11 Big Sur and later on Apple Silicon (M1/M2/M3/M4). An Intel build is planned.</p></details>
+    <details><summary>Which Macs are supported?</summary><p>macOS 11 Big Sur and later, on both Apple Silicon (M1–M4) and Intel Macs. Two downloads are available; pick the one matching your Mac.</p></details>
+    <details><summary>Does it work with GitLab?</summary><p>Yes. DevNotify supports both GitHub notifications and GitLab todos — switch provider in Preferences. More providers are on the roadmap.</p></details>
+    <details><summary>Is the download safe?</summary><p>The DMG isn't signed with an Apple Developer certificate yet (hence the right-click-to-open step), but SHA-256 checksums for every build are published on this page so you can verify what you downloaded.</p></details>
+    <details id="sha256"><summary>SHA-256 checksums</summary><p style="font-family:monospace;font-size:.78rem;word-break:break-all">DevNotify_0.2.0_aarch64.dmg<br>d68da705b8a0022912aa8e44245c92231e3c091ff9cf86a68a3873f36392beea<br><br>DevNotify_0.2.0_x64.dmg<br>96901b076afadcc6b25eecf0cc8fd9bd4c05c780e35d7588e9b158710eb53885</p></details>
     <details><summary>Lifetime — really?</summary><p>Yes. One payment, perpetual use of version 1.x including updates.</p></details>
   </div>
 </section>

@@ -1,46 +1,46 @@
-# STATUS — Iteration 127 (23. august, sen aften)
+# STATUS — Iteration 128 (23. august, nat)
 
-## 1. Universitetet (punkt 1) — vurderet, bestått 10. gang
+## 1. Universitetet (punkt 1) — vurderet igen: bestået
 
-Tjek udført fra bunden denne iteration:
+DevNotify-kernen (`providers.rs`) er platform-uafhængig (token+provider ind,
+GitHub/GitLab som adapters). Sitet er statisk HTML uden binding.
+**Konklusion: intet at trække ud.** Det nye guide-indhold er ligeledes
+generisk (gælder alle GitHub-brugere, ikke et CMS-nichemarked).
 
-- **DevNotify-kernen:** `providers.rs` tager token + provider — 100 %
-  CMS-uafhængig. GitHub og GitLab er adapters; nye platforme er én ny adapter.
-- **Sitet:** statisk HTML, ingen platformsbinding. Alle 9 kritiske URL'er
-  hentet live og verificeret HTTP 200 med korrekt indhold (forside, /devnotify/,
-  alle 5 SEO-sider, terms, privacy, DMG-download).
-- **Konklusion:** intet skal trækkes ud. Begge produkter opfylder punkt 1.
+## 2. Nyt denne iteration — hul mellem besøgende og betaling lukket
 
-## 2. Konkurrenttjek (penge-linsen, ikke originalitets-linsen)
+Fund ved frisk gennemgang af købsrejsen:
 
-Gitify (5.325 stjerner, gratis/Electron) er den reelle konkurrent — den findes,
-den bruges, og det BEVISER at udviklere downloader menu bar-notifikationsapps.
-DevNotify differentierer på: native/Tauri (lettere), GitLab-adapters (Gitify har
-kun GitHub), $19 lifetime med licensnøgle. Beslutningen holder under
-pengekriteriet — ingen ændring af DECISION.md.
+- **Sitet serverede stadig v0.1.0-DMG'en**, mens appen var v0.2.0 med
+  LS-licensvalidering og GitLab-support. RETTET: begge 0.2.0-builds
+  (Apple Silicon + **Intel**, som FAQ'et tidligere løgnagtigt kaldte "planned")
+  er nu live med SHA-256-checksummer offentliggjort på siden.
+- Ny SEO-side: `/guides/github-notifications-not-showing/` — long-tail
+  søgetrafik ("github notifications not showing") direkte ind til produktet.
+- FAQ udvidet (GitLab-support, checksum-sikkerhed), features-grid viser nu
+  GitLab, sitemap opdateret.
 
-## 3. Nyt denne iteration
+Alle 6 kritiske URL'er verificeret live efter deploy: HTTP 200, korrekt
+indhold, DMG'er i fulde størrelser (4,47/4,60 MB).
 
-- Live-verificering af hele sitet (9/9 URL'er OK).
-- Konkurrentanalyse opdateret i RESEARCH.md.
-- BUILD.md gennemgået: stadig korrekt — én manglende led (LS checkout).
+## 3. Blokeringer (én linje hver)
 
-## 4. Blokeringer (én linje hver)
+1. LS API-nøgle fra Bitwarden → `ls-setup.sh` → checkout-URL → deploy → købsrejse testet.
+2. Domæne getdevnotify.com venter på Registrar-token/Mads' klik.
 
-1. LS API-nøglen: Mads kopierer den fra Bitwarden → `ls-setup.sh` → checkout-link → deploy.
-2. Domæne getdevnotify.com: venter på Registrar-token eller at Mads klikker købet.
+## 4. Traction (worker-metrics, ikke egne tests)
 
-## 5. Traction (fra worker-metrics, ikke mine egne tests)
+**0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
 
-**0** betalende · **$0** revenue · **0** rigtige tilmeldinger · downloads: se worker-metrics.
+## 5. Venter på Mads
 
-## 6. Venter på Mads (én linje)
+LS-nøgle (Bitwarden) → én kommandokæde sætter checkout live.
+Cloudflare Registrar-adgang → domæne.
 
-LS-nøgle fra Bitwarden → én kommando kører det hele. Cloudflare Registrar-adgang → domæne.
+## 6. Næste iteration
 
-## 7. Næste iteration
-
-1. Nøgle modtaget → ls-setup.sh → checkout-URL på alle sider → release-build med
-   `LS_LICENSE_API_KEY` → deploy → verificér købsrejsen ende-til-ende.
-2. Uden nøgle: ny SEO-side (fx "github notifications not showing" /
-   long-tail guide) + evt. DevNotify vs Octobox-side, så trafikbasen vokser mens vi venter.
+1. Nøgle modtaget: `ls-setup.sh` + release-build med `LS_LICENSE_API_KEY`
+   + deploy + ende-til-ende købsrejse.
+2. Uden nøgle: ny guide-side (fx "github email notifications not working"
+   eller "how to see github notifications on mac") + klar Product Hunt/Show HN-
+   tekst der venter på Mads' ja.
