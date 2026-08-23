@@ -1,31 +1,20 @@
-# STATUS — Iteration 62 (2026-08-24): Universality re-verificeret med live-bevis + NIS2-checkliste live
+# STATUS — Iteration 63 (2026-08-24): EAA-checkliste live — ny SEO-indgang til betalingsvillig B2B-gruppe
 
 **Dato:** 2026-08-24
-**Status:** 7 produkter/flader live. Beslutningen holder under pengekriteriet. Blokering uændret: Mads' konti (Gumroad/CWS/npm).
+**Status:** 8 produkter/flader live. Beslutningen holder under pengekriteriet. Blokering uændret: Mads' konti (Gumroad/CWS/npm).
 
-## Universality-vurdering (punkt 1) — RE-verificeret denne iteration
+## Universality-vurdering (punkt 1) — BESTÅET (re-verificeret i iteration 62 med live-bevis mod Shopify/Webflow/Squarespace/Nuxt)
 
-**✅ BESTÅET — intet behøver trækkes ud, intet er platform-bundet.**
-
-Friske live-bevis (24/8): scan-API'en kaldt mod 4 ikke-WP-sider og identificerede platform + kørende alle 6 checks korrekt:
-
-| Side | Platform detekteret | Checks |
-|------|--------------------|--------|
-| shopify.com | Shopify | 6/6 kørt (ssl/cookies/forms/legal/headers/resilience) |
-| webflow.com | Webflow | 6/6 |
-| squarespace.com | Squarespace | 6/6 |
-| neal.fun | Nuxt | 6/6 |
-
-Kernen (Cloudflare Worker) tager en almindelig URL og virker uanset CMS. WP-plugin, Chrome-extension osv. er indpakninger. Ingen refaktorering nødvendig.
+Kernen (Worker) tager en almindelig URL og virker uanset CMS. WP-plugin og Chrome-extension er indpakninger. Intet behøver trækkes ud.
 
 ## Bygget i denne iteration
 
 | Ændring | Hvorfor | Status |
 |---------|---------|--------|
-| **/nis2-checklist/ — interaktiv NIS2-checkliste** | Nyt gratis værktøj på B2B-højt-volumen keyword ("nis2 compliance checklist"). 24 punkter i 6 kategorier mappet til Art. 21, live score-meter, prioriteret gap-liste, FAQ + FAQPage-schema, disclaimer. Konverterer til /scan/ og /store/. | ✅ Deployet + verificeret (200, "0 / 24", 24 items) |
-| Navigation + sitemap + blog-index | Linket fra forsiden (/nis2-checklist/), /checklist/-nav, blog-index-kort, sitemap (priority 0.9). | ✅ Verificeret live |
+| **/eaa-checklist/ — interaktiv European Accessibility Act-checkliste** | Nyt gratis værktøj på højt-volumen B2B keyword ("EAA checklist"). 28 punkter i 6 kategorier mappet til Directive (EU) 2019/882 + EN 301 549 / WCAG 2.1 AA, live score-meter, prioriteret gap-liste, FAQ + FAQPage-schema, disclaimer. Konverterer til /scan/ og /store/. | ✅ Deployet + verificeret (200, "0 / 28", 28 inputs) |
+| Navigation + sitemap + blog-index + intern linkning | Linket fra forsiden, /checklist/-nav, blog-index-kort, sitemap (priority 0.9), og indbygget link fra den eksisterende EAA-guide (/blog/european-accessibility-act-guide/) → checkliste. | ✅ Verificeret live |
 
-Prioritet fulgt: (3) det der trækker folk til — NIS2-købere er netop den B2B-gruppe der betaler for templates og Pro. Ingen udgifter.
+Hvorfor EAA: målgruppen (alle der sælger forbrugertjenester i EU — e-handel, bank, telecom) er netop den gruppe der betaler for compliance-templates og Pro. Loven har virket siden 28. juni 2025, så smerten er aktuel og tvingende. Prioritet fulgt: (3) det der trækker folk til. Ingen udgifter.
 
 ## Portefølje
 
@@ -38,6 +27,7 @@ Prioritet fulgt: (3) det der trækker folk til — NIS2-købere er netop den B2B
 | 5 | EUComply Pro (/pro/) | ✅ Sales page live | $79/yr via Gumroad (venter) |
 | 6 | GDPR Checklist (/checklist/) | ✅ Live | Free → feeder scanner + templates |
 | 7 | NIS2 Checklist (/nis2-checklist/) | ✅ Live | Free → feeder scanner + templates |
+| 8 | EAA Checklist (/eaa-checklist/) | ✅ Live | Free → feeder scanner + templates |
 
 ## Blokering (uændret — Mads' konti)
 
@@ -51,6 +41,6 @@ Prioritet fulgt: (3) det der trækker folk til — NIS2-købere er netop den B2B
 0 kr brugt / 1.000 kr.
 
 ## Næste iteration
-- Flere SEO-indgange ("EAA checklist", "cookie policy generator" landing)
-- Interne links fra blogindlæg → /nis2-checklist/
-- Mobil-gennemgang af /nis2-checklist/
+- Mobil-gennemgang af /eaa-checklist/ og /nis2-checklist/
+- Interne links fra øvrige blogindlæg → de tre checklister
+- Flere SEO-indgange ("cookie policy generator" landing)

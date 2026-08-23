@@ -1353,3 +1353,18 @@ Live-bevis hentet igen i dag: scan-API'et svarede med fuld compliance-rapport fo
 STATUS.md opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md. Budget stadig 0 kr.
 2026-08-23T11:46:47+02:00 iteration 4 afsluttet (exit 0)
 2026-08-23T11:47:09+02:00 === iteration 5/15 ===
+Iteration 62 færdig. Resumé:
+
+**1. Universality-vurdering (punkt 1) — BESTÅET, intet behøver trækkes ud.**
+Jeg re-testede kernen (scan-Worker'en) live mod fire ikke-WordPress-sider: shopify.com, webflow.com, squarespace.com og en Nuxt-side. Alle blev korrekt platform-detekteret og fik kørt alle 6 checks. Kernen tager en almindelig URL og er CMS-uafhængig; WP-plugin og Chrome-extension er allerede indpakninger. Ingen refaktorering nødvendig.
+
+**2. Beslutningen holder under pengekriteriet → bygget videre.**
+Ny flade: **/nis2-checklist/** — interaktiv NIS2-checkliste med 24 punkter i 6 kategorier mappet til Artikel 21 (governance, 24h/72h-incidenrapportering, business continuity, supply chain, access control, hygiene), live score-meter, prioriteret gap-liste, FAQ + struktureret data. NIS2-søgere er netop den B2B-gruppe der betaler for Pro ($79/år) og templates.
+
+**3. Verificeret live:** side svarer 200 med "0 / 24" og alle 24 items; linket fra forside, /checklist/, blog-index og sitemap (priority 0.9). Deployet til https://auditedwp.pages.dev/nis2-checklist/ og commitet (f7a38c2).
+
+**4. STATUS.md opdateret** i både site/ og roden med vurderingen, beviserne og porteføljen (nu 7 flader).
+
+Blokering uændret: første krone kræver stadig Mads' Gumroad-konto — alt checkout-indhold står klar. Budget: 0 kr brugt.
+2026-08-23T11:54:18+02:00 iteration 5 afsluttet (exit 0)
+2026-08-23T11:54:39+02:00 === iteration 6/15 ===
