@@ -2814,3 +2814,56 @@ Iteration 132 færdig. Kort:
 Commit `0d9e5aa` pushed. STATUS.md opdateret.
 2026-08-23T23:51:28+02:00 iteration 48 afsluttet (exit 0)
 2026-08-23T23:52:14+02:00 === iteration 49/60 ===
+Iteration 133 færdig.
+
+**Universalitetsvurdering (punkt 1):** bestået igen. DevNotify-kernen er platformsuafhængig (token+provider i `providers.rs`, GitHub/GitLab er adapters), sitet er statisk HTML — intet at trække ud.
+
+**Beslutningen:** holder under pengekriteriet — bygget, live, $19 lifetime, kun blokeret på LS-nøglen (Bitwarden stadig unauthenticated, tjekket denne iteration).
+
+**Bygget:**
+- Ny guide med høj købsintention: https://auditedwp.pages.dev/guides/github-notifications-not-working-mac/ ("GitHub notifications not working on Mac" — fejlfindingssøgninger konverterer bedre end generiske guides). 5 ærlige fixes med DevNotify som fix 5.
+- Nav + sitemap opdateret, deployet og verificeret side for side (200 + indhold + sitemap-entry bekræftet via curl).
+- Commit 69b7fe3 pushed.
+
+Traction er stadig **0 / $0** — skrevet som 0 i STATUS.md.
+
+Venter på Mads: LS-nøgle → checkout + købstest; domæne; ja/nej til launch-teksterne.
+2026-08-23T23:54:52+02:00 iteration 49 afsluttet (exit 0)
+2026-08-23T23:55:52+02:00 === iteration 50/60 ===
+Iteration 134 færdig. Kort:
+
+**Universalitet (punkt 1):** Verificeret for tredje gang — DevNotify-kernen er platformsuafhængig (token+provider i `providers.rs`, GitHub/GitLab er adapters). Intet at trække ud.
+
+**Pengekriteriet:** Beslutningen holder. En færdig desktop-app til $19 med 0 kr/md i drift og kun en betalingsnøgle mangler, slår stadig alle alternativer på alle fem faktorer.
+
+**Købsrejse gennemgået med friske øjne:** Alle 11 live-sider tjekket (200 + rigtigt indhold). Fundet én reel fejl: Buy-knappen var en død `#`-anchor der affyrede en JS-alert — den opfører sig nu ærligt og synligt ("checkout opens as soon as our payment link goes live"). `/privacy/` og `/terms/` redirectede 308 → bekræftet at de lander 200 med indhold.
+
+**Blokeringer (uændrede, nævnt sidste gang):**
+1. LS-nøglen: Bitwarden-session er stadig unauthenticated.
+2. Domænet venter på Registrar.
+
+**Traction: 0 betalende, $0.**
+
+STATUS.md er opdateret. Næste iteration uden nøgle: ny long-tail-side ("slack github notifications" / "turn off github email notifications") — høj søgeintention, direkte produktmatch.
+2026-08-23T23:57:03+02:00 iteration 50 afsluttet (exit 0)
+2026-08-23T23:58:52+02:00 === iteration 51/60 ===
+Iteration 135 færdig. Kort:
+
+**Universalitet (punkt 1):** DevNotify-kernen er ikke platformsbundet — GitHub og GitLab er adapters omkring en fælles provider-kerne. Intet at trække ud.
+
+**Beslutningen:** Holder under pengekriteriet — færdig app, $19, 0 kr/md drift, venter kun på LS-nøglen. Ingen kandidat slår den på de fem kriterier.
+
+**Bygget denne iteration:**
+- To nye long-tail-guides skrevet, deployet og verificeret live (200 + rigtigt indhold):
+  - /guides/slack-github-notifications/
+  - /guides/turn-off-github-email-notifications/
+- Sitemap opdateret til 13 URLs. Commit 778ae73.
+- Bemærk: `./deploy.sh` uden argument udgiver stadig EUComply-mappen (`site/`) — jeg brugte `./deploy.sh devnotify-site` og verificerede at forsiden igen er DevNotify. Overvej at låse standardmappen til `devnotify-site`.
+
+**Traction:** 0 betalende · $0 · 0 tilmeldinger.
+
+**Venter på Mads:** LS-nøgle i Bitwarden (checkout kan åbnes samme time) + domæne getdevnotify.com.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-24T00:01:51+02:00 iteration 51 afsluttet (exit 0)
+2026-08-24T00:03:02+02:00 === iteration 52/60 ===
