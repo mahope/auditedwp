@@ -1,36 +1,44 @@
-# STATUS — Iteration 141 (24. august)
+# STATUS — Iteration 142 (24. august)
 
-## 1. Universalitet (punkt 1) — vurderet igen
+## 1. Universalitet (punkt 1) — vurdering
 
-DevNotify-kernen (`providers.rs`) er platform-uafhængig: token ind,
-notifications ud. GitHub og GitLab er adapters; sitet er statisk HTML.
-**Ikke bundet til én platform — intet at trække ud.** Verificeret.
+DevNotify-kernen (`devnotify/src-tauri/src/providers.rs`) er platform-uafhængig:
+`Provider`-enum + `fetch_notifications(provider, token)` tager et token og
+returnerer notifikationer. GitHub og GitLab er adapters; en ny platform er én ny
+variant. Sitet er statisk HTML. **Ikke bundet til én platform — intet at trække
+ud. Verificeret i koden denne iteration.**
 
-## 2. Gjort denne iteration
+## 2. Pengevurdering (punkt A)
 
-- Fandt og rette en reel fejl: guiden "github desktop notifications mac"
-  linkede til `/devnotify/download/`, som ikke havde en side → brudt link i
-  købsrejsen. Nyt download-index er bygget (Apple Silicon + Intel, pris,
-  trial-betingelser, 3-trins opsætning, links til token-guide).
-- Direkte DMG-link fra samme guides CTA-knap (færre klik mod download).
-- Sitemap opdateret (9 URLs). Deploy verificeret live: download-side 200,
-  DMG 200, guide-CTA peger nu på det rigtige.
+Beslutningen holder under de fem pengekriterier: produktet er bygget og
+udgivet (0 kr omkostning), $19 one-time, timer til første kunde så snart
+LS-checkout åbner. Ingen ny idé slår det på tid-til-første-betaling. DevNotify
+forbliver valget. BUILD.md er opdateret.
 
-## 3. Blokeringer (én linje hver)
+## 3. Gjort denne iteration (punkt B: forbedr købsrejsen)
+
+- Gennemgik alle interne links på alle 7 devnotify-sider som en fremmed.
+- Fandt 3 brudte ankre: `#download` fandtes ikke på landingssiden — CTAs på
+  best-github-notification-apps-macos, github-token-scopes-guide og vs/gitify
+  pegede i tomheden. Rettede dem alle til `/devnotify/download/`.
+- Deployet og verificeret live: alle sider 200, rettelsen bekræftet i HTML.
+- Købsrejsen nu: landing/guide → download-side → DMG → #buy → (venter LS).
+
+## 4. Blokeringer (én linje hver)
 
 1. LS API-nøgle: Bitwarden `unauthenticated` → checkout kan ikke åbnes endnu.
-2. Domæne getdevnotify.com: ikke købt via Cloudflare Registrar endnu.
+2. Domæne getdevnotify.com: ikke købt endnu.
 
-## 4. Traction (ærlige tal)
+## 5. Traction (ærlige tal)
 
 **0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
 
-## 5. Venter på Mads
+## 6. Venter på Mads
 
 1. LS-nøgle i Bitwarden → LS-produkt via API + live checkout + købstest.
 2. Domænekøb getdevnotify.com.
 
-## 6. Næste iteration
+## 7. Næste iteration
 
-LS-nøglen kommer: checkout før alt. Ellers ny guide ("github notifications
-slack integration" eller "gitlab desktop app alternative").
+Ny guide ("github notifications slack integration" eller "gitlab desktop app
+alternative") + flere sammenligningssider. LS-nøglen: checkout før alt.
