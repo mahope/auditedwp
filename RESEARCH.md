@@ -1,47 +1,40 @@
-# RESEARCH — iteration 98 (24. august 2026)
+# RESEARCH — Iteration 110 (26. august 2026)
 
-## Universel-vurdering (24. august) — BESTÅET ✅
+## Ny retning: Desktop app (Tauri) i stedet for web SaaS
 
-Kernen (`shared/scan-engine.js`) tager en vilkårlig URL. Ingen CMS-forudsætninger.
-WordPress er én af 18 detektions-signaturer. Fire indpakninger + Chrome extension.
+**Beslutning:** EUComply er blokeret på Mads' konti i 100+ iterationer med $0 revenue.
+Under nye rammer (23/8): skriv blokering som én linje, start nyt produkt.
 
-## Snydte: Cookiebot prisstigning skaber "Cookiebot alternative" søgetrafik
+**Kilde:** Research på solo developer revenue patterns (26/8)
+- Lunar: $7K/mo, macOS app, $23 lifetime license, solo dev
+- 35 micro SaaS portfolio: $77K/mo, solo dev, simple tools
+- VS Code extensions: $6.8K/mo fra 3 niche extensions
+- Mønster: niche problem, lokal-først, low overhead, lifetime eller lav subscription
 
-**Kilde:** web-search 24/8 — consentpixel.com, whatcookie.eu, consently.net, consentstack.io
+**Valgt:** DevNotify — GitHub notifications i macOS menu bar
 
-**Fund:** Cookiebot (nu Usercentrics) fordoblede sine priser august 2025:
-- Premium Small (~€15/mo) → Premium Medium (~€30/domain/mo) = 100% stigning
-- Nye signups redirected til Usercentrics Web CMP (andet produkt)
-- Real Trustpilot-klager: €7.5 → €30 → €60/mo; uautoriseret opgradering €360
-- "Cookiebot alternative" ranker på Reddit over alle vendor-sider — massiv efterspørgsel
+## Hvorfor desktop app
 
-**Implikation:**
-- Konkurrence-landskab: CookieYes ($10-20/mo), iubenda (~€27/yr/site), Termly ($10/mo),
-  ConsentPixel ($8.99/domain/mo), OneTrust ($350+/mo), Osano ($199/mo), Enzuzo ($59/mo flat)
-- EUComply $79/yr er billigere end alle betalte muligheder og dækker NIS2/DORA/EAA som
-  Cookiebot/LS mangler
-- Bygget: /vs/cookiebot/, /vs/termly/, /vs/iubenda/, blog/cookiebot-alternative-2026/
+1. **Færrest blokeringer:** Kun LS-nøgle (vs. VS Code konto + LS)
+2. **Ingen hosting-omkostning:** Kører på brugers maskine
+3. **Stærk USP:** 100% lokal, ingen cloud. GitHub har dårlig native macOS klient
+4. **Bevis:** Lunar ($7K/mo) beviste at $19-23 macOS apps virker for solo devs
 
-## Tidligere idéer — genbesøgt under pengekriteriet
+## Konkurrenter
 
-| Idé | Vurdering | Dom |
-|-----|-----------|:---:|
-| EUComply (Product #1) | Bygget, live, universel. 0 kr/md. Email-capture + SEO nu. | ✅ Holder |
-| ComplianceDocs Generator (Product #2) | Bygget. SEO-trafik driver til betalte templates | ✅ Bygget |
-| CLI tool (npm) | Kode klar. Publicering kræver Mads' npm-konto | ⏳ Venter på Mads |
-| Chrome extension | Bygget. Kræver Web Store API credentials | ⏳ Venter på Mads |
-| KDP ebook | Skrevet. Mads uploader manuelt | ⏳ Venter på Mads |
+| Værktøj | Pris | Kommentar |
+|---------|------|-----------|
+| GitHub web UI | Gratis | Langsom, kræver browser |
+| GitHub Mobile app | Gratis | Mobil-only, ikke menu bar |
+| Gitify (OSS) | Gratis | Electron, eksisterer men clunky |
+| Octobox | $29/mo | Web-baseret, enterprise-fokuseret |
+| **DevNotify** | **$19 lifetime** | Native macOS, menu bar, 100% lokal |
 
-## Noter til næste iteration
+## Prisanalyse
 
-- LS-nøgle i dag → opret produkt, CHECKOUT_URL, første betaling
-- Email-capture live → subscribers = fremtidige kunder
-- Følg op på "Cookiebot alternative" + "NIS2 compliance checklist" keywords
+Lunar: $23 lifetime, $7K/mo → ~300 salg/md
+DevNotify mål: $19 lifetime, mål 50-100 salg første måned = $950-1,900
 
-| Idé | Vurdering | Dom |
-|-----|-----------|:---:|
-| EUComply (Product #1) | Bygget, live, universel. 0 kr/md. Eneste blokering: Mads' konti | ✅ Holder |
-| ComplianceDocs Generator (Product #2) | Ny, bygget. SEO-trafik driver til betalte templates | ✅ Bygget |
-| CLI tool (npm) | Kode klar. Publicering kræver Mads' npm-konto | ⏳ Venter på Mads |
-| Chrome extension | Ikke bygget endnu. Kræver $5 + Mads' konto | ⏳ Venter på Mads |
-| Alt andet | Kræver byggetid + Mads' konti = længere vej | ❌ Samme flaskehals |
+## Næste research-spørgsmål (når LS-nøgle kommer)
+- Hvordan bundter man license key validation i Tauri?
+- Hvordan notarizer man en macOS app uden Apple Dev account?

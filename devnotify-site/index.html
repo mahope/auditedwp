@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DevNotify — GitHub Notifications in Your Mac Menu Bar</title>
+<meta name="description" content="DevNotify puts your GitHub notifications in your macOS menu bar. Unread count at a glance, one click to any PR or issue. 100% local, your token stays on your Mac. $19 lifetime license.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/">
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+  --accent:#2f81f7;--green:#3fb950;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.logo .dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block}
+nav a{margin-left:20px;text-decoration:none;font-size:.95rem;color:var(--muted)}
+nav a:hover{color:var(--text)}
+.hero{text-align:center;padding:70px 0 40px}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);line-height:1.15;margin-bottom:16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.sub{color:var(--muted);font-size:1.15rem;max-width:620px;margin:0 auto 28px}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;font-size:1rem}
+.btn-primary{background:var(--green);color:#04180a}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--muted)}
+.price-note{color:var(--muted);font-size:.95rem}
+.price-note strong{color:var(--text)}
+.mockup{max-width:340px;margin:36px auto 0;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.mockup .bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.mockup .bar span{width:10px;height:10px;border-radius:50%;background:var(--border)}
+.mockup ul{list-style:none;padding:8px 0}
+.mockup li{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #21262d;font-size:.85rem}
+.mockup li:last-child{border-bottom:none}
+.mockup .repo{color:var(--muted)}
+.badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.b-pr{background:#1f3a5f;color:#79b8ff}.b-issue{background:#2a2f1f;color:#c3e88d}.b-mention{background:#3a2440;color:#d2a8ff}
+.features{padding:60px 0}
+.features h2,.faq h2,.how h2{text-align:center;font-size:1.8rem;margin-bottom:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.card h3{font-size:1.05rem;margin-bottom:8px}
+.card p{color:var(--muted);font-size:.92rem}
+.how{padding:60px 0;border-top:1px solid var(--border)}
+.steps{max-width:640px;margin:0 auto}
+.step{display:flex;gap:18px;margin-bottom:24px}
+.step .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step p{color:var(--muted)}.step strong{color:var(--text)}
+.faq{padding:60px 0;border-top:1px solid var(--border)}
+.faq details{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;padding:16px 20px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{color:var(--muted);margin-top:10px;font-size:.95rem}
+.buy{ text-align:center;padding:70px 0;border-top:1px solid var(--border)}
+.buy h2{font-size:1.8rem;margin-bottom:10px}
+.big-price{font-size:3rem;font-weight:800;color:var(--green);margin:12px 0}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(max-width:600px){.hero{padding:48px 0 30px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span> DevNotify</div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+      <a href="#buy">Buy — $19</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Your GitHub notifications,<br><em>in your Mac menu bar.</em></h1>
+    <p class="sub">See the unread count at a glance. One click to any pull request, issue or mention — without opening a single browser tab.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="download/DevNotify_0.1.0_aarch64.dmg" download>Download for macOS (Apple Silicon)</a>
+      <a class="btn btn-ghost" href="#buy">Buy license — $19</a>
+    </div>
+    <p class="price-note"><strong>$19</strong> lifetime · free 7-day trial · your data never leaves your Mac · v0.1.0, macOS 11+, Apple Silicon</p>
+
+    <div class="mockup" role="img" aria-label="Screenshot mockup of the DevNotify menu bar popup showing recent GitHub notifications">
+      <div class="bar"><span></span><span></span><span></span></div>
+      <ul>
+        <li><span>Review requested on <strong>#142</strong> API rate limits<br><span class="repo">acme/backend</span></span><span class="badge b-pr">PR</span></li>
+        <li><span>Mentioned in <strong>#87</strong> Migration plan<br><span class="repo">acme/infra</span></span><span class="badge b-mention">@you</span></li>
+        <li><span>New issue: <strong>Cron job fails nightly</strong><br><span class="repo">acme/tools</span></span><span class="badge b-issue">Issue</span></li>
+        <li><span>CI failed on your PR <strong>#139</strong><br><span class="repo">acme/backend</span></span><span class="badge b-pr">PR</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <h2>Built for developers who live in pull requests</h2>
+    <div class="grid">
+      <div class="card"><h3>Unread count, always visible</h3><p>A menu bar badge shows exactly how many notifications you have. No tab-switching, no email digests.</p></div>
+      <div class="card"><h3>One click to context</h3><p>Click any notification to open that PR, issue or discussion directly in your browser.</p></div>
+      <div class="card"><h3>100% local</h3><p>Your GitHub token stays on your Mac. No accounts, no cloud relay, no analytics. Polls the official GitHub API every 60 seconds.</p></div>
+      <div class="card"><h3>Lives quietly in the tray</h3><p>Closing the window keeps DevNotify in the menu bar. Check Now whenever you want an instant refresh.</p></div>
+      <div class="card"><h3>Lightweight native app</h3><p>A small Tauri app — a fraction of the memory of a browser tab left open all day.</p></div>
+      <div class="card"><h3>Works with your own token</h3><p>Paste a GitHub personal access token (read-only notifications scope is enough) and you're running in under a minute.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <h2>Up and running in 3 minutes</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><p><strong>Download and open the DMG.</strong> Drag DevNotify to Applications. First launch: right-click the app and choose Open (it isn't notarized yet).</p></div>
+      <div class="step"><div class="n">2</div><p><strong>Create a fine-grained personal access token</strong> on GitHub with read access to notifications, paste it into Preferences.</p></div>
+      <div class="step"><div class="n">3</div><p><strong>Done.</strong> Your unread count appears in the menu bar and refreshes every minute.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details><summary>Does my token leave my Mac?</summary><p>No. It is stored locally by the app and used only to call api.github.com directly from your machine.</p></details>
+    <details><summary>"App can't be opened" on first launch</summary><p>The DMG isn't signed with an Apple Developer certificate yet. Right-click DevNotify.app → Open → Open. You only have to do this once.</p></details>
+    <details><summary>What does the trial include?</summary><p>Everything. Full functionality for 7 days. After that, a $19 lifetime license unlocks it permanently.</p></details>
+    <details><summary>Which macOS versions are supported?</summary><p>macOS 11 Big Sur and later, Apple Silicon and Intel.</p></details>
+    <details><summary>Lifetime — really?</summary><p>Yes. One payment, perpetual use of version 1.x including updates.</p></details>
+  </div>
+</section>
+
+<section class="buy" id="buy">
+  <div class="wrap">
+    <h2>Stop letting PRs surprise you</h2>
+    <div class="big-price">$19</div>
+    <p class="price-note" style="margin-bottom:24px">one-time · lifetime license · VAT handled at checkout</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#" id="buy-btn" aria-label="Buy DevNotify license for 19 dollars">Buy license</a>
+    </div>
+    <p class="price-note" style="margin-top:16px">Checkout is processed by Lemon Squeezy as Merchant of Record.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 DevNotify · Made for developers, by developers</div>
+    <div><a href="/devnotify/terms.html">Terms</a> · <a href="/devnotify/privacy.html">Privacy</a></div>
+  </div>
+</footer>
+
+<script>
+// Placeholder targets until LS checkout URL exists. Honest no-op messaging.
+for (const [id,msg] of [['buy-btn','Checkout opens here as soon as our payment provider link goes live — check back shortly.']]) {
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('click',function(e){e.preventDefault();alert(msg);});
+}
+</script>
+</body>
+</html>

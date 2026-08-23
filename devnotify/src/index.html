@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevNotify</title>
+    <script type="module" src="/main.js" defer></script>
+  </head>
+  <body>
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="panel">
+      <h2>Settings</h2>
+      <div class="form-group">
+        <label for="token-input">GitHub Personal Access Token</label>
+        <input
+          id="token-input"
+          type="password"
+          placeholder="ghp_..."
+          autocomplete="off"
+        />
+        <p class="hint">
+          Create a token at
+          <a href="#" id="token-link">github.com/settings/tokens</a>
+          with <code>notifications</code> and <code>repo</code> scopes.
+        </p>
+      </div>
+      <div class="form-actions">
+        <button id="save-token-btn" class="primary">Save Token</button>
+        <button id="test-token-btn">Test Connection</button>
+      </div>
+      <p id="settings-status" class="status-msg"></p>
+      <hr />
+      <p class="hint">
+        Close this window to hide to the menu bar.
+        Click the menu bar icon to show notifications.
+      </p>
+      <button id="show-notifications-btn" class="primary">Show Notifications</button>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notifications-panel" class="panel" style="display: none">
+      <div class="notif-header">
+        <h2>Notifications</h2>
+        <div class="notif-actions">
+          <button id="refresh-notifs-btn">Refresh</button>
+          <button id="settings-btn">⚙</button>
+        </div>
+      </div>
+      <div id="unread-badge" class="unread-badge"></div>
+      <div id="notification-list" class="notification-list">
+        <p class="loading">Checking for notifications…</p>
+      </div>
+    </div>
+  </body>
+</html>

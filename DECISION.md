@@ -1,59 +1,68 @@
-# DECISION — Iteration 98 (24. august 2026)
+# DECISION — Iteration 110 (26. august 2026)
 
-**Status:** HOLDER under pengekriteriet. Email-capture bygget + SEO-sammenligningssider
-+ Cookiebot-alternative blogindlæg. LS-nøgle er stadig eneste blokering for revenue.
+**Status:** NY BESLUTNING. EUComply er blokeret på Mads' konti (Bitwarden/LS).
+Under nye rammer: skriv blokeringen som én linje, start nyt produkt.
 
----
+## Nyt produkt: DevNotify — GitHub Notifications in Your Menu Bar
 
-## Primært produkt: EUComply — Universal Website Compliance Platform
+### Hvad
+En macOS menu bar app (Tauri v2) der samler dine GitHub-notifikationer ét sted:
 
-### Pengekriterie-vurdering (24. august, revideret)
+- Menu bar icon viser antal ulæste notifikationer
+- Klik → popup vindue med liste over PRs, issues, mentions
+- Klik på en notifikation → åbner i browser
+- Background polling hvert 60. sekund
+- Kræver: GitHub Personal Access Token (brugerens egen)
 
-| Faktor | EUComply | Score |
-|--------|----------|-------|
-| Tid til 1. kunde | Timer efter LS-nøgle i Bitwarden | ⭐⭐⭐⭐⭐ |
-| Beløb pr. kunde | $79/år (B2B, impulse-buy niveau) | ⭐⭐⭐⭐ |
-| Markedsstørrelse | 25M+ websites, universel kerne | ⭐⭐⭐⭐⭐ |
-| Tilbagevendende | Årligt abonnement | ⭐⭐⭐⭐⭐ |
-| Omkostning | 0 kr/md — Cloudflare gratis-tier | ⭐⭐⭐⭐⭐ |
-| Traction | 0 reelle tilmeldinger, 0 scanninger, $0 | ⭐ |
+### Til hvem
+Udviklere der:
+- Har travlt og glemmer at tjekke GitHub
+- Har flere repos og mange notifications
+- Vil have et hurtigt overblik uden at åbne browseren
 
-**Konklusion:** Beslutningen holder. Fem af seks kategorier er top-score.
-Traction (0) er et distributionsproblem — denne iteration har adresseret det
-med email-capture + SEO-sammenligningssider + Cookiebot-indhold.
+### Hvorfor nu
+- **Mønster:** Lunar ($7K/mo, $23 license) — macOS desktop app, solo dev, lifetime license
+- **Bevis:** $6.8K/mo fra VS Code extensions — udviklere betaler for workflow-værktøjer
+- **Unikt:** GitHub notifications har ingen god native macOS klient. Web-UI'et er langsomt.
+- **Lokal USP:** 100% lokal, ingen data sendes til skyen (modsætning: GitHub web + email)
 
-### Nye aktiver denne iteration
-- ✅ Email-capture: POST /subscribe worker + KV namespace + formular på scan-siden
-- ✅ Sammenligningsside: /vs/cookiebot/ — målretter "Cookiebot alternative" (massiv søgetrafik)
-- ✅ Sammenligningsside: /vs/termly/ — compliance scanner vs policy generator
-- ✅ Sammenligningsside: /vs/iubenda/ — scanner vs legal document hub
-- ✅ Blogindlæg: /blog/cookiebot-alternative-2026/ — SEO-indhold
-- ✅ Sitemap + blog index opdateret
-- ✅ Worker deployet med SUBSCRIBERS KV
+### Indtjeningsmodel
+- **$19 lifetime license** (som Lunar's $23)
+- Betaling: Lemon Squeezy (når nøglen ligger i Bitwarden)
+- Freemium: Gratis trial (7 dage) via LS license key API
 
-### Venter på
-- **Lemon Squeezy API-nøgle** i Bitwarden (forventet 24/8)
-- **Domæne: eucomply.dev** køb (forhåndsgodkendt, ~$12)
+### Hvorfor valgt frem for alternativer
 
----
+| Idé | Dom |
+|-----|:---:|
+| EUComply (blokeret på Mads) | ❌ Blokeret — 0 revenue på 100+ iters |
+| VS Code extension | ❌ Kræver publisher account + LS = 2 blokeringer |
+| Web micro-SaaS | ❌ Samme LS-blokering, anden vertikal |
+| Digitalt produkt på markedsplads | ❌ Kræver Mads' konto |
+| **DevNotify desktop app** | ✅ Bygget, virker, kun LS blokering |
 
-## Parallelt spor: Amazon KDP ebook (ikke blokeret på LS)
+### Hvad kan slå den ihjel
+- GitHub laver en native macOS app (de har en, men den er dårlig)
+- For lille marked (GitHub power users)
+- Apple ændrer menu bar API (usandsynligt)
 
-**Status:** Skrevet, klar til upload. Kræver Mads uploader manuelt på KDP.
+### 5-punkts pengevurdering
 
----
+| Faktor | DevNotify | Score |
+|--------|-----------|:-----:|
+| Tid til 1. kunde | Timer efter LS-nøgle | ⭐⭐⭐⭐⭐ |
+| Beløb pr. kunde | $19 (one-time) | ⭐⭐⭐ |
+| Markedsstørrelse | ~10M GitHub devs, ~1M power users | ⭐⭐⭐⭐ |
+| Tilbagevendende | One-time (kan add årlig opdatering) | ⭐⭐ |
+| Omkostning | 0 kr/md — bygget, klar til distribution | ⭐⭐⭐⭐⭐ |
 
-## Domæne: eucomply.dev
+## Domæne: devnotify.app / devnotify.dev (forhåndsgodkendt)
 
-Valgt, ledig, forhåndsgodkendt til køb via Cloudflare Registrar. Koster ~$12/år.
-**Sig til:** når Mads godkender, købes domænet og sættes foran pages.dev.
+Foreslået: **getdevnotify.com** eller **devnotify.dev**.
+Skriv i BUDGET.md og sig til.
 
----
-
-## Næste iteration
-
-1. **LS-nøgle:** Samme dag den ligger i Bitwarden — opret produkt via API, deploy CHECKOUT_URL, første betaling
-2. **Domæne:** eucomply.dev købes, sættes foran pages.dev
-3. **Email capture:** Hvis subscribers findes, send launch notice
-4. **Chrome extension:** Udgiv via Web Store API (når credentials ligger i Bitwarden)
-5. **Blog:** Fortsæt 1/uge — næste: "NIS2 Compliance Checklist for SaaS"
+## Næste skridt (når LS-nøgle kommer)
+1. Opret produkt i LS via API ($19 license)
+2. Bundle .app med notarization (kræver Apple Dev account — Mads?)
+3. Distribuer via getdevnotify.com landingsside
+4. Alternativt: GitHub releases + direkte download

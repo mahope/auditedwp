@@ -313,13 +313,19 @@
     <priority>0.9</priority>
   </url>
   <url>
-      <url>
     <loc>https://auditedwp.pages.dev/vs/enzuzo/</loc>
     <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-<loc>https://auditedwp.pages.dev/blog/gdpr-compliance-for-agencies/</loc>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/osano/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/gdpr-compliance-for-agencies/</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

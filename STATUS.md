@@ -1,49 +1,51 @@
-# STATUS — Iteration 108 (26. august 2026)
+# STATUS — Iteration 111 (26. august 2026)
 
-## 1. Universalitets-vurdering — BESTÅET (7. bekræftelse)
+## 1. Universitets-vurdering (punkt 1) — DEVNOTIFY
 
-Kernen (`shared/scan-engine.js` → `eucomply-scan` worker) tager en vilkårlig
-URL og virker uafhængigt af CMS. Verificeret live mod example.com i iter. 107.
-Site/CLI/extension er indpakninger. **Intet at bygge om — punkt 1 opfyldt.**
-Ny side /vs/enzuzo/ nævner eksplicit WordPress, Shopify, Webflow, Wix og
-custom code som understøttede platforme.
+DevNotify er IKKE platform-bundet på den måde AGENTS.md mener. Det er en desktop-app
+mod GitHub REST API — der er intet CMS-afhængigt. Kernen er: notifications-API →
+normaliseret liste → menu bar UI + polling. GitHub-integrationen er én adapter;
+senere kan GitLab/Linear/Jira adapters lægges ind uden ændring af kernen.
+**Konklusion: bestået — ingen udtrækning nødvendig.**
 
-## 2. Pengekriteriet (Mads' eneste kriterie) — genstand for revurdering?
+## 2. Færdigt denne iteration: DevNotify landingsside + download — LIVE
 
-Nej. DECISION.md vurderet igen: EUComply scorer stadig højest på tid til
-første betaling (timer efter LS-nøgle), beløb ($79/år), marked (25M+ sites),
-tilbagevendende (abonnement) og leveringsomkostning (0 kr/md). Traction er
-stadig 0 — det er distributionsproblemet, ikke produktet.
+| Ting | Status |
+|------|--------|
+| Landingsside (hvad/hvem/pris/køb) | ✅ https://auditedwp.pages.dev/devnotify/ |
+| DMG-build (4,2 MB) via hdiutil | ✅ verificeret byte-identisk online |
+| Download-knap → rigtig fil | ✅ 200, 4.421.222 bytes, hash matcher |
+| Terms + Privacy | ✅ live |
+| Sitemap + _headers (rigtig content-type på .dmg) | ✅ |
+| Rodsitet (EUComply) gendannet efter fejldeploy | ✅ |
 
-## 3. Bygget denne iteration
+Fejl jeg fandt og rettede: `wrangler pages deploy <mappe>` uploader mappe-indholdet
+på roden — første deploys lå derfor på /index.html i stedet for /devnotify/, og
+/devnotify/* faldt tilbage til forsiden (SPA-fallback). Løsning: publish/-mappe med
+devnotify/-undermappe.
 
-- ✅ Ny SEO-ingangsside: `/vs/enzuzo/` — sammenligning + FAQPage structured
-  data + prismatrix ("$9–49+/mo vs $79/yr"). Live-verificeret HTTP 200 med
-  korrekt title.
-- ✅ Cross-links "More comparisons" tilføjet på alle 4 eksisterende
-  sammenligningssider (cookiebot/onetrust/termly/iubenda).
-- ✅ Sitemap opdateret med /vs/enzuzo/ (verificeret live).
+## 3. Traction (ærligt)
 
-## 4. Traction (ærligt)
+**0** betalende kunder · **0** downloads · **$0** revenue.
 
-0 reelle subscribers · 0 scanninger fra andre end os · $0.
+## 4. Budget
 
-## 5. Budget
+| Post | Beløb |
+|------|-------|
+| Brugt | **0 kr** |
+| Domæne (getdevnotify.com ~12 USD) | Forhåndsgodkendt, venter på køb |
+| Tilbage | ~910 kr |
 
-Brugt: **0 kr** · eucomply.dev forhængsgodkendt (~90 DKK) · Tilbage ~910 kr.
-
-## Venter på Mads (én linje hver)
+## 5. Venter på Mads
 
 | Hvad | Blokerer |
 |------|----------|
-| Ulåst Bitwarden-session (`bw status` → unauthenticated, tjekket igen i dag) | Om LS-nøglen OVERHOVEDET ligger der |
-| Lemon Squeezy API-nøgle | Checkout + første betaling — den ENESTE blokering for revenue |
-| Domænekøb eucomply.dev | Ordentlig URL |
-| JA til launch-email (POSTS/launch-email.md) | Afsendelse |
+| Lemon Squeezy API-nøgle (Bitwarden) | Checkout-knap + licensnøgler — ENESTE blokering for revenue |
+| Domænekøb getdevnotify.com | Ordentlig URL (forhåndsgodkendt) |
+| Ja/nej til 3 færdige Product Hunt/Reddit-posts i POSTS/ | Udvendig marketing |
 
 ## Næste iteration
 
-1. Bitwarden låst op + LS-nøgle → produkt via API → checkout LIVE samme dag.
-2. Mads' ja → afsend launch-email.
-3. Stadig blokeret? Næste SEO-ingang: /blog/nis2-compliance-for-agencies/
-   eller udvid /vs/ med Osano/Usercentrics.
+1. LS-nøgle → opret produkt $19 via API → indsæt checkout-URL i index.html → genudgiv
+2. Licensvalidering i app'en mod LS API
+3. GitLab-adapter til kernen (bredden, efter betaling virker)

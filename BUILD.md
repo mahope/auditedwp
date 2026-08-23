@@ -1,141 +1,36 @@
-# BUILD — Korteste vej til $1 (opdateret 24. august 2026)
+# BUILD — DevNotify: korteste vej til første betalende kunde
 
-## Produkt 1: EUComply Pro ($79/år)
-**Status:** Bygget, live, universel. Ventende: LS API-nøgle (forventet i Bitwarden 24/8).
+Opdateret 26. august 2026.
 
-### Præcis plan: 10 minutter fra LS-nøgle til checkout
+## Produktet
+macOS menu bar app (Tauri v2), bygget og kompileret: `devnotify/src-tauri/target/release/bundle/macos/DevNotify.app` + DMG.
+$19 lifetime license via Lemon Squeezy (MoR — håndterer moms). Brugeren giver sin egen GitHub PAT; app'en er 100% lokal.
 
-```bash
-# 1. Hent LS API-nøgle fra Bitwarden
-#    Log ind på bitwarden.mahope.dk / vault.bitwarden.com
-#    Nøglen hedder "Lemon Squeezy API Key"
+## Universel kerne
+Kernen er en **notifications-klient**: GitHub REST API → normaliseret notifikationsliste → UI + polling. GitHub-integrationen er én adapter. Senere indpakninger: GitLab, Linear, Jira adapters mod samme UI/kerne.
 
-# 2. Opret produkt via LS API
-curl -X POST https://api.lemonsqueezy.com/v1/products \
-  -H "Authorization: Bearer $LS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "type": "products",
-      "attributes": {
-        "name": "EUComply Pro",
-        "description": "Daily EU compliance monitoring for any website. Automated GDPR, NIS2, DORA, and EAA checks with dashboard, PDF reports, and email alerts.",
-        "price": 79,
-        "interval": "year"
-      }
-    }
-  }'
+## Vejen til første betaling (rækkefølge)
 
-# 3. Opret en variant (price) på produktet
-#    Brug product_id fra svaret ovenfor
-curl -X POST https://api.lemonsqueezy.com/v1/variants \
-  -H "Authorization: Bearer $LS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "type": "variants",
-      "attributes": {
-        "name": "Standard",
-        "price": 7900  # $79 i cent
-      },
-      "relationships": {
-        "product": {
-          "data": { "type": "products", "id": "<product_id>" }
-        }
-      }
-    }
-  }'
+| # | Skridt | Status | Blokering |
+|---|--------|--------|-----------|
+| 1 | Landingsside der sælger (hvad/hvem/pris/køb) | ✅ Bygget denne iteration | — |
+| 2 | DMG uploades som release-asset på GitHub (offentligt repo i mit eget navn er ikke muligt — se blokering) | ⏳ | Venter: repo skal oprettes i Mads' GitHub eller direkte download fra sitet |
+| 3 | Lemon Squeezy: opret produkt $19 + license key via API | ⏳ | LS API-nøgle i Bitwarden (ventes 24/8) |
+| 4 | App'en validerer license key mod LS API (gratis trial 7 dage uden key) | Kode klar, aktiveres ved nøgle | |
+| 5 | Checkout-knap på landingsside → LS checkout URL | ⏳ | Samme nøgle |
 
-# 4. Opret et checkout-link
-curl -X POST https://api.lemonsqueezy.com/v1/checkouts \
-  -H "Authorization: Bearer $LS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "type": "checkouts",
-      "attributes": {
-        "product_options": {
-          "name": "EUComply Pro",
-          "description": "Automated EU compliance monitoring — daily scans, PDF reports, templates"
-        },
-        "checkout_data": {
-          "custom": {
-            "source": "eucomply-pro-page"
-          }
-        }
-      },
-      "relationships": {
-        "variant": {
-          "data": { "type": "variants", "id": "<variant_id>" }
-        }
-      }
-    }
-  }'
+## Priser
+- $19 lifetime, én licens pr. bruger.
+- Gratis: 7 dages trial fuld funktionalitet.
+- Ingen abonnement før der er betalende kunder.
 
-# 5. Indsæt checkout-URL i kodebasen
-#    site/pro/index.html → CHECKOUT_URL = '<url>' (linje 294)
-#    Deploy: ./deploy.sh site
+## Distribution (uden app store)
+Direkte download af DMG fra landingssiden. Ikke-notarized DMG kræver højreklik → Open første gang; det står i FAQ. Notarization ($99/år Apple Developer) er en fremtidig udgift — beder IKKE om den nu; først når der er revenue.
 
-# 6. Test med LS sandbox (1 cent test)
-#    LS har sandbox-mode: opret en checkout med "test" i data og brug
-#    testkort 4242 4242 4242 4242 for at verificere flowet
+## Marketing (mine egne flader, ingen henvendelser)
+- SEO-tekst på landingssiden ("github notifications mac menubar")
+- Sitemap + robots.txt
+- Product Hunt / Reddit-posts skrevet FÆRDIGE og lagt i POSTS/, venter på Mads' ja
 
-# 7. Skift til live mode
-#    Opret checkout i live-mode. Første rigtige betaling mulig samme dag.
-```
-
-**Checklist til når nøglen ligger klar:**
-- [ ] Opret produkt i LS
-- [ ] Opret variant ($79/yr)
-- [ ] Opret checkout link
-- [ ] Sæt CHECKOUT_URL i `site/pro/index.html`
-- [ ] Test med LS sandbox
-- [ ] Deploy
-- [ ] Første betaling
-
-### Hvad ER allerede klar (kan testes nu)
-- ✅ Pro-side med pris, features, sammenligning — live på auditedwp.pages.dev/pro/
-- ✅ CHECKOUT_URL variabel i HTML (linje 294) — klar til at indsætte URL
-- ✅ Buy-knap med JS redirect til checkout — klar
-- ✅ Garanti ("30-day money-back") — tilføjet 24/8
-- ✅ Thank-you side — klar på /pro/thank-you/
-- ✅ Daily monitoring engine — bygget og kører
-- ✅ 21 blogindlæg til SEO-trafik
-- ✅ Domæne eucomply.dev — valgt, forhåndsgodkendt til køb
-
----
-
-## Produkt 2: "EU Website Compliance Guide 2026" (Amazon KDP ebook)
-**Status:** Skrevet, klar til upload. Kræver Mads uploader manuelt (10 min).
-
-### Upload-vejledning (til Mads)
-1. Gå til kdp.amazon.com
-2. Log ind med Mads' konto
-3. Vælg "Create a New Title" → Ebook
-4. Upload filen: `eu-website-compliance-guide-2026.docx` (fra `/book/`)
-5. Upload omslag: (skal designes — se nedenfor)
-6. Sæt pris: $9.99 (KDP Select, 70% royalty)
-7. Sæt beskrivelse og 7 søgeord
-8. Udgiv
-
----
-
-## Næste trin (prioriteret)
-
-| # | Hvad | Hvornår | Blokering |
-|---|------|---------|-----------|
-| 1 | Domæne: eucomply.dev → køb og sæt foran pages.dev | Ventende | "Sig til" |
-| 2 | LS-nøgle: opret produkt → checkout → $1 | Samme dag nøglen ligger i Bitwarden | LS API-nøgle |
-| 3 | KDP-upload: Mads uploader bogen | Når omslag er på plads | Omslag + Mads' handling |
-| 4 | Blog: fortsæt 1/uge | Løbende | Ingen |
-| 5 | Chrome extension: opdater LS-licens, udgiv | Efter LS-nøgle | LS-nøgle + Mads' Chrome Web Store-konto |
-
----
-
-## Budget
-
-| Post | Status | Beløb |
-|------|--------|-------|
-| Brugt | | **0 kr** |
-| Domæne: eucomply.dev | Forhåndsgodkendt, ~$12 | ~90 DKK |
-| **Tilbage** | | **~910 kr af 1.000 kr** |
+## Definition of "færdigt nok til at tjene penge"
+Landingsside live + DMG downloadbar + LS-checkout aktiv = kan tage imod penge.
