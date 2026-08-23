@@ -5,13 +5,15 @@
  * compliance report. Works regardless of CMS/platform.
  *
  * Checks (header/HTML based, no CMS assumptions):
- *   1. ssl       — HTTPS + HSTS header
- *   2. cookies   — cookie banner / consent platform detection in HTML
- *   3. forms     — form markup + privacy-policy link presence
- *   4. legal     — privacy policy / imprint / accessibility statement links
- *   5. headers   — security headers (CSP, X-Content-Type-Options, Referrer-Policy, X-Frame-Options)
- *   6. tech      — platform fingerprint (informational)
- *   7. dora      — DORA resilience check (email redundancy, DNS failover signals)
+ *   0.  consent_mode_v2 — Google Consent Mode v2 signatures
+ *   0a. tcf            — IAB Transparency & Consent Framework
+ *   1.  ssl            — HTTPS + HSTS header
+ *   2.  cookies        — cookie banner / consent platform detection in HTML
+ *   3.  forms          — form markup + privacy-policy link presence
+ *   4.  legal          — privacy policy / imprint / accessibility statement links
+ *   5.  headers        — security headers (CSP, X-Content-Type-Options, Referrer-Policy, X-Frame-Options)
+ *   6.  tech           — platform fingerprint (informational)
+ *   7.  dora           — DORA resilience check (email redundancy, DNS failover signals)
  *
  * Import: import { runScan, normalizeUrl } from '../shared/scan-engine.js'
  */
@@ -23,6 +25,22 @@ export const CORS = {
 };
 
 const UA = "Mozilla/5.0 (compatible; EUComplyScan/1.0; +https://auditedwp.pages.dev)";
+
+const IAB_TCF_SIGNATURES = [
+  { re: /__tcfapi|tcfapi/i, name: "IAB TCF API (__tcfapi)" },
+  { re: /IABTCF_[a-z]/i, name: "IAB TCF cookies set" },
+  { re: /gdprApplies|tcf[_-]?gdpr/i, name: "GDPR applies / TCF GDPR signals" },
+  { re: /IAB[_-]?Consent[_-]?String|tcstring|consent[_-]?string[_-]?tcf/i, name: "IAB Consent String present" },
+  { re: /tcf[_-]?v[12]|tcfapiv[12]/i, name: "TCF version indicator" },
+];
+const CMV2_SIGNATURES = [
+  { re: /google_consent_mode|consent_mode_v2|cmv2[\s_,]/i, name: "Google Consent Mode v2 class/attribute" },
+  { re: /gtag\(['"]consent['"]|'consent',\s*['"]default['"]|consent.*default.*ad_storage|ad_storage.*consent/i, name: "Google Consent Mode v2 (gtag)" },
+  { re: /dataLayer[\s\S]{0,200}consent[\s\S]{0,200}(default|update)/i, name: "Google Consent Mode v2 (dataLayer)" },
+  { re: /granted|denied[\s\S]{0,40}ad_storage|ad_storage[\s\S]{0,40}(granted|denied)/i, name: "Consent signals for ad storage and personalization" },
+  { re: /google_ads[\s\S]{0,100}consent|consent[\s\S]{0,100}google_ads/i, name: "Google Ads consent integration" },
+  { re: /consent.*analytics_storage|analytics_storage.*consent/i, name: "Analytics storage consent signal" },
+];
 
 const CONSENT_SIGNATURES = [
   { re: /cookiebot|consentmanager|onetrust|usercentrics/i, name: "Cookiebot / OneTrust / Usercentrics / ConsentManager" },
@@ -156,7 +174,51 @@ export async function runScan(url) {
 
   const checks = {};
 
-  // 1. SSL / HTTPS + HSTS
+  // 0. Google Consent Mode v2 (platform-independent — detects in-page JS/HTML patterns)
+  const cmv2Matches = [];
+  for (const sig of CMV2_SIGNATURES) {
+    if (sig.re.test(html)) cmv2Matches.push(sig.name);
+  }
+  checks.consent_mode_v2 = {
+    pass: cmv2Matches.length >= 2,
+    warn: cmv2Matches.length === 1,
+    label: cmv2Matches.length >= 2
+      ? "Google Consent Mode v2 detected"
+      : cmv2Matches.length === 1
+        ? "Partial Consent Mode v2 signals"
+        : "No Google Consent Mode v2 detected",
+    detail: cmv2Matches.length > 0
+      ? `Consent Mode v2 signals: ${cmv2Matches.join(", ")}.`
+      : "No Consent Mode v2 signals found. Since March 2024, Google requires Consent Mode v2 for ad personalization in the EEA. Without it, Google Ads conversion tracking may be restricted.",
+  };
+  if (cmv2Matches.length < 2) {
+    checks.consent_mode_v2.fix =
+      "Implement Google Consent Mode v2 with the default consent state for ad_storage and analytics_storage. See https://developers.google.com/tag-platform/security/guides/consent.";
+  }
+  // 0a. IAB TCF (Transparency & Consent Framework)
+  const tcfMatches = [];
+  for (const sig of IAB_TCF_SIGNATURES) {
+    if (sig.re.test(html)) tcfMatches.push(sig.name);
+  }
+  checks.tcf = {
+    pass: tcfMatches.length >= 2,
+    warn: tcfMatches.length === 1,
+    label: tcfMatches.length >= 2
+      ? "IAB TCF detected"
+      : tcfMatches.length === 1
+        ? "Partial IAB TCF signals"
+        : "No IAB TCF detected",
+    detail: tcfMatches.length > 0
+      ? `TCF signals: ${tcfMatches.join(", ")}.`
+      : "No IAB Transparency & Consent Framework signals found. TCF is used by ad-tech platforms and publishers for GDPR consent management in programmatic advertising.",
+  };
+  if (tcfMatches.length < 2) {
+    checks.tcf.fix =
+      tcfMatches.length === 1
+        ? "Partial TCF implementation detected. Ensure __tcfapi is available and IAB consent strings are properly stored."
+        : "If you run programmatic ads in the EEA, implement IAB TCF through your CMP. See https://iabeurope.eu/tcf/.";
+  }
+
   const hsts = resp.headers.get("Strict-Transport-Security") || "";
   checks.ssl = {
     pass: url.startsWith("https:") && hsts.length > 0,

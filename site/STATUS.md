@@ -50,7 +50,7 @@ folk til):
 7. Blog (17 artikler, sitemap 40 URLs)
 8. Sample Report — live
 
-Waitlist: 6 personer. Omsætning: $0.
+Waitlist: 0 rigtige tilmeldinger (de 6 tidligere var egne tests, ryddet 23/8). Omsætning: $0.
 
 ## 4. Budget
 

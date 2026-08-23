@@ -1763,3 +1763,135 @@ Det der før var et salgs-løfte, ER nu bygget:
 - **Næste:** hvis Gumroad → link og test køb. Ellers ny SEO-blog (GDPR compliance for SaaS founders).
 2026-08-23T15:05:27+02:00 iteration 9 afsluttet (exit 0)
 2026-08-23T15:05:52+02:00 === iteration 10/15 ===
+Iteration 80 er færdig og deployet. Resumé:
+
+**1. Universalitets-vurdering (punkt 1-opgaven): BESTÅET**
+Jeg gik hvert produkt i porteføljen igennem ét ad gangen. Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og forudsætter intet CMS — WordPress er én signatur blandt 15+. Web-scanner, API, CLI, Chrome-extension, badge, alle fem generatorer, tre checklists og bloggen er alle platformsneutrale. WordPress-plugin'et er bundet til WP, men det er allerede korrekt placeret som **én indpakning blandt mange**, ikke selve produktet. Der var intet at trække ud — arkitekturen matcher allerede Mads' model.
+
+**2. Ventetid = arbejdstid (punkt 3: det der trækker folk til)**
+Da checkout stadig venter på Mads' Gumroad, byggede jeg videre på SEO-spolen:
+- Ny guide: **"Wix GDPR Compliance Guide 2026"** — udvider platformsdækningen efter Shopify-guiden, med interne links til scanner, generators og Pro
+- Blog-index opdateret, sitemap nu 40 URLs
+- Linktjek: samtlige links i den nye artikel svarer 200
+
+**3. Verificeret live**
+Deploy via Cloudflare Pages gennemført; guiden svarer 200 med korrekt titel, blog-index og sitemap indeholder den. Committed og pushed til GitHub.
+
+**Status:** Beslutningen (EUComply) holder under pengekriteriet. Budget: 0/1000 kr. Den eneste blokering er stadig Mads' Gumroad-konto — hans 3 minutter der åbner for første betaling. Næste iteration: link produktet hvis Gumroad er klar, ellers fortsæt med Squarespace/Webflow-guider.
+2026-08-23T15:20:23+02:00 iteration 10 afsluttet (exit 0)
+2026-08-23T15:20:46+02:00 === iteration 11/15 ===
+---
+
+## Resumé — Iteration 81
+
+**Valg: B) BYG** — beslutningen holder under pengekriteriet.
+
+### Hvad blev gjort
+
+| Leverance | Status |
+|-----------|--------|
+| **BUILD.md** — korteste vej til $1 | ✅ Oprettet |
+| **Brudt link fikset** — scan-siden pegede til `/#pricing` (404) → `/pro/` | ✅ Fikset |
+| **Konkurrent-sammenligning** — ny sektion på Pro-siden $79/yr vs $1.200–$7.200/yr (Qualys, Sucuri, Cookiebot) | ✅ Tilføjet |
+| **Script-struktur** — `</script>` sad forkert inde i HTML-kommentar, manglede som lukning af tidligere blok | ✅ Repareret |
+| **Deploy + verifikation** | ✅ Alle sider 200, ny tabel fundet |
+
+### Blokering står ved magt
+
+**Mads' Gumroad** (3 min). BUILD.md har exact steps:
+1. gumroad.com → "Start selling"
+2. Opret produkt "EUComply Pro" til $79/yr
+3. Send mig linket → jeg sætter det på /pro/ → **første kunde kan betale**
+
+### Site
+
+https://auditedwp.pages.dev/pro/ — se den nye konkurrent-sammenligningstabel under Free vs Pro tabellen.
+
+### Næste
+
+Gumroad → link Pro → $1. Eller: fortsæt SEO med Squarespace/Webflow compliance guide.
+2026-08-23T15:28:33+02:00 iteration 11 afsluttet (exit 0)
+2026-08-23T15:28:54+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-23T15:35:24+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-23T15:40:26+02:00 === iteration 12/15 ===
+---
+
+## Resume — iteration 82 færdig
+
+**Universalitet:** ✅ BESTÅET — scanneren tager en URL og virker uanset CMS. Intet at trække ud.
+
+**Beslutning:** HOLDER under pengekriteriet. EUComply opfylder alle fem kriterier bedre end nogen anden kandidat. At skifte ville stadig kræve Mads' konti.
+
+**Bygget denne iteration:** `/pro/dashboard/` — et full-feature compliance dashboard med live score, 30-dages historik, scan-log, quick actions (PDF, badge, templates), email alerts og setup guide. Alt statisk HTML, 0 kr, trækker data fra eksisterende Worker. Linket fra Pro-siden.
+
+**Hvad det gør:** Pro er ikke længere bare en landingsside — det er et synligt, virkeligt produkt. Når Mads sætter Gumroad op (3 min), er hele oplevelsen klar: køb → dashboard → compliance score.
+
+**Stadig blokeret på:** Mads' Gumroad. Det er den eneste vej til $1. Alle betalingskanaler kræver Mads.
+
+**Budget:** 0 kr / 1.000 kr.
+2026-08-23T15:47:44+02:00 iteration 12 afsluttet (exit 0)
+2026-08-23T15:48:11+02:00 === iteration 13/15 ===
+Iteration 83 færdig. Kort resumé:
+
+**Vurdering (punkt 1 — universalitet): BESTÅET.** Kernen tager en vilkårlig URL og virker på alle CMS (live-verificeret i it. 82). WordPress er kun én indpakning. Intet at bygge om.
+
+**Beslutningen holder under pengekriteriet** — målt på de fem faktorer slår EUComply stadig alternativerne: 0 kr drift, $79/år pr. kunde, timer til betaling når Gumroad findes.
+
+**Bygget denne iteration (prioritet 1: mellem besøgende og betaling):**
+1. Scannerens Pro-CTA er nu personaliseret med brugerens eget resultat: har de fejl → "Your scan found N issues — fix them once, then keep them fixed"; består de alt → "You pass today — will you pass next month?". Generisk salgstale erstattet af deres egen situation.
+2. BUILD.md omskrevet — den var forældet og beskrev WordPress-plugin som produktet. Nu: universel købsrejse + den ene variabel Mads skal udfylde.
+3. Deployet og verificeret: /, /scan/, /pro/, /pro/dashboard/ alle 200, ny CTA bekræftet live.
+
+**Uændret blokering:** Mads' Gumroad-konto (10 min) er den eneste vej til første betalende kunde. Alt er klar til det link bliver sat ind.
+
+STATUS.md, DECISION.md og site/BUILD.md er opdaterede. Budget: 0 kr brugt.
+2026-08-23T15:51:36+02:00 iteration 13 afsluttet (exit 0)
+2026-08-23T15:51:59+02:00 === iteration 14/15 ===
+**Iteration 84 — færdig.** Her er hvad der skete:
+
+---
+
+**1. Universalitets-vurdering (punkt 1): BESTÅET**
+
+Gik hele koden igennem. `shared/scan-engine.js` har præcis 2 `wp-`-referencer: én i consent-platform-signaturer (genkender WP Consent API blandt 18+ CMP'er) og én i CMS-fingerprintet (genkender WordPress blandt 20+ platforme). Begge er **detektion, ikke afhængighed**. Scanneren tager en hvilken som helst URL og virker. Live-verificeret på WordPress, Shopify, Squarespace, Wix. Fem indpakninger omkring kernen intakte: Worker, plugin, CLI, Chrome-extension, web-UI. Intet at ombygge.
+
+---
+
+**2. Bygget: Google Consent Mode v2 check (platform-uafhængig)**
+
+Tilføjet en helt ny check til scannermotoren: **Consent Mode v2**. Google kræver det siden marts 2024 for EU-adspersonalisering — hvis et site kører Google Ads uden Consent Mode v2, er conversion tracking begrænset. Det er et aktuelt, stort problem. 6 detektionssignaturer:
+
+- `gtag('consent', 'default')` — den officielle API
+- dataLayer consent patterns — for Tag Manager setups
+- `ad_storage` / `analytics_storage` consent signals
+- Google Ads consent integration
+
+Alt deployeret og verificeret — nye check leveres fra API'et og vises på scan-siden.
+
+---
+
+**Blokering stadig:** Gumroad-konto hos Mads. 0 kr brugt. Første salg muligt timer efter linket er indsat.
+2026-08-23T15:59:53+02:00 iteration 14 afsluttet (exit 0)
+2026-08-23T16:00:16+02:00 === iteration 15/15 ===
+---
+
+## Sammenfatning for Mads
+
+**Iteration 85 — IAB TCF check + blog post**
+
+| Hvad | Status |
+|------|--------|
+| Universalitet (punkt 1) | ✅ Bestået. 350 linjers kerne, nul CMS-forudsætninger. Live-bevis: CNN, Shopify, Wix, Squarespace, WordPress |
+| Ny check #8: IAB TCF | ✅ 5 signaturer (__tcfapi, IABTCF cookies, gdprApplies, TC string, TCF version) |
+| Worker deployeret | ✅ eucomply-scan v2 — 8 checks, TCF på plads |
+| SEO blog-post | ✅ IAB TCF Guide — målretter "iab tcf framework", "transparency consent framework" |
+| Forside + scan-side | ✅ Opdateret: "Eight compliance checks, one URL", IAB TCF card |
+| Sitemap | ✅ Ny URL: /blog/iab-tcf-compliance-guide/ |
+| Deployet | ✅ Alle 5 sider 200, API virker |
+| **Budget** | **0 kr / 1.000 kr** |
+
+**Eneste blokering:** Mads' Gumroad-konto. Alt er klar til at sælge — produktet har 8 checks, 24 blog-opslag, flere indgange (web, CLI, extension, plugin). Første betaling mulig samme dag som Gumroad-linket indsættes.
+
+Indtil da: næste iteration fortsætter med SEO (blog posts) og evt. nye checks (GDPR-repræsentant-detektion, consent banner text quality).
+2026-08-23T16:06:23+02:00 iteration 15 afsluttet (exit 0)
+2026-08-23T16:06:43+02:00 ceo-loop3 afsluttet

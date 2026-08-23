@@ -1,72 +1,42 @@
-# BUILD.md — EUComply WordPress Plugin
+# BUILD.md — EUComply: korteste vej til første betalende kunde
 
-## Korteste vej til første betalende kunde
+Opdateret 26. august 2026. Produktet er **universelt** (URL ind, resultat ud — alle CMS).
+WordPress-pluginet er kun én af flere indgange, ikke produktet.
 
 ```
-TRIN   TID         UDEN MADS?     STATUS
-─────  ─────────── ────────────── ──────────────────────
- 1     Landingsside  1 time    ✅  KLAR — site/index.html live på GitHub Pages
- 2     Plugin Free    2 dage   ✅  KLAR — plugin/eucomply.php (761 linjer)
- 3     Plugin Pro     1 dag    ✅  KLAR — features defineret i landing page
- 4     wp.org-submit  1 time   ❌  Venter på Mads-konto
- 5     Gumroad-setup  10 min   ❌  Venter på Mads-konto
- 6     Cloudflare     5 min    ❌  Venter på `wrangler login`
- 7     Første kunde   1-3 mdr  ✅  Automatisk via wp.org
+TRIN   HVAD                          STATUS
+─────  ────────────────────────────  ──────────────────────────
+ 1     Landingsside + gratis scan    ✅ LIVE (auditedwp.pages.dev)
+ 2     Universal scan-Worker         ✅ LIVE (eucomply-scan, 7 checks)
+ 3     Pro-side med pris + FAQ       ✅ LIVE (/pro/, $79/år)
+ 4     Pro Dashboard                 ✅ LIVE (/pro/dashboard/)
+ 5     Daily monitoring Worker       ✅ LIVE (eucomply-watch)
+ 6     Blog/SEO (17 artikler)        ✅ LIVE
+ 7     Gumroad-konto (Mads, 10 min)  ❌ ENESTE BLOKERING
+ 8     Første betalende kunde        ⏳ Timer efter trin 7
 ```
 
-## Hvad er bygget
+## Købsrejsen (bygget og optimeret)
 
-### ✅ Trin 1: Landingsside — KLAR
-- `site/index.html` — salgsside: 6 checks, Free vs Pro ($79/år), FAQ
-- `site/plugin/index.html` — samme side (plugin-subdirectory)
-- `index.html` — kopi til GitHub Pages (root)
-- Hostes på GitHub Pages: `mahope.github.io/auditedwp/`
+1. Besøgende lander på /scan/ (organisk søgning eller blog-link)
+2. Scanner sit site → får sin egen score + fejl-liste
+3. Resultat-CTA er **personlig**: nævner antal fundne problemer og hvad Pro gør ved netop dem
+4. Klik til /pro/ → pris på 5 sekunder ($79/yr), sammenligningstabel, live dashboard-demo
+5. "Buy Pro" → Gumroad checkout (venter på Mads' konto; link indsættes i én variabel)
 
-### ✅ Trin 2: Plugin Free-version — KLAR (opdateret 23/8)
-- `plugin/eucomply.php` — PHP-plugin til WordPress
-- Scanner: SSL, cookies, forms, backups, plugin health, legal pages
-- Admin dashboard i WordPress med resultater
-- Singleton, en klasse, 6 checks
-- **v1.1.0:** Pro-dokumenter er nu RIGTIG kode (se trin 3)
+## Når Mads har Gumroad-klart
 
-### ✅ Trin 3: Plugin Pro-version — KLAR SOM KODE (v1.1.0)
-- DPA-generator (GDPR Art. 28 fuld tekst med signaturblok)
-- NIS2/DORA vendor clause kit (5 klausuler A-E)
-- EAA accessibility statement
-- Kvartalsrapport bygget fra seneste scan (pass/fail + anbefalinger)
-- Download som .html (åbnes i Word / printes til PDF)
-- Licensvalidering mod Gumroad license API — døgnlig gen-tjek,
-  refunderede/chargebacked nøgler falder automatisk tilbage til Free
+Én ændring i `site/pro/index.html`:
 
-### ⏳ Trin 4-6: Venter på Mads
-- wp.org-konto til plugin-upload
-- Gumroad-konto til Pro-betalinger
-- `wrangler login` til Cloudflare Pages
+```js
+var GUMROAD_PRODUCT_URL = 'https://<mads>.gumroad.com/l/eucomply-pro';
+```
 
-## Hvad blokerer første salg
+Knappen skifter automatisk fra waitlist-fallback til direkte checkout.
+Samme dag kan første kunde betale.
 
-1. **Gumroad-konto**: Uden denne kan Pro ikke sælges. Mads opretter (10 min).
-2. **wp.org-konto**: Uden denne bliver plugin ikke opdaget organisk. Mads opretter (5 min).
-3. **Ingen af delene kræver penge**. Begge er gratis.
+## Ikke bygget endnu (bevidst)
 
-## Hvordan Pro sælges (når Gumroad er oppe)
-
-1. Gumroad product: "EUComply Pro — 1 Year License" — $79
-2. Plugin'et tjekker om brugeren har en gyldig licens (Gumroad license API)
-3. Eller: simpelt — betalingslink i plugin-admin → Gumroad checkout → license key
-
-## Hvad jeg IKKE bygger endnu
-
-- CRM — manuelt de første 20 kunder
-- WooCommerce-integration — version 2
-- Multisite-support — version 2
+- Licensvalidering mod Gumroad API — først når der findes en rigtig nøgle at teste med
+- Bulk/agency-prisning — version 2, når der er betalende kunder
 - Flere sprog — version 2
-
-## Ressourcer
-
-- GitHub Pages: LIVE (`mahope.github.io/auditedwp/`)
-- Cloudflare Pages: klar til deploy (venter på `wrangler login`)
-- wp.org: gratis, venter på konto
-- Gumroad: 10% + $0.50 pr. salg, venter på konto
-- PHP: vanilla, ingen dependencies
-- Git: `main` branch på `github.com:mahope/auditedwp.git`

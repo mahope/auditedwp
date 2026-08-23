@@ -1,0 +1,16 @@
+{
+  "buyer@example.com": "{\"email\":\"buyer@example.com\",\"signed_up_at\":\"2026-08-23T07:43:01.409Z\",\"source\":\"eucomply-landing\"}",
+  "by_time:1787470671620": "test@example.com",
+  "by_time:1787470753150": "probe-test@example.com",
+  "by_time:1787470753514": "probe2@example.com",
+  "by_time:1787470981483": "buyer@example.com",
+  "by_time:1787489557551": "iteration78-test@example.com",
+  "by_time:1787489727863": "test-iteration78@example.com",
+  "iteration78-test@example.com": "{\"email\":\"iteration78-test@example.com\",\"signed_up_at\":\"2026-08-23T12:52:37.491Z\",\"source\":\"pro-page\"}",
+  "probe-test@example.com": "{\"email\":\"probe-test@example.com\",\"signed_up_at\":\"2026-08-23T07:39:13.088Z\",\"source\":\"eucomply-landing\"}",
+  "probe2@example.com": "{\"email\":\"probe2@example.com\",\"signed_up_at\":\"2026-08-23T07:39:13.448Z\",\"source\":\"eucomply-landing\"}",
+  "ratelimit:85.81.45.51": "{\"start\":1787493953653,\"n\":1}",
+  "stats:scans": "1",
+  "test-iteration78@example.com": "{\"email\":\"test-iteration78@example.com\",\"signed_up_at\":\"2026-08-23T12:55:27.811Z\",\"source\":\"test\"}",
+  "test@example.com": "{\"email\":\"test@example.com\",\"signed_up_at\":\"2026-08-23T07:37:51.553Z\",\"source\":\"testing\"}"
+}

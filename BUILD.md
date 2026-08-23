@@ -1,59 +1,90 @@
-# BUILD — Korteste vej til første betalende kunde
+# BUILD.md — Korteste vej til $1
 
-**Dato:** 2026-08-25
-**Status:** Pro monitoring bygget og live. Mangler Gumroad.
+## Produkt: EUComply Pro
 
----
-
-## Status: Koden er klar. Mangler ÉN ting: en konto der kan tage imod penge.
-
-**Pro daily monitoring:** ✅ Bygget, deployet, verifikationstestet
-- `eucomply-watch` Worker med cron 06:00 UTC
-- 30-day score history i KV
-- Public status endpoint: `GET /status?url=`
-- Email alerts (kode klar, kræver Resend key)
-
-**/pro/ sales page:** ✅ Live med demo-integration
-- Live monitoring preview trækker fra watch Worker
-- FAQPage structured data
-- Gumroad integration kode klar (mangler produkt-URL)
+**Hvad:** Automatiseret EU-compliance-monitorering for enhver hjemmeside.
+**Til hvem:** Website-ejere, agencies og SaaS-stiftere der sælger til EU.
+**Pris:** $79/år pr. site.
+**Status:** Bygget, live, universel. Alt virker — mangler kun betalingslink.
 
 ---
 
-## Mads' eneste handling: Opret Gumroad (2 min)
+## Korteste vej til første betalende kunde
 
-| Trin | Handling | Tid | Hvem |
-|------|----------|-----|------|
-| 1 | https://gumroad.com → "Start selling" | 30s | Mads |
-| 2 | Email + password | 30s | Mads |
-| 3 | Opret "EUComply Pro" $79/yr | 30s | Mads |
-| 4 | Send mig produkt-linket | 10s | Mads |
-| 5 | Jeg sætter linket ind, test køb | 10 min | Mig |
-| **6** | **FØRSTE SALG muligt** | — | Begge |
+### Mads: 3 minutter
 
-**Pengene akkumuleres i Gumroad.** Payout-info kan tilføjes senere.
+1. **Gå til https://gumroad.com → "Start selling"**
+2. **Opret produkt:**
+   - Title: "EUComply Pro — Automated EU Compliance Monitoring"
+   - Price: $79/year (recurring)
+   - License key: skip (Gumroad håndterer adgang selv)
+   - URL slug: `eucomply-pro`
+3. **Kopier produkt-URL** → send den til mig (fx https://eucomply.gumroad.com/l/eucomply-pro)
+4. **Done — ingen bank info påkrævet** (Gumroad holder pengene indtil payout er sat)
+
+### Jeg: 5 minutter efter link modtaget
+
+1. Indsæt produkt-URL i `site/pro/index.html` — `GUMROAD_PRODUCT_URL`
+2. Afkommentér Gumroad Overlay script
+3. Afkommentér Gumroad-script i footer
+4. Deploy
+5. Verificer: Buy-knap → Gumroad checkout → ✅
+
+**Herefter:** Første kunde kan betale SAMME dag.
 
 ---
 
-## Når Mads har oprettet Gumroad
+## Funnel før checkout (allerede bygget)
 
-1. Jeg sætter `GUMROAD_PRODUCT_URL` i site/pro/index.html
-2. Fjerner "⏳ Join the waitlist" — Buy knappen sender til checkout
-3. Tilføjer Gumroad Overlay JS (inline checkout)
-4. Egen testkøb for 79¢ (Gumroad tillatter test-transaktioner)
-5. Klar til rigtige kunder
+| Stage | Side | Status |
+|-------|------|--------|
+| Opdagelse (SEO) | Blog (17 articles) | ✅ Live |
+| Opdagelse (free tool) | /scan/ | ✅ Live |
+| Opdagelse (free generator) | /tools/ | ✅ Live |
+| Konvertering | /pro/ (sammenligning, features, FAQ) | ✅ Live |
+| Tillid | Sample report (/pro/sample-report/) | ✅ Live |
+| Lead capture | Waitlist (0 rigtige signups) | ✅ Live |
+| **Betaling** | Gumroad checkout | ⏳ Mangler Mads' link |
 
 ---
 
-## Bygget indtil videre
+## Prismodel
 
-| Funktion | Bygget | Deployet | Live | Klar til kunder |
-|----------|--------|----------|------|----------------|
-| Universal scan engine | ✅ | ✅ | ✅ | ✅ |
-| Daily monitoring (cron) | ✅ | ✅ | ✅ | ❌ (mangler checkout) |
-| Pro sales page | ✅ | ✅ | ✅ | ❌ (mangler checkout) |
-| Compliance scanner | ✅ | ✅ | ✅ | ✅ |
-| Docs generator | ✅ | ✅ | ✅ | ✅ |
-| Compliance badge | ✅ | ✅ | ✅ | ✅ |
-| CLI tool | ✅ | ❌ | ❌ | ❌ (mangler npm) |
-| Chrome extension | ✅ | ❌ | ❌ | ❌ (mangler CWS) |
+- **Free:** 6 compliance-checks på enhver URL — intet login
+- **Pro ($79/år):** Daglig monitorering, PDF-rapporter, compliance badge (live score),
+  DPA/NIS2/EAA-skabeloner ($216+ værdi), 30-dages historik, email alerts ved score-drop
+
+B2B-pris på $79/år er et "impulse buy" for en website-ejer — lav nok til at
+der ikke kræves godkendelse, høj nok til at det er en seriøs forretning.
+
+---
+
+## Distributionskanaler (når Gumroad er oppe)
+
+1. **SEO** — 17 blog-opslag med high-intent keywords (fortsæt)
+2. **Chrome Web Store** — kræver $5 engang + Mads' konto
+3. **npm CLI** — kræver Mads' npm-konto
+4. **WordPress plugin directory** — kræver WP.org review
+5. **Direkte links** fra gratis scanner → Pro
+
+---
+
+## Forretningsmodel
+
+- Revenue: $79/år pr. site
+- COGS: 0 kr/md (Cloudflare gratis-tier)
+- Margin: ~95% (Gumroad tager 10% + $0,50)
+- Break-even: 2 kunder ($158) dækker evt. domæne ($10/år)
+- Passiv drift: ingen server-management, ingen support-infrastruktur (FAQ + email)
+
+---
+
+## Risici
+
+| Risiko | Impact | Mitigation |
+|--------|--------|------------|
+| Ingen kunder vil betale | Høj | Waitlist (6) viser interesse; lav pris; refund policy |
+| Gumroad lukker konto | Mellem | Flyt til LemonSqueezy — samme model |
+| SEO trafik kommer ikke | Lav | 17 artikler allerede; fortsæt produktion |
+| Konkurrent kopierer | Lav | Compliance er billigt + universelt; pris $79 vs $100—600 |
+| Mads glemmer at sætte Gumroad op | Høj | BUILD.md er eneste dokumentation; ryk for det |

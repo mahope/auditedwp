@@ -130,8 +130,8 @@
 
 <section id="checks">
   <div class="wrap">
-    <h2>Five compliance checks, one URL</h2>
-    <p class="lede">Enter any domain. EUComply checks the five most common EU compliance gaps — no installation, no sign-up, no WordPress required.</p>
+    <h2>Eight compliance checks, one URL</h2>
+    <p class="lede">Enter any domain. EUComply checks the eight most common EU compliance gaps — no installation, no sign-up, no WordPress required.</p>
     <div class="grid3">
       <div class="card">
         <div class="icon">🔒</div>
@@ -157,6 +157,16 @@
         <div class="icon">🛡️</div>
         <h3>Security Headers</h3>
         <p>CSP, X-Content-Type-Options, Referrer-Policy, frame protection — OWASP baseline and NIS2 Art. 21 supply-chain security requirement.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔔</div>
+        <h3>Consent Mode v2</h3>
+        <p>Detects Google Consent Mode v2 signals (gtag, dataLayer, ad_storage/analytics_storage). Required since March 2024 for EU ad personalization — without it, Google Ads conversion tracking is restricted.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📢</div>
+        <h3>IAB TCF</h3>
+        <p>Detects IAB Transparency &amp; Consent Framework — used by ad-tech platforms and publishers for GDPR-compliant programmatic advertising.</p>
       </div>
     </div>
   </div>
@@ -220,6 +230,7 @@
         <ul>
           <li>SSL / HTTPS + HSTS check</li>
           <li>Cookie consent detection (15+ platforms)</li>
+          <li>Google Consent Mode v2 check</li>
           <li>Form + privacy link audit</li>
           <li>Legal pages scan (privacy, imprint, EAA)</li>
           <li>Security headers check (CSP, XFO, HSTS)</li>

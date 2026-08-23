@@ -64,6 +64,19 @@ export default {
         });
       }
 
+      // Reserverede testdomaener maa ALDRIG lande i ventelisten: de kan pr.
+      // definition ikke modtage post, og de blev tidligere talt med som
+      // rigtige tilmeldinger, saa status rapporterede 6 personer ved 0 rigtige.
+      const TESTDOMAENER = /@(example\.(com|org|net)|test\.com|localhost)$/i;
+      if (TESTDOMAENER.test(email)) {
+        return new Response(JSON.stringify({
+          message: "Test accepted (not stored)", test: true,
+        }), {
+          status: 200,
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        });
+      }
+
       // Check for double signup
       const existing = await env.WAITLIST.get(email);
       if (existing) {

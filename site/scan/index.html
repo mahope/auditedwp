@@ -118,11 +118,12 @@
     </div>
     <div id="cards"></div>
 
-    <div class="procta">
-      <h3>Need documented proof — not just flags?</h3>
-      <p>The Pro tier turns findings into auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and accessibility statements you can forward to clients, auditors and insurers.</p>
-      <a class="btn" href="/#pricing">See Pro — $79/year</a>
+    <div class="procta" id="procta">
+      <h3 id="procta-title">Need documented proof — not just flags?</h3>
+      <p id="procta-body">The Pro tier turns findings into auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and accessibility statements you can forward to clients, auditors and insurers.</p>
+      <a class="btn" href="/pro/">See Pro — $79/year</a>
       <a class="btn green" href="/assets/eucomply-1.2.0.zip" style="margin-left:8px">↓ WordPress plugin (free)</a>
+      <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
     </div>
   </div>
 </section>
@@ -130,15 +131,17 @@
 <section>
   <div class="wrap">
     <h2>What the scan checks</h2>
-    <p class="lede">Six automated checks based on EU requirements that apply to every website serving EU users — regardless of platform. Plus DORA resilience signals for financial and ICT entities.</p>
+    <p class="lede">Eight automated checks based on EU requirements that apply to every website serving EU users — regardless of platform. Plus DORA resilience signals for financial and ICT entities.</p>
     <div class="grid3">
       <div class="feat"><h3>🔒 HTTPS + HSTS</h3><p>TLS and Strict-Transport-Security. GDPR Art. 32 requires appropriate technical security measures.</p></div>
       <div class="feat"><h3>🍪 Cookie consent</h3><p>Detects 15+ consent platforms in served HTML (Cookiebot, OneTrust, CookieYes…). ePrivacy Directive requires prior consent.</p></div>
+      <div class="feat"><h3>🔔 Google Consent Mode v2</h3><p>Detects Consent Mode v2 signals (gtag, dataLayer, ad_storage). Required by Google since March 2024 for EU ad personalization — without it, conversion tracking is restricted.</p></div>
       <div class="feat"><h3>📋 Forms &amp; privacy link</h3><p>Forms found without a visible privacy-policy link are a top GDPR enforcement target (Art. 13).</p></div>
       <div class="feat"><h3>📄 Legal pages</h3><p>Privacy policy, imprint, terms, and EAA accessibility statement linked from your homepage.</p></div>
       <div class="feat"><h3>🛡️ Security headers</h3><p>CSP, X-Content-Type-Options, Referrer-Policy, frame protection — OWASP baseline, NIS2 Art. 21.</p></div>
       <div class="feat"><h3>🔍 Platform fingerprint</h3><p>Identifies your CMS/stack so advice is relevant. Purely informational — nothing is stored.</p></div>
       <div class="feat"><h3>🏦 DORA resilience</h3><p>DORA (EU 2022/2554) effective Jan 2025. Checks for incident reporting, business continuity, ICT risk management and resilience testing disclosures on financial/ICT entity sites.</p></div>
+      <div class="feat"><h3>📢 IAB TCF</h3><p>Detects IAB Transparency & Consent Framework — used by ad-tech platforms and publishers for GDPR-compliant programmatic advertising. <b>8 checks total.</b></p></div>
     </div>
   </div>
 </section>
@@ -223,13 +226,30 @@
       div.innerHTML = html;
       cardsEl.appendChild(div);
     });
+    // Personalized Pro CTA — use the user's own score and failures
+    var failed = [];
+    Object.entries(d.checks).forEach(function(pair) {
+      var c = pair[1];
+      if (!c.pass || c.warn) failed.push(c.label || pair[0]);
+    });
+    var t = document.getElementById('procta-title');
+    var b = document.getElementById('procta-body');
+    if (t && b) {
+      if (failed.length > 0) {
+        t.textContent = 'Your scan found ' + failed.length + ' issue' + (failed.length > 1 ? 's' : '') + ' — fix them once, then keep them fixed.';
+        b.textContent = 'Pro monitors your site daily, emails you the moment a check starts failing again, and generates the PDF reports, DPA documents and vendor clauses you can show auditors and clients.';
+      } else {
+        t.textContent = 'You pass today — will you pass next month?';
+        b.textContent = 'Certificates expire, plugins update, headers get dropped in redesigns. Pro re-scans daily and alerts you the day something breaks, with auditor-ready PDF proof of continuous compliance.';
+      }
+    }
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function host(u) { try { return new URL(u).hostname; } catch { return u; } }
-  function icon(k) {
-    return ({ssl:'🔒',cookies:'🍪',forms:'📋',legal:'📄',headers:'🛡️',resilience:'🏦'})[k] || '•';
-  }
+  var icon = function(k) {
+    return ({ssl:'🔒',cookies:'🍪',forms:'📋',legal:'📄',headers:'🛡️',resilience:'🏦',consent_mode_v2:'🔔'})[k] || '•';
+  };
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(m) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];

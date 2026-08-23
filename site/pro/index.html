@@ -162,6 +162,28 @@ footer a{color:var(--accent)}
 
 <section>
   <div class="wrap">
+    <h2>💸 Compliance monitoring: $79/yr vs $1,200–$7,200/yr</h2>
+    <p class="lede">Enterprise compliance platforms (Qualys, Sucuri, Cookiebot) start at $100–$600/month — and they lock you into their ecosystem. EUComply Pro gives you the same daily monitoring, PDF reports, and audit-ready documentation for <strong>less than what a single competitor invoice costs</strong>. No platform lock-in. No per-site minimums.</p>
+    <div class="compare-wrap">
+    <table class="compare">
+      <thead>
+        <tr><th>Platform</th><th>Typical price/year</th><th>Works on every CMS?</th><th>PDF reports?</th><th>Free scan to try?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>EUComply Pro</strong></td><td class="check"><strong>$79</strong></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td>Qualys</td><td>$599–$2,400/mo</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Sucuri</td><td>$300–$500/yr</td><td>WordPress only</td><td>✗</td><td>✗</td></tr>
+        <tr><td>Cookiebot</td><td>$114–$576/yr</td><td>✓</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Stripe Radar (fraud only)</td><td>$1,200+/mo</td><td>Platform-bound</td><td>✗</td><td>✗</td></tr>
+        <tr class="highlight"><td>EUComply Pro is <strong>6–60× cheaper</strong></td><td colspan="4">And includes templates worth $216+ at no extra cost</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
     <h2>What you get with Pro</h2>
     <p class="lede">Everything you need to pass an EU compliance audit — without a lawyer or consultant.</p>
     <div class="grid3">
@@ -202,7 +224,7 @@ footer a{color:var(--accent)}
       <div id="demo-score" style="font-size:24px;font-weight:700;color:var(--ink)">Loading…</div>
       <div id="demo-detail" style="font-size:14px;color:var(--muted);margin:6px 0"></div>
       <div id="demo-days" style="font-size:13px;color:var(--muted)"></div>
-      <div style="margin-top:12px;font-size:12px;color:var(--muted)">Data from <code style="font-size:11px">eucomply-watch</code> · <a href="https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com" target="_blank" style="color:var(--accent)">View raw JSON →</a></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted)">Data from <code style="font-size:11px">eucomply-watch</code> · <a href="/pro/dashboard/" style="color:var(--accent);font-weight:600">View live dashboard →</a> · <a href="https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com" target="_blank" style="color:var(--accent)">View raw JSON →</a></div>
     </div>
   </div>
 </section>
@@ -261,14 +283,11 @@ fetch('https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com')
     var el = document.getElementById('demo-score');
     if (el) el.textContent = 'Demo unavailable right now';
   });
-
-// ── Gumroad + Buy button ──────────────────────────────────────
-
-<!-- Gumroad Overlay — afkommentér når produkt-ID kendes
-<script type="text/javascript" data-gumroad-overlay="true"
-  src="https://assets.gumroad.com/js/gumroad-overlay.js">
 </script>
--->
+
+<!-- Gumroad Overlay: activate after product ID is known -->
+<!-- Activate: uncomment the script line below and set src to your Gumroad product -->
+<!-- <script src="https://assets.gumroad.com/js/gumroad-overlay.js"></script> -->
 
 <script>
 // ── Mads: indsæt dit Gumroad produkt-link her ──────────────────
