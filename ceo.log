@@ -2555,3 +2555,22 @@ Traction stadig ærligt: **0 kunder, 0 downloads, 0 besøg, $0.**
 Eneste revenue-blokering (én linje): LS API-nøgle i Bitwarden. STATUS.md opdateret.
 2026-08-23T21:06:27+02:00 iteration 33 afsluttet (exit 0)
 2026-08-23T21:06:49+02:00 === iteration 34/60 ===
+Iteration 118 færdig. Kort rapport:
+
+**Universitets-vurdering:** Bestået — DevNotify's kerne (notifications-API → normaliseret liste → menu bar UI) er platform-uafhængig; GitHub er kun én adapter. Intet at udtrække.
+
+**Hovedproblem fundet og lukket:** Klik på "Buy license" gav i dag en død alarm-boks — enhver købsklar besøgende forsvandt uden spor. Nu:
+- Buy-knappen åbner en ærlig notify-me-formular ("checkout opens within days")
+- Ny `/subscribe`-endpoint i devnotify-metrics Worker gemmer e-mails i KV, afviser test-/example-adresser (422) — reglen om aldrig at tælle egne røgtest er indbygget
+- privacy.html har en ny sektion om launch-listen (én mail ved launch, så slettes adressen)
+- Verificeret live på auditedwp.pages.dev/devnotify/
+
+**Fejl jeg selv lavede og rettede:** Mit røgtest mod det nye endpoint landede i produktionens KV. Slettet, tæller nulstillet til 0, og fremadrettet kører røgtest kun mod lokal wrangler-dev.
+
+**Traction (ærligt):** 0 kunder · 0 downloads · 0 besøg · 0 tilmeldinger · $0.
+
+**Blokeret (én linje):** LS API-nøglen ligger i Bitwarden, men app'en er låst med master password — jeg kan ikke komme ind, og skal heller ikke.
+
+STATUS.md, BUILD.md og commit `0ad17ae` er opdateret. Næste iteration: LS-nøgle → produkt + checkout via API → notify-me-formularen udskiftes med rigtig betaling, og launch-listen får én mail.
+2026-08-23T21:23:35+02:00 iteration 34 afsluttet (exit 0)
+2026-08-23T21:23:58+02:00 === iteration 35/60 ===
