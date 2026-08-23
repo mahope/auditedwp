@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://auditedwp.pages.dev
  * Description:       Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, backups, forms, plugin health. Pro ($79/yr): auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.
- * Version:           1.2.0
+ * Version:           1.1.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,44 +30,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.2.0' );
+define( 'EUCOMPLY_VERSION', '1.1.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://eucomply.gumroad.com/l/pro' );
 define( 'EUCOMPLY_GUMROAD_PRODUCT', 'pro' ); // Gumroad product permalink — set when product is created
 define( 'EUCOMPLY_UPDATE_URI', 'https://auditedwp.pages.dev/update.json' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
-
-/**
- * Activation guard — prevent activation on unsupported PHP or WordPress.
- */
-function eucomply_activation_check() {
-    $min_php  = '7.4';
-    $min_wp   = '5.8';
-    $php_ok   = version_compare( PHP_VERSION, $min_php, '>=' );
-    $wp_ok    = version_compare( $GLOBALS['wp_version'] ?? '0', $min_wp, '>=' );
-
-    if ( $php_ok && $wp_ok ) {
-        return; // All good — let activation proceed.
-    }
-
-    $errors = array();
-    if ( ! $php_ok ) {
-        $errors[] = 'PHP ' . $min_php . ' or newer is required (yours: ' . PHP_VERSION . ').';
-    }
-    if ( ! $wp_ok ) {
-        $errors[] = 'WordPress ' . $min_wp . ' or newer is required.';
-    }
-
-    deactivate_plugins( plugin_basename( __FILE__ ) );
-    wp_die(
-        '<p><strong>EUComply</strong> could not be activated:</p>' .
-        '<ul><li>' . implode( '</li><li>', $errors ) . '</li></ul>' .
-        '<p>Upgrade your PHP or WordPress and try again.</p>',
-        'Plugin Activation Error',
-        array( 'back_link' => true )
-    );
-}
-register_activation_hook( __FILE__, 'eucomply_activation_check' );
 
 /**
  * Main plugin class — keeps everything in one place for v1.
@@ -213,25 +181,13 @@ class EUComply {
      */
     private function check_ssl() {
         $home = get_home_url();
-
-        // Guard: home_url might be empty or malformed.
-        if ( empty( $home ) || ! is_string( $home ) ) {
-            return array(
-                'pass'    => false,
-                'label'   => 'Site URL not set',
-                'detail'  => 'The WordPress Address URL is empty or invalid in settings.',
-                'fix'     => 'Go to Settings → General and set a valid WordPress Address URL starting with https://',
-            );
-        }
-
         $scheme = parse_url( $home, PHP_URL_SCHEME );
 
-        if ( ! is_string( $scheme ) || 'https' !== $scheme ) {
-            $scheme_label = is_string( $scheme ) ? strtoupper( $scheme ) : 'unknown';
+        if ( 'https' !== $scheme ) {
             return array(
                 'pass'    => false,
                 'label'   => 'Not HTTPS',
-                'detail'  => 'Site URL uses ' . $scheme_label . ', not HTTPS.',
+                'detail'  => 'Site URL uses ' . strtoupper( $scheme ) . ', not HTTPS.',
                 'fix'     => 'Install an SSL certificate and set WordPress Address to https://',
             );
         }

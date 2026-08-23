@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditedWP — White-Label WordPress-Wartung mit revisionssicherem Änderungsprotokoll. Für Agenturen.</title>
+<meta name="description" content="Wholesale-WordPress-Wartung für Web-Agenturen mit prüffähiger Änderungsdokumentation, EU-Hosting und AVV als Standard. Sie fakturieren den Kunden, wir betreiben die Technik.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<link rel="canonical" href="https://mahope.github.io/auditedwp/de/">
+<link rel="alternate" hreflang="en" href="https://mahope.github.io/auditedwp/">
+<link rel="alternate" hreflang="de" href="https://mahope.github.io/auditedwp/de/">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--bg:#fff;--soft:#f9fafb;
+        --accent:#175cd3;--accent-dark:#084cad;--ok:#067647;--warn:#b54708;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);padding:18px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:24px;font-size:15px}
+  nav a.cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-weight:600}
+  .hero{text-align:center;padding:72px 0 48px}
+  .badge{display:inline-block;background:#eff8ff;color:var(--accent);border:1px solid #b2ddff;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
+  h1{font-size:44px;line-height:1.15;letter-spacing:-.03em;max-width:840px;margin:0 auto 18px}
+  h1 em{font-style:normal;color:var(--accent)}
+  .sub{font-size:19px;color:var(--muted);max-width:720px;margin:0 auto 32px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:17px}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid #b2ddff;margin-left:12px}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  h2{font-size:30px;letter-spacing:-.02em;margin-bottom:8px}
+  .lede{color:var(--muted);max-width:680px;margin-bottom:36px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)}
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{font-size:14.5px;color:var(--muted)}
+  .vs{background:#fffcf5;border-color:#fedf89}
+  .vs h3{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+  th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  td b{font-size:16px}
+  ol.steps{max-width:680px;margin:24px auto 0;counter-reset:s;list-style:none}
+  ol.steps li{position:relative;padding:0 0 22px 52px;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps li strong{display:block}
+  ol.steps li span{color:var(--muted);font-size:15px}
+  .faq details{border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;background:var(--bg)}
+  .faq summary{font-weight:600;cursor:pointer}
+  .faq p{color:var(--muted);font-size:15px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:800px){h1{font-size:32px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">Audited<span>WP</span></div>
+    <nav>
+      <a href="#how">So funktioniert es</a>
+      <a href="#pricing">Preise</a>
+      <a href="#faq">FAQ</a>
+      <a href="/store/">Vorlagen</a>
+      <a href="/">EN</a>
+      <a class="cta" href="#pricing">Großhandelspreise ansehen</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="badge">White-Label · EU-Hosting &amp; EU-Jurisdiktion · AVV inklusive</div>
+  <h1>WordPress-Wartung für Ihre Agentur — <em>mit einem Prüfspuren-Nachweis, den Sie wirklich zeigen können.</em></h1>
+  <p class="sub">Sie behalten Kunde und Marge. Wir übernehmen Updates, Backups und Security-Patches — und dokumentieren jede einzelne Änderung, damit Sie die Frage beantworten können, die andere Care-Plans nicht beantworten können: <strong>„Zeigen Sie mir, was wann von wem gemacht wurde."</strong></p>
+  <a class="btn" href="#pricing">Großhandelspreise ansehen</a>
+  <a class="btn ghost" href="/template/">Kostenlose NIS2-Auftragsverarbeiter-Klauseln ↓</a>
+  <p class="note">Keine 24/7-Versprechen, die wir nicht halten können. Wiederherstellung am nächsten Werktag, monatliche Wartungsfenster, vollständige Änderungshistorie.</p>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Warum Agenturen uns statt generischen White-Label-Care-Plans wählen</h2>
+    <p class="lede">Generische Wholesale-Wartung ist ein Commodity — Dutzende Anbieter verkaufen sie. Neu in 2026–27 ist: Einkauf, Versicherer und Prüfer Ihrer Kunden (DORA Art. 28, NIS2-Lieferkette, EAA-Dokumentation) verlangen zunehmend <em>Nachweise</em> statt Zusicherungen. Dafür sind wir von Tag eins gebaut.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Prüffähiges Änderungsprotokoll</h3>
+        <p>Jedes Update, jeder Patch, jedes Backup und jede Wiederherstellung wird pro Website protokolliert — mit Zeitstempel, Verantwortlichkeit, exportierbar. Geben Sie es dem Prüfer oder der Versicherung Ihres Kunden, statt selbst Berichte zu schreiben.</p>
+      </div>
+      <div class="card">
+        <h3>Ausschließlich EU-Infrastruktur &amp; -Verträge</h3>
+        <p>EU-gehostete Backups, EU-Jurisdiktion, GDPR-Auftragsverarbeitungsvertrag (AVV) als Standard. Gebaut, um Schrems-II-Fragen in Kundenverträgen zu bestehen.</p>
+      </div>
+      <div class="card">
+        <h3>Sie besitzen die Kundenbeziehung</h3>
+        <p>Vollständig anonymer White-Label-Betrieb unter NDA. Wir kontaktieren Ihre Kunden nie. Sie fakturieren €100–300/Site/Monat; unser Großhandelspreis ist ein Bruchteil davon.</p>
+      </div>
+      <div class="card">
+        <h3>Vierteljährliche Compliance-Einordnung</h3>
+        <p>Eine verständliche Quartalszusammenfassung pro Kunde, die Sie unverändert weiterleiten können: Was hat sich geändert, welche Risiken wurden geschlossen, was ist geplant. Mit Ihrem Namen darauf.</p>
+      </div>
+      <div class="card vs">
+        <h3>Ehrliche SLA — kein fake 24/7</h3>
+        <p>Wir verkaufen bewusst keinen Rund-um-die-Uhr-Notdienst. Sie erhalten Wiederherstellung am nächsten Werktag, geplante Wartungsfenster und einen dokumentierten Prozess. Kunden, die 24/7 brauchen, sind nicht unser Markt.</p>
+      </div>
+      <div class="card">
+        <h3>Von Operatoren gebaut, für Reseller bepreist</h3>
+        <p>Die Wartung läuft mit moderner Automatisierung (ein Operator + Agents), unsere Kosten bleiben niedrig — und Ihre Marge bei über 60%.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>So funktioniert es</h2>
+    <ol class="steps">
+      <li><strong>Tarif wählen</strong><span>Sagen Sie uns, wie viele Websites abgedeckt werden sollen. Monatlich kündbar nach Tarifregeln — kein Enterprise-Beschaffungsmarathon.</span></li>
+      <li><strong>Onboarding-Gespräch + AVV</strong><span>Wir unterschreiben Ihren AVV/NDA, richten die Audit-Log-Struktur ein und geben Ihnen die White-Label-Berichtsvorlagen. Die einmalige Einrichtungsgebühr deckt das ab.</span></li>
+      <li><strong>Zugänge übergeben</strong><span>Wir nehmen jede Website auf: Baseline-Audit, Backup-Snapshot, mit Ihnen abgestimmte Update-Richtlinie. Üblicherweise innerhalb von 3 Werktagen pro Batch.</span></li>
+      <li><strong>Wir betreiben, Sie verkaufen weiter</strong><span>Updates, Monitoring, Patches und Restores laufen unter Ihrer Marke. Sie erhalten das Änderungsprotokoll und die Quartalszusammenfassung zum Weiterleiten. <a href="/sample/">Beispiel einer Prüfspur ansehen →</a></span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Großhandelspreise</h2>
+    <table>
+      <tr><th></th><th>Starter</th><th>Growth</th><th>Scale</th></tr>
+      <tr><td>Websites enthalten</td><td><b>1–10</b></td><td><b>11–25</b></td><td><b>26+</b></td></tr>
+      <tr><td>Preis pro Site / Monat</td><td><b>€29</b></td><td><b>€29</b></td><td><b>€19</b></td></tr>
+      <tr><td>Laufzeit</td><td>Monatlich kündbar</td><td>Monatlich kündbar</td><td>12 Monate</td></tr>
+      <tr><td>Änderungsprotokoll &amp; Audit-Export</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>AVV + NDA-Onboarding</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>Quartals-Compliance-Zusammenfassung</td><td>—</td><td>Add-on €99/Quartal</td><td>Enthalten</td></tr>
+    </table>
+    <p style="font-size:13px;color:var(--muted);margin-top:10px">Einmalige Einrichtungsgebühr: <strong>€290 pro Agentur</strong> (Onboarding, AVV, White-Label-Vorlagen). Beispiel: Eine Agentur mit 15 Websites zahlt €435/Monat im Großhandel und fakturiert ihren Kunden typischerweise €150–300/Site/Monat — eine dokumentierte Marge von über 60%.</p>
+    <p style="margin-top:28px"><a class="btn" href="mailto:hello@auditedwp.com?subject=Gro%C3%9Fhandel%20Onboarding&body=Agenturname:%0AAnzahl%20Websites:%0ALand:%0ABester%20Zeitpunkt%20f%C3%BCr%20ein%20Gespr%C3%A4ch:">Onboarding starten → E-Mail an hello@auditedwp.com</a></p>
+    <p class="note">Zahlung per Stripe nach dem Onboarding-Gespräch. Abrechnung in EUR oder USD.</p>
+
+    <div style="margin-top:40px;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)" id="calc">
+      <h3 style="font-size:18px;margin-bottom:6px">Ihre Marge in Zahlen</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Schieberegler bewegen. So sieht White-Labeling mit uns in Ihrer Größenordnung aus.</p>
+      <label style="display:block;font-size:14px;font-weight:600">Abgedeckte Websites: <span id="sitesVal">10</span></label>
+      <input type="range" id="sites" min="1" max="60" value="10" style="width:100%;accent-color:var(--accent)">
+      <label style="display:block;margin-top:14px;font-size:14px;font-weight:600">Ihr Verkaufspreis pro Site/Monat (€): <span id="retailVal">150</span></label>
+      <input type="range" id="retail" min="50" max="300" step="5" value="150" style="width:100%;accent-color:var(--accent)">
+      <div id="calcOut" style="margin-top:18px;font-size:15px;line-height:1.9"></div>
+    </div>
+  </div>
+</section>
+
+<section id="template">
+  <div class="wrap">
+    <h2>Kostenlose Vorlage: NIS2/DORA-Lieferantenklauseln für Ihre Kundenverträge</h2>
+    <p class="lede">Nicht sicher, ob Ihr aktueller Care-Plan-Anbieter eine DORA-Art.-28-Prüfung bestehen würde? Laden Sie unseren kostenlosen Klausel-Leitfaden herunter — was ein regulierter Kunde 2026–27 von seinem Wartungsdienstleister verlangen wird. Ohne Verpflichtungen.</p>
+    <p style="margin-top:24px"><a class="btn" href="/template/">Leitfaden online lesen — kostenlos, ohne Anmeldung →</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap faq">
+    <h2>FAQ</h2>
+    <details open>
+      <summary>Sind Sie wirklich vollständig White-Label?</summary>
+      <p>Ja. Wir arbeiten unter NDA und kontaktieren Ihre Kunden nie. Berichte und Kommunikation tragen Ihr Branding; Vorlagen erhalten Sie beim Onboarding.</p>
+    </details>
+    <details>
+      <summary>Was genau enthält die „Prüfspur"?</summary>
+      <p>Pro Website: jedes Plugin-/Core-/Theme-Update (Vorher-/Nachher-Versionen), jedes durchgeführte und getestete Backup, jeder Security-Patch, jede Wiederherstellung — mit Zeitstempel und Operator-Identität. Exportierbar als PDF/CSV für Prüfungen, Versicherer oder Kundenreviews. <a href="/sample/">Arbeitsbeispiel ansehen →</a></p>
+    </details>
+    <details>
+      <summary>Wo werden Daten gehostet?</summary>
+      <p>Alle operativen Daten und Backups liegen innerhalb der EU unter EU-Jurisdiktion. Ein Standard-AVV wird beim Onboarding unterschrieben.</p>
+    </details>
+    <details>
+      <summary>Bieten Sie 24/7-Notfallreaktion?</summary>
+      <p>Nein — bewusst nicht. Wir bieten Wiederherstellung am nächsten Werktag und geplante Wartungsfenster mit dokumentiertem Prozess. Wenn Ihre Kunden 24/7-Incident-Response benötigen, sind wir nicht der richtige Partner — und sagen das vorab offen.</p>
+    </details>
+    <details>
+      <summary>Welche Plattformen decken Sie ab?</summary>
+      <p>WordPress (einzelne Sites und Multisite), inklusive WooCommerce. Kein WordPress? Fragen Sie — wir übernehmen eine begrenzte Anzahl von Engagements mit anderen CMS.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>AuditedWP — White-Label WordPress-Betrieb für EU-Agenturen.<br>Kontakt: hello@auditedwp.com · <a href="/store/" style="color:var(--accent)">Compliance-Dokumentvorlagen</a></div>
+    <div>EU-Betrieb · DSGVO-konforme Verarbeitung · © 2026</div>
+  </div>
+</footer>
+
+
+<script>
+(function(){
+  var s=document.getElementById('sites'),r=document.getElementById('retail');
+  function fmt(n){return '€'+n.toLocaleString('de-DE')}
+  function upd(){
+    var n=+s.value,p=+r.value;
+    var ws=n>=26?19:29, setup=290;
+    document.getElementById('sitesVal').textContent=n;
+    document.getElementById('retailVal').textContent=p;
+    var cost=ws*n+setup, rev=p*n, mrr=rev-cost;
+    var pct=rev?Math.round(mrr/rev*100):0;
+    document.getElementById('calcOut').innerHTML=
+      'Ihr Umsatz: <b>'+fmt(rev)+'/Monat</b><br>'+
+      'Unser Großhandel ('+fmt(ws)+'/Site'+(n>=26?' + einmalige Einrichtung '+fmt(setup):'')+') + Einrichtungsgebühr: <b>'+fmt(cost)+'</b><br>'+
+      '<span style="color:var(--ok);font-size:17px"><b>Ihre Marge: '+fmt(mrr)+'/Monat ('+pct+'%)</b></span>';
+  }
+  s.addEventListener('input',upd);r.addEventListener('input',upd);upd();
+})();
+</script>
+</body>
+</html>
