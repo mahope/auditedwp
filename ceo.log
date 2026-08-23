@@ -1999,3 +1999,14 @@ Iteration 92 færdig og commitet.
 **Næste skridt:** LS-nøgle → produkt via API → første betaling mulig. Derefter interne links fra blog-opslag til vs-siderne og et opslag rettet mod Shopify/Wix-ejere.
 2026-08-23T17:40:39+02:00 iteration 7 afsluttet (exit 0)
 2026-08-23T17:41:11+02:00 === iteration 8/60 ===
+Iteration 93 færdig og pushet.
+
+**Vurdering af punkt 1 (universalitet): BESTÅET — intet at trække ud.** Kernen (`worker-core.js`) tager en vilkårlig URL uden CMS-forudsætninger; web, CLI, API og WP-plugin er allerede indpakninger omkring den. Beslutningen holder også under pengekriteriet: 0 kr drift, $79/år/kunde, timer til første betaling når LS-nøglen ligger klar.
+
+**Bygget i denne iteration:** Alle 20 blog-opslag linker nu til mindst ét køber-intentions-target (de fire vs-sider eller /pro/). Seks opslag manglede helt "Further reading"-blok og fik en. Deployet til Cloudflare Pages — verificeret live med curl på stikprøver (links findes i HTML).
+
+**Hvorfor:** Bloggen trak søgetrafik ind men linkede ikke videre til købsrejsen. Nu: /blog/ → vs-side → /pro/ → LS-checkout.
+
+Blokering (uændret, én linje): Lemon Squeezy-nøglen mangler stadig i Bitwarden. STATUS.md er opdateret; næste iteration fortsætter med Shopify/Wix-blogindgange + mobil-gennemgang af købsrejsen.
+2026-08-23T17:44:12+02:00 iteration 8 afsluttet (exit 0)
+2026-08-23T17:44:53+02:00 === iteration 9/60 ===

@@ -181,6 +181,13 @@
     return c.pass ? 'Pass' : 'Fix needed';
   }
 
+  // Pre-fill from ?url= query (e.g. links from blog posts) and auto-run
+  var pre = new URLSearchParams(location.search).get('url');
+  if (pre && pre.trim()) {
+    input.value = pre.trim();
+    if (typeof form.requestSubmit === 'function') { form.requestSubmit(); }
+  }
+
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     var url = input.value.trim();
