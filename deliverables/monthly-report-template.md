@@ -1,6 +1,8 @@
 # MONTHLY MAINTENANCE REPORT — WHITE-LABEL TEMPLATE
-AuditedWP v1.0. Agency replaces [AGENCY] tokens with their own brand and
-forwards to the client. We supply filled content; they own the delivery.
+
+**ComplianceDocs** · v1.0, August 2026.
+
+[AGENCY] replaces [AGENCY] tokens with their own brand and forwards to the client.
 
 ---
 

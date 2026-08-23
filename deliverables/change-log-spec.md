@@ -1,6 +1,8 @@
 # AUDIT CHANGE LOG — FORMAT SPECIFICATION
-AuditedWP v1.0. The core product artefact. One row per operational action,
-per site. Exported monthly per agency as PDF + CSV.
+
+**ComplianceDocs** · v1.0, August 2026.
+
+One row per operational action, per site. Exported monthly per agency as CSV.
 
 ## CSV schema
 

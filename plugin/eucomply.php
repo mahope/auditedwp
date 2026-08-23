@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name:       EUComply — EU Compliance Audit
- * Plugin URI:        https://mahope.github.io/auditedwp
+ * Plugin URI:        https://auditedwp.pages.dev
  * Description:       Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, backups, forms, plugin health. Pro ($79/yr): auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.
  * Version:           1.1.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
- * Author URI:        https://mahope.github.io/auditedwp
- * Plugin URI:        https://mahope.github.io/auditedwp
+ * Author URI:        https://auditedwp.pages.dev
+ * Plugin URI:        https://auditedwp.pages.dev
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       eucomply
@@ -34,7 +34,7 @@ define( 'EUCOMPLY_VERSION', '1.1.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://eucomply.gumroad.com/l/pro' );
 define( 'EUCOMPLY_GUMROAD_PRODUCT', 'pro' ); // Gumroad product permalink — set when product is created
-define( 'EUCOMPLY_UPDATE_URI', 'https://mahope.github.io/auditedwp/update.json' );
+define( 'EUCOMPLY_UPDATE_URI', 'https://auditedwp.pages.dev/update.json' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 
 /**

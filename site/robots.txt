@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://eucomply.pages.dev/sitemap.xml

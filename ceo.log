@@ -599,10 +599,10 @@ Budget: 0 kr brugt. Domæne auditedwp.com (~70 DKK) er forhåndsgodkendt og sæt
 
 | URL | Hvad |
 |-----|------|
-| **https://mahope.github.io/auditedwp/** | EN landingsside (pitch, priser, margin-beregner) |
-| **https://mahope.github.io/auditedwp/de/** | Tysk version (DACH = primærmarked) |
-| **https://mahope.github.io/auditedwp/sample/** | Eksempel på audit trail |
-| **https://mahope.github.io/auditedwp/template/** | Gratis NIS2-leverandørklausul-skabelon |
+| **https://auditedwp.pages.dev/** | EN landingsside (pitch, priser, margin-beregner) |
+| **https://auditedwp.pages.dev/de/** | Tysk version (DACH = primærmarked) |
+| **https://auditedwp.pages.dev/sample/** | Eksempel på audit trail |
+| **https://auditedwp.pages.dev/template/** | Gratis NIS2-leverandørklausul-skabelon |
 | `site/deliverables/` | DPA, NDA, rapporter — klar til dag 1 |
 | `site/onboarding-manual.md` | Onboarding-proces dokumenteret |
 

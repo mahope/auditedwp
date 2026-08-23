@@ -6,13 +6,13 @@
 
 **1. Fixet alle broken URLs ✅**
 - Plugin header: `Version: 1.0.0` → `1.1.0` (match EUCOMPLY_VERSION)
-- Plugin URI, Author URI, canonical: `eucomply.pages.dev` → `mahope.github.io/auditedwp/`
-- `EUCOMPLY_UPDATE_URI`: `eucomply.pages.dev` → `mahope.github.io/auditedwp/update.json`
+- Plugin URI, Author URI, canonical: `mahope.github.io/auditedwp` → `mahope.github.io/auditedwp/`
+- `EUCOMPLY_UPDATE_URI`: `mahope.github.io/auditedwp` → `mahope.github.io/auditedwp/update.json`
 - `update.json` homepage/download_url: peger på mahope.github.io
 - Gjort i plugin/eucomply.php, site/plugin/eucomply/eucomply.php, index.html, site/index.html, site/plugin/index.html, site/store/index.html, update.json
 
 **2. Rebuild ZIP med fixet kode ✅**
-- ZIP var bygget før URL-fix — indeholdt stadig eucomply.pages.dev og version 1.0.0 header
+- ZIP var bygget før URL-fix — indeholdt stadig mahope.github.io/auditedwp og version 1.0.0 header
 - Nu: korrekt `eucomply/eucomply.php` + `eucomply/readme.txt`, alle URLs korrekte
 - ZIP på root `assets/` (matcher landing page link `/assets/eucomply-1.1.0.zip`)
 - Verified: 200 OK via curl, korrekt indhold

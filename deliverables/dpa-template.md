@@ -1,13 +1,13 @@
 # DATA PROCESSING AGREEMENT (DPA)
-## AuditedWP — White-label WordPress Maintenance Operations
 
-Template v1.0 — 2026-08-23. To be reviewed by counsel before first signature.
-Structure follows EU GDPR Art. 28 requirements. Placeholders in [BRACKETS].
+**ComplianceDocs** · v1.0, August 2026 · Not legal advice — have counsel review before use.
+
+Template for controller→processor DPA following GDPR Art. 28. Placeholders in [BRACKETS].
 
 ## Parties
 
 - **Controller:** [AGENCY LEGAL NAME], [address], [CVR/registration no.] ("Agency")
-- **Processor:** AuditedWP / [OPERATOR LEGAL ENTITY], Denmark ("Processor")
+- **Processor:** [PROCESSOR LEGAL ENTITY], [jurisdiction] ("Processor")
 
 ## 1. Subject matter
 

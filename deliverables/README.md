@@ -1,14 +1,15 @@
-# Deliverables package
+# Deliverables package — ComplianceDocs
 
-The documents promised in the landing-page pricing table ("DPA + NDA
-onboarding", white-label templates) — built so a paying agency can be served
-day 1 without any gap between sale and delivery.
+Ready-to-use EU compliance document templates. Each file is a standalone
+product sold via ComplianceDocs.
 
-- `dpa-template.md` — GDPR Art. 28 data-processing agreement template
-- `nda-clause-set.md` — mutual NDA incl. the no-client-contact clause
-- `monthly-report-template.md` — white-label monthly report (agency brand)
-- `quarterly-narrative-template.md` — quarterly compliance narrative (add-on)
-- `change-log-spec.md` — audit change log format + example rows (the core)
+- `dpa-template.md` — GDPR Art. 28 Data Processing Agreement template ($59)
+- `nis2-vendor-clauses.md` — NIS2/DORA vendor clause set ($49)
+- `nda-clause-set.md` — Mutual NDA clause set ($29)
+- `eaa-statement-template.md` — EAA Accessibility Statement template ($39)
+- `monthly-report-template.md` — Monthly maintenance report template (in Report Kit, $69)
+- `quarterly-narrative-template.md` — Quarterly compliance narrative (in Report Kit, $69)
+- `change-log-spec.md` — Audit change log format (in Report Kit, $69)
 
-All are working templates pending legal review before first signature
-(noted in STATUS.md).
+All templates carry disclaimers — they are professional starting points,
+not legal advice. Have counsel review before signature.

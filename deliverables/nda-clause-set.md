@@ -1,5 +1,6 @@
 # WHITE-LABEL MUTUAL NDA — CLAUSE SET
-AuditedWP template v1.0 — 2026-08-23. Review by counsel before first use.
+
+**ComplianceDocs** · v1.0, August 2026 · Not legal advice — have counsel review before first use.
 
 Core clauses (attach to agency agreement or sign standalone):
 
