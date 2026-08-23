@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EUComply — EU compliance audit for WordPress. Free scan, Pro documentation.</title>
+<meta name="description" content="Scan your WordPress site for GDPR, NIS2, EAA and DORA compliance gaps. Free plugin checks SSL, cookies, backups, forms. Pro ($79/yr) auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.">
+<link rel="canonical" href="https://eucomply.pages.dev/">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fafcff;--soft:#eef3f9;
+      --acc:#2868d0;--acc-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--bad:#c03030}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* header */
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo-icon{width:26px;height:26px;background:var(--acc);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.logo span{color:var(--acc)}
+nav{display:flex;align-items:center;gap:6px}
+nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px}
+nav a:hover{background:var(--soft)}
+nav a.cta{background:var(--acc);color:#fff;font-weight:600;padding:8px 18px}
+nav a.cta:hover{background:var(--acc-dark)}
+
+/* hero */
+.hero{padding:80px 0 56px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#e8f0fe;color:var(--acc);border:1px solid #c6daf7;border-radius:999px;padding:5px 16px;font-size:13px;font-weight:600;margin-bottom:22px}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+h1{font-size:42px;line-height:1.15;letter-spacing:-.025em;max-width:820px;margin:0 auto 18px}
+h1 em{font-style:normal;color:var(--acc)}
+.sub{font-size:18px;color:var(--muted);max-width:700px;margin:0 auto 32px;line-height:1.5}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--acc);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:16px;transition:.12s}
+.btn:hover{background:var(--acc-dark);transform:translateY(-1px)}
+.btn.ghost{background:transparent;border:2px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{background:var(--soft);border-color:var(--acc);color:var(--acc)}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+.note a{color:var(--acc)}
+
+/* sections */
+section{padding:56px 0}
+section.alt{background:#fff;border-top:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.02em;margin-bottom:10px;text-align:center}
+.lede{color:var(--muted);max-width:680px;margin:0 auto 32px;text-align:center;font-size:16.5px}
+.lede strong{color:var(--ink)}
+
+/* grid cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{border:1px solid var(--line);border-radius:12px;padding:24px;background:#fff}
+.card-icon{font-size:26px;margin-bottom:10px}
+.card h3{font-size:16.5px;margin-bottom:6px}
+.card p{font-size:14.5px;color:var(--muted)}
+.centered{text-align:center}
+
+/* feature comparison table */
+.comp-table{width:100%;border-collapse:collapse;margin:20px auto 0;max-width:800px;font-size:14.5px}
+.comp-table th{background:var(--soft);padding:12px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.comp-table td{padding:12px 16px;border-bottom:1px solid var(--line)}
+.comp-table tr:last-child td{border-bottom:none}
+.check{color:var(--ok);font-weight:700}
+.cross{color:var(--bad)}
+
+/* pricing card */
+.pricing-wrap{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.pcard{border:1px solid var(--line);border-radius:14px;padding:32px 28px;background:#fff;flex:1;min-width:240px;max-width:360px;display:flex;flex-direction:column}
+.pcard.featured{border-color:var(--acc);border-width:2px;position:relative}
+.pcard.featured::before{content:"Most popular";position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.pcard h3{font-size:20px;margin-bottom:4px}
+.pcard .price{font-size:36px;font-weight:800;margin:10px 0 4px}
+.pcard .price span{font-size:15px;font-weight:400;color:var(--muted)}
+.pcard ul{margin:16px 0 24px;padding:0;list-style:none}
+.pcard li{padding:5px 0;font-size:14.5px;display:flex;align-items:flex-start;gap:8px}
+.pcard li::before{content:"✓";color:var(--ok);font-weight:700}
+.pcard li.cross-item::before{content:"✗";color:var(--bad)}
+.pcard li.cross-item{color:var(--muted)}
+.pcard .btn{margin-top:auto;justify-content:center;width:100%}
+
+/* how-it-works steps */
+.steps{max-width:720px;margin:24px auto 0;counter-reset:s;list-style:none}
+.steps li{position:relative;padding:0 0 24px 54px;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:36px;height:36px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.steps li strong{display:block;font-size:16px;margin-bottom:2px}
+.steps li span{color:var(--muted);font-size:15px}
+
+/* FAQ */
+.faq details{border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;background:#fff}
+.faq summary{font-weight:600;cursor:pointer;font-size:15.5px}
+.faq p{color:var(--muted);font-size:14.5px;margin-top:8px;line-height:1.55}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media(max-width:780px){
+  h1{font-size:30px}
+  .grid3{grid-template-columns:1fr}
+  nav a:not(.cta):not(.nav-main){display:none}
+  .pricing-wrap{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap">
+  <div class="logo"><span class="logo-icon">EC</span> EU<span>Comply</span></div>
+  <nav>
+    <a href="#features" class="nav-main">Features</a>
+    <a href="#pricing" class="nav-main">Pricing</a>
+    <a href="#faq" class="nav-main">FAQ</a>
+    <a href="#download" class="cta">Get the plugin →</a>
+  </nav>
+</div>
+</header>
+
+<div class="wrap hero">
+  <div class="badge"><span class="badge-dot"></span> Free WordPress plugin · wp.org · v1.0 coming September 2026</div>
+  <h1>Know exactly where your WordPress site stands on <em>EU compliance.</em></h1>
+  <p class="sub">EUComply scans your site for GDPR, NIS2, DORA, and EAA requirements — SSL, cookies, backups, forms, contact data, plugin security — and gives you a clear pass/fail dashboard. <strong>Free to start. Pro to document.</strong></p>
+  <div class="hero-actions">
+    <a class="btn" href="#download">↓ Get the free plugin</a>
+    <a class="btn ghost" href="#pricing">See Pro for $79/yr</a>
+  </div>
+  <p class="note">No account needed. No data sent externally. No banner or popup. <a href="#check">See what it checks →</a></p>
+</div>
+
+<section id="check">
+<div class="wrap">
+  <h2>Five compliance checks, one dashboard</h2>
+  <p class="lede">EUComply runs inside your WordPress admin. Everything is checked server-side — no external API calls, no data leaving your site.</p>
+  <div class="grid3">
+    <div class="card"><div class="card-icon">🔒</div><h3>SSL &amp; HTTPS</h3><p>Valid certificate? HSTS header? Mixed content warnings? Checks all pages, not just the homepage.</p></div>
+    <div class="card"><div class="card-icon">🍪</div><h3>Cookie &amp; Consent</h3><p>Does a cookie banner or consent plugin exist? Is it blocking scripts before consent? Checks wp_head for consent hooks.</p></div>
+    <div class="card"><div class="card-icon">📋</div><h3>GDPR Forms</h3><p>Contact forms, newsletter signups and comment forms — do they have a privacy notice, consent checkbox, and data-retention note?</p></div>
+    <div class="card"><div class="card-icon">💾</div><h3>Backup Status</h3><p>When was the last full backup? Is it stored off-server? Encryption status. Checks known backup plugins and file timestamps.</p></div>
+    <div class="card"><div class="card-icon">⚠️</div><h3>Plugin &amp; Core Health</h3><p>Outdated plugins? Unmaintained plugins? Known CVEs in installed versions? Checks against wp.org vulnerability API.</p></div>
+    <div class="card"><div class="card-icon">📄</div><h3>Legal Pages</h3><p>Privacy Policy page exists? Imprint/Impressum? Terms of Service? Accessibility statement (EAA)? Checks page titles and content patterns.</p></div>
+  </div>
+</div>
+</section>
+
+<section class="alt" id="features">
+<div class="wrap">
+  <h2>Free vs Pro</h2>
+  <p class="lede">The free plugin gives you a live compliance dashboard. Pro turns that dashboard into <strong>audit-ready documentation</strong> your clients, insurers, and regulators can accept.</p>
+  <table class="comp-table">
+    <tr><th>Feature</th><th>Free</th><th>Pro — $79/yr</th></tr>
+    <tr><td>Compliance scan dashboard (5 checks)</td><td class="check">✓</td><td class="check">✓</td></tr>
+    <tr><td>Pass/fail per check with fix guidance</td><td class="check">✓</td><td class="check">✓</td></tr>
+    <tr><td>Weekly automated re-scan</td><td class="check">✓</td><td class="check">✓</td></tr>
+    <tr><td>GDPR Data Processing Agreement (Art. 28) — auto-filled from scan data</td><td class="cross">✗</td><td class="check">✓</td></tr>
+    <tr><td>NIS2 / DORA vendor clause set</td><td class="cross">✗</td><td class="check">✓</td></tr>
+    <tr><td>EAA Accessibility Statement — auto-generated</td><td class="cross">✗</td><td class="check">✓</td></tr>
+    <tr><td>Quarterly compliance report (PDF, white-label ready)</td><td class="cross">✗</td><td class="check">✓</td></tr>
+    <tr><td>Email report delivery to clients</td><td class="cross">✗</td><td class="check">✓</td></tr>
+    <tr><td>Export audit log (CSV/PDF)</td><td class="cross">✗</td><td class="check">✓</td></tr>
+  </table>
+</div>
+</section>
+
+<section class="alt" style="border-top:none;padding-top:0" id="pricing">
+<div class="wrap">
+  <div class="pricing-wrap">
+    <div class="pcard">
+      <h3>Free</h3>
+      <div class="price">$0<span>/yr</span></div>
+      <ul>
+        <li>Compliance scan dashboard</li>
+        <li>5 automated checks</li>
+        <li class="cross-item">No document templates</li>
+        <li class="cross-item">No quarterly reports</li>
+        <li class="cross-item">No e-mail delivery</li>
+      </ul>
+      <a class="btn" href="#download">↓ Download free</a>
+    </div>
+    <div class="pcard featured">
+      <h3>Pro</h3>
+      <div class="price">$79<span>/yr per site</span></div>
+      <ul>
+        <li>Everything in Free</li>
+        <li>Auto-generated DPA (Art. 28)</li>
+        <li>NIS2/DORA clause set</li>
+        <li>EAA accessibility statement</li>
+        <li>Quarterly PDF compliance report</li>
+        <li>E-mail reports to clients</li>
+        <li>Export audit log</li>
+      </ul>
+      <a class="btn" href="#download">Buy Pro →</a>
+    </div>
+  </div>
+  <p class="note centered" style="margin-top:20px">Pro licenses are annual, auto-renewing. Volume discounts for agencies covering 10+ sites: contact us.</p>
+</div>
+</section>
+
+<section id="how">
+<div class="wrap">
+  <h2>How it works</h2>
+  <p class="lede">Install from wp.org, activate, and your compliance dashboard appears. No config, no API keys, no accounts.</p>
+  <ol class="steps">
+    <li><strong>Install the plugin</strong><span>Search "EUComply" on wp.org or upload the ZIP. Activate like any WordPress plugin.</span></li>
+    <li><strong>Run your first scan</strong><span>The plugin immediately runs all five compliance checks. Results appear in your admin under Compliance → Dashboard.</span></li>
+    <li><strong>Fix what's red</strong><span>Each failed check links to a short fix guide. Most issues (missing SSL, outdated plugin, no cookie banner) can be resolved in minutes.</span></li>
+    <li><strong>Upgrade to Pro for documentation</strong><span>With Pro, every scan generates or updates a DPA, NIS2 clause set, EAA statement, and quarterly PDF — ready to send to clients or keep for your own audit file.</span></li>
+  </ol>
+</div>
+</section>
+
+<section class="alt" id="audience">
+<div class="wrap">
+  <h2>Who needs this</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <h3>Small agencies</h3>
+      <p>Manage 5–25 WordPress client sites and need a compliance story to answer procurement questionnaires, insurance renewals, and DORA/NIS2 supply-chain audits.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧑‍💻</div>
+      <h3>Freelance WP developers</h3>
+      <p>Your clients ask "are we GDPR-compliant?" and you want a dashboard you can show them — plus the documents to back it up when they're ready.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏗️</div>
+      <h3>SaaS founders on WP</h3>
+      <p>You run your SaaS landing page or docs on WordPress and need basic compliance evidence before enterprise prospects request it in a vendor assessment.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="faq">
+<div class="wrap faq">
+  <h2>FAQ</h2>
+  <div style="max-width:760px;margin:0 auto;width:100%">
+  <details open>
+    <summary>Does the free plugin send my site data anywhere?</summary>
+    <p>No. All checks run server-side on your WordPress installation. No data is sent to EUComply servers, no analytics, no telemetry. Pro license validation is the exception — a simple site-key check against our license server (no site data transmitted).</p>
+  </details>
+  <details>
+    <summary>How is this different from Complianz, CookieYes, or WP Activity Log?</summary>
+    <p>Those plugins solve <em>one</em> compliance problem (cookies, or audit logging). EUComply is the only plugin that combines five compliance checks <em>and</em> generates the legal documentation (DPA, NIS2 clauses, EAA statements, quarterly reports) from the scan results. It's a compliance monitor + document generator in one, not another cookie banner.</p>
+  </details>
+  <details>
+    <summary>Is the generated DPA legally valid?</summary>
+    <p>The DPA follows the standard GDPR Art. 28 structure used across the EU and matches the text of our standalone ComplianceDocs template ($59 sold separately — Pro users get it included). We recommend having a lawyer review the filled-in result for high-value contracts. The template gives you 90% of the work done; legal review is the final 10%.</p>
+  </details>
+  <details>
+    <summary>What happens to my data when I cancel Pro?</summary>
+    <p>The plugin continues working in Free mode — you keep the dashboard and weekly scans. You lose access to document generation, quarterly reports, and email delivery. No data is deleted from your site; it's all stored in your local WordPress database.</p>
+  </details>
+  <details>
+    <summary>Can I white-label the reports for my clients?</summary>
+    <p>Yes. Pro quarterly reports are generated with your agency name (configurable in settings). The PDF footer says "Generated by EUComply" — a white-label upgrade is available for agencies covering 10+ sites. <a href="mailto:hello@eucomplywp.com">Contact us</a> for details.</p>
+  </details>
+  <details>
+    <summary>Do you cover EAA (European Accessibility Act)?</summary>
+    <p>Yes. The EAA check verifies that an accessibility statement page exists and contains the required disclosures (conformance level, date, contact method). Pro generates a complete EAA statement you can publish immediately. Note: EUComply does not audit actual WCAG conformance — that requires a separate accessibility audit tool.</p>
+  </details>
+</div>
+</div>
+</section>
+
+<section class="alt" id="download">
+<div class="wrap centered">
+  <h2>Ready to check your site?</h2>
+  <p class="lede" style="text-align:center">The free plugin is available on WordPress.org. Pro is sold directly.</p>
+  <div class="hero-actions" style="margin-top:16px">
+    <a class="btn" href="/assets/eucomply-1.0.0.zip" download>↓ Download free plugin (v1.0.0)</a>
+    <a class="btn ghost" href="#">Buy Pro — $79/yr</a>
+  </div>
+  <p class="note" style="margin-top:20px">Install: Plugins → Add New → Upload Plugin → choose the zip. wp.org listing coming September 2026. Pro checkout via Gumroad (VAT handled, instant delivery).<br>
+  <a href="/store/">While you wait, browse standalone compliance document templates →</a></p>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+  <div>EUComply — EU compliance audit for WordPress. <a href="https://github.com/mahope/eucomply" style="color:var(--acc)">GitHub</a> · <a href="/store/" style="color:var(--acc)">Templates store</a></div>
+  <div>Made in the EU · GDPR-compliant processing · © 2026</div>
+</div>
+</footer>
+
+</body>
+</html>

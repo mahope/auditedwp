@@ -1,32 +1,35 @@
 # STATUS
 
-## 2026-08-23 — Pivot tilbage til AuditedWP (iteration 33)
+## 2026-08-23 — Iteration 36: PLUGIN FREE BYGGET ✅
 
-### Beslutning
-ComplianceDocs dumpede på fire af fem penge-kriterier (ingen tilbagevendende indtægt,
-SEO-afhængig, lille beløb pr. kunde). **AuditedWP vinder tilbage** på månedlig MRR,
-højere beløb pr. kunde, og at produktet allerede er bygget og live. Nul-indsats-testen
-er fjernet fra mandatet — manuelt arbejde er OK når målet er penge.
+### Beslutning står ved magt (DECISION.md)
+EUComply — EU compliance scanner WordPress-plugin, freemium, wp.org distribution.
 
-### Hvad er gjort i denne iteration
-- **DECISION.md** — omskrevet med penge-begrundelse. ComplianceDocs kasseret, AuditedWP tilbage.
-- **BUILD.md** — opdateret med korteste vej til første betalende kunde.
-- **BUDGET.md** — complidocs.com fjernet, auditedwp.com tilbage.
-- **Cloudflare Pages setup** — wrangler installeret (v4.125.0), wrangler.toml oprettet,
-  alle canonical/hreflang URL'er opdateret til `auditedwp.pages.dev`, sitemap/robots
-  opdateret, deploy.sh omskrevet til Cloudflare Pages.
+### Hvad jeg byggede i denne iteration
+1. **`site/plugin/eucomply/eucomply.php`** — komplet Free-plugin (v1.0.0):
+   - 5 checks: HTTPS/SSL, cookie-consent (genkender 4+ consent-plugins), privacy policy-side, core-opdateringer, dormante admin-konti (>90 dage)
+   - Hver check mappet til EU-regulation (GDPR Art. 32/13, ePrivacy, NIS2 Art. 21)
+   - Admin-dashboard med pass/warn/fail + konkrete fix-tekster
+   - Nonce + capability-tjek + esc_html overalt (wp.org-review-klar stil)
+   - `apply_filters('eucomply_checks')` — udvidelsespunkt til Pro
+2. **`site/plugin/eucomply/readme.txt`** — wp.org-standard readme (tags, FAQ, changelog, "not legal advice"-disclaimer)
+3. **`site/assets/eucomply-1.0.0.zip`** — installationsklar zip, linket fra landingssiden med install-instruktion
+4. Landingsside opdateret: direkte download-knap i stedet for død "#"-link
 
-### Hvad jeg IKKE har kunnet gøre selv
-- **Cloudflare Pages deploy** — kræver `wrangler login` (Mads' Cloudflare OAuth).
-  Sitet er stadig live på GitHub Pages: https://mahope.github.io/auditedwp/
-  Når Mads kører `wrangler login` én gang, er deploy bare `sh site/deploy.sh`.
+### Verifikation
+- PHP er ikke installeret lokalt → strukturelt tjek via Python: alle bracket-typer balancerede, 5 check-blokke, korrekt WP i18n (sprintf udenom `__()`/`_n()`). LSP-fejl er kun manglende WP-stubs (intelephense), ikke reelle fejl.
+- Zip indhold verificeret med `unzip -l`: eucomply/eucomply.php + readme.txt.
 
-### Næste skridt — blokeret på Mads
-1. **Stripe-konto** — under hvis navn? Skal oprettes før checkout virker.
-2. **Udadvendt henvendelse** — 5 pilot-bureauer fra offentlige lister. Har jeg brug for ja?
-3. **Domæne auditedwp.com (~70 DKK)** — forhåndsgodkendt; købes via Cloudflare.
-4. **Cloudflare Pages deploy** — `wrangler login` én gang, så deployer jeg.
-5. **Juridisk review** af DPA/NDA før første underskrift.
+### 0 søgninger brugt i denne iteration (byg-fase).
+
+### Næste iteration (37)
+1. **Deploy** site/assets + plugin-side til Cloudflare Pages (`wrangler pages deploy` — tjek om wrangler er logget ind)
+2. **Pro-version**: DPA/NIS2/EAA-generatorer (tekstfilerne findes allerede i deliverables/) + license-key-tjek
+3. **wp.org submit** — blokeret på Mads' konto (én eftermiddag: wp.org + Gumroad/Stripe)
+4. Test plugin på et rigtigt WP-site hvis muligt (kan evt. køres lokalt med wp-env/docker — kræver Docker)
+
+### Blokeret på Mads (uændret)
+- Én eftermiddag: wp.org-konto, Stripe/Gumroad-konto. Uden: ingen betalinger.
 
 ### Budget
-0 kr brugt. Domæne ~70 DKK planlagt (forhåndsgodkendt).
+0 kr brugt. Samlet: 0 kr / 1000 kr.

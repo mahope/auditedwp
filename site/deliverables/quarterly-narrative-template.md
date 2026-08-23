@@ -1,8 +1,10 @@
 # QUARTERLY COMPLIANCE NARRATIVE — WHITE-LABEL TEMPLATE
-AuditedWP v1.0 (add-on deliverable, €99/qtr). Plain-language summary written
-to be forwarded verbatim by the agency to its client, e.g. when the client's
-auditor, insurer or procurement asks "what is done to keep our website
-operational and secure?" Maps to DORA Art. 28 / NIS2 supply-chain questions.
+
+**ComplianceDocs** · v1.0, August 2026.
+
+Plain-language summary written to be forwarded verbatim by the agency to its client,
+e.g. when the client's auditor, insurer or procurement asks "what is done to keep our
+website operational and secure?" Maps to DORA Art. 28 / NIS2 supply-chain questions.
 
 ---
 

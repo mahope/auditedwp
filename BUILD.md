@@ -1,67 +1,53 @@
-# BUILD — korteste vej til første betalende kunde
+# BUILD.md — EUComply WordPress Plugin
 
-Produkt: **AuditedWP** — white-label WordPress-drift med compliance-dokumentation,
-wholesale til små/mellemstore webbureauer i EU/DACH.
-
-## ✅ Allerede bygget (kan levere i dag)
-
-| Lag | Status | Hvad |
-|-----|--------|------|
-| Landingsside EN | ✅ Live (Cloudflare Pages) | Priser, USP, margin-beregner |
-| Landingsside DE | ✅ Live | DACH-markedet |
-| Sample audit trail | ✅ Live | Preview af revisionsklar rapport |
-| NIS2 vendor-clause template | ✅ Live | Gratis lead magnet |
-| DPA-skabelon | ✅ Bygget | `site/deliverables/dpa-template.md` |
-| NDA-clause-set | ✅ Bygget | `site/deliverables/nda-clause-set.md` |
-| Change-log spec | ✅ Bygget | `site/deliverables/change-log-spec.md` |
-| Kvartals-compliance-rapport | ✅ Bygget | `site/deliverables/` |
-| Audit-trail-pipeline | ✅ Bygget, testet | `ops/auditlog.py` — stdlib Python, end-to-end |
-| Margin-beregner | ✅ Live | Indbygget i landing page |
-| robots.txt + sitemap.xml | ✅ Live | SEO-grundlag |
-| Onboarding-manual | ✅ Bygget | `site/onboarding-manual.md` |
-
-**Hvad der mangler for at lukke første kunde:**
+## Korteste vej til første betalende kunde
 
 ```
-Mads             ──→ Godkend outreach til 5 pilot-bureauer
-Mads             ──→ Opret Stripe-konto (under hans navn)
-Mads             ──→ Godkend DPA/NDA juridisk
-Mads/Claude      ──→ Køb auditedwp.com (~70 DKK)
-                 ──→ Sæt MX record så hello@auditedwp.com virker
-                 ──→ Første salgssamtale → onboarding → Stripe Payment Link
+TRIN V     TID       UDEN MADS?     AFTALE
+─── ─────── ───────── ────────────── ─────────────────────
+ 1  Landingsside  1 dag    ✅ Ja   Cloudflare Pages
+ 2  Plugin Free    2 dage   ✅ Ja   PHP, klar til zip
+ 3  Plugin Pro     1 dag    ✅ Ja   Kode klar
+ 4  wp.org-submit  1 time   ❌     Kræver Mads-konto
+ 5  Første kunde   1-3 mdr  ✅     Organisk på wp.org
+ 6  Penge          1 dag    ❌     Kræver Strihe/betalingsløsning
 ```
 
-## Den korteste vej — hvad jeg gør UDEN Mads
+## Hvad jeg bygger (i denne rækkefølge)
 
-1. **Flyt til Cloudflare Pages** (allerede i gang) — sitet på pages.dev
-2. **Skriv salgs-case til de 5 pilot-bureauer** — klar til når Mads siger ja
-3. **Polér landingsside og sample audit trail**
-4. **Forbered Stripe-integration** — Payment Link-opskrift, klar til at sende
+### Trin 1: Landingsside (nu)
+- `site/plugin/index.html` — salgsside: hvad det gør, hvem det er til, priser (Free vs Pro $79/år)
+- `site/plugin/features.html` — feature-detaljer
+- Link fra ComplianceDocs store-side til plugin-siden
+- Hostes på `eucomply.pages.dev` / Cloudflare Pages
 
-## Salgs-case — hvem de 5 pilot-bureauer er
+### Trin 2: Plugin Free-version
+- PHP-plugin til WordPress
+- Scanner: SSL-certifikat, GDPR-formular-tjek, cookie-banner-tjek, backup-alder, WP-version
+- Admin dashboard i WordPress med resultater
+- Enkelt: en klasse, en admin-side, 5 simple checks
 
-Målgruppe: 3-15 personers WordPress-bureau i Tyskland, Østrig, Schweiz eller
-Norden med 10-40 WordPress-klienter.
+### Trin 3: Plugin Pro-version
+- DPA-generator (bruger ComplianceDocs DPA-template som output)
+- NIS2 vendor clause kit
+- EAA statement generator 
+- Kvartalsrapport (PDF via mPDF/tcpdf eller simplere: HTML)
+- E-mail-notifikation
 
-Problemet: ejeren bruger 15-20 timer/uge på driftsopgaver der ikke skalerer.
-Klienter begynder at stille NIS2/DORA-kompatibilitetsspørgsmål som ejeren ikke
-kan besvare med dokumentation.
+### Trin 4: Betalingskanal
+- Stripe hosted checkout link (ingen Stripe-konto på mit site)
+- Eller: sell Pro via Gumroad (samme konto som ComplianceDocs)
+- (kræver Mads' godkendelse — én af delene)
 
-Løsningen: AuditedWP tager driften + compliance-dokumentationen. Bureauet
-beholder klienten og marginen. Vi arbejder under NDA — slutkunden ved intet.
+## Hvad jeg IKKE bygger endnu
+- CRM — håndteres manuelt de første 20 kunder
+- WooCommerce-integration — senere
+- Multisite-support — version 2
+- Flere sprog — version 2
 
-## Priser (usændret)
-
-- Wholesale: €29/site/md (1-25) → €19/site/md (26+, 12 mdr.)
-- Setup-fee: €290 pr. bureau (onboarding, DPA, white-label templates)
-- Add-on: €99/kvartal/bureau for compliance-rapport
-
-## Leverance-model (når første kunde er klar)
-
-1. Mads modtager e-mail fra bureau → booker onboarding-samtale (20 min)
-2. DPA/NDA signeres digitalt (PandaDoc el. lign. — gratis niveau)
-3. Bureau giver site-adgang (SFTP/Admin) — 1-2 sites som pilot
-4. Auditlog initialiseres: baseline backup + konfig-snapshot
-5. Månedlig drift kører: patches, monitorering, logning
-6. Månedsrapport genereres (auditlog.py → HTML → PDF) og sendes til bureau
-7. Bureau videresender til klient med eget logo — klar til NIS2/DORA-revision
+## Ressourcer
+- Cloudflare Pages: gratis (site + landing pages)
+- wp.org-listing: gratis
+- PHP: ingen dependencies, vanilla PHP
+- PDF: tcpdf (free, MIT) — kun til Pro
+- Git: site/ mappen er allerede et repo

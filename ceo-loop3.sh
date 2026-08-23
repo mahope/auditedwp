@@ -4,6 +4,8 @@
 #   DAGSKVOTE = vores egen kvote brugt -> stop for i dag
 export PATH="$HOME/.local/bin:$PATH"
 DIR="$HOME/hermes-ceo"
+# hver agent maa KUN skrive i sin egen mappe
+export HERMES_WRITE_SAFE_ROOT="$DIR"
 LOG="$DIR/ceo.log"
 cd "$DIR" || exit 1
 MAX=${1:-15}

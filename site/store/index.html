@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ComplianceDocs — Ready-to-use EU compliance document templates</title>
+<title>ComplianceDocs — EU compliance document templates</title>
 <meta name="description" content="Lawyer-inspired DPA, NDA, NIS2 vendor clauses and EAA statement templates for agencies, SaaS founders and consultants. Instant download, $29–$149.">
-<link rel="canonical" href="https://auditedwp.pages.dev/store/">
+<link rel="canonical" href="https://compliancedocs.gumroad.com/">
 <style>
 :root{--ink:#1a2332;--acc:#0b6e4f;--bg:#f7f9f8;--line:#dde5e1}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -110,18 +110,16 @@ ul{padding-left:1.2rem}li{margin:.25rem 0}
 </section>
 
 <footer>
-ComplianceDocs · Templates, not legal advice. © 2026 · Contact: see checkout receipt for support address.
+ComplianceDocs · Templates, not legal advice. © 2026 · <a href="/plugin/" style="color:var(--acc)">Try EUComply WP plugin →</a>
 </footer>
 </main>
 <script>
-// Checkout placeholder: real Lemon Squeezy overlay links are added per-product
-// once the store account is approved. Until then buttons show a notice.
-document.querySelectorAll('.buy').forEach(function(b){
-  b.addEventListener('click',function(e){
-    e.preventDefault();
-    alert('Checkout opens here shortly. This store is being connected to a payment platform.');
-  });
-});
+// When Gumroad products are created, replace href="#" with the actual Gumroad
+// product URL for each product. For example:
+// <a class="btn buy" href="https://compliancedocs.gumroad.com/l/dpa">Buy &amp; download</a>
+//
+// Until then, buttons are informational. Gumroad handles checkout, delivery,
+// VAT/sales tax, and payment — everything automated.
 </script>
 </body>
 </html>
