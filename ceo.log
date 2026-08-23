@@ -2472,3 +2472,21 @@ Iteration 112 færdig. Resumé:
 **Eneste revenue-blokering:** Lemon Squeezy-nøglen i Bitwarden (ventes 24/8). Når den kommer, opretter jeg produktet via API og sætter checkout ind samme iteration. STATUS.md er opdateret.
 2026-08-23T20:29:35+02:00 iteration 28 afsluttet (exit 0)
 2026-08-23T20:29:57+02:00 === iteration 29/60 ===
+Iteration 113 færdig. Kort rapport:
+
+**Universitets-vurdering (punkt 1):** Bestået — DevNotify er ikke platform-bundet. Kernen (notifications-API → liste → menu bar UI + polling) er generisk; GitHub er kun én adapter, GitLab/Linear kan tilføjes uden kerneændring. Ingen udtrækning nødvendig.
+
+**Hvad jeg fandt og rettede denne iteration:**
+- Iteration 112-arbejdet (OG-tags, /vs/gitify/-side) lå ucommit'et → committet.
+- **Reelt hul:** rodsidens sitemap.xml — den eneste robots.txt peger på — indeholdt ingen DevNotify-URL'er, og intet på rodsitet linkede til /devnotify/. Produktet var usynligt for søgemaskiner.
+- Rettede det: 2 URLs ind i rodsitemap + footer-link fra rodsitet. Verificeret live (sitemap indeholder nu devnotify, footer-link til stede, alle undersider svarer 200).
+
+**Kontekst:** Gitify har 5.325 GitHub-stjerner og dominerer nøgleordet — vores ærlige /vs/gitify/-side er den rigtige SEO-indgang og kan nu findes.
+
+**Traction (ærligt):** 0 kunder · 0 downloads · $0.
+
+**Venter på Mads:** LS-nøglen i Bitwarden er stadig den eneste revenue-blokering (bw status: unauthenticated). Domæne getdevnotify.com forhåndsgodkendt, klar til køb. 3 marketing-posts ligger færdige i POSTS/ og venter på ja.
+
+STATUS.md opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-23T20:33:06+02:00 iteration 29 afsluttet (exit 0)
+2026-08-23T20:33:29+02:00 === iteration 30/60 ===

@@ -86,6 +86,49 @@ async function testToken() {
   }
 }
 
+// ── Trial / license ──────────────────────────────────────────────
+
+async function refreshTrialStatus() {
+  try {
+    const t = await invoke("get_trial_status");
+    const box = document.getElementById("trial-box");
+    const badge = document.getElementById("unread-badge");
+    if (t.licensed) {
+      box.style.display = "none";
+      return;
+    }
+    box.style.display = "block";
+    if (t.expired) {
+      badge.textContent = "Trial ended — activate your license to continue";
+      showPanel("settings");
+    } else if (t.trial_days_left <= 2) {
+      badge.textContent = `Trial: ${t.trial_days_left} day${t.trial_days_left !== 1 ? "s" : ""} left`;
+    }
+  } catch (err) {
+    console.error("trial status:", err);
+  }
+}
+
+async function activateLicense() {
+  const input = document.getElementById("license-input");
+  const status = document.getElementById("license-status");
+  const key = input.value.trim();
+  if (!key) {
+    status.textContent = "Please paste your license key";
+    status.className = "status-msg error";
+    return;
+  }
+  try {
+    await invoke("activate_license", { key });
+    status.textContent = "License activated ✓ Thank you!";
+    status.className = "status-msg success";
+    setTimeout(() => refreshNotifications(), 500);
+  } catch (err) {
+    status.textContent = `Error: ${err}`;
+    status.className = "status-msg error";
+  }
+}
+
 // ── Notifications rendering ─────────────────────────────────────
 
 async function refreshNotifications() {
@@ -183,10 +226,15 @@ els.tokenLink.addEventListener("click", (e) => {
   invoke("open_url", { url: "https://github.com/settings/tokens" });
 });
 
+document
+  .getElementById("activate-license-btn")
+  .addEventListener("click", activateLicense);
+
 // ── Init ─────────────────────────────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", async () => {
   await loadSavedToken();
+  await refreshTrialStatus();
   // If token exists, show notifications by default
   if (savedToken) {
     showPanel("notifications");

@@ -34,13 +34,129 @@ struct GitHubRepo {
     html_url: String,
 }
 
-// ── App state ─────────────────────────────────────────────────────────────────
+// ── Trial / license ──────────────────────────────────────────────────────────
+//
+// ÆRLIG MODEL (så sitets løfter holder):
+//  - Første app-start gemmer en "first_run"-tidsstempel lokalt → 7 dages trial.
+//  - Efter 7 dage låser appen notifikations-fetching, indtil en licensnøgle er
+//    indløst. Licensvalidering mod Lemon Squeezy aktiveres, når API-nøglen er
+//    på plads (LICENSE_API_URL + LICENSE_API_KEY via compile-time env eller
+//    offline-grace). Indtil da er unlock-kommandoen klar i UI og backend.
+
+const TRIAL_DAYS: u64 = 7;
 
 struct AppState {
     unread_count: Mutex<u32>,
     notifications: Mutex<Vec<NotificationItem>>,
     token: Mutex<Option<String>>,
     last_check: Mutex<Option<String>>,
+    license_key: Mutex<Option<String>>,
+}
+
+fn trial_file_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir.join("trial.json"))
+}
+
+/// Sikrer at trial-filen findes; returnerer first-run ISO-tidsstempel.
+fn ensure_trial_started(app: &AppHandle) -> Result<String, String> {
+    let path = trial_file_path(app)?;
+    if let Ok(existing) = std::fs::read_to_string(&path) {
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&existing) {
+            if let Some(ts) = v["first_run"].as_str() {
+                return Ok(ts.to_string());
+            }
+        }
+    }
+    let ts = get_now_iso();
+    let doc = serde_json::json!({ "first_run": ts });
+    std::fs::write(&path, doc.to_string()).map_err(|e| e.to_string())?;
+    Ok(ts)
+}
+
+#[derive(Serialize)]
+struct TrialStatus {
+    trial_started: String,
+    trial_days_total: u64,
+    trial_days_left: i64,
+    expired: bool,
+    licensed: bool,
+}
+
+fn read_license_key(app: &AppHandle) -> Option<String> {
+    let path = trial_file_path(app).ok()?;
+    let txt = std::fs::read_to_string(&path).ok()?;
+    let v: serde_json::Value = serde_json::from_str(&txt).ok()?;
+    v["license_key"].as_str().map(|s| s.to_string())
+}
+
+/// Variant der tager `&AppHandle` (setup-kontekst), samme logik.
+#[allow(dead_code)]
+fn read_license_key_static(app: &tauri::AppHandle) -> Option<String> {
+    read_license_key(app)
+}
+
+#[tauri::command]
+fn get_trial_status(state: State<AppState>, app: AppHandle) -> Result<TrialStatus, String> {
+    let started = ensure_trial_started(&app)?;
+    let licensed = state.license_key.lock().unwrap().is_some();
+    let first_run =
+        chrono::NaiveDateTime::parse_from_str(&started, "%Y-%m-%dT%H:%M:%SZ")
+            .map_err(|e| e.to_string())?;
+    let elapsed = chrono::Utc::now().naive_utc() - first_run;
+    let days_left = TRIAL_DAYS as i64 - elapsed.num_days();
+    Ok(TrialStatus {
+        trial_started: started,
+        trial_days_total: TRIAL_DAYS,
+        trial_days_left: days_left.max(0),
+        expired: days_left <= 0,
+        licensed,
+    })
+}
+
+/// Aktiverer en licensnøgle. Remote-validering mod Lemon Squeezy tilføjes, når
+/// API-nøglen er tilgængelig; indtil da gemmes nøglen og markere som aktiveret.
+#[tauri::command]
+fn activate_license(key: String, state: State<AppState>, app: AppHandle) -> Result<(), String> {
+    let key = key.trim().to_string();
+    if key.len() < 8 {
+        return Err("That doesn't look like a valid license key.".into());
+    }
+    // TODO(LS): POST til LS license-validation endpoint når API-nøgle findes.
+    let path = trial_file_path(&app)?;
+    let mut doc: serde_json::Value = std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|t| serde_json::from_str(&t).ok())
+        .unwrap_or_else(|| serde_json::json!({}));
+    doc["license_key"] = serde_json::Value::String(key.clone());
+    std::fs::write(&path, doc.to_string()).map_err(|e| e.to_string())?;
+    *state.license_key.lock().unwrap() = Some(key);
+    Ok(())
+}
+
+#[tauri::command]
+async fn check_now(app: AppHandle, state: State<'_, AppState>) -> Result<u32, String> {
+    // Trial-gate: efter 7 dage uden licens nægtes fetch med en ærlig fejl.
+    let started = ensure_trial_started(&app)?;
+    let licensed = read_license_key(&app).is_some() || state.license_key.lock().unwrap().is_some();
+    if !licensed {
+        if let Ok(first_run) =
+            chrono::NaiveDateTime::parse_from_str(&started, "%Y-%m-%dT%H:%M:%SZ")
+        {
+            let elapsed = chrono::Utc::now().naive_utc() - first_run;
+            if elapsed.num_days() >= TRIAL_DAYS as i64 {
+                return Err(
+                    "Your free 7-day trial has ended. Buy a $19 lifetime license at \
+                     https://auditedwp.pages.dev/devnotify/ to keep using DevNotify."
+                        .into(),
+                );
+            }
+        }
+    }
+    let token_opt = state.token.lock().unwrap().clone();
+    let token = token_opt.ok_or("No GitHub token configured")?;
+    fetch_notifications(&app, &token).await
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -92,13 +208,6 @@ fn open_url(url: String) -> Result<(), String> {
         .spawn()
         .map_err(|e| format!("Failed to open URL: {}", e))?;
     Ok(())
-}
-
-#[tauri::command]
-async fn check_now(app: AppHandle, state: State<'_, AppState>) -> Result<u32, String> {
-    let token_opt = state.token.lock().unwrap().clone();
-    let token = token_opt.ok_or("No GitHub token configured")?;
-    fetch_notifications(&app, &token).await
 }
 
 // ── GitHub API ────────────────────────────────────────────────────────────────
@@ -176,6 +285,7 @@ pub fn run() {
             notifications: Mutex::new(vec![]),
             token: Mutex::new(None),
             last_check: Mutex::new(None),
+            license_key: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
             get_notifications,
@@ -185,6 +295,8 @@ pub fn run() {
             get_last_check,
             check_now,
             open_url,
+            get_trial_status,
+            activate_license,
         ])
         .setup(|app| {
             //── Load saved token ──────────────────────────────────────────────

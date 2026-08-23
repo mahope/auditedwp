@@ -16,7 +16,7 @@ Kernen er en **notifications-klient**: GitHub REST API → normaliseret notifika
 | 1 | Landingsside der sælger (hvad/hvem/pris/køb) | ✅ Bygget denne iteration | — |
 | 2 | DMG uploades som release-asset på GitHub (offentligt repo i mit eget navn er ikke muligt — se blokering) | ⏳ | Venter: repo skal oprettes i Mads' GitHub eller direkte download fra sitet |
 | 3 | Lemon Squeezy: opret produkt $19 + license key via API | ⏳ | LS API-nøgle i Bitwarden (ventes 24/8) |
-| 4 | App'en validerer license key mod LS API (gratis trial 7 dage uden key) | Kode klar, aktiveres ved nøgle | |
+| 4 | App'en validerer license key mod LS API (gratis trial 7 dage uden key) | ✅ Trial implementeret i binær (iter. 114); remote LS-validering venter nøgle | — |
 | 5 | Checkout-knap på landingsside → LS checkout URL | ⏳ | Samme nøgle |
 
 ## Priser
