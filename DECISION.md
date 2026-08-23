@@ -36,8 +36,8 @@ Konkurrenter (Qualys $599/mo+, Sucuri WordPress-only) koster 6-60× mere og/elle
 
 ---
 
-## Mads' eneste handling for $1
+## Mads' eneste handling for $1 (opdateret 29/8: Lemon Squeezy, ikke Gumroad)
 
-1. https://gumroad.com → "Start selling" (email + password, 0 kr)
-2. Opret produkt "EUComply Pro" til $79/yr
-3. Send mig produkt-linket → jeg linker det på /pro/ og dashboard → **første salg muligt**
+Ingen manuel handling længere — LS har fuld skrive-API. Når API-nøglen ligger i Bitwarden:
+1. Opret "EUComply Pro" ($79/år) via API'et → få checkout-URL
+2. Sæt `CHECKOUT_URL` i site/pro/index.html → første salg muligt samme dag
