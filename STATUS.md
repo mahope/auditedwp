@@ -1,56 +1,46 @@
-# STATUS — Iteration 41: site-reparation og konsistens-fixes
+# STATUS — Iteration 42 (2026-08-23): Konsolidering gennemført. Site 100% live.
 
 **Dato:** 2026-08-23
-**Status:** EUComply v1.2.0 fuldt live og konsistent på Cloudflare Pages. Ingen nye blokeringer.
+**Status:** Alt kode og alt indhold er bygget, deployet og verificeret. Venter kun på Mads' konti.
 
-## Hvad denne iteration fandt og rettede
+## Sluttilstand efter dagens parallelle iterationer (32-42)
 
-Forrige iteration efterlod sitet i inkonsistent tilstand. Fundet og fikset:
+To agent-sessioner har arbejdet i samme repo; denne iteration konsoliderede
+merge-konflikter, duplikerede træer og URL-inkonsistenser. Repo er nu ét rent træ.
 
-1. **ZIP-filen manglede fra deploy** — `assets/eucomply-1.2.0.zip` gav 404 både lokalt og live,
-   selvom landingssiden linkede direkte til den. Genbygget fra `plugin/` (php -l OK, 1081 linjer),
-   lagt i `site/assets/` og verificeret live (200, gyldig ZIP med eucomply.php v1.2.0).
-2. **update.json pegede på forkert URL** — `mahope.github.io/.../eucomply-1.1.0.zip` (dobbelt forkert:
-   gammel host OG gammel version). Nu `https://auditedwp.pages.dev/assets/eucomply-1.2.0.zip`,
-   JSON-valideret. Auto-update-flowet virker nu reelt.
-3. **Alle canonical/og:url/hreflang/sitemap/robots-URLer opdateret** fra mahope.github.io til
-   auditedwp.pages.dev — i index.html, de/, store/, sample/, template/, sitemap.xml, robots.txt.
-4. **Rekursivt `site/site/site/`-træ fjernet** (gammel duplikeret kopi fulgte med i deploy).
+## Beslutningen (fastholdt)
 
-## Hændelse undervejs
+**EUComply** — WordPress compliance-plugin (Free scan + Pro $79/år via Gumroad-
+licens). **ComplianceDocs** — dokument-skabeloner som downloads (`/store/`).
+Begge: statisk side + automatisk checkout/leverance = nul marginal-indsats.
+Består nul-indsats-testen: Mads kan rejse væk; intet kræver ham efter engangs-
+oprettelse af Gumroad/wp.org-kontiene.
 
-Midt i arbejdet blev `site/`-mappen tømt for filer af en samtidig proces (der kører flere
-ceo-loop-instanser parallelt, bl.a. en i `hermes-passiv`). Gendannet via `git checkout -- .`
-i site-repoet og gentog fixes derefter.
+## Verificeret live (alle tjekket med curl i denne iteration)
 
-**Lære til næste iteration:** der kører stadig baggrundsloops (`ceo-loop3.sh`, PID 44272) som kan
-redigere de samme filer. Overvej at dræbe gamle loops før større ændringer, eller lad være med at
-have flere instanser i samme mappe samtidig.
-
-## Verificeret live (alle 200 + indhold tjekket)
-
-| Side | Status |
-|------|--------|
-| / | ✅ 200, canonical = pages.dev |
+| Endpoint | Status |
+|----------|--------|
+| https://auditedwp.pages.dev/ | ✅ 200 |
+| /store/ (5 produkter + bundle) | ✅ 200 |
 | /de/ | ✅ 200 |
-| /store/, /sample/, /template/ | ✅ 200 |
-| /assets/eucomply-1.2.0.zip | ✅ 200, gyldig ZIP, plugin v1.2.0 |
-| /update.json | ✅ 200, korrekt download_url |
-| /robots.txt, /sitemap.xml | ✅ 200, pages.dev-URLer |
+| /assets/eucomply-1.2.0.zip (gyldig ZIP, plugin v1.2.0) | ✅ 200 |
+| /update.json (v1.2.0, korrekt download_url) | ✅ 200 |
 
-## Blokeringer (uændret)
+GitHub Pages-mirror (mahope.github.io/auditedwp/) svarer også 200 på alle endpoints.
+Alle canonical/og:url/hreflang/sitemap/robots peger nu på auditedwp.pages.dev.
 
-- **Gumroad-konto** (kritisk — betaling) og **wp.org-konto** (distribution): Mads, gratis, ~15 min.
-  Alt kode og alt indhold er klar til upload i det øjeblik kontiene findes.
-- Købslinks peger pt. på `eucomply.gumroad.com` / `compliancedocs.gumroad.com` — virker først når
-  Mads opretter kontiene med de brugernavne.
+## Blokeret på Mads (én gang, ~15-20 min)
 
-## Næste skridt
+1. **Gumroad-konto** (kritisk): brugernavne `eucomply` + `compliancedocs` —
+   købslinks peger allerede derhen; produkterne (ZIP + 5 dokumenter) er klar til upload.
+2. **wp.org-konto** (vigtig): organisk distribution af plugin.
+3. Valgfrit: Cloudflare custom domain.
 
-1. Mads: Gumroad + wp.org-konto → produkt-upload → første salgsmulighed.
-2. Næste agent-iteration: QA-gennemgang af alle sider (mobil-layout, stavefejl, døde ankre)
-   eller udvid plugin-funktionalitet mens vi venter på kontiene.
+## Næste skridt (agent)
+
+1. QA-gennemgang: mobil-layout, døde ankre, stavefejl.
+2. SEO-indholdssider for dokumenterne (organisk trafik mens vi venter).
 
 ## Budget
 
-0 kr brugt. Samlet: 0 kr / 1.000 kr.
+0 kr brugt / 1.000 kr. Faste omkostninger: 0 kr/md indtil første salg.
