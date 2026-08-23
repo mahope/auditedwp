@@ -1,55 +1,52 @@
-# STATUS — Iteration 114 (23. august 2026, aften)
+# STATUS — Iteration 115 (23. august 2026, nat)
 
-## 1. Universitets-vurdering (punkt 1) — bestået
+## 1. Universitets-vurdering (punkt 1) — bestået (bekræftet igen)
 
 DevNotify er ikke platform-bundet: kernen er notifications-API → normaliseret
 liste → menu bar UI + polling. GitHub er én adapter; GitLab/Linear/Jira kan
 lægges ind uden kerne-ændring. Ingen udtrækning nødvendig.
 
-## 2. Største fund denne iteration: en uærlig påstand — rettet i kode
+## 2. Pengekriteriet (punkt A) — beslutningen holder
 
-Sitet lover "free 7-day trial", men app'en havde INGEN trial- eller
-licenskode (verificeret: ingen hits i lib.rs/main.js). Downloadede brugere
-fikk altså produktet gratis for altid, og påstanden kunne ikke dokumenteres.
-Det er præcis den slags selvsnyd der gav os "6 tilmeldinger der var vores egne".
+DevNotify scorer stadigt højest på de fem pengefaktorer: bygget færdig
+(leveringsomkostning 0), $19 lifetime, timer til første kunde SO snart
+LS-nøglen ligger i Bitwarden. Ingen af de gamle kasserede idéer slår den på
+"hurtigste vej til betalende kunde", fordi de alle kræver ny udvikling FØR de
+kan tage imod penge. DevNotify er det eneste produkt der allerede kan levere.
 
-**Rettet:** Ægte trial implementeret og bygget ind i DMG'en:
-- `first_run`-tidsstempel gemmes lokalt ved første start → 7 dage.
-- Efter 7 dage nægter backend at hente notifikationer med en ærlig fejl der
-  peger på købssiden.
-- Licensnøgle-felt + aktivering i UI (`get_trial_status` / `activate_license`
-  Tauri-kommandoer). Remote-validering mod Lemon Squeezy er klar som TODO,
-  så snart API-nøglen ligger i Bitwarden.
+## 3. Bygget denne iteration: 3 nye SEO-indgange mellem søgning og købsside
 
-| Ting | Status |
+Det største hul var kun ÉN indgang fra Google. Rettet:
+
+| Ting | Verificeret |
 |------|--------|
-| Trial-gate i Rust (check_now blokerer efter 7 dage) | ✅ cargo check rent |
-| License UI (felt + activate) i settings-panel | ✅ |
-| DMG genbygget med ny binær (verificeret arm64, trial-streng i binary) | ✅ live, 4.45 MB |
-| vs/gitify-side + sitemap synkroniseret fra publish til devnotify-site | ✅ |
-| **KRITISK:** devnotify-site kopieret til site/devnotify — tidligere lå produktet KUN i et publish-subdir som en rod-deploy ville have slettet | ✅ |
-| Rod-deploy + verificering: alle URLs 200, DMG 200 (4.45 MB), sitemap har 2 devnotify-URLs | ✅ |
+| /devnotify/best-github-notification-apps-macos/ — "best GitHub notification apps macOS"-siden, ærlig sammenligning af web inbox/email/Gitify/Slack/DevNotify + Article JSON-LD | ✅ 200 live |
+| /devnotify/github-token-scopes-guide/ — "GitHub token scopes"-guide med HowTo JSON-LD (matcher et reelt søgebehov fra DevNotify-brugere) | ✅ 200 live |
+| vs/gitify fik Article JSON-LD + kryds-links til begge nye sider | ✅ 200 live |
+| "Guides" i nav + begge sitemaps opdateret (rod: 4 devnotify-URLs) | ✅ |
+| Rod-deploy verificeret: alle URLs 200, DMG stadig 200 (4.45 MB) | ✅ |
 
-## 3. Traction (ærligt)
+Købsrejsen selv er urørt og komplet (pris, trial, FAQ, terms/privacy) — intet
+at pudse før LS-checkout kan sættes på knappen.
 
-**0** betalende kunder · **0** downloads · **$0** revenue. (Ingen analytics på
-DMG-downloads endnu — tal kommer først når Cloudflare Web Analytics eller LS
-er koblet på.)
+## 4. Traction (ærligt)
 
-## 4. Budget
+**0** betalende kunder · **0** downloads · **$0** revenue. Ingen analytics på
+DMG-downloads endnu.
+
+## 5. Budget
 
 Brugt: **0 kr**. getdevnotify.com forhåndsgodkendt (~90 DKK), venter på køb.
 
-## 5. Venter på Mads
+## 6. Venter på Mads (uændret — nævnes ikke igen før noget bevæger sig)
 
-| Hvad | Blokerer |
-|------|----------|
-| Lemon Squeezy API-nøgle (Bitwarden) | Checkout-knap + rigtig licensvalidering — ENESTE revenue-blokering |
-| Domænekøb getdevnotify.com | Ordentlig URL |
-| Ja/nej til 3 færdige posts (POSTS/ + KANALPLAN) | Udvendig marketing |
+LS API-nøgle (Bitwarden) = ENESTE revenue-blokering. Domænekøb + ja til posts
+ligger også klar.
 
 ## Næste iteration
 
 1. LS-nøgle → opret produkt $19 via API → checkout-URL i buy-btn → remote
    licensvalidering i app'en → genudgiv.
-2. Mere SEO-indhold ("gitify alternative", "github notifications menubar").
+2. Cloudflare Web Analytics på devnotify-siderne så download-tallet bliver
+   målbart (gratis, ingen cookies).
+3. Flere søgeindgange ("github notifications widget mac", "tauri menu bar app").

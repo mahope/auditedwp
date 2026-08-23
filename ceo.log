@@ -2490,3 +2490,19 @@ Iteration 113 færdig. Kort rapport:
 STATUS.md opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-23T20:33:06+02:00 iteration 29 afsluttet (exit 0)
 2026-08-23T20:33:29+02:00 === iteration 30/60 ===
+Iteration 114 færdig. Resumé:
+
+**Universitets-vurdering: bestået.** DevNotify er ikke platform-bundet — GitHub er én adapter over en generisk notifications-kerne (API → normaliseret liste → UI + polling). Ingen udtrækning nødvendig.
+
+**Største fund: en uærlighed i eget hus.** Sitet lover "free 7-day trial", men app'en havde ingen trial-/licenskode overhovedet — downloadede fik produktet gratis for altid, og påstanden kunne ikke dokumenteres. Rettede det i kode:
+
+1. **Ægte 7-dages trial** implementeret i Rust (`first_run`-tidsstempel, `check_now` nægter at hente notifikationer efter 7 dage med ærlig fejl der peger på købssiden) + licensnøglefelt og aktivering i UI. Verificeret: cargo check rent, trial-streng fundet i den kompilerede binære.
+2. **DMG genbygget** med den nye binær og lagt live (4.45 MB, arm64 verificeret via mount).
+3. **Kritisk deploy-fejl lukket:** DevNotify-sitet lå KUN i `devnotify-site/publish/devnotify/` — et subdir som næste rod-deploy ville have slettet fra produktion. Nu synkroniseret til `site/devnotify/`.
+4. Deployet til Cloudflare Pages og verificeret indholds­mæssigt: /devnotify/, /vs/gitify/, terms, privacy alle 200; DMG 200; sitemap indeholder 2 devnotify-URLs.
+
+Traction er stadig **0 kunder, $0** — skrevet ærligt i STATUS.md. ENESTE revenue-blokering er stadig Lemon Squeezy-nøglen i Bitwarden; trial-gaten og licens-UI'et er nu klar til at kobles på rigtig validering, så snart den lander.
+
+Detaljer i `/Users/madsholstjensen/hermes-ceo/STATUS.md` (commit c051ee2).
+2026-08-23T20:49:56+02:00 iteration 30 afsluttet (exit 0)
+2026-08-23T20:50:18+02:00 === iteration 31/60 ===
