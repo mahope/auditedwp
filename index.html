@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUComply — Free EU Compliance Audit Plugin for WordPress</title>
-<meta name="description" content="Free WordPress plugin that scans your site for GDPR, NIS2, DORA, and EAA compliance gaps. Get a dashboard report in seconds. Pro version ($79/yr) generates DPA, NIS2 clauses, EAA statements.">
+<title>EUComply — Free EU Compliance Scan for Any Website</title>
+<meta name="description" content="Free online EU compliance scanner. Enter any URL and check HTTPS, cookie consent, privacy policy, forms and security headers against GDPR, NIS2, DORA and EAA requirements. Works on WordPress, Shopify, Webflow, Squarespace, Next.js — every stack.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
 <link rel="canonical" href="https://auditedwp.pages.dev/">
-<meta property="og:title" content="EUComply — Free EU Compliance Audit Plugin for WordPress">
-<meta property="og:description" content="Scan your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps — from your admin dashboard. Free. Pro generates DPA, NIS2 clauses, EAA statements.">
+<meta property="og:title" content="EUComply — Free EU Compliance Scan for Any Website">
+<meta property="og:description" content="Enter any URL. Get a free GDPR, NIS2, DORA and EAA compliance report in seconds. No installation, no WordPress required.">
 <meta property="og:url" content="https://auditedwp.pages.dev/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="EUComply — Free EU Compliance Audit Plugin">
-<meta name="twitter:description" content="Scan WordPress for GDPR, NIS2, DORA, EAA compliance gaps from your admin dashboard. Free + Pro $79/yr.">
+<meta name="twitter:title" content="EUComply — Free EU Compliance Scan">
+<meta name="twitter:description" content="Scan any URL for GDPR, NIS2, DORA & EAA gaps. Free. Works on every platform.">
 <style>
   :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;}
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
   .wrap{max-width:960px;margin:0 auto;padding:0 20px}
@@ -26,20 +26,28 @@
   .logo span{color:var(--accent)}
   nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
   nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-  .hero{text-align:center;padding:56px 0 32px}
+  .hero{text-align:center;padding:52px 0 32px}
   .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
-  h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;max-width:720px;margin:0 auto 12px}
+  h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
   h1 em{font-style:normal;color:var(--accent)}
   .sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto 24px}
+  .scanbox{display:flex;gap:10px;max-width:540px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+  .scanbox input{flex:1;min-width:200px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
+  .scanbox input:focus{border-color:var(--accent)}
+  .scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .scanbox button:hover{background:var(--accent-dark)}
+  .scanbox button[disabled]{opacity:.6;cursor:wait}
+  .err{color:var(--fail);font-size:14px;min-height:22px;margin-top:8px;font-weight:600}
+  .examples{font-size:13px;color:var(--muted);margin-top:10px}
+  .examples button{background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;margin:0 3px;font-size:12.5px;color:var(--accent);cursor:pointer}
+  .examples button:hover{border-color:var(--accent)}
   .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
   .btn:hover{background:var(--accent-dark)}
   .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
   .btn.ghost:hover{border-color:var(--accent)}
-  .btn.green{background:var(--ok)}
-  .btn.green:hover{background:#146336}
+  .btn.green{background:var(--ok)}.btn.green:hover{background:#146336}
   .note{font-size:12.5px;color:var(--muted);margin-top:10px}
-  .note a{color:var(--accent)}
-  section{padding:44px 0;border-top:1px solid var(--line)}
+  section{padding:48px 0;border-top:1px solid var(--line)}
   h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
   .lede{color:var(--muted);max-width:640px;margin-bottom:28px;font-size:15px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -47,6 +55,7 @@
   .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
   .card h3{font-size:16px;margin-bottom:6px}
   .card p{font-size:14px;color:var(--muted)}
+  .card .icon{font-size:24px;margin-bottom:6px}
   .checks{list-style:none;margin:16px 0}
   .checks li{padding:5px 0 5px 24px;position:relative;font-size:14px;color:var(--ink);border-bottom:1px solid var(--soft)}
   .checks li:last-child{border:0}
@@ -65,13 +74,13 @@
   .faq details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:8px;background:var(--bg)}
   .faq summary{font-weight:600;cursor:pointer;font-size:15px}
   .faq p{color:var(--muted);font-size:14px;margin-top:6px}
-  .steps{max-width:640px;margin:24px auto 0;counter-reset:s;list-style:none}
-  .steps li{position:relative;padding:0 0 18px 44px;counter-increment:s;font-size:14px}
-  .steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
-  .steps li strong{display:block;font-size:15px}
-  .steps li span{color:var(--muted)}
   footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
   footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .platforms{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px}
+  .platforms span{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:500}
+  .integrations-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .integrations-row a{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 18px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500}
+  .integrations-row a:hover{border-color:var(--accent);color:var(--accent)}
   @media(max-width:700px){h1{font-size:28px}.grid2,.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
 </style>
 </head>
@@ -84,84 +93,121 @@
       <a href="#checks">Checks</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
-      <a href="/store/">Templates</a>
-      <a class="cta" href="#pricing">Get Pro $79/yr</a>
+      <a href="/store/">Docs</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/scan/">Scan a URL →</a>
     </nav>
   </div>
 </header>
 
 <div class="wrap hero">
-  <div class="badge">Free WordPress plugin · EU compliance audit · 30-second setup</div>
-  <h1>Scan your WordPress site for <em>GDPR, NIS2, DORA &amp; EAA</em> gaps — from the admin dashboard.</h1>
-  <p class="sub">One click checks SSL, cookies, forms, backups, plugin health, and legal pages. Free report in your dashboard. Pro generates DPA documents, NIS2 vendor clauses, and quarterly audit PDFs your clients can actually use.</p>
-  <a class="btn" href="#pricing">Get Pro — $79/year</a>
-  <a class="btn ghost" href="#free">Try the free scan first →</a>
-  <p class="note">⚡ Works on any WordPress 5.8+ site. No external services, no data leaves your server.</p>
+  <div class="badge">Free online scanner · EU compliance · Works on any platform</div>
+  <h1>Scan <em>any website</em> for EU compliance gaps — free.</h1>
+  <p class="sub">Enter a URL and instantly check HTTPS security, cookie consent, privacy-policy links, forms, and security headers against EU requirements. Works on WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, static HTML — every stack.</p>
+
+  <form class="scanbox" action="/scan/" method="get">
+    <input type="text" name="url" placeholder="yourdomain.com" aria-label="Website URL to scan" required>
+    <button type="submit">Run free scan</button>
+  </form>
+  <div class="examples">Try:
+    <button type="button" onclick="document.location='/scan/?url=wordpress.org'">wordpress.org</button>
+    <button type="button" onclick="document.location='/scan/?url=shopify.com'">shopify.com</button>
+    <button type="button" onclick="document.location='/scan/?url=example.com'">example.com</button>
+  </div>
 </div>
 
 <section id="checks">
   <div class="wrap">
-    <h2>Six compliance checks, one click</h2>
-    <p class="lede">Click "Run Scan" in your WordPress admin. EUComply checks your site against the six most common EU compliance requirements — and tells you exactly what to fix.</p>
+    <h2>Five compliance checks, one URL</h2>
+    <p class="lede">Enter any domain. EUComply checks the five most common EU compliance gaps — no installation, no sign-up, no WordPress required.</p>
     <div class="grid3">
       <div class="card">
-        <h3>🔒 SSL &amp; HTTPS</h3>
-        <p>Checks if your site runs on HTTPS with HSTS headers. Without it, GDPR Art. 32 (security) and browser "Not Secure" warnings hurt trust.</p>
+        <div class="icon">🔒</div>
+        <h3>SSL &amp; HTTPS</h3>
+        <p>TLS certificate validation + HSTS header check. Without it, GDPR Art. 32 (security) and browser "Not Secure" warnings hurt trust.</p>
       </div>
       <div class="card">
-        <h3>🍪 Cookie Consent</h3>
-        <p>Detects GDPR cookie consent plugins (Complianz, Cookiebot, CookieYes, WP Consent API). Flags sites missing consent mechanisms — ePrivacy Directive requirement.</p>
+        <div class="icon">🍪</div>
+        <h3>Cookie Consent</h3>
+        <p>Detects 15+ consent platforms in served markup (Cookiebot, OneTrust, CookieYes, Complianz…). ePrivacy Directive requires prior consent.</p>
       </div>
       <div class="card">
-        <h3>📋 GDPR Forms</h3>
-        <p>Scans for form plugins (CF7, WPForms, Gravity Forms) and checks if a Privacy Policy page is linked. Missing consent checkboxes on forms = high GDPR risk.</p>
+        <div class="icon">📋</div>
+        <h3>Forms &amp; Privacy Link</h3>
+        <p>Forms found without a visible privacy-policy link are a top GDPR enforcement target (Art. 13). Checks if your data collection is documented.</p>
       </div>
       <div class="card">
-        <h3>💾 Backup Status</h3>
-        <p>Verifies backup plugins are active and reports last backup age. NIS2 Art. 18 requires recovery capability — no backup = no recovery.</p>
+        <div class="icon">📄</div>
+        <h3>Legal Pages</h3>
+        <p>Looks for Privacy Policy, Imprint/Impressum, and EAA accessibility statement linked from your homepage — required by GDPR, eCommerce Directive, and EAA.</p>
       </div>
       <div class="card">
-        <h3>🔧 Plugin &amp; Core Health</h3>
-        <p>Checks for outdated WordPress core and plugins. Each outdated plugin is a potential CVE entry — DORA Art. 6 requires vulnerability management.</p>
-      </div>
-      <div class="card">
-        <h3>📄 Legal Pages</h3>
-        <p>Looks for Privacy Policy, Imprint/Impressum, and accessibility statement pages. EAA requires an accessibility statement; GDPR requires a privacy policy.</p>
+        <div class="icon">🛡️</div>
+        <h3>Security Headers</h3>
+        <p>CSP, X-Content-Type-Options, Referrer-Policy, frame protection — OWASP baseline and NIS2 Art. 21 supply-chain security requirement.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="free">
-  <div class="wrap">
-    <h2>How the free scan works</h2>
-    <ol class="steps">
-      <li><strong>Install the plugin</strong><span>Upload the .zip, activate. That's it — no API keys, no configuration, no signup.</span></li>
-      <li><strong>Click "Run Scan"</strong><span>In your WordPress admin under <strong>EUComply</strong>, click the scan button. Results appear in seconds.</span></li>
-      <li><strong>See your compliance gaps</strong><span>Green = pass, red = fix needed, amber = warning. Each check includes a plain-language fix instruction.</span></li>
-      <li><strong>Optional: upgrade to Pro</strong><span>Need documented proof for auditors, insurers, or clients? Pro generates the documents for you.</span></li>
-    </ol>
+<section id="platforms">
+  <div class="wrap" style="text-align:center">
+    <h2>Works on every platform</h2>
+    <p class="lede" style="margin:0 auto 12px">The scanner checks HTTP/HTML — there are no platform assumptions. Confirmed working on all major stacks.</p>
+    <div class="platforms">
+      <span>WordPress</span>
+      <span>Shopify</span>
+      <span>Webflow</span>
+      <span>Squarespace</span>
+      <span>Wix</span>
+      <span>Next.js</span>
+      <span>Drupal</span>
+      <span>Joomla</span>
+      <span>Static HTML</span>
+      <span>+ any other HTTP site</span>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap" style="text-align:center">
+    <h2>Two ways to use EUComply</h2>
+    <p class="lede" style="margin:0 auto 24px">The most universal path: enter any URL in the online scanner. For WordPress users, the plugin adds self-hosted scanning from your admin dashboard.</p>
+    <div class="grid2" style="text-align:left">
+      <div class="card" style="text-align:center">
+        <div class="icon">🌐</div>
+        <h3>Online Scanner (any platform)</h3>
+        <p>Enter a URL, get results in seconds. No sign-up, no installation, no plugin. Works on every website — WordPress, Shopify, Webflow, Squarespace, Next.js, or hand-written HTML.</p>
+        <a class="btn" href="/scan/">Try the free scanner →</a>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="icon">⚙️</div>
+        <h3>WordPress Plugin</h3>
+        <p>Same checks, run from your WordPress admin dashboard. Includes backup detection, plugin health, and WordPress core version checks. Free, open source (GPL v2).</p>
+        <a class="btn ghost" href="assets/eucomply-1.2.0.zip">↓ Download plugin (ZIP)</a>
+      </div>
+    </div>
   </div>
 </section>
 
 <section id="pricing">
   <div class="wrap">
     <h2>Pricing</h2>
-    <p class="lede">Free scan covers the basics. Pro generates the documentation you need to prove compliance to auditors, clients, and insurers.</p>
+    <p class="lede">The online scanner is free for any URL — no limits, no sign-up. Pro generates the documentation you need to prove compliance to auditors, clients, and insurers.</p>
     <div class="grid2">
       <div class="pricing-card">
-        <h3>Free</h3>
-        <div class="price">$0<span>/yr</span></div>
-        <div class="per">Forever free for all sites</div>
+        <h3>Free Scanner</h3>
+        <div class="price">$0</div>
+        <div class="per">No sign-up, no limits</div>
         <ul>
-          <li>6 compliance checks (SSL, cookies, forms, backups, plugins, legal pages)</li>
-          <li>Dashboard report with pass/fail status</li>
-          <li>Fix instructions for each failing check</li>
-          <li>Weekly automated re-scan</li>
-          <li>Open source (GPL v2)</li>
+          <li>SSL / HTTPS + HSTS check</li>
+          <li>Cookie consent detection (15+ platforms)</li>
+          <li>Form + privacy link audit</li>
+          <li>Legal pages scan (privacy, imprint, EAA)</li>
+          <li>Security headers check (CSP, XFO, HSTS)</li>
+          <li>Platform fingerprint</li>
         </ul>
-        <a class="btn ghost" href="assets/eucomply-1.2.0.zip">↓ Download Free v1.2.0 (ZIP)</a>
-        <p class="note">Open source (GPL v2) — manually upload via Plugins → Add New → Upload Plugin.</p>
+        <a class="btn ghost" href="/scan/">Scan any URL →</a>
       </div>
       <div class="pricing-card featured">
         <h3>Pro</h3>
@@ -173,11 +219,11 @@
           <li>📋 DPA generator (GDPR data processing agreement)</li>
           <li>📑 NIS2 vendor clause kit</li>
           <li>♿ EAA accessibility statement generator</li>
-          <li>📊 Quarterly compliance narrative (forward to clients)</li>
+          <li>📊 Quarterly compliance narrative</li>
           <li>📧 Email alerts on compliance changes</li>
         </ul>
-        <a class="btn" href="https://eucomply.gumroad.com/l/pro">Buy Pro $79 →</a>
-        <p class="note">Payment via Gumroad · Secure checkout · Instant license key · 30-day refunds</p>
+        <a class="btn" href="/store/">Get Pro — $79/yr</a>
+        <p class="note">Payment via Gumroad (opening soon) · 30-day refunds</p>
       </div>
     </div>
   </div>
@@ -187,35 +233,35 @@
   <div class="wrap faq">
     <h2>FAQ</h2>
     <details open>
-      <summary>Does the plugin send my data anywhere?</summary>
-      <p>No. All checks run locally on your WordPress server. No data is sent to external APIs, no user tracking, no telemetry. The Pro PDF report is generated server-side and delivered as a download.</p>
+      <summary>Does this work on my platform?</summary>
+      <p>Yes — the scanner checks HTTP responses and HTML markup. It works on <strong>any website</strong>: WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, Joomla, static HTML, or custom stacks. The only requirement is a public URL.</p>
+    </details>
+    <details>
+      <summary>Do I need to install something?</summary>
+      <p>No. The online scanner works entirely from your browser — just enter a URL. If you use <strong>WordPress</strong>, you can optionally install the free plugin to run scans from your admin dashboard with additional WordPress-specific checks (backup status, plugin health, core version).</p>
     </details>
     <details>
       <summary>Which regulations does it cover?</summary>
-      <p>EUComply checks against requirements from: <strong>GDPR</strong> (Art. 5, 25, 32 — data protection, privacy by design, security), <strong>NIS2</strong> (Art. 18 — recovery, Art. 21 — supply chain), <strong>DORA</strong> (Art. 6 — ICT risk, Art. 28 — third-party), and <strong>EAA</strong> (accessibility statement requirement). The checks are not legal advice — they flag technical gaps for further review.</p>
+      <p>EUComply checks against requirements from: <strong>GDPR</strong> (Art. 5, 13, 25, 32 — data protection, privacy by design, security), <strong>NIS2</strong> (Art. 18 — recovery, Art. 21 — supply chain), <strong>DORA</strong> (Art. 6 — ICT risk), and <strong>EAA</strong> (accessibility statement requirement). The checks identify technical gaps — they are not legal advice.</p>
     </details>
     <details>
-      <summary>Who needs this?</summary>
-      <p>WordPress site owners in the EU (or serving EU customers) who need to document compliance. Typical users: web agencies managing client sites, e-commerce operators, SaaS companies, and any business subject to EU procurement or insurance compliance reviews.</p>
+      <summary>Is my data stored or tracked?</summary>
+      <p>No. The scanner fetches the URL, runs checks in memory, and returns results. No scan data, URLs, or IPs are logged or stored. The WordPress plugin runs everything on your own server — no data leaves your installation.</p>
     </details>
     <details>
-      <summary>Can I use the Pro report for audits?</summary>
-      <p>Yes — the Pro PDF report is designed to be auditor-ready. It documents the scan date, methodology, and findings. For formal compliance certification, consult a qualified auditor — EUComply gives you the technical baseline.</p>
-    </details>
-    <details>
-      <summary>Will this slow down my site?</summary>
-      <p>No. The scan runs on demand or via WordPress cron (weekly). No page-load impact. The plugin adds ~0.01 KB of CSS to admin pages only — nothing on the frontend.</p>
+      <summary>Who needs Pro?</summary>
+      <p>Anyone who needs <strong>documented proof</strong> of compliance — web agencies managing client sites, SaaS companies responding to vendor questionnaires, businesses subject to EU procurement or insurance reviews. Pro generates auditor-ready PDFs and legal templates you can forward directly.</p>
     </details>
     <details>
       <summary>What about the European Accessibility Act (EAA)?</summary>
-      <p>The EAA (effective June 2025) requires EU websites to be accessible. EUComply checks for an accessibility statement page and helps you generate one with Pro. Full WCAG audit requires a dedicated tool — the plugin tells you where to start.</p>
+      <p>The EAA (effective June 2025) requires accessible digital services. EUComply checks for an accessibility statement page on your site. Pro generates an EAA conformance statement template. Full WCAG audit requires a dedicated tool — the scanner tells you where to start.</p>
     </details>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <div>EUComply — free EU compliance audit plugin for WordPress.<br>⚖️ Not legal advice. Consult a qualified professional for formal compliance. · <a href="/store/" style="color:var(--accent)">Compliance Templates</a></div>
+    <div>EUComply — free EU compliance scanning for any website.<br>⚖️ Automated technical checks only. Not legal advice. · <a href="/store/" style="color:var(--accent)">ComplianceDocs</a> · <a href="/blog/" style="color:var(--accent)">Guides</a></div>
     <div>Open source (GPL v2) · <a href="https://github.com/mahope/eucomply" style="color:var(--accent)">GitHub</a></div>
   </div>
 </footer>

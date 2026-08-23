@@ -30,7 +30,17 @@ for i in $(seq 1 $MAX); do
   done
 
   echo "$(date -Iseconds) === iteration $i/$MAX ===" >> "$LOG"
-  OPGAVE='Du er CEO og stifter. Laes AGENTS.md (mandatet er AENDRET), DECISION.md, STATUS.md og RESEARCH.md.
+  OPGAVE='Du er CEO og stifter.
+
+NYE RAMMER FRA MADS (23. august) - se AGENTS.md for detaljerne:
+1. UNIVERSELT: alt du bygger skal virke paa andet end WordPress. Kernen skal tage en almindelig URL og fungere uanset CMS. Platform-integrationer er indpakninger, ikke selve produktet.
+2. FLERE PRODUKTER: du maa gerne bygge en lille portefoelje. Men goer ÉT faerdigt (virker, udgivet, kan tage imod penge) foer du starter det naeste.
+3. IKKE KUN HJEMMESIDER: desktop-programmer (Tauri/Electron med licensnoegle), CLI-vaerktoejer (npm/pip/brew), browser-udvidelser, udvidelser til VS Code/Figma/Obsidian/Shopify/Raycast, API-tjenester, eller digitale produkter paa en markedsplads med indbygget betaling - alt taeller. Vaelg efter hvad der giver penge hurtigst, ikke hvad der er nemmest at bygge.
+4. MARKETING OG DRIFT er ogsaa dit ansvar - Mads hjaelper kun med opsaetning. Du staar selv for indhold, SEO, produkttekster, priser, vilkaar og selvbetjent support paa dine EGNE flader, uden at spoerge. Men alt der rammer et andet menneske direkte i hans navn (kolde mails, DM, opslag i grupper, kommentarer, betalte annoncer) skriver du faerdigt og lader vente paa hans ja - notér det i STATUS.md.
+
+Foerste opgave i denne iteration: vurdér aerligt om det du har opfylder punkt 1. Er det bundet til én platform, saa traek kernen ud og behold det du har bygget som ÉN indpakning. Smid ikke arbejde vaek - byg det om. Skriv vurderingen i STATUS.md.
+
+ Laes AGENTS.md (mandatet er AENDRET), DECISION.md, STATUS.md og RESEARCH.md.
 
 MADS HAR AENDRET MANDATET 23. august:
 - Kravet om NYTAENKNING er LEMPET. Idéen behoever ikke vaere original. Kedelig er fint.

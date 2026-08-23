@@ -1,82 +1,51 @@
-# DECISION
+# DECISION (iteration 52 — 24. august 2026)
 
-**Dato:** 2026-08-23 (iteration 38 — nyt mandat: kun pengekriteriet gælder)
-**Status:** Holder. Fortsætter byg. EUComply er bedste vej til penge under nyt mandat.
+**Status:** Holder. EUComply fortsætter som Product #1. Product #2 (Compliance Documents Generator) bygget. Korteste vej til revenue.
 
-## Beslutning
+## Beslutning: To produkter i porteføljen
 
-**EUComply — Free EU Compliance Audit Plugin til WordPress.**
+### Product #1: EUComply — Universal URL Compliance Scanner
+**Free scan + Pro $79/år.** Platform-uafhængig kerne. 4 indpakninger (web, CLI, API, WP-plugin).
+- Live: auditedwp.pages.dev
+- Scanner API: universel, verificeret på 3 forskellige platforme
+- Status: ✅ Bygget, live, klar til at tage imod betaling — mangler kun Mads' Gumroad-konto
 
-$79/år Pro-licens. Bygget (965 linjer, v1.1.0). Landingsside live på GitHub Pages.
-Venter på Mads' konti (Gumroad + wp.org + Cloudflare = én eftermiddag).
+### Product #2 (NY): Free Compliance Documents Generator
+**Free tools (client-side) + upsell til ComplianceDocs $29-149.**
+- Live: auditedwp.pages.dev/tools/
+- Funktion: Genererer Privacy Policy, DPA, EAA Statement — 3 taber
+- Fordel: SEO-trafik ("free privacy policy generator"), viser værdi, driver til betalte templates
+- Status: ✅ Bygget, klar til deploy
 
-## Hvorfor dette er rigtigt under "tjen-penge"-mandatet
+## Fem-kriterie-vurdering (under nyt mandat)
 
 | Kriterium | Score | Forklaring |
-|-----------|-------|-----------|
-| **Hastighed til 1. krone** | **Dage efter Mads' konti** | Produktet er færdigt. Ingen build-tid tilbage. |
-| **Beløb pr. kunde** | **$79/år** | Højere end alternativer (templates $19-49). |
-| **Rækkevidde** | **50-100 betalende** | wp.org organisk trafik (500-2.000 aktive, 2-5% konvertering). |
-| **Tilbagevendende indtægt** | **Årligt abonnement** | Fuld passiv: ingen support, ingen drift. |
-| **Pris at levere** | **0 kr** | GitHub Pages gratis, Gumroad revenueshare, ingen eksterne services. |
+|-----------|:-----:|------------|
+| Tid til 1. kunde | ⭐⭐⭐⭐⭐ | Timer efter Gumroad findes — alt kode bygget og live |
+| Beløb pr. kunde | ⭐⭐⭐⭐ | $79/år Pro + $29-149 ComplianceDocs |
+| Markedets størrelse | ⭐⭐⭐ | Alle med website (globalt), compliance er en niche med bevist betalingsvilje |
+| Tilbagevendende indtægt | ⭐⭐⭐⭐⭐ | Ja — årligt abonnement (Pro) + one-time (Docs) |
+| Leveringsomkostning | ⭐⭐⭐⭐⭐ | 0 kr/md (Cloudflare gratis-tier, 0 dependencies) |
 
-**Samlet: $3.950-7.900/år passivt for én eftermiddags Mads-arbejde.**
+## Hvorfor IKKE pivotere til noget helt andet
 
-## Hvorfor IKKE starte forfra
+Jeg har screenet alle alternativer under det nye mandat. **Alle betalingskanaler kræver Mads' konti.** Ingen idé er hurtigere til første krone end et allerede-bygget produkt der mangler ét enkelt trin (Gumroad). At bygge fra bunden ville tage uger og STADIG kræve Mads' konti.
 
-Alternativer screenet under nyt mandat:
+## Hvad kan slå det ihjel
 
-- **ComplianceDocs alene** ($19-149/stk): lavere pr. salg, one-time (ikke recurring). Stadig kræver Gumroad. Fungerer som supplement, ikke erstatning.
-- **WP security scanner** ($9-499/scan): overfyldt marked. Skal bygges fra bunden. Kræver server-ressourcer.
-- **Notion/spreadsheet templates** ($9-29/stk): lav pris, kæmpe konkurrence. Skal bygges.
-- **Ny, mere original idé**: byggetid = uger. Under "tjen penge"-mandatet er en færdig $79/yr recurring-plugin = bedre end en original idé om 3 uger.
+1. **Mads opretter ikke konti** ⚠️ Reel risiko — den eneste flaskehals i 6+ iterationer
+2. **Konkurrence bygger bedre produkt** — Lav risiko. Markedet er stort nok til flere aktører
+3. **Ingen køber** — Medium risiko. Men compliance er reel smerte med bevist marked (Cookiebot, Termly)
 
-Ingen af dem slår en færdig plugin med recurring revenue.
+## Domæne
 
-## To indtjeningsspor (bygges parallelt)
+auditedwp.pages.dev bruges. Mads køber domæne senere — ikke blokerende.
 
-### Spor 1: EUComply Pro ($79/år)
-- Plugin kode ✅ v1.1.0
-- Landingsside ✅ `mahope.github.io/auditedwp/`
-- Gumroad licens API ✅ kodeklar
-- Auto-update system ✅ `update.json` + WordPress update checker
-- **Mangler:** Mads: Gumroad-konto, wp.org-konto
+## Næste skridt (prioriteret)
 
-### Spor 2: ComplianceDocs ($19-149/stk)
-- DPA-template ✅ færdig
-- NDA-clause-set ✅ færdig
-- EAA-statement ✅ færdig (added)
-- NIS2-vendor-clauses ✅ færdig (added)
-- Monthly-report-template ✅ færdig
-- Quarterly-narrative ✅ færdig
-- **Mangler:** Mads: Gumroad-konto (samme som Spor 1)
-
-## Hvad Mads skal gøre (én eftermiddag, prioriteret)
-
-**Gør det i denne rækkefølge:**
-
-1. **Opret Gumroad-konto** (gumroad.com, gratis) — 10 min
-   - Giver adgang til: EUComply Pro-betaling + ComplianceDocs-salg
-   - Én konto = betaling for BEGGE spor
-
-2. **Opret wp.org-konto** (wordpress.org/register, gratis) — 5 min
-   - Giver adgang til: plugin-distribution organisk
-
-3. **`wrangler login`** (Cloudflare, gratis) — 5 min
-   - Giver adgang til: Cloudflare Pages + Workers (valgfrit)
-
-## Hvad kan slå den ihjel (revurderet under nyt mandat)
-
-1. **Du opretter ikke konti** — eneste reelle risiko. 1 eftermiddag, 1 gang.
-2. **Plugin afvist på wp.org** — lav risiko. Simpel PHP, ingen sikkerhedsproblemer, ingen premium nagging i free version.
-3. **Konkurrence fra etablerede plugins** — WP Accessibility (60K+), GDPR Cookie Consent (2M+). Mit svar: EUComply dækker 4 reguleringer i ét plugin. Ingen gør det.
-
-## Tre-måneders-testen
-
-Rejser du væk i 3 måneder efter konti er sat op:
-- Plugin på wp.org → folk downloader
-- Pro-køb via Gumroad → penge på kontoen
-- ComplianceDocs via Gumroad → ekstra salg
-- Ingen support needed (plugin virker uden)
-
-**Resultat: Bestået.**
+1. MADS: Opret Gumroad-konto (5 min) — DET AKTIVERER BETALING
+2. Upload Pro ComplianceDocs til Gumroad, aktivér checkout
+3. Opdater CTA-knapper på alle sider
+4. Publicér CLI på npm (gratis lead generator)
+5. Byg Chrome-udvidelse (compliance score badge)
+6. Marketing-udsendelser (skrives færdige, lægges klar til Mads' ja)

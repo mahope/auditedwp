@@ -1,46 +1,47 @@
-# STATUS — Iteration 42 (2026-08-23): Konsolidering gennemført. Site 100% live.
+# STATUS — Iteration 53 (2026-08-24): Universal-check bestået, Gumroad-pakke færdigbygget
 
-**Dato:** 2026-08-23
-**Status:** Alt kode og alt indhold er bygget, deployet og verificeret. Venter kun på Mads' konti.
+**Dato:** 2026-08-24
+**Status:** Aktiv. Alt bygget + alt salgsmateriale klar. Venter kun på Mads' konti.
 
-## Sluttilstand efter dagens parallelle iterationer (32-42)
+## Punkt 1 — Universelt: vurderet og bestået (denne iterations hovedopgave)
 
-To agent-sessioner har arbejdet i samme repo; denne iteration konsoliderede
-merge-konflikter, duplikerede træer og URL-inkonsistenser. Repo er nu ét rent træ.
+Kernen (`worker-scan/index.js`, 269 linjer) tager en almindelig URL og virker uanset CMS.
+Verificeret live tidligere på wordpress.org, wix.com og shopify.com. WordPress er allerede
+skåret ud som én indpakning blandt fire (web, CLI, API, WP-plugin). **Intet behøver bygges om.**
+Notat i RESEARCH.md, dato 24/8.
 
-## Beslutningen (fastholdt)
+## Hvad jeg byggede denne iteration: hele salgspakken til Gumroad
 
-**EUComply** — WordPress compliance-plugin (Free scan + Pro $79/år via Gumroad-
-licens). **ComplianceDocs** — dokument-skabeloner som downloads (`/store/`).
-Begge: statisk side + automatisk checkout/leverance = nul marginal-indsats.
-Består nul-indsats-testen: Mads kan rejse væk; intet kræver ham efter engangs-
-oprettelse af Gumroad/wp.org-kontiene.
+Den reelle flaskehals er betaling. Så jeg har fjernet ALT arbejde undtagen selve klikken:
 
-## Verificeret live (alle tjekket med curl i denne iteration)
+1. **7 færdige PDF-produkter** — `gumroad/products/*.pdf`, professionelt format
+   (ComplianceDocs-branding, sidefod, side nummerering). Bygget af markdown-kilderne i
+   `deliverables/` via `build_pdfs.py` (kan køres igen efter ændringer).
+2. **Upload-guide med færdige produkttekster** — `gumroad/UPLOAD-GUIDE.md`.
+   Titel, beskrivelse (copy-paste), pris for hvert af 5 produkter + bundle. ~20 min arbejde.
+3. **ZIP-opskrift** til Report Kit og Complete Bundle.
 
-| Endpoint | Status |
-|----------|--------|
-| https://auditedwp.pages.dev/ | ✅ 200 |
-| /store/ (5 produkter + bundle) | ✅ 200 |
-| /de/ | ✅ 200 |
-| /assets/eucomply-1.2.0.zip (gyldig ZIP, plugin v1.2.0) | ✅ 200 |
-| /update.json (v1.2.0, korrekt download_url) | ✅ 200 |
+Mads' arbejde reduceret til: opret konto → upload 5 filer + 1 ZIP → indsæt tekster → send mig URL'en. Derefter aktiverer jeg checkout-knapperne på sitet samme dag.
 
-GitHub Pages-mirror (mahope.github.io/auditedwp/) svarer også 200 på alle endpoints.
-Alle canonical/og:url/hreflang/sitemap/robots peger nu på auditedwp.pages.dev.
+## Portefølje (uændret)
 
-## Blokeret på Mads (én gang, ~15-20 min)
+| # | Produkt | Status |
+|---|---|---|
+| 1 | EUComply universal compliance scanner | Live, verificeret universel |
+| 2 | ComplianceDocs templates ($29–149) | **PDF'er færdige til Gumroad — NYT** |
+| 2b | Free tools generator (/tools/) | Live |
 
-1. **Gumroad-konto** (kritisk): brugernavne `eucomply` + `compliancedocs` —
-   købslinks peger allerede derhen; produkterne (ZIP + 5 dokumenter) er klar til upload.
-2. **wp.org-konto** (vigtig): organisk distribution af plugin.
-3. Valgfrit: Cloudflare custom domain.
+## Indtjening: stadig 0 kr
 
-## Næste skridt (agent)
+Én blokering, uændret: Mads' konti (Gumroad primært). Jeg har nu gjort min side af handlen
+100 % færdig — der findes ikke mere jeg kan bygge alene der forkorter vejen til første krone.
 
-1. QA-gennemgang: mobil-layout, døde ankre, stavefejl.
-2. SEO-indholdssider for dokumenterne (organisk trafik mens vi venter).
+## Næste skridt
+
+1. **MADS:** Gumroad-konto + upload jf. `gumroad/UPLOAD-GUIDE.md` (~20 min)
+2. **MIG:** modtag profil-URL → aktivér checkout-knapper → redeploy → verifyér alle links
+3. Efter første salg: npm-publish af CLI (gratis lead-gen), derefter Chrome-udvidelse
 
 ## Budget
 
-0 kr brugt / 1.000 kr. Faste omkostninger: 0 kr/md indtil første salg.
+0 kr brugt / 1.000 kr. PDF-byggernes deps (reportlab) installeret gratis via pip.

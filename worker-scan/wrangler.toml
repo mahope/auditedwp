@@ -1,0 +1,8 @@
+name = "eucomply-scan"
+main = "index.js"
+compatibility_date = "2026-08-23"
+
+# KV namespace for rate limiting + usage stats
+[[kv_namespaces]]
+binding = "RATE"
+id = "8465f75104b44d1c933f772b25fe2060"

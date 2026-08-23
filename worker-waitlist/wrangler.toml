@@ -1,0 +1,14 @@
+name = "waitlist-eucomply"
+main = "index.js"
+compatibility_date = "2026-08-23"
+
+# KV namespace for storing waitlist emails
+[[kv_namespaces]]
+binding = "WAITLIST"
+id = "8465f75104b44d1c933f772b25fe2060"
+
+# Allow the landing page to invoke this worker
+[env.production]
+routes = [
+  { pattern = "auditedwp.pages.dev/api/waitlist", custom_domain = false },
+]
