@@ -1,40 +1,43 @@
-# STATUS — Iteration 124 (24. august 2026)
+# STATUS — Iteration 125 (23. august, aften)
 
-## 1. Universitetet (punkt 1) — bestått 7. gang
+## 1. Universitetet (punkt 1) — bestått 8. gang
 
-DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters),
-sitets indhold er CMS-uafhængigt statisk HTML. **Ingen udtrækning nødvendig.**
+DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters).
+Sitets indhold er statisk HTML — og nu flyttet til **roden** af domænet, så det er
+helt CMS- og mappe-uafhængigt. Ingen udtrækning nødvendig.
 
-## 2. Beslutningen holder på pengekriteriet
+## 2. Nyt denne iteration
 
-DevNotify: bygget + udgivet, $19 one-time, 0 kr/md drift. Ingen anden kandidat
-kan nå en betaling hurtigere end "sæt checkout-link ind".
+- **Ny SEO-side: `/vs/octobox/`** — DevNotify vs Octobox (hostet web-inbox vs
+  native menu bar app). Samme ærlige stil som Gitify-siden.
+- **Site-struktur rettet:** alle interne links peger nu på roden (`/vs/gitify/`,
+  `/privacy/`, `/terms/`) i stedet for `/devnotify/...` og `.html`. Den døde
+  `publish/`-kopi i mappen er slettet. Sitemap opdateret.
+- **Verificeret side for side:** forsiden, begge vs-sider, privacy, terms,
+  sitemap og DMG-download svarer 200 med rigtigt indhold; link-crawler fandt
+  0 døde links og intet fallback-indhold.
 
-## 3. Blokering (én linje)
+## 3. Blokeringer (én linje hver)
 
-LS API-nøglen: Bitwarden desktop-app kører, men har ingen tilgængelig vinduesflade
-og CLI er unauthenticated — jeg kan ikke låse boksen op selv; Mads skal åbne
-Bitwarden og kopiere nøglen (eller indsætte den i `scripts/ls-setup.sh`-kaldet).
+1. LS API-nøglen: Bitwarden har ingen tilgængelig vinduesflade og CLI er
+   unauthenticated — Mads skal åbne appen og kopiere nøglen.
+2. Domæne: `getdevnotify.com` er ledigt (RDAP-verificeret), men Cloudflare-
+   tokenet mangler Registrar-skrivetilladelser (#domain:list) — køb kræver et
+   token med Registrar-permissions eller at Mads klikker købet.
 
-## 4. Nyt denne iteration
-
-- **`scripts/ls-setup.sh`** klar: én kommando når nøglen findes — tjekker store,
-  opretter produkt "DevNotify License" $19 one-time, variant og checkout-URL,
-  idempotent (springer over hvis produktet allerede findes).
-- Købssektionen på forsiden gennemgået linje for linje: alt klart, ét led mangler
-  (checkout-URL erstatter notify-formularen).
-
-## 5. Traction (fra worker-metrics, ikke mine egne tests)
+## 4. Traction (fra worker-metrics, ikke mine egne tests)
 
 **0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
 
-## 6. Venter på Mads (én linje)
+## 5. Venter på Mads (én linje)
 
-Lemon Squeezy API-nøgle fra Bitwarden → kør `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh`.
+LS-nøgle fra Bitwarden → `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh`;
+evt. nyere Cloudflare-token med Registrar-adgang → jeg køber getdevnotify.com.
 
-## 7. Næste iteration
+## 6. Næste iteration
 
-1. Nøgle modtaget → ls-setup.sh → checkout-URL ind i alle 5 sider → deploy →
-   verificér side for side.
+1. Nøgle modtaget → ls-setup.sh → checkout-URL ind på alle sider → deploy →
+   verificér.
 2. Remote licensvalidering mod LS license API i appen (TODO i lib.rs).
-3. Købsrejse-gennemgang som fremmed på mobil.
+3. Launch-poster (Product Hunt / Show HN / subreddit) skrevet færdige og klar
+   til Mads' ja — ligger i POSTS/.
