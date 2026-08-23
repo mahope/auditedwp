@@ -2629,3 +2629,33 @@ Iteration 121 færdig og committed (a6970a5).
 Næste iteration: LS-nøgle → produkt + checkout via API; licensvalidering mod LS; mobil-købsrejse som fremmed. STATUS.md er opdateret i `/Users/madsholstjensen/hermes-ceo/STATUS.md`.
 2026-08-23T22:00:28+02:00 iteration 37 afsluttet (exit 0)
 2026-08-23T22:00:50+02:00 === iteration 38/60 ===
+Iteration 122 færdig. Kort:
+
+**1. Universitet (punkt 1): bestået.** Kernen i DevNotify (`providers.rs`) er platform-agnostisk — GitHub og GitLab er adapters, én funktion pr. ny provider. Ingen CMS- eller WordPress-afhængighed. Ingen udtrækning nødvendig.
+
+**2. Beslutningen revurderet på pengelinen: holder.** Målt på de fem faktorer vinder DevNotify stadig på "hurtigst til første betaling" — appen er bygget, DMG'erne ligger klar, sitet sælger allerede ($19, købssektion, 5 SEO-sider). Det eneste manglende led er LS checkout-linket, og det venter kun på nøglen.
+
+**3. BUILD.md oprettet** (`~/hermes-ceo/BUILD.md`): korteste vej til første betalende kunde — LS-nøgle → produkt via API → checkout erstatter notify-formularen → licensvalidering → fuld købsrejse-verificering.
+
+**4. Ny SEO-side live:** `/devnotify/github-token-scopes-guide/` — rammer long-tail-søgninger fra folk der opsætter notifikations-apps (vores præcise købere). Sitemap opdateret, deployet, alle 7 sitemap-URL'er verificeret med korrekt indhold. Commit `b25f51f`.
+
+Traction, ærligt: **0 betalende · $0**.
+
+Venter på Mads (én linje): LS API-nøgle i Bitwarden (ventes 24/8) — så opretter jeg produktet og skifter checkout ind samme dag.
+2026-08-23T22:02:59+02:00 iteration 38 afsluttet (exit 0)
+2026-08-23T22:03:22+02:00 === iteration 39/60 ===
+Iteration 123 færdig. Kort resumé:
+
+**Universitet (punkt 1):** Bestået igen — DevNotify-kernen er platform-agnostisk (GitHub + GitLab adapters i providers.rs), ikke bundet til noget CMS. Ingen udtrækning nødvendig.
+
+**Pengevurdering (A):** Beslutningen holder. DevNotify er bygget, udgivet, koster 0 kr/md, og første betaling kræver kun Lemon Squeezy-nøglen. Ingen anden kandidat slår den på tid-til-første-betaling.
+
+**Bygget (B):** Fandt en reel hulning i købsrejsen — alle 4 undersider (vs Gitify, token-scopes guide, best-apps guide, GitLab-siden) sendte besøgende direkte til download uden at vise prisen eller et købs-link. Nu har hver side tydelig pristekst ($19 one-time + trial) og et "Buy license — $19"-link til #buy-sektionen. Deployet til Cloudflare Pages og verificeret side for side (alle 200, buy-link bekræftet i det live indhold).
+
+**Traction:** 0 betalende, $0 — rapporteret ærligt i STATUS.md.
+
+**Venter på Mads:** LS API-nøglen (Bitwarden låst). Når den kommer: opret produkt via API, erstat notify-formularen med checkout på alle sider, og kør hele købsrejsen igennem som fremmed.
+
+Committeret som 77cc9a4. STATUS.md opdateret.
+2026-08-23T22:06:42+02:00 iteration 39 afsluttet (exit 0)
+2026-08-23T22:07:29+02:00 === iteration 40/60 ===
