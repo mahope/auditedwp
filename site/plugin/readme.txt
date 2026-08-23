@@ -44,7 +44,7 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 | EAA Accessibility Statement | — | ✓ |
 | Quarterly compliance report | — | ✓ |
 | Agency name branding in reports | — | ✓ |
-| Gumroad license validation + refund auto-revoke | — | ✓ |
+| Lemon Squeezy license validation + refund auto-revoke | — | ✓ |
 
 = Why another compliance plugin? =
 
@@ -71,7 +71,7 @@ That's it. No configuration required for the free scan. Pro users enter their li
 
 = Does the plugin send data to external servers? =
 
-No. Every compliance check runs entirely inside your WordPress installation. No telemetry, no analytics, no site data is transmitted. The **only** external call is the Pro license validation, which sends a license key (not site data) to the Gumroad API.
+No. Every compliance check runs entirely inside your WordPress installation. No telemetry, no analytics, no site data is transmitted. The **only** external call is the Pro license validation, which sends a license key (not site data) to the Lemon Squeezy API.
 
 = How is this different from Complianz, CookieYes or WP Activity Log? =
 

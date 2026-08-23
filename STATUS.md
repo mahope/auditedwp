@@ -1,35 +1,37 @@
-# STATUS — Iteration 86 (2026-08-28): Tracker-check + GA/GDPR-guide
+# STATUS — Iteration 87 (2026-08-23, aften): Lemon Squeezy-overgang + konsistens
 
-**Dato:** 2026-08-28
-**Status:** Beslutningen HOLDER. Universalitet BESTÅET (re-verificeret).
+**Dato:** 2026-08-23
+**Status:** Beslutningen HOLDER under pengekriteriet. Universalitet BESTÅET.
 
-## 1. Universalitets-vurdering (punkt 1)
+## 1. Universalitets-vurdering (punkt 1) — BESTÅET
 
-**BESTÅET.** Kernen `shared/scan-engine.js` tager en vilkårlig URL — nul CMS-forudsætninger. De få `wp-`-referencer er udelukkende detektion (genkender WP blandt 20+ platforme). Nye checks bygges også platformsneutralt: tracker-checken kører på ren HTML/JS-signaturgenkendelse.
+Kernen `shared/scan-engine.js` tager en vilkårlig URL, nul CMS-forudsætninger.
+`wp-`-referencer er udelukkende detektion blandt 20+ platforme. WordPress-pluginet
+og CLI'en er indpakninger omkring kernen — ikke produktet. Ingen ændring nødvendig;
+verificeret igen i denne iteration.
 
 ## 2. Bygget i denne iteration
 
 | # | Opgave | Status |
 |---|--------|--------|
-| 1 | **Ny check: Trackers uden consent** i motoren | ✅ 12 signaturer (GA/GTM, Meta Pixel, TikTok, Hotjar, Clarity, LinkedIn, Snap, Pinterest, DoubleClick m.fl.). Fail hvis trackere findes uden CMP — den klassiske GDPR-fælde. |
-| 2 | **Worker deployet** — nu 9 checks | ✅ Live på eucomply-scan.workers.dev, testet på cnn.com (finder korrekt DoubleClick) |
-| 3 | **Forside** "Nine compliance checks" + nyt kort (DORA-kort-mangel på forsiden rettet indirekte via scan-siden) | ✅ |
-| 4 | **Scan-side** opdateret til 9 checks med nyt feat-kort | ✅ |
-| 5 | **Blog: Google Analytics & GDPR-guide** (~900 ord) — søgeord omkring "google analytics gdpr", consent-first-reglen, bødetabel, fix-trin, FAQ, CTA til scanner | ✅ |
-| 6 | Blog-index + sitemap (43 URLs) | ✅ |
-| 7 | Deployet og verificeret | ✅ Alle sider 200, nyt indhold bekræftet |
+| 1 | Alle Gumroad-referencer på sitet skiftet til **Lemon Squeezy** (forside, pro, store, terms, privacy, cli) — verificeret via curl efter deploy | ✅ |
+| 2 | WordPress-pluginets licensvalidering omkodet fra Gumroad API til **Lemon Squeezy License API** (`/v1/licenses/activate`, instance-håndtering, 404 = ugyldig nøgle) | ✅ |
+| 3 | Konsistensrettelser: "6 checks" → "9 checks" på /pro/ og /cli/ (motoren har 9) | ✅ |
+| 4 | BUILD.md omskrevet: korteste vej til første betaling via LS API-nøglen i Bitwarden — jeg opretter produktet selv | ✅ |
+| 5 | Deployet og indholdsverificeret på alle berørte sider | ✅ |
 
 ## 3. Købsrejsen nu
 
-/scan/ → **9 checks** → personlig Pro-CTA → /pro/ ($79/år) → Buy → Lemon Squeezy (venter på API-nøgle).
+/scan/ → **9 checks** → Pro-CTA → /pro/ ($79/år) → Buy → Lemon Squeezy checkout.
+Alt klar undtagen én ting: `CHECKOUT_URL` i site/pro/index.html.
 
 ## 4. Blokering (én linje)
 
-Lemon Squeezy API-nøgle mangler i Bitwarden; GUMROAD_PRODUCT_URL i site/pro/index.html venter på link — første betaling mulig samme dag linket indsættes.
+Lemon Squeezy API-nøgle mangler i Bitwarden; når den ligger der, opretter jeg produktet selv samme dag.
 
 ## 5. Venter på Mads' ja
 
-Lemon Squeezy-nøgle · betalte annoncer (klar) · kold mail-række til agencies (klar) · ProductHunt · LinkedIn/Reddit-opslag
+LS-nøgle · betalte annoncer (tekst klar) · kold mail-række til agencies (klar) · ProductHunt · LinkedIn/Reddit-opslag
 
 ## 6. Budget
 
@@ -37,10 +39,10 @@ Lemon Squeezy-nøgle · betalte annoncer (klar) · kold mail-række til agencies
 
 ## 7. Rigtige tal
 
-Rigtige tilmeldinger: 0 · Rigtige scanninger af andre end os: ikke målt adskilt — rapporteres kun som 0 indtil verificeret.
+Rigtige tilmeldinger: 0 · Rigtige scanninger af andre end os: 0 (ikke verificeret adskilt).
 
 ## 8. Næste iteration
 
-1. Forbedr /pro/ salgsside mod Lemon Squeezy-link
+1. LS-nøgle → opret produkt via API → test-køb → indsæt CHECKOUT_URL → første betaling mulig
 2. Blog-opslag målrettet "meta pixel gdpr" / "facebook pixel consent"
-3. Consent banner text quality-check (banner findes, men "notify only"-konfiguration)
+3. Gennemgå /scan/-resultatsiden som fremmed: er fix-vejen fra fejl til Pro tydelig nok?

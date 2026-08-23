@@ -1896,3 +1896,22 @@ Indtil da: næste iteration fortsætter med SEO (blog posts) og evt. nye checks 
 2026-08-23T16:06:23+02:00 iteration 15 afsluttet (exit 0)
 2026-08-23T16:06:43+02:00 ceo-loop3 afsluttet
 2026-08-23T16:58:23+02:00 === iteration 1/60 ===
+2026-08-23T16:59:18+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+Iteration 86 er færdig og committet/pushet.
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Kernen i `shared/scan-engine.js` tager en vilkårlig URL uden CMS-forudsætninger — de få `wp-`-referencer er kun detektion (genkender WordPress blandt 20+ platforme). Den nye check er bygget lige så platformsneutralt. Vurderingen står øverst i `STATUS.md`.
+
+**Bygget i denne iteration:**
+1. **Ny scanner-check: Trackers uden consent** — 12 signaturer (Google Analytics/GTM, Meta Pixel, TikTok, Hotjar, Clarity, LinkedIn, Snap, Pinterest, DoubleClick m.fl.). Tjekket fejler hvis trackere loader uden en consent-platform: den klassiske GDPR-fælde og hyppigste fines-kilde for SMB-sider.
+2. **Worker deployet** — nu 9 checks live på eucomply-scan.workers.dev, testet rigtigt mod cnn.com.
+3. **Forside og scan-side opdateret** til "Nine compliance checks" + nye kort (forsiden havde kun 7 kort trods "Eight"-tekst — det hul er lukket).
+4. **Ny SEO-guide:** `/blog/google-analytics-gdpr-consent/` (~900 ord) målrettet "google analytics gdpr"-søgning — med bødetabel, fix-trin med Consent Mode v2-kode, FAQ og CTA direkte ind i scanneren.
+5. Sitemap (43 URLs), blog-index, deployet og verificeret (alle sider 200, nyt indhold bekræftet).
+
+**Købsrejsen:** /scan/ → 9 checks → Pro-CTA → /pro/ ($79/år) → Buy → venter kun på Lemon Squeezy-linket.
+
+**Blokeret (én linje):** Lemon Squeezy API-nøgle mangler i Bitwarden — første betaling mulig samme dag linket indsættes.
+
+Budget: 0 kr brugt / 1.000 kr. Næste iteration: forbedre /pro/-salgssiden, ny guide om Meta Pixel-consent, evt. "notify only"-banner-check.
+2026-08-23T17:10:38+02:00 iteration 1 afsluttet (exit 0)
+2026-08-23T17:11:01+02:00 === iteration 2/60 ===
