@@ -2867,3 +2867,56 @@ Iteration 135 færdig. Kort:
 STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-24T00:01:51+02:00 iteration 51 afsluttet (exit 0)
 2026-08-24T00:03:02+02:00 === iteration 52/60 ===
+Iteration 136 færdig. Kort rapport:
+
+**Universalitet (punkt 1):** Bestået igen — DevNotify-kernen (`providers.rs`) er platform-uafhængig (token ind → notifications ud, GitHub/GitLab som adapters). Intet at trække ud.
+
+**Beslutningen:** Holder under pengekriteriet. Færdig app, $19 lifetime, 0 kr/md drift — venter kun på Lemon Squeezy-nøglen.
+
+**Gjort:**
+- Deployet de 2 nye guides (slack-github-notifications, turn-off-github-email-notifications)
+- Verificeret live: begge 200 med korrekt titel, alle nav-links gennemgået (ingen 404'ere), sitemap = 13 URLs
+- Commit + push + STATUS.md opdateret
+
+**Blokeringer (uændrede, nævnes ikke igen):** LS-nøgle i Bitwarden; domænekøb getdevnotify.com.
+
+**Traction:** 0 betalende · $0 · 0 rigtige tilmeldinger.
+2026-08-24T00:05:53+02:00 iteration 52 afsluttet (exit 0)
+2026-08-24T00:06:14+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T00:11:14+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T00:16:15+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-24T00:21:15+02:00 UPSTREAM - venter 5 min (forsoeg 4/24)
+2026-08-24T00:26:33+02:00 === iteration 53/60 ===
+Iteration 137 færdig. Kort:
+
+**Universalitet:** DevNotify-kernen er stadig platform-uafhængig (GitHub og GitLab er adapters omkring en fælles `providers.rs`-kerne). Intet at trække ud — vurderingen står i STATUS.md.
+
+**Beslutningen holder:** Færdig app, $19 lifetime, 0 kr/md drift, kun LS-nøglen mangler for indtjening. Ingen af de fem penge-kriterier giver en bedre kandidat lige nu.
+
+**Gjort:**
+- Gennemgået alle 8 guides live — alle 200 med korrekt titel/canonical; DMG svarer 200; sitemap 13 gyldige URLs.
+- Fundet og rettet reelt hul: forsiden manglede nav-links til de to nyeste guides. Deployet og verificeret live.
+- Commit 49963f4 pushet.
+
+**Traction (ærligt):** 0 betalende, $0.
+
+**Blokeringer (uændrede):** LS-nøgle i Bitwarden; domæne getdevnotify.com.
+2026-08-24T00:28:05+02:00 iteration 53 afsluttet (exit 0)
+2026-08-24T00:28:47+02:00 === iteration 54/60 ===
+Iteration 138 færdig.
+
+**Universalitetsvurdering (punkt 1):** DevNotify-kernen (`providers.rs`) tager token ind og giver notifications ud — GitHub/GitLab er adapters, sitet er statisk HTML. Ikke bundet til én platform. Samme konklusion som de seneste iterationer; intet at trække ud.
+
+**Beslutningen holder:** Færdig app, $19 lifetime, 0 kr/md drift. Eneste revenue-blokering er stadig LS-nøglen (Bitwarden unauthenticated). Ingen af de fem penge-kriterier peger på noget bedre.
+
+**Bygget denne iteration:**
+- Ny guide `github-notifications-on-windows` — Windows-vinkel åbner søgetrafik uden for Mac-markedet, hvilket også lægger grus i vejen for kritikken om at produktet kun rammer én OS-platform indholds-mæssigt.
+- Sitemap 14 URLs, nav-link på forsiden.
+- Deployet og verificeret live: guide svarer 200 med korrekt titel, sitemap viser 14 URLs, forsiden indeholder linket.
+- Commit c7b7c6c pushet.
+
+**Traction (ærlige tal):** 0 betalende · $0 · 0 rigtige tilmeldinger.
+
+**Venter på Mads:** LS-nøgle i Bitwarden (checkout + købstest) og domænekøb getdevnotify.com.
+2026-08-24T00:31:04+02:00 iteration 54 afsluttet (exit 0)
+2026-08-24T00:32:32+02:00 === iteration 55/60 ===

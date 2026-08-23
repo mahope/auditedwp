@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Octobox Alternatives in 2026: 6 Options Compared (Free &amp; Paid) — DevNotify</title>
+<meta name="description" content="Looking for an Octobox alternative? Six real options compared — Octobox self-hosted, GitHub's own inbox, notification filters, email digests, and native menu bar apps — with honest pros and cons.">
+<link rel="canonical" href="https://auditedwp.pages.dev/guides/octobox-alternative/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Octobox Alternatives in 2026: 6 Options Compared">
+<meta property="og:description" content="Six ways to manage GitHub notification overload — including options that work without hosting anything.">
+<meta property="og:url" href="https://auditedwp.pages.dev/guides/octobox-alternative/">
+<meta name="twitter:card" content="summary">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted);margin-left:14px}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.92rem}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:var(--panel);color:var(--text)}
+td{color:var(--muted)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">DevNotify</a>
+    <nav><a href="/">Home</a><a href="/guides/slack-github-notifications/">Slack guide</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>Octobox alternatives in 2026: what to use when your GitHub inbox overflows</h1>
+<p class="meta">Updated August 2026 · 6 min read</p>
+
+<p>Octobox was the tool that taught developers a "GitHub inbox" could exist:
+every notification as a row, filterable by repo and reason, mark-as-done
+instead of mark-as-read. But Octobox's hosted version shut down in 2024, and
+self-hosting it means maintaining a Rails app and a Postgres database just to
+triage notifications. If you're here because of that, you have six realistic
+options — and one of them requires no hosting at all.</p>
+
+<h2>Option 1: Self-host Octobox</h2>
+<p>It's open source and still maintained. You can run it on Fly.io or a small
+VPS with Docker. You get the full experience: archived notifications persist
+beyond GitHub's three-month window, saved searches, per-repo filters.</p>
+<p><strong>The catch:</strong> you're now the ops team for a notification app.
+Upgrades, database backups, SSL renewal — all so you can read PRs faster. For
+most individual developers this cost outweighs the benefit. Reasonable if your
+team already runs infrastructure and several people will share the instance.</p>
+
+<h2>Option 2: GitHub's built-in inbox</h2>
+<p>The most underrated option. Since 2023, github.com/notifications has an
+inbox UI with triage controls — done, unsubscribe, filter by reason
+(mention, review requested, CI activity). It syncs everywhere, needs no setup,
+and is free.</p>
+<p><strong>The catch:</strong> it lives in the browser tab you never keep
+open. Notifications only help if you see them promptly, and GitHub gives you
+no ambient presence on your desktop — you still have to remember to check.</p>
+
+<h2>Option 3: Filtered email digests</h2>
+<p>In GitHub Settings → Notifications you can route watching, participating,
+and mentions into email, then build Gmail/Outlook filters to label them. A
+daily digest keeps noise near zero.</p>
+<p><strong>The catch:</strong> email latency. Review requests sit in a queue
+until you next check mail, which defeats the purpose when someone is blocked
+on your review right now.</p>
+
+<h2>Option 4: Slack / Discord routing</h2>
+<p>Pipe repo activity into a channel with the official GitHub integration.
+Works well for team awareness of a few key repos.</p>
+<p><strong>The catch:</strong> it's channel-level, not personal. Your review
+request drowns between deploy logs and memes, and there's no unread count
+that means <em>you specifically</em>. We cover the trade-offs in detail in our
+<a href="/guides/slack-github-notifications/">Slack notifications guide</a>.</p>
+
+<h2>Option 5: Third-party hosted triage tools</h2>
+<p>A handful of SaaS tools picked up where Octobox's hosted version left off.
+They work, but they're another subscription, another account, and — critically
+for a notifications tool — another service that sees your tokens. Evaluate any
+of them on two questions: does it store data beyond GitHub's retention window,
+and who holds the API token?</p>
+
+<h2>Option 6: Native desktop apps (menu bar)</h2>
+<p>The closest thing to "Octobox without the server": a small app that lives
+in your menu bar, polls your GitHub notifications endpoint with your own token,
+and shows an unread badge next to the clock. Click it and you get the list;
+click a row and the exact PR opens. Nothing to host, nothing new to log into.</p>
+<p>On macOS, DevNotify works exactly this way — 100% local, your token stays
+on your machine, free 7-day trial, $19 lifetime license. On Windows and Linux,
+look at Gitify (free, Electron-based) as the closest equivalent.</p>
+
+<h2>Quick comparison</h2>
+<table>
+<tr><th>Option</th><th>Setup effort</th><th>Ongoing cost</th><th>Best for</th></tr>
+<tr><td>Self-hosted Octobox</td><td>High</td><td>VPS + maintenance</td><td>Teams sharing an instance</td></tr>
+<tr><td>GitHub inbox</td><td>None</td><td>Free</td><td>People who live in the browser anyway</td></tr>
+<tr><td>Email digests</td><td>Low</td><td>Free</td><td>Batching, low urgency</td></tr>
+<tr><td>Slack routing</td><td>Low</td><td>Free tier</td><td>Team awareness</td></tr>
+<tr><td>Hosted triage SaaS</td><td>Low</td><td>Subscription</td><td>Power triagers who accept the token risk</td></tr>
+<tr><td>Menu bar app</td><td>Minutes</td><td>$0–19 one-time</td><td>Prompt personal signal, zero hosting</td></tr>
+</table>
+
+<h2>What we'd pick</h2>
+<p>If your problem is genuinely "too many repos watched", fix the source first:
+unwatch noisy repos and rely on mentions plus review requests. After that, if
+your problem is <strong>latency</strong> — seeing the important one within
+minutes instead of hours — a menu bar app is the shortest path. It's the same
+inbox idea Octobox popularized, minus the server you'd otherwise have to babysit.</p>
+
+<div class="cta">
+<strong>Your GitHub mentions and review requests, always visible</strong>
+<br>DevNotify puts your unread count in the macOS menu bar and opens the exact PR or issue in one click. Free 7-day trial, $19 lifetime.
+<br><a class="btn" href="/">Learn more &amp; download</a>
+</div>
+
+</article>
+
+<footer>
+  <div class="wrap">© 2026 DevNotify · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></div>
+</footer>
+
+</body>
+</html>
