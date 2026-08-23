@@ -1,15 +1,15 @@
 {
   "name": "EUComply",
   "slug": "eucomply",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://eucomply.pages.dev",
-  "download_url": "https://eucomply.pages.dev/assets/eucomply-1.0.0.zip",
+  "download_url": "https://eucomply.pages.dev/assets/eucomply-1.1.0.zip",
   "requires": "5.8",
   "tested": "6.8",
   "requires_php": "7.4",
   "last_updated": "2026-08-23",
   "sections": {
     "description": "Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, forms, backups, plugin health, legal pages. Pro ($79/yr) auto-generates DPA, NIS2 clauses, EAA statements, and quarterly PDF reports.",
-    "changelog": "= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
+    "changelog": "= 1.1.0 =\n* Gumroad license API integration with caching and refund detection.\n* Auto-update checker via update.json manifest.\n* Improved license validation UX in settings.\n\n= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
   }
 }
