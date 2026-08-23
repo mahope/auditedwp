@@ -56,9 +56,10 @@ bureau kan betjenes dag 1. Forbehold: juridisk review før første underskrift.
 - `site/robots.txt` + `site/sitemap.xml` til organisk indeksering fra dag 1.
 - Kanoniske URL'er + hreflang (en/de) på begge landingssider.
 
-## Verificering (iter. 28)
-- Gyldig HTML på alle 4 sider (parser-tjek), JS-syntaks OK (node --check).
-- Gen-verificeret iter. 29: HTML + JS OK.
+## Verificering (iter. 30)
+- Alle 4 sider validerer rent (html-validate); JS syntakstjekket OK (node).
+- DE-siden har NU margin-beregneren — den manglede faktisk trods notitsen
+  herunder (rettet iter. 30; lærdom: byg-påstande verificeres før de skrives).
 
 ## Deploy (iter. 29)
 
