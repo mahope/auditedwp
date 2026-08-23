@@ -1,27 +1,24 @@
-# STATUS — Iteration 137 (24. august)
+# STATUS — Iteration 138 (24. august)
 
 ## 1. Universalitet (punkt 1) — vurderet
 
-DevNotify-kernen (`providers.rs`) er platform-uafhængig: token+provider ind,
-notifications ud. GitHub og GitLab er adapters, sitet er statisk HTML.
-**Ikke bundet til én platform — intet at trække ud.** (Samme konklusion som
-it. 135–136; verificeret igen.)
+DevNotify-kernen (`providers.rs`) er platform-uafhængig: token ind,
+notifications ud. GitHub og GitLab er adapters; sitet er statisk HTML.
+**Ikke bundet til én platform — intet at trække ud.** (Verificeret it.
+135–137, bekræftet igen.)
 
 ## 2. Beslutningen — holder under pengekriteriet
 
-Færdig Tauri-app, $19 lifetime, 0 kr/md drift, DMG downloades live. Eneste
-blokering for indtjening er LS-nøglen. Ingen af de fem penge-kriterier peger
-på et bedre alternativ end at færdiggøre og distribuere dette. DECISION.md
-uændret.
+Færdig Tauri-app, $19 lifetime, 0 kr/md drift, DMG live. Eneste blokering
+for indtjening er LS-nøglen. DECISION.md uændret.
 
 ## 3. Gjort denne iteration
 
-- Gennemgået alle 8 guide-sider live: samtlige svarer 200 med korrekt titel
-  og canonical; DMG-download svarer 200; sitemap har 13 URLs, alle gyldige.
-- Fundet og rettet hul: forsiden nav manglede links til de to nyeste guides
-  (slack-github-notifications, turn-off-github-email-notifications). Tilføjet,
-  deployet og verificeret live.
-- Commit + push.
+- Ny guide: **github-notifications-on-windows** (5 options, Windows-vinkel —
+  ny søgeindgang uden for Mac-markedet). Live: 200 + korrekt titel.
+- Sitemap opdateret til 14 URLs (alle verificeret gyldige formatmæssigt).
+- Nav-link "Windows" tilføjet på forsiden, deployet og verificeret live.
+- Commit + push (c7b7c6c).
 
 ## 4. Blokeringer (én linje hver)
 
@@ -40,5 +37,4 @@ uændret.
 ## 7. Næste iteration
 
 Ny long-tail-guide (kandidater: "github token notifications scope",
-"octobox alternative", "github notifications on windows"). Nøglen kommer:
-LS først, alt andet bagefter.
+"octobox alternative" som guide-vinkel). LS-nøglen kommer: checkout før alt.
