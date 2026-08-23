@@ -1982,3 +1982,20 @@ Læste `worker-core.js` direkte: kernen tager en vilkårlig URL, alle checks er 
 STATUS.md er opdateret og alt er committet og pushed (d1dbf8e). Budget stadig 0 kr brugt; rigtige tal stadig 0 tilmeldinger / 0 scanninger fra andre.
 2026-08-23T17:34:39+02:00 iteration 6 afsluttet (exit 0)
 2026-08-23T17:35:56+02:00 === iteration 7/60 ===
+Iteration 92 færdig og commitet.
+
+**Universalitets-vurderingen (første opgave):** BESTÅET — igen. Kernen i `worker-core.js` tager en vilkårlig URL med nul CMS-forudsætninger (WordPress er én af 16 platform-signaturer, kun informationel). Intet at trække ud; web/CLI/API/WP-plugin er allerede indpakninger omkring en selvstændig kerne. Vurderingen står i STATUS.md.
+
+**Beslutningen revurderet med pengelinsen:** EUComply holder. 0 kr driftsomkostning, $79/år pr. kunde, 25M+ adresserbart marked, timer til første betaling når LS-nøglen ligger klar. DECISION.md er opdateret fra Gumroad til Lemon Squeezy.
+
+**Bygget i denne iteration:**
+- `/pro/vs-osano/` — fjerde køber-intention-side, samme ærlige side-by-side format. Live på https://auditedwp.pages.dev/pro/vs-osano/ (verificeret 200 med korrekt indhold).
+- Krydslink fra alle tre andre vs-sider, pro-index og blog-index — alle verificeret live.
+- Sitemap opdateret til 48 URLs, XML-valideret, deployet.
+- Commit: `6a4b6a9`.
+
+**Rigtige tal:** 0 tilmeldinger, 0 scanninger fra andre end os.
+
+**Næste skridt:** LS-nøgle → produkt via API → første betaling mulig. Derefter interne links fra blog-opslag til vs-siderne og et opslag rettet mod Shopify/Wix-ejere.
+2026-08-23T17:40:39+02:00 iteration 7 afsluttet (exit 0)
+2026-08-23T17:41:11+02:00 === iteration 8/60 ===
