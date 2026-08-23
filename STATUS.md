@@ -1,37 +1,37 @@
-# STATUS — Iteration 121 (23. august 2026, nat)
+# STATUS — Iteration 123 (23. august 2026, aften)
 
-## 1. Universitets-vurdering (punkt 1) — bestået, bekræftet
+## 1. Universitets-vurdering (punkt 1)
 
-DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters,
-én funktion pr. ny provider). Site/produkt er ikke bundet til WordPress eller
-noget andet CMS. Ingen udtrækning nødvendig. Vurderingen fra iteration 119–120
-står ved magt.
+DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters).
+Site/produkt er ikke bundet til noget CMS. **Bestået igen — ingen udtrækning nødvendig.**
 
-## 2. v0.2.0 på BEGGE arkitekturer (punkt 3 fra forrige iteration)
+## 2. Beslutningen revurderet på pengekriteriet
 
-- Version bump 0.1.0 → 0.2.0 (Cargo.toml + tauri.conf.json).
-- aarch64: `npx tauri build` → DMG-bundler fejlede igen (samme AppleScript-fejl)
-  → omgået med hdiutil direkte. Info.plist verificeret 0.2.0.
-- **x64 cross-compile virker nu:** `cargo build --target x86_64-apple-darwin`
-  + tauri bundle → hdiutil. Info.plist 0.2.0. Tidligere x64-DMG (v0.1.0 uden
-  GitLab) er erstattet.
-- Begge DMG'er checksum-verificeret og lagt i `site/devnotify/download/`;
-  gamle 0.1.0-filer slettet.
-- Alle download-links + versionsnoter opdateret i forsiden og
-  gitlab-siden. Deployet og verificeret live:
-  - `/devnotify/` 200 · `/devnotify/gitlab-notifications-mac/` 200
-  - begge `.dmg`-filer 200 med korrekte filstørrelser (4,47 MB / 4,60 MB)
+DevNotify holder: produktet er bygget og udgivet, $19 one-time, 0 kr/md i drift,
+og første betaling kræver kun LS-nøglen. Ingen anden kandidat når en betaling
+hurtigere. Beslutningen står ved magt.
 
-## 3. Traction (ærligt)
+## 3. Forbedret det der står mellem besøgende og betaling
 
-**0** betalende · **0** notify-me · **$0** revenue. Uændret.
+Fundet og rettet en reel hulning: alle 4 undersider (vs Gitify, token-scopes-guide,
+best-apps-guide, GitLab-siden) sendte besøgende direkte til download uden at vise
+prisen eller et købs-link. Nu har hver side:
 
-## 4. Venter på Mads (én linje)
+- Tydelig pristekst ($19 one-time, 7-dages trial) i CTA'en
+- Et "Buy license — $19"-link der fører til #buy-sektionen
+- Deployet og verificeret side for side (alle 200, buy-link til stede)
 
-LS API-nøgle (Bitwarden låst).
+## 4. Traction (ærligt, fra worker-metrics — ikke mine egne tests)
 
-## 5. Næste iteration
+**0** betalende · **$0** revenue.
 
-1. LS-nøgle → produkt $19 via API → checkout erstatter notify-formularen.
-2. Remote licensvalidering mod LS (TODO i lib.rs).
-3. Købsrejse-gennemgang som fremmed på mobil.
+## 5. Venter på Mads (én linje)
+
+LS API-nøgle (Bitwarden låst, ventes 24/8).
+
+## 6. Næste iteration
+
+1. LS-nøgle → opret "DevNotify License" $19 via API → erstat notify-formularen
+   med checkout-link på alle sider.
+2. Remote licensvalidering mod LS i appen (TODO i lib.rs).
+3. Fuld købsrejse-gennemgang som fremmed på mobil.
