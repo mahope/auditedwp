@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSTS Preload Guide 2026: How to Enable HTTP Strict Transport Security Correctly</title>
+<meta name="description" content="Step-by-step HSTS guide: what Strict-Transport-Security is, how to send the header on Nginx, Apache, Cloudflare and Netlify, max-age values, preload requirements, and common mistakes that break subdomains.">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/hsts-preload-guide/">
+<link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/blog/hsts-preload-guide/">
+<meta property="og:title" content="HSTS Preload Guide 2026: Enable HTTP Strict Transport Security Correctly">
+<meta property="og:description" content="What HSTS is, correct header syntax, max-age guidance, preload list requirements, and the mistakes that take subdomains offline.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/hsts-preload-guide/">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;max-width:780px;margin:0 auto;padding:32px 24px}
+  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  .meta a{color:var(--accent)}
+  h2{font-size:22px;margin:40px 0 12px;letter-spacing:-.015em;padding-top:16px;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 8px}
+  p{margin-bottom:14px}
+  li{margin-bottom:6px}
+  ul,ol{padding-left:22px;margin-bottom:16px}
+  .toc{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
+  .toc h2{font-size:16px;margin:0 0 10px;padding:0;border:none}
+  .toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0;font-size:14px}
+  .toc a:hover{text-decoration:underline}
+  .box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+  .box.warn{background:#fff8ef;border-color:#ffd699}
+  pre{background:#101828;color:#e4e7ec;border-radius:8px;padding:16px 18px;font-size:13.5px;overflow-x:auto;margin:14px 0;line-height:1.5}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2f4f7;padding:1px 6px;border-radius:4px;font-size:.92em}
+  pre code{background:none;padding:0;color:inherit}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .tag{display:inline-block;background:#e5effa;color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer a{color:var(--accent)}
+  @media(max-width:600px){h1{font-size:26px}}
+</style>
+</head>
+<body>
+
+<nav style="margin-bottom:24px;font-size:13px">
+  <a href="/" style="color:var(--muted);text-decoration:none">← EUComply</a> ·
+  <a href="/blog/" style="color:var(--muted);text-decoration:none">Blog</a>
+</nav>
+
+<h1>HSTS preload guide: how to enable HTTP Strict Transport Security without breaking your site</h1>
+<p class="meta">Published 26 August 2026 · 9 min read · <span class="tag">Security headers</span> <span class="tag">HTTPS</span> <span class="tag">Compliance</span></p>
+
+<div class="toc">
+  <h2>Table of contents</h2>
+  <a href="#what">1. What is HSTS?</a>
+  <a href="#header">2. The header, explained field by field</a>
+  <a href="#how">3. How to enable it (Nginx, Apache, Cloudflare, Netlify, Vercel)</a>
+  <a href="#maxage">4. Choosing a max-age value safely</a>
+  <a href="#preload">5. Submitting to the HSTS preload list</a>
+  <a href="#mistakes">6. Common mistakes that take sites offline</a>
+  <a href="#test">7. Test your site now</a>
+</div>
+
+<h2 id="what">1. What is HSTS?</h2>
+<p>HTTP Strict Transport Security (HSTS) is a response header that tells browsers: <em>"from now on, only talk to this site over HTTPS — even if the user types http:// or clicks an http link."</em></p>
+<p>Without it, every visitor's first request can still travel over plain HTTP, where it can be intercepted or redirected to a lookalike site (a "SSL-stripping" attack). With HSTS set, the browser refuses to make insecure connections to your domain at all.</p>
+<p>HSTS matters beyond security. It appears in PCI DSS guidance, in most modern security baselines, and our own scanner checks for it as part of its six compliance checks. If you handle logins, payments, or personal data, a missing HSTS header is a finding any auditor will raise.</p>
+
+<div class="box"><strong>One-line summary:</strong> HSTS closes the gap between "my site supports HTTPS" and "my site enforces HTTPS."</div>
+
+<h2 id="header">2. The header, explained field by field</h2>
+<pre><code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code></pre>
+<table>
+  <tr><th>Directive</th><th>Meaning</th></tr>
+  <tr><td><code>max-age=31536000</code></td><td>Browsers remember "HTTPS only" for this many seconds. 31536000 = one year.</td></tr>
+  <tr><td><code>includeSubDomains</code></td><td>The rule applies to every subdomain too (<strong>app.</strong>, <strong>api.</strong>, <strong>staging.</strong>…). Required for preload.</td></tr>
+  <tr><td><code>preload</code></td><td>Says you consent to being hardcoded into browser preload lists.</td></tr>
+</table>
+<p>The header is ignored entirely on non-HTTPS responses — browsers only honor it over a secure connection with no certificate errors.</p>
+
+<h2 id="how">3. How to enable it</h2>
+
+<h3>Nginx</h3>
+<pre><code>add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;</code></pre>
+<p>Put it in your HTTPS <code>server {}</code> block. <code>always</code> makes sure it's sent on error responses too. Reload with <code>nginx -s reload</code>.</p>
+
+<h3>Apache</h3>
+<pre><code>Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"</code></pre>
+<p>Requires <code>mod_headers</code>. Place it in your SSL virtual host.</p>
+
+<h3>Cloudflare</h3>
+<p>Dashboard → SSL/TLS → Edge Certificates → enable "HTTP Strict Transport Security". Choose max-age, toggle includeSubDomains/preload there. Cloudflare adds the header at the edge, so no origin changes needed.</p>
+
+<h3>Netlify</h3>
+<p>In <code>netlify.toml</code>:</p>
+<pre><code>[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"</code></pre>
+
+<h3>Vercel</h3>
+<p>Vercel sends <code>max-age=63072000</code> automatically on all deployments. You cannot override it — but note it does not include <code>includeSubDomains</code> by default, so apex domains with subdomains may still want their own layer.</p>
+
+<h3>GitHub Pages</h3>
+<p>GitHub Pages already serves <code>max-age=31536000</code> on <code>*.github.io</code>. Custom domains get HSTS automatically once they're enrolled in GitHub's preload submission.</p>
+
+<h2 id="maxage">4. Choosing a max-age value safely</h2>
+<p>Do not jump straight to one year. Roll out gradually so a mistake doesn't lock visitors out:</p>
+<table>
+  <tr><th>Phase</th><th>Header</th><th>Duration</th></tr>
+  <tr><td>1. Test</td><td><code>max-age=300</code> (5 min)</td><td>A day</td></tr>
+  <tr><td>2. Confirm</td><td><code>max-age=604800</code> (1 week)</td><td>A week</td></tr>
+  <tr><td>3. Commit</td><td><code>max-age=2592000</code> (1 month)</td><td>A month</td></tr>
+  <tr><td>4. Full</td><td><code>max-age=31536000</code> + preload flags</td><td>Permanent</td></tr>
+</table>
+<div class="box warn"><strong>Warning:</strong> while max-age is active, browsers will refuse plain-HTTP connections until it expires. If your certificate expires or a subdomain only has HTTP, those users see errors you cannot remotely undo. Fix certificates first, then extend max-age.</div>
+
+<h2 id="preload">5. Submitting to the HSTS preload list</h2>
+<p>The preload list is compiled into Chrome, Firefox, Safari and Edge source. Domains on it are HTTPS-only from the very first visit — even before your server has ever answered.</p>
+<ol>
+  <li>Serve valid HTTPS on both the apex domain and <code>www</code>.</li>
+  <li>Send the full header on <strong>all</strong> responses: <code>max-age=31536000; includeSubDomains; preload</code>.</li>
+  <li>Redirect all HTTP traffic (including subdomains) to HTTPS.</li>
+  <li>Every subdomain must serve valid HTTPS — <code>staging.</code> included.</li>
+  <li>Submit at <a href="https://hstspreload.org/" rel="nofollow noopener" target="_blank">hstspreload.org</a>.</li>
+</ol>
+<p>Removal takes months of coordinated work across browsers. Only preload when your HTTPS setup is boringly reliable.</p>
+
+<h2 id="mistakes">6. Common mistakes that take sites offline</h2>
+<ul>
+  <li><strong>includeSubDomains with an HTTP-only subdomain.</strong> The classic outage: marketing sets the flag, and <code>intranet.example.com</code> dies for everyone who visited the main site first. Audit all subdomains before adding it.</li>
+  <li><strong>Serving the header over HTTP.</strong> Browsers ignore it there, so teams think it works when it silently doesn't. Verify on the HTTPS response specifically.</li>
+  <li><strong>Setting it on a redirect page only.</strong> If the header is only on the 301 handler, direct deep links never receive it.</li>
+  <li><strong>Duplicate conflicting headers.</strong> A CDN adds one, origin adds another with different max-age. Browsers use the first — audit which one actually ships.</li>
+  <li><strong>Preloading before phase 4.</strong> Preload is forever-ish. Complete the ramp-up above first.</li>
+</ul>
+
+<h2 id="test">7. Test your site now</h2>
+<p>You can verify your header in one command:</p>
+<pre><code>curl -sI https://yourdomain.com | grep -i strict</code></pre>
+<p>Or run the free EUComply scan — it checks HSTS alongside cookies, forms, legal pages, other security headers, and DORA disclosures, and tells you exactly what's missing:</p>
+<p><a class="btn" href="/scan/">Run a free compliance scan →</a></p>
+<p>For auditor-ready PDF reports covering all checks across a whole domain portfolio, see <a href="/pro/">EUComply Pro ($79/year)</a>.</p>
+
+<h2>Further reading</h2>
+<ul>
+  <li><a href="/blog/eu-compliance-checklist-2026/">The EU website compliance checklist for 2026</a></li>
+  <li><a href="/blog/gdpr-cookie-banner-fines/">GDPR cookie banner fines: what triggers them</a></li>
+  <li><a href="/blog/dora-compliance-guide/">DORA compliance: operational resilience guide</a></li>
+</ul>
+
+<footer>
+  <p>Part of the <a href="/">EUComply</a> knowledge base · <a href="/blog/">All articles</a> · <a href="/checklist/">Free GDPR checklist</a></p>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is HSTS required for GDPR compliance?",
+      "acceptedAnswer": {"@type": "Answer", "text": "GDPR does not mandate specific headers, but it requires appropriate technical measures to protect personal data in transit. Enforced HTTPS via HSTS is widely considered such a measure, and auditors commonly flag its absence."}
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to be removed from the HSTS preload list?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Months. Removal requests go through hstspreload.org and then propagate as each browser vendor updates its shipped list. Treat preload as effectively permanent."}
+    },
+    {
+      "@type": "Question",
+      "name": "Does HSTS work on the first visit?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Only if your domain is on the browser preload lists. Otherwise HSTS takes effect after the first successful HTTPS response that carries the header."}
+    }
+  ]
+}
+</script>
+</body>
+</html>

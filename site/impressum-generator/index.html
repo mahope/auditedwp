@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Impressum Generator — German § 5 DDG Legal Notice | EUComply</title>
+<meta name="description" content="Generate a legally required German Impressum (Imprint) in under 2 minutes. Free, no sign-up. Covers § 5 DDG requirements for individuals and companies, media state under § 18 MStV, and EU-wide equivalents.">
+<meta property="og:title" content="Free Impressum Generator — German § 5 DDG compliant">
+<meta property="og:description" content="Answer a few questions about your business and get a complete, ready-to-publish Impressum. Free, runs entirely in your browser.">
+<meta property="og:url" content="https://auditedwp.pages.dev/impressum-generator/">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://auditedwp.pages.dev/impressum-generator/">
+  <link rel="alternate" hreflang="de" href="https://auditedwp.pages.dev/de/was-ist-ein-impressum/">
+  
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇩🇪</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I legally need an Impressum?",
+      "acceptedAnswer": {"@type": "Answer", "text": "If your website is operated from Germany or targets the German market commercially, yes: section 5 of the Digitale-Dienste-Gesetz (DDG) requires providers of business websites to publish a provider identification (Impressum) that is always accessible — typically within two clicks from any page. Missing or incorrect Impressums can trigger warning letters (Abmahnungen) from competitors costing hundreds to thousands of euros."}
+    },
+    {
+      "@type": "Question",
+      "name": "What must an Impressum contain?",
+      "acceptedAnswer": {"@type": "Answer", "text": "For companies: legal name, legal form, registered address, a contact channel (email or contact form), and if applicable register court and number, VAT ID, and name of authorised representatives. For sole traders trading under a different name, the owner's surname must be recognisable. Media services with editorial content additionally need a person responsible for content under section 18 MStV with their full name and address."}
+    },
+    {
+      "@type": "Question",
+      "name": "Is this generator really free?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Yes. It runs entirely in your browser with no sign-up and produces a complete Impressum you can copy as text or download as HTML. For the rest of your compliance stack — privacy policy, cookie policy, terms of service and refund policy — see our other free generators."}
+    },
+    {
+      "@type": "Question",
+      "name": "I'm not based in Germany. Do I still need one?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Possibly. If you offer services into Germany commercially, German courts have long held that the DDG's transparency duties apply to foreign providers targeting that market. Comparable rules exist elsewhere too: Austria (§ 25 MedienG / ECG), Italy (note legali), Switzerland (UWG Art. 3). Publishing a clear imprint is the safe default for any business selling into Europe."}
+    },
+    {
+      "@type": "Question",
+      "name": "Where should I put my Impressum?",
+      "acceptedAnswer": {"@type": "Answer", "text": "German practice requires it to be reachable at all times with no more than two clicks — most sites link it as 'Imprint' or 'Legal notice' in the footer on every page, next to privacy policy and terms. It should not be hidden behind a form, login or cookie wall."}
+    }
+  ]
+}
+</script>
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{padding:44px 0 12px;text-align:center}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+h1{font-size:32px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);font-size:16px;max-width:600px;margin:0 auto 28px}
+
+.form{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:26px;margin:10px 0 30px}
+.form h2{font-size:18px;margin-bottom:4px}
+.form p.hint{color:var(--muted);font-size:13px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:5px}
+.field input[type=text],.field input[type=email],.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink)}
+.field textarea{resize:vertical;min-height:60px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.checks{border:1px solid var(--line);border-radius:8px;padding:6px 14px 14px;margin-bottom:16px}
+.checks legend{font-weight:600;font-size:14px;padding:0 6px}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
+.chk input{width:17px;height:17px;margin-top:3px;accent-color:var(--accent);flex-shrink:0}
+.chk b{font-size:14px}
+.chk span{display:block;color:var(--muted);font-size:12.5px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:none;font-weight:600;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none;text-align:center;font-family:inherit}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.ghost:hover{background:#eef3f9}
+
+#output{display:none;margin:30px 0}
+#output.on{display:block}
+#output .obar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+#impressum{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:24px;max-height:520px;overflow:auto;font-size:14px}
+#impressum h3{margin:18px 0 6px;font-size:15px}
+#impressum h3:first-child{margin-top:0}
+#impressum p,#impressum li,#impressum td{color:#33465a;margin-bottom:8px}
+#impressum table{border-collapse:collapse;width:100%;max-width:520px;margin-bottom:10px}
+#impressum td{padding:4px 10px 4px 0;vertical-align:top}
+
+.faq{margin:40px 0}
+.faq h2{font-size:20px;margin-bottom:14px}
+.faq details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:var(--bg)}
+.faq summary{font-weight:600;font-size:14px;cursor:pointer}
+.faq details p{color:var(--muted);font-size:14px;margin-top:8px}
+.cross{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:22px;margin:34px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.cross b{font-size:15px}
+.cross p{color:var(--muted);font-size:14px;flex:1;min-width:220px}
+.disc{background:#fffbe8;border:1px solid #e8dc9a;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;margin:18px 0;color:#5a4f1a}
+footer{margin-top:50px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:13px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+@media(max-width:600px){h1{font-size:25px}.hero{padding:30px 0 8px}nav a{margin-left:10px}.form{padding:18px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+  <a href="/scan/">Scanner</a>
+  <a href="/checklist/">GDPR</a>
+  <a href="/terms-of-service-generator/">ToS</a>
+  <a href="/store/">Templates</a>
+  <a class="cta" href="/pro/">Go Pro</a>
+</nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <span class="badge">Free · No sign-up · Runs in your browser</span>
+  <h1>Impressum Generator<br><em>Meet the German § 5 DDG duty</em></h1>
+  <p class="sub">Selling into Germany? Your website needs a legally compliant Impressum — missing ones invite Abmahnung warning letters. Answer a few questions and get one ready to paste, in English or German.</p>
+</div></div>
+
+<div class="wrap">
+
+<div class="form">
+  <h2>Tell us about your business</h2>
+  <p class="hint">Nothing leaves this page — everything is generated locally.</p>
+
+  <div class="field">
+    <label for="lang">Output language</label>
+    <select id="lang">
+      <option value="en">English (with German headings)</option>
+      <option value="de">Deutsch (full German)</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="legalform">Who operates this website?</label>
+    <select id="legalform">
+      <option value="gmbh">Company — GmbH</option>
+      <option value="ug">Company — UG (haftungsbeschränkt)</option>
+      <option value="ag">Company — AG</option>
+      <option value="freelancer">Sole trader / freelancer</option>
+      <option value="other-eu">Company registered outside Germany (EU/other)</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="cname">Name exactly as registered (company or person)</label>
+    <input type="text" id="cname" placeholder="Muster GmbH" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="caddr">Registered address (street, postcode, city, country)</label>
+    <textarea type="text" id="caddr" placeholder="Musterstraße 12&#10;10115 Berlin&#10;Germany"></textarea>
+  </div>
+  <div class="field">
+    <label for="cmail">Contact email</label>
+    <input type="email" id="cmail" placeholder="info@example.com" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="rep">Authorised representative(s) (managing director / owner)</label>
+    <input type="text" id="rep" placeholder="Max Mustermann (Geschäftsführer)" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="reg">Commercial register — court and number <span style="font-weight:400;color:var(--muted)">(if applicable, e.g. "Amtsgericht Charlottenburg, HRB 12345 B"; leave empty if none)</span></label>
+    <input type="text" id="reg" placeholder="" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="vat">VAT ID (USt-IdNr.) <span style="font-weight:400;color:var(--muted)">(leave empty if none)</span></label>
+    <input type="text" id="vat" placeholder="DE123456789" autocomplete="off">
+  </div>
+  <div class="field">
+    <label for="editorial">Person responsible for content under § 18 MStV <span style="font-weight:400;color:var(--muted)">(needed only if the site has editorial content like news or blogs — usually leave empty)</span></label>
+    <input type="text" id="editorial" placeholder="" autocomplete="off">
+  </div>
+
+  <fieldset class="checks field">
+    <legend>Optional extras (pick all that fit)</legend>
+    <label class="chk"><input type="checkbox" id="o-dispute"><span><b>Consumer dispute resolution note</b></span></label>
+  </fieldset>
+  <div class="field">
+    <label for="ophone">Phone number <span style="font-weight:400;color:var(--muted)">(optional — included in the contact block if filled)</span></label>
+    <input type="text" id="ophone" placeholder="+49 30 123456" autocomplete="off">
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="gen" type="button">Generate my Impressum →</button>
+    <button class="btn ghost" id="copy" type="button" style="display:none">Copy text</button>
+    <button class="btn ghost" id="dl" type="button" style="display:none">Download HTML</button>
+  </div>
+</div>
+
+<div id="output">
+  <div class="obar">
+    <b>Your Impressum</b>
+    <span style="color:var(--muted);font-size:13px">Review before publishing — see disclaimer below.</span>
+  </div>
+  <div id="impressum"></div>
+</div>
+
+<div class="cross">
+  <b>An Impressum is only the German piece.</b>
+  <p>Your privacy policy, cookie consent flow and terms matter just as much across Europe — and regulators fine for each of them. Run a free scan to check the whole picture, on any CMS.</p>
+  <a class="btn ghost" href="/scan/">Scan your site free</a>
+</div>
+
+<section class="faq">
+<h2>Frequently asked questions</h2>
+<details open><summary>What is an Impressum?</summary><p>An Impressum (in English often "Imprint" or "Legal notice") is the mandatory provider identification on German websites: who legally operates the site, how they can be contacted, and — for companies — their registration and tax identifiers. Section 5 of the Digitale-Dienste-Gesetz (DDG), which replaced the old Telemediengesetz (TMG) in May 2024, sets out the requirement. The content obligations themselves are essentially unchanged.</p></details>
+<details><summary>What happens without one?</summary><p>Missing, incomplete or unreachable Impressums are among the most common grounds for Abmahnungen — formal warning letters from competitors and consumer associations demanding you fix the page, sign a cease-and-desist declaration and reimburse legal fees that routinely run €500–€2,000 per letter. Regulators can also levy fines directly.</p></details>
+<details><summary>Does the two-click rule really apply?</summary><p>Yes — established practice requires the Impressum to be reachable from every page within two clicks at all times. A footer link called "Imprint" or "Legal notice" satisfies it. Hiding it behind a contact form, a survey, a cookie wall or a login does not.</p></details>
+<details><summary>I'm a freelancer using a brand name. What goes in?</summary><p>Section 5 DDG requires the operator's identity to be recognisable. If you trade under a brand ("Studio Pixelwerk"), the Impressum must also show the natural person behind it — at minimum first name and surname — plus your address and contact details. A pure brand name alone is not sufficient.</p></details>
+<details><summary>Do Austrian, Swiss or Italian sites need something similar?</summary><p>Austria requires an Offenlegungspflicht under § 25 MedienG (name, seat, contact, register data) for any media owner operating a website. Switzerland expects clear provider information under Art. 3 UWG, and Italian sites commonly publish note legali alongside privacy info. If you sell anywhere in Europe, a published imprint is the low-risk default everywhere.</p></details>
+</section>
+
+<p class="disc"><strong>Disclaimer:</strong> This generator provides general information, not legal advice. Generated imprints are a starting point; exact obligations depend on your legal form, registers and activities. For binding documents consult a qualified lawyer.</p>
+
+
+<div class="scanner-cta" style="background:#f0f4ff;border:1px solid #b2ddff;border-radius:10px;padding:20px;text-align:center;margin:32px 0">
+  <p style="font-size:16px;font-weight:600;margin-bottom:8px">🔍 Already generated your document?</p>
+  <p style="font-size:14px;color:#475467;margin-bottom:12px">Check if your website passes a full EU compliance scan — free, no sign-up.</p>
+  <a href="/scan/" style="display:inline-block;background:#175cd3;color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:8px">Run free scan →</a>
+</div>
+<footer>
+  <p>EUComply — universal website compliance. Works on WordPress, Shopify, Webflow, Squarespace, Next.js and hand-written HTML.</p>
+  <p><a href="/">Scanner</a> · <a href="/de/was-ist-ein-impressum/">Was ist ein Impressum? (Deutsch)</a> · <a href="/privacy-policy-generator/">Privacy Policy Generator</a> · <a href="/cookie-policy-generator/">Cookie Policy Generator</a> · <a href="/terms-of-service-generator/">Terms of Service Generator</a> · <a href="/refund-policy-generator/">Refund Policy Generator</a> · <a href="/impressum-generator/">Impressum Generator</a> · <a href="/store/">Templates</a> · <a href="/pro/">Pro</a></p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  function esc(s){return s.replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+  function val(id,d){var v=$(id).value.trim();return v||d}
+  function chk(id){return $(id)&&$(id).checked}
+  function lines(t){return t.split(/\n+/).map(function(l){return esc(l.trim())}).filter(Boolean).join('<br>')}
+
+  var T={
+   en:{title:'Imprint (Impressum)',info:'Information pursuant to',ddg:'§ 5 DDG (Digitale-Dienste-Gesetz)',
+       rep:'Authorised representative',reg:'Register entry',vat:'VAT identification number',
+       resp:'Responsible for content pursuant to § 18 para. 2 MStV',contact:'Contact',
+       dispute:'Consumer dispute resolution / universal arbitration board'},
+   de:{title:'Impressum',info:'Angaben gemäß',ddg:'§ 5 DDG (Digitale-Dienste-Gesetz)',
+       rep:'Vertretungsberechtigt',reg:'Registereintrag',vat:'Umsatzsteuer-Identifikationsnummer',
+       resp:'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',contact:'Kontakt',
+       dispute:'Streitschlichtung / Verbraucherstreitbeilegung / Universalschlichtungsstelle'}
+  };
+
+  function build(){
+    var lang=T[$('lang').value], lf=$('legalform').value,
+        name=val('cname','Your Company'), mail=val('cmail','info@example.com'),
+        addr=lines(val('caddr','Street, Postcode City, Country')),
+        rep=val('rep',''), reg=val('reg',''), vat=val('vat',''), ed=val('editorial','');
+    var isDe=($('lang').value==='de');
+
+    var h='<h3>'+lang.title+'</h3>';
+    h+='<table><tr><td><strong>'+esc(name)+'</strong></td></tr>'+
+       '<tr><td>'+addr+'</td></tr>'+
+       '<tr><td>Email: '+esc(mail)+(val('ophone','')?'<br>Phone: '+esc($('ophone').value.trim()):'')+'</td></tr></table>';
+
+    h+='<p><strong>'+lang.info+'</strong> '+lang.ddg+':</p>';
+    h+='<p>'+esc(name)+'<br>'+addr+'</p>';
+
+    if(rep){
+      h+='<p><strong>'+lang.rep+':</strong> '+esc(rep)+'</p>';
+    }else if(isDe&&lf!=='freelancer'){
+      // representative line omitted when empty for non-German entities
+    }
+
+    if(reg){h+='<p><strong>'+lang.reg+':</strong> '+esc(reg)+'</p>';}
+    if(vat){h+='<p><strong>'+lang.vat+' gemäß § 27a UStG:</strong> '+esc(vat)+'</p>';}
+
+    if(ed){
+      h+='<p><strong>'+lang.resp+':</strong><br>'+lines(ed)+'</p>';
+    }
+
+    h+='<p><strong>Contact:</strong> '+esc(mail)+'</p>';
+
+    if(chk('o-dispute')){
+      if(isDe){
+        h+='<h3>Streitschlichtung</h3>'+
+           '<p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr.<br>'+
+           'Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>'+
+           '<p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>';
+      }else{
+        h+='<h3>Consumer dispute resolution</h3>'+
+           '<p>The European Commission provides a platform for online dispute resolution (ODR): https://ec.europa.eu/consumers/odr.<br>'+
+           'Our email address can be found above in the imprint.</p>'+
+           '<p>We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board.</p>';
+      }
+    }
+    return h;
+  }
+
+  $('gen').addEventListener('click',function(){
+    $('impressum').innerHTML=build();
+    $('output').classList.add('on');
+    $('copy').style.display=$('dl').style.display='';
+    $('output').scrollIntoView({behavior:'smooth'});
+  });
+  $('copy').addEventListener('click',function(){
+    navigator.clipboard.writeText($('impressum').innerText).then(function(){
+      $('copy').textContent='✓ Copied';
+      setTimeout(function(){$('copy').textContent='Copy text'},1600);
+    });
+  });
+  $('dl').addEventListener('click',function(){
+    var html='<!DOCTYPE html><html lang="'+$('lang').value+'"><head><meta charset="UTF-8"><title>Impressum</title></head><body style="max-width:760px;margin:40px auto;padding:0 20px;font-family:sans-serif;line-height:1.6">'+$('impressum').innerHTML+'</body></html>';
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+    a.download='impressum.html';a.click();URL.revokeObjectURL(a.href);
+  });
+})();
+</script>
+</body>
+</html>

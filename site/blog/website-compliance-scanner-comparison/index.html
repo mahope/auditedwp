@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Compliance Scanners Compared: What a Free Scan Actually Checks (2026)</title>
+<meta name="description" content="What website compliance scanners actually test — cookie consent, SSL hardening, privacy policy links — and how free automated scans compare to manual audits and paid tools. Includes the full EUComply check list.">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/">
+  
+<meta property="og:title" content="Website Compliance Scanners Compared: What a Free Scan Actually Checks">
+<meta property="og:description" content="Cookie consent, SSL hardening, privacy policy links: what automated compliance scanners can and cannot detect.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;max-width:780px;margin:0 auto;padding:32px 24px}
+  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{font-size:22px;margin:40px 0 12px;letter-spacing:-.015em;padding-top:16px;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 8px}
+  p{margin-bottom:14px}
+  li{margin-bottom:6px}
+  ul,ol{padding-left:22px;margin-bottom:16px}
+  .box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+  .box.warn{background:#fff8ef;border-color:#ffd699}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
+  .btn:hover{background:#1557b0}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .tag{display:inline-block;background:#e5effa;color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer a{color:var(--accent)}
+  @media(max-width:600px){h1{font-size:26px}}
+</style>
+</head>
+<body>
+
+<nav style="margin-bottom:24px;font-size:13px">
+  <a href="/" style="color:var(--muted);text-decoration:none">← EUComply</a> ·
+  <a href="/blog/" style="color:var(--muted);text-decoration:none">Blog</a>
+</nav>
+
+<h1>Website compliance scanners compared: what a free scan actually checks (2026)</h1>
+<p class="meta">Published 24 August 2026 · 9 min read · <span class="tag">Comparison</span> <span class="tag">Tools</span> <span class="tag">GDPR</span></p>
+
+<p>"Run a free compliance scan" is everywhere. But what do these tools actually test, what can they never see, and when do you need something more than a scan? This guide answers that honestly — including exactly what our own scanner checks and doesn't.</p>
+
+<div class="box">
+  <strong>💡 Try it as you read:</strong> the <a href="/scan/">EUComply free scanner</a> works on any URL from any platform — WordPress, Shopify, Webflow, Next.js, Squarespace or hand-written HTML. No sign-up.
+</div>
+
+<h2>The three layers of compliance checking</h2>
+
+<table>
+  <tr><th>Layer</th><th>What it covers</th><th>Automated?</th></tr>
+  <tr><td>Technical signals</td><td>HTTPS/HSTS, security headers, cookie banner presence, privacy policy links, tracking scripts</td><td>✅ Fully</td></tr>
+  <tr><td>Behavioural checks</td><td>Cookies firing before consent, reject-button parity, third-party trackers</td><td>⚠️ Partially (needs real browser)</td></tr>
+  <tr><td>Legal substance</td><td>Whether your policy text actually matches your data practices; records of consent; DPA filings</td><td>❌ No tool can judge this</td></tr>
+</table>
+
+<p>Any scanner that claims to "make you GDPR compliant" with one click is overselling layer 3. A good scanner does layer 1 reliably, flags obvious layer-2 problems, and tells you clearly where automation ends.</p>
+
+<h2>What EUComply's free scan checks</h2>
+
+<ul>
+  <li><strong>TLS/HTTPS configuration</strong> — certificate validity and HSTS header (GDPR Art. 32 expects appropriate technical measures)</li>
+  <li><strong>Cookie consent banner detection</strong> — presence of a recognised consent mechanism in the served HTML</li>
+  <li><strong>Security headers</strong> — Content-Security-Policy, X-Content-Type-Options, Referrer-Policy and friends</li>
+  <li><strong>Privacy policy discoverability</strong> — whether a linked privacy/cookie policy exists and is reachable</li>
+  <li><strong>Platform fingerprinting</strong> — identifies your stack so fixes come as copy-paste instructions for your actual setup</li>
+</ul>
+
+<p>Every failed check comes with a concrete fix — not "consult a professional", but the exact header to add or element to change.</p>
+
+<h2>How scanners compare to the alternatives</h2>
+
+<h3>Free automated scans</h3>
+<p>Best for: a fast triage of the technical layer. Ten seconds per site, zero cost, no installation. Limitation: one snapshot of the homepage — subpages with their own trackers aren't crawled.</p>
+
+<h3>Manual audits (consultant)</h3>
+<p>Best for: legal substance — policy wording, data-processing agreements, consent records, international transfers. Cost: typically €1,500–€10,000+. A sensible sequence is scan first, audit second: arrive at the consultant with the technical layer already clean.</p>
+
+<h3>Enterprise monitoring platforms</h3>
+<p>Best for: large sites needing continuous crawling of thousands of pages. €200–€1,000+/month. Overkill for most SMBs, but the right answer at scale.</p>
+
+<div class="box warn">
+  <strong>⚠️ Honest limitation:</strong> no scanner proves compliance. A passing scan means the technical signals are right — it's evidence of diligence, not a legal guarantee. Anyone claiming otherwise is selling you something.
+</div>
+
+<h2>Who needs which</h2>
+
+<table>
+  <tr><th>You are…</th><th>Sensible setup</th></tr>
+  <tr><td>Freelancer / small business site</td><td>Free scan quarterly + generated policies (<a href="/tools/">free document tools</a>)</td></tr>
+  <tr><td>Agency managing client sites</td><td>Scan every client + documented reports (<a href="/store/">EUComply Pro</a>, $79/yr) before handover</td></tr>
+  <tr><td>E-commerce / high traffic</td><td>Scans + generated docs + periodic human review of policy substance</td></tr>
+</table>
+
+<h2>Bottom line</h2>
+<p>A free scan won't make you compliant, but it catches the specific technical failures behind most cookie-related complaints — missing banners, weak TLS, unreachable policies — in seconds and for nothing. That makes it the correct first step for any site, on any platform:</p>
+
+<p><a class="btn" href="/scan/">Scan any website free →</a><p style="font-size:.9rem;margin-top:.5rem">🛡️ Passed? <a href="/badge/">Add a free compliance badge</a> to your site — client trust plus a dofollow backlink.</p></p>
+
+<footer>
+  <p>This article is general information, not legal advice.</p>
+  <p><a href="/">EUComply</a> · <a href="/scan/">Free scan</a> · <a href="/blog/gdpr-cookie-banner-fines/">What gets sites fined</a> · <a href="/tools/">Document generator</a></p>
+</footer>
+</body>
+</html>

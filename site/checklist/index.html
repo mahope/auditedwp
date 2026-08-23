@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDPR Compliance Checklist 2026 — Free Interactive Self-Assessment | EUComply</title>
+<meta name="description" content="Free interactive GDPR compliance checklist for website owners. Work through all 24 requirements, see your compliance score instantly, and get a prioritized fix list. No sign-up required.">
+<meta property="og:title" content="GDPR Compliance Checklist 2026 — Free Interactive Self-Assessment">
+<meta property="og:description" content="24-point interactive GDPR checklist for websites. Instant score, prioritized fixes. Free, no sign-up.">
+<meta property="og:url" content="https://auditedwp.pages.dev/checklist/">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://auditedwp.pages.dev/checklist/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/checklist/">
+  
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is GDPR compliance for a website?",
+      "acceptedAnswer": {"@type": "Answer", "text": "For most website owners, GDPR compliance means: a lawful basis for every cookie and tracker you set (usually consent), a consent banner that actually blocks tracking before opt-in, a privacy policy that names your data processing, working data-subject rights processes, secure transport (HTTPS/HSTS), and records of processing for anything beyond trivial use."}
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check if my website is GDPR compliant?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Work through this checklist manually, or run the free EUComply scanner which tests HTTPS and HSTS headers, detects your consent platform, checks whether cookies fire before consent, inspects forms for consent language, and verifies your legal pages exist — automatically, on any CMS."}
+    },
+    {
+      "@type": "Question",
+      "name": "Is GDPR compliance required for small websites?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Yes if you target or measure visitors from the EU — there is no small-business exemption. Fines scale with turnover, but supervisory authorities do fine small companies, and the bigger practical risk is ad networks and analytics vendors requiring valid consent signals."}
+    }
+  ]
+}
+</script>
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{padding:44px 0 12px;text-align:center}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+h1{font-size:32px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);font-size:16px;max-width:600px;margin:0 auto 28px}
+
+.scorebar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);padding:10px 0;display:none}
+.scorebar.on{display:block}
+.scorebar .wrap{display:flex;align-items:center;gap:14px}
+.meter{flex:1;height:10px;background:var(--soft);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--warn);transition:width .3s,background .3s}
+.scorebar b{font-size:15px;white-space:nowrap}
+.scorebar .lbl{font-size:13px;color:var(--muted)}
+
+section.cat{margin:34px 0}
+section.cat h2{font-size:19px;letter-spacing:-.01em;margin-bottom:4px}
+section.cat p.note{color:var(--muted);font-size:14px;margin-bottom:14px}
+.item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.item:hover{border-color:var(--accent)}
+.item input{width:19px;height:19px;margin-top:3px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.item .t{font-weight:600;font-size:15px}
+.item .w{color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;letter-spacing:.03em;margin-left:8px;vertical-align:2px}
+.item .w.must{background:var(--fail,#b03030)}
+.item .w.should{background:var(--warn)}
+.item .d{color:var(--muted);font-size:13px;margin-top:3px}
+.item .d a{color:var(--accent)}
+.item.done{background:var(--soft)}
+.item.done .t{text-decoration:line-through;color:var(--muted)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:none;font-weight:600;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none;text-align:center}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.ghost:hover{background:#eef3f9}
+#result{display:none;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:22px;margin:22px 0}
+#result.on{display:block}
+#result h2{font-size:20px;margin-bottom:6px}
+#result p{color:var(--muted);font-size:14px;margin-bottom:12px}
+#fixlist{list-style:none}
+#fixlist li{padding:9px 0;border-top:1px solid var(--line);font-size:14px;display:flex;gap:10px}
+#fixlist li:first-child{border-top:none}
+.pill{flex-shrink:0;color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;height:fit-content;margin-top:3px}
+.pill.must{background:#b03030}
+.pill.should{background:var(--warn)}
+
+.faq{margin:40px 0}
+.faq h2{font-size:20px;margin-bottom:14px}
+.faq details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:var(--bg)}
+.faq summary{font-weight:600;font-size:14px;cursor:pointer}
+.faq details p{color:var(--muted);font-size:14px;margin-top:8px}
+
+footer{margin-top:50px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:13px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+.disc{background:#fffbe8;border:1px solid #e8dc9a;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;margin:18px 0}
+@media(max-width:600px){h1{font-size:26px}.hero{padding:30px 0 8px}nav a{margin-left:10px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+  <a href="/scan/">Scanner</a>
+  <a href="/nis2-checklist/">NIS2</a>
+  <a href="/eaa-checklist/">EAA</a>
+  <a href="/tools/">Generator</a>
+  <a href="/store/">Templates</a>
+  <a class="cta" href="/pro/">Go Pro</a>
+</nav>
+</div></header>
+
+<div class="scorebar" id="scorebar"><div class="wrap">
+  <b id="scoretxt">0 / 24</b>
+  <div class="meter"><i id="meterfill"></i></div>
+  <span class="lbl" id="scorelbl">getting started</span>
+</div></div>
+
+<main class="wrap">
+<div class="hero">
+  <span class="badge">Updated August 2026 · Works on any CMS</span>
+  <h1>The GDPR Compliance Checklist for <em>Websites</em></h1>
+  <p class="sub">24 concrete requirements across 5 categories. Tick what's in place, watch your score update live, and get a prioritized fix list at the end. Nothing is stored — everything runs in your browser.</p>
+</div>
+
+<div class="disc"><strong>This is a self-assessment tool, not legal advice.</strong> It maps to widely accepted GDPR obligations for website operators. For high-risk processing, involve counsel.</div>
+
+<section class="cat">
+  <h2>1. Cookies &amp; Tracking</h2>
+  <p class="note">ePrivacy + GDPR Art. 6 — consent before non-essential cookies fire.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Consent banner shown to EU visitors on first visit</span> <span class="w must">MUST</span>
+    <span class="d">A banner must appear before any tracking happens, not after the first pageview has already fired tags.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">No non-essential cookies fire before opt-in</span> <span class="w must">MUST</span>
+    <span class="d">Analytics, ads and social pixels must stay silent until the visitor accepts. Test with a fresh incognito window and DevTools → Application → Cookies.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Rejecting is as easy as accepting</span> <span class="w must">MUST</span>
+    <span class="d">Equal-prominence buttons ("Accept all" vs "Reject all"). Pre-ticked boxes are invalid under German and French enforcement practice.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Granular categories (necessary / analytics / marketing)</span> <span class="w should">SHOULD</span>
+    <span class="d">Visitors must be able to consent per purpose, not one giant yes.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Consent is logged with timestamp and version</span> <span class="w should">SHOULD</span>
+    <span class="d">You must be able to prove consent existed. Most consent platforms store this automatically — confirm it's enabled.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Banner offers a way to change or withdraw consent later</span> <span class="w should">SHOULD</span>
+    <span class="d">Usually a small "Cookie settings" link in the footer.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>2. Legal Pages</h2>
+  <p class="note">GDPR Arts. 12–14 — transparency about what you collect and why.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Privacy policy exists and is reachable from every page</span> <span class="w must">MUST</span>
+    <span class="d">Linked from the footer, not buried three clicks deep.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Policy names each category of personal data collected</span> <span class="w must">MUST</span>
+    <span class="d">Contact form data, analytics identifiers, newsletter emails, order data — list them concretely.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Legal basis stated per purpose</span> <span class="w must">MUST</span>
+    <span class="d">Consent for marketing, legitimate interest for security logs, contract performance for orders.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Data retention periods specified</span> <span class="w must">MUST</span>
+    <span class="d">Say how long you keep each category — e.g. "newsletter data until unsubscribe".</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Third-party processors named (analytics, hosting, email)</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 13(1)(e) requires naming recipients. Google Analytics, Mailchimp, your host — list them.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Cookie policy or cookie table listing actual cookies</span> <span class="w should">SHOULD</span>
+    <span class="d">Name, provider, purpose, duration. Most consent platforms can generate this table.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Policy has a last-updated date and version history</span> <span class="w should">SHOULD</span>
+    <span class="d">Regulators check whether policies track reality. A stale date is an easy red flag.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>3. Forms &amp; Data Collection</h2>
+  <p class="note">Every field you collect needs a lawful basis and honest labeling.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Marketing/newsletter checkboxes are unticked by default</span> <span class="w must">MUST</span>
+    <span class="d">Pre-ticked consent was explicitly rejected by the CJEU (Planet49).</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Each form states what happens to the data and links the policy</span> <span class="w must">MUST</span>
+    <span class="d">One line above the submit button is enough.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Only necessary fields are collected</span> <span class="w should">SHOULD</span>
+    <span class="d">Data minimization, Art. 5(1)(c). Don't ask for a phone number you never use.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Double opt-in on newsletter signups</span> <span class="w should">SHOULD</span>
+    <span class="d">Not strictly required by GDPR, but standard practice in DE/AT and your best proof of consent.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Forms protected against spam without dark-pattern UX</span> <span class="w should">SHOULD</span>
+    <span class="d">Honeypot or server-side rate limiting beats unreadable CAPTCHAs that create accessibility problems.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>4. Security &amp; Technical Measures</h2>
+  <p class="note">GDPR Art. 32 — "appropriate technical measures". These also feed your SEO.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">HTTPS enforced site-wide with redirects from HTTP</span> <span class="w must">MUST</span>
+    <span class="d">Table stakes. Any http:// URL should 301 to https://.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">HSTS header set (Strict-Transport-Security)</span> <span class="w should">SHOULD</span>
+    <span class="d"><code>Strict-Transport-Security: max-age=31536000</code>. The EUComply scanner checks this automatically.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Security headers configured (CSP or at minimum X-Content-Type-Options)</span> <span class="w should">SHOULD</span>
+    <span class="d">Defense-in-depth against injected scripts that could exfiltrate user data.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Access to admin areas restricted (2FA, limited attempts)</span> <span class="w should">SHOULD</span>
+    <span class="d">Compromised sites leak personal data — Art. 32 requires you prevent the obvious attacks.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Backups exist and have been restore-tested</span> <span class="w should">SHOULD</span>
+    <span class="d">Availability is a GDPR principle too (Art. 5(1)(f)).</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>5. Data Subject Rights &amp; Accountability</h2>
+  <p class="note">GDPR Arts. 15–22, 30 — people can ask, and you must answer within one month.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">A working contact channel for privacy requests exists</span> <span class="w must">MUST</span>
+    <span class="d">privacy@yourdomain or a form. It must actually reach someone who responds.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">You know where all personal data lives (systems inventory)</span> <span class="w must">MUST</span>
+    <span class="d">You can't delete or export data you can't find. A simple spreadsheet listing system → data → owner is enough at this scale.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Record of processing activities maintained (Art. 30)</span> <span class="w should">SHOULD</span>
+    <span class="d">Required for organizations over 250 staff — but recommended for everyone because it doubles as your systems inventory.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Process defined for access/deletion requests within 30 days</span> <span class="w should">SHOULD</span>
+    <span class="d">Decide now who handles them and how you verify identity. Don't improvise when the first email arrives.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">DPAs signed with processors that handle EU personal data</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 28 requires a written agreement. Most SaaS vendors offer a standard DPA you can accept online in minutes — <a href="/store/">our template pack includes one for smaller vendors that don't</a>.</span></span></label>
+</section>
+
+<div class="actions">
+  <button class="btn" id="calcBtn">Show my score &amp; fix list</button>
+  <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+</div>
+
+<div id="result">
+  <h2 id="verdict"></h2>
+  <p id="summary"></p>
+  <ul id="fixlist"></ul>
+  <p style="margin-top:14px"><strong>Next step:</strong> several of these checks can be verified automatically.
+    <a href="/scan/">Run the free scanner on your URL</a> — it tests HTTPS/HSTS, consent platform detection, cookies-before-consent, form consent text and legal pages on any CMS, in seconds.
+    Need the documents behind items like DPAs and privacy policies? <a href="/store/">Browse ComplianceDocs templates</a>.</p>
+</div>
+
+<section class="faq">
+<h2>Frequently asked questions</h2>
+<details open><summary>What is GDPR compliance for a website?</summary>
+<p>For most website owners it means five things: a lawful basis for every cookie and tracker (usually consent), a banner that actually blocks tracking before opt-in, a privacy policy that matches reality, working data-subject rights processes, and basic technical security like HTTPS and HSTS. This checklist walks through all of them.</p></details>
+<details><summary>How do I check if my website is GDPR compliant?</summary>
+<p>Two ways: work through this checklist honestly (10 minutes), or automate the parts that can be tested — the free <a href="/scan/">EUComply scanner</a> checks SSL/HSTS, consent platforms, cookies-before-consent, forms and legal pages on WordPress, Shopify, Webflow, Wix, Squarespace, custom HTML and anything else.</p></details>
+<details><summary>Is GDPR compliance required for small websites?</summary>
+<p>Yes, if you have visitors from the EU. There is no size exemption. Enforcement against small businesses is real but rarer than headline fines — the practical risk today is that ad networks and analytics vendors require valid consent signals to keep serving you.</p></details>
+<details><summary>Does this apply outside the EU?</summary>
+<p>GDPR applies extraterritorially: if you target or monitor people in the EU, it applies regardless of where you're based. Similar laws (UK GDPR, Swiss FADP, Brazil LGPD) largely follow the same playbook, so this checklist covers most of them by default.</p></details>
+</section>
+</main>
+
+<footer>
+  <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/tools/">Generator</a> · <a href="/store/">Templates</a> · <a href="/pro/">Pro</a> · <a href="/blog/">Blog</a></div>
+  <div style="margin-top:8px">EUComply · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/impressum-generator/">Impressum Generator</a></div>
+</footer>
+
+<script>
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+  var bar = document.getElementById('scorebar');
+  var fill = document.getElementById('meterfill');
+  var stxt = document.getElementById('scoretxt');
+  var slbl = document.getElementById('scorelbl');
+
+  function score(){
+    return items.filter(function(i){return i.querySelector('input').checked}).length;
+  }
+  function update(){
+    var s = score(), n = items.length;
+    bar.classList.add('on');
+    stxt.textContent = s + ' / ' + n;
+    var pct = Math.round(s/n*100);
+    fill.style.width = pct + '%';
+    fill.style.background = pct >= 90 ? '#1a7a44' : pct >= 60 ? '#b8860b' : '#b85a0a';
+    slbl.textContent = pct >= 95 ? 'excellent' : pct >= 75 ? 'solid foundation' : pct >= 45 ? 'gaps remain' : pct > 0 ? 'early days' : '';
+  }
+  items.forEach(function(i){
+    i.addEventListener('change', function(){
+      i.classList.toggle('done', i.querySelector('input').checked);
+      update();
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    items.forEach(function(i){ i.querySelector('input').checked=false; i.classList.remove('done'); });
+    document.getElementById('result').classList.remove('on');
+    update();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', function(){
+    var unchecked = items.filter(function(i){return !i.querySelector('input').checked});
+    var mustLeft = unchecked.filter(function(i){return i.querySelector('input').dataset.w==='must'});
+    var s = score(), n = items.length, pct = Math.round(s/n*100);
+    var v = document.getElementById('verdict'), sum = document.getElementById('summary'), ul = document.getElementById('fixlist');
+    ul.innerHTML = '';
+    if(unchecked.length === 0){
+      v.textContent = '🎉 Full marks: ' + n + '/' + n;
+      sum.textContent = 'Everything is ticked. Run the automated scanner to verify the technical items independently — manual self-assessments drift.';
+    } else {
+      v.textContent = pct >= 75 ? 'Solid — ' + s + '/' + n + ' (' + pct + '%)' :
+                      pct >= 45 ? 'Gaps remain — ' + s + '/' + n + ' (' + pct + '%)' :
+                                  'Early stage — ' + s + '/' + n + ' (' + pct + '%)';
+      sum.textContent = mustLeft.length ?
+        mustLeft.length + ' MUST-level item(s) still open. Fix these first — they carry the highest enforcement risk.' :
+        'All MUST-level items done. Close out the SHOULD items below to harden further.';
+      unchecked.sort(function(a,b){ return (a.querySelector('input').dataset.w==='must'?0:1)-(b.querySelector('input').dataset.w==='must'?0:1); });
+      unchecked.forEach(function(i){
+        var li = document.createElement('li');
+        var w = i.querySelector('input').dataset.w;
+        li.innerHTML = '<span class="pill '+w+'">'+(w==='must'?'MUST':'SHOULD')+'</span><span>'+i.querySelector('.t').textContent+'</span>';
+        ul.appendChild(li);
+      });
+    }
+    var res = document.getElementById('result');
+    res.classList.add('on');
+    res.scrollIntoView({behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

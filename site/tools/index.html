@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free EU Compliance Document Generator — Privacy Policy, DPA, EAA Statement</title>
+<meta name="description" content="Generate free GDPR-compliant privacy policy, data processing agreement (DPA), and EAA accessibility statement. Fill in your details, get a formatted document instantly. No sign-up required.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/tools/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/tools/">
+  
+<meta property="og:title" content="Free EU Compliance Document Generator">
+<meta property="og:description" content="Generate privacy policy, DPA, and EAA accessibility statement for your website — free, no sign-up.">
+<meta property="og:url" content="https://auditedwp.pages.dev/tools/">
+<meta property="og:type" content="website">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  h1{font-size:30px;letter-spacing:-.025em;margin-bottom:8px}
+  .sub{color:var(--muted);font-size:16px;margin-bottom:28px;max-width:650px}
+  .hero{padding:40px 0 8px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap}
+  .tab{background:var(--soft);border:1px solid var(--line);padding:10px 18px;border-radius:8px 8px 0 0;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);position:relative;bottom:-1px}
+  .tab:hover{background:#eef3f9}
+  .tab.active{background:var(--bg);border-bottom-color:var(--bg);color:var(--ink)}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  /* Form */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-bottom:20px}
+  .form-grid .full{grid-column:1/-1}
+  label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:3px}
+  input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-size:15px;outline:none;font-family:inherit}
+  input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(40,104,208,.12)}
+  .form-help{font-size:12px;color:var(--muted);margin-top:3px}
+
+  /* Buttons */
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;font-weight:600;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none}
+  .btn:hover{background:var(--accent-dark)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .btn.ok{background:var(--ok)}
+
+  /* Output */
+  .output{display:none;margin-top:24px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .output-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--soft);border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .output-bar .title{font-weight:600;font-size:14px}
+  .output-bar .actions{display:flex;gap:6px}
+  .output-bar .actions button{background:var(--bg);border:1px solid var(--line);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .output-bar .actions button:hover{border-color:var(--accent);color:var(--accent)}
+  #doc-output{padding:24px 28px;font-size:14px;line-height:1.7;max-height:800px;overflow-y:auto}
+  #doc-output h2{font-size:18px;margin:20px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+  #doc-output h2:first-child{margin-top:0;border-top:none}
+  #doc-output p{margin-bottom:10px}
+  #doc-output ul{padding-left:20px;margin-bottom:10px}
+  #doc-output li{margin-bottom:4px}
+  #doc-output address{font-style:normal;margin-bottom:10px}
+
+  /* Upsell */
+  .upsell{margin-top:20px;background:#f8faff;border:2px solid var(--accent);border-radius:10px;padding:20px 24px;text-align:center}
+  .upsell h3{font-size:17px;margin-bottom:4px}
+  .upsell p{color:var(--muted);font-size:14px;margin-bottom:12px}
+  .upsell .btn.ok{background:var(--ok)}
+  .upsell .btn.ok:hover{background:#146336}
+
+  /* Features section */
+  section{padding:40px 0;border-top:1px solid var(--line)}
+  h2{font-size:24px;letter-spacing:-.02em;margin-bottom:6px}
+  .lede{color:var(--muted);max-width:640px;margin-bottom:22px;font-size:15px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .feat{border:1px solid var(--line);border-radius:10px;padding:20px;background:var(--soft)}
+  .feat h3{font-size:15px;margin-bottom:6px}
+  .feat p{font-size:13.5px;color:var(--muted)}
+
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+
+  @media(max-width:700px){
+    h1{font-size:24px}
+    .form-grid{grid-template-columns:1fr}
+    .grid3{grid-template-columns:1fr}
+    nav a:not(.cta){display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/store/">Templates</a>
+      <a href="/extension/">Extension</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/#pricing">Get Pro $79/yr</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1>Free EU compliance document generator</h1>
+  <p class="sub">Generate a privacy policy, data processing agreement (DPA), or EAA accessibility statement for your website — fill in your details, get a formatted document instantly. No sign-up, no account. Want more? Try the dedicated <a href="/privacy-policy-generator/">privacy policy generator</a>, <a href="/terms-of-service-generator/">terms of service generator</a>, <a href="/refund-policy-generator/">refund policy generator</a> or <a href="/cookie-policy-generator/">cookie policy generator</a>.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="privacy" role="tab">📄 Privacy Policy</button>
+    <button class="tab" data-tab="dpa" role="tab">🤝 DPA</button>
+    <button class="tab" data-tab="eaa" role="tab">♿ EAA Statement</button>
+  </div>
+
+  <!-- Privacy Policy -->
+  <div class="tab-pane active" id="pane-privacy">
+    <div class="form-grid">
+      <div class="full">
+        <label for="pp-name">Your business name</label>
+        <input type="text" id="pp-name" placeholder="e.g. Acme Web Services Ltd">
+      </div>
+      <div>
+        <label for="pp-domain">Website domain</label>
+        <input type="text" id="pp-domain" placeholder="example.com">
+      </div>
+      <div>
+        <label for="pp-email">Contact email</label>
+        <input type="email" id="pp-email" placeholder="privacy@example.com">
+      </div>
+      <div>
+        <label for="pp-address">Registered address (optional)</label>
+        <input type="text" id="pp-address" placeholder="123 Main Street, City, Country">
+      </div>
+      <div>
+        <label for="pp-country">Country of establishment</label>
+        <input type="text" id="pp-country" placeholder="e.g. Denmark, Germany, UK">
+      </div>
+      <div class="full">
+        <label for="pp-services">What services does your website offer?</label>
+        <input type="text" id="pp-services" placeholder="e.g. SaaS platform, e-commerce store, consultancy services">
+      </div>
+    </div>
+    <button class="btn" onclick="generate('privacy')">Generate Privacy Policy</button>
+    <p class="form-help" style="margin-top:8px">This is a template to get you started. Have a legal professional review it before use.</p>
+  </div>
+
+  <!-- DPA -->
+  <div class="tab-pane" id="pane-dpa">
+    <div class="form-grid">
+      <div class="full">
+        <label for="dpa-name">Your business name (Data Controller)</label>
+        <input type="text" id="dpa-name" placeholder="e.g. Acme Web Services Ltd">
+      </div>
+      <div>
+        <label for="dpa-domain">Your website domain</label>
+        <input type="text" id="dpa-domain" placeholder="example.com">
+      </div>
+      <div>
+        <label for="dpa-email">Contact email</label>
+        <input type="email" id="dpa-email" placeholder="privacy@example.com">
+      </div>
+      <div>
+        <label for="dpa-address">Your registered address</label>
+        <input type="text" id="dpa-address" placeholder="123 Main Street, City, Country">
+      </div>
+      <div>
+        <label for="dpa-processor">Data Processor name</label>
+        <input type="text" id="dpa-processor" placeholder="e.g. Cloud Services Inc.">
+      </div>
+      <div class="full">
+        <label for="dpa-desc">Description of processing</label>
+        <input type="text" id="dpa-desc" placeholder="e.g. Web hosting, email marketing, analytics processing">
+      </div>
+      <div class="full">
+        <label for="dpa-data">Types of personal data processed</label>
+        <input type="text" id="dpa-data" placeholder="e.g. Names, email addresses, IP addresses, payment data">
+      </div>
+    </div>
+    <button class="btn" onclick="generate('dpa')">Generate DPA</button>
+    <p class="form-help" style="margin-top:8px">GDPR Art. 28 requires a written DPA between controller and processor. This template covers the mandatory clauses.</p>
+  </div>
+
+  <!-- EAA -->
+  <div class="tab-pane" id="pane-eaa">
+    <div class="form-grid">
+      <div class="full">
+        <label for="eaa-name">Your business name</label>
+        <input type="text" id="eaa-name" placeholder="e.g. Acme Web Services Ltd">
+      </div>
+      <div>
+        <label for="eaa-domain">Website domain</label>
+        <input type="text" id="eaa-domain" placeholder="example.com">
+      </div>
+      <div>
+        <label for="eaa-email">Contact email</label>
+        <input type="email" id="eaa-email" placeholder="accessibility@example.com">
+      </div>
+      <div>
+        <label for="eaa-country">Country of establishment</label>
+        <input type="text" id="eaa-country" placeholder="e.g. Denmark, Germany">
+      </div>
+      <div>
+        <label for="eaa-standards">Accessibility standards followed</label>
+        <input type="text" id="eaa-standards" placeholder="WCAG 2.2 AA">
+      </div>
+    </div>
+    <button class="btn" onclick="generate('eaa')">Generate EAA Statement</button>
+    <p class="form-help" style="margin-top:8px">The European Accessibility Act (effective June 2025) requires digital services to publish an accessibility statement.</p>
+  </div>
+</div>
+
+<div class="wrap" id="output-area">
+  <div class="output" id="output-box">
+    <div class="output-bar">
+      <span class="title" id="doc-title">Generated Document</span>
+      <div class="actions">
+        <button onclick="copyDoc()">📋 Copy</button>
+        <button onclick="printDoc()">🖨️ Print / PDF</button>
+      </div>
+    </div>
+    <div id="doc-output"></div>
+  </div>
+
+  <div class="upsell" id="upsell-box" style="display:none">
+    <h3>Need a lawyer-reviewed version?</h3>
+    <p>Our ComplianceDocs library includes professionally drafted, regularly updated templates with jurisdiction-specific clauses, data-subject rights addenda, and breach-notification procedures — ready for auditors and clients.</p>
+    <a class="btn ok" href="/store/">Browse ComplianceDocs →</a>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">From $29 one-time. Instant download.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Three documents, one tool</h2>
+    <p class="lede">Generate the three most commonly requested EU compliance documents — all from one page.</p>
+    <div class="grid3">
+      <div class="feat"><h3>📄 Privacy Policy</h3><p>GDPR Arts. 12–14 compliant template covering data categories, lawful bases, retention, rights, and international transfers. Fill in your details, get a formatted document.</p></div>
+      <div class="feat"><h3>🤝 Data Processing Agreement</h3><p>GDPR Art. 28 DPA with mandatory clauses: processing instructions, confidentiality, sub-processor authorisation, data breach notification, and deletion obligations.</p></div>
+      <div class="feat"><h3>♿ EAA Statement</h3><p>European Accessibility Act (2025) compliance statement template. Confirms your commitment to accessibility, lists standards followed, and provides a contact channel.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Made for every website owner</h2>
+    <p class="lede">Whether you run a WordPress blog, a Shopify store, a Next.js SaaS, or a static HTML site — these documents work for all platforms. Use them together with our <a href="/scan/">free compliance scanner</a> to check and fix gaps.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — compliance tools for every website.<br>⚖️ Automated templates only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('pane-' + tab.dataset.tab).classList.add('active');
+      document.getElementById('output-box').style.display = 'none';
+      document.getElementById('upsell-box').style.display = 'none';
+    });
+  });
+})();
+
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function today() {
+  var d = new Date();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function generate(type) {
+  var doc = '';
+  var title = '';
+  var scrollTo = document.getElementById('output-area');
+
+  if (type === 'privacy') {
+    var name = esc(document.getElementById('pp-name').value.trim()) || '[Your Business Name]';
+    var domain = esc(document.getElementById('pp-domain').value.trim()) || '[yourdomain.com]';
+    var email = esc(document.getElementById('pp-email').value.trim()) || '[privacy@email.com]';
+    var address = esc(document.getElementById('pp-address').value.trim()) || '';
+    var country = esc(document.getElementById('pp-country').value.trim()) || '[Country]';
+    var services = esc(document.getElementById('pp-services').value.trim()) || 'our website services';
+
+    title = 'Privacy Policy — ' + name;
+    doc = '<h2>Privacy Policy</h2>';
+    doc += '<p><strong>' + name + '</strong> (' + domain + ')</p>';
+    doc += '<p><em>Last updated: ' + today() + '</em></p>';
+    doc += '<p>This Privacy Policy explains how ' + name + ' (\'we\', \'us\', or \'our\') collects, uses, shares, and protects personal data in connection with ' + services + ' provided through ' + domain + ' (the \'Website\'). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (GDPR) and applicable national data protection laws.</p>';
+
+    doc += '<h2>1. Data Controller</h2>';
+    doc += '<p>' + name + ' is the data controller for personal data collected through the Website.</p>';
+    if (address) doc += '<address>' + name + '<br>' + address.replace(/\n/g,'<br>') + '</address>';
+    doc += '<p>Email: <a href="mailto:' + email + '">' + email + '</a></p>';
+
+    doc += '<h2>2. Personal Data We Collect</h2>';
+    doc += '<p>We may collect the following categories of personal data:</p>';
+    doc += '<ul>';
+    doc += '<li><strong>Contact information:</strong> Name, email address, phone number, company name</li>';
+    doc += '<li><strong>Account information:</strong> Username, password, profile information</li>';
+    doc += '<li><strong>Usage data:</strong> IP address, browser type, device information, pages visited, time spent</li>';
+    doc += '<li><strong>Communication data:</strong> Messages sent through contact forms, support requests</li>';
+    doc += '<li><strong>Transaction data:</strong> Billing information, purchase history (payment data is processed by our payment processor and not stored by us)</li>';
+    doc += '</ul>';
+
+    doc += '<h2>3. Legal Basis for Processing</h2>';
+    doc += '<p>We process personal data on the following legal bases under GDPR:</p>';
+    doc += '<ul>';
+    doc += '<li><strong>Consent (Art. 6(1)(a)):</strong> For marketing communications, non-essential cookies, and optional data sharing</li>';
+    doc += '<li><strong>Contractual necessity (Art. 6(1)(b)):</strong> To provide our ' + services + ' and fulfil our obligations under our terms of service</li>';
+    doc += '<li><strong>Legal obligation (Art. 6(1)(c)):</strong> To comply with applicable laws, regulatory requirements, and legal processes</li>';
+    doc += '<li><strong>Legitimate interests (Art. 6(1)(f)):</strong> For network security, fraud prevention, analytics, and service improvement</li>';
+    doc += '</ul>';
+
+    doc += '<h2>4. How We Use Your Data</h2>';
+    doc += '<p>We use personal data for the following purposes:</p>';
+    doc += '<ul>';
+    doc += '<li>Providing and maintaining our ' + services + '</li>';
+    doc += '<li>Communicating with you about your account, orders, and support requests</li>';
+    doc += '<li>Sending service-related communications (not marketing)</li>';
+    doc += '<li>Improving our Website, products, and user experience</li>';
+    doc += '<li>Detecting and preventing fraud, abuse, and security incidents</li>';
+    doc += '<li>Complying with legal obligations</li>';
+    doc += '</ul>';
+
+    doc += '<h2>5. Data Sharing and Recipients</h2>';
+    doc += '<p>We may share personal data with the following categories of recipients:</p>';
+    doc += '<ul>';
+    doc += '<li><strong>Service providers:</strong> Hosting, analytics, email delivery, payment processing (each bound by a Data Processing Agreement)</li>';
+    doc += '<li><strong>Professional advisors:</strong> Lawyers, accountants, insurers (on a need-to-know basis)</li>';
+    doc += '<li><strong>Public authorities:</strong> When required by law, court order, or regulatory request</li>';
+    doc += '<li><strong>Business transferees:</strong> In connection with a merger, acquisition, or sale of assets</li>';
+    doc += '</ul>';
+    doc += '<p>We do not sell your personal data to third parties.</p>';
+
+    doc += '<h2>6. International Data Transfers</h2>';
+    doc += '<p>If we transfer personal data to countries outside the European Economic Area (EEA), we ensure appropriate safeguards are in place, including Standard Contractual Clauses (SCCs) adopted by the European Commission, or an adequacy decision by the European Commission under Art. 45 GDPR.</p>';
+
+    doc += '<h2>7. Data Retention</h2>';
+    doc += '<p>We retain personal data only as long as necessary to fulfil the purposes for which it was collected, or as required by applicable law. Retention periods are determined by:</p>';
+    doc += '<ul>';
+    doc += '<li>The nature of the data and the purpose of processing</li>';
+    doc += '<li>Legal and regulatory retention requirements (typically 3–7 years for financial records)</li>';
+    doc += '<li>Statutes of limitation for potential legal claims</li>';
+    doc += '</ul>';
+
+    doc += '<h2>8. Your Rights</h2>';
+    doc += '<p>Under the GDPR, you have the following rights regarding your personal data:</p>';
+    doc += '<ul>';
+    doc += '<li><strong>Right of access (Art. 15):</strong> Obtain confirmation of whether we process your data and request a copy</li>';
+    doc += '<li><strong>Right to rectification (Art. 16):</strong> Request correction of inaccurate or incomplete data</li>';
+    doc += '<li><strong>Right to erasure (Art. 17):</strong> Request deletion of your personal data (subject to legal retention requirements)</li>';
+    doc += '<li><strong>Right to restriction (Art. 18):</strong> Request restriction of processing in certain circumstances</li>';
+    doc += '<li><strong>Right to data portability (Art. 20):</strong> Receive your data in a structured, commonly used format</li>';
+    doc += '<li><strong>Right to object (Art. 21):</strong> Object to processing based on legitimate interests or for direct marketing</li>';
+    doc += '<li><strong>Right to withdraw consent:</strong> Withdraw consent at any time where processing is based on consent</li>';
+    doc += '</ul>';
+    doc += '<p>To exercise any of these rights, contact us at <a href="mailto:' + email + '">' + email + '</a>. We will respond within 30 days.</p>';
+
+    doc += '<h2>9. Cookies</h2>';
+    doc += '<p>Our Website uses cookies and similar tracking technologies. For detailed information about the cookies we use, your preferences, and how to manage consent, please refer to our Cookie Policy or your consent preferences tool on the Website.</p>';
+
+    doc += '<h2>10. Security</h2>';
+    doc += '<p>We implement appropriate technical and organisational measures to protect personal data against unauthorised access, alteration, disclosure, or destruction, in accordance with GDPR Art. 32. These include encryption (TLS/SSL), access controls, regular security assessments, and staff training.</p>';
+
+    doc += '<h2>11. Contact and Complaints</h2>';
+    doc += '<p>If you have any questions about this Privacy Policy or our data practices, please contact us at <a href="mailto:' + email + '">' + email + '</a>.</p>';
+    doc += '<p>You have the right to lodge a complaint with your local data protection supervisory authority in the ' + country + ' or the EU country where we are established.</p>';
+  }
+
+  else if (type === 'dpa') {
+    var controller = esc(document.getElementById('dpa-name').value.trim()) || '[Your Business Name (Controller)]';
+    var domain = esc(document.getElementById('dpa-domain').value.trim()) || '[yourdomain.com]';
+    var email = esc(document.getElementById('dpa-email').value.trim()) || '[privacy@email.com]';
+    var address = esc(document.getElementById('dpa-address').value.trim()) || '[Your Registered Address]';
+    var processor = esc(document.getElementById('dpa-processor').value.trim()) || '[Processor Name]';
+    var procDesc = esc(document.getElementById('dpa-desc').value.trim()) || '[description of processing]';
+    var dataTypes = esc(document.getElementById('dpa-data').value.trim()) || '[types of personal data]';
+
+    title = 'Data Processing Agreement — ' + controller + ' & ' + processor;
+    doc = '<h2>Data Processing Agreement (DPA)</h2>';
+    doc += '<p><strong>Between:</strong> ' + controller + ' (\'Controller\') and ' + processor + ' (\'Processor\')</p>';
+    doc += '<p><strong>Date:</strong> ' + today() + '</p>';
+    doc += '<p><strong>Website:</strong> ' + domain + '</p>';
+    doc += '<p><em>This DPA forms part of the agreement between the Controller and the Processor for the provision of ' + procDesc + '. It sets out the terms relating to the processing of personal data in compliance with Art. 28 of the General Data Protection Regulation (GDPR).</em></p>';
+
+    doc += '<h2>1. Definitions</h2>';
+    doc += '<p>Capitalised terms used in this DPA shall have the meanings given in the GDPR, including: \'personal data\', \'processing\', \'data subject\', \'supervisory authority\', and \'personal data breach\'.</p>';
+
+    doc += '<h2>2. Scope and Duration</h2>';
+    doc += '<p>This DPA applies to the processing of personal data by the Processor on behalf of the Controller in connection with ' + procDesc + '. The duration of this DPA shall be the term of the underlying agreement between the parties, unless terminated earlier in accordance with its terms.</p>';
+
+    doc += '<h2>3. Description of Processing</h2>';
+    doc += '<p><strong>Nature and purpose:</strong> ' + procDesc + '.</p>';
+    doc += '<p><strong>Categories of data subjects:</strong> Website visitors, customers, users, and other individuals whose data is processed by the Controller through ' + domain + '.</p>';
+    doc += '<p><strong>Types of personal data:</strong> ' + dataTypes + '.</p>';
+
+    doc += '<h2>4. Obligations of the Processor</h2>';
+    doc += '<p>The Processor agrees to:</p>';
+    doc += '<ul>';
+    doc += '<li>Process personal data only on documented instructions from the Controller (Art. 28(3)(a))</li>';
+    doc += '<li>Ensure that persons authorised to process the personal data are bound by confidentiality obligations (Art. 28(3)(b))</li>';
+    doc += '<li>Implement appropriate technical and organisational measures to ensure a level of security appropriate to the risk (Art. 32)</li>';
+    doc += '<li>Not engage a sub-processor without the prior written authorisation of the Controller (Art. 28(2))</li>';
+    doc += '<li>Assist the Controller in fulfilling its obligations regarding data subject rights (Arts. 15–22)</li>';
+    doc += '<li>Assist the Controller with data protection impact assessments and prior consultation obligations (Arts. 35–36)</li>';
+    doc += '<li>Notify the Controller without undue delay upon becoming aware of a personal data breach (Art. 33)</li>';
+    doc += '<li>At the choice of the Controller, delete or return all personal data after the end of the processing services (Art. 28(3)(g))</li>';
+    doc += '</ul>';
+
+    doc += '<h2>5. Sub-processing</h2>';
+    doc += '<p>The Controller provides general authorisation for the Processor to engage sub-processors. The Processor shall maintain an up-to-date list of sub-processors and notify the Controller of any intended changes, allowing the Controller at least 14 days to object.</p>';
+
+    doc += '<h2>6. Data Subject Rights</h2>';
+    doc += '<p>The Processor shall assist the Controller in responding to data subject requests exercising their rights under GDPR. If a data subject contacts the Processor directly regarding their personal data, the Processor shall promptly forward the request to the Controller.</p>';
+
+    doc += '<h2>7. Personal Data Breach</h2>';
+    doc += '<p>The Processor shall notify the Controller without undue delay (and in any event within 48 hours) upon becoming aware of a personal data breach affecting Controller data. The notification shall include the nature of the breach, the categories and approximate number of data subjects and personal data records concerned, and measures taken or proposed.</p>';
+
+    doc += '<h2>8. Audit Rights</h2>';
+    doc += '<p>The Processor shall make available to the Controller all information necessary to demonstrate compliance with the obligations under this DPA and allow for and contribute to audits, including inspections, conducted by the Controller or an auditor mandated by the Controller (Art. 28(3)(h)).</p>';
+
+    doc += '<h2>9. International Transfers</h2>';
+    doc += '<p>Where processing involves transfers of personal data to countries outside the EEA, the parties shall ensure appropriate safeguards are in place, including Standard Contractual Clauses (2021/914) where applicable.</p>';
+
+    doc += '<h2>10. Liability and Indemnification</h2>';
+    doc += '<p>Each party shall be liable for any damage caused by processing that infringes the GDPR. The Processor shall indemnify the Controller against any claims arising from the Processor\'s breach of this DPA or the GDPR.</p>';
+
+    doc += '<h2>11. Deletion and Return</h2>';
+    doc += '<p>Upon termination of the agreement, the Processor shall, at the choice of the Controller, delete or return all personal data processed on behalf of the Controller and delete existing copies unless EU or Member State law requires storage.</p>';
+
+    doc += '<h2>12. Contact</h2>';
+    doc += '<p><strong>Controller:</strong> ' + controller + ', ' + address + ', <a href="mailto:' + email + '">' + email + '</a></p>';
+    doc += '<p><strong>Processor:</strong> ' + processor + '</p>';
+
+    doc += '<p style="margin-top:16px"><em>Template DPA — have legal counsel complete and review before signing.</em></p>';
+  }
+
+  else if (type === 'eaa') {
+    var name = esc(document.getElementById('eaa-name').value.trim()) || '[Your Business Name]';
+    var domain = esc(document.getElementById('eaa-domain').value.trim()) || '[yourdomain.com]';
+    var email = esc(document.getElementById('eaa-email').value.trim()) || '[accessibility@email.com]';
+    var country = esc(document.getElementById('eaa-country').value.trim()) || '[Country]';
+    var standards = esc(document.getElementById('eaa-standards').value.trim()) || 'WCAG 2.2 Level AA';
+
+    title = 'Accessibility Statement — ' + name;
+    doc = '<h2>Accessibility Statement</h2>';
+    doc += '<p><strong>' + name + '</strong> (' + domain + ')</p>';
+    doc += '<p><em>Published: ' + today() + '</em></p>';
+
+    doc += '<h2>Our Commitment</h2>';
+    doc += '<p>' + name + ' is committed to ensuring digital accessibility for all users, regardless of ability. We strive to make our website accessible in accordance with the European Accessibility Act (Directive (EU) 2019/882) and applicable national implementing legislation.</p>';
+
+    doc += '<h2>Standards Applied</h2>';
+    doc += '<p>We aim to conform to Web Content Accessibility Guidelines (WCAG) 2.2 Level AA as our target accessibility standard. Our website is designed, developed, and maintained with accessibility as a core requirement.</p>';
+
+    doc += '<h2>Accessibility Features</h2>';
+    doc += '<p>Our website incorporates the following accessibility features:</p>';
+    doc += '<ul>';
+    doc += '<li>Semantic HTML structure with proper heading hierarchy (h1-h6)</li>';
+    doc += '<li>Descriptive alt text for meaningful images and ARIA labels for interactive elements</li>';
+    doc += '<li>Keyboard-navigable interface with visible focus indicators</li>';
+    doc += '<li>Sufficient colour contrast between text and background</li>';
+    doc += '<li>Resizable text (up to 200%) without loss of content or functionality</li>';
+    doc += '<li>Consistent navigation and predictable operation</li>';
+    doc += '<li>Captions and transcripts for multimedia content</li>';
+    doc += '</ul>';
+
+    doc += '<h2>Compliance Status</h2>';
+    doc += '<p>We are continuously working to improve the accessibility of our website. While we strive to conform to WCAG 2.2 AA, some content may not yet be fully accessible. Partial compliance is an ongoing process, and we welcome feedback on any barriers you encounter.</p>';
+
+    doc += '<h2>Feedback and Contact</h2>';
+    doc += '<p>If you encounter any accessibility barriers on our website, or if you need assistance accessing content, please contact us:</p>';
+    doc += '<p>Email: <a href="mailto:' + email + '">' + email + '</a></p>';
+    doc += '<p>We aim to respond to accessibility feedback within 5 business days and to provide a satisfactory resolution within 15 business days.</p>';
+
+    doc += '<h2>Enforcement Procedure</h2>';
+    doc += '<p>If you are not satisfied with our response, you have the right to contact the national enforcement authority under the applicable accessibility legislation in ' + country + '. This statement will be reviewed and updated at least annually.</p>';
+  }
+
+  // Show output
+  document.getElementById('doc-title').textContent = title;
+  document.getElementById('doc-output').innerHTML = doc;
+  document.getElementById('output-box').style.display = 'block';
+  document.getElementById('upsell-box').style.display = 'block';
+  scrollTo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyDoc() {
+  var content = document.getElementById('doc-output').innerText;
+  navigator.clipboard.writeText(content).then(function() {
+    var btn = document.querySelector('.actions button:first-child');
+    var orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  }).catch(function() {
+    alert('Could not copy automatically. Please select the text manually.');
+  });
+}
+
+function printDoc() {
+  var content = document.getElementById('doc-output').innerHTML;
+  var title = document.getElementById('doc-title').textContent;
+  var w = window.open('', '', 'width=800,height=600');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + title + '</title>');
+  w.document.write('<style>body{font-family:Georgia,serif;line-height:1.7;padding:40px;max-width:700px;margin:0 auto}h2{font-size:18px;margin:24px 0 10px;border-top:1px solid #ddd;padding-top:16px}p{margin-bottom:12px}ul{padding-left:20px;margin-bottom:12px}</style></head><body>');
+  w.document.write('<h1>' + title + '</h1>');
+  w.document.write(content);
+  w.document.write('<hr><p style="color:#888;font-size:12px">Generated by EUComply — automated template, not legal advice.</p>');
+  w.document.write('</body></html>');
+  w.document.close();
+  setTimeout(function() { w.print(); }, 500);
+}
+</script>
+</body>
+</html>

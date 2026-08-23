@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://auditedwp.pages.dev/sample/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/sample/">
+  
+<title>Sample audit trail &amp; quarterly compliance narrative — AuditedWP</title>
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;--ok:#067647;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;max-width:920px;margin:0 auto;padding:40px 24px}
+  h1{font-size:30px;letter-spacing:-.02em;line-height:1.2}
+  h2{font-size:20px;margin:36px 0 10px;padding-top:20px;border-top:1px solid var(--line)}
+  .meta{color:var(--muted);font-size:14px;margin:12px 0 28px}
+  p{margin-bottom:12px;color:#1d2939}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  th{background:#f9fafb;font-family:inherit;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .box{background:#eff8ff;border:1px solid #b2ddff;border-radius:10px;padding:16px 20px;margin:20px 0;font-size:15px}
+  .narrative{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:24px;margin:14px 0}
+  .narrative h3{font-size:16px;margin-bottom:6px}
+  .narrative ul{padding-left:22px;color:#1d2939}
+  .narrative li{margin-bottom:6px}
+  .stamp{display:inline-block;background:#ecfdf3;color:var(--ok);border:1px solid #abefc6;border-radius:999px;padding:2px 12px;font-size:13px;font-weight:600}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<h1>What "audit trail" actually means here</h1>
+<p class="meta">Worked example · AuditedWP · Fictional client site shown with permission-style placeholder data · v1.0, August 2026</p>
+
+<p>This is the document layer you resell to your clients. Every covered site gets a
+machine-generated change log like the one below, plus a quarterly plain-language
+narrative you can forward as-is under <strong>your agency's brand</strong>. Nothing
+here was written by hand after the fact — it is produced as a side effect of the
+operations we already run.</p>
+
+<h2>1. Per-site change log (excerpt)</h2>
+<p>Exportable as PDF or CSV for audits, insurers, or DORA Art. 28 vendor reviews.</p>
+<table>
+  <tr><th>Timestamp (UTC)</th><th>Site</th><th>Action</th><th>Detail</th><th>Operator</th></tr>
+  <tr><td>2026-08-19 02:14</td><td>client-shop.example</td><td>UPDATE plugin</td><td>woocommerce 9.4.2 → 9.5.1 · staging smoke test passed · live 02:31</td><td>agent/wp-ops-01</td></tr>
+  <tr><td>2026-08-19 02:33</td><td>client-shop.example</td><td>UPDATE core</td><td>WordPress 6.7.1 → 6.8 · rollback point stored pre-update</td><td>agent/wp-ops-01</td></tr>
+  <tr><td>2026-08-21 03:02</td><td>client-shop.example</td><td>PATCH security</td><td>Elementor 3.24.x CVE-2026-44112 mitigation applied same day of disclosure</td><td>agent/wp-ops-01</td></tr>
+  <tr><td>2026-08-22 03:00</td><td>client-shop.example</td><td>BACKUP verified</td><td>Full snapshot (files + DB) to EU storage · restore test on staging OK</td><td>agent/wp-ops-02</td></tr>
+  <tr><td>2026-08-14 11:47</td><td>client-blog.example</td><td>RESTORE</td><td>Rolled back bad client-side plugin install · downtime 22 min · RCA note attached</td><td>human/operator-A</td></tr>
+</table>
+
+<p><span class="stamp">Every row: timestamped · attributable · exportable</span></p>
+
+<h2>2. Quarterly compliance narrative (forwarded under your brand)</h2>
+<div class="narrative">
+  <h3>[Your Agency] — Quarterly Site Care Report, Q3 2026<br><span style="font-weight:400;color:var(--muted);font-size:14px">Prepared for: Client GmbH · Sites covered: 3 · Prepared in partnership with AuditedWP (EU operations)</span></h3>
+  <ul>
+    <li><strong>What changed:</strong> 41 updates applied across your three sites (core, WooCommerce, plugins), all staged and tested before production. Zero update-related incidents.</li>
+    <li><strong>Risks closed:</strong> One disclosed plugin vulnerability affecting your shop (CVE-2026-44112) was patched within 24 hours of disclosure — evidence in appendix.</li>
+    <li><strong>Resilience:</strong> Weekly verified backups with EU-only storage; full restore rehearsal completed successfully on 22 August.</li>
+    <li><strong>Next quarter:</strong> PHP 8.3 upgrade planned for the shop during the October maintenance window; accessibility review of checkout flow recommended ahead of EAA enforcement.</li>
+  </ul>
+  <p style="margin-bottom:0"><em>Appendix: complete change log (PDF), backup verification records, restore-test protocol.</em></p>
+</div>
+
+<h2>3. Why your clients' auditors care</h2>
+<ul>
+  <li><strong>DORA Art. 28–30:</strong> financial-entity clients must govern ICT third-party providers contractually — including website operations. This log is the evidence their register and reviews require.</li>
+  <li><strong>NIS2 supply-chain duties:</strong> essential/important entities must manage supplier security; documented patching and backup verification is exactly what assessors ask for.</li>
+  <li><strong>EAA:</strong> documented maintenance windows and changes support the ongoing-accessibility record for sites in scope.</li>
+  <li><strong>Insurers &amp; procurement questionnaires:</strong> "show me what was done, when, by whom" — answered with an attachment instead of an email written from memory.</li>
+</ul>
+
+<div class="box">This page shows fictional sample data so you can see the format before buying.
+During onboarding you receive this pipeline pointed at <em>your</em> sites and the
+white-label templates to forward it under your own brand.</div>
+
+<footer>AuditedWP — white-label WordPress operations for EU agencies · <a href="/">← Back to auditedwp</a> · <a href="/store/">Compliance document templates</a></footer>
+
+</body>
+</html>

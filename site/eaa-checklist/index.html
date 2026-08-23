@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Accessibility Act Checklist 2026 — Free Interactive Self-Assessment | EUComply</title>
+<meta name="description" content="Free interactive EAA compliance checklist. 28 requirements across 6 categories mapped to Directive (EU) 2019/882 and EN 301 549. Score yourself instantly and get a prioritized fix list. No sign-up required.">
+<meta property="og:title" content="European Accessibility Act Checklist 2026 — Free Interactive Self-Assessment">
+<meta property="og:description" content="28-point interactive EAA checklist mapped to EN 301 549 / WCAG 2.1 AA. Instant score, prioritized fixes. Free, no sign-up.">
+<meta property="og:url" content="https://auditedwp.pages.dev/eaa-checklist/">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://auditedwp.pages.dev/eaa-checklist/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/eaa-checklist/">
+  
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♿</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Who must comply with the European Accessibility Act?",
+      "acceptedAnswer": {"@type": "Answer", "text": "The EAA applies to businesses that provide consumer products or services in the EU covered by the directive: e-commerce, consumer banking services, e-books, telecommunications services, TV broadcast equipment and services, transport service passenger information (air, bus, rail, waterborne), and self-service terminals like ATMs, ticket machines and check-in kiosks. Microenterprises providing services (fewer than 10 employees and under €2M turnover) are exempt from service obligations."}
+    },
+    {
+      "@type": "Question",
+      "name": "When did the EAA become enforceable?",
+      "acceptedAnswer": {"@type": "Answer", "text": "The EAA has applied to new products and services since 28 June 2025. Service contracts concluded before that date may run unchanged until their expiry but no longer than five years (until June 2030). Member states had to transpose the directive into national law by 28 June 2022."}
+    },
+    {
+      "@type": "Question",
+      "name": "What standard defines EAA conformance for websites?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Harmonized European standard EN 301 549, which incorporates WCAG 2.1 Level AA as its web requirement. Meeting WCAG 2.1 AA for your website and mobile apps is the practical benchmark most regulators and market-surveillance authorities use when checking digital services under the EAA."}
+    },
+    {
+      "@type": "Question",
+      "name": "What are the penalties for EAA non-compliance?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Penalties are set nationally and vary by member state, but all states must provide effective, proportionate and dissuasive sanctions. Beyond fines, authorities can require corrective action, withdraw non-compliant products or services from the market, and suspend service provision. Consumer associations can also take legal action on behalf of affected users."}
+    }
+  ]
+}
+</script>
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#1c5e8f;--accent-dark:#12405f;--ok:#1a7a44;--warn:#b85a0a;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{padding:44px 0 12px;text-align:center}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+h1{font-size:32px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);font-size:16px;max-width:600px;margin:0 auto 28px}
+
+.scorebar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);padding:10px 0;display:none}
+.scorebar.on{display:block}
+.scorebar .wrap{display:flex;align-items:center;gap:14px}
+.meter{flex:1;height:10px;background:var(--soft);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--warn);transition:width .3s,background .3s}
+.scorebar b{font-size:15px;white-space:nowrap}
+.scorebar .lbl{font-size:13px;color:var(--muted)}
+
+section.cat{margin:34px 0}
+section.cat h2{font-size:19px;letter-spacing:-.01em;margin-bottom:4px}
+section.cat p.note{color:var(--muted);font-size:14px;margin-bottom:14px}
+.item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.item:hover{border-color:var(--accent)}
+.item input{width:19px;height:19px;margin-top:3px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.item .t{font-weight:600;font-size:15px}
+.item .w{color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;letter-spacing:.03em;margin-left:8px;vertical-align:2px}
+.item .w.must{background:#b03030}
+.item .w.should{background:var(--warn)}
+.item .d{color:var(--muted);font-size:13px;margin-top:3px}
+.item .d a{color:var(--accent)}
+.item.done{background:var(--soft)}
+.item.done .t{text-decoration:line-through;color:var(--muted)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:none;font-weight:600;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none;text-align:center}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.ghost:hover{background:#eef3f9}
+#result{display:none;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:22px;margin:22px 0}
+#result.on{display:block}
+#result h2{font-size:20px;margin-bottom:6px}
+#result p{color:var(--muted);font-size:14px;margin-bottom:12px}
+#fixlist{list-style:none}
+#fixlist li{padding:9px 0;border-top:1px solid var(--line);font-size:14px;display:flex;gap:10px}
+#fixlist li:first-child{border-top:none}
+.pill{flex-shrink:0;color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;height:fit-content;margin-top:3px}
+.pill.must{background:#b03030}
+.pill.should{background:var(--warn)}
+
+.faq{margin:40px 0}
+.faq h2{font-size:20px;margin-bottom:14px}
+.faq details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:var(--bg)}
+.faq summary{font-weight:600;font-size:14px;cursor:pointer}
+.faq details p{color:var(--muted);font-size:14px;margin-top:8px}
+
+footer{margin-top:50px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:13px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+.disc{background:#fffbe8;border:1px solid #e8dc9a;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;margin:18px 0}
+@media(max-width:600px){h1{font-size:26px}.hero{padding:30px 0 8px}nav a{margin-left:10px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+  <a href="/scan/">Scanner</a>
+  <a href="/tools/">Generator</a>
+  <a href="/store/">Templates</a>
+  <a class="cta" href="/pro/">Go Pro</a>
+</nav>
+</div></header>
+
+<div class="scorebar" id="scorebar"><div class="wrap">
+  <b id="scoretxt">0 / 28</b>
+  <div class="meter"><i id="meterfill"></i></div>
+  <span class="lbl" id="scorelbl">getting started</span>
+</div></div>
+
+<main class="wrap">
+<div class="hero">
+  <span class="badge">Updated August 2026 · Applies since 28 June 2025 · Directive (EU) 2019/882</span>
+  <h1>The European Accessibility Act Checklist for <em>Digital Services</em></h1>
+<p class="sub">28 concrete requirements across 6 categories, mapped to EN 301 549 / WCAG 2.1 AA. Tick what's in place, watch your score update live, and get a prioritized gap list at the end. Nothing is stored — everything runs in your browser.</p>
+</div>
+
+<div class="disc"><strong>This is a self-assessment tool, not legal advice.</strong> It maps to the accessibility requirements of Directive (EU) 2019/882 as specified by EN 301 549. Enforcement and penalty details vary by member state — verify against your national law and involve counsel for formal questions.</div>
+
+<section class="cat">
+  <h2>1. Scope &amp; Governance</h2>
+  <p class="note">Before fixing anything: know whether you're in scope, and who owns it.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">You've confirmed which of your services fall under the EAA</span> <span class="w must">MUST</span>
+    <span class="d">E-commerce, consumer banking, e-books, telecoms, transport passenger info, and self-service terminals are covered. B2B-only services generally are not — but many companies serve both without realizing it.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">A named person owns accessibility compliance</span> <span class="w must">MUST</span>
+    <span class="d">Market-surveillance authorities expect a contactable responsible party. "The web team" is not an owner.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">An accessibility policy statement is published</span> <span class="w should">SHOULD</span>
+    <span class="d">A public commitment plus a feedback channel is both good practice and expected by several member-state regimes. Our <a href="/store/">compliance template pack</a> includes one.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Staff who build content have received accessibility training</span> <span class="w should">SHOULD</span>
+    <span class="d">Editors, designers and developers each introduce different classes of barriers. Annual training keeps regression rates down.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>2. Perceivable Content</h2>
+  <p class="note">WCAG 2.1 AA principles 1–2 — users must be able to perceive your content.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">All meaningful images have accurate alt text</span> <span class="w must">MUST</span>
+    <span class="d">Decorative images need empty alt attributes so screen readers skip them. Missing alt text is the single most common WCAG failure worldwide.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Text contrast meets 4.5:1 (3:1 for large text)</span> <span class="w must">MUST</span>
+    <span class="d">Low-contrast gray-on-gray design trends fail this constantly. Test your actual brand colors, not a sample page.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Video has captions; audio-only content has transcripts</span> <span class="w must">MUST</span>
+    <span class="d">Pre-recorded video requires captions at AA level. Auto-captions alone don't reliably meet the accuracy bar.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Content reflows at 320px width without horizontal scrolling</span> <span class="w should">SHOULD</span>
+    <span class="d">WCAG 1.4.10: users who zoom to 400% must still be able to read in a single column. Fixed-width layouts fail.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Text alternatives exist for icons and non-text UI elements</span> <span class="w should">SHOULD</span>
+    <span class="d">Icon-only buttons (cart, close, menu) need accessible names. The free <a href="/scan/">EUComply scanner</a> flags missing alt text automatically on any URL.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>3. Operable Interfaces</h2>
+  <p class="note">Everything must work without a mouse.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Every function is reachable and usable by keyboard alone</span> <span class="w must">MUST</span>
+    <span class="d">Tab through your whole checkout. If focus disappears into a modal or custom widget, keyboard users cannot buy from you.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Keyboard focus is always visible</span> <span class="w must">MUST</span>
+    <span class="d">outline:none without replacement is a direct WCAG 2.4.7 failure and one of the easiest violations to spot.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">No time limits trap users without a way to extend or disable them</span> <span class="w must">MUST</span>
+    <span class="d">Session timeouts, carousels and countdown timers need pause, extend or adjust mechanisms (WCAG 2.2.1).</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Focus order matches visual reading order</span> <span class="w should">SHOULD</span>
+    <span class="d">CSS order changes and positive tabindex values create illogical tab paths through forms and menus.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Motion-triggered interactions have a non-motion alternative</span> <span class="w should">SHOULD</span>
+    <span class="d">WCAG 2.5.4 AA-level: swipe gestures and shake-to-act need buttons too, for users who cannot perform precise movement.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>4. Understandable Forms &amp; Errors</h2>
+  <p class="note">Where e-commerce loses accessibility-critical conversions.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">All form fields have programmatic labels</span> <span class="w must">MUST</span>
+    <span class="d">Placeholder text is not a label. Screen readers announce nothing useful without proper label elements or aria-labels.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Error messages identify what went wrong and how to fix it, in text</span> <span class="w must">MUST</span>
+    <span class="d">Red borders alone fail WCAG 3.3.1/3.3.3. "Invalid input" is not a fix instruction; "Enter a date as DD/MM/YYYY" is.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">The page language is declared and language changes are marked up</span> <span class="w must">MUST</span>
+    <span class="d">Missing lang attribute makes screen readers use the wrong speech synthesizer — the entire page becomes unintelligible audio.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Input purpose is programmatically identifiable where relevant</span> <span class="w should">SHOULD</span>
+    <span class="d">autocomplete attributes on name/email/address fields let assistive tech and browsers autofill correctly (WCAG 1.3.5).</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Navigation is consistent and help is available in the same place on every page</span> <span class="w should">SHOULD</span>
+    <span class="d">WCAG 3.2.3/3.2.6: repeated components in the same relative order; a site-wide help entry point.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>5. Robust Code &amp; Assistive Technology</h2>
+  <p class="note">Your markup must survive contact with real screen readers.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Pages use valid, semantic HTML with correct heading hierarchy</span> <span class="w must">MUST</span>
+    <span class="d">One h1 per page, headings that nest logically, landmarks (nav/main/footer). Screen-reader users navigate by structure, not visuals.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Status messages are announced without stealing focus</span> <span class="w must">MUST</span>
+    <span class="d">"Added to cart", "3 results found", form success confirmations need aria-live regions — otherwise screen-reader users never learn anything happened.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Tested with at least one screen reader (NVDA/VoiceOver) end-to-end</span> <span class="w should">SHOULD</span>
+    <span class="d">Automated tools catch perhaps 40% of issues. A 30-minute NVDA pass over checkout finds most of the rest.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">ARIA is used only where native HTML can't do the job</span> <span class="w should">SHOULD</span>
+    <span class="d">Broken ARIA is worse than none. Prefer native elements; when using ARIA roles/states, keep them synchronized.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>6. Documentation, Monitoring &amp; Market Duties</h2>
+  <p class="note">EAA obligations beyond the pixels — the part audits actually examine.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Accessibility information about the service is made available to consumers</span> <span class="w must">MUST</span>
+    <span class="d">Art. 4/5 &amp; Annex IV of the directive require public information on how the service meets accessibility requirements — typically an accessibility statement page.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Technical documentation demonstrating conformity is kept on file</span> <span class="w must">MUST</span>
+    <span class="d">Audit reports, test results and the applied standard (EN 301 549). Authorities can request it; you have to be able to produce it.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">A feedback channel exists for users to report accessibility barriers</span> <span class="w must">MUST</span>
+    <span class="d">Several national transpositions make a functioning response channel a formal requirement, not just courtesy.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Accessibility is re-tested on a schedule and after major releases</span> <span class="w should">SHOULD</span>
+    <span class="d">Conformity decays with every deploy. Quarterly automated scans plus release-gate checks keep the documentation honest.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Procurement contracts with suppliers carry accessibility requirements</span> <span class="w should">SHOULD</span>
+    <span class="d">If a third-party widget, payment form or chat tool is inaccessible, it's your compliance problem, not theirs.</span></span></label>
+</section>
+
+<div class="actions">
+  <button class="btn" id="calcBtn">Show my score &amp; gap list</button>
+  <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+</div>
+
+<div id="result">
+  <h2 id="verdict"></h2>
+  <p id="summary"></p>
+  <ul id="fixlist"></ul>
+  <p style="margin-top:14px"><strong>Next step:</strong> several technical items (alt text, contrast signals, headers, TLS) can be verified automatically.
+    <a href="/scan/">Run the free scanner on your public URL</a> — it works on any CMS, not just WordPress.
+    Need an accessibility policy statement and audit-ready documentation templates? <a href="/store/">Browse ComplianceDocs templates</a>.</p>
+</div>
+
+<section class="faq">
+<h2>Frequently asked questions</h2>
+<details open><summary>Who must comply with the EAA?</summary>
+<p>Any business providing covered consumer products or services to EU customers regardless of where it's based: e-commerce sites, consumer banking, e-books, telecom services, TV equipment and services, air/bus/rail/waterborne passenger transport information, and self-service terminals (ATMs, ticket machines, check-in kiosks). Services-only microenterprises — fewer than 10 staff and under €2M annual turnover — are exempt, though many choose to comply anyway because the same fixes satisfy procurement demands and ADA-style litigation risk outside the EU.</p></details>
+<details><summary>Doesn't Web Accessibility Directive (EU 2016/2102) already cover websites?</summary>
+<p>No — that directive covers only public-sector bodies. The EAA extends binding accessibility requirements to the private sector for the first time: any company selling covered consumer services in the EU. If you run a private e-commerce store, the WAD never applied to you, but the EAA does.</p></details>
+<details><summary>What exactly counts as "conforming"?</summary>
+<p>The harmonized standard EN 301 549 defines conformance, and its web chapter incorporates WCAG 2.1 Level AA. In practice: meet WCAG 2.1 AA on your website and mobile apps, document how you meet the remaining EN 301 549 clauses (documentation, support services, information provision), and keep evidence. You don't formally certify — you self-declare backed by documentation market surveillance can inspect.</p></details>
+<details><summary>We're based outside the EU — does this apply to us?</summary>
+<p>Yes, if you offer covered services to consumers in EU member states. The EAA follows the market, not the headquarters. A US-based online shop selling to French customers falls under the French transposition. Non-EU sellers are among the least prepared groups, which is why enforcement actions frequently start there.</p></details>
+<details><summary>What happens if we don't comply?</summary>
+<p>Each member state sets its own sanctions but they must be effective, proportionate and dissuasive: fines, corrective orders, withdrawal of the non-compliant service from that market, and suspension of provision. Consumers and representative organizations can also pursue claims. Because the EAA has been live since 28 June 2025, "we're working on it" is no longer a defense — documented remediation plans are what authorities accept.</p></details>
+</section>
+</main>
+
+<footer>
+  <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/checklist/">GDPR Checklist</a> · <a href="/nis2-checklist/">NIS2 Checklist</a> · <a href="/eaa-checklist/">EAA Checklist</a> · <a href="/tools/">Generator</a> · <a href="/pro/">Pro</a></div>
+  <div style="margin-top:8px">EUComply · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/impressum-generator/">Impressum Generator</a></div>
+</footer>
+
+<script>
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+  var bar = document.getElementById('scorebar');
+  var fill = document.getElementById('meterfill');
+  var stxt = document.getElementById('scoretxt');
+  var slbl = document.getElementById('scorelbl');
+
+  function score(){
+    return items.filter(function(i){return i.querySelector('input').checked}).length;
+  }
+  function update(){
+    var s = score(), n = items.length;
+    bar.classList.add('on');
+    stxt.textContent = s + ' / ' + n;
+    var pct = Math.round(s/n*100);
+    fill.style.width = pct + '%';
+    fill.style.background = pct >= 90 ? '#1a7a44' : pct >= 60 ? '#b8860b' : '#b85a0a';
+    slbl.textContent = pct >= 95 ? 'excellent' : pct >= 75 ? 'solid foundation' : pct >= 45 ? 'gaps remain' : pct > 0 ? 'early days' : '';
+  }
+  items.forEach(function(i){
+    i.addEventListener('change', function(){
+      i.classList.toggle('done', i.querySelector('input').checked);
+      update();
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    items.forEach(function(i){ i.querySelector('input').checked=false; i.classList.remove('done'); });
+    document.getElementById('result').classList.remove('on');
+    update();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', function(){
+    var unchecked = items.filter(function(i){return !i.querySelector('input').checked});
+    var mustLeft = unchecked.filter(function(i){return i.querySelector('input').dataset.w==='must'});
+    var s = score(), n = items.length, pct = Math.round(s/n*100);
+    var v = document.getElementById('verdict'), sum = document.getElementById('summary'), ul = document.getElementById('fixlist');
+    ul.innerHTML = '';
+    if(unchecked.length === 0){
+      v.textContent = '🎉 Full marks: ' + n + '/' + n;
+      sum.textContent = 'All EN 301 549 baseline measures covered on paper. Validate with real testing — auditors ask for evidence, not checkmarks.';
+    } else {
+      v.textContent = pct >= 75 ? 'Solid — ' + s + '/' + n + ' (' + pct + '%)' :
+                      pct >= 45 ? 'Gaps remain — ' + s + '/' + n + ' (' + pct + '%)' :
+                                  'Early stage — ' + s + '/' + n + ' (' + pct + '%)';
+      sum.textContent = mustLeft.length ?
+        mustLeft.length + ' MUST-level item(s) still open. Fix these first — they map directly to requirements market-surveillance authorities check.' :
+        'All MUST-level items done. Close out the SHOULD items below to harden further.';
+      unchecked.sort(function(a,b){ return (a.querySelector('input').dataset.w==='must'?0:1)-(b.querySelector('input').dataset.w==='must'?0:1); });
+      unchecked.forEach(function(i){
+        var li = document.createElement('li');
+        var w = i.querySelector('input').dataset.w;
+        li.innerHTML = '<span class="pill '+w+'">'+(w==='must'?'MUST':'SHOULD')+'</span><span>'+i.querySelector('.t').textContent+'</span>';
+        ul.appendChild(li);
+      });
+    }
+    var res = document.getElementById('result');
+    res.classList.add('on');
+    res.scrollIntoView({behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIS2 Compliance Checklist 2026 — Free Interactive Self-Assessment | EUComply</title>
+<meta name="description" content="Free interactive NIS2 compliance checklist. 24 requirements across 6 categories mapped to the directive's Article 21 measures. Score yourself instantly and get a prioritized fix list. No sign-up required.">
+<meta property="og:title" content="NIS2 Compliance Checklist 2026 — Free Interactive Self-Assessment">
+<meta property="og:description" content="24-point interactive NIS2 checklist mapped to Article 21. Instant score, prioritized fixes. Free, no sign-up.">
+<meta property="og:url" content="https://auditedwp.pages.dev/nis2-checklist/">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://auditedwp.pages.dev/nis2-checklist/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/nis2-checklist/">
+  
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Who must comply with NIS2?",
+      "acceptedAnswer": {"@type": "Answer", "text": "NIS2 applies to essential and important entities in 18 sectors — energy, transport, banking, health, digital infrastructure, public administration, ICT service management, and others — generally organizations with 50+ employees or €10M+ turnover that provide services within the EU. Many small suppliers to these sectors are pulled in indirectly through supply-chain security requirements (Article 21(2)(d))."}
+    },
+    {
+      "@type": "Question",
+      "name": "What are the NIS2 cybersecurity risk-management measures?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Article 21 lists ten minimum measures: risk-analysis and information-security policies; incident handling; business continuity, backup and crisis management; supply-chain security; security in network acquisition/development/maintenance; effectiveness-assessment policies; cyber-hygiene and training; cryptography and encryption policies; HR security, access control and asset management; and multi-factor authentication or secured communication channels."}
+    },
+    {
+      "@type": "Question",
+      "name": "When is the NIS2 incident-reporting deadline?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Three stages: an early warning to the CSIRT within 24 hours of becoming aware of a significant incident, an incident notification within 72 hours, and a final report within one month. Missing the reporting duty is one of the most heavily penalized failures under NIS2."}
+    },
+    {
+      "@type": "Question",
+      "name": "What are the NIS2 fines?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Essential entities face fines of up to €10 million or 2% of global annual turnover, whichever is higher. Important entities face up to €7 million or 1.4%. Management bodies can also be held personally accountable for supervising compliance."}
+    }
+  ]
+}
+</script>
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#1c5e8f;--accent-dark:#12405f;--ok:#1a7a44;--warn:#b85a0a;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{padding:44px 0 12px;text-align:center}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+h1{font-size:32px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);font-size:16px;max-width:600px;margin:0 auto 28px}
+
+.scorebar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);padding:10px 0;display:none}
+.scorebar.on{display:block}
+.scorebar .wrap{display:flex;align-items:center;gap:14px}
+.meter{flex:1;height:10px;background:var(--soft);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--warn);transition:width .3s,background .3s}
+.scorebar b{font-size:15px;white-space:nowrap}
+.scorebar .lbl{font-size:13px;color:var(--muted)}
+
+section.cat{margin:34px 0}
+section.cat h2{font-size:19px;letter-spacing:-.01em;margin-bottom:4px}
+section.cat p.note{color:var(--muted);font-size:14px;margin-bottom:14px}
+.item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.item:hover{border-color:var(--accent)}
+.item input{width:19px;height:19px;margin-top:3px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.item .t{font-weight:600;font-size:15px}
+.item .w{color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;letter-spacing:.03em;margin-left:8px;vertical-align:2px}
+.item .w.must{background:var(--fail,#b03030)}
+.item .w.should{background:var(--warn)}
+.item .d{color:var(--muted);font-size:13px;margin-top:3px}
+.item .d a{color:var(--accent)}
+.item.done{background:var(--soft)}
+.item.done .t{text-decoration:line-through;color:var(--muted)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:none;font-weight:600;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none;text-align:center}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.ghost:hover{background:#eef3f9}
+#result{display:none;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:22px;margin:22px 0}
+#result.on{display:block}
+#result h2{font-size:20px;margin-bottom:6px}
+#result p{color:var(--muted);font-size:14px;margin-bottom:12px}
+#fixlist{list-style:none}
+#fixlist li{padding:9px 0;border-top:1px solid var(--line);font-size:14px;display:flex;gap:10px}
+#fixlist li:first-child{border-top:none}
+.pill{flex-shrink:0;color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;height:fit-content;margin-top:3px}
+.pill.must{background:#b03030}
+.pill.should{background:var(--warn)}
+
+.faq{margin:40px 0}
+.faq h2{font-size:20px;margin-bottom:14px}
+.faq details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:var(--bg)}
+.faq summary{font-weight:600;font-size:14px;cursor:pointer}
+.faq details p{color:var(--muted);font-size:14px;margin-top:8px}
+
+footer{margin-top:50px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:13px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+.disc{background:#fffbe8;border:1px solid #e8dc9a;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;margin:18px 0}
+@media(max-width:600px){h1{font-size:26px}.hero{padding:30px 0 8px}nav a{margin-left:10px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+  <a href="/scan/">Scanner</a>
+  <a href="/tools/">Generator</a>
+  <a href="/store/">Templates</a>
+  <a class="cta" href="/pro/">Go Pro</a>
+</nav>
+</div></header>
+
+<div class="scorebar" id="scorebar"><div class="wrap">
+  <b id="scoretxt">0 / 24</b>
+  <div class="meter"><i id="meterfill"></i></div>
+  <span class="lbl" id="scorelbl">getting started</span>
+</div></div>
+
+<main class="wrap">
+<div class="hero">
+  <span class="badge">Updated August 2026 · Applies to essential &amp; important entities</span>
+  <h1>The NIS2 Compliance Checklist for <em>Management Teams</em></h1>
+<p class="sub">24 concrete measures across 6 categories, mapped to Article 21 of Directive (EU) 2022/2555. Tick what's in place, watch your score update live, and get a prioritized gap list at the end. Nothing is stored — everything runs in your browser.</p>
+</div>
+
+<div class="disc"><strong>This is a self-assessment tool, not legal advice.</strong> It maps to the minimum cybersecurity risk-management measures in NIS2 Article 21 plus the Article 23 reporting duties. Member-state transpositions vary — verify against your national law and involve counsel for formal registration questions.</div>
+
+<section class="cat">
+  <h2>1. Governance &amp; Risk Management</h2>
+  <p class="note">Art. 21(1)–(2)(a) + Art. 20 — management carries personal accountability.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Entity is classified: you know if you're essential, important, or out of scope</span> <span class="w must">MUST</span>
+    <span class="d">Sector + size determines everything else, including registration with your national authority and which fine regime applies.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">A documented information-security policy exists and management has approved it</span> <span class="w must">MUST</span>
+    <span class="d">Art. 21(2)(a) requires risk-analysis and infosec policies. A PDF nobody signed doesn't count.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Management body has completed cybersecurity training (Art. 20)</span> <span class="w must">MUST</span>
+    <span class="d">NIS2 uniquely holds leadership personally liable. Directors must be able to approve measures they understand.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Formal risk assessments run on a schedule, not just once</span> <span class="w should">SHOULD</span>
+    <span class="d">Annual at minimum, plus after major changes. Document method (e.g. ISO 27005) and findings.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Security budget and responsibilities assigned by name</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 20(1): management must approve measures and oversee implementation — that needs an owner and money.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>2. Incident Handling &amp; Reporting</h2>
+  <p class="note">Art. 21(2)(b) + Art. 23 — detect, respond, and report on the clock.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Incident-response procedure documented, with roles and escalation paths</span> <span class="w must">MUST</span>
+    <span class="d">Must cover detection, triage, containment, eradication, recovery and lessons learned.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">24-hour early-warning channel to your CSIRT is known and tested</span> <span class="w must">MUST</span>
+    <span class="d">Significant incidents: warning within 24h, notification within 72h, final report within 1 month. Find your national CSIRT's intake before you need it.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Logging and monitoring generate alerts someone actually watches</span> <span class="w should">SHOULD</span>
+    <span class="d">You can't meet a 24-hour deadline on incidents you discover weeks later. Centralize logs from critical systems.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Incident response has been exercised (tabletop at minimum)</span> <span class="w should">SHOULD</span>
+    <span class="d">A plan never rehearsed fails under pressure. Run one tabletop per year and record the findings.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>3. Business Continuity &amp; Crisis Management</h2>
+  <p class="note">Art. 21(2)(c) — keep operating, and prove you can recover.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Backups exist for critical systems and are offline/immutable where feasible</span> <span class="w must">MUST</span>
+    <span class="d">Ransomware-proof backups are the baseline expectation under Art. 21(2)(c).</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Backups are restore-tested on a schedule</span> <span class="w should">SHOULD</span>
+    <span class="d">An untested backup is a hope, not a control. Record restore tests with dates and outcomes.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Business-continuity plan defines RTO/RPO for critical services</span> <span class="w should">SHOULD</span>
+    <span class="d">Name the acceptable downtime and data loss per system — regulators increasingly ask for the numbers.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Crisis-communication plan includes customers and authorities</span> <span class="w should">SHOULD</span>
+    <span class="d">Who says what, when, through which channel — including the CSIRT notification chain.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>4. Supply Chain Security</h2>
+  <p class="note">Art. 21(2)(d) — your suppliers' weakness is your liability.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Critical suppliers are listed and assessed for security posture</span> <span class="w must">MUST</span>
+    <span class="d">You must identify direct suppliers of network/information systems and evaluate their risks — a simple tiered register satisfies this at first.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Contracts include security requirements and incident-notification clauses</span> <span class="w should">SHOULD</span>
+    <span class="d">Suppliers must tell you when they're breached, on a deadline. Our <a href="/store/">compliance template pack</a> includes a vendor clause set.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Software you build uses SBOM or dependency tracking</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 21(2)(e) overlaps here: know what's inside anything you ship or buy.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>5. Access Control &amp; Asset Management</h2>
+  <p class="note">Art. 21(2)(i) — least privilege, known inventory.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Asset inventory covers hardware, software and data flows</span> <span class="w must">MUST</span>
+    <span class="d">You can't protect systems you don't know exist. Include cloud services and SaaS.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">Multi-factor authentication enforced on remote access and admin accounts</span> <span class="w must">MUST</span>
+    <span class="d">Art. 21(2)(j) names MFA explicitly. This is the cheapest high-impact control on the list.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Access follows least privilege with periodic reviews</span> <span class="w should">SHOULD</span>
+    <span class="d">Quarterly review of who can reach critical systems; revoke leavers immediately.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">HR security: background checks and secure offboarding defined</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 21(2)(i) covers HR security and access-control policies explicitly.</span></span></label>
+</section>
+
+<section class="cat">
+  <h2>6. Hygiene, Cryptography &amp; Effectiveness</h2>
+  <p class="note">Art. 21(2)(e)(f)(g)(h) — the remaining named measures.</p>
+  <label class="item"><input type="checkbox" data-w="must">
+    <span><span class="t">TLS/HTTPS everywhere; encryption policy for data in transit and at rest</span> <span class="w must">MUST</span>
+    <span class="d">Art. 21(2)(h). The free <a href="/scan/">EUComply scanner</a> checks TLS and HSTS on any URL automatically.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Cyber-hygiene program: patching cadence and staff awareness training</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 21(2)(g). Critical patches within days, not quarters; phishing simulations at least yearly.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Effectiveness of controls is assessed (internal audit or external test)</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 21(2)(f). Penetration test or structured review annually; document remediation.</span></span></label>
+  <label class="item"><input type="checkbox" data-w="should">
+    <span><span class="t">Secure development practices for anything you build or commission</span> <span class="w should">SHOULD</span>
+    <span class="d">Art. 21(2)(e): vulnerability disclosure handling and secure-by-default configuration.</span></span></label>
+</section>
+
+<div class="actions">
+  <button class="btn" id="calcBtn">Show my score &amp; gap list</button>
+  <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+</div>
+
+<div id="result">
+  <h2 id="verdict"></h2>
+  <p id="summary"></p>
+  <ul id="fixlist"></ul>
+  <p style="margin-top:14px"><strong>Next step:</strong> several technical items (TLS, HSTS, headers, resilience signals) can be verified automatically.
+    <a href="/scan/">Run the free scanner on your public URL</a> — it works on any CMS, not just WordPress.
+    Need the documents behind supplier clauses and policies? <a href="/store/">Browse ComplianceDocs templates</a>.</p>
+</div>
+
+<section class="faq">
+<h2>Frequently asked questions</h2>
+<details open><summary>Who must comply with NIS2?</summary>
+<p>Essential and important entities across 18 sectors — energy, transport, banking, financial-market infrastructure, health, drinking water, wastewater, digital infrastructure, ICT service management, public administration, space, postal services, waste management, chemicals, food, manufacturing, digital providers and research — generally 50+ employees or €10M+ turnover while providing services in the EU. Suppliers to these entities are pulled in via Article 21(2)(d) contract requirements even when individually below the size threshold.</p></details>
+<details><summary>What exactly does Article 21 require?</summary>
+<p>Ten minimum measures: risk-analysis and information-security policies; incident handling; business continuity, backup and crisis management; supply-chain security; security in acquisition, development and maintenance; policies to assess effectiveness; basic cyber-hygiene and training; cryptography and encryption policies; HR security, access control and asset management; and multi-factor authentication or secured voice/video/text channels. This checklist maps each one.</p></details>
+<details><summary>How fast do I have to report an incident?</summary>
+<p>Three deadlines: early warning within 24 hours of awareness, full notification within 72 hours, final report within one month. Only "significant" incidents qualify, but the definition is broad — significant operational disruption or financial/material loss for you, or considerable harm to others. Prepare the process now; don't improvise during an outage.</p></details>
+<details><summary>What happens if we don't comply?</summary>
+<p>Fines up to €10M or 2% of worldwide turnover for essential entities (€7M / 1.4% for important ones). Supervisors can audit, issue binding instructions, and temporarily suspend certifications or authorizations. Under Article 20, management bodies can be held accountable for failing to oversee compliance.</p></details>
+<details><summary>We're a small supplier to a bigger NIS2 entity — does this apply to us?</summary>
+<p>Directly, maybe not; contractually, almost certainly yes. Large NIS2 entities must assess and manage their suppliers' security, so expect questionnaires, contract clauses and MFA requirements to flow down to you. Working through this checklist puts you ahead of those requests instead of scrambling when the questionnaire arrives.</p></details>
+</section>
+</main>
+
+<footer>
+  <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/checklist/">GDPR Checklist</a> · <a href="/tools/">Generator</a> · <a href="/blog/dora-nis2-gdpr-differences/">NIS2 vs GDPR vs DORA</a> · <a href="/pro/">Pro</a></div>
+  <div style="margin-top:8px">EUComply · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/impressum-generator/">Impressum Generator</a></div>
+</footer>
+
+<script>
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+  var bar = document.getElementById('scorebar');
+  var fill = document.getElementById('meterfill');
+  var stxt = document.getElementById('scoretxt');
+  var slbl = document.getElementById('scorelbl');
+
+  function score(){
+    return items.filter(function(i){return i.querySelector('input').checked}).length;
+  }
+  function update(){
+    var s = score(), n = items.length;
+    bar.classList.add('on');
+    stxt.textContent = s + ' / ' + n;
+    var pct = Math.round(s/n*100);
+    fill.style.width = pct + '%';
+    fill.style.background = pct >= 90 ? '#1a7a44' : pct >= 60 ? '#b8860b' : '#b85a0a';
+    slbl.textContent = pct >= 95 ? 'excellent' : pct >= 75 ? 'solid foundation' : pct >= 45 ? 'gaps remain' : pct > 0 ? 'early days' : '';
+  }
+  items.forEach(function(i){
+    i.addEventListener('change', function(){
+      i.classList.toggle('done', i.querySelector('input').checked);
+      update();
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    items.forEach(function(i){ i.querySelector('input').checked=false; i.classList.remove('done'); });
+    document.getElementById('result').classList.remove('on');
+    update();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', function(){
+    var unchecked = items.filter(function(i){return !i.querySelector('input').checked});
+    var mustLeft = unchecked.filter(function(i){return i.querySelector('input').dataset.w==='must'});
+    var s = score(), n = items.length, pct = Math.round(s/n*100);
+    var v = document.getElementById('verdict'), sum = document.getElementById('summary'), ul = document.getElementById('fixlist');
+    ul.innerHTML = '';
+    if(unchecked.length === 0){
+      v.textContent = '🎉 Full marks: ' + n + '/' + n;
+      sum.textContent = 'All Article 21 measures covered on paper. Validate with evidence — auditors ask for proof, not checkmarks.';
+    } else {
+      v.textContent = pct >= 75 ? 'Solid — ' + s + '/' + n + ' (' + pct + '%)' :
+                      pct >= 45 ? 'Gaps remain — ' + s + '/' + n + ' (' + pct + '%)' :
+                                  'Early stage — ' + s + '/' + n + ' (' + pct + '%)';
+      sum.textContent = mustLeft.length ?
+        mustLeft.length + ' MUST-level item(s) still open. Fix these first — they map directly to Article 21 obligations supervisors check.' :
+        'All MUST-level items done. Close out the SHOULD items below to harden further.';
+      unchecked.sort(function(a,b){ return (a.querySelector('input').dataset.w==='must'?0:1)-(b.querySelector('input').dataset.w==='must'?0:1); });
+      unchecked.forEach(function(i){
+        var li = document.createElement('li');
+        var w = i.querySelector('input').dataset.w;
+        li.innerHTML = '<span class="pill '+w+'">'+(w==='must'?'MUST':'SHOULD')+'</span><span>'+i.querySelector('.t').textContent+'</span>';
+        ul.appendChild(li);
+      });
+    }
+    var res = document.getElementById('result');
+    res.classList.add('on');
+    res.scrollIntoView({behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

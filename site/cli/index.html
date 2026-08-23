@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eucomply-scan — EU Compliance Scanner for the Command Line</title>
+<meta name="description" content="Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack. Free CLI, npm install eucomply-scan.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/cli/">
+<link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/cli/">
+<meta property="og:title" content="eucomply-scan — Compliance scanning in your terminal">
+<meta property="og:description" content="One command, six compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA & EAA technical checks.">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{text-align:center;padding:48px 0 24px}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;max-width:720px;margin:0 auto 12px}
+h1 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-size:.85em;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+.sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 auto 28px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
+.lede{color:var(--muted);max-width:640px;margin-bottom:24px;font-size:15px}
+pre{background:#0d1522;color:#dbe6f5;border-radius:10px;padding:20px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;overflow-x:auto;margin:16px 0}
+pre .c{color:#7d93b3}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted)}
+.card .icon{font-size:28px;margin-bottom:6px}
+.checks{list-style:none;margin:14px 0}
+.checks li{padding:5px 0 5px 28px;position:relative;font-size:15px}
+.checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+.probox{border:2px solid var(--accent);border-radius:12px;padding:26px;text-align:center;background:#f8faff;margin-top:8px}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer a{color:var(--accent)}
+@media(max-width:700px){h1{font-size:25px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/store/">Templates</a>
+      <a href="/extension/">Extension</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/#pricing">Pro $79/yr</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="badge">🟢 Open source · MIT</div>
+  <h1>Compliance scanning in your <code>terminal</code>.</h1>
+  <p class="sub"><strong>eucomply-scan</strong> checks any URL for GDPR, NIS2, DORA and EAA technical gaps in seconds. Any CMS, any stack — one command.</p>
+  <a class="btn" href="#install">Get started</a>
+  <a class="btn ghost" href="/scan/">Try the web version</a>
+</div>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install &amp; run</h2>
+    <p class="lede">Requires Node.js 18+. No sign-up, no API key, no tracking.</p>
+<pre><span class="c"># Install globally</span>
+npm install -g eucomply-scan
+
+<span class="c"># Scan any site</span>
+eucomply-scan https://yourdomain.com</pre>
+    <p class="lede">Example output (real scan of webflow.com):</p>
+<pre>$ eucomply-scan https://webflow.com
+╔══ EUComply Scan ═══ webflow.com (696ms)
+║  Score:  67%   4/6 checks  ·  Platform: Webflow
+║  🔒  HTTPS + HSTS OK                     PASS
+║  🍪  No consent banner detected          CHECK MANUALLY
+║  📋  Forms present, privacy policy linked PASS
+║  📄  Legal pages linked                  PASS
+║  🛡️  3/4 security headers present        PASS
+║  •  No DORA / resilience disclosures     CHECK MANUALLY
+╚══════════════════════════════════════════════════</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What it checks</h2>
+    <p class="lede">Six automated technical checks against EU requirements:</p>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">🔒</div>
+        <h3>HTTPS + HSTS</h3>
+        <p>TLS encryption and Strict-Transport-Security header (GDPR Art. 32).</p>
+      </div>
+      <div class="card">
+        <div class="icon">🍪</div>
+        <h3>Cookie consent</h3>
+        <p>Detects 15+ consent platforms (Cookiebot, OneTrust, CookieYes…). ePrivacy Directive.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📋</div>
+        <h3>Forms &amp; privacy link</h3>
+        <p>Forms without a visible privacy-policy link are a top enforcement target (Art. 13).</p>
+      </div>
+      <div class="card">
+        <div class="icon">📄</div>
+        <h3>Legal pages</h3>
+        <p>Privacy policy, imprint, terms and EAA statement linked from the homepage.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3>Security headers</h3>
+        <p>CSP, X-Content-Type-Options, Referrer-Policy — OWASP baseline, NIS2 Art. 21.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔍</div>
+        <h3>DORA disclosures</h3>
+        <p>Operational-resilience information financial entities must publish under DORA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why a CLI?</h2>
+    <ul class="checks">
+      <li><strong>CMS-independent</strong> — works on WordPress, Shopify, Webflow, Next.js, Squarespace, Wix or hand-written HTML. The scanner only needs a URL.</li>
+      <li><strong>CI-friendly</strong> — pipe results into your build pipeline and fail deploys when compliance regressions appear.</li>
+      <li><strong>Fast</strong> — sub-second scans over a public API. No agent to install on the target server.</li>
+      <li><strong>Honest output</strong> — every check reports PASS, FAIL or CHECK MANUALLY. We never claim legal certainty a script can't have.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="probox">
+      <h2 style="margin-bottom:6px">Need auditor-ready proof?</h2>
+      <p class="lede" style="margin:0 auto 18px">The CLI is free forever. For documented deliverables — PDF audit reports, DPA documents, NIS2 clauses and EAA statements — upgrade to EUComply Pro.</p>
+      <a class="btn" href="/#pricing">See Pro — $79/year →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/extension/">Extension</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

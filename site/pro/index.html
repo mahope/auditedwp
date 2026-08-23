@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EUComply Pro — Automated EU Compliance Monitoring | $79/year</title>
+<meta name="description" content="EUComply Pro: automated daily compliance scanning, auditor-ready PDF reports, DPA and NIS2 document templates, and a live compliance badge for your site. $79/year. Works on every platform.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/pro/">
+  <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/pro/">
+  
+<meta property="og:title" content="EUComply Pro — $79/year | Automated EU Compliance">
+<meta property="og:description" content="Daily compliance monitoring, PDF audit reports, document templates and live badge. GDPR, NIS2, DORA, EAA. Works on every website platform.">
+<meta property="og:url" content="https://auditedwp.pages.dev/pro/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;
+      --gold:#d4a030;--gold-bg:#fff9e6;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+
+/* Header */
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+
+/* Hero */
+.hero{text-align:center;padding:56px 0 36px}
+h1{font-size:36px;line-height:1.15;letter-spacing:-.02em;max-width:700px;margin:0 auto 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto}
+.price-hero{font-size:52px;font-weight:800;color:var(--ink);margin:20px 0 8px;letter-spacing:-.03em}
+.price-hero small{font-size:18px;font-weight:400;color:var(--muted);letter-spacing:0}
+.price-note{color:var(--muted);font-size:14px;margin-bottom:20px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 28px;border-radius:8px;font-size:16px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+.btn.gold{background:var(--gold);color:#3a2d0a}.btn.gold:hover{background:#c49120}
+
+/* Sections */section{padding:48px 0;border-top:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+.lede{color:var(--muted);max-width:620px;margin:0 auto 32px;text-align:center;font-size:15px}
+
+/* Comparison table */
+.compare-wrap{overflow-x:auto}
+.compare{width:100%;border-collapse:collapse;font-size:14px}
+.compare th,.compare td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.compare th{background:var(--soft);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+.compare .free{width:33%}.compare .pro{width:33%;background:#f4f8ff}
+.compare .pro td{background:#f4f8ff}
+.compare .check{color:var(--ok);font-weight:700}
+.compare .cross{color:#ccc}
+.compare .highlight{background:var(--gold-bg);font-weight:600}
+.compare .note{font-size:12px;color:var(--muted);margin-top:2px}
+.compare tr:last-child td{border-bottom:none}
+
+/* Feature grid */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+.feat h3{font-size:15px;margin-bottom:6px}
+.feat p{font-size:13.5px;color:var(--muted)}
+
+/* Waitlist CTA */
+.waitlist-wrap{background:var(--accent);color:#fff;border-radius:14px;padding:40px 32px;text-align:center;margin:32px 0}
+.waitlist-wrap h2{color:#fff;font-size:28px}
+.waitlist-wrap p{color:rgba(255,255,255,.85);max-width:520px;margin:8px auto 20px;font-size:15px}
+.wform{display:flex;gap:8px;max-width:400px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.wform input{flex:1;min-width:180px;padding:12px 16px;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-size:15px;background:rgba(255,255,255,.12);color:#fff;outline:none;font-family:inherit}
+.wform input::placeholder{color:rgba(255,255,255,.5)}
+.wform input:focus{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.18)}
+.wform button{padding:12px 24px;background:#fff;color:var(--accent);border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.wform button:hover{filter:brightness(.95)}
+.wmsg{font-size:13px;margin-top:8px;min-height:20px}
+.wmsg.ok{color:#b3ffb3}.wmsg.err{color:#ffb3b3}
+
+/* FAQ */
+.faq-item{border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin-bottom:10px}
+.faq-item h3{font-size:15px;margin-bottom:4px;cursor:pointer}
+.faq-item p{font-size:14px;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer a{color:var(--accent)}
+
+@media(max-width:700px){
+  h1{font-size:27px}
+  .price-hero{font-size:40px}
+  .grid3{grid-template-columns:1fr}
+  nav a:not(.cta){display:none}
+  .compare th,.compare td{padding:8px 10px;font-size:13px}
+}
+@media(max-width:500px){
+  .compare{font-size:12px}.compare th,.compare td{padding:6px 6px}
+  .wrap{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/store/">Templates</a>
+      <a href="/tools/">Generator</a>
+      <a href="/extension/">Extension</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/pro/">Pro</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1>Automated EU compliance monitoring — <em>for every website.</em></h1>
+  <p class="sub">Daily scans, auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and a live compliance badge for your site. 100 % web-based — no installation, no WordPress required.</p>
+  <div class="price-hero">$79 <small>/ year</small></div>
+  <p class="price-note">One site · unlimited scans · all templates included · cancel anytime</p>
+  <a class="btn" href="#waitlist">Join the waitlist →</a>
+  <br><span style="font-size:13px;color:var(--muted);margin-top:10px;display:inline-block">⏳ Checkout opens on Gumroad. Get launch pricing + early-access badge.</span>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Free vs Pro</h2>
+    <p class="lede">The free scan tells you if something is wrong. Pro tells you what to fix and gives you the paperwork to prove you fixed it.</p>
+    <div class="compare-wrap">
+    <table class="compare">
+      <thead>
+        <tr><th>Feature</th><th class="free">Free</th><th class="pro">Pro ($79/yr)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Compliance scan (6 checks)</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td>DORA resilience check</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td>Platform fingerprint</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td><strong>Daily automated scans</strong></td><td class="cross">✗</td><td class="check">✓</td></tr>
+        <tr><td><strong>Auditor-ready PDF report</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Download any scan as a professional PDF with timestamp, findings, and fix history</span></td></tr>
+        <tr><td><strong>Compliance badge</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Live badge with your latest score — embed on any site. Click-through to verified scan record.</span></td></tr>
+        <tr><td><strong>Compliance history</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">30-day score graph + change log. Prove continuous compliance to auditors and insurers.</span></td></tr>
+        <tr><td><strong>DPA template (Art. 28 GDPR)</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Full controller→processor DPA with EU-hosting clauses, sub-processor annex. $59 separately.</span></td></tr>
+        <tr><td><strong>NIS2 vendor clause set</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Audit-trail, incident-reporting and subcontractor clauses for supplier contracts. $49 separately.</span></td></tr>
+        <tr><td><strong>EAA accessibility statement</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">European Accessibility Act compliance statement, ready for June-2025+ enforcement. $39 separately.</span></td></tr>
+        <tr><td><strong>Notification on score drops</strong></td><td class="cross">✗</td><td class="check">✓ <span class="note">Email alert when your compliance score drops — so you fix it before a client or auditor spots it.</span></td></tr>
+        <tr><td>Sign-up required</td><td class="cross">✗</td><td class="check">✓ <span class="note">Email + payment</span></td></tr>
+        <tr class="highlight"><td><strong>Total value of included extras</strong></td><td>—</td><td><strong>$216+</strong> <span class="note">Templates alone cost $29–$149 separately</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What you get with Pro</h2>
+    <p class="lede">Everything you need to pass an EU compliance audit — without a lawyer or consultant.</p>
+    <div class="grid3">
+      <div class="feat">
+        <h3>📊 Daily automated checks</h3>
+        <p>Once a day, EUComply re-scans your site. Any new issue triggers a notification — you fix it before clients or auditors report it.</p>
+      </div>
+      <div class="feat">
+        <h3>📄 Auditor-ready PDF reports</h3>
+        <p>Each scan result is available as a downloadable PDF with your URL, score, findings, suggested fixes, and a timestamp. Forward it to clients, insurers, or regulators.</p>
+      </div>
+      <div class="feat">
+        <h3>🛡️ Live compliance badge</h3>
+        <p>Embed a verified badge on your site footer showing your latest compliance score. Visitors see you take compliance seriously — and can click through to verify the result.</p>
+      </div>
+      <div class="feat">
+        <h3>📋 Document templates ($216+ value)</h3>
+        <p>Included at no extra cost: GDPR data processing agreement (DPA, Art. 28), NIS2/DORA vendor clause set, EAA accessibility statement. Instant download, fill in your details.</p>
+      </div>
+      <div class="feat">
+        <h3>⏱️ 30-day compliance history</h3>
+        <p>A running score graph and change log covering the last 30 days. When an auditor asks "show me your compliance monitoring record", you have it ready.</p>
+      </div>
+      <div class="feat">
+        <h3>🔔 Email alerts on score drops</h3>
+        <p>If a scan detects a new failure (expired certificate, missing privacy link, broken header), you get an email the same day. No surprises.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Who needs Pro?</h2>
+    <p class="lede">If someone has ever asked you "are you GDPR compliant?" and you answered "I think so" — this is for you.</p>
+    <div class="grid3">
+      <div class="feat">
+        <h3>🖥️ Website owners</h3>
+        <p>One site, one subscription. Set up in 2 minutes. Know your compliance status every day without lifting a finger.</p>
+      </div>
+      <div class="feat">
+        <h3>🏢 Agencies</h3>
+        <p>Managing 10+ client sites? Each needs its own compliance monitoring. PDF reports and the badge give your clients proof — and reduce your liability.</p>
+      </div>
+      <div class="feat">
+        <h3>🚀 SaaS founders</h3>
+        <p>A security questionnaire from an enterprise client is often the first time you discover a compliance gap. Pro catches it before they do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap waitlist-wrap">
+    <h2>Get launch pricing — join the waitlist</h2>
+    <p>Checkout opens soon on Gumroad. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
+    <form class="wform" id="pro-waitlist">
+      <input type="email" id="pro-email" placeholder="your@email.com" required aria-label="Email address">
+      <button type="submit">Join the waitlist →</button>
+    </form>
+    <div class="wmsg" id="pro-msg"></div>
+    <p style="font-size:13px;margin-top:16px;opacity:.7">No spam. No announcements except launch day. Unsubscribe any time.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Frequently asked questions</h2>
+    <p class="lede">Quick answers — if something's missing, <a href="/">use the free scanner</a> right now.</p>
+    <div class="faq-item">
+      <h3>Do I need to run WordPress?</h3>
+      <p>No. EUComply Pro works on every website — WordPress, Shopify, Webflow, Next.js, Squarespace, Wix, Drupal, static HTML, or custom stacks. The only requirement is a public URL.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How does the daily scan work?</h3>
+      <p>You register your URL once. Our server performs a full compliance check once per day and stores the results. You get a dashboard with your score history, PDF reports, and email alerts on score drops.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What happens if I cancel?</h3>
+      <p>You keep access to your existing reports and downloads. Daily scanning and alerts stop at the end of your billing period. No lock-in, no data hostage.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Are the templates actual legal documents?</h3>
+      <p>They are professional templates with guidance comments — written for agencies and consultants, not law firms. They cover the clauses most EU compliance audits check. For high-risk contracts, have counsel review the filled-in result (minutes, not hours).</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I try before I buy?</h3>
+      <p>Yes — <a href="/scan/">use the free scanner</a> right now. It runs the same checks. Pro adds daily monitoring, PDF reports, the badge, and templates. Try the scanner first; if you need the paperwork, Pro is ready.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I add multiple sites?</h3>
+      <p>Pro is $79 per site per year. Multiple sites each need their own subscription — each site has its own scan schedule, dashboard and badge. There is no bulk discount yet, but it's on the roadmap.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('pro-waitlist').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var email = document.getElementById('pro-email').value.trim();
+  var msg = document.getElementById('pro-msg');
+  var btn = this.querySelector('button');
+  if (!email) { msg.textContent = 'Please enter your email.'; msg.className = 'wmsg err'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Joining…';
+  try {
+    var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email: email, source: 'pro-page'})
+    });
+    var d = await r.json();
+    if (r.ok) {
+      msg.textContent = d.message || "You're on the list! We'll email you when checkout opens.";
+      msg.className = 'wmsg ok';
+      document.getElementById('pro-email').value = '';
+      btn.textContent = '✓ Joined';
+      btn.classList.add('sent');
+    } else {
+      msg.textContent = d.error || 'Something went wrong. Try again.';
+      msg.className = 'wmsg err';
+      btn.disabled = false;
+      btn.textContent = 'Join the waitlist →';
+    }
+  } catch(err) {
+    msg.textContent = 'Network error. Please try again.';
+    msg.className = 'wmsg err';
+    btn.disabled = false;
+    btn.textContent = 'Join the waitlist →';
+  }
+});
+</script>
+</body>
+</html>

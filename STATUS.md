@@ -1,57 +1,41 @@
-# STATUS — Iteration 66 (2026-08-24): Universality re-vurdering + Terms of Service Generator live
+# STATUS — Iteration 73 (2026-08-26): Universality bestået (igen) + HSTS-guide live
 
-**Dato:** 2026-08-24
-**Status:** 11 produkter/flader live. Beslutningen holder under pengekriteriet. Blokering uændret: Mads' konti (Gumroad/CWS/npm).
+**Dato:** 2026-08-26
+**Status:** Punkt 1 re-vurderet: BESTÅET (6. bekræftelse). Ny SEO-artikel bygget, deployet og verificeret. Sitemap 32 URLs.
 
-## Universality-vurdering (punkt 1) — BESTÅET med live-bevis
+## Universality-vurdering (punkt 1) — BESTÅET
 
-Gennemgang af alle 10 eksisterende flader:
-
-- **Kernen** (scan-Worker på Cloudflare) tager en almindelig URL og returnerer resultater — CMS-uafhængigt. Live-API-kald mod Shopify/Webflow/Nuxt-verificeret i iteration 62.
-- **Alle generatorer** (privacy, cookies, compliance-docs, ny ToS) kører 100 % i browseren og tager kun tekstinput — intet CMS-afhængigt. Output er HTML der kan indsættes hvor som helst.
-- **Checklisterne** (GDPR/NIS2/EAA) er platform-neutrale selv-vurderinger.
-- WP-plugin (`plugin/`) og Chrome-extension (`chrome-ext/`) er indpakninger omkring kernen — aldrig selve produktet.
-
-**Konklusion: intet behøver trækkes ud. Porteføljen opfylder allerede punkt 1.**
+- Kernen (`worker-scan`, 269 linjer) tager en vilkårlig URL og kører 6 checks uanset CMS.
+- Live-bevis denne iteration: `eucomply-scan.js` mod example.com → score, platform-detektion, alle checks kørt korrekt via Worker-API'en.
+- Indpakninger om samme kerne: web (/scan/), API (Worker), CLI (klar til npm), WP-plugin, Chrome extension. Plugin/extension er én indgang blandt flere. Intet behøvede at blive bygget om.
 
 ## Bygget i denne iteration
 
 | Ændring | Hvorfor | Status |
 |---------|---------|--------|
-| **/terms-of-service-generator/ — interaktiv ToS-generator** | "Terms of service generator" har stor søgevolumen og købsintent → feeder $29–149 templates i /store/, /pro/ og scanneren. 7 spørgsmål (navn, URL, mail, site-type, lovvalg: DK/DE/NL/IE/UK/US, samt accounts/betaling/UGC/API) → 18-sektions ToS med acceptable use, betaling & fornyelse, refunder, UGC-licens, liability-cap, indemnity, termination, ændringsmekanisme, ODR-platform. EU-forbrugerret fair-clauses. Copy/download, FAQPage-schema, disclaimer. | ✅ Deployet; logik verificeret med Node DOM-shim (ecommerce+accounts+pay+UGC = 18 sektioner inkl. German law; tom form = minimal-tilstand korrekt) |
-| Intern linkning | Nav på forsiden + privacy- + cookie-generatoren, kort på blog-index, krydslink fra /tools/-hubben. Sitemap opdateret (priority 0.9). | ✅ Verificeret live |
-| Mobil-tjek af generatorer/checklister | Alle har media queries ved 600px, flydende felter, ingen faste bredder > 600px undtagen max-width-containere. Ingen rettelser nødvendige. | ✅ Gennemgået |
-
-Prioritet (3): det der trækker folk til. Ingen udgifter.
+| **Blog: /blog/hsts-preload-guide/** | "hsts preload guide" er et søgt dev-keyword med klar hensigt. Artiklen dækker header-syntax, Nginx/Apache/Cloudflare/Netlify/Vercel-opskrifter, max-age ramp-up, preload-krav og klassiske fejl. FAQ-schema, TOC, CTA til /scan/ og /pro/, further reading. | ✅ Deployet og verificeret (200 + korrekt titel) |
+| Blog-indeks opdateret | Ny artikel øverst i listen. | ✅ Verificeret live |
+| Sitemap + hreflang | 32 URLs, XML valideret, x-default sat. | ✅ Verificeret |
 
 ## Portefølje
 
-| # | Produkt | Status | Pris |
-|---|---------|--------|------|
-| 1 | EUComply Scanner | ✅ Live, universel | Free / $79 yr |
-| 2 | ComplianceDocs Generator (/tools/) | ✅ Live | Free / $29–149 |
-| 3 | Chrome Extension | ✅ Kode klar | Venter Mads' CWS-konto |
-| 4 | Compliance Badge Widget | ✅ Live på /badge/ | Free (backlinks) |
-| 5 | EUComply Pro (/pro/) | ✅ Sales page live | $79/yr via Gumroad (venter) |
-| 6 | GDPR Checklist (/checklist/) | ✅ Live | Free → feeder scanner + templates |
-| 7 | NIS2 Checklist (/nis2-checklist/) | ✅ Live | Free → feeder scanner + templates |
-| 8 | EAA Checklist (/eaa-checklist/) | ✅ Live | Free → feeder scanner + templates |
-| 9 | Cookie Policy Generator | ✅ Live | Free → feeder templates + scanner |
-| 10 | Privacy Policy Generator | ✅ Live | Free → feeder templates + scanner |
-| 11 | Terms of Service Generator | ✅ Live | Free → feeder templates + scanner |
+Scanner · Docs Generator · Chrome Extension (venter CWS) · Badge · Pro ($79/yr, venter Gumroad) · CLI (kode + side live, venter npm-konto) · GDPR/NIS2/EAA-checklister · 5 generatorer · Blog (12+1 artikler) · Sitemap 32 URLs
 
-## Blokering (uændret — Mads' konti)
+## Blokering (uændret)
 
-**Eneste flaskehals for revenue.** Gumroad (~10 min), Chrome Web Store ($5), npm-konto. Så snart Gumroad findes: skift checkout-links i /pro/ og /store/, deploy, første salg samme dag.
+Mads' konti: Gumroad, CWS ($5), npm. Alle payment-kanaler kræver hans juridiske person. Klar til at gå live samme dag kontiene findes.
 
 ## Klart til Mads (venter på ja)
-- ✅ Gumroad-produkter prissat, tekster klar
-- ✅ Sociale opslag skrevet og klar til afsendelse
+
+- Gumroad-produkter prissat, tekster klar
+- Sociale opslag skrevet og klar til afsendelse
 
 ## Budget
+
 0 kr brugt / 1.000 kr.
 
 ## Næste iteration
-- SEO-blogindlæg: "Terms of Service template" / "Do I need terms of service" → link til generatoren
-- Flere SEO-indgange ("GDPR compliance checker", "refund policy generator")
-- Interne links fra øvrige blogindlæg → ToS-generatoren
+
+- SEO-artikel: cookie consent patterns (server-side vs client-side)
+- Lighthouse-tjek af forsiden
+- Forbered npm-publicering (package.json metadata, README) så publish kan køre straks Mads' konto findes
