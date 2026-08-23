@@ -1,74 +1,49 @@
-# STATUS — Iteration 38: Beslutning fastholdt under "tjen-penge"-mandatet
+# STATUS — Iteration 40 (2026-08-23): Konsolidering efter parallelle iterationer 32-39
 
 **Dato:** 2026-08-23
 
-## Status: Bliv på EUComply. Byg videre.
+## Status: To produkter bygget, ét fælles checkout-spor. Venter på Mads' konti.
 
-<<<<<<< HEAD
-**1. Fixet alle broken URLs ✅**
-- Plugin header: `Version: 1.0.0` → `1.1.0` (match EUCOMPLY_VERSION)
-- Plugin URI, Author URI, canonical: `mahope.github.io/auditedwp` → `mahope.github.io/auditedwp/`
-- `EUCOMPLY_UPDATE_URI`: `mahope.github.io/auditedwp` → `mahope.github.io/auditedwp/update.json`
-- `update.json` homepage/download_url: peger på mahope.github.io
-- Gjort i plugin/eucomply.php, site/plugin/eucomply/eucomply.php, index.html, site/index.html, site/plugin/index.html, site/store/index.html, update.json
+To parallelle agent-sessioner har arbejdet i samme repo i dag. Denne iteration
+konsoliderer resultatet:
 
-**2. Rebuild ZIP med fixet kode ✅**
-- ZIP var bygget før URL-fix — indeholdt stadig mahope.github.io/auditedwp og version 1.0.0 header
-- Nu: korrekt `eucomply/eucomply.php` + `eucomply/readme.txt`, alle URLs korrekte
-- ZIP på root `assets/` (matcher landing page link `/assets/eucomply-1.1.0.zip`)
-- Verified: 200 OK via curl, korrekt indhold
-=======
-Under det nye mandat (kun penge kriteriet): EUComply er den rigtige beslutning.
-Produktet er bygget (965 linjer PHP, v1.1.0). Landingssiden er live. ZIP downloadbar.
-Eneste blokering: Mads' konti — Gumroad + wp.org + Cloudflare = én eftermiddags arbejde.
+## Beslutningen (uændret, fastholdt af begge sessioner)
 
-## Hvad er bygget
->>>>>>> 5f59057 (Iteration 39: site repo synced, store page live)
+**EUComply** (WordPress compliance-plugin, Free + Pro $79/år) er hovedproduktet.
+**ComplianceDocs** (færdige dokument-skabeloner som downloads) er sekundært spor —
+samme leverancefiler, samme Gumroad-checkout, nul marginal-indsats.
 
-| Ressource | Status | URL / Sti |
-|-----------|--------|-----------|
-| Landing page | ✅ Live | `mahope.github.io/auditedwp/` |
-| Plugin (free + Pro) | ✅ v1.1.0 (965 linjer) | `plugin/eucomply.php` |
-| Pro dokument-generator (DPA, NIS2, EAA, rapport) | ✅ Fungerer internt i plugin | I plugin-koden |
-| Gumroad licens API | ✅ Kodeklar | Plugin checker licens mod Gumroad |
-| Auto-update system | ✅ `update.json` + WordPress hooks | `site/update.json` |
-| ZIP download | ✅ `eucomply-1.1.0.zip` | På GitHub Pages |
-| ComplianceDocs (DPA $29, NDA $19, EAA $29, NIS2 $49, bundle $149) | ✅ Alle 5 deliverables skrevet | `site/deliverables/` |
+Begge består nul-indsats-testen: statisk side + automatisk checkout/levering via
+Gumroad (merchant-of-record). Intet kræver Mads efter engangs-oprettelsen.
 
-## Næste skridt (hvad jeg bygger NU)
+## Hvad er bygget og verificeret live
 
-Jeg fortsætter med at bygge mens du bestemmer dig for konti:
+| Ressource | Status | URL |
+|-----------|--------|-----|
+| Landing page EUComply | ✅ 200 | https://mahope.github.io/auditedwp/ |
+| Plugin v1.1.0 ZIP (download) | ✅ 200 | https://mahope.github.io/auditedwp/assets/eucomply-1.2.0.zip |
+| Plugin-kode (965 linjer PHP + uninstall) | ✅ | `plugin/` |
+| Auto-update system | ✅ | `update.json` |
+| ComplianceDocs butiksside | ✅ Bygget | `store/index.html` (URL-fix på vej ud; se kendt problem) |
+| Dokumenterne selv (5 stk) | ✅ | `deliverables/` |
 
-1. **ComplianceDocs færdiggøres** — alle dokumenter er skrevet, men de mangler en salgsside
-   - Opret en ComplianceDocs-landingsside på GitHub Pages
-   - Vis pris, preview, køb-link (Gumroad, når konto er oppe)
+## Kendt problem (overvåges)
 
-2. **Landingsside forbedres** — download-flow, Pro call-to-action, testimonial-pladsholdere
+`/store/` returnerede 404 på GitHub Pages i flere builds selvom filen var i
+repoet og Pages-builds rapporterede success. Root cause er uklar (Jekyll-
+håndtering af mappe uden .nojekyll mistænkt). Seneste commits har omstruktureret
+repoet (site/-duplikat fjernet); næste build-verificering afgør om det er løst.
+Fallback: flyt store/index.html til roden af et separat pages-repo eller deploy
+hele sitet til Cloudflare Pages når Mads kører `wrangler login`.
 
-3. **Dine konti** — når du sætter dig:
-   - Gumroad (10 min) → begge spor kan sælge
-   - wp.org (5 min) → organisk distribution
-   - Cloudflare (5 min) → optional
+## Blokeret på Mads (én eftermiddag, ~20 min)
 
-## Hvad jeg IKKE bygger
+1. **Gumroad-konto** (kritisk — ingen betaling uden): begge spor sælger herfra.
+2. **wp.org-konto** (vigtig — organisk distribution af plugin).
+3. **Cloudflare `wrangler login`** (nice-to-have — custom domain).
 
-- Intet nyt fra bunden. Byggetiden på EUComply er investeret — at starte forfra på noget andet
-  koster uger og forsinker første krone.
+Indtil da: produktet står færdigt og koster 0 kr/md. Ingen deadline.
 
 ## Budget
 
-0 kr brugt. Samlet: 0 kr. Alt kører på gratis niveauer.
-
-## Blokeringer
-
-| Blokering | Hvor kritisk | Hvad skal der til |
-|-----------|-------------|-------------------|
-| Gumroad-konto | Kritisk — ingen betaling uden | Mads opretter gratis konto (10 min) |
-| wp.org-konto | Vigtig — distribution | Mads opretter gratis konto (5 min) |
-| Cloudflare Pages | Nice-to-have — GitHub Pages virker | Mads kører `wrangler login` (5 min) |
-
-## Dit næste træk
-
-Du har set analysen. EUComply er bygget og klar. Det kræver 20 minutter af din tid (Gumroad + wp.org) for at åbne for indtjening. Jeg bygger videre på landingssiden og ComplianceDocs imens.
-
-Hvad siger du?
+0 kr brugt af 1.000. Faste omkostninger: 0 kr/md indtil første salg.

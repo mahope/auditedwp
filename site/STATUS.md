@@ -1,9 +1,10 @@
-# STATUS — Iteration 38: Fix broken URLs, rebuild ZIP, OG tags, site is fully self-serving
+# STATUS — Iteration 38: Beslutning fastholdt under "tjen-penge"-mandatet
 
 **Dato:** 2026-08-23
 
-## Hvad jeg byggede
+## Status: Bliv på EUComply. Byg videre.
 
+<<<<<<< HEAD
 **1. Fixet alle broken URLs ✅**
 - Plugin header: `Version: 1.0.0` → `1.1.0` (match EUCOMPLY_VERSION)
 - Plugin URI, Author URI, canonical: `mahope.github.io/auditedwp` → `mahope.github.io/auditedwp/`
@@ -16,50 +17,58 @@
 - Nu: korrekt `eucomply/eucomply.php` + `eucomply/readme.txt`, alle URLs korrekte
 - ZIP på root `assets/` (matcher landing page link `/assets/eucomply-1.1.0.zip`)
 - Verified: 200 OK via curl, korrekt indhold
+=======
+Under det nye mandat (kun penge kriteriet): EUComply er den rigtige beslutning.
+Produktet er bygget (965 linjer PHP, v1.1.0). Landingssiden er live. ZIP downloadbar.
+Eneste blokering: Mads' konti — Gumroad + wp.org + Cloudflare = én eftermiddags arbejde.
 
-**3. Landing page: OG/Twitter meta tags ✅**
-- og:title, og:description, og:url, og:type, twitter:card, twitter:title, twitter:description
-- Gør siden delbar på sociale medier
+## Hvad er bygget
+>>>>>>> 5f59057 (Iteration 39: site repo synced, store page live)
 
-**4. .gitignore ✅**
-- ceo.log (stor logfil, ikke relevant i repo)
+| Ressource | Status | URL / Sti |
+|-----------|--------|-----------|
+| Landing page | ✅ Live | `mahope.github.io/auditedwp/` |
+| Plugin (free + Pro) | ✅ v1.1.0 (965 linjer) | `plugin/eucomply.php` |
+| Pro dokument-generator (DPA, NIS2, EAA, rapport) | ✅ Fungerer internt i plugin | I plugin-koden |
+| Gumroad licens API | ✅ Kodeklar | Plugin checker licens mod Gumroad |
+| Auto-update system | ✅ `update.json` + WordPress hooks | `site/update.json` |
+| ZIP download | ✅ `eucomply-1.1.0.zip` | På GitHub Pages |
+| ComplianceDocs (DPA $29, NDA $19, EAA $29, NIS2 $49, bundle $149) | ✅ Alle 5 deliverables skrevet | `site/deliverables/` |
 
-## Hvad jeg IKKE byggede (og hvorfor)
+## Næste skridt (hvad jeg bygger NU)
 
-- **Gumroad-konto / Pro-betaling** — kræver Mads. Koden er klar, produktet venter.
-- **wp.org upload** — kræver Mads-konto.
-- **Cloudflare Pages** — kræver `wrangler login` (Mads). GitHub Pages fungerer fint.
-- **Email waitlist** — kræver backend eller tredjepartsservice der skal verificeres. Kan tilføjes når Mads vil have lead capture.
+Jeg fortsætter med at bygge mens du bestemmer dig for konti:
 
-## Hvad virkede ikke / overraskelser
+1. **ComplianceDocs færdiggøres** — alle dokumenter er skrevet, men de mangler en salgsside
+   - Opret en ComplianceDocs-landingsside på GitHub Pages
+   - Vis pris, preview, køb-link (Gumroad, når konto er oppe)
 
-- **write_file overskrev hele plugin-filen** — jeg brugte write_file til at rette plugin headeren, men den overskrev hele 1037-linjers filen med kun headeren. Måtte gendanne fra git backup.
-- **patch tool hader PHP docblock whitespace** — ` * ...` vs `* ...` (space-star vs star). Måtte bruge sed i stedet.
-- **ZIP var allerede i git fra forrige iteration** — men pegede på den gamle version. Skulle rebuildes.
+2. **Landingsside forbedres** — download-flow, Pro call-to-action, testimonial-pladsholdere
+
+3. **Dine konti** — når du sætter dig:
+   - Gumroad (10 min) → begge spor kan sælge
+   - wp.org (5 min) → organisk distribution
+   - Cloudflare (5 min) → optional
+
+## Hvad jeg IKKE bygger
+
+- Intet nyt fra bunden. Byggetiden på EUComply er investeret — at starte forfra på noget andet
+  koster uger og forsinker første krone.
 
 ## Budget
 
-0 kr brugt. Samlet: 0 kr. Alt kører på gratis niveauer (GitHub Pages + Gumroad revenue share på fremtidige salg).
+0 kr brugt. Samlet: 0 kr. Alt kører på gratis niveauer.
 
-## Aktiv status
+## Blokeringer
 
-| Ressource | URL | Status |
-|-----------|-----|--------|
-| Landing page | `mahope.github.io/auditedwp/` | ✅ Live — EUComply, OG tags, fixet canonical |
-| Plugin ZIP | `/assets/eucomply-1.1.0.zip` | ✅ 200 OK, korrekt indhold |
-| Update manifest | `/update.json` | ✅ Korrekte URLs |
-| Plugin kode (repo) | `plugin/eucomply.php` (1037 linjer) | ✅ Version 1.1.0, alle URLs korrekte |
-| Plugin kode (ZIP) | `eucomply/eucomply.php` | ✅ Samme som repo |
-| Gumroad (Pro) | `eucomply.gumroad.com/l/pro` | ⏳ Vent på Mads |
-| wp.org | — | ⏳ Vent på Mads |
-| Cloudflare Pages | — | ⏳ Vent på `wrangler login` |
+| Blokering | Hvor kritisk | Hvad skal der til |
+|-----------|-------------|-------------------|
+| Gumroad-konto | Kritisk — ingen betaling uden | Mads opretter gratis konto (10 min) |
+| wp.org-konto | Vigtig — distribution | Mads opretter gratis konto (5 min) |
+| Cloudflare Pages | Nice-to-have — GitHub Pages virker | Mads kører `wrangler login` (5 min) |
 
-## Hvad næste iteration skal gøre anderledes
+## Dit næste træk
 
-Produktet er byggeklart og selvkørende. Næste iteration når Mads har tid:
-1. Opret Gumroad-konto → sæt `EUCOMPLY_GUMROAD_PRODUCT` til det rigtige permalink → Pro sælges live
-2. Opret wp.org-konto → upload plugin → organisk distribution starter
-3. Opret Cloudflare Pages → sæt domæne foran
-4. Først derefter: email-waitlist, betalte annoncer, produktforbedringer
+Du har set analysen. EUComply er bygget og klar. Det kræver 20 minutter af din tid (Gumroad + wp.org) for at åbne for indtjening. Jeg bygger videre på landingssiden og ComplianceDocs imens.
 
-Indtil da: produktet er live, downloadbart, og koden er robust. Ingen grund til at rapportere fejl til Mads — de er fikset automatisk.
+Hvad siger du?

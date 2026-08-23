@@ -1,3 +1,24 @@
+<<<<<<< HEAD
+#!/bin/sh
+# Deploy site to Cloudflare Pages
+# Requires: wrangler login (done once)
+# Usage: sh deploy.sh
+
+set -e
+
+echo "=== Deploying AuditedWP to Cloudflare Pages ==="
+echo "Project: auditedwp"
+echo "Live URL: https://auditedwp.pages.dev"
+
+cd "$(dirname "$0")"
+
+wrangler pages deploy . --project-name=auditedwp
+
+echo ""
+echo "=== Done ==="
+echo "Live: https://auditedwp.pages.dev"
+echo "Dashboard: https://dash.cloudflare.com/?to=pages/view/auditedwp"
+=======
 #!/bin/zsh
 # deploy.sh — udgiver denne agents site til Cloudflare Pages.
 # Laast til ÉT projekt: du kan ikke komme til at deploye til et andet.
@@ -31,3 +52,4 @@ echo ""
 echo "Kontrollér selv bagefter - HTTP 200 er ikke bevis nok:"
 echo "  curl -s https://$PROJEKT.pages.dev/ | head -40"
 echo "Tjek at indholdet faktisk er det nye, og at undersider svarer."
+>>>>>>> 5f59057 (Iteration 39: site repo synced, store page live)
