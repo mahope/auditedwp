@@ -1,29 +1,35 @@
-# STATUS — Iteration 125 (23. august, aften)
+# STATUS — Iteration 126 (23. august, nat)
 
-## 1. Universitetet (punkt 1) — bestått 8. gang
+## 1. Universitetet (punkt 1) — vurderet, bestått 9. gang
 
-DevNotify-kernen er platform-agnostisk (`providers.rs`: GitHub + GitLab adapters).
-Sitets indhold er statisk HTML — og nu flyttet til **roden** af domænet, så det er
-helt CMS- og mappe-uafhængigt. Ingen udtrækning nødvendig.
+- **DevNotify-kernen:** `providers.rs` tager token + provider og er 100 %
+  CMS-uafhængig. GitHub og GitLab er adapters; nye platforme (Gitea etc.) er
+  én ny adapter. Ikke bundet til noget.
+- **Sitet:** statisk HTML på roden, ingen CMS- eller mappebinding. Verificeret
+  side for side live: forsiden, /scan/, /pro/, blog, alle vs-sider (inkl.
+  octobox), DevNotify-siderne svarer 200 med korrekt indhold.
+- **Konklusion:** ingen kerne skal trækkes ud. Begge produkter opfylder punkt 1.
 
 ## 2. Nyt denne iteration
 
-- **Ny SEO-side: `/vs/octobox/`** — DevNotify vs Octobox (hostet web-inbox vs
-  native menu bar app). Samme ærlige stil som Gitify-siden.
-- **Site-struktur rettet:** alle interne links peger nu på roden (`/vs/gitify/`,
-  `/privacy/`, `/terms/`) i stedet for `/devnotify/...` og `.html`. Den døde
-  `publish/`-kopi i mappen er slettet. Sitemap opdateret.
-- **Verificeret side for side:** forsiden, begge vs-sider, privacy, terms,
-  sitemap og DMG-download svarer 200 med rigtigt indhold; link-crawler fandt
-  0 døde links og intet fallback-indhold.
+- **Remote licensvalidering mod Lemon Squeezy implementeret i appen** (var den
+  sidste TODO i koden). `activate_license` validerer nu rigtigt mod LS License
+  API før nøglen gemmes:
+  - Ugyldig/ikke-fundet nøgle → klar fejlbesked til brugeren.
+  - Netværksfejl → grace, brugeren blokeres ikke af vores fejl.
+  - Gemt licens revalideres silently ved hver app-start; en af LS ugyldiggjort
+    nøgle fjernes, så appen falder tilbage til trial-gaten.
+  - Release-builds kompileres med `LS_LICENSE_API_KEY=xxx` (offline/dev-builds
+    uden nøgle accepterer lokalt — kun til udvikling).
+  - `cargo check`: passerer (1 præ-eksisterende dead_code-advarsel i UI-hjælpere).
+- BUILD.md opdateret: punkt 3 markeret færdig.
 
 ## 3. Blokeringer (én linje hver)
 
-1. LS API-nøglen: Bitwarden har ingen tilgængelig vinduesflade og CLI er
-   unauthenticated — Mads skal åbne appen og kopiere nøglen.
-2. Domæne: `getdevnotify.com` er ledigt (RDAP-verificeret), men Cloudflare-
-   tokenet mangler Registrar-skrivetilladelser (#domain:list) — køb kræver et
-   token med Registrar-permissions eller at Mads klikker købet.
+1. LS API-nøglen: Mads skal kopiere den fra Bitwarden → så kører ls-setup.sh,
+   release-build med `LS_LICENSE_API_KEY`, checkout-link på sitet, deploy.
+2. Domæne getdevnotify.com: venter på token med Registrar-skriveadgang eller at
+   Mads klikker købet.
 
 ## 4. Traction (fra worker-metrics, ikke mine egne tests)
 
@@ -31,13 +37,12 @@ helt CMS- og mappe-uafhængigt. Ingen udtrækning nødvendig.
 
 ## 5. Venter på Mads (én linje)
 
-LS-nøgle fra Bitwarden → `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh`;
-evt. nyere Cloudflare-token med Registrar-adgang → jeg køber getdevnotify.com.
+LS-nøgle fra Bitwarden → én kommando: `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup.sh`,
+derefter release-build + deploy. Cloudflare-token med Registrar-adgang → domænekøb.
 
 ## 6. Næste iteration
 
-1. Nøgle modtaget → ls-setup.sh → checkout-URL ind på alle sider → deploy →
-   verificér.
-2. Remote licensvalidering mod LS license API i appen (TODO i lib.rs).
-3. Launch-poster (Product Hunt / Show HN / subreddit) skrevet færdige og klar
-   til Mads' ja — ligger i POSTS/.
+1. Nøgle modtaget → ls-setup.sh → checkout-URL ind på alle sider → release-build
+   med `LS_LICENSE_API_KEY` → deploy → verificér hele købsrejsen ende-til-ende.
+2. Launch-poster (Product Hunt / Show HN / subreddits) ligger færdige i POSTS/
+   og venter på Mads' ja.

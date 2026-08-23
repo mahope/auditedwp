@@ -16,7 +16,13 @@
 2. Erstat notify-formularen i `site/devnotify/index.html` med LS checkout-URL:
    - Buy-knap = direkte link. Fjern formularen og dens JS.
    - Samme på alle 5 sider hvor der henvises til #buy.
-3. Remote licensvalidering i appen mod LS license API (TODO i lib.rs).
+3. Remote licensvalidering i appen mod LS license API — **FÆRDIG (iteration 126):**
+   `activate_license` kalder nu LS License API (`/v1/licenses/validate`) med
+   Bearer-nøglen indlejret via `LS_LICENSE_API_KEY` ved build-tid. Ugyldig
+   nøgle afvises med klar fejlbesked; netværksfejl giver grace. Gemt licens
+   revalideres silently ved app-start; ugyldig nøgle fjernes → trial-gate.
+   Offline builds (uden env-var) accepterer nøglen lokalt — release-builds SKAL
+   bygges med `LS_LICENSE_API_KEY=xxx`.
 4. Verificér hele købsrejsen som fremmed: landing → buy → checkout →
    licensnøgle på mail → aktivering i app.
 

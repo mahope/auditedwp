@@ -84,24 +84,114 @@ fn get_trial_status(state: State<AppState>, app: AppHandle) -> Result<TrialStatu
     })
 }
 
-/// Aktiverer en licensnøgle. Remote-validering mod Lemon Squeezy tilføjes, når
-/// API-nøglen er tilgængelig; indtil da gemmes nøglen og markere som aktiveret.
+/// Remote-validering mod Lemon Squeezy License API.
+///
+// Kompileres med: LS_LICENSE_API_KEY=xxx cargo tauri build
+// Uden nøglen kompileres appen i "offline mode": nøglen gemmes lokalt som
+// før (bruges kun til udvikling/CI-byg — release-builds skal have nøglen).
+const LICENSE_VALIDATE_URL: &str = match option_env!("LS_LICENSE_API_URL") {
+    Some(url) => url,
+    None => "https://api.lemonsqueezy.com/v1/licenses/validate",
+};
+
+#[derive(serde::Deserialize)]
+struct LsValidateMeta {
+    #[serde(default)]
+    status: String,
+}
+
+#[derive(serde::Deserialize)]
+struct LsValidateResponse {
+    #[serde(default)]
+    valid: bool,
+    #[serde(default)]
+    error: Option<String>,
+    #[serde(default)]
+    meta: Option<LsValidateMeta>,
+}
+
+async fn validate_license_remote(key: &str) -> Result<(), String> {
+    let Some(api_key) = option_env!("LS_LICENSE_API_KEY") else {
+        // Offline build (udvikling): acceptér nøglen lokalt uden remote-tjek.
+        return Ok(());
+    };
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(15))
+        .build()
+        .map_err(|e| e.to_string())?;
+    let resp = client
+        .post(LICENSE_VALIDATE_URL)
+        .header("Accept", "application/json")
+        .bearer_auth(api_key)
+        .json(&serde_json::json!({ "license_key": key }))
+        .send()
+        .await
+        .map_err(|e| format!("Network error while validating your license: {}. DevNotify will retry next time you open the app.", e))?;
+
+    let status = resp.status();
+    let body: LsValidateResponse = resp.json().await.map_err(|e| e.to_string())?;
+    if status.as_u16() == 404 || (!body.valid && body.error.as_deref() == Some("license_not_found")) {
+        return Err("That license key was not found. Check for typos and try again.".into());
+    }
+    if !body.valid {
+        let why = body
+            .meta
+            .map(|m| m.status)
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| body.error.unwrap_or_else(|| "unknown".into()));
+        return Err(format!("This license is not active (status: {}). If you believe this is a mistake, contact support.", why));
+    }
+    Ok(())
+}
+
 #[tauri::command]
-fn activate_license(key: String, state: State<AppState>, app: AppHandle) -> Result<(), String> {
+async fn activate_license(key: String, state: State<'_, AppState>, app: AppHandle) -> Result<(), String> {
     let key = key.trim().to_string();
     if key.len() < 8 {
         return Err("That doesn't look like a valid license key.".into());
     }
-    // TODO(LS): POST til LS license-validation endpoint når API-nøgle findes.
+    // Valider mod Lemon Squeezy før nøglen gemmes (offline builds springer over).
+    validate_license_remote(&key).await?;
     let path = trial_file_path(&app)?;
     let mut doc: serde_json::Value = std::fs::read_to_string(&path)
         .ok()
         .and_then(|t| serde_json::from_str(&t).ok())
         .unwrap_or_else(|| serde_json::json!({}));
     doc["license_key"] = serde_json::Value::String(key.clone());
+    doc["validated_at"] = serde_json::Value::String(get_now_iso());
     std::fs::write(&path, doc.to_string()).map_err(|e| e.to_string())?;
     *state.license_key.lock().unwrap() = Some(key);
     Ok(())
+}
+
+/// Genvaliderer en gemt licensnøgle ved app-start (silent).
+/// Network-fejl giver grace (nøglen beholdes); eksplicit "invalid"/"not found"
+/// fjerner licensen, så appen falder tilbage til trial-gaten.
+async fn revalidate_stored_license(app: AppHandle) {
+    let Some(key) = read_license_key(&app) else { return };
+    // Netværksfejl (beskeden indeholder "Network error") → grace, behold nøglen.
+    // Eksplicit ugyldig nøgle → fjern licensen, appen falder tilbage til trial.
+    let outcome = validate_license_remote(&key).await;
+    match outcome {
+        Ok(()) => return,
+        Err(msg) if msg.contains("Network error") => return,
+        _ => {}
+    }
+    let path = match trial_file_path(&app) {
+        Ok(p) => p,
+        Err(_) => return,
+    };
+    if let Ok(txt) = std::fs::read_to_string(&path) {
+        if let Ok(mut doc) = serde_json::from_str::<serde_json::Value>(&txt) {
+            doc.as_object_mut().map(|o| o.remove("license_key"));
+            doc["validated_at"] = serde_json::Value::String(get_now_iso());
+            let _ = std::fs::write(&path, doc.to_string());
+        }
+    }
+    if let Some(state) = app.try_state::<AppState>() {
+        *state.license_key.lock().unwrap() = None;
+    }
+    let _ = &app; // keep AppHandle alive for state access above
 }
 
 #[tauri::command]
@@ -340,6 +430,13 @@ pub fn run() {
                 .build(app)?;
 
             //── Start background polling ──────────────────────────────────────
+            // Silent license re-validation once at startup.
+            {
+                let app_handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    revalidate_stored_license(app_handle).await;
+                });
+            }
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 // Initial check after 2 seconds
