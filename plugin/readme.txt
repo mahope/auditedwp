@@ -44,8 +44,9 @@ EUComply checks your WordPress site against six EU compliance criteria:
 | Quarterly compliance report (PDF) | ✗ | ✓ |
 | Email report delivery | ✗ | ✓ |
 | Export audit log (CSV/PDF) | ✗ | ✓ |
-
-= No data leaves your site =
+| Auto-updates via GitHub manifest | ✓ | ✓ |
+| Gumroad license validation | ✗ | ✓ |
+=== No data leaves your site =
 
 All checks run server-side on your WordPress installation. No external API calls, no telemetry, no analytics. Pro license validation is the only external request (site-key check, no site data transmitted).
 

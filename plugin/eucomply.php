@@ -30,9 +30,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.0.0' );
+define( 'EUCOMPLY_VERSION', '1.1.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://eucomply.gumroad.com/l/pro' );
+define( 'EUCOMPLY_GUMROAD_PRODUCT', 'pro' ); // Gumroad product permalink — set when product is created
+define( 'EUCOMPLY_UPDATE_URI', 'https://eucomply.pages.dev/update.json' );
+define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 
 /**
  * Main plugin class — keeps everything in one place for v1.
@@ -57,6 +60,7 @@ class EUComply {
     private function __construct() {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+        add_action( 'admin_init', array( $this, 'maybe_generate_doc' ) );
         add_action( 'wp_ajax_eucomply_run_scan', array( $this, 'ajax_run_scan' ) );
 
         // Schedule weekly scan.
@@ -591,10 +595,10 @@ class EUComply {
                 <h2 style="font-size:16px;margin:0 0 8px">📄 Pro: Documents &amp; Reports</h2>
                 <table class="eucomply-table">
                     <tr><th>Document</th><th>Last generated</th><th></th></tr>
-                    <tr><td>GDPR Data Processing Agreement</td><td><?php echo esc_html( get_option( 'eucomply_pro_dpa_date', 'Not yet' ) ); ?></td><td><a href="#" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
-                    <tr><td>NIS2 / DORA Vendor Clause Set</td><td><?php echo esc_html( get_option( 'eucomply_pro_nis2_date', 'Not yet' ) ); ?></td><td><a href="#" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
-                    <tr><td>EAA Accessibility Statement</td><td><?php echo esc_html( get_option( 'eucomply_pro_eaa_date', 'Not yet' ) ); ?></td><td><a href="#" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
-                    <tr><td>Quarterly Compliance Report (PDF)</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="#" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>GDPR Data Processing Agreement</td><td><?php echo esc_html( get_option( 'eucomply_pro_dpa_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=dpa' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>NIS2 / DORA Vendor Clause Set</td><td><?php echo esc_html( get_option( 'eucomply_pro_nis2_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=nis2' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>EAA Accessibility Statement</td><td><?php echo esc_html( get_option( 'eucomply_pro_eaa_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=eaa' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>Quarterly Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                 </table>
             </div>
             <?php endif; ?>
@@ -741,18 +745,218 @@ class EUComply {
     }
 
     /**
+     * Pro: generate and download a compliance document.
+     *
+     * Hooked on admin_init. Downloads a .html document (opens in Word /
+     * prints to PDF) built from the latest scan + site info. No external
+     * services, no data leaves the site.
+     */
+    public function maybe_generate_doc() {
+        if ( empty( $_GET['eucomply_doc'] ) || ! is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified below
+            return;
+        }
+        if ( ! check_admin_referer( 'eucomply_doc' ) || ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Not allowed' );
+        }
+        $doc = sanitize_key( wp_unslash( $_GET['eucomply_doc'] ) );
+        $allowed = array( 'dpa', 'nis2', 'eaa', 'report' );
+        if ( ! in_array( $doc, $allowed, true ) || ! $this->is_pro() ) {
+            wp_die( 'Pro license required.' );
+        }
+
+        $titles = array(
+            'dpa'    => 'Data Processing Agreement',
+            'nis2'   => 'NIS2 / DORA Vendor Clause Set',
+            'eaa'    => 'Accessibility Statement (EAA)',
+            'report' => 'Quarterly Compliance Report',
+        );
+
+        $body = call_user_func( array( $this, 'build_' . str_replace( '-', '_', $doc ) ) );
+
+        update_option( 'eucomply_pro_' . $doc . '_date', current_time( 'mysql' ) );
+
+        nocache_headers();
+        header( 'Content-Type: text/html; charset=utf-8' );
+        header( 'Content-Disposition: attachment; filename=eucomply-' . $doc . '-' . gmdate( 'Ymd' ) . '.html' );
+
+        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . esc_html( $titles[ $doc ] ) . '</title>';
+        echo '<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;line-height:1.6;color:#111}h1{font-size:22px;border-bottom:2px solid #111;padding-bottom:8px}h2{font-size:16px;margin-top:28px}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #999;padding:6px 10px;font-size:13px;text-align:left}footer{margin-top:48px;font-size:11px;color:#666;border-top:1px solid #ccc;padding-top:8px}</style>';
+        echo '</head><body>';
+        echo '<h1>' . esc_html( $titles[ $doc ] ) . '</h1>';
+        echo '<p>Site: <strong>' . esc_html( get_bloginfo( 'name' ) ) . '</strong> (' . esc_html( home_url() ) . ')<br>';
+        echo 'Generated: ' . esc_html( current_time( 'date' ) ) . ' &middot; By: ' . esc_html( get_option( 'eucomply_agency_name', '' ) ) . '</p>';
+        echo wp_kses_post( $body );
+        echo '<footer>Generated by EUComply Pro. This document is a template aid and does not constitute legal advice.</footer>';
+        echo '</body></html>';
+        exit;
+    }
+
+    /** Latest scan results as key => row, or empty array. */
+    private function scan_snapshot() {
+        return get_option( 'eucomply_scan_results', array() );
+    }
+
+    private function build_dpa() {
+        $name = get_bloginfo( 'name' );
+        ob_start(); ?>
+        <p>This Data Processing Agreement ("DPA") governs the processing of personal data by <strong><?php echo esc_html( $name ); ?></strong> ("Processor") on behalf of its clients ("Controller"), pursuant to Article 28 GDPR.</p>
+        <h2>1. Roles</h2>
+        <p>The Controller determines the purposes and means of processing. The Processor processes personal data only on documented instructions from the Controller.</p>
+        <h2>2. Subject matter and duration</h2>
+        <p>Processing covers the services agreed between the parties and lasts for the term of the underlying service agreement.</p>
+        <h2>3. Categories of data subjects and data</h2>
+        <p>Website visitors, customers and employees of the Controller. Contact data, usage data, content data as required for the services.</p>
+        <h2>4. Processor obligations</h2>
+        <ul>
+            <li>Process data only on documented instructions (Art. 28(3)(a)).</li>
+            <li>Ensure persons authorised to process are bound by confidentiality (Art. 28(3)(b)).</li>
+            <li>Apply appropriate technical and organisational security measures (Art. 32).</li>
+            <li>Not engage sub-processors without prior authorisation; flow down equivalent obligations (Art. 28(4)).</li>
+            <li>Assist the Controller with data subject requests and DPIAs (Art. 28(3)(e)-(f)).</li>
+            <li>Delete or return all personal data at end of the engagement (Art. 28(3)(g)).</li>
+            <li>Notify the Controller without undue delay after becoming aware of a personal data breach (Art. 33(2)).</li>
+        </ul>
+        <h2>5. Transfers outside the EEA</h2>
+        <p>Transfers outside the EEA occur only with adequate safeguards, e.g. EU Standard Contractual Clauses (Commission Decision 2021/914).</p>
+        <h2>6. Audit</h2>
+        <p>The Controller may audit compliance with this DPA once per year upon reasonable notice.</p>
+        <table><tr><th></th><th>Controller</th><th>Processor</th></tr>
+        <tr><td>Name</td><td>[Client name]</td><td><?php echo esc_html( $name ); ?></td></tr>
+        <tr><td>Signed / date</td><td></td><td></td></tr></table>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function build_nis2() {
+        ob_start(); ?>
+        <p>This clause set is intended for contracts where <strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong> acts as supplier or sub-supplier to entities in scope of NIS2 (Directive (EU) 2022/2555) or DORA (Regulation (EU) 2022/2554).</p>
+        <h2>Clause A — Security measures</h2>
+        <p>The Supplier maintains risk-appropriate technical and organisational measures including: network security, access control, multi-factor authentication for administrative access, patch management within defined SLAs, encrypted backups tested at least annually, and incident response procedures.</p>
+        <h2>Clause B — Incident notification</h2>
+        <p>The Supplier notifies the Client of any significant incident affecting the services within <strong>[24] hours</strong> of detection, including nature, affected systems, containment status and expected impact. Significant incidents under NIS2 Art. 23 are reported to the competent authority by the Client unless otherwise agreed.</p>
+        <h2>Clause C — Supply chain</h2>
+        <p>The Supplier informs the Client of changes to sub-suppliers with access to the Client's systems or data and ensures equivalent obligations are imposed contractually (NIS2 Art. 21(2)(d), DORA Art. 28).</p>
+        <h2>Clause D — Audit and evidence</h2>
+        <p>The Supplier provides upon request: an up-to-date overview of its security posture, results of the most recent vulnerability scans, backup restore test documentation, and cooperates with the Client's register-of-information obligations under DORA Art. 28(3).</p>
+        <h2>Clause E — Exit</h2>
+        <p>Upon termination the Supplier supports orderly transition and securely deletes or returns all Client data within [30] days, certifying deletion in writing.</p>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function build_eaa() {
+        ob_start(); ?>
+        <p><strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong> is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply the relevant accessibility standards, in line with Directive (EU) 2019/882 (the European Accessibility Act).</p>
+        <h2>Conformance status</h2>
+        <p>This website aims to conform with WCAG 2.1 Level AA. Conformance assessment was carried out by self-evaluation.</p>
+        <h2>Measures</h2>
+        <ul>
+            <li>Accessibility is part of our design and review process.</li>
+            <li>We test the website with assistive technologies where feasible.</li>
+            <li>Known issues are tracked and remediated on a rolling basis.</li>
+        </ul>
+        <h2>Feedback</h2>
+        <p>We welcome your feedback on the accessibility of this website. Please contact us via <a href="mailto:[email protected]">[email protected]</a>. We aim to respond within [5] business days.</p>
+        <h2>Enforcement</h2>
+        <p>If you are not satisfied with our response, you may escalate to the relevant enforcement body in your member state under the European Accessibility Act.</p>
+        <p><em>Last reviewed: <?php echo esc_html( current_time( 'F Y' ) ); ?>.</em></p>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function build_report() {
+        $results = $this->scan_snapshot();
+        ob_start();
+        echo '<p>Summary of the latest automated compliance scan (' . esc_html( get_option( 'eucomply_last_scan', '' ) ) . ').</p>';
+        echo '<table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>';
+        foreach ( $results as $key => $r ) {
+            echo '<tr><td>' . esc_html( $r['label'] ) . '</td><td>' . ( ! empty( $r['pass'] ) ? 'PASS' : 'FAIL' ) . ( ! empty( $r['warn'] ) ? ' (warning)' : '' ) . '</td><td>' . esc_html( $r['detail'] ) . '</td></tr>';
+        }
+        echo '</table>';
+        if ( empty( $results ) ) {
+            echo '<p>No scan has been run yet. Run a scan from the EUComply dashboard and re-generate this report.</p>';
+        } else {
+            $fails = 0;
+            foreach ( $results as $r ) {
+                if ( empty( $r['pass'] ) ) {
+                    $fails++;
+                }
+            }
+            echo '<h2>Recommendations</h2><ul>';
+            foreach ( $results as $r ) {
+                if ( empty( $r['pass'] ) && ! empty( $r['fix'] ) ) {
+                    echo '<li>' . esc_html( $r['label'] ) . ': ' . esc_html( $r['fix'] ) . '</li>';
+                }
+            }
+            echo '</ul><p>' . sprintf( '%d of %d checks passed.', count( $results ) - $fails, count( $results ) ) . '</p>';
+        }
+        return ob_get_clean();
+    }
+
+    /**
      * Determine if Pro license is active.
+     *
+     * A key counts as Pro if it has the right format AND has been verified
+     * against the Gumroad license API (result cached for 24h). Format-only
+     * keys get one grace verification attempt on save.
      */
     private function is_pro() {
         $key = get_option( 'eucomply_pro_key', '' );
         if ( empty( $key ) ) {
             return false;
         }
-        // Simple key format: starts with EC-PRO- and has 16 alphanumeric chars.
-        if ( 0 === strpos( $key, 'EC-PRO-' ) && strlen( $key ) >= 22 ) {
-            return true;
+        // Key format: EC-PRO- followed by 16 alphanumeric chars (Gumroad default is UUID-ish).
+        if ( 0 !== strpos( $key, 'EC-PRO-' ) || strlen( $key ) < 22 ) {
+            return false;
         }
-        return false;
+        $verified = get_option( 'eucomply_pro_verified', '' );
+        if ( '1' === $verified ) {
+            // Re-verify at most once a day so refunds/expiries take effect.
+            $checked_at = (int) get_option( 'eucomply_pro_verified_at', 0 );
+            if ( time() - $checked_at < DAY_IN_SECONDS ) {
+                return true;
+            }
+        }
+        // Attempt remote verification; fall back to previously verified state.
+        $ok = $this->verify_license_remote( $key );
+        if ( null === $ok ) {
+            // API unreachable: trust previous verification if any.
+            return '1' === $verified;
+        }
+        update_option( 'eucomply_pro_verified', $ok ? '1' : '0' );
+        update_option( 'eucomply_pro_verified_at', time() );
+        return $ok;
+    }
+
+    /**
+     * Verify a license key against the Gumroad License API.
+     *
+     * @return bool|null True/False on definitive answer, null when API unreachable.
+     */
+    private function verify_license_remote( $key ) {
+        $response = wp_remote_post(
+            'https://api.gumroad.com/v2/licenses/verify',
+            array(
+                'timeout' => 10,
+                'body'    => array(
+                    'product_permalink' => EUCOMPLY_GUMROAD_PRODUCT,
+                    'license_key'       => $key,
+                ),
+            )
+        );
+        if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+            return null;
+        }
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( ! is_array( $data ) || empty( $data['success'] ) ) {
+            return false;
+        }
+        // A refunded or cancelled purchase must not stay Pro.
+        $purchase = isset( $data['purchase'] ) ? $data['purchase'] : array();
+        if ( ! empty( $purchase['refunded'] ) || ! empty( $purchase['chargebacked'] ) ) {
+            return false;
+        }
+        return true;
     }
 }
 
@@ -761,3 +965,74 @@ add_action( 'plugins_loaded', array( 'EUComply', 'get_instance' ) );
 
 // Deactivation hook.
 register_deactivation_hook( __FILE__, array( 'EUComply', 'deactivate' ) );
+
+/**
+ * Auto-update checker: fetches update manifest from the site.
+ * When the plugin is on wp.org this is unused — wp.org handles updates.
+ * Until then, this provides updates from the published update.json.
+ */
+add_filter( 'site_transient_update_plugins', 'eucomply_check_for_updates' );
+function eucomply_check_for_updates( $transient ) {
+    if ( ! is_object( $transient ) ) {
+        $transient = new stdClass();
+    }
+    $plugin_slug = plugin_basename( __FILE__ );
+    $remote      = wp_remote_get( EUCOMPLY_UPDATE_URI, array( 'timeout' => 5 ) );
+    if ( is_wp_error( $remote ) || 200 !== wp_remote_retrieve_response_code( $remote ) ) {
+        return $transient;
+    }
+    $data = json_decode( wp_remote_retrieve_body( $remote ), true );
+    if ( ! is_array( $data ) || empty( $data['version'] ) ) {
+        return $transient;
+    }
+    // Only show update if remote version > installed version.
+    if ( version_compare( EUCOMPLY_VERSION, $data['version'], '>=' ) ) {
+        return $transient;
+    }
+    $update = new stdClass();
+    $update->slug        = $data['slug'];
+    $update->plugin      = $plugin_slug;
+    $update->new_version = $data['version'];
+    $update->url         = $data['homepage'] ?? '';
+    $update->package     = $data['download_url'] ?? '';
+    $update->requires    = $data['requires'] ?? '5.8';
+    $update->tested      = $data['tested'] ?? '6.8';
+    $update->icons       = array( 'svg' => 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIGZpbGw9IiMyODY4ZDAiIHJ4PSIyMCIvPjx0ZXh0IHg9IjI0IiB5PSI4NSIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSI4MDAiPkVDPC90ZXh0Pjwvc3ZnPg==' );
+    $transient->response[ $plugin_slug ] = $update;
+    return $transient;
+}
+
+/**
+ * Plugin details popup (Plugins → Add New → Details or the "View details" link).
+ */
+add_filter( 'plugins_api', 'eucomply_plugin_info', 10, 3 );
+function eucomply_plugin_info( $result, $action, $args ) {
+    if ( 'plugin_information' !== $action || empty( $args->slug ) || 'eucomply' !== $args->slug ) {
+        return $result;
+    }
+    $remote = wp_remote_get( EUCOMPLY_UPDATE_URI, array( 'timeout' => 5 ) );
+    if ( is_wp_error( $remote ) || 200 !== wp_remote_retrieve_response_code( $remote ) ) {
+        return $result;
+    }
+    $data = json_decode( wp_remote_retrieve_body( $remote ), true );
+    if ( ! is_array( $data ) ) {
+        return $result;
+    }
+    $result                = new stdClass();
+    $result->name          = $data['name'] ?? 'EUComply';
+    $result->slug          = $data['slug'] ?? 'eucomply';
+    $result->version       = $data['version'] ?? '1.0.0';
+    $result->requires      = $data['requires'] ?? '5.8';
+    $result->tested        = $data['tested'] ?? '6.8';
+    $result->requires_php  = $data['requires_php'] ?? '7.4';
+    $result->last_updated  = $data['last_updated'] ?? '';
+    $result->download_link = $data['download_url'] ?? '';
+    $result->homepage      = $data['homepage'] ?? '';
+    $result->sections      = array(
+        'description' => $data['sections']['description'] ?? '',
+        'changelog'   => $data['sections']['changelog'] ?? '',
+    );
+    $result->banners = array( 'low' => '' );
+    $result->icons   = array( 'svg' => 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIGZpbGw9IiMyODY4ZDAiIHJ4PSIyMCIvPjx0ZXh0IHg9IjI0IiB5PSI4NSIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSI4MDAiPkVDPC90ZXh0Pjwvc3ZnPg==' );
+    return $result;
+}
