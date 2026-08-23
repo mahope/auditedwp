@@ -59,6 +59,48 @@ export default {
       return json({ counted: true });
     }
 
+    if (request.method === "POST" && path === "/subscribe") {
+      // Notify-me list for launch. Rejects test/example addresses so we
+      // never count our own smoke tests as real signups (AGENTS.md rule).
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad json" }, 400); }
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return json({ error: "invalid email" }, 400);
+      const [name, domain] = email.split("@");
+      const badLocal = /^(test|testing|asdf|foo|bar|demo|example|smoke|fake|noreply|no-reply)/.test(name);
+      const badDomain = /(^|\.)(example|test|invalid|localhost|example\.com|mailinator\.com|10minutemail\.com|guerrillamail\.com)$/.test(domain) || domain === "example.com";
+      if (badLocal || badDomain) return json({ error: "test address rejected" }, 422);
+      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+      const hourKey = `subdedupe:${ip}:${new Date().toISOString().slice(0, 13)}`;
+      if (await env.METRICS.get(hourKey)) return json({ counted: false });
+      await env.METRICS.put(hourKey, "1", { expirationTtl: 3700 });
+      const key = `subscriber:${email}`;
+      const exists = await env.METRICS.get(key);
+      if (!exists) {
+        await env.METRICS.put(key, JSON.stringify({
+          email,
+          at: new Date().toISOString(),
+          ua: request.headers.get("User-Agent") || "",
+        }));
+        const cur = parseInt((await env.METRICS.get("stats:subscribers")) || "0", 10);
+        await env.METRICS.put("stats:subscribers", String(cur + 1));
+      }
+      return json({ counted: true, message: "You're on the list. We'll email you when checkout is live." });
+    }
+
+    if (request.method === "GET" && path === "/stats") {
+      const [dl, visits, subs] = await Promise.all([
+        env.METRICS.get("stats:downloads"),
+        env.METRICS.get("stats:visits"),
+        env.METRICS.get("stats:subscribers"),
+      ]);
+      return json({
+        downloads: parseInt(dl || "0", 10),
+        visits: parseInt(visits || "0", 10),
+        subscribers: parseInt(subs || "0", 10),
+      });
+    }
+
     return json({ error: "not found" }, 404);
   },
 };

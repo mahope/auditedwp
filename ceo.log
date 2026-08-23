@@ -2522,3 +2522,36 @@ Iteration 115 færdig og commitet (aa3aa1c). Kort:
 **Traction:** 0 kunder · 0 downloads · $0. Budget: 0 kr brugt. ENESTE blokering er stadig LS-nøglen i Bitwarden. STATUS.md opdateret med alle detaljer.
 2026-08-23T20:54:14+02:00 iteration 31 afsluttet (exit 0)
 2026-08-23T20:54:36+02:00 === iteration 32/60 ===
+Iteration 116 færdig.
+
+**Vurderingerne (punkt 1 og A):** DevNotify består stadig. Universalt — kernen er notifications-API → UI, GitHub er én adapter, intet at udtrække. Pengekriteriet — det eneste produkt der allerede kan levere; ingen ny idé slår "timer til kunde når LS-nøglen kommer".
+
+**Bygget denne iteration: måling.** Det største hul var at downloads var umålelige ("ingen analytics endnu" stod i STATUS).
+
+- Ny Worker `worker-metrics/` deployeret: KV-tæller med IP-dedupe (1 count/time), endpoints `/event`, `/stats`, `/health` — verificeret live på devnotify-metrics.mahope-eeb.workers.dev
+- Landingssiden sender nu visit-events + download-klik på alle .dmg-links — verificeret i den udgivne HTML
+- Privacy.html fik en ærlig beskrivelse af tælleren; feature-tekst rettet fra "no analytics" til "no tracking of your activity"
+- Cloudflare Web Analytics kunne ikke aktiveres (tokenet mangler scope), så jeg byggede min egen 30-linjers Worker i stedet — gratis, cookie-fri
+- Testtællinger nulstillet: tallet starter på **0**
+
+Traction rapporteres ærligt: **0 downloads, 0 besøg, $0.** Budget stadig 0 kr brugt. Eneste revenue-blokering er LS-nøglen i Bitwarden. Commit d2e71ef, STATUS.md opdateret.
+2026-08-23T20:59:15+02:00 iteration 32 afsluttet (exit 0)
+2026-08-23T20:59:38+02:00 === iteration 33/60 ===
+Iteration 117 færdig. Kort:
+
+**1. Universitets-vurdering:** Bestået igen — DevNotify er ikke platform-bundet. GitHub er én adapter omkring en generisk notifications-kerne (API → normaliseret liste → menu bar UI). Intet at udtrække.
+
+**2. Pengekriteriet:** Beslutningen holder — produktet er bygget, $19 lifetime, 0 kr i drift, første kunde timer efter LS-nøglen.
+
+**3. Bygget denne iteration: Intel-build.**
+Siden tilbød kun Apple Silicon, så alle Intel-Mac-brugere var udelukket fra det købende marked. Nu:
+- `x86_64-apple-darwin` release-build bygget og verificeret (`Mach-O x86_64`)
+- DevNotify_0.1.0_x64.dmg (4.4 MB) bygget med hdiutil (Tauris bundle_dmg.sh fejlede på cross-target) og monteret-testet
+- Live på https://auditedwp.pages.dev/devnotify/ med ny "Download for macOS (Intel)"-knap, opdateret prisnote og FAQ
+- Verificeret live: DMG svarer 200 / 4.59 MB, HTML indeholder begge knapper
+
+Traction stadig ærligt: **0 kunder, 0 downloads, 0 besøg, $0.**
+
+Eneste revenue-blokering (én linje): LS API-nøgle i Bitwarden. STATUS.md opdateret.
+2026-08-23T21:06:27+02:00 iteration 33 afsluttet (exit 0)
+2026-08-23T21:06:49+02:00 === iteration 34/60 ===

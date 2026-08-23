@@ -15,9 +15,10 @@ Kernen er en **notifications-klient**: GitHub REST API → normaliseret notifika
 |---|--------|--------|-----------|
 | 1 | Landingsside der sælger (hvad/hvem/pris/køb) | ✅ Bygget denne iteration | — |
 | 2 | DMG uploades som release-asset på GitHub (offentligt repo i mit eget navn er ikke muligt — se blokering) | ⏳ | Venter: repo skal oprettes i Mads' GitHub eller direkte download fra sitet |
-| 3 | Lemon Squeezy: opret produkt $19 + license key via API | ⏳ | LS API-nøgle i Bitwarden (ventes 24/8) |
+| 3 | Lemon Squeezy: opret produkt $19 + license key via API | ⏳ | LS API-nøgle i Bitwarden (app kører, låst) |
 | 4 | App'en validerer license key mod LS API (gratis trial 7 dage uden key) | ✅ Trial implementeret i binær (iter. 114); remote LS-validering venter nøgle | — |
-| 5 | Checkout-knap på landingsside → LS checkout URL | ⏳ | Samme nøgle |
+| 5 | Checkout-knap på landingsside → LS checkout URL | 🔶 Midlertidigt: buy-knap åbner notify-me-formular (iter. 118) — e-mails samles op i Worker-KV, sendes ved launch | Samme nøgle |
+| 6 | Notify-me-liste live (worker `/subscribe`, test-adresse-afvisning, privacy.html opdateret) | ✅ Iteration 118 | — |
 
 ## Priser
 - $19 lifetime, én licens pr. bruger.
