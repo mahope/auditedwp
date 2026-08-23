@@ -43,6 +43,15 @@ export default {
       }
     }
 
+    // GET /config — public runtime config (checkout URL sættes via secret/vars,
+    // så en ny Lemon Squeezy-checkout kan aktiveres uden ny deploy)
+    if (request.method === "GET" && path === "/config") {
+      return json({
+        checkoutUrl: env?.CHECKOUT_URL || "",
+        launchPricing: true,
+      });
+    }
+
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
 
     // Simple usage stats

@@ -295,11 +295,27 @@ fetch('https://eucomply-watch.mahope-eeb.workers.dev/status?url=shopify.com')
 <!-- Activate: uncomment the script line below and set src="https://assets.lemonsqueezy.com/js/lemon.js" -->
 
 <script>
-// ── Mads: indsæt dit Lemon Squeezy produkt-link her ──────────────────
-var CHECKOUT_URL = ''; // Lemon Squeezy checkout-URL, fx https://mahope.lemonsqueezy.com/buy/xxxx
+// Checkout-URL hentes runtime fra workerens /config endpoint.
+// Sæt secret/vars CHECKOUT_URL på eucomply-scan workeren (via wrangler eller dashboard),
+// så går checkout live med det samme — ingen kodeændring eller deploy nødvendig.
+var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
+var CHECKOUT_URL = '';
 
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('buy-pro-btn');
+  var note = document.querySelector('.price-note');
+  fetch(API + '/config').then(function(r){ return r.json(); }).then(function(cfg) {
+    if (cfg && cfg.checkoutUrl) {
+      CHECKOUT_URL = cfg.checkoutUrl;
+      if (btn) { btn.href = CHECKOUT_URL; }
+      var legacy = document.querySelector('span[style*="color:var(--muted)"][style*="display:inline-block"]');
+      // Fjern "checkout opens soon"-noten når checkout er live
+      document.querySelectorAll('br + span, span').forEach(function(s) {
+        if (/Checkout opens on Lemon Squeezy/.test(s.textContent)) s.style.display = 'none';
+      });
+    }
+  }).catch(function(){ /* fallback: waitlist */ });
+
   if (btn) {
     btn.addEventListener('click', function(e) {
       if (CHECKOUT_URL) {
