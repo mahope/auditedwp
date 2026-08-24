@@ -4368,3 +4368,36 @@ STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-24T14:28:16+02:00 iteration 18 afsluttet (exit 0)
 2026-08-24T14:28:37+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-24T14:33:39+02:00 === iteration 19/60 ===
+Iteration 223 færdig.
+
+**Universalitets-vurdering (første opgave): BESTÅET.** Kernen `shared/scan-engine.js` tager en almindelig URL og virker uanset CMS — beviest med friske scanninger af shopify/webflow/squarespace i it. 219. WP-plugin, CLI og browser-ext er allerede indpakninger. Ingen udtrækning nødvendig; vurderingen står i STATUS.md.
+
+**Pengekriteriet:** Beslutningen holder — EUComply Pro $79/år er primært. Pro-siden verificeret korrekt i flip-tilstand (waitlist nu, checkout automatisk når CHECKOUT_URL sættes).
+
+**Bygget denne iteration** (prioritet 3, da LS-nøglen stadig mangler):
+- Fuld intern-linking-audit: 8 af 27 blogposts havde nul/nær-nul interne backlinks, 6 var helt forældreløse
+- Nyt emnegrupperet "Keep reading"-modul i alle 27 posts (`site/add_related.py`, idempotent)
+- 12 håndplukkede ekstra links → **0 forældreløse sider**, script-verificeret, ingen brudte links
+- Deployet: alle 27 undersider returnerer HTTP 200 med modulet live
+
+Traction forbliver det ærlige tal: **0 kunder, $0, 1 scanning.**
+
+Blokering (én linje): LS API-nøglen ligger endnu ikke i Bitwarden. Når den kommer: sandbox-testkøb → flip Pro-checkout + 6 butikssider samme time. Commit: `fda18ed`.
+2026-08-24T14:38:40+02:00 iteration 19 afsluttet (exit 0)
+2026-08-24T14:39:15+02:00 === iteration 20/60 ===
+Iteration 224 færdig. Kort rapport:
+
+**Punkt 1 (universalitet): BESTÅET — verificeret mod live-systemet, ikke kun koden.**
+Scanner-workeren `eucomply-scan` svarer 200 med fuld check-JSON på shopify.com, webflow.com, squarespace.com og example.com på under et halvt sekund. Kernen tager enhver URL uden CMS-antagelser; WP-plugin, CLI og Chrome-extension er indpakninger. Ingen udtrækning nødvendig.
+
+**Pengekriteriet: beslutningen holder.** EUComply Pro ($79/år recurring) er stadig den korteste vej til første betaling, og Pro-siden flipper automatisk til checkout når LS-nøglen sættes.
+
+**Gjort i denne iteration:** Gennemgik købsrejsen på live-sitet. Alle nav-links og nøglesider virker (200). Ét reelt gap fundet og lukket: forsiden — den stærkeste side — linkede ikke til high-value guides som fines-tracker. Tilføjede en "Popular guides"-sektion med 3 kort (GDPR fines tracker, cookie consent guide 2026, scanner comparison) + link til alle 27 guides. Responsiv, hover-stil, deployet og verificeret live.
+
+**Traction (ærlige tal): 0 betalende kunder · $0 · 0 rigtige tilmeldinger · 1 scanning.**
+
+**Blokering (én linje):** LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
+
+STATUS.md er opdateret. Næste skridt står der: sandbox-testkøb + flip så snart nøglen kommer, ellers hreflang-gennemgang af de tyske sider.
+2026-08-24T14:42:08+02:00 iteration 20 afsluttet (exit 0)
+2026-08-24T14:42:31+02:00 === iteration 21/60 ===

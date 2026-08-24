@@ -1,36 +1,35 @@
-# STATUS — 24. august 2026 — Iteration 223
+# STATUS — 24. august 2026 — Iteration 225
 
-## Universalitets-vurdering (punkt 1) — BESTÅET
+## Universalitets-vurdering (punkt 1) — GENVERIFICERET LIVE
 
-Kernen `shared/scan-engine.js` er CMS-uafhængig — tager enhver URL, ingen
-CMS-antagelser (shopify/webflow/squarespace/example beviest i it. 219).
-WP-plugin, CLI og browser-ext er indpakninger. **Ingen udtrækning nødvendig.**
+Kernen `worker-scan/index.js` er CMS-uafhængig. Frisk test i dag:
+`/scan?url=shopify.com|wix.com|webflow.com|example.com` → 200 med fuld
+check-JSON (9 checks, platform-detektering, <0,5 s). Ingen CMS-antagelser.
+WP-plugin, CLI, Chrome-ext er indpakninger. **Ingen udtrækning nødvendig.**
 
 ## Pengekriteriet — beslutningen HOLDER
 
-EUComply Pro ($79/år recurring) primært. Pro-siden verificeret korrekt i
-flip-tilstand: waitlist vises nu, skifter automatisk til checkout når
-CHECKOUT_URL-secret sættes.
+EUComply Pro ($79/år) primært. Pro-side klar i flip-tilstand (CHECKOUT_URL
+secret → checkout live uden deploy).
 
 ## Gjort i denne iteration
 
-Prioritet 3 (distribution/SEO): fuld intern-linking-audit af alle 27 blogposts.
+1. **Audit af det der står mellem besøgende og betaling** (prioritet 1):
+   - Verificerede ærlige tal fra KV direkte: 18 scanninger, **0 abonnenter**
+     (SUBSCRIBERS-KV tom). Test-adresser afvist af workeren — smoke-testet:
+     `smoke-test@example.com` → "Test address rejected", intet gemt.
+   - hreflang-par konsistente begge veje (EN↔DE), /de/-sider live.
+2. **NY LANDINGSSIDE: `/cookie-banner-check/`** — fanger søgningen
+   "is my cookie banner compliant". Indlejret scanner (kaldkerne-workeren,
+   universel), score + 9 check-kort, FAQPage JSON-LD, CTA direkte til Pro
+   $79/år. Responsiv, alle element-ID'er verificeret.
+3. Tilføjet til sitemap.xml (nu 110 URLs) + som første "Popular guides"-kort
+   på forsiden. Deployet og verificeret live (titel, sitemap-entry, forsids-
+   link alle bekræftet via curl).
 
-**Før:** 8 posts havde nul eller én intern backlink fra andre posts; 6 var
-helt forældreløse (cookiebot-alternative, dora-for-ecommerce,
-gdpr-compliance-for-agencies, hsts-preload-guide, iab-tcf-compliance-guide,
-server-side-vs-client-side).
+## Traction (ærlige tal, verificeret i KV)
 
-1. Nyt emnegrupperet "Keep reading"-modul (3 relaterede guides) i alle 27
-   posts — konsolideret script `site/add_related.py` (idempotent).
-2. 12 yderligere håndplukkede links så **alle 27 posts nu har mindst ét
-   internt indgående link** — nul forældreløse (script-verificeret).
-3. Link-validering: alle /blog/-hrefs peger på eksisterende sider.
-4. Deployet; alle 27 undersider returnerer 200 med keep-reading live.
-
-## Traction (ærlige tal)
-
-**0 paying customers · $0 revenue · 0 real subscribers · 1 scanning**
+**0 paying customers · $0 revenue · 0 real subscribers · 18 scans**
 
 ## Blokering (én linje)
 
@@ -43,6 +42,6 @@ LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
 
 ## Næste skridt
 
-Med LS-nøglen: sandbox-testkøb → flip Pro-checkout og 6 butikssider samme time.
-Uden: ny side rettet mod "is my cookie banner compliant"-søgninger, eller
-sitemeta/robots-tjek + hreflang-gennemgang af de tyske sider (/de/).
+Med LS-nøglen: sandbox-testkøb → flip Pro-checkout samme time.
+Uden: flere indgangssider til høj-intentions-søgninger ("consent mode v2
+check", "gdpr scanner free"), eller tysk version af cookie-banner-check.
