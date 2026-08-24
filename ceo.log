@@ -4124,3 +4124,209 @@ Alle filer opdateret. Her er den korte status for Mads:
 **Næste skridt:** Vent på LS key. Derefter `wrangler secret put CHECKOUT_URL` → EUComply Pro checkout live på 15 minutter.
 2026-08-24T12:53:17+02:00 iteration 4 afsluttet (exit 0)
 2026-08-24T12:53:41+02:00 === iteration 5/60 ===
+## Iteration 209 — færdig
+
+### Universalitets-vurdering
+**Begge produkter BESTÅET** ✅ — scanner tager enhver URL, DevNotify er desktop-app uden CMS-binding. Kernen er uafhængig; platform-indpakninger (WP-plugin, CLI, browser-ext) er add-ons.
+
+### Valg: B — hold beslutningen
+EUComply Pro ($79/år recurring) er det rigtige valg under pengekriteriet. Compliance = lovkrav = must-buy. $79/år er disruptivt billigt vs. Termly/Cookiebot på $120–$7,200/år. Problemet er **distribution**, ikke produktet.
+
+### Hvad blev bygget
+- **Runtime checkout-detektion** — Pro-siden henter `/config` fra workeren. Når du sætter `CHECKOUT_URL` secret, skjules waitlist-sektionen og knappen peger på LS checkout — **ingen deploy nødvendig**
+- **`scripts/eucomply-flip.sh`** — klar til når nøglen kommer
+- **`BUILD.md`** opdateret med præcis plan
+
+### Næste skridt
+**Når LS key ligger i Bitwarden (forventes i dag):**
+```bash
+wrangler secret put CHECKOUT_URL --name eucomply-scan
+# Value: https://eucomply.lemonsqueezy.com/checkout/buy/XXXX
+```
+15 minutter — så er $79/år checkout live, waitlist væk, og vi kan tage imod betaling.
+
+**Kommer den ikke i dag:** pivot til produkt med indbygget betaling (Chrome Web Store, manuel publish via Mads' dashboard).
+2026-08-24T13:00:51+02:00 iteration 5 afsluttet (exit 0)
+2026-08-24T13:01:15+02:00 === iteration 6/60 ===
+Iteration 210 færdig.
+
+**Universalitets-vurdering: begge produkter består.** Jeg bekræftede det med kode og live-tests, ikke bare påstande: scan-kernen (`shared/scan-engine.js`) er ren HTTP/HTML-analyse og identificerede Shopify, Wix og Webflow korrekt på tværs af tre ikke-WordPress-sider. DevNotify er en Tauri-app uden CMS-binding. Ingen kernetrækning nødvendig — platform-integrationerne (WP-plugin, Chrome-ext) er allerede indpakninger.
+
+**Resten af iterationen gik på punkt 5: det der står mellem besøgende og betaling.** Ærligheds-rundgang fandt ni ting, alle rettet, deployet og verificeret live:
+
+- Fjernede en opdigtet statistik ("Downloaded 12 times this month") fra dashboardet
+- Labellede /pro/dashboard/ tydeligt som live-demo (den kører på shopify.com-data)
+- Sample-rapporten fik illustrativ-data-note øverst
+- Gav de 2 blogposts uden konverteringslink en vej mod /pro/ — nu har alle posts det
+- Rettede footerens "Deutsch"-link, som pegede på en gammel AuditedWP-side
+- Worker-scan afviser nu test-emails (verificeret: `{"error":"Test address rejected."}`) og tæller faktisk rigtige scans — det gjorde den aldrig før
+- Sitemap +3 URLer, XML-valideret
+
+Traction forbliver det ærlige tal: **0 kunder, 0 tilmeldinger, scan-tæller nulstillet til 0.**
+
+Blokering uændret (én linje): LS API-nøgle + Chrome Web Store credentials i Bitwarden. Alt er klar til flip på 15 minutter når nøglen kommer.
+
+STATUS.md er opdateret med det hele.
+2026-08-24T13:23:00+02:00 iteration 6 afsluttet (exit 0)
+2026-08-24T13:23:23+02:00 === iteration 7/60 ===
+Iteration 211 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1):** Bestået siden iteration 210 — begge kerner (EUComply scan-engine og DevNotify Tauri-app) er platformsuafhængige. Ingen trækning nødvendig; vurderingen står i STATUS.md.
+
+**Bygget i denne iteration:** DevNotify var det eneste produkt uden runtime-checkout-detektion — nu har det det samme som EUComply:
+- `/config`-endpoint tilføjet `worker-metrics/index.js` og deployet (verificeret: `{"checkoutUrl":""}`)
+- Forsidens købsknap skifter automatisk til levende LS-checkout når `CHECKOUT_URL` sættes — ingen redeploy
+- `scripts/devnotify-flip.sh` oprettet, klar til at køre med checkout-URL'en
+
+**Status:** Begge produkter kan nu tage imod betaling ~15 minutter efter LS-nøglen lander. Traction stadig ærligt 0. Blokering uændret: LS API-nøgle + Chrome OAuth i Bitwarden (bw CLI er unauthenticated). STATUS.md opdateret, committet.
+2026-08-24T13:28:06+02:00 iteration 7 afsluttet (exit 0)
+2026-08-24T13:28:29+02:00 === iteration 8/60 ===
+Iteration 212 færdig. Kort rapport:
+
+**Universalitets-vurdering (første opgave): BESTÅET — nu med levende beviser.** Jeg testede scan-kernen direkte mod wordpress.org (platform "WordPress", score 22 %) og shopify.com (platform "Shopify", score 44 %) — samme kerne, ingen CMS-binding. Kernen er ren HTTP/HTML-analyse; web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. DevNotify er en Tauri-app og har slet intet CMS-forhold. Ingen kernetrækning nødvendig.
+
+**Resten af iterationen: fuld kvalitetsgennemgang af købsrejsen** (prioritet 1: det der står mellem besøgende og betaling):
+- Crawlede hele sitet fra 20 startsider: 121 sider, **0 brudte links**
+- Sitemap: 109 URL'er, alle svarer 200
+- Alle download-filer (DMG/MSI/deb) 200; AppImage på GitHub verificeret (84 MB)
+- Scan-workeren kører fejlfrit på tværs af platforme
+- Pro-siden og den personificerede efter-scan CTA sidder rigtigt
+
+**Konklusion:** Alt mellem besøgende og betaling er bygget, fungerer og er verificeret live — undtagen selve betalingen. Den ene blokering står i én linje i STATUS.md: LS API-nøglen (Bitwarden stadig unauthenticated). Så snart den lander, flipper `./scripts/eucomply-flip.sh <url>` EUComply Pro ($79/år) live uden deploy.
+
+STATUS.md er opdateret. Beslutningen (EUComply Pro primært) holder under pengenkriteriet — $79/år recurring i et must-buy marked, 0 kr drift, klar til betaling på 15 minutter.
+2026-08-24T13:35:27+02:00 iteration 8 afsluttet (exit 0)
+2026-08-24T13:35:51+02:00 === iteration 9/60 ===
+Iteration 213 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): bestået.** Kernen (`shared/scan-engine.js`) er platformsuafhængig — testet levende mod WordPress, Shopify, Next.js, Webflow, Squarespace, Wix og Hugo med samme kerne. Web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. DevNotify er en Tauri-app uden CMS-binding. Ingen kernetrækning nødvendig.
+
+**Det reelle arbejde i denne iteration: 2 produktfejl fundet og rettet.**
+
+1. **Falsk score på døde domæner.** Et ikke-eksisterende domæne fik en fuld rapport med score — præcis den slags "succes på egne tests" AGENTS.md advarer om. Nu giver det en klar fejlbesked.
+2. **SSRF-hul.` Workeren scannede private IP-adresser (192.168.1.1 → 200 OK). Nu afvist: localhost, alle private ranges, link-local/cloud-metadata blokeret via ny `isPublicHostname()` i kernen.
+
+Fordi retningen ligger i kernen, fik begge workers (scan + watch) fixet i ét hug. Deployet og verificeret live: dødt domæne → 502 med forklaring; 192.168.1.1 → 400; wordpress.org scanner stadig normalt (score 22 %).
+
+**Traction, ærligt: 0 betalende · $0 · 0 tilmeldte · 1 scanning.**
+
+Blokering uændret (én linje): LS API-nøglen venter på Mads' Bitwarden-login. Næste skridt står i `/Users/madsholstjensen/hermes-ceo/STATUS.md`; commit `6422adc`.
+2026-08-24T13:41:53+02:00 iteration 9 afsluttet (exit 0)
+2026-08-24T13:42:16+02:00 === iteration 10/60 ===
+Iteration 214 færdig. Kort rapport:
+
+**Universalitets-vurderingen (første opgave): BESTÅET — ingen ombygning nødvendig.**
+
+- EUComply-kernen (`shared/scan-engine.js`) er allerede en selvstændig, CMS-uafhængig kerne: tager enhver URL, laver ren HTTP/HTML-analyse (consent mode v2, TCF, trackere, SSL, headers, DORA). Testet i forrige iteration mod WordPress, Shopify, Webflow, Squarespace, Wix, Next.js og Ghost.
+- CLI, WP-plugin og Chrome-ext er indpakninger omkring samme kerne — WP-pluginet er én indgang af flere. DevNotify er Tauri desktop-app, intet CMS.
+
+**Konverteringsrejsen gennemgået bagefter (besøgende → betaling) — fundet og rettet:**
+
+1. Sitemap havde 6 dublet-URL'er (109 → 103). Rettet, XML valideret.
+2. Pro-siden havde en statisk "⏳ Checkout opens soon" -not i hero'en — den ville lyve selv efter checkout-flip. Fjernet; runtime-flip via CHECKOUT_URL secret virker stadig automatisk.
+3. Deployet til https://auditedwp.pages.dev og verificeret live: alle 103 sitemap-URL'er + zip-asset svarer korrekt.
+
+STATUS.md er opdateret med vurderingen. Stadig blokeret på én ting: LS API-nøglen i Bitwarder — i det sekund den kommer, flipper `./scripts/eucomply-flip.sh` checkout for $79/år.
+2026-08-24T13:48:23+02:00 iteration 10 afsluttet (exit 0)
+2026-08-24T13:48:48+02:00 === iteration 11/60 ===
+Iteration 215 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Kernen `shared/scan-engine.js` er allerede selvstændig og CMS-uafhængig (bevist i iteration 213 mod 7 platforme). WP-plugin, CLI, web-UI og Chrome-ext er alle indpakninger — ingen ombygning nødvendig.
+
+**Beslutningen holder under pengekriteriet:** EUComply Pro ($79/år recurring) vinder stadig på tid-til-kunde, beløb, marked, recurring og leveringsomkostning.
+
+**Bygget denne iteration:**
+- Ny blogpost `/blog/gdpr-cookie-fines-tracker/` — tracker over de reelle cookie-bøder (Google €325M sep. 2025, SHEIN €150M, Amex €1.5M nov. 2025), de tre fejl-mønstre bag næsten alle bøder, og en self-check der fører til gratis scan → Pro. Det var det største hul i indholdet: de nye store sager manglede.
+- Indført i sitemap (104 URLs, XML valideret), blog-indeks øverst, krydslænket fra fines-artiklen.
+- Deployet til Cloudflare Pages og verificeret live: side 200 med korrekt indhold, sitemap og begge indeks viser den.
+
+**Traction (ærlige tal): 0 betalende · $0 · 1 scanning.**
+
+**Blokering (én linje):** Venter på LS API-nøglen i Bitwarden.
+
+STATUS.md er opdateret. Næste skridt: flip checkouts når nøglen kommer; ellers fortsæt high-intent enforcement-indhold.
+2026-08-24T13:55:15+02:00 iteration 11 afsluttet (exit 0)
+2026-08-24T13:55:47+02:00 === iteration 12/60 ===
+Iteration 216 færdig og pushet (c96e4f3).
+
+**Universalitets-vurderingen — denne gang bevist, ikke bare påskrevet:**
+
+Kørte `shared/scan-engine.js` direkte mod fire ikke-WordPress-sider i dag. Alle scannes rent: shopify.com 44 %, webflow.com 44 %, squarespace.com 33 %, ghost.org — 9 tjek hver, ingen CMS-binding nogen steder. Kernen er universel; web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. **Ingen ombygning nødvendig**, og intet arbejde er smidt væk.
+
+**Resten af iterationen gik til det der står mellem besøgende og betaling:**
+- Fuld link-audit: alle 124 interne hrefs tjekket mod filsystemet — ingen brudte links (de 4 kandidater verificeret live som HTTP 200).
+- Pro-sidens strukturerede data bekræftet: Product + Offer ($79/år) + FAQPage, så prisen kan vises direkte i Google-resultater.
+- Opsalgsvejen gratis scan → Pro verificeret (personlig CTA med brugerens egen score).
+- Checkout-flip via `/config` klar — én secret sat, og waitlist bliver til rigtig checkout.
+
+Traction er stadig ærligt **0**. Blokering er uændret én linje: LS API-nøglen i Bitwarden. STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-24T13:59:52+02:00 iteration 12 afsluttet (exit 0)
+2026-08-24T14:00:15+02:00 === iteration 13/60 ===
+Færdig for denne iteration. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Kernen `shared/scan-engine.js` er CMS-uafhængig — bevist med frisk kørsel i forrige iteration mod Shopify, Webflow, Squarespace og Ghost. Web-UI, CLI, plugin og extension er indpakninger. Ingen ombygning nødvendig.
+
+**Det jeg fandt og rettede i stedet:** Ved gennemgang af købsrejsen opdagede jeg et reelt konverteringshul — `/store/` lovede gratis prøver "på produktsiden", men der fandtes ingen produktsider. Kortene var døde ender.
+
+**Bygget (iteration 217):**
+- 5 produktsider under `/store/` med ÆGTE uddrag fra de færdige dokumenter i `deliverables/`:
+  - `/store/dpa/` — første to sektioner af Art. 28-DPA ($59)
+  - `/store/nis2-clauses/` — audit-right- og 24h-incident-klausulerne ordret ($49)
+  - `/store/nda-clauses/` — fuld klausulliste + klausul 1–2 verbatim ($29)
+  - `/store/eaa-statement/` — struktur + commitment-sektion ($39)
+  - `/store/report-kit/` — månedsrapportens åbning ($69)
+- Butikssiden peger nu på alle fem; sitemap opdateret; deployet til Cloudflare Pages.
+- Verificeret live: alle 6 sider HTTP 200 med korrekt indhold.
+
+**Ærlige tal: 0 betalende kunder, $0 revenue, 0 rigtige tilmeldinger, 1 scanning.**
+
+**Blokering (én linje):** LS API-nøglen mangler stadig (Bitwarden). Når den kommer, flipper jeg både Pro-checkout og de 6 butikssider samme time — alt er forberedt.
+
+STATUS.md er opdateret på `/Users/madsholstjensen/hermes-ceo/STATUS.md`.
+2026-08-24T14:12:07+02:00 iteration 13 afsluttet (exit 0)
+2026-08-24T14:12:30+02:00 === iteration 14/60 ===
+Iteration 218 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — igen, med bevis.**
+
+Jeg gennemgik kernen `shared/scan-engine.js` (446 linjer) med friske øjne i stedet for at stole på iteration 216's konklusion:
+
+- Kernen tager en almindelig URL og scanner vilkårlig HTML. Ingen CMS-forudsætninger.
+- WordPress er kun 1 af 18 platform-signaturer (Shopify, Wix, Squarespace, Webflow, Next.js, Drupal, TYPO3, Ghost, Magento m.fl.). Formular-detektion dækker også Typeform/Formspree/Jotform — ikke kun WP-plugins.
+- Jeg kørte kernen lige nu mod https://example.com: score 22 %, platform "Unknown" — den scanner uden at gå ud fra noget som helst CMS.
+
+**Konklusion: ingen udtrækning nødvendig.** Kernen ER allerede det universelle produkt; web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. Det arbejde der kunne "bygges om", findes ikke.
+
+**Pengekriteriet (A): beslutningen holder.** EUComply Pro ($79/år recurring) vinder stadig på alle fem faktorer — compliance er lovkrav med høj betalingsvilje, $79 vs. konkurrenters $120–7.200/år, nul driftsomkostninger. BUILD.md har den korteste vej til første betaling: én `wrangler secret put` når LS-nøglen ligger i Bitwarden.
+
+STATUS.md er opdateret. Ærlige tal står ved magt: **0 betalende kunder, $0**. Eneste blokering er fortsat LS API-nøglen (én linje, gentages ikke yderligere).
+2026-08-24T14:13:48+02:00 iteration 14 afsluttet (exit 0)
+2026-08-24T14:14:10+02:00 === iteration 15/60 ===
+Iteration 219 færdig og committet (98567b5).
+
+**Sammendrag:**
+
+1. **Universalitet (punkt 1): BESTÅET — med frisk kørsel som bevis.** Kernen `shared/scan-engine.js` tog fire vilkårlige URLs og identificerede Shopify, Webflow, Squarespace og "Unknown" korrekt uden CMS-forudsætninger. Live workeren returnerede en fuld compliance-rapport for webflow.com på 682 ms. Intet at udtrække: kernen er allerede det universelle produkt; CLI, WP-plugin og browser-ext er indpakninger.
+
+2. **Pengekriteriet: beslutningen holder.** EUComply Pro ($79/år recurring, compliance = lovkrav) forbliver primært fokus. Alt mellem besøgende og betaling verificeret i live: alle workers oppe, sitet intakt, checkout-detection klar til at flippe automatisk når `CHECKOUT_URL` sættes.
+
+3. **Eneste blokering:** LS API-nøglen ligger endnu ikke i Bitwarden. Jeg venter ikke passivt — næste iteration går på high-intent SEO-indhold ("cookie fine", "GDPR penalty"), som trækker folk til det der allerede står klar til at tage imod penge.
+2026-08-24T14:16:12+02:00 iteration 15 afsluttet (exit 0)
+2026-08-24T14:16:35+02:00 === iteration 16/60 ===
+Iteration 220 er færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — ingen udtrækning nødvendig.**
+Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og forudsætter intet CMS; den blev kørt frisk mod shopify/webflow/squarespace/example i forrige iteration med fuld JSON-rapport på under ét sekund. WP-plugin, CLI og browser-udvidelsen er allerede indpakninger omkring samme kerne — strukturen opfylder Mads' krav som den er.
+
+**Beslutningen holder under pengekriteriet.** EUComply Pro ($79/år recurring, compliance = lovkrav) forbliver primært fokus. Revurderet på de fem faktorer: ingen af de to næstbedste kandidater slår den på tid-til-første-betaling, når LS-nøglen kommer.
+
+**Det konkrete arbejde denne iteration** gik på det, der står mellem besøgende og betaling — fines-trackeren, som er sidens bedste high-intent SEO-side:
+1. Verificerede alle beløb mod CNILs egne pressemeddelelser — tallene holder.
+2. Tilføjede Condé Nast-bøden (€750k, nov. 2025), der manglede i tabellen.
+3. Rettet Amex-datoen (nov. 2025 → jan. 2026, CNILs egen datering).
+4. Kildehenvisning under tabellen + FAQPage JSON-LD med 4 spørgsmål (berettiger Google rich results for "GDPR cookie fine").
+5. Deployet til https://auditedwp.pages.dev og verificeret at det nye indhold er live.
+
+STATUS.md er opdateret. Traction er stadig ærligt **0**. Eneste blokering: LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
+2026-08-24T14:19:36+02:00 iteration 16 afsluttet (exit 0)
+2026-08-24T14:19:58+02:00 === iteration 17/60 ===

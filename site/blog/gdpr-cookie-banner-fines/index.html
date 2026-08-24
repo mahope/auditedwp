@@ -35,6 +35,46 @@
   footer a{color:var(--accent)}
   @media(max-width:600px){h1{font-size:26px}}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can you actually get fined for a bad cookie banner?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. In September 2025 alone, France's CNIL fined Google €325 million and SHEIN €150 million over cookie consent failures — cookies placed before consent, ineffective reject options and incomplete information. Smaller sites typically face lower fines but are routinely reported by users and investigated."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the most common cookie banner mistake?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cookies firing before the user makes a choice. Tracking or advertising scripts that load on page view invalidate consent entirely. The second most common is making 'Reject' harder to click than 'Accept' — hidden, greyed out, or buried behind extra steps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How big can GDPR cookie fines be?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Real decisions range from hundreds of euros after user complaints to record amounts for big platforms — €325 million for Google and €150 million for SHEIN from France's CNIL in September 2025, and €600,000 for Kruidvat in the Netherlands. Fines scale with traffic, data sensitivity and how long the problem persisted."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check if my own cookie banner would pass?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Test in an incognito window with dev tools open: no non-essential cookies may appear before you interact with the banner, reject must be one equally prominent click, and your CMP should log consent records. You can also run EUComply's free scanner on any URL to check this automatically."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -85,6 +125,19 @@
   <strong>⚠️ The realistic risk for a small business isn't the headline fine.</strong> It's the complaint: one user, one email to a DPA, then weeks of correspondence, mandatory documentation and a remediation deadline. Prevention costs minutes; response costs months.
 </div>
 
+<h2>Recent enforcement: what regulators actually did</h2>
+<p>These are real decisions from 2024–2026, each verified against the authority's own announcement:</p>
+<table>
+  <tr><th>When</th><th>Who</th><th>Fine / action</th><th>What went wrong</th></tr>
+  <tr><td>Sep 2025</td><td>Google (France, CNIL)</td><td>€325M</td><td>Ads in Gmail without valid consent; coercive cookie practices. Third CNIL fine for Google's cookies (after €100M in 2020 and €150M in 2021).</td></tr>
+  <tr><td>Sep 2025</td><td>SHEIN (France, CNIL)</td><td>€150M</td><td>Advertising cookies placed before any user choice; reject/withdrawal mechanisms ineffective; incomplete banner information.</td></tr>
+  <tr><td>Dec 2025</td><td>UK top-1,000 sites (ICO)</td><td>Enforcement sweep</td><td>564 of the UK's 1,000 biggest websites failed initial checks and only complied after ICO letters, investigations and 17 preliminary enforcement notices; 21 still failing.</td></tr>
+  <tr><td>2024</td><td>Kruidvat / AS Watson (Netherlands)</td><td>€600,000</td><td>Tracking cookies without valid consent; pre-ticked-style consent mechanics.</td></tr>
+  <tr><td>Apr 2025</td><td>Warner Music Sweden, Aller Media et al. (Sweden, IMY)</td><td>Formal warnings</td><td>Banners designed to favour "Accept" over "Reject".</td></tr>
+</table>
+<p style="font-size:.85rem;color:var(--muted)">Sources: CNIL press releases (cnil.fr, 1 &amp; 3 Sep 2025), EDPB case register, ICO news release (4 Dec 2025), Dutch DPA decision on AS Watson, Swedish IMY supervisory notices.</p>
+<p>The pattern across every case is the same three failures: <strong>cookies before consent, a harder-to-find reject option, and incomplete information</strong>. None of these require enterprise budgets to fix — they are implementation mistakes.</p>
+
 <h2>The 5-point self-check</h2>
 <ol>
   <li><strong>Nothing fires before the click.</strong> Open your site in an incognito window with dev tools open. No analytics, marketing or embed cookies may appear before consent.</li>
@@ -104,6 +157,7 @@
 <div class="further-reading">
 <h2>Further reading</h2>
 <ul>
+  <li><a href="/blog/gdpr-cookie-fines-tracker/">GDPR cookie fines tracker — Google €325M, SHEIN €150M and every major decision</a></li>
   <li><a href="/blog/eu-cookie-consent-guide-2026/">EU Cookie Consent Guide 2026</a></li>
   <li><a href="/blog/website-compliance-scanner-comparison/">Free Compliance Scanner Comparison</a></li>
   <li><a href="/scan/">Scan your website free →</a></li>

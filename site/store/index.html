@@ -61,50 +61,50 @@ ul{padding-left:1.2rem}li{margin:.25rem 0}
 
 <div class="disc"><strong>Note:</strong> These are professional templates with guidance comments — not legal advice. For high-risk contracts, have counsel review the filled-in result (minutes, not hours).</div>
 
-<div class="waitlist-banner">🔔 <strong>Checkout opens soon on Lemon Squeezy.</strong> Documents are finished and priced ($29–$149). Join the waitlist to get launch-day pricing — or <a href="/scan/" style="color:var(--acc);font-weight:bold;text-decoration:underline">run the free compliance scan</a> on your site right now.</div>
+<div class="waitlist-banner">🔔 <strong>Checkout opens soon on Lemon Squeezy.</strong> Documents are finished and priced ($29–$149) — each product page shows a free sample right now. Join the launch list on any product page for launch-day pricing, or <a href="/scan/" style="color:var(--acc);font-weight:bold;text-decoration:underline">run the free compliance scan</a> on your site.</div>
 
 <section id="docs">
 <h2>The documents</h2>
 <div class="grid">
 
 <article class="card">
-<h2>GDPR Data Processing Agreement (Art. 28)</h2>
+<h2><a href="/store/dpa/" style="color:inherit;text-decoration:none">GDPR Data Processing Agreement (Art. 28)</a></h2>
 <p>Complete controller→processor DPA following GDPR Art. 28, with annex structure, sub-processor terms and EU-hosting clauses.</p>
 <p class="price">$59</p>
-<div class="wform"><input type="email" placeholder="your@email.com"><button data-interest="dpa">Join waitlist</button></div>
-<p class="preview">Free sample: first two sections included on product page.</p>
+<a class="btn" href="/store/dpa/">View sample &amp; buy →</a>
+<p class="preview">First two sections free to read on the product page.</p>
 </article>
 
 <article class="card">
-<h2>NIS2 / DORA Vendor Clause Set</h2>
+<h2><a href="/store/nis2-clauses/" style="color:inherit;text-decoration:none">NIS2 / DORA Vendor Clause Set</a></h2>
 <p>Audit-trail, incident-reporting and subcontractor clauses you can paste into any supplier contract to answer client vendor-chain questionnaires.</p>
 <p class="price">$49</p>
-<div class="wform"><input type="email" placeholder="your@email.com"><button data-interest="nis2">Join waitlist</button></div>
-<p class="preview">Sample clause viewable before purchase.</p>
+<a class="btn" href="/store/nis2-clauses/">View sample &amp; buy →</a>
+<p class="preview">Two full clauses free to view before purchase.</p>
 </article>
 
 <article class="card">
-<h2>Mutual NDA Clause Set</h2>
+<h2><a href="/store/nda-clauses/" style="color:inherit;text-decoration:none">Mutual NDA Clause Set</a></h2>
 <p>Balanced mutual NDA including the no-client-contact and IP-clarity clauses agencies actually need.</p>
 <p class="price">$29</p>
-<div class="wform"><input type="email" placeholder="your@email.com"><button data-interest="nda">Join waitlist</button></div>
-<p class="preview">Full clause list on product page.</p>
+<a class="btn" href="/store/nda-clauses/">See all 7 clauses →</a>
+<p class="preview">Full clause list + first two clauses verbatim, free.</p>
 </article>
 
 <article class="card">
-<h2>EAA Accessibility Statement Template</h2>
+<h2><a href="/store/eaa-statement/" style="color:inherit;text-decoration:none">EAA Accessibility Statement Template</a></h2>
 <p>European Accessibility Act conformance statement template with the required disclosures, ready for June-2025+ enforcement.</p>
 <p class="price">$39</p>
-<div class="wform"><input type="email" placeholder="your@email.com"><button data-interest="eaa">Join waitlist</button></div>
-<p class="preview">Structure outline free to view.</p>
+<a class="btn" href="/store/eaa-statement/">View structure →</a>
+<p class="preview">Structure outline and commitment section free to view.</p>
 </article>
 
 <article class="card">
-<h2>Client Compliance Report Kit</h2>
+<h2><a href="/store/report-kit/" style="color:inherit;text-decoration:none">Client Compliance Report Kit</a></h2>
 <p>Monthly/quarterly report templates + change-log format that make your maintenance work look audit-ready to clients and insurers.</p>
 <p class="price">$69</p>
-<div class="wform"><input type="email" placeholder="your@email.com"><button data-interest="reportkit">Join waitlist</button></div>
-<p class="preview">Example page on product page.</p>
+<a class="btn" href="/store/report-kit/">View example page →</a>
+<p class="preview">Report opening free to view on the product page.</p>
 </article>
 
 </div>
@@ -113,7 +113,8 @@ ul{padding-left:1.2rem}li{margin:.25rem 0}
 <h2>The Complete Bundle</h2>
 <p>All five documents, plus updates for 12 months.</p>
 <p class="price">$149 <span style="font-size:.85rem;color:#5a6b63">(vs $245 separately)</span></p>
-<div class="wform" style="max-width:350px;margin:0.8rem auto 0"><input type="email" placeholder="your@email.com"><button data-interest="bundle">Join waitlist</button></div>
+<form class="wform" id="bundleform" style="max-width:350px;margin:0.8rem auto 0"><input type="email" placeholder="your@email.com" required aria-label="Email"><button class="wbtn" data-interest="bundle" style="padding:8px 14px;background:var(--acc);color:#fff;border:none;border-radius:4px;font-family:Georgia,serif;font-size:.9rem;cursor:pointer">Notify me at launch</button></form>
+<div class="wmsg" id="bundlemsg"></div>
 </div>
 </section>
 
@@ -137,7 +138,7 @@ document.querySelectorAll('.wform').forEach(function(form) {
     e.preventDefault();
     var btn = form.querySelector('button');
     var input = form.querySelector('input');
-    var msg = form.querySelector('.wmsg') || (function() {
+    var msg = document.getElementById('bundlemsg') || (function() {
       var m = document.createElement('div');
       m.className = 'wmsg';
       form.appendChild(m);
