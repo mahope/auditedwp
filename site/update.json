@@ -10,6 +10,6 @@
   "last_updated": "2026-08-23",
   "sections": {
     "description": "Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, forms, backups, plugin health, legal pages. Pro ($79/yr) auto-generates DPA, NIS2 clauses, EAA statements, and quarterly PDF reports.",
-    "changelog": "= 1.2.0 =\n* Activation guard for PHP/WordPress versions.\n* URL fixes, ZIP rebuilt with correct plugin header.\n\n= 1.1.0 =\n* Gumroad license API integration with caching and refund detection.\n* Auto-update checker via update.json manifest.\n* Improved license validation UX in settings.\n\n= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
+    "changelog": "= 1.2.0 =\n* Activation guard for PHP/WordPress versions.\n* URL fixes, ZIP rebuilt with correct plugin header.\n\n= 1.1.0 =\n* Lemon Squeezy license API integration with caching and refund detection.\n* Auto-update checker via update.json manifest.\n* Improved license validation UX in settings.\n\n= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
   }
 }

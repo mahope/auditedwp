@@ -5307,3 +5307,40 @@ STATUS.md er opdateret med vurderingen, de ærlige tal (0 over hele linjen) og d
 2026-08-24T21:34:51+02:00 iteration 4 afsluttet (exit 0)
 2026-08-24T21:35:11+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-24T21:40:16+02:00 === iteration 5/60 ===
+Iteration 269 færdig. Kort rapport:
+
+**Universalitets-vurdering: BESTÅET.** Alle tre produkter (EUComply, DevNotify, QuickFormat) har platformsuafhængige kerner — scanneren tager en vilkårlig URL og forudsætter intet CMS (live-testet i iteration 268 mod 5 platforme). WordPress-pluginet er kun én indpakning. Detaljer i STATUS.md.
+
+**Hvad jeg gjorde:**
+1. Forsøgte domænekøb selv — tokenet mangler stadig registrar-permission (#domain:list). Kan ikke købe eucomplypro.com selv.
+2. Link-audit af hele sitet: 82 interne links tjekket, **0 døde**. Alle assets svarer 200.
+3. Verificerede hele checkout-kæden live: scan-worker /config + /stats OK, watch-worker leverer ægte historik.
+4. Rettede uærlig copy på pro-siden ("Checkout opening today" havde stået i flere dage) → "launch pricing while checkout is finalized". Deployet og verificeret live.
+5. Committet og pushet.
+
+**Til Mads — de 3 ting der låser alt op:**
+- Bitwarden unlock → LS key → jeg flipper checkout på alle 3 produkter med ét script
+- eucomplypro.com købes i dit Cloudflare-dashboard (~$12/år)
+- npm-login → `npm publish eucomply-scanner`
+
+**Ærlige tal:** 0 kunder, $0 revenue, 0 rigtige brugere. Alt er bygget og klar; intet kan tjene penge før LS-nøglen ligger i Bitwarden.
+2026-08-24T21:44:50+02:00 iteration 5 afsluttet (exit 0)
+2026-08-24T21:45:11+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T21:50:11+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T21:55:15+02:00 === iteration 6/60 ===
+Iteration 270 færdig og committet.
+
+**Universalitets-vurderingen (første opgave): BESTÅET.** Gennemgik hele kodebasen med friske øjne — alle tre produkters kerner tager en vilkårlig URL/fil og forudsætter ingen platform. WordPress-pluginet er allerede kun én indpakning. Ingen kerne skal trækkes ud.
+
+**Men gennemgangen afslørede et reelt hul på prioritet 1 (det der står mellem besøgende og betaling):**
+
+- De fem ComplianceDocs-sider (/store/dpa, /nis2-clauses, /nda-clauses, /eaa-statement, /report-kit) + store-forsiden havde **kun statiske waitlist-formularer** — ingen flip-mekanisme. Da LS-nøglen kommer, ville de aldrig have kunnet tage imod penge uden nye deploys.
+- Fix: `scripts/add_dynamic_checkout.py` har indsat runtime /config-flip på alle seks sider — samme mønster som Pro/DevNotify/QuickFormat. Sæt CHECKOUT_URL-secret, så erstattes "notify me" med købs-links automatisk.
+- Verificeret live: snippet til stede på alle 6 sider, peger på rigtig worker, no-op-path bekræftet mod den tomme config.
+- Rettede desuden uærlig copy: QuickFormats "payment opens in the next 24 hours" (har stået i over et døgn) og store-bannerets "within days" → nu "being finalized on Lemon Squeezy".
+
+Deployet til auditedwp.pages.dev og alt tjekket (200 + korrekt indhold). STATUS.md er opdateret.
+
+**Konsekvens:** Alle fire produkter kan nu gå live med betaling ved én handling hver — ingen kodeændringer eller deploys når nøglen lander i Bitwarden. Ærlige tal uændret: 0 kunder, $0 revenue.
+2026-08-24T22:09:54+02:00 iteration 6 afsluttet (exit 0)
+2026-08-24T22:10:16+02:00 === iteration 7/60 ===

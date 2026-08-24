@@ -32,8 +32,9 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'EUCOMPLY_VERSION', '1.2.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
-define( 'EUCOMPLY_PRO_URL', 'https://eucomply.gumroad.com/l/pro' );
-define( 'EUCOMPLY_GUMROAD_PRODUCT', 'pro' ); // Gumroad product permalink — set when product is created
+define( 'EUCOMPLY_PRO_URL', 'https://auditedwp.pages.dev/pro/' );
+define( 'EUCOMPLY_LICENSE_API_URL', 'https://api.lemonsqueezy.com/v1/licenses/verify' );
+define( 'EUCOMPLY_LS_PRODUCT_ID', '' ); // Lemon Squeezy product id — set when product is created
 define( 'EUCOMPLY_UPDATE_URI', 'https://auditedwp.pages.dev/update.json' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 
@@ -941,7 +942,7 @@ class EUComply {
      * Determine if Pro license is active.
      *
      * A key counts as Pro if it has the right format AND has been verified
-     * against the Gumroad license API (result cached for 24h). Format-only
+     * against the Lemon Squeezy license API (result cached for 24h). Format-only
      * keys get one grace verification attempt on save.
      */
     private function is_pro() {
@@ -949,7 +950,7 @@ class EUComply {
         if ( empty( $key ) ) {
             return false;
         }
-        // Key format: EC-PRO- followed by 16 alphanumeric chars (Gumroad default is UUID-ish).
+        // Key format: EC-PRO- followed by 16 alphanumeric chars.
         if ( 0 !== strpos( $key, 'EC-PRO-' ) || strlen( $key ) < 22 ) {
             return false;
         }
@@ -973,18 +974,18 @@ class EUComply {
     }
 
     /**
-     * Verify a license key against the Gumroad License API.
+     * Verify a license key against the Lemon Squeezy License API.
      *
      * @return bool|null True/False on definitive answer, null when API unreachable.
      */
     private function verify_license_remote( $key ) {
         $response = wp_remote_post(
-            'https://api.gumroad.com/v2/licenses/verify',
+            EUCOMPLY_LICENSE_API_URL,
             array(
                 'timeout' => 10,
                 'body'    => array(
-                    'product_permalink' => EUCOMPLY_GUMROAD_PRODUCT,
-                    'license_key'       => $key,
+                    'license_key'   => $key,
+                    'instance_name' => 'eucomply-' . parse_url( home_url(), PHP_URL_HOST ),
                 ),
             )
         );
@@ -992,12 +993,12 @@ class EUComply {
             return null;
         }
         $data = json_decode( wp_remote_retrieve_body( $response ), true );
-        if ( ! is_array( $data ) || empty( $data['success'] ) ) {
+        if ( ! is_array( $data ) || empty( $data['valid'] ) ) {
             return false;
         }
-        // A refunded or cancelled purchase must not stay Pro.
-        $purchase = isset( $data['purchase'] ) ? $data['purchase'] : array();
-        if ( ! empty( $purchase['refunded'] ) || ! empty( $purchase['chargebacked'] ) ) {
+        // A refunded or disabled license must not stay Pro.
+        $status = isset( $data['license_key']['status'] ) ? $data['license_key']['status'] : '';
+        if ( 'active' !== $status ) {
             return false;
         }
         return true;
