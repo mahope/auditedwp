@@ -1,48 +1,49 @@
-# STATUS — 24. august 2026 — Iteration 249
+# STATUS — 24. august 2026 — Iteration 250
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger (reelle tal)**
+**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · 4 besøg / 1 download (metrics-worker, egen trafik ikke filtreret fra — behandl som ~0)**
 
-Denne iteration: **universalitets-vurdering af hele porteføljen (punkt 1) — bestået.
-Ingen omskrivning nødvendig.** Derefter adfærds-verificeret købsrejsen og
-scanneren end-to-end.
+Denne iteration: **konverteringsreparation på det der står mellem indhold og betaling.**
+Universalitets-vurderingen bestod i iteration 249 og gentages ikke.
 
-## Universalitets-vurdering (punkt 1) — bestået
+## Fundet og rettet denne iteration
 
-| Produkt | Kerne | Platform-uafhængig? | Indpakninger |
-|---------|-------|--------------------|--------------|
-| EUComply Pro | `shared/scan-engine.js` + `worker-scan` — tager en rå URL, detekterer platform (WordPress er kun én af flere: Shopify, Webflow, Next.js, Squarespace m.fl.) | ✅ Ja | Web-scan (/scan), CLI (`eucomply-scan`), WP-plugin |
-| QuickFormat | `quickconvert/src/engine.js` — ren formatkonvertering, intet CMS i kernen | ✅ Ja | Web-tool (/tools/format), produktside, npm CLI |
-| DevNotify | `chrome-extension/` | ✅ Ja (Chrome er platformen, ikke et CMS) | Chrome Web Store |
+Gennemgang af købsrejsen med friske øjne fandt **ét alvorligt problem**:
 
-WordPress findes kun som detektions-mønster og som ÉN indpakning. Intet produkt
-forudsætter WordPress for at virke. Konklusion: **kernen er allerede trukket ud;
-det eksisterende arbejde beholdes som indpakninger.**
+1. **Blog-indeksen havde NUL links til de 27 artikler.** Alle blogindlæg var kun
+   tilgængelige via sitemap.xml — Google crawler dem måske, men mennesker der landede
+   på /blog/ så bare en tom overskrift. Rettet: indeksen genereret på ny med 27 kort
+   (titel, beskrivelse, dato), alle links verificeret mod filsystemet (0 brudte).
 
-## Verificeret denne iteration (adfærd, ikke kun HTTP 200)
+2. **Ingen af blog-siderne linkede til /pro/ ($79/år-produktet).** Trafik kunne komme
+   ind på en guide og dø uden at se produktet. Rettet: "Pro"-link i navigationen på
+   blog-indeksen + 23 artikler; de 4 artikler med alternativt navn (Abmahnung m.fl.)
+   fik et fremhævet "Pro — $79/yr"-link.
 
-- `/scan/` side peger på `https://eucomply-scan.mahope-eeb.workers.dev` (linje 171)
-- Worker `/scan?url=example.com` → korrekt JSON med checks, score og platform-detektion ✅
-- Worker `/subscribe` → afviser testadresse med 422 "Test address rejected" —
-  validering og anti-smoke-test-regel virker ✅
-- `/pro/` og `/quickconvert/` → 200, quickconvert peger stadig på waitlist-workerens `/config` ✅
-- Browser-adfærdstest kunne ikke køres (ingen Chrome-session tilgængelig) —
-  curl-verificering dækker API-kontrakten; JS-adfærdstest genoptages når browser findes.
+Deployet og verificeret live (cache-bustet curl): /blog/ viser 27 kort + Pro-link,
+artiklerne peger på /pro/.
+
+## Konstateringer (ikke handlet endnu)
+
+- Bing-indeksering via r.jina.ai gav uklart svar (1 hit) — reelt indekseringsantal ukendt.
+  Kan først måles ordentligt når domæne + Search Console er sat op.
+- Trust-signaler på /pro/ er ok: money-back, secure checkout, cancel anytime, pris overalt.
+- npm publish kræver login → ny blokering ud over Bitwarden (npm-token findes ikke).
 
 ## Blokeringer (én linje hver)
 
-1. LS API key i Bitwarden — kræver manuel unlock af Mads.
-2. CWS OAuth credentials — samme Bitwarden.
+1. LS API key + CWS OAuth credentials i Bitwarden — kræver manuel unlock af Mads.
+2. npm-token for quick-format publish — samme Bitwarden.
 
 ## Næste skridt
 
-1. **Mads (2 min):** unlock Bitwarden → LS API key → flip CHECKOUT_URL på alle tre
-   produkter → første betaling mulig samme time.
-2. Mig: LS-produkter oprettes via API sekundet nøglen er der.
-3. Uden blokering fortsat: SEO-indhold + npm-publish af quick-format CLI.
+1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → første betaling mulig samme time.
+2. Mig: fortsæt konverteringsarbejde uden blokering — næste kandidat er
+   cross-linking fra /vs/-siderne (6 konkurrent-sider) til /pro/ og scanneren.
+3. Domæne: quickformat.com vurdering står i DECISION.md; køb klar når Mads siger go.
 
 ## Lærdom (fast)
 
-Verificér JS-adfærd, ikke kun 200'er. En fetch der fejler silent i try/catch er
-usynlig for en statuscode-tjek.
+Verificér JS-adfærd, ikke kun 200'er — og gå selv købsrejsen igennem som en fremmed:
+bloggen har haft 27 usynlige artikler i flere iterationer uden at nogen tjek bemærkede det.
