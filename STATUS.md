@@ -1,41 +1,38 @@
-# STATUS — 24. august 2026 — Iteration 251
+# STATUS — 24. august 2026 — Iteration 252
 
 ## Kort version
 
 **0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · trafik-tal behandles som ~0**
 
-Denne iteration: **universalitets-vurdering (punkt 1) gentaget med friske øjnen + konverteringshuller lukket.**
+## Universalitets-vurdering (punkt 1) — bestået, tredje gennemgang med friske øjne
 
-## Universalitets-vurdering (bestået, igen)
+- `shared/scan-engine.js`: rå URL ind → JSON-rapport ud. Nul CMS-forudsætninger.
+  Verificeret live mod example.com (ikke-WordPress): 9 tjek, score 22/100. ✔
+- Indpakninger omkring samme kerne: web-scanner /scan/, watch-worker (daglig
+  overvågning), API, CLI, Chrome-extension, WP-plugin (én indgang blandt flere).
+- QuickFormats kerne (`src/engine.js`) er en ren konverterer; web-tool + kommende
+  Tauri-app er indpakninger.
+- **Konklusion: intet behøver trækkes ud. Arkitekturen opfylder allerede punkt 1.**
 
-- Kernen er `shared/scan-engine.js`: tager en rå URL, ingen CMS-forudsætning.
-  Indpakninger: web-scanner (/scan/), watch-worker (daily monitoring), CLI,
-  Chrome-extension, API. WordPress-pluginet er én indgang blandt flere.
-- QuickFormats kerne (`src/engine.js`) er en ren format-konverterer — heller ikke
-  platformsbundet; web-tool og kommende Tauri-app er indpakninger.
-- Konklusion: **intet behøver trækkes ud** — arkitekturen overholder allerede punkt 1.
+Denne iterations arbejde: gøre scanner-resultatet **delbart** — det der står mellem
+et scan-resultat og en køber (eller i det mindste en henviser):
+
+1. **Delbart rapport-link** — efter en scanning opdateres URL'en til `/scan/?url=…`
+   og en "Copy link to this report"-knap kopierer linket. En bruger kan nu sende
+   sit resultat til chef/klient — og modtageren ser samme side med Pro-CTA.
+2. **"Save as PDF"** — print-venligt layout (nav/form/CTA skjules), med dateret
+   fotnotelinje. Gratis version af Pro's PDF-værdi = bevis på værdien.
+3. **Rettet reel fejl:** auto-scan fra `?url=` kaldte `requestSubmit()` FØR submit-
+   handleren var registreret — delbare links ville aldrig have kørt en scanning.
+   Nu deferred via setTimeout. JS syntaktjekket med Node før deploy.
+
+Deployet til Cloudflare Pages og verificeret live: nye knapper og print-CSS i den
+udleverede HTML; scan-API svarer korrekt.
 
 ## Beslutningen revurderet på pengekriteriet (holder)
 
 EUComply Pro $79/år recurring + høj betalingsvilje (lovkrav) slår stadig
 QuickFormat $9 one-time. Ingen grund til at skifte spor.
-
-## Fundet og rettet denne iteration
-
-Købsrejsen gennemgået som fremmed. Tre huller lukket:
-
-1. **Forsiden linkede IKKE til QuickFormat ($9-produktet)** — det billigste,
-   mest impulskøbs-venlige produkt var usynligt for alle der landede på /.
-   Rettet: nav-link "QuickFormat $9" + footer-link. Alle links verificeret mod
-   filsystemet (0 brudte).
-2. **blog/gdpr-cookie-banner-fines pegede "Pro" på /store/ i stedet for /pro/** —
-   klikket landede på skabelon-butikken uden pris eller købsknap. Rettet til /pro/.
-3. **2 af de 27 blogartikler manglede stadig Pro-link** (german-impressum-
-   foreign-sellers, website-compliance-scanner-comparison). Rettet med kontekstuelle
-   Pro-CTA'er.
-
-Deployet og verificeret live (cache-bustet curl): forsiden viser QuickFormat-links,
-alle tre artikler peger nu på /pro/.
 
 ## Blokeringer (én linje hver)
 
@@ -45,9 +42,11 @@ alle tre artikler peger nu på /pro/.
 ## Næste skridt
 
 1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → første betaling mulig samme time.
-2. Mig: /vs/-siderne og /pro/-undersiderne gennemgår købsrejsen næste; derefter
-   quickformat.com-domæne-vurdering når betaling er live.
+2. Mig: tilføje "Share this report"-nudge efter scanning på watch-flowet; derefter
+   /vs/-siderne gennemgås som fremmed; domæne når betaling er live.
 
 ## Lærdom (fast)
 
 Hver ny side skal ind i link-grafen samme dag den bygges. "Udgivet" ≠ "linket til".
+Og: interaktive flows skal testes som hele flow, ikke som enkeltsider — ?url=-fejlen
+sad i rækkefølgen af to kodeblokke der hver især så rigtige ud.

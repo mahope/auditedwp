@@ -75,6 +75,14 @@
   footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   footer a{color:var(--accent)}
   @media(max-width:700px){h1{font-size:25px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+  @media print {
+    header, footer, nav, form, .procta, #subbox, #err, .scanbox, button { display: none !important; }
+    body { background: #fff; }
+    .card { break-inside: avoid; border: 1px solid #ddd; }
+    #results { display: block !important; }
+    .printfriendly-note { display: block !important; font-size: 11px; color: #666; margin-top: 16px; }
+  }
+  .printfriendly-note { display: none; }
 </style>
 </head>
 <body>
@@ -123,8 +131,11 @@
       <h3 id="procta-title">Need documented proof — not just flags?</h3>
       <p id="procta-body">The Pro tier turns findings into auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and accessibility statements you can forward to clients, auditors and insurers.</p>
       <a class="btn" href="/pro/">See Pro — $79/year</a>
-      <a class="btn green" href="/assets/eucomply-1.2.0.zip" style="margin-left:8px">↓ WordPress plugin (free)</a>
+      <button type="button" class="btn ghost" id="share-btn" style="margin-left:8px">🔗 Copy link to this report</button>
+      <button type="button" class="btn ghost" id="print-btn" style="margin-left:8px">🖨️ Save as PDF</button>
       <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
+      <p style="font-size:12.5px;margin:6px 0 0"><a class="btn green" href="/assets/eucomply-1.2.0.zip" style="padding:8px 14px;font-size:13px">↓ WordPress plugin (free)</a></p>
+      <p class="printfriendly-note" id="print-note"></p>
     </div>
 
     <!-- Email capture -->
@@ -193,11 +204,15 @@
     return c.pass ? 'Pass' : 'Fix needed';
   }
 
-  // Pre-fill from ?url= query (e.g. links from blog posts) and auto-run
+  // Pre-fill from ?url= query (e.g. shared report links) and auto-run.
+  // Deferred so the submit handler below is registered first.
   var pre = new URLSearchParams(location.search).get('url');
   if (pre && pre.trim()) {
     input.value = pre.trim();
-    if (typeof form.requestSubmit === 'function') { form.requestSubmit(); }
+    setTimeout(function() {
+      if (typeof form.requestSubmit === 'function') { form.requestSubmit(); }
+      else { form.dispatchEvent(new Event('submit', { cancelable: true })); }
+    }, 0);
   }
 
   form.addEventListener('submit', async function(e) {
@@ -265,7 +280,28 @@
       }
     }
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Update the address bar so the report is shareable
+    try { history.replaceState(null, '', '?url=' + encodeURIComponent(host(d.url))); } catch (e) {}
   }
+
+  // Share + print buttons
+  var shareBtn = document.getElementById('share-btn');
+  var printBtn = document.getElementById('print-btn');
+  if (shareBtn) shareBtn.addEventListener('click', function() {
+    var link = location.origin + '/scan/?url=' + encodeURIComponent(input.value.trim());
+    function done() { shareBtn.textContent = '✓ Link copied'; setTimeout(function(){ shareBtn.textContent = '🔗 Copy link to this report'; }, 2500); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(done, done);
+    } else {
+      var ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(ta); done();
+    }
+  });
+  if (printBtn) printBtn.addEventListener('click', function() {
+    var note = document.getElementById('print-note');
+    if (note) note.textContent = 'Compliance snapshot of ' + (lastUrl || input.value) + ' — generated ' + new Date().toISOString().slice(0,10) + ' by EUComply (auditedwp.pages.dev/scan). Automated technical checks, not legal advice.';
+    window.print();
+  });
 
   function host(u) { try { return new URL(u).hostname; } catch { return u; } }
   var icon = function(k) {
