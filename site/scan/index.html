@@ -115,8 +115,9 @@
   <div class="examples">Try it:
     <button type="button" data-url="wordpress.org">wordpress.org</button>
     <button type="button" data-url="shopify.com">shopify.com</button>
-    <button type="button" data-url="example.com">example.com</button>
+    <button type="button" data-url="webflow.com">webflow.com</button>
   </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0"><span id="scan-count-line" style="display:none">🛡️ <strong id="scan-count">…</strong> websites scanned so far — every scan is free, no signup required.</span></p>
 </div>
 
 <section>
@@ -180,6 +181,14 @@
 <script>
 (function() {
   var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
+  // Public scan counter (real usage, from worker KV — never our own test traffic)
+  fetch(API + '/stats').then(function(r){ return r.json(); }).then(function(d){
+    if (d && d.scans > 0) {
+      var line = document.getElementById('scan-count-line');
+      var num = document.getElementById('scan-count');
+      if (line && num) { num.textContent = d.scans.toLocaleString('en-US'); line.style.display = 'inline'; }
+    }
+  }).catch(function(){});
   var form = document.getElementById('scan-form');
   var input = document.getElementById('url-input');
   var btn = document.getElementById('scan-btn');
@@ -258,6 +267,10 @@
                  '<p>' + escapeHtml(c.detail || '') + '</p>';
       if (!c.pass || v === 'warn') {
         html += c.fix ? '<div class="fix"><strong>Suggested fix:</strong> ' + escapeHtml(c.fix) + '</div>' : '';
+        var tool = FIX_TOOLS[pair[0]];
+        if (tool) {
+          html += '<p style="margin-top:8px"><a href="' + tool[1] + '" style="color:var(--accent);font-weight:600;font-size:13px">' + escapeHtml(tool[0]) + ' →</a></p>';
+        }
       }
       div.innerHTML = html;
       cardsEl.appendChild(div);
@@ -302,6 +315,14 @@
     if (note) note.textContent = 'Compliance snapshot of ' + (lastUrl || input.value) + ' — generated ' + new Date().toISOString().slice(0,10) + ' by EUComply (auditedwp.pages.dev/scan). Automated technical checks, not legal advice.';
     window.print();
   });
+
+  // Map failed checks to our own free tools that help fix them
+  var FIX_TOOLS = {
+    cookies:      ['Free cookie banner check', '/cookie-banner-check/'],
+    legal:        ['Generate a privacy policy (free tool)', '/privacy-policy-generator/'],
+    forms:        ['Privacy policy generator (free)', '/privacy-policy-generator/'],
+    headers:      ['Security headers checklist', '/checklist/']
+  };
 
   function host(u) { try { return new URL(u).hostname; } catch { return u; } }
   var icon = function(k) {

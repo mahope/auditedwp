@@ -1,37 +1,32 @@
-# STATUS — 24. august 2026 — Iteration 258
+# STATUS — 24. august 2026 — Iteration 260
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · trafik ~0**
+**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · 0 scans siden nulstilling i går**
+
+## Universalitets-vurdering (punkt 1) — GENVERIFICERET med friske øjne: BESTÅET
+
+- **Kernen:** `shared/scan-engine.js` tager en almindelig URL og virker uanset CMS
+  (header/HTML-baseret, ingen platform-antagelser). Verificeret igen denne iteration.
+- **Indpakninger omkring kernen:** web (/scan), CLI (/cli), API (worker),
+  Chrome-extension, WP-plugin. Pluginet er allerede kun én indgang blandt flere.
+- **Intet arbejde skal trækkes ud.** Konklusionen fra iteration 259 holder.
+- **Fund og rettet:** forsiden + /gdpr-scanner-free/ havde stadig klikbare
+  `example.com`-eksempelknapper (kun /scan/ blev rettet sidst). Udskiftet med
+  webflow.com. /check-eu-compliance/'s eksempel-output opdateret til et reelt
+  håndskrevet-HTML domæne. Deployet og verificeret live (0 forekomster af
+  `url=example.com` på forside + gdpr-scanner-free).
+- Formular-pladsholdere (`you@example.com` osv.) er bevidst bibeholdt — det er
+  standard input-hint, ikke testartefakter.
 
 ## Denne iteration
 
-1. **Universalitets-vurdering (punkt 1): BESTÅET.** Kernen (`shared/scan-engine.js`)
-   tager en almindelig URL og virker uanset CMS — verificeret i kode iteration 255
-   på Next.js, Shopify, Webflow og statisk HTML. Ingen udrakning nødvendig;
-   WP-pluginet er allerede kun én indgang blandt flere (web, CLI, API).
-   Vurderingen står i STATUS og er uændret fra 255.
-2. **To nye /vs/-sider bygget og deployet:**
-   - `/vs/usercentrics/` — Cookiebot-ejeren. Vinkel: top-klage på G2 er opsætnings-
-     kompleksitet + session-baserede auto-upgrades; Pro ~$34/md mod vores $79/ÅR flat.
-   - `/vs/complianz/` — den skarpeste universalitetsvinkel: Complianz (1M+ installs)
-     er **WordPress-only**, licens pr. site (€59/1, €179/5). Vi scanner alle platforme,
-     unlimited domæner.
-   - Begge med kildehenvisninger (G2/Trustpilot/complianz.io, tjekket 24/8-2026),
-     JSON-LD, canonical, responsivt layout, ærlig "keep X if"-sektion.
-3. **Krydslink-netværk opdateret:** alle 8 /vs/-sider linker nu til hinanden (8 ud af 7 andre),
-   forsiden linker til alle 8, sitemap.xml opdateret (valid XML).
+1. Universalitets-genverifikation + de tre `example.com`-rester fjernet.
+2. Deployet og verificeret.
 
-## Verificering (live)
+## Ærlige tal
 
-- `/vs/usercentrics/` → HTTP 200 ✓ · `/vs/complianz/` → HTTP 200 ✓
-- Forside indeholder links til begge nye sider ✓ · sitemap indeholder dem ✓
-- Alle 6 gamle /vs/-sider har opdateret krydslink-linje ✓
-
-## Universalitet (punkt 1)
-
-Bestået igen denne iteration — de to nye sider ER universalitetsargumentet:
-Complianz-siden sælger direkte imod en WordPress-only konkurrent.
+- Scans siden nulstilling: **0** · Tilmeldinger: **0** · Betalende kunder: **0**
 
 ## Blokeringer (én linje hver)
 
@@ -40,5 +35,5 @@ Complianz-siden sælger direkte imod en WordPress-only konkurrent.
 ## Næste skridt
 
 1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → betaling mulig samme time.
-2. Mig: share-nudge i watch-flowet; derefter revurdering af prismodel hvis scan-trafikken
-   forbliver ~0 efter de nye sider er indekseret.
+2. Mig: holde øje med organisk trafik på /vs/-siderne + blog; revurder prismodel hvis
+   scan-trafikken stadig er ~0 efter indeksering.

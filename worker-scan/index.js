@@ -58,6 +58,13 @@ export default {
       });
     }
 
+    // GET /stats — public scan counter (transparency / social proof)
+    if (request.method === "GET" && path === "/stats") {
+      let scans = null;
+      try { scans = parseInt((await env?.RATE?.get("stats:scans")) || "", 10); } catch { /* ignore */ }
+      return json({ scans: Number.isFinite(scans) ? scans : null });
+    }
+
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
 
     // Simple usage stats
