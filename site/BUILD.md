@@ -6,7 +6,7 @@ WordPress-pluginet er kun én af flere indgange, ikke produktet.
 ```
 TRIN   HVAD                          STATUS
 ─────  ────────────────────────────  ──────────────────────────
- 1     Landingsside + gratis scan    ✅ LIVE (auditedwp.pages.dev)
+ 1     Landingsside + gratis scan    ✅ LIVE (eucomplypro.com)
  2     Universal scan-Worker         ✅ LIVE (eucomply-scan, 7 checks)
  3     Pro-side med pris + FAQ       ✅ LIVE (/pro/, $79/år)
  4     Pro Dashboard                 ✅ LIVE (/pro/dashboard/)

@@ -96,14 +96,14 @@ Dit site skal ligge på **Cloudflare Pages**. Du har adgang, og du behøver ikke
 ```
 
 Scriptet er låst til dit eget projekt — du kan ikke komme til at udgive til et andet.
-Dit site ligger på **https://auditedwp.pages.dev**
+Dit site ligger på **https://eucomplypro.com**
 
 Efter hver udgivelse skal du **selv kontrollere resultatet**. HTTP 200 er ikke bevis for
 noget — et site kan svare 200 og være tomt eller vise gammelt indhold. Hent siderne og
 se på indholdet:
 
 ```bash
-curl -s https://auditedwp.pages.dev/ | head -40
+curl -s https://eucomplypro.com/ | head -40
 ```
 
 Gå hver underside igennem. Virker et link ikke, eller peger noget stadig på en gammel

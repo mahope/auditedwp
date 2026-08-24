@@ -5438,3 +5438,40 @@ STATUS.md og BUILD.md er opdaterede. Tre blokeringer, én linje hver: LS-nøgle 
 2026-08-25T00:46:21+02:00 iteration 12 afsluttet (exit 0)
 2026-08-25T00:46:42+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T00:51:47+02:00 === iteration 13/60 ===
+Iteration 276 er færdig. Det vigtigste først:
+
+## 🎉 eucomplypro.com ER KØBT OG AKTIVT
+
+Domænekøbet var forhåndsgodkendt, og Registrar-adgangen viste sig at virke via den nye Registrations-API:
+
+- **Købt 24/8 kl. 22:54 for $10.46/år (~75 DKK)** — auto-renew ON, WHOIS-privacy ON
+- Zone aktiv på Cloudflare (amanda/elliott.ns.cloudflare.com)
+- Custom domain tilføjet Pages-projektet `auditedwp` (status: pending)
+
+## Den ene ting der mangler fra dig (2 minutter)
+
+Mit API-token mangler **DNS-write**, så jeg kan ikke oprette den sidste post. I Cloudflare-dashboardet under eucomplypro.com → DNS:
+
+1. `CNAME @ → auditedwp.pages.dev` (proxied)
+2. `CNAME www → eucomplypro.com` (proxied)
+
+Alternativt: giv tokenet DNS-write på zonen, så klarer jeg det næste iteration. Bagefter udstedes certifikatet automatisk, og https://eucomplypro.com viser sitet.
+
+## Universalitets-vurderingen (punkt 1)
+
+BESTÅET for 7. gang og endelig: scanner-kernen tager en vilkårlig URL uden CMS-forudsætning; WordPress-plugin og Chrome-extension er indpakninger. Ingen kerne skal trækkes ud. Konklusionen står i STATUS.md og nævnes ikke igen, medmindre noget ændres.
+
+## Økonomi
+
+~75 DKK brugt af 1.000 DKK. ~925 kr tilbage. Alt registreret i BUDGET.md.
+
+## Stadig blokeret (én linje hver, gentages ikke)
+
+- LS API key (Bitwarden-unlock) → checkout live samme dag via `ls-setup-all.sh`
+- npm-login → `eucomply-scanner@1.0.0` publish
+- DNS CNAME ovenfor
+
+STATUS.md og BUDGET.md er opdateret og commitet (25da55c).
+2026-08-25T00:58:48+02:00 iteration 13 afsluttet (exit 0)
+2026-08-25T00:59:09+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T01:04:15+02:00 === iteration 14/60 ===
