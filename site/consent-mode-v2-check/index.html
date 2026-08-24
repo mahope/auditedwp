@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consent Mode v2 Check — Is Your Site Sending the Right Signals? Free.</title>
+<meta name="description" content="Free instant Consent Mode v2 checker. Paste your URL and see if your site sends the Google consent signals required for EEA ad personalisation since March 2024. Works on any platform — WordPress, Shopify, Webflow, Wix or hand-coded HTML.">
+<link rel="canonical" href="https://auditedwp.pages.dev/consent-mode-v2-check/">
+<meta property="og:title" content="Consent Mode v2 Check — Free, Instant, Any Platform">
+<meta property="og:description" content="Missing Consent Mode v2 quietly breaks Google Ads measurement in the EEA. Check your site free in 10 seconds — no sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://auditedwp.pages.dev/consent-mode-v2-check/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{text-align:center;padding:52px 0 32px}
+h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;max-width:720px;margin:0 auto 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto}
+.scanbox{display:flex;gap:10px;max-width:560px;margin:28px auto 8px;flex-wrap:wrap;justify-content:center}
+.scanbox input{flex:1;min-width:220px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
+.scanbox input:focus{border-color:var(--accent)}
+.scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.scanbox button:hover{background:var(--accent-dark)}
+.scanbox button[disabled]{opacity:.6;cursor:wait}
+.err{color:var(--fail);font-size:14px;text-align:center;min-height:20px}
+.examples{margin-top:4px}
+.examples span{color:var(--muted);font-size:13px;margin-right:6px}
+.examples button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;margin:3px 2px}
+.examples button:hover{border-color:var(--accent);color:var(--accent)}
+.results{display:none;margin-top:36px;text-align:left}
+.scorecard{border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;background:var(--soft)}
+.scorebig{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.scorebig.good{color:var(--ok)}.scorebig.mid{color:var(--warn)}.scorebig.bad{color:var(--fail)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.card{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:14px 16px;font-size:14px}
+.card.pass{border-left-color:var(--ok)}.card.fail{border-left-color:var(--fail)}.card.warn{border-left-color:var(--warn)}
+.card b{display:block;margin-bottom:4px}
+.pill{float:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
+.card.pass .pill{background:#e6f4ea;color:var(--ok)}.card.fail .pill{background:#fdeaea;color:var(--fail)}.card.warn .pill{background:#fff3e2;color:var(--warn)}
+.card p{color:var(--muted);font-size:13px;margin-top:4px}
+.pro-cta{margin-top:22px;text-align:center}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;letter-spacing:-.02em;margin-bottom:10px}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin-bottom:12px}
+li{margin-bottom:6px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:18px 0;font-size:14.5px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td:first-child{font-weight:600}
+details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer;font-size:15px}
+details p{margin-top:8px;color:var(--muted);font-size:14.5px}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer a{color:var(--accent)}
+@media(max-width:600px){h1{font-size:25px}h2{font-size:21px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/pro/">Pro $79/year</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <h1>Is your site sending <em>Consent Mode v2</em> signals? Check free — right here.</h1>
+  <p class="sub">Since March 2024, Google requires Consent Mode v2 for ad personalisation in the EEA. Sites missing it can lose conversions tracking and audience features without any visible error. Paste your URL and find out in seconds — no sign-up, works on every platform.</p>
+
+  <form id="scan-form" class="scanbox">
+    <input id="url-input" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Your website URL" autocomplete="url">
+    <button id="scan-btn" type="submit">Check my signals</button>
+  </form>
+  <p class="err" id="scan-err" role="alert"></p>
+  <div class="examples">
+    <span>Try:</span>
+    <button type="button" data-url="shopify.com">shopify.com</button>
+    <button type="button" data-url="webflow.com">webflow.com</button>
+    <button type="button" data-url="wix.com">wix.com</button>
+  </div>
+
+  <div class="results" id="results" aria-live="polite">
+    <div class="scorecard">
+      <div style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Compliance score</div>
+      <div class="scorebig" id="score-num">–<small style="font-size:22px;color:var(--muted)">%</small></div>
+      <div style="color:var(--muted);font-size:13px;margin-top:6px" id="score-for"></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="pro-cta">
+      <a class="btn" href="/pro/">Monitor this automatically with EUComply Pro — $79/year →</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>What the check looks at</h2>
+    <p>The scan analyses your live page HTML for the technical markers regulators and Google look for:</p>
+    <table>
+      <tr><th>Signal</th><th>Why it matters</th></tr>
+      <tr><td>Consent default state</td><td>Consent Mode v2 must fire a <code>default</code> consent state (granted or denied) for <code>ad_storage</code> and <code>analytics_storage</code> before any tags load.</td></tr>
+      <tr><td>Consent update mechanism</td><td>Your CMP must push an <code>update</code> when the visitor chooses — otherwise Google never learns consent was given.</td></tr>
+      <tr><td>ad_user_data &amp; ad_personalization</td><td>The two v2-only parameters. Without them, EEA ad personalisation and audience building stop working.</td></tr>
+      <tr><td>URL passthrough</td><td><code>url_passthrough</code> and ads data redaction preserve measurement accuracy when consent is denied.</td></tr>
+      <tr><td>Trackers before consent</td><td>Even perfect Consent Mode code doesn't help if analytics or ad scripts still fire before the visitor consents — the exact pattern behind the SHEIN €150M decision.</td></tr>
+    </table>
+    <div class="box">
+      <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Tag managers change, scripts get added, CMP settings drift. <a href="/pro/">Pro ($79/year)</a> re-scans daily and alerts you before Google's signals silently break.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How to fix a failing result</h2>
+    <ol>
+      <li><strong>Set the default state early.</strong> Call <code>gtag('consent', 'default', {...})</code> before any other gtag or GTM tag fires — ideally inline in the <code>&lt;head&gt;</code>.</li>
+      <li><strong>Include the two v2 fields.</strong> <code>ad_user_data</code> and <code>ad_personalization</code> must appear in both the default and update calls. Most broken setups simply predate March 2024.</li>
+      <li><strong>Wire your CMP to consent mode.</strong> Cookiebot, Usercentrics, Complianz and most major CMPs have a Consent Mode integration — enable it rather than pushing consent yourself.</li>
+      <li><strong>Verify after every tag change.</strong> This is the step everyone skips, and exactly why monitoring exists.</li>
+    </ol>
+    <p>Full walkthrough: the <a href="/blog/eu-cookie-consent-guide-2026/">EU cookie consent guide 2026</a> covers Consent Mode v2 implementation step by step.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Frequently asked questions</h2>
+    <details open>
+      <summary>What is Google Consent Mode v2?</summary>
+      <p>A Google requirement, effective March 2024, that sites in the European Economic Area send structured consent signals (<code>ad_storage</code>, <code>analytics_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>) before Google Ads and measurement products process user data. Without valid v2 signals, ad personalisation and conversion modelling degrade in the EEA.</p>
+    </details>
+    <details>
+      <summary>Does Consent Mode v2 apply outside the EU?</summary>
+      <p>The strict requirement applies to users in the EEA (plus the UK and Switzerland under equivalent rules), but the same implementation is global — the signals travel with your tags wherever visitors come from. Implementing once covers every market.</p>
+    </details>
+    <details>
+      <summary>Can I check Consent Mode v2 without installing anything?</summary>
+      <p>Yes. This checker fetches your public page HTML and detects the v2 consent patterns server-side. Nothing is installed on your site, and no account is needed. For runtime behaviour (what actually fires in a browser), also verify in Google Tag Assistant.</p>
+    </details>
+    <details>
+      <summary>Does this work on Shopify, Wix, Squarespace or Webflow?</summary>
+      <p>Yes. The checker analyses the served HTML of any public URL, so it works identically on WordPress, Shopify, Wix, Squarespace, Webflow, Next.js or hand-coded sites regardless of which consent platform you use.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/cookie-banner-check/">Cookie banner check</a> · <a href="/scan/">Scanner</a> · <a href="/privacy/">Privacy</a></div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"What is Google Consent Mode v2?","acceptedAnswer":{"@type":"Answer","text":"A Google requirement, effective March 2024, that sites in the European Economic Area send structured consent signals (ad_storage, analytics_storage, ad_user_data, ad_personalization) before Google Ads and measurement products process user data. Without valid v2 signals, ad personalisation and conversion modelling degrade in the EEA."}},
+    {"@type":"Question","name":"Does Consent Mode v2 apply outside the EU?","acceptedAnswer":{"@type":"Answer","text":"The strict requirement applies to users in the EEA plus the UK and Switzerland, but the same implementation is global — the signals travel with your tags wherever visitors come from. Implementing once covers every market."}},
+    {"@type":"Question","name":"Can I check Consent Mode v2 without installing anything?","acceptedAnswer":{"@type":"Answer","text":"Yes. This checker fetches your public page HTML and detects the v2 consent patterns server-side. Nothing is installed on your site and no account is needed. For runtime browser behaviour, also verify in Google Tag Assistant."}},
+    {"@type":"Question","name":"Does this work on Shopify, Wix, Squarespace or Webflow?","acceptedAnswer":{"@type":"Answer","text":"Yes. The checker analyses the served HTML of any public URL, so it works identically on WordPress, Shopify, Wix, Squarespace, Webflow, Next.js or hand-coded sites regardless of consent platform."}}
+  ]
+}
+</script>
+
+<script>
+(function() {
+  var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
+  var form = document.getElementById('scan-form');
+  var input = document.getElementById('url-input');
+  var btn = document.getElementById('scan-btn');
+  var errEl = document.getElementById('scan-err');
+  var results = document.getElementById('results');
+  var cardsEl = document.getElementById('cards');
+
+  document.querySelectorAll('.examples button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      input.value = b.dataset.url;
+      form.requestSubmit();
+    });
+  });
+
+  function verdict(c) {
+    if (c.warn) return 'warn';
+    return c.pass ? 'pass' : 'fail';
+  }
+  function pillText(c) {
+    if (c.warn && c.pass === false) return 'Check manually';
+    if (c.warn) return 'Warning';
+    return c.pass ? 'Pass' : 'Fix needed';
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var url = input.value.trim();
+    errEl.textContent = '';
+    if (!url) { errEl.textContent = 'Please enter your domain.'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    try {
+      var r = await fetch(API + '/scan?url=' + encodeURIComponent(url));
+      var d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Scan failed.');
+      render(d);
+    } catch (ex) {
+      errEl.textContent = ex.message || 'Network error. Try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Check my signals';
+    }
+  });
+
+  function render(d) {
+    results.style.display = 'block';
+    var pct = d.score.pct;
+    var cls = pct >= 80 ? 'good' : (pct >= 50 ? 'mid' : 'bad');
+    var num = document.getElementById('score-num');
+    num.innerHTML = '';
+    num.appendChild(document.createTextNode(pct));
+    num.className = 'scorebig ' + cls;
+    num.insertAdjacentHTML('beforeend', '<small style="font-size:22px;color:var(--muted)">%</small>');
+    // Put the consent-relevant cards first
+    var order = ['consent_mode_v2','trackers','cookies','tcf','ssl','headers','legal','forms','dora'];
+    var keys = Object.keys(d.checks).sort(function(a,b){ return (order.indexOf(a)+1||99)-(order.indexOf(b)+1||99); });
+    document.getElementById('score-for').textContent = 'for ' + d.url;
+    cardsEl.innerHTML = '';
+    keys.forEach(function(k) {
+      var c = d.checks[k];
+      var v = verdict(c);
+      var card = document.createElement('div');
+      card.className = 'card ' + v;
+      card.innerHTML =
+        '<span class="pill">' + pillText(c) + '</span>' +
+        '<b>' + (c.label || k) + '</b>' +
+        '<p>' + (c.detail || '') + '</p>';
+      cardsEl.appendChild(card);
+    });
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+})();
+</script>
+</body>
+</html>
