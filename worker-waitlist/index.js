@@ -44,7 +44,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/config") {
       return new Response(JSON.stringify({
         service: "quickformat-waitlist",
-        checkout_url: env.CHECKOUT_URL || "",
+        checkout_url: (env.CHECKOUT_URL || "").trim(),
       }), {
         headers: {
           "Content-Type": "application/json",

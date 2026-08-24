@@ -28,6 +28,9 @@ ACCEPT='Accept: application/vnd.api+json'
 
 req() { curl -sf -H "Authorization: Bearer $KEY" -H "$CT" -H "$ACCEPT" "$@"; }
 
+TMPDIR_LS="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_LS"' EXIT
+
 echo "== Store =="
 STORE_ID=$(req "$API/stores" | python3 -c 'import json,sys;print(json.load(sys.stdin)["data"][0]["id"])')
 echo "store_id=$STORE_ID"
@@ -89,20 +92,21 @@ checkout_url_for() {
 
 set_worker_secret() {
   local worker="$1" url="$2" key_name="$3"
+  # API tokens cannot use the /secrets endpoint — patch bindings via settings (multipart) instead
   curl -s "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/workers/scripts/$worker/settings" \
-    -H "Authorization: Bearer $CF_TOKEN" > /tmp/cf_settings.json
-  python3 - "$url" "$key_name" <<'PYEOF'
+    -H "Authorization: Bearer $CF_TOKEN" > "$TMPDIR_LS/cf_settings.json"
+  python3 - "$url" "$key_name" "$TMPDIR_LS" <<'PYEOF'
 import json,sys
-url,key=sys.argv[1],sys.argv[2]
-s=json.load(open('/tmp/cf_settings.json'))
+url,key,tmp=sys.argv[1],sys.argv[2],sys.argv[3]
+s=json.load(open(tmp+'/cf_settings.json'))
 b=[x for x in s['result'].get('bindings',[]) if x.get('name')!=key]
 b.append({"type":"secret_text","name":key,"text":url})
-json.dump({"bindings":b},open('/tmp/cf_bindings.json','w'))
+json.dump({"bindings":b},open(tmp+'/cf_bindings.json','w'))
 PYEOF
   curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/workers/scripts/$worker/settings" \
     -H "Authorization: Bearer $CF_TOKEN" \
-    -F "settings=</tmp/cf_bindings.json;type=application/json" > /tmp/cf_patch_result.json
-  python3 -c "import json;d=json.load(open('/tmp/cf_patch_result.json'));assert d['success'], d.get('errors')"
+    -F "settings=<$TMPDIR_LS/cf_bindings.json;type=application/json" > "$TMPDIR_LS/cf_patch_result.json"
+  python3 -c "import json;d=json.load(open('$TMPDIR_LS/cf_patch_result.json'));assert d['success'], d.get('errors')"
 }
 
 verify_config() {

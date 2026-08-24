@@ -68,7 +68,7 @@ export default {
       // switches from waitlist to live Lemon Squeezy checkout — no deploy needed.
       return json({
         service: "devnotify-metrics",
-        checkoutUrl: env?.CHECKOUT_URL || "",
+        checkoutUrl: (env?.CHECKOUT_URL || "").trim(),
       });
     }
 

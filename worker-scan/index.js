@@ -53,7 +53,7 @@ export default {
     // så en ny Lemon Squeezy-checkout kan aktiveres uden ny deploy)
     if (request.method === "GET" && path === "/config") {
       return json({
-        checkoutUrl: env?.CHECKOUT_URL || "",
+        checkoutUrl: (env?.CHECKOUT_URL || "").trim(),
         launchPricing: true,
       });
     }
