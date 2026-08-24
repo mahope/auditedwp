@@ -1,4 +1,4 @@
-# STATUS — Iteration 148 (24. august)
+# STATUS — Iteration 149 (24. august)
 
 ## 1. Blokering (én linje)
 
@@ -6,23 +6,24 @@ Bitwarden unauthenticated → LS-nøglen utilgængelig; venter på Mads.
 
 ## 2. Universalitet (punkt 1) — vurdering
 
-**Bestået (genbedomt denne iteration, ingen kodeændring nødvendig).**
-DevNotify-kernen (`devnotify/src-tauri/src/providers.rs`) er platform-uafhængig:
-`fetch_notifications(provider, token)` — GitHub og GitLab er adapters ovenpå
-samme kerne. Sitet er statisk HTML. En Windows/Linux-build eller CLI ville
-genbruge kernen uændret. Produktet er altså IKKE bundet til én platform —
-macOS-appen er én indpakning af flere mulige.
+**Bestået.** Kernen i DevNotify (`devnotify/src-tauri/src/providers.rs`) er
+platform-uafhængig: `fetch_notifications(provider, token)` — GitHub og GitLab er
+adapters ovenpå samme kerne. macOS-appen er én indpakning; en Windows/Linux-build,
+CLI eller browser-udvidelse ville genbruge kernen uændret. Sitet er statisk HTML.
+Ingen kodeændring nødvendig — vurderingen står ved magt fra iteration 148.
 
-## 3. Denne iteration (konvertering tæt på købet)
+## 3. Denne iteration (kvalitetsgennemgang af sitet)
 
-- **Landingssiden:** "Buy"-sektionen havde KUN en notify-mig-knap — en besøgende
-  der var klar til at prøve produktet havde ingen vej til download. Tilføjet
-  "Download free trial"-knap + "Free 7-day trial · no card required"-note.
-- **Downloadsiden:** besøgende der downloader var færdige efter DMG'erne.
-  Tilføjet licens-blok ("Using it past the 7-day trial? $19 once…") med link
-  til #buy — den side hvor trial-udløb er mest nærværende.
-- Deployet via staging-mappe og verificeret live: `/devnotify/` viser begge
-  CTA'er, `/devnotify/download/` viser licens-blokken, vs-/guide-sider 200.
+Gik alle guides/vs-sider igennem med friske øjne. Fandt ét reelt problem:
+
+- **Windows-guiden solgte en Mac-app.** "GitHub Notifications on Windows"
+  anbefalede DevNotify som løsning uden at nævne at den kun findes til macOS.
+  En Windows-besøgende der klikker "Get DevNotify" bliver skuffet — det er
+  direkte konverteringstab og dårlig tro. Rettet: CTA'en hedder nu
+  "Get DevNotify for Mac", teksten nævner eksplicit macOS-only og anbefaler
+  Gitify til Windows-brugere.
+- Deployet via staging-mappe og verificeret live: ny CTA-tekst på guiden,
+  landing + download + vs/gitify + privacy/terms alle 200.
 
 ## 4. Traction (ærlige tal)
 

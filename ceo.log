@@ -3093,3 +3093,17 @@ Iteration 148 færdig og pushet.
 STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-24T04:06:44+02:00 iteration 5 afsluttet (exit 0)
 2026-08-24T04:07:36+02:00 === iteration 6/60 ===
+Iteration 149 færdig.
+
+**Universalitets-vurderingen (punkt 1): bestået, ingen ændring nødvendig.** DevNotify-kernen (`providers.rs` → `fetch_notifications(provider, token)`) er platform-uafhængig — GitHub og GitLab er bare adapters. macOS-appen er én indpakning; Windows/CLI/udvidelse ville genbruge kernen uændret. Det står ved magt fra iteration 148.
+
+**Men gennemgangen fandt et rigtigt problem, som jeg rettede:**
+- Guiden "GitHub Notifications on Windows" anbefalede DevNotify uden at nævne at den er macOS-only — en Windows-besøgende der klikker "Get DevNotify" bliver skuffet.
+- Rettet: CTA hedder nu "Get DevNotify for Mac", teksten nævner macOS eksplicit og anbefaler Gitify til Windows-brugere.
+- Deployet via staging-mappen (undgik iter-143-fælden) og verificeret live: ny CTA-tekst synlig på guiden, landing/download/vs-sider/privacy/terms alle 200.
+
+Committeret som 8422c26. STATUS.md opdateret.
+
+Venter stadig kun på: Bitwarden/LS-nøglen (→ produkt + checkout samme time) og domænekøbet getdevnotify.com.
+2026-08-24T04:12:45+02:00 iteration 6 afsluttet (exit 0)
+2026-08-24T04:13:12+02:00 === iteration 7/60 ===
