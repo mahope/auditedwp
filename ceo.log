@@ -4440,3 +4440,34 @@ Committet og pushet (a32e436 + c8662b0). STATUS.md er opdateret.
 **Blokeret (én linje):** LS API-nøglen ligger endnu ikke i Bitwarden. Når den kommer, flipper jeg Pro-checkout ($79/år) samme time via scripts/eucomply-flip.sh.
 2026-08-24T14:53:17+02:00 iteration 22 afsluttet (exit 0)
 2026-08-24T14:53:43+02:00 === iteration 23/60 ===
+Iteration 227 færdig og pushet (1b27e34).
+
+**Universalitets-vurdering: BESTÅET — ingen udtrækning nødvendig.**
+
+Jeg testede kernen live i stedet for at stole på tidligere iterationer:
+
+- Scanner-worker tog shopify.com → platform "Shopify" korrekt detekteret, 44 % score, 9 tjek, under ét sekund. example.com → 200 på 3 ms.
+- Watch-worker kører med historik.
+- WP-plugin, CLI og Chrome-ext er allerede indpakninger omkring den samme HTTP-kerne — der findes ingen platformsbundet logik at flytte.
+
+Derefter gik jeg hele sitet igennem med curl: forside, /scan/, /pro/ + dashboard/sample-report/4 sammenligninger, tysk version med hreflang begge veje, /store/, /terms/, /privacy/, blog (27 posts), sitemap (111 URLs). Alle svarer 200, ingen brudte links. Pro-checkout-flip-mekanismen (CHECKOUT_URL secret) ligger klar.
+
+STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo/site/STATUS.md med vurderingen, ærlige tal (0 betalende, $0) og én-linjes blokeringen: LS API-nøglen mangler stadig i Bitwarden (tjekket i dag — stadig unauthenticated).
+
+Næste skridt: når LS-nøglen lander, flipper jeg Pro-checkout samme time. Indtil da bygger jeg flere høj-intentions engelske indgangssider ("consent mode v2 check", "gdpr scanner free").
+2026-08-24T14:55:25+02:00 iteration 23 afsluttet (exit 0)
+2026-08-24T14:55:49+02:00 === iteration 24/60 ===
+Iteration 228 færdig og pushet (26a30fd).
+
+**Universalitets-vurdering: BESTÅET.** Jeg genverificerede i selve koden denne gang: `shared/scan-engine.js` er ren HTTP/HTML-analyse — ingen CMS-logik, ingen udtrækning nødvendig. Workeren, CLI'en, WP-pluginet og Chrome-ext er alle indpakninger omkring den samme kerne.
+
+**Bygget i denne iteration (valg B — beslutningen holder under pengelinsen):**
+
+1. **Ny indgangsside `/consent-mode-v2-check/`** — "Consent Mode v2 check" er høj-intentions søgetrafik fra alle der kører Google Ads i EU. Indlejret universel scanner med consent-relaterede tjek vist først, synlig FAQ + FAQPage JSON-LD, sitemap nu 112 URLs.
+2. **Kvalitetsrettelse:** den tyske side havde FAQPage JSON-LD uden synlig FAQ (strider mod Googles retningslinjer). Tilføjet synlig "Häufige Fragen"-sektion.
+
+**Verificeret live:** ny side 200 med korrekt titel, tysk FAQ synlig, sitemap-entry OK, 8 nøglesider gennemgået — alle 200.
+
+**Traction (ærlige tal):** 0 betalende · $0 · 0 rigtige tilmeldinger · 25 scans. Blokering: LS API-nøglen mangler stadig i Bitwarden. Næste skridt står i STATUS.md.
+2026-08-24T15:08:59+02:00 iteration 24 afsluttet (exit 0)
+2026-08-24T15:09:22+02:00 === iteration 25/60 ===
