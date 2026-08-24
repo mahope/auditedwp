@@ -3520,3 +3520,35 @@ Iteration 175 færdig, committet og pushet.
 Næste iteration: flere long-tail guides eller købsrejse-forbedringer, indtil nøglen lander. STATUS.md er opdateret.
 2026-08-24T07:18:18+02:00 iteration 31 afsluttet (exit 0)
 2026-08-24T07:18:40+02:00 === iteration 32/60 ===
+Iteration 176 færdig og commitet (be27186).
+
+**Universalitetsvurdering: bestået.** Gik hele DevNotify igennem — kernen er en platform-agnostisk native app, sitet dækker mac/Windows/Linux/iPhone og nu også Android. Ingen udtrækning nødvendig; punkt 1 er opfyldt.
+
+**Denne iteration:**
+1. Ny guide "GitHub notifications on Android: 5 working options" — med FAQ-schema, sammenligningstabel og ærlige trade-offs (Doze-problemet, token-custody). Fylder det sidste hul i platformsdækningen.
+2. CHECKOUT-GO-LIVE.md skrevet i devnotify/ — komplet runbook fra LS-nøgle til live checkout: API-kald, testkøb, præcis hvilke to HTML-filer der rettes. Tiden fra nøgle til salg er nu under en time.
+3. Sitemap 33 → 34 URLs, cross-links fra forside + Windows- + Linux-guide. Link-check: 357 interne links, 0 brudte.
+4. Deployet og verificeret live (indhold tjekket, ikke kun HTTP 200): android-guiden 200, links bekræftet på alle tre steder.
+
+**Traction (ærligt):** 0 kunder · $0 · 0 tilmeldinger · 1 download · 2 besøg.
+
+**Venter på Mads:** LS-nøglen (checkout live samme time), domænekøb getdevnotify.com, evt. Apple Developer-konto, ja til launch-teksterne i LAUNCH.md.
+
+Næste iteration: ny long-tail guide eller download-sidens konvertering — platformsdækningen er nu komplet.
+2026-08-24T07:23:39+02:00 iteration 32 afsluttet (exit 0)
+2026-08-24T07:24:02+02:00 === iteration 33/60 ===
+Iteration 177 færdig og pushet (d33e2e2).
+
+**Universalitetsvurdering: bestået.** DevNotify er allerede en platform-uafhængig kerne — native Tauri-app med LS-licensvalidering, ingen WordPress/CMS-bundethed at trække ud. Guides dækker mac/Windows/Linux/iOS/Android; Windows- og Linux-brugere er eksplicit målgruppe. Intet at ombygge.
+
+**Fundet under gennemgangen (reelle problemer):**
+1. Iteration 176's filer lå kun i `.deploy-staging/devnotify/`, ikke i `devnotify-site/` — arbejdskopien var bagefter det deployede. Synkroniseret til én kilde til sandhed.
+2. Dødt eksternt link: `github.com/watch_disabled` findes ikke → rettet til `github.com/watching`.
+
+**Nyt indhold:** guide "GitHub notifications not showing on Windows: 7 fixes" — problemorienteret long-tail med FAQ-schema og CTA. Sitemap nu 35 URLs.
+
+**Verificeret live:** ny guide 200 med korrekt titel, rettet link på live-siden, sitemap tæller 35, cross-link på forsiden, 0 brudte interne links. Deploy + commit + push OK.
+
+Traction stadig ærligt **0 kunder / $0 / 0 tilmeldinger / 1 download** — checkout venter stadig udelukkende på LS-nøglen i Bitwarden; runbook ligger klar i `devnotify/CHECKOUT-GO-LIVE.md`. STATUS.md er opdateret.
+2026-08-24T07:30:59+02:00 iteration 33 afsluttet (exit 0)
+2026-08-24T07:31:25+02:00 === iteration 34/60 ===
