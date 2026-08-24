@@ -67,7 +67,7 @@
 </details>
 <details>
   <summary>SHA-256 checksums (macOS)</summary>
-  <span class="hash">Universal: 13a97b6f91a851964ef5d5b99575c77df934f84fa2324d9977ee963298e0a1a8</span>
+  <span class="hash">Universal (0.2.0): 263180d2e3ef3654f4cbf068326b21efaf5f3d301bbe74cb627880c0942c2ce5</span>
   <span class="hash">Apple Silicon (0.2.0 aarch64): d68da705b8a0022912aa8e44245c92231e3c091ff9cf86a68a3873f36392beea</span>
   <span class="hash">Intel (0.2.0 x64): 96901b076afadcc6b25eecf0cc8fd9bd4c05c780e35d7588e9b158710eb53885</span>
 </details>
@@ -124,6 +124,16 @@
   <a href="/devnotify/privacy">Privacy</a>
   <a href="/devnotify/#buy">Buy a license</a>
 </footer>
+<script>
+// Privacy-friendly counting (no cookies, no personal data): one count per visitor per hour.
+(function(){
+  var M='https://devnotify-metrics.mahope-eeb.workers.dev';
+  try{fetch(M+'/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'visit',path:'/devnotify/download/'})});}catch(e){}
+  document.querySelectorAll('a.dl[href]').forEach(function(a){
+    a.addEventListener('click',function(){try{fetch(M+'/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'download'})});}catch(e){}});
+  });
+})();
+</script>
 </div>
 </body>
 </html>

@@ -3552,3 +3552,102 @@ Iteration 177 færdig og pushet (d33e2e2).
 Traction stadig ærligt **0 kunder / $0 / 0 tilmeldinger / 1 download** — checkout venter stadig udelukkende på LS-nøglen i Bitwarden; runbook ligger klar i `devnotify/CHECKOUT-GO-LIVE.md`. STATUS.md er opdateret.
 2026-08-24T07:30:59+02:00 iteration 33 afsluttet (exit 0)
 2026-08-24T07:31:25+02:00 === iteration 34/60 ===
+Iteration 178 færdig og pushet. Kort resumé:
+
+**Universalitetsvurderingen (første opgave) — bestået, denne gang med rigtig kodelæsning:**
+- `devnotify/src-tauri/src/providers.rs` ER det universelle lag: normaliseret `NotificationItem` + provider-adapters (GitHub, GitLab). En ny platform (Gitea/Bitbucket) tilføjes uden at røre UI, tray eller licenslogik.
+- Appen er ikke bundet til én platform i koden. Det eneste bundne er branding og mac-only downloads — et go-to-market-valg, ikke en kodeafhængighed.
+- Konklusion: ingen kerne at trække ud; den findes allerede på det rigtige sted.
+
+**Resten af iterationen:**
+- Verificeret it. 177 er live med indholdstjek (guide 200, forside-linker, sitemap = 35 URLs), og at `.deploy-staging/devnotify/` og `devnotify-site/` er identiske.
+- Fuld link-gennemgang med script over alle 33 sider: 0 brudte interne links.
+- Købsrejse gennemgået: pris, trial-løfter og appens licensflow matcher — intet at pudse.
+
+**Traction (ærligt): 0 kunder · $0 · 0 tilmeldinger · 1 download · 2 besøg.**
+
+Næste iteration: Windows/Linux-builds via GitHub Actions (gratis, fordobler målgruppen, koden er klar i providers-laget) — eller flere købsintent-guides. Alt venter-status står i `/Users/madsholstjensen/hermes-ceo/STATUS.md`.
+2026-08-24T07:34:09+02:00 iteration 34 afsluttet (exit 0)
+2026-08-24T07:34:31+02:00 === iteration 35/60 ===
+Iteration 179 færdig. Resumé:
+
+**Universalitetsvurdering (første opgave):** Bestået — og nu bekræftet i praksis. It. 178's kodelæsning viste at `providers.rs`-kernen allerede er platform-agnostisk; den eneste rigtige mac-afhængighed i koden var `open_url`, som jeg har fjernet.
+
+**Bygget denne iteration:**
+- `devnotify/src-tauri/src/lib.rs:269` — cross-platform URL-åbning (open/cmd start/xdg-open), accelerators CommandOrControl
+- `.github/workflows/build-devnotify.yml` — CI der bygger DevNotify til macOS, Windows OG Linux ved hvert push
+
+**Verificeret med rigtige kørsler:** CI-run 32695480660 grøn for alle tre platforme; artefakterne downloadet og inspiceret — universal .dmg (hdiutil verify: VALID), x64 .msi (gyldig Windows-installer), .AppImage + .deb (korrekte filformater).
+
+Det betyder at DevNotify uden ekstra omkostning er gået fra "mac-only" til et produkt for alle desktop-udviklere. Næste iteration udvider download-siden med Windows/Linux-installere, så sitet sælger til det marked vi nu kan betjene.
+
+STATUS.md er opdateret: `/Users/madsholstjensen/hermes-ceo/STATUS.md`. Blokering uændret (én linje): LS-checkout venter på Bitwarden-nøglen. Traction stadig ærligt 0 / $0.
+2026-08-24T08:08:45+02:00 iteration 35 afsluttet (exit 0)
+2026-08-24T08:09:32+02:00 === iteration 36/60 ===
+Iteration 180 færdig.
+
+**Universalitetsvurdering:** bestået — DevNotify er en desktop-app (macOS/Windows/Linux), ikke platformsbundet. Ingen kerne at trække ud.
+
+**Bygget denne iteration:**
+- Downloadsiden (`devnotify-site/download/index.html`) sælger nu alle 3 platforme med per-platform instruktioner og SHA-256 checksums — tidligere kun macOS, dvs. vi solgte til ⅓ af markedet.
+- Windows MSI (4 MB), Linux .deb (5 MB) og macOS universal-DMG (8 MB) hostes på Cloudflare Pages.
+- AppImage (85 MB) overskrider Pages' 25 MiB-grænse → lagt på GitHub Releases (`mahope/auditedwp`, tag `devnotify-v0.2.0`), link verificeret 200.
+- To fejlede deploys undervejs pga. filstørrelsen; løst og alt verificeret live med rigtige indholdsstørrelser, ikke kun HTTP 200.
+- STATUS.md opdateret; committet og pushet (AppImage fjernet fra git igen — den hører hjemme på Releases).
+
+**Traction (ærligt):** 0 kunder · $0 · downloads: 1.
+
+**Venter på Mads:** LS-nøgle i Bitwarden (checkout klar samme time), domæne getdevnotify.com, evt. Apple Developer til notarization, ja til launch-teksterne.
+
+Næste iteration: landingssiden siger stadig "Mac Menu Bar" — skal bredes ud til alle platforme, så Windows/Linux-besøgende også konverterer.
+2026-08-24T08:17:41+02:00 iteration 36 afsluttet (exit 0)
+2026-08-24T08:18:03+02:00 === iteration 37/60 ===
+Iteration 181 færdig.
+
+**Universalitetsvurdering (punkt 1): bestått.** DevNotify er en cross-platform desktop-app (samme kerne bygger til macOS/Windows/Linux i CI) — ingen CMS-binding, ingen kerne at trække ud. Det står i STATUS.md.
+
+**Hvad jeg byggede i denne iteration:** sidste iterations efterladte punkt — landingssiden markedsførte stadig kun "Mac Menu Bar", selvom vi solgte til alle tre platforme. Rettet i `devnotify-site/index.html`:
+
+- Hero, features, how-it-works og FAQ nævner nu macOS · Windows · Linux; én primær CTA til download-siden med alle artefakter
+- Ny FAQ: hvilke platforme understøttes + én licens gælder alle ens maskiner
+- Alt SEO opdateret (title, meta, OG/Twitter, JSON-LD `operatingSystem`)
+
+**Verificeret live:** `/devnotify/` indeholder nu "in your menu bar." + "macOS · Windows · Linux" og ikke længere "Mac Menu Bar"; download-, vs/gitify- og Windows-guidesiderne svarer 200. Undervejs ramte jeg deploy-pitfallet fra min memory (forældet kopi i `.deploy-staging`) — kopierede frisk fil ind og deployede igen.
+
+**Traction (ærligt):** 0 kunder · $0 · 0 tilmeldinger · 1 download · 2 besøg. Blokering uændret: LS-nøgle venter på Bitwarden. Næste iteration: flere købsintent-guides + oprydning af Mac-only-formuleringer i guidesiderne.
+2026-08-24T08:21:38+02:00 iteration 37 afsluttet (exit 0)
+2026-08-24T08:22:00+02:00 === iteration 38/60 ===
+Iteration 182 færdig. Kort rapport:
+
+**Universalitet (punkt 1): bestått.** DevNotify er en desktop-app (Tauri), ikke bundet til WordPress eller noget CMS — samme kodebase bygger til macOS, Windows og Linux. Ingen kerne at trække ud.
+
+**Reparation fundet undervejs:** den publicerede downloadsides AppImage-link pegede på GitHub Releases (korrekt), men staging-mappen var ude af synk med `devnotify-site/` — gammel index.html-kopi og manglende guide-sider. Sidste deploy var desuden fejlet pga. Pages' 25 MiB-grænse på en AppImage-kopi i staging. Synkroniserede, fjernede den for store fil, deployede igen.
+
+**Verificeret live (indhold hentet, ikke bare 200'er):**
+- `/devnotify/` viser "macOS · Windows · Linux"
+- download, guides, vs/gitify, sammenligningsside → alle HTTP 200
+- Alle 4 hostede installere (2× DMG, MSI, deb) svarer 200 med rigtige filstørrelser; AppImage serveres fra GitHub Releases som planlagt
+
+**Pengevurdering:** DevNotify holder stadig som bedste bud — flaskehalsen er udelukkende LS-nøglen i Bitwarden.
+
+STATUS.md opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-24T08:23:50+02:00 iteration 38 afsluttet (exit 0)
+2026-08-24T08:24:20+02:00 === iteration 39/60 ===
+Iteration 183 færdig. Kort rapport:
+
+**Universalitetsvurdering (punkt 1): bestått — bekræftet i koden denne gang.**
+Jeg læste kernen linje for linje: `devnotify/src-tauri/src/providers.rs` definerer en normaliseret `NotificationItem` med en provider-abstraktion, hvor GitHub og GitLab begge er adapters. Tray/UI-logikken kalder kun `fetch_notifications(provider, token)` og ved intet om den underliggende platform. Bygger til macOS/Windows/Linux. Intet at trække ud — vurderingen står.
+
+**Hvad jeg byggede i denne iteration:**
+1. **Downloadsiden måler nu konverteringer** — den vigtigste side i trækken besøg → download → køb havde ingen metrics. Tilføjede samme privacy-venlige tæller som forsiden (worker med IP-time-dedupe, ingen cookies).
+2. Fuld rsync-synk af `devnotify-site/` → `.deploy-staging/devnotify/` og deploy til Cloudflare Pages.
+3. **Verificeret live:** metrics-scriptet er i det serverede HTML på `/devnotify/download/`; forside, download, guides, GitLab-side, terms, privacy → alle 200. Worker svarer korrekt.
+
+**Ærlige tal** (fra workeren, dedupe på min egen trafik):
+0 betalende kunder · $0 · 0 tilmeldinger · 1 download · ~2 besøg.
+
+**Blokering (én linje):** LS-checkout venter stadig på Bitwarden-nøglen.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-24T08:31:33+02:00 iteration 39 afsluttet (exit 0)
+2026-08-24T08:31:55+02:00 === iteration 40/60 ===
