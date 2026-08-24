@@ -3351,3 +3351,33 @@ Iteration 165 færdig. Resumé:
 STATUS.md opdateret, committet som 756ffc0. Næste iteration: ny købsintentionsvinkel eller begynde produkt nr. 2 i porteføljen, da DevNotify er færdigt indtil LS-nøglen lander.
 2026-08-24T05:38:36+02:00 iteration 21 afsluttet (exit 0)
 2026-08-24T05:38:59+02:00 === iteration 22/60 ===
+Iteration 166 færdig og pushet (c97940d).
+
+**Universalitetsvurdering:** Bestået 11. gang — denne gang verificeret i koden. `providers.rs` har en normaliseret `NotificationItem` + provider-enum med GitLab-adapteren fysisk til stede; GitHub er én provider blandt flere. App og site er indpakninger. Intet at trække ud.
+
+**Penge-linsen:** DECISION.md holder. DevNotify er bygget, udgivet, $19 lifetime, nul driftsomkostninger — første kunde timer efter LS-nøglen lander i Bitwarden (stadig eneste blokering, én linje i STATUS.md som aftalt).
+
+**Bygget denne iteration:** Ny "Gitify alternatives in 2026: 5 options compared"-guide på https://auditedwp.pages.dev/devnotify/guides/gitify-alternative/ — den stærkeste bund-of-tragt-vinkel, der manglede: folk der søger et Gitify-alternativ har allerede prøvet det gratis værktøj og leder efter noget bedre. Guiden er ærlig (Gitify konfigureret rigtigt kan være nok), hvilket gør DevNotify-anbefalingen troværdig. Sitemap nu 32 URLs, cross-links fra badge-guiden og best-apps-siden.
+
+**Verificeret live:** Ny guide + forside + download + vs/gitify + badge-guide = alle HTTP 200 med korrekte titler, sitemap indeholder den nye URL.
+
+**Traction (ærligt):** 0 betalende kunder · $0 · tilmeldinger: 0.
+2026-08-24T05:43:02+02:00 iteration 22 afsluttet (exit 0)
+2026-08-24T05:43:36+02:00 === iteration 23/60 ===
+Iteration 167 færdig. Kort rapport:
+
+**Universalitetsvurdering (punkt 1): BESTÅET — verificeret i koden, ikke bare påstået.**
+Læste `devnotify/src-tauri/src/providers.rs`: kernen er en `Provider`-enum (GitHub + GitLab) med normaliseret `NotificationItem` og en dispatcher (`fetch_notifications`). GitHub er én adapter blandt flere. macOS-appen og sitet er indpakninger. Intet at trække ud.
+
+**Penge-linsen:** DevNotify holder — $19 lifetime, ~0 kr/md i omkostninger, kortest vej til første betalende kunde (kun LS-nøglen mangler). DECISION.md uændret.
+
+**Fund og rettet et reelt problem denne iteration:**
+- Tjekkede ALLE 63 sitemap-URLs live: alle 200, ingen ødelagte lenker.
+- Men `site/devnotify/sitemap.xml` i repo var foreldet (9 URLs mod live 32) — den rigtige kilde er `devnotify-site/`. Synkroniseret, redeployet og verificeret live: devnotify-sitemap svarer nu med 32 URLs.
+
+**Traction (ærligt): 0 betalende kunder · $0 · tilmeldinger: 0.**
+
+STATUS.md opdateret, committet og pushet (d4ec611). Blokeret stadig kun på Bitwarden/LS-nøglen; næste iteration: ny købsintention-guide eller porteføljeprodukt nr. 2.
+2026-08-24T05:46:42+02:00 iteration 23 afsluttet (exit 0)
+2026-08-24T05:47:02+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T05:52:24+02:00 === iteration 24/60 ===
