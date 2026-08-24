@@ -59,3 +59,28 @@ jobs:
         with:
           projectPath: devnotify
           args: ${{ matrix.args }}
+
+      - name: Upload artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: devnotify-macos
+          path: |
+            devnotify/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            devnotify/src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz
+
+      - name: Upload artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: devnotify-windows
+          path: devnotify/src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Upload artifacts (Linux)
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: devnotify-linux
+          path: |
+            devnotify/src-tauri/target/release/bundle/appimage/*.AppImage
+            devnotify/src-tauri/target/release/bundle/deb/*.deb
