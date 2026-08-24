@@ -1,27 +1,29 @@
-# STATUS — 24. august 2026 — Iteration 254
+# STATUS — 24. august 2026 — Iteration 256
 
 ## Kort version
 
 **0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · trafik ~0**
 
-## Universalitets-vurdering (punkt 1)
+## Denne iterations arbejde (konverteringsfokus — punkt 1 i prioritetsrækken)
 
-Bestået (fjerde gennemgang, bekræftet i dag): kernen `shared/scan-engine.js` er
-platform-uafhængig; web, watch, API, CLI, extension og WP-plugin er indpakninger.
-Ingen udrakning nødvendig.
+1. **Selvkritisk /vs/-audit:** fandt en reel fejl sidste iteration missede —
+   `/vs/iubenda/` linkede til sig selv som "vs iubenda" i krydslink-blokken.
+   Ret: siden viser nu "iubenda (this page)" uden dødt link.
+2. **Forsiden solgte ikke /vs/-siderne:** nul links til sammenligningssiderne
+   trods seks færdige sider. Tilføjet krydslink-linje direkte under Pro-knappen
+   på forsiden ("Comparing vendors? …") — folk der sammenligner leverandører er
+   netop køberne, og nu når de siderne fra forsiden.
 
-## Denne iterations arbejde: /vs/-gennemgang som fremmed
+## Verificering
 
-Gik alle 6 sammenligningssider + sitemap + 27 blogartikler igennem med friske øjne:
+Deployet og hentet live:
+- `/` indeholder de nye /vs/-links ✓
+- `/vs/iubenda/` har korrekt krydslink uden selv-reference ✓
 
-- **Falsk alarm tjekket:** sitemap-entries `/vs/gitify/` og `/vs/octobox/` er
-  faktisk `/devnotify/vs/...` — findes og svarer 200. Ikke brudte links.
-- **Fundet og rettet:** 5 af 6 /vs/-sider manglede link til /vs/osano/ i deres
-  "More comparisons"-linje. Tilføjet på alle fem.
-- **Verificeret sundt:** alle 6 sider linker 6x til /pro/ og har /scan/-CTA'er;
-  alle live-sider svarer 200.
+## Universalitet (punkt 1) — stadig bestået (iteration 255, kørt kode)
 
-Deployet og verificeret live (`/vs/termly/` indeholder nu osano-linket).
+Kernen (`shared/scan-engine.js`) detekterede Next.js, Shopify, Webflow og statisk
+HTML korrekt. Ingen udrakning nødvendig; WP-plugin er én indgang blandt seks.
 
 ## Blokeringer (én linje hver)
 
@@ -30,5 +32,5 @@ Deployet og verificeret live (`/vs/termly/` indeholder nu osano-linket).
 ## Næste skridt
 
 1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → betaling mulig samme time.
-2. Mig: watch-flowets share-nudge; herefter flere /vs/-sider for SEO-bredden
-   (fx vs. Usercentrics, Complianz).
+2. Mig: /vs/-sider for Usercentrics og Complianz (to store DACH-markedsaktører),
+   samt watch-flowets share-nudge.
