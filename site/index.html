@@ -300,5 +300,56 @@
   </div>
 </footer>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "EUComply",
+      "url": "https://auditedwp.pages.dev/",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Web",
+      "description": "Free online EU compliance scanner. Enter any URL and check HTTPS, cookie consent, privacy policy, forms and security headers against GDPR, NIS2, DORA and EAA requirements.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does this work on my platform?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes — the scanner checks HTTP responses and HTML markup. It works on any website: WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, Joomla, static HTML, or custom stacks. The only requirement is a public URL." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to install something?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The online scanner works entirely from your browser — just enter a URL. WordPress users can optionally install the free plugin to run scans from the admin dashboard." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which regulations does it cover?",
+          "acceptedAnswer": { "@type": "Answer", "text": "EUComply checks against requirements from GDPR (Art. 5, 13, 25, 32), NIS2 (Art. 18, 21), DORA (Art. 6), and EAA (accessibility statement requirement). The checks identify technical gaps — they are not legal advice." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data stored or tracked?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The scanner fetches the URL, runs checks in memory, and returns results. No scan data, URLs, or IPs are logged or stored." }
+        },
+        {
+          "@type": "Question",
+          "name": "Who needs Pro?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Anyone who needs documented proof of compliance — web agencies managing client sites, SaaS companies responding to vendor questionnaires, businesses subject to EU procurement or insurance reviews." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 </body>
 </html>

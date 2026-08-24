@@ -1,40 +1,57 @@
-# BUILD — DevNotify: korteste vej til første betalende kunde
+# BUILD — Korteste vej til første betalende kunde
 
-## Hvor vi står (iteration 122)
+## Nuværende position
 
-- Produktet er bygget og udgivet: Tauri v2 macOS menu bar app, v0.2.0,
-  Apple Silicon + Intel DMG'er, checksum-verificeret, downloadbart fra sitet.
-- Landingsside sælger allerede: hvad, hvem, $19, købssektion. 5 SEO-sider live.
-- **Den eneste manglende led:** checkout-knappen viser en notify-me-formular
-  i stedet for en betalingslink.
+**DevNotify.** App bygget, site live (0,5+1 betaling). 63/63 URL'er 200. Downloads virker.
+App har trial/license-aktivering. Blokeret på: betalingsopsætning.
 
-## Korteste vej til første betaling
+## Valg: Fortsæt DevNotify, byg lille portefølje når betaling er åben
 
-1. **LS API-nøgle** (Bitwarden, ventes 24/8) → opret produkt via API:
-   - Navn "DevNotify License", $19 USD one-time.
-   - Test-køb gennemført → test-tilstand slås fra.
-2. Erstat notify-formularen i `site/devnotify/index.html` med LS checkout-URL:
-   - Buy-knap = direkte link. Fjern formularen og dens JS.
-   - Samme på alle 5 sider hvor der henvises til #buy.
-3. Remote licensvalidering i appen mod LS license API — **FÆRDIG (iteration 126):**
-   `activate_license` kalder nu LS License API (`/v1/licenses/validate`) med
-   Bearer-nøglen indlejret via `LS_LICENSE_API_KEY` ved build-tid. Ugyldig
-   nøgle afvises med klar fejlbesked; netværksfejl giver grace. Gemt licens
-   revalideres silently ved app-start; ugyldig nøgle fjernes → trial-gate.
-   Offline builds (uden env-var) accepterer nøglen lokalt — release-builds SKAL
-   bygges med `LS_LICENSE_API_KEY=xxx`.
-4. Verificér hele købsrejsen som fremmed: landing → buy → checkout →
-   licensnøgle på mail → aktivering i app.
+Fortsatte under kriteriet "tjener flest penge hurtigst". DevNotify kræver 0 kr i drift,
+kan tage imod $19 per kunde time efter checkout er sat op.
 
-## Efter første betaling er mulig — trafik (prioriteret)
+## Den korteste vej — to muligheder
 
-1. Flere sammenligningssider (DevNotify vs Octobox/Notifier for GitHub),
-   long-tail søgninger om GitHub notifications.
-2. Produkttekster klar til steder Mads kan godkende: Product Hunt,
-   Hacker News Show HN, relevante subreddits — skrevet færdigt, venter på ja.
-3. Sitemap/robots vedligeholdes ved hver ny side.
+### A. Mads opretter checkout via LS web-dashboard (2 min, ingen API-nøgle)
 
-## Ikke blokeret på andet
+Dette er hurtigst. Mads logger ind på **https://lemonsqueezy.com** (mads@mahope.dk),
+opretter et produkt:
 
-Intet. Alt andet arbejde (flere sider, forbedringer) kan fortsætte mens
-vi venter på nøglen.
+1. **Products → Create product**
+   - Navn: `DevNotify License`
+   - Slug: `devnotify-license`
+   - Beskrivelse: `Lifetime license for DevNotify — GitHub notifications in your macOS menu bar. One payment, perpetual use including updates.`
+   - Pris: **$19** (one-time, ingen abonnement)
+   - Publiseret ja
+2. **Kopier checkout-URL'en** — den ser ud som `https://devnotify.lemonsqueezy.com/checkout/buy/xxx`
+3. **Send URL'en** til mig — så flipper jeg sitet på 30 sekunder med:
+   ```bash
+   python3 scripts/flip_checkout.py <URL>
+   ./deploy.sh site
+   ```
+   Done. Site accepterer betalinger.
+
+### B. Mads logger ind i Bitwarden → jeg gør resten
+
+1. `bw login` eller `bw unlock`
+2. Jeg henter LS API key → kører `./scripts/ls-setup.sh` → får checkout URL → flipper
+
+Same result, 3 min mere.
+
+## Efter checkout er live
+
+| Trin | Hvad | Hvem |
+|------|------|------|
+| 1 | Testkøb $19 på LS-checkouten | Mig |
+| 2 | Verificér at licens-nøgle udleveres / app unlocker | Mig |
+| 3 | Domæne købes: **getdevnotify.com** | Mads via Cloudflare |
+| 4 | Skriv "Lancering" i 1 relevant kanal (Reddit r/macapps; Hacker News "Show HN") | Mig (skriver, Mads godkender) |
+| 5 | Fortsæt SEO: titler, guides | Mig |
+| 6 | Overvej nyt produkt når 1. betaling er landet | Mig |
+
+## Fremtidige produkter (når DevNotify betaler)
+
+- **CLI-variant** (npm → brew) — gratis kerne, betalt pro ($9/md)
+- **Windows build** — Tauri cross-compile, nyt marked
+- **EUComply** — compliance tjek, universelt, $79/md
+- **Simpelt digitalt produkt** på en markedsplads med indbygget betaling

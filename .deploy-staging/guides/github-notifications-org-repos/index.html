@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications for Org Repos: Managing Noise Across a Whole Team (2026) — DevNotify</title>
+<meta name="description" content="Organization repositories multiply GitHub notification noise. How default watch settings, team mentions and org policies shape what every member receives — and how to quiet it down.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-org-repos/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notifications for org repos: managing the noise">
+<meta property="og:description" content="Why organization repos flood your notification inbox — auto-watch, team mentions, default branches — and the settings that fix it for good.">
+<meta property="og:url" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-org-repos/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notifications for org repos</h1>
+<p class="meta">Updated August 2026 · 6 min read</p>
+
+<p>Personal repos are quiet. Then you join an organization with forty
+repositories, three active teams, and CI that comments on everything — and
+your notification inbox becomes a firehose. Org notifications have specific,
+fixable causes. This guide walks through each one.</p>
+
+<h2>Cause 1: Auto-watch on join</h2>
+<p>The single biggest source of org noise is GitHub's default:
+<strong>Automatically watch repositories</strong>. The moment you're granted
+access to a new repo (or an org enables default watching), you're subscribed
+to every issue, PR and discussion in it. In a busy org this means hundreds of
+notifications a week for code you've never opened.</p>
+<p><strong>Fix:</strong> GitHub → <strong>Settings → Notifications →
+Subscriptions &amp; notifications schedule → Automatically watch repositories</strong>
+→ turn it <em>off</em>. Then visit
+<strong>github.com/watching</strong> and unfollow the repo backlog you've
+accumulated. New repos won't auto-subscribe you anymore.</p>
+
+<h2>Cause 2: Team mentions reach everyone</h2>
+<p>A <code>@team/platform</code> mention notifies every member individually.
+Some teams use them as broadcast; if your team has twenty members, one comment
+generates twenty personal notifications.</p>
+<p><strong>Fix:</strong> agree on team norms — @-mention individuals for action,
+reserve team mentions for genuine all-hands items. You can't opt out of team
+mentions without leaving the team, so the norm matters more than any setting.</p>
+
+<h2>Cause 3: Default branch activity on repos you "participate" in</h2>
+<p>Once you comment in or review anything in a repo, GitHub subscribes you to
+that thread — and sometimes to more. Participation-based subscriptions are
+usually reasonable, but they accumulate silently over months.</p>
+<p><strong>Fix:</strong> periodically audit
+<strong>github.com/notifications</strong> → subscriptions, or run through our
+<a href="/devnotify/guides/too-many-github-notifications/">notification-noise cleanup guide</a>.
+Unsubscribe from threads that moved on without you.</p>
+
+<h2>Cause 4: CI bots and Apps commenting everywhere</h2>
+<p>Dependabot, linters, deploy bots and CI apps open issues and comment on PRs
+across every org repo you touch. Each one can generate a notification if
+you're watching the repo or thread.</p>
+<p><strong>Fix:</strong> after killing auto-watch, most bot noise disappears.
+For remaining threads, unsubscribe from the specific thread — GitHub remembers
+per-thread choices even inside watched repos.</p>
+
+<h2>Cause 5: Email defaults amplify everything above</h2>
+<p>With email enabled per category, each of the causes above also lands in
+your inbox. Decide deliberately which categories deserve email at
+<strong>Settings → Notifications</strong>: most people keep
+<strong>Participating and @mentions</strong> and nothing else. If you route
+org alerts to Slack or Teams instead, we compare those setups in
+<a href="/devnotify/guides/slack-github-notifications/">Slack</a> and
+<a href="/devnotify/guides/github-notifications-microsoft-teams/">Teams guides</a>.</p>
+
+<h2>An org-level note</h2>
+<p>Org owners can set a <strong>default repository watching level</strong> for
+all members (Org → Settings → Member privileges). If you administer an org,
+setting it to <em>Participating and @mentions</em> by default is the highest-leverage
+noise reduction available — it fixes cause 1 for every current and future
+member at once.</p>
+
+<div class="cta">
+<h2>Keep the signal, drop the firehose</h2>
+<p style="max-width:520px;margin:0 auto">After cleanup, DevNotify keeps the
+important part visible: your unread count — mentions, reviews, your threads —
+in the menu bar of macOS, Windows or Linux, refreshed every minute. Free
+trial, $19 lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify</a>
+<a class="btn btn-buy" href="/devnotify/#buy">Buy license — $19</a>
+</div>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/too-many-github-notifications/">Too many GitHub notifications? Cut the noise</a></li>
+<li><a href="/devnotify/guides/miss-pr-review-notifications/">Missing PR review requests on GitHub?</a></li>
+<li><a href="/devnotify/guides/github-watch-vs-star/">Watch vs Star: what each actually does</a></li>
+<li><a href="/devnotify/guides/github-notifications-coming-back-unread/">Notifications keep coming back as unread</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>

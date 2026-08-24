@@ -1,29 +1,26 @@
-# DECISION — Iteration 192 (24. august 2026, aften)
+# DECISION — Iteration 197 (24. august 2026, formiddag)
 
-**Status:** DevNotify. Bygget, live, klar til betaling. Blokeret på LS-nøgle i Bitwarden.
+**Status:** DevNotify. Bygget, live, 13 sider med guides. 0 betalinger — blokeret på LS-nøgle.
 
-## Vurdering under nye rammer (23. august)
+## Vurdering under nye rammer (23. august: pengekriteriet)
 
-**Universalitetskrav:** BESTÅET. Desktop-app (Tauri), tager GitHub token, 100% platform-uafhængig. Ingen CMS-binding.
+**Universalitetskrav:** BESTÅET. Desktop-app (Tauri), tager GitHub token, 100% platform-uafhængig.
 
-**Pengevurdering (5 kriterier):**
+**Pengevurdering (5 kriterier):** DevNotify vinder på tid-til-1.-kunde og omkostning. $19 er lavt beløb pr. kunde, men ét salg dækker alle omkostninger på sitet (0 kr/md). Efter betaling bygges næste produkt.
 
 | Faktor | DevNotify | Score |
 |--------|-----------|:-----:|
-| Tid til 1. kunde | Timer efter LS-nøgle/manuel checkout | ⭐⭐⭐⭐⭐ |
+| Tid til 1. kunde | Timer efter Mads logger ind i LS web-UI eller Bitwarden | ⭐⭐⭐⭐⭐ |
 | Beløb pr. kunde | $19 (one-time) | ⭐⭐⭐ |
-| Markedsstørrelse | ~10M GitHub devs, ~1M power users | ⭐⭐⭐⭐ |
-| Tilbagevendende | One-time (kan udvides med årlig opdatering) | ⭐⭐ |
-| Omkostning | 0 kr/md — bygget, klar, 44 URL'er live | ⭐⭐⭐⭐⭐ |
+| Markedsstørrelse | ~1M GitHub power users på macOS | ⭐⭐⭐⭐ |
+| Tilbagevendende | One-time (kan udvides: årlig update-abonnement $9/år) | ⭐⭐ |
+| Omkostning | 0 kr/md | ⭐⭐⭐⭐⭐ |
 
-**Ærlig vurdering:** DevNotify KAN tjene penge. Den eneste blokering er LS-nøglen. Sitet er sundt (alle 44 URL'er 200 OK, downloads reelle filer). Appen er bygget med trial/license-aktivering. Der er 0 betalende kunder fordi der ER INGEN BETALINGSMULIGHED ENDNU.
+**Ærlig vurdering:** DevNotify er et rigtigt produkt til en reel smerte (GitHub notifs i menulinjen, $19 er en fair pris for en lifetime-licens på en Mac-app). Den eneste mangel: betaling. Mads kan selv oprette checkout på 2 min via LS web-UI.
 
-## Hvad holder tilbage
+**Nye idéer under pengekriteriet:** Overvejet at droppe DevNotify for at bygge noget med umiddelbar betalingsmultiplikator. Men 0 omkostninger + 0 risiko gør DevNotify til det bedste valg — ét salg på $19 betyder produktet er i nul. Og med den færdige app og site er alternativomkostningen lav.
 
-1. **LS API-nøgle i Bitwarden** (Bitwarden status: "unauthenticated")
-2. ELLER: Ét manuelt checkout-link oprettet i LS's web-dashboard (tager Mads 2 minutter)
-
-Intet andet. Alt andet er bygget, testet, verificeret.
+**Næste:** Hvis Mads ikke har tid til LS checkout i dag, starter jeg research på produkt #2 (byg parallelt, men DevNotify først). Ellers: flip checkout → testkøb → domæne → marketing.
 
 ## Domæne (forhåndsgodkendt)
 

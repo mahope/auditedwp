@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications Keep Coming Back as Unread — How to Stop It (2026) — DevNotify</title>
+<meta name="description" content="You read a GitHub notification and it shows up unread again hours later. Why notifications resurrect themselves — participating vs watching, auto-subscriptions, and how to stop each cause.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-coming-back-unread/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notifications keep coming back as unread — why, and how to stop it">
+<meta property="og:description" content="Resurrecting notifications have specific causes: watching vs participating, automatic subscriptions, and issue state changes. Fix each one.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-notifications-coming-back-unread/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+pre code{display:block;padding:14px;overflow-x:auto;border-radius:8px;line-height:1.5}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notifications keep coming back as unread</h1>
+<p class="meta">Updated August 2026 · 5 min read</p>
+
+<p>You read it. The badge went down. Then the same pull request is sitting in
+your inbox marked <strong>unread</strong> again — sometimes hours later,
+sometimes on a different device. If GitHub notifications keep resurrecting
+themselves, one of four specific causes is almost always responsible. Here's
+how to tell them apart and stop each one.</p>
+
+<h2>Cause 1: You're "Participating," not just subscribed</h2>
+<p>GitHub's inbox has three sources of notifications:</p>
+<ul>
+<li><strong>Watching</strong> — you explicitly watch the repo.</li>
+<li><strong>Participating</strong> — you authored, commented on, or were
+@mentioned in a thread.</li>
+<li><strong>Subscribed threads</strong> — threads you hit "Subscribe" on.</li>
+</ul>
+<p>The trap: <strong>unsubscribing from a thread does nothing if you're
+still participating.</strong> Anyone replying to "your" PR or issue re-triggers
+the notification, even after you clicked Unsubscribe. That's why the item
+keeps coming back no matter what you do to it.</p>
+<p>The only real fix for participating threads you no longer care about is
+<strong>"ignore"</strong>: open the repo → Watch dropdown →
+<strong>Ignoring</strong>. That suppresses everything, including mentions.
+Use the per-thread route if you want to keep mention coverage: open the
+thread, click <strong>Customize</strong> next to your subscription, and turn
+off the event types you don't want.</p>
+
+<h2>Cause 2: Automatic watching from organization membership</h2>
+<p>If you accept an organization invitation, GitHub may default you to
+<strong>Auto</strong> watching — every repo in that org notifies you by
+default. New repos appear "already watched" without you ever clicking
+anything. Check it at
+<strong>github.com/settings/notifications</strong> → under "Automatic
+watching". Turn Auto off and switch repos you actually follow to explicit
+Watch. This one change removes most resurrection cases for people who just
+joined a company or org.</p>
+
+<h2>Cause 3: Issue/PR reopened, reassigned, or approved-for-review</h2>
+<p>A closed issue that gets <strong>reopened</strong>, a PR you're assigned
+as reviewer on, or a thread where someone requests your review will flip back
+to unread by design — this is correct behavior, not a bug. It looks like a
+haunting because the title is identical, but check the timeline: there's new
+activity. If these are legitimate but noisy, mute the individual thread with
+<strong>Unsubscribe</strong> rather than fighting the whole inbox.</p>
+
+<h2>Cause 4: Read-state sync lag across clients</h2>
+<p>Read state syncs between github.com, mobile, email digests, and API-based
+clients eventually, not instantly. A desktop client that polled five minutes
+ago can re-show items you already read on your phone until its next refresh.
+Two things help:</p>
+<ol>
+<li>Hard-refresh the web tab before assuming anything is wrong.</li>
+<li>Use a client that polls the notifications API directly instead of caching
+local badge state — stale local counts are the number-one reason people think
+items came back when they never left.</li>
+</ol>
+
+<h2>The nuclear option that isn't</h2>
+<p>Marking <em>everything</em> done clears the count but doesn't touch the
+underlying subscriptions — the same threads resurface tomorrow. The durable
+fix is always upstream: audit what you watch, disable auto-watch, and ignore
+repos you've left. Ten minutes of subscription cleanup beats marking-all-done
+every week indefinitely. We walk through the full audit in our
+<a href="/devnotify/guides/too-many-github-notifications/">guide to cutting notification noise</a>.</p>
+
+<div class="cta">
+<h2>An unread count you can trust</h2>
+<p style="max-width:520px;margin:0 auto">DevNotify reads GitHub's
+notifications API directly every minute, so the menu bar number matches
+server truth — no cached badges, no phantom resurrections. Free trial, $19
+lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify</a>
+<a class="btn btn-buy" href="/devnotify/#buy">Buy license — $19</a>
+</div>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-phantom-notifications/">Phantom ("ghost") notifications that won't clear</a></li>
+<li><a href="/devnotify/guides/github-watch-vs-star/">Watch vs Star: what each actually does</a></li>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications/">Turn off GitHub email notifications (keep web)</a></li>
+<li><a href="/devnotify/vs/octobox/">DevNotify vs Octobox</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Phantom / Ghost Notifications That Won't Go Away — Real Fixes (2026) — DevNotify</title>
+<meta name="description" content="A GitHub notification shows as unread but clicking it doesn't clear it — or it comes back after you mark it read. Why phantom notifications happen and four ways to actually remove them.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-phantom-notifications/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub phantom (ghost) notifications: why they won't clear, and real fixes">
+<meta property="og:description" content="Unread badges that never go away — four actual causes and fixes, from done-thread edge cases to stale API state.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-phantom-notifications/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub phantom ("ghost") notifications that won't go away</h1>
+<p class="meta">Updated August 2026 · 5 min read</p>
+
+<p>The badge says <strong>1 unread</strong>. You open the notification, read
+the thread, go back — and it's still there. Or you mark everything as read,
+the count hits zero, and an hour later the same item is unread again. This
+is one of the most-reported GitHub annoyances of the last few years, and it
+has a handful of specific, fixable causes.</p>
+
+<h2>Why it happens at all</h2>
+<p>GitHub's notification is a pointer to a <em>thread</em>, not to a message.
+A thread stays "unread" until GitHub considers every reason you were
+subscribed resolved. That means a thread can be unread even when nothing new
+is visible to you — for example when the last activity happened in a part of
+the conversation you can't see, or when your subscription outlived the thing
+you cared about. Clients that cache this state (including browser tabs left
+open for days) make it look even more haunted than it is.</p>
+
+<h2>Fix 1: Mark as done, not just as read</h2>
+<p>Since 2023 GitHub has two separate concepts in the inbox:</p>
+<ul>
+<li><strong>Read/unread</strong> — whether you've looked at the latest activity.</li>
+<li><strong>Done</strong> — that you're finished with the thread entirely.</li>
+</ul>
+<p>A read-but-not-done thread keeps living in your inbox. Open
+<strong>github.com/notifications</strong>, hover the stubborn item and press
+<strong>"Done"</strong> (or select several and use the <strong>Done</strong>
+button). Done items stop counting and stop resurfacing. If your badge counts
+"inbox items" rather than strictly-unread items, this alone explains most
+phantoms.</p>
+
+<h2>Fix 2: Unsubscribe from the thread instead of fighting it</h2>
+<p>If "Done" isn't available (some third-party clients only expose
+read/unread), unsubscribe directly: open the notification, click
+<strong>Subscribe/Unsubscribe</strong> in the right sidebar on the thread,
+and choose <strong>Unsubscribe</strong>. You'll stop receiving updates for
+that thread unless you're @mentioned again. For issues in repos you don't
+contribute to, this is the cleanest escape.</p>
+
+<h2>Fix 3: Clear the stale state via the API</h2>
+<p>When the web UI insists a thread is unread no matter what you click, the
+thread's server-side state may be genuinely stuck. The notifications API can
+reset what the UI sometimes can't:</p>
+<ol>
+<li>Create a personal access token with the <code>notifications</code> scope
+(Settings → Developer settings → Personal access tokens).</li>
+<li>Mark the phantom thread as read directly:</li>
+</ol>
+<pre><code>curl -X PATCH \
+  -H "Authorization: Bearer ghp_YOURTOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/notifications/threads/THREAD_ID</code></pre>
+<p>You can list thread IDs with <code>GET
+https://api.github.com/notifications</code> and find the offender by its
+title. After the PATCH, refresh github.com — the ghost is normally gone.
+Desktop clients that poll this same API pick up the cleared state within a
+minute or two.</p>
+
+<h2>Fix 4: Rule out the boring causes first</h2>
+<ul>
+<li><strong>Stale browser tab.</strong> A tab open for days shows old badge
+counts until reload. Hard-refresh before assuming anything is haunted.</li>
+<li><strong>Multiple devices.</strong> Read state syncs eventually, not
+instantly — another logged-in device can briefly resurrect a count.</li>
+<li><strong>Expired token in a client.</strong> If a desktop client's token
+expired, it can freeze on an old cached list where items never resolve.
+Re-issue the token with the <code>notifications</code> scope
+(see our <a href="/devnotify/github-token-scopes-guide/">token scopes guide</a>)
+and sign in again.</li>
+</ul>
+
+<div class="cta">
+<h2>See the real unread count — always in sync</h2>
+<p style="max-width:520px;margin:0 auto">DevNotify polls GitHub's
+notifications API directly, so its menu bar count reflects actual server
+state — no stale tabs, no frozen caches. When something won't clear in the
+browser, DevNotify's own mark-as-done clears it for real. Free to try, $19
+for a lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify for macOS</a>
+<a class="btn btn-buy" href="/devnotify/#buy">Buy license — $19</a>
+</div>
+
+<h2>Still stuck?</h2>
+<p>If a specific thread survives all four fixes, check whether the repo has
+been archived or made private — threads in repos you've lost access to can
+linger as permanently unreadable entries, and only GitHub support can purge
+those. For everyone else, Fix 1 (Done) plus Fix 3 (API) resolves the vast
+majority of cases reported over the last three years.</p>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-notification-badge-not-showing/">GitHub notification badge not showing? 6 fixes</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-working-mac/">GitHub notifications not working on Mac</a></li>
+<li><a href="/devnotify/github-token-scopes-guide/">Which scopes your GitHub token needs for notifications</a></li>
+<li><a href="/devnotify/vs/octobox/">DevNotify vs Octobox</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications on Android: 5 Working Options (2026) — DevNotify</title>
+<meta name="description" content="There is no official GitHub notifications app for Android. Five real options — the mobile web inbox, email rules, push via third-party apps, Tasker automations and a self-hosted bridge — compared honestly, with trade-offs.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-android/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notifications on Android: 5 working options">
+<meta property="og:description" content="Five real ways to get GitHub notifications on an Android phone, compared honestly — including the trade-offs nobody mentions.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-android/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {"@type":"Question","name":"Is there an official GitHub notification app for Android?","acceptedAnswer":{"@type":"Answer","text":"No. GitHub ships no first-party mobile app for notifications on Android or iOS. The github.com mobile web inbox is the closest official option; everything else is third-party."}},
+    {"@type":"Question","name":"Can I get push notifications for GitHub on Android?","acceptedAnswer":{"@type":"Answer","text":"Not natively. GitHub sends email and (on iOS) its own mobile push, but on Android you rely on third-party apps that poll the notifications API, or automation tools like Tasker or MacroDroid checking the API on a timer."}},
+    {"@type":"Question","name":"What is the lightest way to follow GitHub review requests on Android?","acceptedAnswer":{"@type":"Answer","text":"A filtered email rule into a dedicated label, plus a home-screen shortcut to github.com/notifications. No extra apps, no tokens stored on the phone, minutes-level latency instead of seconds."}}
+  ]
+}
+</script>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+pre{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-size:.85rem;line-height:1.5;color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.95rem}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;color:var(--muted)}
+th{background:var(--panel);color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/download/">Download</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub Notifications on Android: 5 Working Options (2026)</h1>
+<p class="meta">Updated August 2026 · 6 min read</p>
+
+<p>GitHub has no official mobile app for notifications — not on Android, not
+anywhere. If your review requests and issue mentions reach your phone today,
+it's because of email, a browser tab, or a third-party tool. Here are the five
+options that actually work in 2026, with the trade-offs stated plainly.</p>
+
+<h2>1. The github.com mobile inbox (official, but pull-only)</h2>
+<p>Open <code>github.com/notifications</code> in Chrome or Firefox and add it to
+your home screen. It's the same inbox as the desktop site, wrapped as a PWA-ish
+shortcut.</p>
+<p><strong>Honest downsides:</strong> nothing arrives until you open it. There is
+no badge, no sound, no lock-screen preview. This solves "where do I look", not
+"how do I find out". Good as a companion to one of the options below, weak on
+its own.</p>
+
+<h2>2. Email notifications + Gmail rules (the reliable baseline)</h2>
+<p>Under Settings → Notifications, choose which events email you. Then create a
+Gmail filter for <code>from:notifications@github.com</code>: apply a label like
+<code>GH</code>, skip the inbox for noise categories, and mark review requests as
+important.</p>
+<p>This is the only option that works everywhere with zero maintenance.
+<strong>Honest downsides:</strong> latency is minutes at best, GitHub's default
+email volume is punishing if you belong to busy orgs, and filtering well takes
+an hour of tuning. If your inbox is already overflowing, this makes it worse
+before it makes it better.</p>
+
+<h2>3. Third-party notifier apps (push-style polling)</h2>
+<p>Several Play Store apps poll the GitHub notifications API in the background
+and raise Android notifications. Quality varies a lot; check when each was last
+updated before installing anything, and remember you're handing a personal
+access token to an unknown developer.</p>
+<p><strong>Honest downsides:</strong> Android aggressively kills background
+polling (Doze mode, battery optimization), so "real-time" often becomes
+"whenever the OS feels like it". And token custody matters: prefer apps that are
+open source, or scope the token down to <code>notifications</code> only — see our
+<a href="/devnotify/github-token-scopes-guide/">token scopes guide</a>.</p>
+
+<h2>4. Tasker / MacroDroid automation (the tinkerer's route)</h2>
+<p>If you already use Tasker or MacroDroid, an HTTP Request action against
+<code>api.github.com/notifications</code> every 15–60 minutes, plus an
+Alert → Notify step, gives you real Android toasts with no new apps:</p>
+<pre># Tasker HTTP Request
+GET https://api.github.com/notifications
+Header: Authorization: token ghp_xxxx
+
+# Response: JSON array — count items, notify with %COUNT</pre>
+<p><strong>Honest downsides:</strong> the token sits in your automation profile,
+polling intervals under ~15 minutes drain battery and flirt with rate limits,
+and there's no tap-through list — you still end up opening the web inbox. It's
+the right answer for people who enjoy this kind of thing.</p>
+
+<h2>5. Self-hosted bridge (webhooks → Push, ntfy or Telegram)</h2>
+<p>The most robust setup: point repository webhooks (or a small serverless
+function polling the API) at <code>ntfy.sh</code>, PushBullet or a Telegram bot.
+Your phone just subscribes to a channel. Latency is seconds, delivery is true
+push, and the logic lives off-device where Doze can't touch it.</p>
+<p><strong>Honest downsides:</strong> you now operate infrastructure. Filtering
+which events matter, keeping the endpoint alive, and rotating tokens are all
+your problem. Excellent value per hour once set up; a weekend to set up.</p>
+
+<h2>Quick comparison</h2>
+<table>
+<tr><th>Option</th><th>Cost</th><th>Latency</th><th>Maintenance</th></tr>
+<tr><td>Mobile web inbox</td><td>Free</td><td>Only when you check</td><td>None</td></tr>
+<tr><td>Email rules</td><td>Free</td><td>Minutes–hours</td><td>Low</td></tr>
+<tr><td>Notifier apps</td><td>Free–$3</td><td>Unreliable (Doze)</td><td>Low</td></tr>
+<tr><td>Tasker/MacroDroid</td><td>~$3 one-off</td><td>15+ min practical</td><td>Medium</td></tr>
+<tr><td>Self-hosted bridge</td><td>Free–$2/mo</td><td>Seconds</td><td>Ongoing</td></tr>
+</table>
+
+<div class="cta">
+<h2>Sitting at a Mac all day? DevNotify covers that side.</h2>
+<p style="max-width:520px;margin:0 auto">Live unread count in the macOS menu
+bar, one click to any PR or issue, polls every minute, GitLab too. Your token
+never leaves your machine. Free to try, $19 lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify for macOS</a>
+<a class="btn btn-buy" href="/devnotify/#buy">Buy license — $19</a>
+</div>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-notifications-on-windows/">GitHub notifications on Windows: 5 options</a></li>
+<li><a href="/devnotify/guides/github-notifications-on-linux/">GitHub notifications on Linux: 4 options</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-working-iphone/">GitHub notifications not working on iPhone: fixes</a></li>
+<li><a href="/devnotify/guides/slack-github-notifications/">Route GitHub notifications to Slack instead</a></li>
+<li><a href="/devnotify/github-token-scopes-guide/">Which scopes does your GitHub token need?</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>
