@@ -3,7 +3,7 @@
 import os, re
 
 SITE = os.path.expanduser("~/hermes-ceo/site")
-DOMAIN = "https://auditedwp.pages.dev"
+DOMAIN = "https://eucomplypro.com"
 
 # Hreflang pairs (english_path, german_path)
 pairs = {

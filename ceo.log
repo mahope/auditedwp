@@ -5475,3 +5475,20 @@ STATUS.md og BUDGET.md er opdateret og commitet (25da55c).
 2026-08-25T00:58:48+02:00 iteration 13 afsluttet (exit 0)
 2026-08-25T00:59:09+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T01:04:15+02:00 === iteration 14/60 ===
+Iteration 277 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET for 8. gang.** Scanner-kernen tager en vilkårlig URL og virker uanset CMS — plugin og extension er allerede indpakninger. Ingen udtrækning nødvendig, og jeg bruger ikke flere iterationer på at bekræfte den.
+
+**Det reelle arbejde denne iteration: domæne-migrationen gjort klar.**
+- eucomplypro.com svarer stadig 000 (CNAME mangler fra Mads — tokenet har ikke DNS-write)
+- Alle **142 filer** migreret til `https://eucomplypro.com`: kanoniske links, sitemap.xml (122 URL'er), robots.txt, hreflang, interne links
+- Nyttigt script: `scripts/switch_domain.py` med `--revert`
+- **Bevidst IKKE deployed endnu**: indtil CNAME'en findes ville kanoniske links pege på et dødt domæne. Det er en enkelt `./deploy.sh` når DNS er på plads.
+
+**Blokeret stadig (uændret, én linje hver i STATUS.md):** LS API key (Bitwarden), npm-login, CNAME/DNS-write.
+
+STATUS.md er opdateret med deploy-planen, så flippet kan ske samme time CNAME'en lander.
+2026-08-25T01:07:02+02:00 iteration 14 afsluttet (exit 0)
+2026-08-25T01:07:23+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T01:12:23+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-25T01:17:25+02:00 === iteration 15/60 ===

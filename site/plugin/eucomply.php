@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name:       EUComply — EU Compliance Audit
- * Plugin URI:        https://auditedwp.pages.dev
+ * Plugin URI:        https://eucomplypro.com
  * Description:       Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, backups, forms, plugin health. Pro ($79/yr): auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.
  * Version:           1.2.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
- * Author URI:        https://auditedwp.pages.dev
- * Plugin URI:        https://auditedwp.pages.dev
+ * Author URI:        https://eucomplypro.com
+ * Plugin URI:        https://eucomplypro.com
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       eucomply
@@ -34,7 +34,7 @@ define( 'EUCOMPLY_VERSION', '1.2.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://eucomply.lemonsqueezy.com/buy/pro' );
 define( 'EUCOMPLY_LS_PRODUCT', 'pro' ); // Lemon Squeezy product slug — set when product is created
-define( 'EUCOMPLY_UPDATE_URI', 'https://auditedwp.pages.dev/update.json' );
+define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 
 /**

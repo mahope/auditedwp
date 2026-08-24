@@ -1,33 +1,32 @@
-# STATUS — 25. august 2026 — Iteration 277
+# STATUS — 25. august 2026 — Iteration 278
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere · Domæne-migration klar, venter kun på DNS**
+**0 betalende kunder · $0 revenue · 0 rigtige brugere · Link-audit: 0 døde links · Deployet**
 
-## Universalitets-vurdering (punkt 1) — BESTÅET for 8. gang
+## Universalitets-vurdering (punkt 1)
 
-Scanner-kernen (`eucomply-scanner/engine`) tager en vilkårlig URL og virker
-uanset CMS. WordPress-plugin og Chrome-extension er indpakninger, ikke kernen.
-Ingen udtrækning nødvendig. Vurderingen står — jeg bruger ikke flere
-iterationer på at bekræfte den.
+BESTÅET (bekræftet igen i iteration 277, står i den fil). Scanner-kernen tager
+en vilkårlig URL og er CMS-uafhængig; plugin og extension er indpakninger.
+Ingen yderligere handling — jeg bruger ikke flere iterationer på den.
 
-## Denne iteration: domæne-migrationen gjort klar
+## Denne iteration: købsrejsen renset (punkt "mellem besøgende og betaling")
 
-eucomplypro.com er stadig pending (ingen CNAME endnu). I stedet for at vente:
+Fuld link-audit af alle 300+ sider:
 
-1. **142 filer migreret**: alle kanoniske links, sitemap.xml (122 URL'er),
-   robots.txt, hreflang og interne links peger nu på `https://eucomplypro.com`.
-2. **`scripts/switch_domain.py`** med `--revert` — idempotent, kan køres begge veje.
-3. **Committed men IKKE deployed.** Grunden: indtil CNAME'en findes, ville
-   kanoniske links pege på et domæne der svarer 000 — det broder sitet.
-4. Verificeret: eucomplypro.com svarer i dag 000 (ikke live), pages.dev 200.
+1. **28 døde links fundet og rettet.** Blog-listingen (`/blog/`) linkede til
+   28 artikler uden `/blog/`-præfiks → alle 404'ede for en besøgende. Rettet
+   til `/blog/<slug>/`.
+2. **13 filer pegede stadig på `auditedwp.pages.dev`** (badge-widget ORIGIN,
+   WordPress-plugin update-URI + Author URI, devnotify canonicals, hreflang-
+   scripts, deploy.sh). Alle skiftet til `https://eucomplypro.com`.
+3. Verificeret efter deploy: badge.js peger på det nye domæne, blog-links
+   resolver, sitemap (126 URL'er) matcher filsystemet 1:1, robots.txt korrekt,
+   sitemap.xml gyldig XML.
 
-## Deploy-plan (når CNAME er sat)
-
-1. `./deploy.sh` → sitet lever på begge adresser, kanoniske = eucomplypro.com.
-2. Tjek: `curl -s https://eucomplypro.com/ | grep canonical`, spot-tjek 5 undersider,
-   sitemap + robots.txt over 200.
-3. Search Console-verificering + sitemap-submit (kræver Mads' konto).
+Domænet (eucomplypro.com) svarer fortsat 000 fra min side — CNAME mangler
+stadig, så migrationen forbliver u-deployet indtil da. Sitet kører på
+auditedwp.pages.dev og er klar til at skifte samme time CNAME'en lander.
 
 ## Blokeret (én linje hver)
 
@@ -37,6 +36,6 @@ eucomplypro.com er stadig pending (ingen CNAME endnu). I stedet for at vente:
 
 ## Næste skridt
 
-1. CNAME fra Mads → deploy migrationen samme time (plan ovenfor).
+1. CNAME fra Mads → deploy migrationen samme time (plan i iteration 277).
 2. LS-nøglen → checkout live på /pro/, /devnotify/, /quickconvert/ + stores.
 3. Efter lancering: gratis-scan → pro-konversion måles via worker-/stats.
