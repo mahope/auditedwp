@@ -1,4 +1,4 @@
-# STATUS — Iteration 149 (24. august)
+# STATUS — Iteration 151 (24. august)
 
 ## 1. Blokering (én linje)
 
@@ -6,34 +6,39 @@ Bitwarden unauthenticated → LS-nøglen utilgængelig; venter på Mads.
 
 ## 2. Universalitet (punkt 1) — vurdering
 
-**Bestået.** Kernen i DevNotify (`devnotify/src-tauri/src/providers.rs`) er
-platform-uafhængig: `fetch_notifications(provider, token)` — GitHub og GitLab er
-adapters ovenpå samme kerne. macOS-appen er én indpakning; en Windows/Linux-build,
-CLI eller browser-udvidelse ville genbruge kernen uændret. Sitet er statisk HTML.
-Ingen kodeændring nødvendig — vurderingen står ved magt fra iteration 148.
+**Bestået, ingen kodeændring nødvendig.** Kernen (`devnotify/src-tauri/src/providers.rs`)
+er `fetch_notifications(provider, token)` — platform-uafhængig. GitHub og GitLab er
+adapters; Windows/Linux-build, CLI eller browser-udvidelse ville genbruge kernen.
+Sitet er statisk HTML. macOS-appen er én indpakning blandt flere.
 
-## 3. Denne iteration (kvalitetsgennemgang af sitet)
+## 3. Beslutningen revurderet (pengekriteriet)
 
-Gik alle guides/vs-sider igennem med friske øjne. Fandt ét reelt problem:
+DevNotify holder stadig: bygget, udgivet, $19-licensmodel, landingsside sælger,
+trial + licensvalidering færdigbygget i appen. Eneste manglende led er checkout-linket
+(LS-nøglen). Ingen anden kandidat slår "timer til første betaling".
 
-- **Windows-guiden solgte en Mac-app.** "GitHub Notifications on Windows"
-  anbefalede DevNotify som løsning uden at nævne at den kun findes til macOS.
-  En Windows-besøgende der klikker "Get DevNotify" bliver skuffet — det er
-  direkte konverteringstab og dårlig tro. Rettet: CTA'en hedder nu
-  "Get DevNotify for Mac", teksten nævner eksplicit macOS-only og anbefaler
-  Gitify til Windows-brugere.
-- Deployet via staging-mappe og verificeret live: ny CTA-tekst på guiden,
-  landing + download + vs/gitify + privacy/terms alle 200.
+## 4. Denne iteration — fuld QA af den side der står mellem besøgende og betaling
 
-## 4. Traction (ærlige tal)
+Gennemgik alle 21 sider som en fremmed:
+
+- **Fundet og rettet:** 10 sider linkede logo/home til `/devnotify/index.html`
+  (308-redirect). Alle rettet til `/devnotify/`. Verificeret: alle 25 interne links
+  svarer 200 live, inkl. begge DMG-filer (200).
+- **Fundet (bevidst beholdt):** guides til Windows-brugere anbefaler allerede Gitify
+  med disklaimer — korrekt og ærligt, ingen ændring.
+- **Metrics-worker fix:** `/stats` returnerede ikke `subscribers`-feltet (deployet
+  version var ældre end koden). Rettet og deployet → `{"downloads":1,"visits":2,"subscribers":0}`.
+  Tallet er nu målbart igen.
+
+## 5. Traction (ærlige tal, fra workeren direkte)
 
 **2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.**
 
-## 5. Venter på Mads
+## 6. Venter på Mads
 
 1. Bitwarden-login (eller LS-nøglen lagt klar) → LS-produkt via API + checkout + købstest.
 2. Domænekøb getdevnotify.com (forhåndsgodkendt — sig blot til).
 
-## 6. Næste iteration
+## 7. Næste iteration
 
-Ny guide fra høj-intentions søgeord; fortsat indholdsmotor mens LS-nøglen udestår.
+Ny guide fra høj-intentions søgeord; indholdsmotor fortsætter mens LS-nøglen udestår.

@@ -30,13 +30,15 @@ export default {
     }
 
     if (request.method === "GET" && path === "/stats") {
-      const [dl, visits] = await Promise.all([
+      const [dl, visits, subs] = await Promise.all([
         env.METRICS.get("stats:downloads"),
         env.METRICS.get("stats:visits"),
+        env.METRICS.get("stats:subscribers"),
       ]);
       return json({
         downloads: parseInt(dl || "0", 10),
         visits: parseInt(visits || "0", 10),
+        subscribers: parseInt(subs || "0", 10),
       });
     }
 
