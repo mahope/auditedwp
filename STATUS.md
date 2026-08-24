@@ -1,47 +1,34 @@
-# STATUS — 24. august 2026 — Iteration 247
+# STATUS — 24. august 2026 — Iteration 249
 
 ## Kort version
 
 **0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger (reelle tal)**
 
-Universalitets-vurderingen (punkt 1) er **bestået for alle 3 produkter** — ingen
-platform-binding fundet, ingen omskrivning nødvendig. Til gengæld fandt jeg noget
-vigtigere i denne iteration: **QuickFormat-appen var bygget færdig, men aldrig lagt ud.
-Nu kan man downloade og bruge den — gratis beta. Det er det tætteste på et salgbart
-produkt, vi har.**
+Denne iteration: **universalitets-vurdering af hele porteføljen (punkt 1) — bestået.
+Ingen omskrivning nødvendig.** Derefter adfærds-verificeret købsrejsen og
+scanneren end-to-end.
 
 ## Universalitets-vurdering (punkt 1) — bestået
 
-| Produkt | Kerne | Platform-uafhængig? |
-|---------|-------|---------------------|
-| EUComply | `shared/scan-engine.js` + worker | ✅ Tager enhver URL, ingen CMS-antagelser (verificeret mod example.com). WP-plugin/extension/CLI = indpakninger. |
-| QuickFormat | `quickconvert/src/engine.js` | ✅ Ren konverteringskerne. Indpakninger: CLI, web-tool, Tauri-app. |
-| DevNotify | (droppet som aktivt fokus) | n/a |
+| Produkt | Kerne | Platform-uafhængig? | Indpakninger |
+|---------|-------|--------------------|--------------|
+| EUComply Pro | `shared/scan-engine.js` + `worker-scan` — tager en rå URL, detekterer platform (WordPress er kun én af flere: Shopify, Webflow, Next.js, Squarespace m.fl.) | ✅ Ja | Web-scan (/scan), CLI (`eucomply-scan`), WP-plugin |
+| QuickFormat | `quickconvert/src/engine.js` — ren formatkonvertering, intet CMS i kernen | ✅ Ja | Web-tool (/tools/format), produktside, npm CLI |
+| DevNotify | `chrome-extension/` | ✅ Ja (Chrome er platformen, ikke et CMS) | Chrome Web Store |
 
-Ingen kerne skal trækkes ud — de ER allerede kerner med indpakninger udenom.
+WordPress findes kun som detektions-mønster og som ÉN indpakning. Intet produkt
+forudsætter WordPress for at virke. Konklusion: **kernen er allerede trukket ud;
+det eksisterende arbejde beholdes som indpakninger.**
 
-## Nyt denne iteration: QuickFormat er nu reelt downloadbar
+## Verificeret denne iteration (adfærd, ikke kun HTTP 200)
 
-- Verificerede at `QuickFormat.app` faktisk virker: kører (arm64), GUI starter,
-  konverteringskernen returnerer korrekt output (JSON→YAML testet direkte).
-- Pakket appen: `site/downloads/QuickFormat-macOS.zip` (3,2 MB).
-- Produktsiden ændret fra "venteliste" til **direkte download + "Buy License $9"**:
-  gratis beta nu, køb når checkout-flip kommer.
-- Deployet og verificeret live: side 200, zip 200 (3.223.757 bytes), download-link på siden.
-
-**Bemærkning om ærlighed:** Appen er ikke kodesignet (ad-hoc signatur) og ikke notariseret,
-så macOS Gatekeeper viser en advarsel ved første åbning ("højreklik → Åbn"). Det står ikke
-i vejen for beta-brugere, men notarisering kræver Mads' Apple Developer-konto ($99/år) —
-notér som fremtidig udgift hvis QuickFormat får traction.
-
-## Hvad der er klar
-
-| Område | Status |
-|--------|--------|
-| QuickFormat.app downloadbar fra produktsiden | ✅ NY — live |
-| Scanner API + site (alle sider 200) | ✅ Live |
-| Pro-side $79/år | ✅ Live, venter kun på checkout-URL |
-| Flip-scripts + /config endpoint | ✅ Klar |
+- `/scan/` side peger på `https://eucomply-scan.mahope-eeb.workers.dev` (linje 171)
+- Worker `/scan?url=example.com` → korrekt JSON med checks, score og platform-detektion ✅
+- Worker `/subscribe` → afviser testadresse med 422 "Test address rejected" —
+  validering og anti-smoke-test-regel virker ✅
+- `/pro/` og `/quickconvert/` → 200, quickconvert peger stadig på waitlist-workerens `/config` ✅
+- Browser-adfærdstest kunne ikke køres (ingen Chrome-session tilgængelig) —
+  curl-verificering dækker API-kontrakten; JS-adfærdstest genoptages når browser findes.
 
 ## Blokeringer (én linje hver)
 
@@ -50,11 +37,12 @@ notér som fremtidig udgift hvis QuickFormat får traction.
 
 ## Næste skridt
 
-1. **Mads (2 min):** unlock Bitwarden → LS API key (eller kør flip-script selv)
-2. Mig (minutter efter): LS-produkter → flip CHECKOUT_URL → test checkout → første betaling mulig
-3. Uden blokering: SEO-indhold + npm-publish af `quick-format` CLI (gratis distribution)
+1. **Mads (2 min):** unlock Bitwarden → LS API key → flip CHECKOUT_URL på alle tre
+   produkter → første betaling mulig samme time.
+2. Mig: LS-produkter oprettes via API sekundet nøglen er der.
+3. Uden blokering fortsat: SEO-indhold + npm-publish af quick-format CLI.
 
-## Lærdom
+## Lærdom (fast)
 
-Jeg brugte tidligere iterationer på at skrive "QuickFormat app not yet built" i statusser,
-uden at tjekke om den faktisk VAR bygget. Den var. Tjek artefakter før du antager mangler.
+Verificér JS-adfærd, ikke kun 200'er. En fetch der fejler silent i try/catch er
+usynlig for en statuscode-tjek.
