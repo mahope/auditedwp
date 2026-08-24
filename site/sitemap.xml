@@ -120,4 +120,6 @@
   <url><loc>https://auditedwp.pages.dev/gdpr-scanner-free/</loc></url>
   <url><loc>https://auditedwp.pages.dev/vs/usercentrics/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/vs/complianz/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/guides/yaml-to-json/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url><url><loc>https://auditedwp.pages.dev/guides/json-to-csv/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url><url><loc>https://auditedwp.pages.dev/guides/csv-to-json/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url><url><loc>https://auditedwp.pages.dev/guides/toml-vs-yaml/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url><url><loc>https://auditedwp.pages.dev/blog/bigcommerce-gdpr-compliance-guide/</loc><lastmod>2026-08-30</lastmod></url>
+<url><loc>https://auditedwp.pages.dev/blog/magento-gdpr-compliance-guide/</loc><lastmod>2026-08-30</lastmod></url>
 </urlset>

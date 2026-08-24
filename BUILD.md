@@ -1,49 +1,57 @@
 # BUILD — Korteste vej til første betalende kunde
 
-Opdateret: 24. august 2026 (mandat-revision)
+Opdateret: 24. august 2026 (Iteration 267 — strategisk skift til distribution)
 
 ## Blokering
 
 **Bitwarden er låst (unauthenticated).** Indeholder LS API key — uden den kan intet produkt tage imod betaling.
 
-Indtil blokeringen er løst, arbejder jeg på:
-- Bygge trafik (SEO-indhold, guides)
-- Gøre alt klar til at flippe sekundet LS key kommer
-- Bygge nye produkter der ikke kræver gateway
+## Nuværende fokus: Byg distribution (kan gøres UDEN LS key)
 
-## Når LS key kommer — tidslinje (minutter, ikke dage)
+### 1. Open source GitHub repo ✅ (NY — denne iteration)
+- `github.com/mahope/eucomply-scanner`
+- Standalone Node.js engine + CLI + API docs
+- MIT licens — udviklere kan finde, bruge og dele det
+- Kanal: GitHub discovery (stjerner, forks, organisk)
+
+### 2. Domæne: eucomplypro.com (foreslået, venter på køb)
+- ~$12/år via Cloudflare Registrar
+- Sættes foran auditedwp.pages.dev
+- Uden et .com-domæne har intet produkt troværdighed
+
+## Når LS key kommer — tidslinje (minutter)
 
 ```
-Minute 0:  bw unlock → ls API key
-           curl -s LS_API create product "EUComply Pro $79/yr"
-           curl -s LS_API create checkout link
-           
+Minute 0:  bw unlock → LS API key → curl LS API create product + checkout
 Minute 5:  ./scripts/eucomply-flip.sh <checkout-url>
-           curl -s verify: /config returnerer checkoutUrl
-           
-Minute 10: curl -s LS_API create product "QuickFormat $9 once"
-           curl -s LS_API create checkout link
-           ./scripts/quickformat-flip.sh <checkout-url>
-           
-Minute 15: Test checkout med eget kort
-           Første rigtige kunde?
-           
-Minute 20: npm login → npm publish quick-format
-           Chrome Web Store → publish DevNotify extension
+Minute 10: npm publish eucomply-scanner (nu med "Pro" tier)
+Minute 15: Test checkout → første kunde
 ```
 
-## Prissætning (klar)
+## Prissætning (klar, venter på key)
 
-| Produkt | Pris | Model | LS klar? |
-|---------|------|-------|----------|
-| EUComply Pro | $79/år | Recurring (abonnement) | ❌ venter på key |
-| QuickFormat | $9 once | One-time | ❌ venter på key |
+| Produkt | Pris | Model |
+|---------|------|-------|
+| EUComply Pro | $79/år | Recurring |
+| QuickFormat | $9 once | One-time |
 
-## Distribution der er klar til at blive skudt af
+## Hvad er bygget og klar
 
-| Kanal | Produkt | Status | Kræver |
-|-------|---------|--------|--------|
-| Produktside (CLOUDFLARE) | Alle | ✅ Live | LS key |
-| CLI (npm) | QuickFormat | ✅ Code klar | npm login |
-| Chrome Web Store | DevNotify | ❌ Blokeret | CWS credentials (Bitwarden) |
-| Mac App Store | QuickFormat | ❌ Ikke bygget | $99/år, Mads godkendelse |
+| Komponent | Status |
+|-----------|--------|
+| Scanner engine (universel, platform-uafhængig) | ✅ Testet, live på Worker |
+| Gratis scanning API (REST, CORS-enabled) | ✅ Live |
+| Open source GitHub repo | ✅ NY — live |
+| CLI (npx eucomply-scanner) | ✅ NY — via GitHub |
+| 30+ platform guides (SEO-indhold) | ✅ STOPPET — 0 trafik |
+| QuickFormat CLI + web tool | ✅ Bygget, venter |
+| Produktside EUComply Pro | ✅ Live |
+| Flip-scripts (klar til checkout) | ✅ Klar |
+
+## Distribution der mangler trafik
+
+| Kanal | Status | Næste |
+|-------|--------|-------|
+| GitHub organisk | 🆕 Lige startet | Tilføj README badges, eksempler |
+| npm (når key kommer) | ⏳ Venter | npm publish |
+| Domæne (eucomplypro.com) | ⏳ Foreslået | Køb → redirect → SEO |

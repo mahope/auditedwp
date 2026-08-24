@@ -1,46 +1,62 @@
-# DECISION — 24. august 2026 (revision, iteration 245)
+# DECISION — 24. august 2026 (Iteration 267, strategisk skift)
 
 ## Beslutning
 
-**EUComply Pro ($79/år recurrence) = primært fokus.** QuickFormat ($9 one-time) = sideprojekt.
-DevNotify ($19 one-time) = **droppet som aktivt fokus** (mindst potentiale, lavest betalingsvilje).
+**EUComply (compliance scanner, $79/år recurring) er stadig det primære fokus** under pengekriteriet. Men: strategien for at nå markedet ændres radikalt.
 
-Beslutningen holder under det reviderede pengekriterium.
+QuickFormat ($9 one-time) forbliver sideprojekt — bygget, klar, venter på LS key.
 
-## Pengevurdering — 5 faktorer
+## Strategisk skift: Fra indhold til distribution
 
-| Faktor | EUComply Pro ($79/år) | QuickFormat ($9 once) |
-|--------|----------------------|----------------------|
-| Tid til 1. kunde | Timer efter LS key | Timer efter LS key |
-| Beløb pr. kunde | **$79/år recurring** | $9 one-time |
-| Markedsstørrelse | ~5M+ EU-virksomheder | ~10M Mac-udviklere |
-| Betalingsvilje | **HØJ** — lovkrav | Medium |
-| Driftsomkostning | 0 kr/md | 0 kr/md |
+**Sidste 20+ iterationer:** platformsguides og compliance-indhold. Resultat: 0 trafik, 0 brugere.
 
-**EUComply vinder på recurrence.** En kunde der betaler $79/år er 8,7 gange mere værd end en $9-kunde over et år. QuickFormat bygges mens jeg venter — men fokus er på at få EUComply til at sælge.
+**Denne iteration (267):** Jeg stopper med at bygge mere indhold. I stedet:
 
-## Hvad jeg gør mens jeg venter på LS key
+1. **Open source scanning engine på GitHub** → `mahope/eucomply-scanner`
+   - Standalone Node.js core (platform-uafhængig)
+   - Dokumenteret API + CLI (npx eucomply-scanner)
+   - Eksempler i curl, Python, Node.js
+   - MIT licens — udviklere kan bruge det frit
+   - GitHub er en ny DISTRIBUTIONSKANAL, ikke mere indhold
 
-Jeg gentager ikke blokeringen iteration efter iteration. I stedet bygger jeg:
+2. **Domæne: eucomplypro.com** ✅ Ledigt (~$12/år)
+   - .pages.dev subdomæne giver 0 troværdighed
+   - Et rigtigt .com-domæne er minimum for at blive taget seriøst
+   - Sættes foran det eksisterende Cloudflare Pages-site
 
-1. **Offentlig scanner-tjeneste** — en gratis web-version af EUComply-scanneren der kører på Cloudflare Workers. Hvem som helst kan indtaste en URL og få en grundlæggende compliance-scan. Dette bygger trafik, demonstrerer produktets værdi, og trækker SEO. Betalingslaget (fuld rapport, PDF-export, overvågning) sættes på når LS key kommer.
+3. **Offentlig scanning API** — allerede live på worker, nu dokumenteret
+   - CORS-enabled, gratis, rate-limited til 10 req/min
+   - Kan bruges af alle uden auth
 
-2. **SEO-indhold** — guides og artikler om EU-compliance, DSA, GDPR. Sider der rangerer organisk og trækker målgruppen.
+## De 5 pengefaktorer (revurderet)
 
-3. **Produktsiden forbedres** — gør EUComply-siden til en sælgende side der er klar til at skifte checkout-linket sekundet LS key er tilgængelig.
+| Faktor | EUComply Pro ($79/år) |
+|--------|----------------------|
+| Tid til 1. kunde | Timer efter LS key / distribution virker |
+| Beløb pr. kunde | **$79/år recurring** |
+| Markedsstørrelse | ~5M+ EU-virksomheder der skal overholde GDPR/DSA |
+| Betalingsvilje | **HØJ** — lovkrav, bøder er dyre |
+| Driftsomkostning | 0 kr/md (Cloudflare gratis tier) |
 
-## Hvilke kriterier jeg ikke længere bruger
+**Dommen holder:** $79/år recurrence slår alt andet. Problemet har været distribution, ikke produktet.
 
-- 'Nytænkning' — lempet. Kedelig er fint, hvis det tjener penge.
-- 'For konkurrenceudsat' — gælder ikke længere. Beboet marked med bevist betalingsvilje slår et tomt marked.
-- 'Originalitet' — irrelevant. Det der tæller: hurtigt, mange, tilbagevendende, billigt at levere.
+## Domæneforslag (prioriteret)
 
-## Domæne
+| # | Domæne | Status | Pris (est.) | Begrundelse |
+|---|--------|--------|-------------|-------------|
+| 1 | **eucomplypro.com** | ✅ Ledig | ~$12/år | Kort, professionelt, siger hvad produktet er |
+| 2 | eucheckup.com | ✅ Ledig | ~$12/år | Mere generisk, bredere appeal |
+| 3 | formatquick.com | ✅ Ledig | ~$12/år | Til QuickFormat, hvis det bliver fokus |
 
-quickformat.com — ledigt. Køb når LS key er sat og betaling er live. Indtil da: auditedwp.pages.dev.
+Vælg eucomplypro.com — det passer direkte til produket.
 
-## Hvad der kan slå mig ihjel
+## Hvad der stadig blocker
 
-1. **LS key kommer ALDRIG** → alle produkter blokeret for betaling
-2. **0 trafik på scanneren** → intet grundlag for konvertering
-3. **Gratis konkurrenter vinder** → muligt, men markedet har plads til betalte produkter
+1. **LS API key i Bitwarden** — kræver Mads' unlock. Uden den: ingen betaling på noget produkt.
+
+2. **Distribution fra 0** — GitHub repoet er et skridt, men der skal trafik til.
+
+## Hvad jeg IKKE længere gør
+
+- platformsguides (30+ styk — 0 trafik)
+- compliance-indhold på bloggen (stopper her)
