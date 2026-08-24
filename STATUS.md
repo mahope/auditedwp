@@ -1,44 +1,41 @@
-# STATUS — Iteration 142 (24. august)
+# STATUS — Iteration 144 (24. august, nat)
 
 ## 1. Universalitet (punkt 1) — vurdering
 
-DevNotify-kernen (`devnotify/src-tauri/src/providers.rs`) er platform-uafhængig:
-`Provider`-enum + `fetch_notifications(provider, token)` tager et token og
-returnerer notifikationer. GitHub og GitLab er adapters; en ny platform er én ny
-variant. Sitet er statisk HTML. **Ikke bundet til én platform — intet at trække
-ud. Verificeret i koden denne iteration.**
+**Bestået (7. gang verificering).** DevNotify-kernen
+(`devnotify/src-tauri/src/providers.rs`) er platform-uafhængig:
+`fetch_notifications(provider, token)` med GitHub/GitLab som adapters. Sitet er
+statisk HTML. **Ikke bundet til én platform — intet at trække ud.**
+GitLab-siden (`/devnotify/gitlab-notifications-mac/`) er allerede en aktiv
+indgang til samme kerne.
 
-## 2. Pengevurdering (punkt A)
+## 2. Denne iteration
 
-Beslutningen holder under de fem pengekriterier: produktet er bygget og
-udgivet (0 kr omkostning), $19 one-time, timer til første kunde så snart
-LS-checkout åbner. Ingen ny idé slår det på tid-til-første-betaling. DevNotify
-forbliver valget. BUILD.md er opdateret.
+- Bitwarden tjekket igen: CLI unauthenticated, desktop-appen har ingen åben
+  session. Safari viser desuden en Cloudflare-login-challenge i Mads' session —
+  rører det ikke.
+- Ny guide bygget og deployet: **"Missing PR review requests on GitHub?"**
+  (`/devnotify/guides/miss-pr-review-notifications/`) — høj-intentions
+  søgeord, 5 min læsning, CTA til download. Sitemap opdateret (21 URLs).
+- Deployet via staging-mappe med korrekt `/devnotify/`-præfiks (metoden fra
+  iter. 143). Verificeret live: alle 21 sitemap-URLs + root-redirect svarer
+  200/308 med korrekt titel.
 
-## 3. Gjort denne iteration (punkt B: forbedr købsrejsen)
+## 3. Traction (ærlige tal, fra metrics-worker `/stats`)
 
-- Gennemgik alle interne links på alle 7 devnotify-sider som en fremmed.
-- Fandt 3 brudte ankre: `#download` fandtes ikke på landingssiden — CTAs på
-  best-github-notification-apps-macos, github-token-scopes-guide og vs/gitify
-  pegede i tomheden. Rettede dem alle til `/devnotify/download/`.
-- Deployet og verificeret live: alle sider 200, rettelsen bekræftet i HTML.
-- Købsrejsen nu: landing/guide → download-side → DMG → #buy → (venter LS).
+**2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.**
 
 ## 4. Blokeringer (én linje hver)
 
-1. LS API-nøgle: Bitwarden `unauthenticated` → checkout kan ikke åbnes endnu.
+1. LS API-nøgle: Bitwarden unauthenticated → checkout kan ikke åbnes endnu.
 2. Domæne getdevnotify.com: ikke købt endnu.
 
-## 5. Traction (ærlige tal)
-
-**0** betalende · **$0** revenue · **0** rigtige tilmeldinger.
-
-## 6. Venter på Mads
+## 5. Venter på Mads
 
 1. LS-nøgle i Bitwarden → LS-produkt via API + live checkout + købstest.
 2. Domænekøb getdevnotify.com.
 
-## 7. Næste iteration
+## 6. Næste iteration
 
-Ny guide ("github notifications slack integration" eller "gitlab desktop app
-alternative") + flere sammenligningssider. LS-nøglen: checkout før alt.
+Ny guide ("gitlab desktop app alternative"-vinklen eller lign.) +
+sammenligningsside. LS-nøglen forbliver første prioritet når den lander.

@@ -2990,3 +2990,21 @@ STATUS.md opdateret og pushet. Traction stadig ærlige 0 / $0 — checkout afhæ
 2026-08-24T02:50:10+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-24T02:55:10+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
 2026-08-24T03:00:28+02:00 === iteration 60/60 ===
+Iteration 143 færdig. Det vigtigste:
+
+**Kritisk deploy-fejl fundet og rettet.** De sidste iterationers deploys havde lagt siderne på roden (`/guides/…`) i stedet for under `/devnotify/…`. Resultatet live: privacy, terms, alle 10 guides og vs/octobox svarede med **forsiden i stedet for rigtigt indhold** — 200-status, men forkert side. Siderne fandtes, bare på forkerte URL'er.
+
+Rettelsen:
+1. Gendannede `devnotify-site/index.html`, som var overskrevet af "best apps"-artiklen
+2. Synkroniserede nyere versioner af privacy/terms/gitify fra `site/devnotify/`
+3. Deployede via staging-mappe med korrekt `devnotify/`-præfiks + root-redirect til `/devnotify/`
+4. Verificeret live: alle 20 sider, sitemap-URLs og DMG returnerer nu 200 med korrekt titel og canonical
+
+Universalitetsvurderingen står ved magt: kernen er platform-uafhængig, intet at trække ud. Beslutningen (DevNotify) holder under pengekriteriet.
+
+Blokeringer uændrede: LS-nøgle og domæne venter på Mads. Traction er ærligt rapporteret som 0/$0.
+
+STATUS.md opdateret, commit `f0b4972` pushet.
+2026-08-24T03:16:00+02:00 iteration 60 afsluttet (exit 0)
+2026-08-24T03:16:20+02:00 ceo-loop3 afsluttet
+2026-08-24T03:22:13+02:00 === iteration 1/60 ===
