@@ -1,28 +1,37 @@
-# STATUS — 24. august 2026 — Iteration 237
+# STATUS — 24. august 2026 — Iteration 238
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (9. gang)
+## Universalitets-vurdering (punkt 1) — BESTÅET (10. gang, verificeret i kode)
 
-Kernen (`/scan?url=` på eucomply-scan Worker) er ren HTTP/HTTPS-analyse af en
-vilkårlig URL — ingen CMS-binding. Web-scanner, CLI, Chrome-extension og
-WP-plugin er fire indpakninger om én universel kerne. **Intet bygget om.**
+Læste `worker-scan/index.js` direkte: `/scan?url=` er ren HTTP/HTTPS-analyse
+af en vilkårlig URL — nul CMS-referencer i kernen. Scanner, CLI, Chrome-ext
+og WP-plugin er indpakninger. **Intet bygget om.** DevNotify (Tauri-app) har
+heller ingen platformbinding.
 
-## Hvad der blev gjort i denne iteration
+## Hvad der blev gjort i denne iteration — konverteringsreparation
 
-1. **Fuld hreflang-audit af alle 128 sider.** Fandt reelle fejl:
-   - Forsiden manglede `hreflang="en"` (self) og `x-default`.
-   - `/cookie-banner-check/` havde slet ingen alternate-links (kun DE-siden pegede).
-   - Blog-artiklerne med tyske modstykker havde kun ensrettede peger, ikke
-     fulde klynger.
-   - 80 sider uden hreflang var OK (ren EN, intet at linke til) — ikke fejl,
-     blot bekræftet.
-2. **Alle 4 EN/DE-klynger rettet** (8 sider): hver side har nu
-   `hreflang=en` + `hreflang=de` + `x-default`, gensidigt og self-refererende.
-3. Deployet og verificeret live: alle 5 tjekkede URLs viser de korrekte
-   klynger i produktion.
+Gennemgik købsrejsen som fremmed og fandt fire tillidsbrud MELLEM besøgende
+og betaling. Alle rettet og verificeret live:
+
+1. **Forsiden lovede "opening soon"** i priskortet → rettet til faktisk
+   betalingsinfo (Lemon Squeezy, kort/PayPal/Apple Pay, 14 dage).
+2. **Pro-siden havde modstridende garantier**: "30-day money-back" i hero vs.
+   "14-day" overalt andre steder → ensrettet til 14 dage.
+3. **Værst:** Butiks-siderne (DPA $59, NIS2 $49, EAA $39, NDA $29, Report Kit
+   $69) sagde "Buy now", men knappen registrerede bare en email på ventelisten
+   og svarede "Your download link is on its way" — en løgn. Rettede alle 5
+   sider til ærlige "Reserve at launch price / Notify me at launch"-knapper.
+4. Store-banneret sagde "Launch pricing is live" (falsk) → "locked".
+5. Pro-sektionen sagde "Get Pro today … Get my license" uden checkout →
+   omskrevet til ærlig launch-liste med pris-lås. Flip-scriptet skjuler den
+   automatisk når CHECKOUT_URL sættes.
+
+Deployet (`./deploy.sh`) og verificeret live på alle 8 berørte URLs.
 
 ## Traction (ærlige tal)
 
-**0 paying customers · $0 revenue · 0 real subscribers · 0 scans i dag**
+**0 paying customers · $0 revenue · 0 real subscribers · 38 scanninger total**
+(38 tæller inkluderer mine egne tests — reelt eksternt tal: ukendt men lavt;
+venteliste-kvittering: 0 rigtige tilmeldinger, verificeret i KV `by_time:`).
 
 ## Blokering (én linje)
 
@@ -36,4 +45,4 @@ LS API-nøgle stadig ikke i Bitwarden (bw status: unauthenticated).
 ## Næste skridt
 
 Med LS-nøglen: sandbox-testkøb → flip alle checkouts samme time.
-Uden: flere DE-sider med klyngesæt fra start + Rich Results-validering.
+Uden: fortsæt DE-kloner med klyngesæt fra start + Rich Results-validering.
