@@ -63,7 +63,7 @@ ul{padding-left:1.2rem}li{margin:.25rem 0}
 
 <div class="disc"><strong>Note:</strong> These are professional templates with guidance comments — not legal advice. For high-risk contracts, have counsel review the filled-in result (minutes, not hours).</div>
 
-<div class="waitlist-banner">🔔 <strong>Launch pricing locked: $29–$149 per document.</strong> Each product page shows a free sample. Checkout opens on Lemon Squeezy (cards, PayPal, Apple Pay) within days — reserve your launch price now, or <a href="/scan/" style="color:var(--acc);font-weight:bold;text-decoration:underline">run the free compliance scan</a> first.</div>
+<div class="waitlist-banner">🔔 <strong>Launch pricing locked: $29–$149 per document.</strong> Each product page shows a free sample. Checkout is being finalized on Lemon Squeezy (cards, PayPal, Apple Pay) — reserve your launch price now, or <a href="/scan/" style="color:var(--acc);font-weight:bold;text-decoration:underline">run the free compliance scan</a> first.</div>
 
 <section id="docs">
 <h2>The documents</h2>
@@ -177,6 +177,40 @@ document.querySelectorAll('.wform').forEach(function(form) {
     }
   });
 });
+</script>
+
+<!-- DYNAMIC-CHECKOUT -->
+<script>
+(async function(){
+  try{
+    var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/config');
+    if(!r.ok) return;
+    var cfg = await r.json();
+    if(!(cfg && cfg.checkout_url)) return;
+    var url = cfg.checkout_url;
+    // 1. Erstat venteliste-formular med koeb-link
+    document.querySelectorAll('#buyform, #bundleform').forEach(function(f){
+      var price = f.textContent.match(/\$(\d+)/);
+      var label = 'Buy now' + (price ? ' — $' + price[1] : '') + ' · instant download';
+      var a = document.createElement('a');
+      a.className = f.className.replace('wform','btn') || 'btn';
+      if(!a.classList.contains('btn')) a.classList.add('btn');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      a.style.cssText = 'display:inline-block;padding:8px 14px;background:var(--acc,#2868d0);color:#fff;border-radius:4px;text-decoration:none;font-weight:600';
+      a.textContent = label;
+      f.parentNode.replaceChild(a, f);
+    });
+    // 2. Konvertér "Get notified"-knappper til koeb-links
+    document.querySelectorAll('button[onclick*="buyform"]').forEach(function(b){
+      var a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.className = b.className;
+      a.textContent = b.textContent.replace(/Get notified/i, 'Buy now');
+      b.parentNode.replaceChild(a, b);
+    });
+    // 3. Skjul "notify me"-tekster
+    document.querySelectorAll('.wmsg').forEach(function(m){ m.textContent = ''; });
+  }catch(e){ /* worker ikke tilgaengelig — behold venteliste */ }
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickFormat for Mac — Universal Format Converter in Your Menu Bar | $9</title>
+<meta name="description" content="QuickFormat is a Mac menu bar app for instant format conversion. Convert JSON, YAML, CSV, TOML, and XML in one click. Works offline. Privacy-first. $9 one-time.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>">
+<meta property="og:title" content="QuickFormat for Mac — $9">
+<meta property="og:description" content="Instantly convert JSON, YAML, CSV, TOML and XML from your menu bar. One click. Works offline. Your data never leaves your Mac.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:800px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+.hero{text-align:center;padding:56px 0 32px}
+h1{font-size:40px;line-height:1.15;letter-spacing:-.03em;max-width:600px;margin:0 auto 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:600px;margin:0 auto 24px}
+.price{font-size:48px;font-weight:800;margin:20px 0 8px;letter-spacing:-.03em}
+.price small{font-size:16px;font-weight:400;color:var(--muted)}
+.price-note{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 32px;border-radius:8px;font-size:16px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+.btn.secondary{background:var(--bg);color:var(--ink);border:2px solid var(--line)}
+.btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.badge-row{display:flex;justify-content:center;gap:24px;margin:20px 0;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.badge-row span{display:flex;align-items:center;gap:6px}
+section{padding:48px 0;border-top:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+.lede{color:var(--muted);max-width:580px;margin:0 auto 32px;text-align:center;font-size:15px}
+
+/* Features grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:28px auto;max-width:720px}
+.card{background:var(--soft);padding:24px;border-radius:8px;text-align:center}
+.card .icon{font-size:36px;display:block;margin-bottom:10px}
+.card h3{font-size:15px;margin-bottom:4px}
+.card p{font-size:13px;color:var(--muted)}
+
+/* Comparison */
+.compare{width:100%;border-collapse:collapse;font-size:14px;margin:24px auto;max-width:640px}
+.compare th,.compare td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+.compare th{background:var(--soft);font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
+.compare .check{color:var(--ok);font-weight:700}
+.compare .cross{color:#ccc}
+.compare .highlight td{background:#f4f8ff;font-weight:600}
+
+/* FAQ */
+.faq-item{padding:20px 0;border-bottom:1px solid var(--line)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-weight:600;font-size:15px;margin-bottom:4px;color:var(--ink)}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.7}
+
+footer{text-align:center;padding:24px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+footer a{color:var(--accent);text-decoration:none}
+
+.cta-section{text-align:center;padding:48px 0}
+.cta-section .btn{margin-top:16px}
+
+/* System requirements */
+.reqs{display:flex;justify-content:center;gap:32px;margin:16px 0;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.reqs span{display:flex;align-items:center;gap:6px}
+
+.hero-icon{font-size:64px;margin-bottom:8px;display:block}
+
+/* Menu bar mockup */
+.menu-bar-demo{background:#2a2a2a;border-radius:10px;padding:8px 14px;margin:20px auto;max-width:420px;text-align:left;display:flex;align-items:center;gap:8px;font-size:12px;color:#ddd;box-shadow:0 4px 24px rgba(0,0,0,0.15)}
+.menu-bar-demo .dot-group{display:flex;gap:5px}
+.menu-bar-demo .dot{width:10px;height:10px;border-radius:50%}
+.menu-bar-demo .dot.r{background:#ff5f57}
+.menu-bar-demo .dot.y{background:#ffbd2e}
+.menu-bar-demo .dot.g{background:#28c840}
+.menu-bar-demo .spacer{flex:1}
+.menu-bar-demo .time{color:#999;font-size:11px}
+.menu-bar-demo .icon-box{background:#fff;color:#222;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700}
+
+/* How it works */
+.steps{max-width:640px;margin:28px auto}
+.step{display:flex;gap:16px;margin-bottom:24px;align-items:flex-start}
+.step-num{background:var(--accent);color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.step h3{font-size:15px;margin-bottom:2px}
+.step p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* Waitlist form tweaks */
+#waitlist-form{display:none;margin-top:20px;background:var(--soft);padding:20px;border-radius:8px;max-width:400px;margin-left:auto;margin-right:auto}
+#waitlist-form p{font-size:14px;margin-bottom:12px}
+#waitlist-form input{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;font-size:14px;margin-bottom:8px;box-sizing:border-box}
+#waitlist-form button{width:100%}
+
+@media(max-width:600px){
+  h1{font-size:30px}
+  .price{font-size:38px}
+  .menu-bar-demo{font-size:10px;padding:6px 10px;flex-wrap:wrap}
+}
+
+@media(max-width:600px){
+  h1{font-size:30px}
+  .price{font-size:38px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/" class="logo">Quick<span>Format</span></a>
+    <nav>
+      <a href="/tools/format/">Free Web Tool</a>
+      <a href="/guides/json-vs-yaml/">Guides</a>
+      <a href="/">EUComply</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="hero-icon">🔄</span>
+    <h1>Format conversion,<br>right in your <em>menu bar</em></h1>
+    <p class="sub">Convert JSON, YAML, CSV, TOML and XML instantly. One click from anywhere on your Mac. No browser tabs, no window switching, no uploads.</p>
+
+    <!-- Menu bar mockup -->
+    <div class="menu-bar-demo">
+      <div class="dot-group">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+      </div>
+      <span style="font-weight:600">QuickFormat</span>
+      <span class="spacer"></span>
+      <span>File</span>
+      <span>Edit</span>
+      <span>View</span>
+      <span class="icon-box">🔄 QF</span>
+      <span class="time">10:28</span>
+    </div>
+
+    <div class="price">$9 <small>one-time</small></div>
+    <p class="price-note">macOS 14+ · Apple Silicon & Intel · Works entirely offline</p>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="/downloads/QuickFormat-macOS.zip" download class="btn">↓ Download QuickFormat — Free Trial</a>
+      <a href="/tools/format/" class="btn secondary">Try Free Web Tool</a>
+    </div>
+    <p class="price-note" style="margin-top:10px">Free while in beta. Buy a license below when you're convinced — $9 one-time, yours forever.</p>
+
+    <div style="margin-top:14px">
+      <a href="#" class="btn secondary" id="buy-btn" style="padding:10px 24px;font-size:14px">Buy License — $9</a>
+    </div>
+
+    <div class="badge-row">
+      <span>⚡ Works offline</span>
+      <span>🔒 Privacy-first</span>
+      <span>📋 Auto-copy</span>
+      <span>⌨️ Global shortcut</span>
+    </div>
+
+    <div id="waitlist-form">
+      <p>QuickFormat is built and ready. Payment is being finalized on Lemon Squeezy — leave your email and we'll send you the download link the moment checkout is live.</p>
+      <form action="https://auditedwp.pages.dev/worker-waitlist" method="POST">
+        <input type="email" name="email" placeholder="you@example.com" required>
+        <button type="submit" class="btn" style="padding:10px 16px;font-size:13px">Notify Me</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>How It Works</h2>
+    <p class="lede">Three seconds from data to converted data. No clicking through menus.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Copy or select your data</h3>
+          <p>JSON from an API response, YAML from a config file, CSV from a spreadsheet. Any source, any app.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Press the shortcut or click the icon</h3>
+          <p>QuickFormat auto-detects the format and shows a live preview. Pick the output format — or let it guess the right one.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>Paste the result</h3>
+          <p>Converted output is automatically copied to your clipboard. Paste it where you need it. Done.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why QuickFormat?</h2>
+    <p class="lede">Free online converters exist. But none live in your menu bar, work offline, and keep your data private.</p>
+    <div class="grid">
+      <div class="card">
+        <span class="icon">⚡</span>
+        <h3>One Click Conversion</h3>
+        <p>See a JSON response in your terminal? Copy it, click QuickFormat, paste the YAML. Two seconds.</p>
+      </div>
+      <div class="card">
+        <span class="icon">🔌</span>
+        <h3>Fully Offline</h3>
+        <p>No network requests. No servers. No data leaves your Mac. Convert API keys and secrets without risk.</p>
+      </div>
+      <div class="card">
+        <span class="icon">⌨️</span>
+        <h3>Global Shortcut</h3>
+        <p>Select text anywhere, press <kbd>⌥⌘F</kbd>, and conversion happens in place. No pasting needed.</p>
+      </div>
+      <div class="card">
+        <span class="icon">📋</span>
+        <h3>Auto-Copy Output</h3>
+        <p>Result is automatically copied to your clipboard. Paste immediately where you need it.</p>
+      </div>
+      <div class="card">
+        <span class="icon">📐</span>
+        <h3>Smart Detection</h3>
+        <p>Paste anything — QuickFormat auto-detects the format and suggests conversions based on content.</p>
+      </div>
+      <div class="card">
+        <span class="icon">🎨</span>
+        <h3>Pretty-Print & Minify</h3>
+        <p>Toggle between readable and compact. Validate as you type. Syntax errors highlighted in real-time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Free Web vs Desktop</h2>
+    <p class="lede">The web tool is free for occasional use. The desktop app is for daily power users.</p>
+    <table class="compare">
+      <tr>
+        <th style="width:40%">Feature</th>
+        <th style="width:30%" class="highlight">QuickFormat Desktop</th>
+        <th style="width:30%">Free Web Tool</th>
+      </tr>
+      <tr class="highlight">
+        <td>Price</td>
+        <td><strong>$9 one-time</strong></td>
+        <td>Free</td>
+      </tr>
+      <tr class="highlight">
+        <td>Works offline</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr class="highlight">
+        <td>Menu bar access</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr>
+        <td>All 5 formats</td>
+        <td class="check">✅</td>
+        <td class="check">✅</td>
+      </tr>
+      <tr>
+        <td>Global keyboard shortcut</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr>
+        <td>Auto-copy to clipboard</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr>
+        <td>Batch file conversion</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr>
+        <td>Privacy (data stays local)</td>
+        <td class="check">✅</td>
+        <td class="check">✅</td>
+      </tr>
+      <tr>
+        <td>CLI version included</td>
+        <td class="check">✅</td>
+        <td class="cross">❌</td>
+      </tr>
+      <tr>
+        <td>Free updates</td>
+        <td class="check">✅</td>
+        <td class="check">✅</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q">What formats does QuickFormat support?</div>
+      <div class="faq-a">JSON, YAML, CSV, TOML, and XML. Convert between any combination, or format/validate within a single format.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does QuickFormat send my data anywhere?</div>
+      <div class="faq-a">No. All conversion happens on your Mac. The app makes zero network requests. Your JSON, API keys, and data never leave your computer.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Which macOS versions are supported?</div>
+      <div class="faq-a">macOS 14 (Sonoma) and later. Both Apple Silicon and Intel Macs are supported. The app is native and lightweight (~8MB).</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does the CLI version come with the desktop app?</div>
+      <div class="faq-a">Yes. When you buy QuickFormat, you also get the CLI tool (`qf`). Run it from your terminal for scripting and automation. The CLI is also available separately as an npm package.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if I don't like it?</div>
+      <div class="faq-a">Full refund within 30 days. Email the address in your purchase receipt — no questions asked.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is there a subscription?</div>
+      <div class="faq-a">No. $9 one-time. Free updates for the current major version. No recurring charges, no account needed.</div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="wrap">
+    <span style="font-size:48px;display:block;margin-bottom:8px">🔄</span>
+    <h2 style="margin-bottom:8px">Ready to convert faster?</h2>
+    <p style="color:var(--muted);margin-bottom:16px">Stop opening browser tabs. Convert from your menu bar.</p>
+    <a href="/downloads/QuickFormat-macOS.zip" download class="btn">↓ Download QuickFormat</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+    <p style="margin-top:4px">© 2026 QuickFormat — a tool by EUComply</p>
+  </div>
+</footer>
+
+<script>
+// Dynamic checkout: reads /config from worker to determine if checkout is live
+(async function(){
+  const btns = [document.getElementById('buy-btn')].filter(Boolean);
+  const wl = document.getElementById('waitlist-form');
+  try{
+    const r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/config');
+    if(r.ok){
+      const cfg = await r.json();
+      if(cfg && cfg.checkout_url){
+        btns.forEach(b => { b.href = cfg.checkout_url; b.target = '_blank'; });
+        return; // checkout live, buy button works
+      }
+    }
+  }catch(e){ /* worker not deployed, fall through */ }
+  // Fallback: show waitlist
+  btns.forEach(b => { b.onclick = function(e){ e.preventDefault(); wl.style.display='block'; }; });
+})();
+</script>
+
+</body>
+</html>
