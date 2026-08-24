@@ -61,6 +61,17 @@ export default {
       return json({ counted: true });
     }
 
+    if (request.method === "GET" && path === "/config") {
+      // Public runtime config. Set CHECKOUT_URL secret via:
+      //   wrangler secret put CHECKOUT_URL --name devnotify-metrics
+      // The buy section detects a non-empty checkoutUrl at runtime and
+      // switches from waitlist to live Lemon Squeezy checkout — no deploy needed.
+      return json({
+        service: "devnotify-metrics",
+        checkoutUrl: env?.CHECKOUT_URL || "",
+      });
+    }
+
     if (request.method === "POST" && path === "/subscribe") {
       // Notify-me list for launch. Rejects test/example addresses so we
       // never count our own smoke tests as real signups (AGENTS.md rule).
