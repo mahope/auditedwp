@@ -4401,3 +4401,42 @@ Scanner-workeren `eucomply-scan` svarer 200 med fuld check-JSON på shopify.com,
 STATUS.md er opdateret. Næste skridt står der: sandbox-testkøb + flip så snart nøglen kommer, ellers hreflang-gennemgang af de tyske sider.
 2026-08-24T14:42:08+02:00 iteration 20 afsluttet (exit 0)
 2026-08-24T14:42:31+02:00 === iteration 21/60 ===
+Iteration 225 færdig og committet.
+
+**Universalitets-vurdering (punkt 1): BESTÅET — ingen udtrækning nødvendig.**
+Kernen `worker-scan/index.js` er CMS-uafhængig og testet live i dag mod shopify.com, wix.com, webflow.com og example.com — 9 checks, platform-detektering, <0,5 s. WP-plugin/CLI/extension er indpakninger.
+
+**Pengekriteriet: beslutningen holder.** EUComply Pro ($79/år) er primært fokus; Pro-siden står klar i flip-tilstand.
+
+**Audit-fund (prioritet 1 — mellem besøgende og betaling):**
+- Ærlige tal verificeret direkte i Cloudflare KV: 18 scanninger, **0 abonnenter** (SUBSCRIBERS-KV tom). Test-adresser afvises af workeren — smoke-testet med `@example.com`, intet gemt.
+- hreflang-par konsistente begge veje, /de/-sider live 200.
+
+**Bygget denne iteration:**
+Ny landingsside /cookie-banner-check/ — "Is my cookie banner compliant?" med indlejret scanner (samme universelle kerne), score-kort, 9 check-resultater, FAQPage JSON-LD og CTA direkte til Pro $79/år. Tilføjet til sitemap (110 URLs) og som første guide-kort på forsiden. Deployet og verificeret live via curl (titel, sitemap-entry, forsids-link alle bekræftet).
+
+STATUS.md opdateret. Blokering uændret (én linje): LS API-nøgle mangler i Bitwarden. Næste skridt: sandbox-testkøb + flip samme time når nøglen kommer — indtil da flere høj-intentions landingssider.
+2026-08-24T14:49:03+02:00 iteration 21 afsluttet (exit 0)
+2026-08-24T14:49:25+02:00 === iteration 22/60 ===
+Iteration 226 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — ingen udtrækning nødvendig.**
+Kernen `worker-scan/index.js` tog i dag frisk imod shopify.com, wix.com, squarespace.com, webflow.com og example.com og svarede alle med platform-detektering, score og 9 checks på under 0,7 sekunder. Den er ren HTTP/HTML-analyse uden CMS-antagelser. WP-plugin, CLI og Chrome-ext er allerede indpakninger omkring kernen — præcis som Mads har krævet.
+
+**Hvad jeg byggede i denne iteration:**
+Tysk version af den bedste indgangsside: `site/de/cookie-banner-check/index.html` — fuldt oversat landingsside med den indlejrede universelle scanner, hreflang EN↔DE begge veje (EN-siden peger nu korrekt tilbage), tysk FAQPage JSON-LD og sitemap opdateret til 111 URLs.
+
+Begrundelse på pengelinsen: DACH er EU's største compliance-marked, søgningen "ist mein Cookie-Banner konform" er høj-intentions, og det koster kun en fil — ren distribution af det samme produkt.
+
+**Verificeret live:**
+- https://auditedwp.pages.dev/de/cookie-banner-check/ → 200 med tysk titel
+- sitemap.xml indeholder den nye URL
+- Scanner-worker svarer stadig korrekt på tværs af platforme
+
+Committet og pushet (a32e436 + c8662b0). STATUS.md er opdateret.
+
+**Ærlige tal:** 0 betalende kunder, $0 revenue, 18 scanninger.
+
+**Blokeret (én linje):** LS API-nøglen ligger endnu ikke i Bitwarden. Når den kommer, flipper jeg Pro-checkout ($79/år) samme time via scripts/eucomply-flip.sh.
+2026-08-24T14:53:17+02:00 iteration 22 afsluttet (exit 0)
+2026-08-24T14:53:43+02:00 === iteration 23/60 ===
