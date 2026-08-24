@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications on Two (or More) Computers — Staying in Sync (2026) — DevNotify</title>
+<meta name="description" content="Read a GitHub notification at your desk and it's still unread on your laptop? Why the unread state diverges across machines and how to keep every device in sync.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-multiple-computers-sync/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notifications on two computers: staying in sync">
+<meta property="og:description" content="Why your GitHub unread count diverges across machines — and the setup that keeps every computer showing the same truth.">
+<meta property="og:url" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-multiple-computers-sync/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notifications on two (or more) computers</h1>
+<p class="meta">Updated August 2026 · 5 min read</p>
+
+<p>You clear your notifications at the office, come home, open your laptop —
+and the badge says <strong>17 unread</strong>, all of which you already dealt
+with. If you work on more than one machine, GitHub notification state seems to
+split into parallel universes. Here's why it happens and how to make every
+device agree.</p>
+
+<h2>Why the counts diverge</h2>
+<p>GitHub itself has exactly one source of truth: the
+<code>/notifications</code> API, tied to your account. Mark something as done,
+read or unsubscribe, and it changes server-side for everyone. The divergence
+is almost never GitHub — it's what each <em>client</em> does between polls:</p>
+
+<ul>
+<li><strong>Clients that cache locally.</strong> A browser tab you left open, an
+email client that downloaded notifications, or any tool that stores "unread"
+state on disk will keep showing yesterday's world until it refreshes. Some
+only reconcile when reopened.</li>
+<li><strong>Different polling intervals.</strong> Machine A polled 30 seconds ago;
+machine B last polled 40 minutes ago. Both are "correct" — just at different
+moments.</li>
+<li><strong>Email as a second copy.</strong> If you get notification emails,
+every machine's mail client holds its own read/unread state that has nothing
+to do with GitHub's. Clearing one doesn't touch the other.</li>
+<li><strong>Different accounts or tokens.</strong> Easy to hit with work and
+personal setups: if one machine uses an old token or a different account, its
+count is genuinely for a different universe of notifications.</li>
+</ul>
+
+<h2>The sync-first checklist</h2>
+<ol>
+<li><strong>Pick one account per machine.</strong> In each client, confirm whose
+token is in use. On GitHub, check
+<strong>Settings → Applications → Authorized OAuth Apps / Personal access tokens</strong>
+to see what's live and revoke strays.</li>
+<li><strong>Drop email as a notification surface.</strong> Keep it archived for
+search if you like, but don't let mail clients own read state — that's the
+copy that never syncs. See
+<a href="/devnotify/guides/turn-off-github-email-notifications/">how to turn off GitHub email notifications</a>.</li>
+<li><strong>Prefer clients that read the API directly.</strong> Anything that
+polls <code>/notifications</code> fresh shows server truth within one poll
+interval, on every machine, no shared state needed.</li>
+<li><strong>Accept the interval, shrink it.</strong> With API-based clients the
+worst-case skew equals the poll interval. A 60-second poll means the two
+machines disagree by at most about a minute — usually shorter than the walk
+between them.</li>
+</ol>
+
+<h2>What "synced" should feel like</h2>
+<p>The test: mark everything done on machine A, then refresh on machine B.
+If B still shows old items after a normal refresh, B isn't reading the API —
+it's replaying its own cache. That's also why phantom counts survive even on a
+single machine after using both the web UI and a client; we cover that cousin
+of this problem in
+<a href="/devnotify/guides/github-phantom-notifications/">phantom notifications that won't clear</a>.</p>
+
+<div class="cta">
+<h2>One count, every machine</h2>
+<p style="max-width:520px;margin:0 auto">DevNotify polls GitHub's notifications
+API directly every minute, so the menu bar number is the same server truth on
+your Mac, Windows PC and Linux box. One $19 lifetime license covers all of
+them.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify</a>
+</div>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-phantom-notifications/">Phantom ("ghost") notifications that won't clear</a></li>
+<li><a href="/devnotify/guides/github-notifications-coming-back-unread/">Notifications keep coming back as unread</a></li>
+<li><a href="/devnotify/guides/github-notification-badge-not-showing/">Badge not showing? 6 fixes</a></li>
+<li><a href="/devnotify/best-github-notification-apps-macos/">Best GitHub notification apps for macOS</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>

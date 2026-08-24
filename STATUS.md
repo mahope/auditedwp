@@ -1,42 +1,43 @@
-# STATUS — Iteration 184 (24. august)
+# STATUS — Iteration 190 (24. august)
 
-## 1. Blokering (én linje)
+## 1. Universalitetsvurdering — bestået (genbekræftet)
+DevNotify: provider-kerne med NotificationItem-normalisering, 
+GitHub/GitLab som adapters, bygger til macOS/Windows/Linux. 
+Ikke bundet til én platform. Ingen ændring nødvendig.
 
-LS-checkout venter på Bitwarden/LS-nøglen (bw status: unauthenticated).
+## 2. Denne iteration — trafikløft (punkt 1/3: det der trækker folk til)
+3 nye SEO-guider bygget, indlinket og deployet:
 
-## 2. Universalitetsvurdering (punkt 1) — bestått
+- `/devnotify/guides/filter-github-emails-gmail/` — Gmail-filtre til 
+  GitHub-notifikationsemails (label, arkivér, split efter vigtighed)
+- `/devnotify/guides/github-notifications-multiple-computers-sync/` 
+  — unread-tæller der divergerer på tværs af maskiner 
+- `/devnotify/guides/github-notifications-org-repos/` — støjkontrol 
+  på organisationsniveau 
 
-DevNotify er ikke bundet til én platform: `providers.rs` definerer en
-normaliseret `NotificationItem` + provider-abstraktion (GitHub og GitLab er
-adapters), UI kalder kun `fetch_notifications(provider, token)`. App bygger til
-macOS/Windows/Linux. Ingen CMS-afhængighed. Intet at trække ud.
+Sitemap 41 → 44 URLs, landing card-sektion opdateret. 
+Verificeret LIVE: 3 nye sider 200, sitemap 44, links virker.
 
-## 3. Denne iteration: kritisk download-fejl rettet
+Bitwarden-status: `unauthenticated` (uændret). LS-nøglen 
+kommer formentlig i dag (24/8).
 
-- **Fundet:** downloadsiden linkede til `DevNotify_0.2.0_universal.dmg`, som
-  aldrig var blevet bygget — Mac-købere fik 404 på hoveddownloaden.
-- **Retttet:** byggede den ægte universal-dmg (lipo af arm64+x64-binaries,
-  ad-hoc codesign, hdiutil UDZO). Verificeret: dmg mounter, binary er
-  universal (x86_64 + arm64).
-- Opdaterede SHA-256 checksummen på siden, synkede staging, deployede.
-- Verificeret live: universal.dmg → 200 (8,9 MB), ny checksum i serveret HTML,
-  alle undersider (/devnotify/, /download/, guide, privacy, terms) → 200.
-- Metrics-worker live: 1 download · 3 visits · 0 subscribers.
+## 3. Traction (ærlige tal)
+**0 betalende kunder · $0 · tilmeldinger: 0 · downloads: 1 · besøg: ~3**
+(kilde: devnotify-metrics worker; egne testkald tæller ikke).
 
-## 4. Traction (ærlige tal)
-
-**0 betalende kunder · $0 · tilmeldinger: 0 · downloads: 1 · besøg: ~2**
-(kilde: devnotify-metrics worker, IP-time-dedupe; mine egne tests medregnes
-ikke som subscribers).
-
-## 5. Venter på Mads (uændret)
-
-1. Bitwarden/LS-nøgle → checkout live samme time (`CHECKOUT-GO-LIVE.md` klar).
-2. Domænekøb getdevnotify.com (forhåndsgodkendt) — sig til.
+## 4. Venter på Mads (uændret)
+1. Bitwarden/LS-nøgle → checkout live samme time 
+   (`CHECKOUT-GO-LIVE.md` klar i roden).
+2. Domænekøb `getdevnotify.com` (forhåndsgodkendt) — sig til.
 3. Valgfrit: Apple Developer ($99/år) til notarization.
 4. Launch-tekster klar i `devnotify-site/LAUNCH.md` — venter på ja.
 
-## 6. Næste iteration
+## 5. Fundet fejl (kendt, ublokerbar)
+Rod-sitemap (som robots.txt peger på) opdateres ikke — 
+kun `/devnotify/sitemap.xml` (44 URLs) deployes. 
+Kræver Mads' Search Console eller flytning til eget domæne for at blive løst.
 
-Købsintent-guides fortsætter; når der kommer ægte trafik, viser
-visit/download-tallene hvor faldet sker mellem besøg → download → køb.
+## 6. Næste iteration
+- Tjek Bitwarden igen (LS-nøgle mulig i dag).
+- Fortsæt trafikløft hvis stadig blokeret: 1-2 nye guider eller
+  forbedr CTA/købsrejse.

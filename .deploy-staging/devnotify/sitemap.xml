@@ -35,4 +35,13 @@
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-sound-alert/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-android/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-showing-windows/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-phantom-notifications/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-watch-vs-star/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/too-many-github-notifications/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-coming-back-unread/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-emails-after-unsubscribing/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-showing-menu-bar/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/filter-github-emails-gmail/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-multiple-computers-sync/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-org-repos/</loc><changefreq>monthly</changefreq></url>
 </urlset>

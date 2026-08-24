@@ -88,6 +88,11 @@ nav a:hover{color:var(--text)}
 footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 @media(max-width:600px){.hero{padding:48px 0 30px}}
+
+.guides-index{max-width:1080px;margin:0 auto;padding:0 24px 40px}
+.guides-index h2{font-size:1.5rem;margin-bottom:8px}
+.guide-list{columns:2;column-gap:32px;padding-left:20px;font-size:.95rem}
+@media(max-width:640px){.guide-list{columns:1}}
 </style>
 </head>
 <body>
@@ -170,6 +175,20 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   </div>
 </section>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Does my GitHub token leave my computer?", "acceptedAnswer": {"@type": "Answer", "text": "No. It is stored locally by the app and used only to call api.github.com directly from your machine."}},
+    {"@type": "Question", "name": "What does the DevNotify free trial include?", "acceptedAnswer": {"@type": "Answer", "text": "Everything. Full functionality for 7 days on every platform. After that, a $19 lifetime license unlocks it permanently."}},
+    {"@type": "Question", "name": "Which platforms does DevNotify support?", "acceptedAnswer": {"@type": "Answer", "text": "macOS 11 Big Sur and later (Apple Silicon and Intel), Windows 10 and 11, and Linux (.deb packages and AppImage). SHA-256 checksums are published for every download."}},
+    {"@type": "Question", "name": "Is one DevNotify license valid on all my computers?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Buy once, use DevNotify on your Mac, your Windows PC and your Linux machine."}},
+    {"@type": "Question", "name": "Is the DevNotify license really lifetime?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. One payment of $19, perpetual use of version 1.x including updates."}}
+  ]
+}
+</script>
+
 <section class="guides" id="guides" style="padding:56px 0;background:var(--bg,#0d1117)">
   <div class="wrap">
     <h2>Free guides on GitHub notifications</h2>
@@ -182,6 +201,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         <li><a href="/devnotify/guides/github-notifications-not-working-mac/">Not working on macOS</a></li>
         <li><a href="/devnotify/guides/github-notification-badge-not-showing/">Badge not showing</a></li>
         <li><a href="/devnotify/guides/github-notifications-sound-alert/">Sound alert not playing</a></li>
+<li><a href="/devnotify/guides/too-many-github-notifications/">Too Many GitHub Notifications? How to Cut the Noise (2026)</a></li>
         <li><a href="/devnotify/guides/github-notifications-not-working-iphone/">Not working on iPhone</a></li>
       </ul></div>
       <div class="card"><h3>Taming the noise</h3><ul style="line-height:2;color:var(--muted);font-size:.95rem">
@@ -192,6 +212,11 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         <li><a href="/devnotify/guides/github-notifications-discord/">GitHub to Discord instead</a></li>
         <li><a href="/devnotify/guides/github-notifications-microsoft-teams/">GitHub in Microsoft Teams</a></li>
         <li><a href="/devnotify/guides/github-notifications-vs-email-digests/">Notifications vs email digests</a></li>
+        <li><a href="/devnotify/guides/github-notifications-coming-back-unread/">Notifications keep coming back as unread</a></li>
+        <li><a href="/devnotify/guides/github-emails-after-unsubscribing/">Emails keep coming after unsubscribing</a></li>
+        <li><a href="/devnotify/guides/github-notifications-not-showing-menu-bar/">Not showing in the menu bar</a></li>
+        <li><a href="/devnotify/guides/filter-github-emails-gmail/">Filter GitHub emails in Gmail</a></li>
+        <li><a href="/devnotify/guides/github-notifications-org-repos/">Org repos: managing the noise</a></li>
       </ul></div>
       <div class="card"><h3>Alternatives &amp; platforms</h3><ul style="line-height:2;color:var(--muted);font-size:.95rem">
         <li><a href="/devnotify/best-github-notification-apps-macos/">Best GitHub notification apps for macOS</a></li>
@@ -205,6 +230,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         <li><a href="/devnotify/guides/gitify-alternative/">Gitify alternatives in 2026</a></li>
         <li><a href="/devnotify/vs/github-desktop/">DevNotify vs GitHub Desktop</a></li>
         <li><a href="/devnotify/vs/octobox/">DevNotify vs Octobox</a></li>
+        <li><a href="/devnotify/guides/github-notifications-multiple-computers-sync/">GitHub notifications on multiple computers</a></li>
       </ul></div>
     </div>
   </div>
@@ -232,6 +258,42 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     </form>
     <p class="price-note" style="margin-top:16px">Checkout is processed by Lemon Squeezy as Merchant of Record.</p>
   </div>
+</section>
+
+
+<section class="guides-index" id="guides">
+<h2>Guides &amp; fixes for GitHub notifications</h2>
+<p>Solving a specific notification problem? These step-by-step guides cover the common ones:</p>
+<ul class="guide-list">
+<li><a href="/devnotify/guides/github-email-notifications-not-working/">GitHub Email Notifications Not Working? 6 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-notification-badge-not-showing/">GitHub Notification Badge Not Showing? 6 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-discord/">GitHub Notifications in Discord: 3 Working Methods (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-microsoft-teams/">How to Get GitHub Notifications in Microsoft Teams (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-showing/">GitHub Notifications Not Showing? 7 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-showing-windows/">GitHub Notifications Not Showing on Windows: 7 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-working-iphone/">GitHub Notifications Not Working on iPhone? How to Fix It (2026)</a></li>
+<li><a href="/devnotify/guides/github-phantom-notifications/">GitHub Phantom (Ghost) Notifications That Won't Go Away (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-working-mac/">GitHub Desktop Notifications Not Working on Mac? 5 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-watch-vs-star/">GitHub Watch vs Star: What Each Actually Does (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-on-android/">GitHub Notifications on Android: 5 Working Options (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-on-linux/">GitHub Notifications on Linux: 4 Working Options (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-on-windows/">GitHub Notifications on Windows: 5 Working Options (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-slack-too-noisy/">GitHub Notifications in Slack Are Too Noisy? 6 Ways to Fix It (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-sound-alert/">GitHub Notifications Sound / Alert Not Playing? 5 Fixes (2026)</a></li>
+<li><a href="/devnotify/guides/github-notifications-vs-email-digests/">GitHub Notifications vs Email Digests: Which One Stops You Missing PRs?</a></li>
+<li><a href="/devnotify/guides/gitify-alternative/">Gitify Alternatives in 2026: 5 Options Compared</a></li>
+<li><a href="/devnotify/guides/gitlab-notifications-on-mac/">How to See GitLab Notifications on Your Mac (Menu Bar, 2026)</a></li>
+<li><a href="/devnotify/guides/miss-pr-review-notifications/">Missing PR Review Requests on GitHub? Here's Why (2026)</a></li>
+<li><a href="/devnotify/guides/octobox-alternative/">Octobox Alternatives in 2026: 6 Options Compared (Free &amp; Paid)</a></li>
+<li><a href="/devnotify/guides/see-github-notifications-on-mac/">How to See GitHub Notifications on Mac (Menu Bar, 2026)</a></li>
+<li><a href="/devnotify/guides/slack-github-notifications/">How to Get GitHub Notifications in Slack (4 Working Methods, 2026)</a></li>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications/">How to Turn Off GitHub Email Notifications (and What to Use Instead)</a></li>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications-mac/">Turn Off GitHub Email Notifications on Mac</a></li>
+<li><a href="/devnotify/best-github-notification-apps-macos/">Best GitHub Notification Apps for macOS</a></li>
+<li><a href="/devnotify/github-desktop-notifications-mac/">GitHub Desktop Notifications on Mac</a></li>
+<li><a href="/devnotify/gitlab-notifications-mac/">GitLab Notifications on Mac</a></li>
+<li><a href="/devnotify/github-token-scopes-guide/">GitHub Token Scopes Guide</a></li>
+</ul>
 </section>
 
 <footer>

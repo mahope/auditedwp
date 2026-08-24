@@ -3651,3 +3651,121 @@ Jeg læste kernen linje for linje: `devnotify/src-tauri/src/providers.rs` define
 STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-24T08:31:33+02:00 iteration 39 afsluttet (exit 0)
 2026-08-24T08:31:55+02:00 === iteration 40/60 ===
+Iteration 184 færdig. Resumé:
+
+**Universalitetsvurdering (punkt 1): bestått.** DevNotify er ikke platformsbundet — `providers.rs` har en normaliseret NotificationItem med GitHub/GitLab som adapters, UI'en kalder kun `fetch_notifications(provider, token)`, og appen bygger til macOS/Windows/Linux. Intet at trække ud.
+
+**Det vigtigste denne iteration: jeg fandt og rettede en kritisk fejl i købsrejsen.** Downloadsiden linkede til `DevNotify_0.2.0_universal.dmg` — filen var aldrig bygget. Enhver Mac-bruger der klikkede hoveddownload-knappen fik 404. Jeg byggede den ægte universal-dmg (lipo af arm64+x64-binaries → codesign → hdiutil), verificerede at den mounter med universal binary inde i, opdaterede checksummen på siden, deployede og bekræftede live: dmg → 200 (8,9 MB), ny checksum i serveret HTML, alle undersider 200.
+
+Traction stadig ærligt: **0 kunder · $0 · 1 download · ~2 besøg**. Eneste blokering: LS-nøglen i Bitwarden (bw status: unauthenticated). STATUS.md er opdateret og alt er commitet og pushet.
+2026-08-24T08:37:58+02:00 iteration 40 afsluttet (exit 0)
+2026-08-24T08:38:20+02:00 === iteration 41/60 ===
+Iteration 185 færdig. Opsummering:
+
+**Universalitetsvurdering (punkt 1): bestået.** DevNotify's kerne (`providers.rs`) er platformsuafhængig — normaliseret `NotificationItem` med GitHub og GitLab som adapters, bygger til macOS/Windows/Linux. Intet at trække ud.
+
+**Beslutningen holder under pengekriteriet.** Målt på de fem kriterier vinder DevNotify stadig: bygget og udgivet til 0 kr/md, første betaling timer efter LS-nøglen, $19 pr. kunde i et stort marked. Ingen ny idé slår "færdig produkt + én enkelt blokering".
+
+**Bygget denne iteration (punkt B):**
+- Verificerede alle 35 sitemap-URLs live — alle 200
+- Tilføjede FAQPage JSON-LD til landingssiden (rich results i Google) og deployede — verificeret live på https://auditedwp.pages.dev/devnotify/
+- Noteret dødt spor: Claude Code CLI er ikke logget ind (Mads' konto) — droppet som delegationsvej
+
+**Traction, ærligt: 0 kunder · $0 · 1 download · ~3 besøg.**
+
+**Blokering (én linje):** LS-checkout venter på Bitwarden/LS-nøglen.
+
+Næste iteration: trafik er flaskehalsen — flere købsintent-guides med intern linkning til downloadsiden. STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-24T08:43:37+02:00 iteration 41 afsluttet (exit 0)
+2026-08-24T08:43:57+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T08:48:58+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T08:54:00+02:00 === iteration 42/60 ===
+Iteration 186 færdig. Resumé:
+
+**Universalitetsvurdering:** DevNotify består stadig — kernen (`providers.rs` med normaliseret `NotificationItem`) er platform-uafhængig, GitHub og GitLab er bare adapters. Intet at trække ud.
+
+**Beslutningen holder under pengekriteriet:** Ja — produktet er bygget, udgivet, 0 kr/md i drift, $19 pr. kunde, kun én blokering (LS-nøglen). Derfor punkt B: forbedre det der står mellem besøgende og betaling.
+
+**Denne iterations fund (købsrejse-gennemgang):**
+- 14 af 22 guides pegede den grønne CTA-knap på landingssiden i stedet for direkte på downloadsiden — ét unødvendigt hop for den købsklare læser. Alle peger nu direkte på `/devnotify/download/`.
+- `gitlab-notifications-on-mac` havde slet ingen CTA — tilføjet med GitLab+GitHub-vinklen.
+- Landingssiden fik en "Guides & fixes"-indeks-sektion med links til alle 26 indholdssider (intern linkning til SEO og dybere besøg).
+
+**Verificeret live:** deployet via Cloudflare Pages, alle tre test-URLs svarer 200 med det nye indhold (44 guidelinks på forsiden, nye CTAs serveres). Én fejl undervejs: rsync tog 80MB AppImage med → Pages afviste; fjernet igen fra staging.
+
+**Traction er stadig ærligt: 0 kunder · $0 · ~3 besøg.** Trafik er flaskehalsen; næste iteration går på indeksering/rangering og flere lavkonkurrence-guider.
+
+STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo/STATUS.md. Venter stadig udelukkende på: Bitwarden/LS-nøgle, domæne-ja, evt. Apple Developer.
+2026-08-24T08:59:37+02:00 iteration 42 afsluttet (exit 0)
+2026-08-24T08:59:58+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T09:04:58+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T09:10:02+02:00 === iteration 43/60 ===
+Iteration 187 færdig. Kort:
+
+**Universalitetsvurdering (punkt 1): bestået.** DevNotify er ikke platformsbundet — `providers.rs` har en normaliseret provider-abstraktion (GitHub/GitLab som adapters), og det bygger til macOS/Windows/Linux. Intet at trække ud; eksisterende arbejde beholdt.
+
+**Beslutningen holder under pengekriteriet:** ja — produktet er bygget, udgivet, koster 0 kr/md, og første kunde kan betale timer efter LS-nøglen.
+
+**Bygget denne iteration:** downloadsiden (siden med mest købsintent) linkede ikke til nogen af de 22 guider. Tilføjede en guides-sektion med 25 interne links (2-kolonners responsivt layout), verificerede alle stier lokalt inden deploy — fandt og rettede 2 forkerte link-stier undervejs. Første deploy brugte desuden en forældet staging-kopi; synkroniserede og udgav igen. Verificeret live: 33 unikke links serveres, spot-tjek 200'er.
+
+**Traction: 0 betalende · $0 · downloads 1 · besøg ~3.** Blokering uændret (én linje): LS-checkout venter på Bitwarden-nøglen. Næste iteration: flere lavkonkurrence-guider + sitemap-ping. STATUS.md er opdateret.
+2026-08-24T09:13:51+02:00 iteration 43 afsluttet (exit 0)
+2026-08-24T09:14:14+02:00 === iteration 44/60 ===
+Iteration 188 færdig.
+
+**Vurdering (punkt 1):** DevNotify består universalitetskravet — provider-kerne med platform-adapters, ikke WordPress- eller single-platform-bundet. Beslutningen holder stadig under pengekriteriet, så ingen revurdering.
+
+**Bygget denne iteration (trafikløft — flaskehalden er ~3 besøg):**
+- 3 nye SEO-guider på lavkonkurrence-søgninger hvor GitHub Docs kun dækker overfladisk:
+  - github-phantom-notifications (ghost-notifications der ikke rydder)
+  - github-watch-vs-star (klassisk forvirring)
+  - too-many-github-notifications (komplet triage-system)
+- Sitemap 35 → 38 URLs, nye guider linket fra downloadsiden og landingssiden
+- Link-checker fandt og rettede 1 reel fejl (forkert slug); fjernede desuden en 80MB AppImage der var sneget sig ind i staging
+- Deployet og verificeret live: alle 3 nye sider svarer 200 med korrekt titel
+
+Traction uændret og ærligt: **0 kunder · $0 · ~3 besøg**. Venter stadig kun på Mads: LS-nøgle, domæne, valgfri Apple Developer, launch-tekster. STATUS.md opdateret.
+2026-08-24T09:22:44+02:00 iteration 44 afsluttet (exit 0)
+2026-08-24T09:24:26+02:00 === iteration 45/60 ===
+Færdig for denne iteration.
+
+**Universalitetsvurdering (punkt 1): bestået.** DevNotify har en provider-kerne med normaliseret `NotificationItem`, GitHub/GitLab som adapters og builds til tre OS'er — ikke bundet til én platform. Beslutningen holder under pengekriteriet, så der blev bygget videre på den.
+
+**Denne iteration (trafikløft, punkt 3 i prioriteringen):**
+- 3 nye SEO-guider bygget: "notifications coming back unread", "emails after unsubscribing" og "not showing in menu bar" — alle lavkonkurrence-søgninger med reel smerte.
+- Intern linkning fra forsiden + kryds-links mellem guider; sitemap 38 → 41 URLs.
+- Alle interne links verificeret mod staging (0 mangler).
+- Deployet til Cloudflare Pages og verificeret live: alle 3 sider svarer 200 med korrekt titel, sitemap serverer 41 URLs, forsiden viser de nye links.
+
+**Traction (ærligt):** 0 kunder · $0 · downloads 1 · besøg ~3.
+
+**Blokering (én linje):** LS-checkout venter på Bitwarden/LS-nøglen (unauthenticated).
+
+STATUS.md er opdateret. Næste iteration fortsætter trafikløftet.
+2026-08-24T09:29:40+02:00 iteration 45 afsluttet (exit 0)
+2026-08-24T09:30:03+02:00 === iteration 46/60 ===
+## Iteration 190 — Færdig
+
+**Status:** 3 nye SEO-guider bygget, linket, deployeret og verificeret LIVE. Alle 44 URLs svarer 200.
+
+**Hvad der skete:**
+
+| Område | Detalje |
+|--------|---------|
+| Universalitet | Genbekræftet — DevNotify er ikke platformsbundet (provider-kerne, 3 OS'er). Ingen omskrivning nødvendig. |
+| Nye guider | `filter-github-emails-gmail` (Gmail-filtre), `multiple-computers-sync` (synkronisering på tværs af maskiner), `org-repos` (støj på organisationsniveau). |
+| Sitemap | 41 → 44 URLs |
+| Landingsside | Nye links i "Taming the noise"-kortet + "Alternatives"-sektionen |
+| Verificering | 4/4 nye sider (forside + 3 guides) 200 via `curl -sL`. Alle ~40 landingsside-links OK. |
+
+**Ikke ændret:**
+- Bitwarden stadig `unauthenticated`. LS-nøglen ventes i dag (24/8).
+- Traction: 0/$0/0 downloads (mit ene test-download tæller ikke — reglen fra 23. aug).
+- Rod-sitemap kan ikke deployes (kendt begrænsning — løses når domænet er foran).
+
+**Næste iteration:** Tjek Bitwarden. Hvis LS-nøglen er der, opret checkout og gå efter første rigtige kunde samme time. Hvis ikke, fortsæt trafik (1-2 nye guider indtil den lander).
+2026-08-24T09:39:19+02:00 iteration 46 afsluttet (exit 0)
+2026-08-24T09:39:40+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T09:44:40+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T09:49:41+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-24T09:55:16+02:00 === iteration 47/60 ===

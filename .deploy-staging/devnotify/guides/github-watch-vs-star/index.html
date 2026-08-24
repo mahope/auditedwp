@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Watch vs Star: What Each Actually Does to Your Notifications (2026) — DevNotify</title>
+<meta name="description" content="Starring a repo doesn't notify you of anything. Watching a repo notifies you of everything. Here's what each button really does, and how to get notified only about what matters.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-watch-vs-star/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub Watch vs Star: what each actually does to your notifications">
+<meta property="og:description" content="Stars are bookmarks. Watches are notification subscriptions. The full breakdown — including the Custom watch settings almost nobody opens.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-watch-vs-star/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.92rem}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+th{color:var(--text);background:var(--panel)}
+td{color:var(--muted)}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub Watch vs Star: what each actually does</h1>
+<p class="meta">Updated August 2026 · 4 min read</p>
+
+<p>Two buttons sit at the top of every repository: <strong>Star</strong> and
+<strong>Watch</strong>. They look interchangeable. They are not — and
+confusing them is the single most common reason people either drown in
+notifications or wonder why they never get any.</p>
+
+<h2>Star = bookmark. Nothing more.</h2>
+<p>Starring a repository adds it to the list of repos you can find later
+under <strong>Your stars</strong>. It feeds GitHub's recommendations and it's
+the number people see on the repo page. That's all.</p>
+<p><strong>Starring never sends you a single notification.</strong> If you
+starred a project hoping to hear about releases, you won't. (The closest
+thing: release announcements from repos you star can appear in your feed,
+but that's not a notification.)</p>
+
+<h2>Watch = subscription. Everything.</h2>
+<p>Watching a repo subscribes you to <strong>all conversations</strong> in
+it: every issue, every pull request, every comment, every discussion. On an
+active repo with dozens of contributors, watching means hundreds of
+notifications per week — which is why "watch" defaults to off unless you
+contribute.</p>
+
+<h3>The four watch states</h3>
+<table>
+<tr><th>State</th><th>You get notified about</th></tr>
+<tr><td><strong>Participating</strong> (default)</td><td>Threads you created, commented on, were @mentioned in, or had assigned to you</td></tr>
+<tr><td><strong>All activity</strong></td><td>Everything in the repo — every issue, PR and comment</td></tr>
+<tr><td><strong>Custom</strong></td><td>A checklist: Releases, Issues, Pulls, Discussions, Security alerts — pick any combination</td></tr>
+<tr><td><strong>Ignore</strong></td><td>Nothing, ever — not even direct @mentions</td></tr>
+</table>
+
+<h2>The setting almost nobody finds: Custom watch</h2>
+<p>This is the fix for the two most common complaints at once:</p>
+<ul>
+<li>"I want to know when this repo ships a release, but not every issue" →
+Watch → <strong>Custom</strong> → tick <em>Releases</em>, untick everything else.</li>
+<li>"I'm mentioned in security discussions but I don't want the firehose" →
+Custom → <em>Security alerts</em> only.</li>
+</ul>
+
+<h2>How this connects to your unread count</h2>
+<p>Your notification inbox is built from three streams:</p>
+<ol>
+<li><strong>Participating</strong> — anything you're personally involved in, regardless of watch status.</li>
+<li><strong>Watching</strong> — everything from repos with All Activity or matching Custom settings.</li>
+<li><strong>Subscriptions</strong> — individual threads you explicitly subscribed to (or were auto-subscribed to by commenting).</li>
+</ol>
+<p>If your badge exploded overnight, check
+<strong>github.com → Settings → Notifications → Watching</strong>: one
+accidental click of "All Activity" on a busy repo is usually the culprit.
+If the badge never moves despite active teams, you're probably relying on a
+star where a watch was needed.</p>
+
+<div class="cta">
+<h2>Triage the noise without touching your watches</h2>
+<p style="max-width:520px;margin:0 auto">DevNotify shows every notification
+in one menu bar list with per-repo filtering — keep your watches exactly as
+they are, and just see the ones that matter first. Free to try, $19 for a
+lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify for macOS</a>
+</div>
+
+<h2>Quick reference</h2>
+<ul>
+<li><strong>Star</strong> = save for later + public endorsement. No notifications.</li>
+<li><strong>Watch (default)</strong> = only threads you participate in.</li>
+<li><strong>Watch (All Activity)</strong> = the full firehose.</li>
+<li><strong>Watch (Custom)</strong> = pick releases/issues/pulls/discussions/security individually.</li>
+<li><strong>Ignore</strong> = total silence for that repo.</li>
+</ul>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications/">Turn off GitHub email notifications (keep desktop)</a></li>
+<li><a href="/devnotify/guides/too-many-github-notifications/">Too many GitHub notifications? How to cut the noise</a></li>
+<li><a href="/devnotify/github-token-scopes-guide/">Which scopes your GitHub token needs for notifications</a></li>
+<li><a href="/devnotify/vs/octobox/">DevNotify vs Octobox</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>
