@@ -2,3 +2,4 @@ ceo.log
 site/
 ceo.log
 .wrangler/
+devnotify-site/download/*.AppImage
