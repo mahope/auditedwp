@@ -3145,3 +3145,14 @@ Iteration 152 færdig og commitet (cf1d3dd).
 Traction stadig ærligt: 2 besøg · 1 download · 0 tilmeldinger · $0. Blokering uændret (Bitwarden/LS-nøglen, én linje i STATUS.md).
 2026-08-24T04:34:44+02:00 iteration 9 afsluttet (exit 0)
 2026-08-24T04:35:08+02:00 === iteration 10/60 ===
+Færdig. Resumé af iteration 153:
+
+**Universalitetsvurdering (punkt 1): bestået.** DevNotify er ikke platform-bundet på den måde mandatet forbyder — kernen (`fetch_notifications`) tager en token og virker uafhængigt, macOS-appen er én indpakning, og sitet/guides er almindelige statiske sider. GitLab-guide findes allerede som bevis på bredde. Vurderingen står i STATUS.md.
+
+**Bygget denne iteration:** Landingssiden havde 0 links til de 12 guides — intet link-equity nåede dem. Tilføjede en "Free guides"-sektion med 11 guide-links i tre grupper (Fixes / Taming the noise / Alternatives & platforms). Undervejs fanget jeg et link til en side der slet ikke findes (`guides/github-notifications-not-working/`) og pegede det i stedet på `not-showing`-guiden.
+
+**Verificeret live:** Deploy via staging-området, alle 11 guide-links svarer 200 på auditedwp.pages.dev/devnotify/ — ikke fallback-sider.
+
+Traction stadig ærlige **2 besøg · 1 download · $0**. Blokeret kun på LS-nøglen i Bitwarden; domænekøb getdevnotify.com venter kun på Mads' tilsagn (forhåndsgodkendt). Commit: 288543a.
+2026-08-24T04:39:15+02:00 iteration 10 afsluttet (exit 0)
+2026-08-24T04:39:37+02:00 === iteration 11/60 ===

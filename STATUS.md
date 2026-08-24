@@ -1,27 +1,29 @@
-# STATUS — Iteration 153 (24. august)
+# STATUS — Iteration 154 (24. august)
 
 ## 1. Blokering (én linje)
 
-Bitwarden unauthenticated → LS-nøglen utilgængelig; venter på Mads.
+Bitwarden: CLI unauthenticated OG desktop-appen kan ikke åbne sit vindue
+(spawner en TCC-tilladelsesdialog der kræver Mads' klik — set i systemlog).
+→ LS-nøglen utilgængelig; venter på Mads.
 
-## 2. Universalitetsvurdering (punkt 1) — bestået
+## 2. Universalitetsvurdering (punkt 1) — genbekræftet
 
-- **Kernen** (`fetch_notifications` i Tauri-appen) tager en GitHub/GitLab token
-  og returnerer notifikationer — ingen platform-assumption ud over git-hosting.
-- **Sitet/landingssiden** er almindelige statiske HTML-sider på Cloudflare Pages.
-- **Guides-indholdet** handler om GitHub-notifikationsproblemer generelt, ikke
-  om et WordPress-produkt. GitLab-guide findes allerede som bevis på bredde.
-- Konklusion: DevNotify er IKKE bundet til én platform i strid med punkt 1.
-  macOS-appen er ÉN indpakning; kernen kan senere pakkes som CLI, browser-
-  extension eller Windows/Linux-build uden omskrivning.
+Kernen (`fetch_notifications`) tager en git-host-token (GitHub/GitLab) og er
+platform-agnostisk; macOS-appen er én indpakning, sitet er statisk HTML.
+Ingen overtrædelse af punkt 1.
 
-## 3. Denne iteration — landingssiden linker nu til alle guides
+## 3. Denne iteration — ny guide + intern linkning
 
-Før: landingssiden havde 0 links til de 12 guides → intet link-equity nåede dem.
-Nu: ny "Free guides"-sektion med 11 guide-links grupperet i Fixes / Noise /
-Alternatives & Platforms. Undervejs fanget og rettet ét link til en side der
-ikke findes (github-notifications-not-working → bruger not-showing-guiden).
-Deployet via staging; **alle 11 links verificeret 200 live**.
+- Ny høj-intentions guide:
+  `guides/github-notifications-slack-too-noisy/` ("GitHub Notifications in
+  Slack Are Too Noisy? 6 Ways to Fix It") — fanger søgninger fra folk der har
+  prøvet Slack-integrationen og stadig mangler personlige alerts.
+- Linket fra landingssiden (guides-sektion), fra de to relaterede guides
+  (slack-github-notifications, turn-off-github-email-notifications) og tilføjet
+  til sitemap.xml (nu 25 URLs).
+- Deployet via staging-mappen og verificeret live: ny guide 200 med korrekt
+  titel; backlinks fundet på landing + begge guides; sitemap opdateret;
+  spotcheck af forsiden/download/terms/privacy = 200.
 
 ## 4. Traction (ærlige tal)
 
@@ -29,10 +31,12 @@ Deployet via staging; **alle 11 links verificeret 200 live**.
 
 ## 5. Venter på Mads
 
-1. Bitwarden-login (eller LS-nøglen lagt klar) → LS-produkt via API + checkout + købstest.
+1. Bitwarden-login (eller LS-nøglen lagt klar) → LS-produkt via API +
+   checkout + købstest. OBS: desktop-appen viser intet vindue pga. en
+   TCC-dialog der skal godkendes manuelt.
 2. Domænekøb getdevnotify.com (forhåndsgodkendt — sig blot til).
 
 ## 6. Næste iteration
 
-Ny høj-intentions guide; overvej "DevNotify vs Octobox" indholdsopdatering
-så sammenligningssiderne matcher de nye søgeord.
+Ny sammenligningsside ("DevNotify vs GitHub mobile push"), eller opdatering af
+vs/-siderne så de matcher nye søgeord.

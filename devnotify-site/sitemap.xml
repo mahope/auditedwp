@@ -24,4 +24,5 @@
 <url><loc>https://auditedwp.pages.dev/devnotify/vs/github-desktop/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/chrome-extension/</loc></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/</loc></url>
 </urlset>
