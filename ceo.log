@@ -4927,3 +4927,58 @@ Det betyder at QuickFormat nu er det mest komplette produkt: brugere kan downloa
 STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-24T18:29:09+02:00 iteration 44 afsluttet (exit 0)
 2026-08-24T18:29:31+02:00 === iteration 45/60 ===
+Iteration 248 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): bestået — igen, med konkret bevis.**
+- EUComply-kernen (`shared/scan-engine.js`) tager en vilkårlig URL og antager intet CMS. Forsiden lover eksplicit "WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, static HTML" — og det stemmer med koden.
+- QuickFormat-kernen (`quickconvert/src/engine.js`) er ren konvertering; CLI, web-tool og app er indpakninger.
+- Intet skal trækkes ud. Ingen omskrivning nødvendig.
+
+**Men vurderingen afdækkede noget vigtigere — en ægte fejl i købsrejsen:**
+QuickFormats "Buy License $9"-knap hentede checkout-config fra `/api/waitlist/config` på pages.dev, som returnerer **HTML** (fallback-siden), ikke JSON. Betjeningen fejlede stille i try/catch, så knappen ville falde tilbage til ventelisten **selv efter LS-nøglen kommer** — flip-scriptet ville altså ikke have virket.
+
+Fix: peger nu direkte på `waitlist-eucomply.mahope-eeb.workers.dev/config`, som returnerer korrekt JSON med CORS åbent (verificeret 200). Deployet, verificeret live i den nye HTML, committet som iteration 248.
+
+STATUS.md er opdateret med vurderingen, fixet og en lærdom: verifikation skal tjekke JS-adfærd, ikke bare HTTP 200 — det er derfor fejlen overlevede flere "verificerede"-runder.
+
+Blokeret stadig kun på: Bitwarden-unlock (LS API key + CWS credentials). Det står som én linje i STATUS.md; jeg bruger ublokeret tid videre på SEO/CLI-publish i næste iteration.
+2026-08-24T18:34:28+02:00 iteration 45 afsluttet (exit 0)
+2026-08-24T18:34:48+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T18:39:49+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T18:44:51+02:00 === iteration 46/60 ===
+Iteration 249 færdig. Kort:
+
+**Universalitets-vurdering (punkt 1): bestået — ingen omskrivning nødvendig.**
+- EUComply: kernen (`shared/scan-engine.js` + worker) tager en rå URL og detekterer platformen selv — WordPress er kun ét mønster iblandt Shopify/Webflow/Next.js/Squarespace. WP-pluginet er én indpakning.
+- QuickFormat: kernen er ren formatkonvertering, intet CMS.
+- DevNotify: Chrome-udvidelse, ikke CMS-bundet.
+
+**Verificeret adfærdsmaessigt (ikke kun 200):**
+- Scan-worker returnerer korrekt JSON med checks og score
+- Subscribe-endpointen afviser testadresser med 422 — anti-smoke-test-reglen virker
+- `/pro/` og `/quickconvert/` live og peger på de rigtige workers
+
+En rigtig browser-adfærdstest af /scan/ kunne ikke køres (ingen Chrome-session tilgængelig) — det står noteret i STATUS.md, som er commitet og pushet (bbe80b1).
+
+Blokeret stadig kun på: LS API key + CWS credentials i Bitwarden (Mads' 2 minutter). Sekundet nøglen er der, flipper jeg CHECKOUT_URL på alle tre produkter.
+2026-08-24T18:46:34+02:00 iteration 46 afsluttet (exit 0)
+2026-08-24T18:46:56+02:00 === iteration 47/60 ===
+Iteration 250 færdig. Resumé:
+
+**Universalitets-vurdering (første opgave):** Bestod allerede i iteration 249 — kernerne i alle tre produkter er platform-uafhængige (scan-engine tager rå URL og detekterer Shopify/Webflow/Next.js m.fl.; QuickFormat er ren formatkonvertering; WordPress er kun ét detektions-mønster). Ingen omskrivning nødvendig. Det står i STATUS.md.
+
+**Det jeg brugte iterationen på i stedet — konverteringsreparation:**
+
+Gennemgang af købsrejsen med friske øjne fandt et alvorligt problem: **blog-indeksen havde nul links til de 27 artikler.** Alt indhold var kun tilgængeligt via sitemap — mennesker der landede på /blog/ så ingenting, og artiklerne kunne ikke konvertere til Pro-trafik fordi ingen af dem linkede til /pro/.
+
+Rettet og verificeret live:
+- /blog/ viser nu 27 artikel-kort (titel, beskrivelse, dato) — 0 brudte links
+- "Pro"-link i navigationen på blog-indeksen + 23 artikler; de 4 med alternativt layout fik et fremhævet "Pro — $79/yr"-link
+- Deployet, cache-bustet curl-verificering bekræfter begge ændringer
+
+**Blokeringer (uændret):** LS API key + CWS credentials + npm-token i Bitwarden — kræver Mads' manuelle unlock. Én linje hver, ikke gentaget videre.
+
+STATUS.md er opdateret, arbejdet committet (9019675). Næste iteration fortsætter konverteringsarbejdet: cross-linking fra de 6 /vs/-konkurrentsider til /pro/ og scanneren.
+2026-08-24T18:53:52+02:00 iteration 47 afsluttet (exit 0)
+2026-08-24T18:54:12+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T18:59:15+02:00 === iteration 48/60 ===

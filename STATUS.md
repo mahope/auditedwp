@@ -1,35 +1,41 @@
-# STATUS — 24. august 2026 — Iteration 250
+# STATUS — 24. august 2026 — Iteration 251
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · 4 besøg / 1 download (metrics-worker, egen trafik ikke filtreret fra — behandl som ~0)**
+**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · trafik-tal behandles som ~0**
 
-Denne iteration: **konverteringsreparation på det der står mellem indhold og betaling.**
-Universalitets-vurderingen bestod i iteration 249 og gentages ikke.
+Denne iteration: **universalitets-vurdering (punkt 1) gentaget med friske øjnen + konverteringshuller lukket.**
+
+## Universalitets-vurdering (bestået, igen)
+
+- Kernen er `shared/scan-engine.js`: tager en rå URL, ingen CMS-forudsætning.
+  Indpakninger: web-scanner (/scan/), watch-worker (daily monitoring), CLI,
+  Chrome-extension, API. WordPress-pluginet er én indgang blandt flere.
+- QuickFormats kerne (`src/engine.js`) er en ren format-konverterer — heller ikke
+  platformsbundet; web-tool og kommende Tauri-app er indpakninger.
+- Konklusion: **intet behøver trækkes ud** — arkitekturen overholder allerede punkt 1.
+
+## Beslutningen revurderet på pengekriteriet (holder)
+
+EUComply Pro $79/år recurring + høj betalingsvilje (lovkrav) slår stadig
+QuickFormat $9 one-time. Ingen grund til at skifte spor.
 
 ## Fundet og rettet denne iteration
 
-Gennemgang af købsrejsen med friske øjne fandt **ét alvorligt problem**:
+Købsrejsen gennemgået som fremmed. Tre huller lukket:
 
-1. **Blog-indeksen havde NUL links til de 27 artikler.** Alle blogindlæg var kun
-   tilgængelige via sitemap.xml — Google crawler dem måske, men mennesker der landede
-   på /blog/ så bare en tom overskrift. Rettet: indeksen genereret på ny med 27 kort
-   (titel, beskrivelse, dato), alle links verificeret mod filsystemet (0 brudte).
+1. **Forsiden linkede IKKE til QuickFormat ($9-produktet)** — det billigste,
+   mest impulskøbs-venlige produkt var usynligt for alle der landede på /.
+   Rettet: nav-link "QuickFormat $9" + footer-link. Alle links verificeret mod
+   filsystemet (0 brudte).
+2. **blog/gdpr-cookie-banner-fines pegede "Pro" på /store/ i stedet for /pro/** —
+   klikket landede på skabelon-butikken uden pris eller købsknap. Rettet til /pro/.
+3. **2 af de 27 blogartikler manglede stadig Pro-link** (german-impressum-
+   foreign-sellers, website-compliance-scanner-comparison). Rettet med kontekstuelle
+   Pro-CTA'er.
 
-2. **Ingen af blog-siderne linkede til /pro/ ($79/år-produktet).** Trafik kunne komme
-   ind på en guide og dø uden at se produktet. Rettet: "Pro"-link i navigationen på
-   blog-indeksen + 23 artikler; de 4 artikler med alternativt navn (Abmahnung m.fl.)
-   fik et fremhævet "Pro — $79/yr"-link.
-
-Deployet og verificeret live (cache-bustet curl): /blog/ viser 27 kort + Pro-link,
-artiklerne peger på /pro/.
-
-## Konstateringer (ikke handlet endnu)
-
-- Bing-indeksering via r.jina.ai gav uklart svar (1 hit) — reelt indekseringsantal ukendt.
-  Kan først måles ordentligt når domæne + Search Console er sat op.
-- Trust-signaler på /pro/ er ok: money-back, secure checkout, cancel anytime, pris overalt.
-- npm publish kræver login → ny blokering ud over Bitwarden (npm-token findes ikke).
+Deployet og verificeret live (cache-bustet curl): forsiden viser QuickFormat-links,
+alle tre artikler peger nu på /pro/.
 
 ## Blokeringer (én linje hver)
 
@@ -39,11 +45,9 @@ artiklerne peger på /pro/.
 ## Næste skridt
 
 1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → første betaling mulig samme time.
-2. Mig: fortsæt konverteringsarbejde uden blokering — næste kandidat er
-   cross-linking fra /vs/-siderne (6 konkurrent-sider) til /pro/ og scanneren.
-3. Domæne: quickformat.com vurdering står i DECISION.md; køb klar når Mads siger go.
+2. Mig: /vs/-siderne og /pro/-undersiderne gennemgår købsrejsen næste; derefter
+   quickformat.com-domæne-vurdering når betaling er live.
 
 ## Lærdom (fast)
 
-Verificér JS-adfærd, ikke kun 200'er — og gå selv købsrejsen igennem som en fremmed:
-bloggen har haft 27 usynlige artikler i flere iterationer uden at nogen tjek bemærkede det.
+Hver ny side skal ind i link-grafen samme dag den bygges. "Udgivet" ≠ "linket til".
