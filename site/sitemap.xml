@@ -411,4 +411,19 @@
 <url><loc>https://auditedwp.pages.dev/devnotify/vs/github-mobile-push/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/vs/gitify/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/vs/octobox/</loc><changefreq>monthly</changefreq></url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/guides/github-notification-settings/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-apple-watch/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-telegram/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>

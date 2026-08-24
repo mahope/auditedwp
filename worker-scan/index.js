@@ -26,6 +26,12 @@ export default {
         if (!SIMPLE_EMAIL_RE.test(email)) {
           return json({ error: "Valid email required." }, 400);
         }
+        // Reject test/disposable addresses so our own smoke tests never pollute real numbers
+        const domain = email.split("@")[1];
+        const badDomain = /(^|\.)(example|test|invalid|localhost|mailinator|10minutemail|guerrillamail)\.(com|org|net|info)$/.test(domain) || domain === "example.com";
+        if (badDomain) {
+          return json({ error: "Test address rejected." }, 422);
+        }
         // Store subscriber
         const sub = {
           email,
@@ -89,6 +95,11 @@ export default {
         await env.RATE.put(key, JSON.stringify(win), { expirationTtl: 120 });
       }
     } catch { /* fail open if KV unavailable */ }
+
+    // Count real scans (not root pings)
+    if (env?.RATE) {
+      env.RATE.put("stats:scans", String(parseInt((await env.RATE.get("stats:scans")) || "0", 10) + 1)).catch(() => {});
+    }
 
     try {
       return json(await runScan(url));
