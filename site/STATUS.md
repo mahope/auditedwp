@@ -1,39 +1,34 @@
-# STATUS — 24. august 2026 — Iteration 228
+# STATUS — 24. august 2026 — Iteration 254
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (genverificert i kode + live)
+## Kort version
 
-Kernen `shared/scan-engine.js` er CMS-uafhængig: ren HTTP/HTML-analyse, ingen
-platformslogik. Worker, CLI, WP-plugin og Chrome-ext er indpakninger. Ingen
-udtrækning nødvendig.
+**0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger · trafik ~0**
 
-## Gjort i denne iteration
+## Universalitets-vurdering (punkt 1)
 
-1. **NY ENGELSK INDGANGSSIDE: `/consent-mode-v2-check/`** ("Consent Mode v2
-   check" er høj-intentions søgetrafik fra alle der kører Google Ads i EU).
-   Indlejret universel scanner, consent-relaterede tjek vises først, synlig
-   FAQ-sektion + FAQPage JSON-LD (matcher Googles retningslinjer), sitemap
-   opdateret (112 URLs). Deployet og verificeret live: 200, korrekt titel.
-2. **RETTELSE: tysk /de/cookie-banner-check/** havde FAQPage JSON-LD men ingen
-   synlig FAQ — strider mod Googles retningslinjer for rich results. Tilføjet
-   synlig "Häufige Fragen"-sektion (details/summary) med samme fire spørgsmål.
-   Verificeret live.
+Bestået (fjerde gennemgang, bekræftet i dag): kernen `shared/scan-engine.js` er
+platform-uafhængig; web, watch, API, CLI, extension og WP-plugin er indpakninger.
+Ingen udrakning nødvendig.
 
-## Traction (ærlige tal, verificeret i KV)
+## Denne iterations arbejde: /vs/-gennemgang som fremmed
 
-**0 paying customers · $0 revenue · 0 real subscribers · 25 scans**
-(Waitlist-KV indeholder kun stats:scans — nul lagrede e-mails.)
+Gik alle 6 sammenligningssider + sitemap + 27 blogartikler igennem med friske øjne:
 
-## Blokering (én linje)
+- **Falsk alarm tjekket:** sitemap-entries `/vs/gitify/` og `/vs/octobox/` er
+  faktisk `/devnotify/vs/...` — findes og svarer 200. Ikke brudte links.
+- **Fundet og rettet:** 5 af 6 /vs/-sider manglede link til /vs/osano/ i deres
+  "More comparisons"-linje. Tilføjet på alle fem.
+- **Verificeret sundt:** alle 6 sider linker 6x til /pro/ og har /scan/-CTA'er;
+  alle live-sider svarer 200.
 
-LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
+Deployet og verificeret live (`/vs/termly/` indeholder nu osano-linket).
 
-## Venter på Mads
+## Blokeringer (én linje hver)
 
-1. LS API-nøgle → `./scripts/eucomply-flip.sh <url>` (Pro $79/år) + store-flip.
-2. Domæne eucomply.com (~$12, forhåndsgodkendt) når betaling er live.
+1. LS API key + CWS OAuth + npm-token i Bitwarden — kræver manuel unlock af Mads.
 
 ## Næste skridt
 
-Med LS-nøglen: sandbox-testkøb → flip Pro-checkout samme time.
-Uden: flere engelske indgangssider ("gdpr scanner free", "cookie banner test")
-og en tysk guide der linker til /de/cookie-banner-check/.
+1. **Mads (2 min):** unlock Bitwarden → flip CHECKOUT_URL → betaling mulig samme time.
+2. Mig: watch-flowets share-nudge; herefter flere /vs/-sider for SEO-bredden
+   (fx vs. Usercentrics, Complianz).

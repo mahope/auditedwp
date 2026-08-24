@@ -4982,3 +4982,50 @@ STATUS.md er opdateret, arbejdet committet (9019675). Næste iteration fortsætt
 2026-08-24T18:53:52+02:00 iteration 47 afsluttet (exit 0)
 2026-08-24T18:54:12+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-24T18:59:15+02:00 === iteration 48/60 ===
+Iteration 251 færdig. Kort:
+
+**Universalitets-vurdering (punkt 1): bestået.** Kernen (`shared/scan-engine.js` for EUComply, `src/engine.js` for QuickFormat) tager en rå URL / ren data og har ingen CMS-forudsætning. WordPress-plugin, web-tool, CLI, extension er alle kun indpakninger. Intet behøver trækkes ud — arkitekturen overholder allerede kravet.
+
+**Beslutningen revurderet på pengekriteriet:** holder. EUComply Pro ($79/år recurring, lovkrav = høj betalingsvilje) vinder stadig over QuickFormat ($9 one-time) som primært fokus.
+
+**Fundet og rettet i købsrejsen (deployet + verificeret live):**
+1. Forsiden linkede slet ikke til QuickFormat — det billigste produkt var usynligt. Nu i nav og footer.
+2. blog/gdpr-cookie-banner-fines pegede "Pro" på /store/ (skabelonbutik uden pris) i stedet for /pro/. Rettet.
+3. 2 af 27 blogartikler manglede Pro-link. Tilføjet kontekstuelle CTA'er.
+
+STATUS.md opdateret med vurderingen, ændringerne og de to blokeringer (LS API key + npm-token, begge Bitwarden — én linje hver som aftalt). Commit: 50afca3.
+
+Næste iteration: købsrejse-gennemgang af /vs/-siderne og /pro/-undersiderne.
+2026-08-24T19:06:25+02:00 iteration 48 afsluttet (exit 0)
+2026-08-24T19:06:50+02:00 === iteration 49/60 ===
+Iteration 252 færdig. Resumé:
+
+**Universalitets-vurderingen (første opgave): bestået — intet behøver trækkes ud.**
+- `shared/scan-engine.js` tager en rå URL og virker uanset CMS — verificeret live mod example.com (ikke-WordPress): 9 tjek, score 22/100.
+- Indpakninger (web-scanner, watch-worker, API, CLI, extension, WP-plugin) deler samme kerne. QuickFormats `src/engine.js` er ligeledes platformsuafhængig.
+
+**Derefter byggede jeg på "det der står mellem resultat og betaling":**
+1. **Delbare rapporter:** scanning opdaterer nu URL'en til `/scan/?url=domæne` og en ny "Copy link to this report"-knap gør resultatet sendbart til chef/klient — modtageren lander på samme side med Pro-CTA.
+2. **Save as PDF:** print-optimeret layout med dateret fotnote — en gratis smagsprøve på Pro's PDF-værdi.
+3. **Rettet reel fejl fundet undervejs:** auto-scan fra `?url=` kaldte `requestSubmit()` før submit-handleren var registreret, så delbare links aldrig ville have kørt en scanning. Nu deferred; JS syntaktjekket før deploy.
+
+Deployet til https://auditedwp.pages.dev/scan/ og verificeret i den live HTML + scan-API svarer korrekt. Commit 88c2728 pushet.
+
+STATUS.md er opdateret. Blokeringer uændrede: LS API key i Bitwarden (Mads' 2 minutter) → flip CHECKOUT_URL → første betaling mulig.
+2026-08-24T19:13:03+02:00 iteration 49 afsluttet (exit 0)
+2026-08-24T19:13:28+02:00 === iteration 50/60 ===
+Iteration 253 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1):** Bestået igen — kernen er stadig CMS-uafhængig, og canonical-URL'erne på .pages.dev er selv-referencer der udskiftes 1:1 ved domænekøb, ikke platform-binding. Intet behøver trækkes ud.
+
+**Faktisk arbejde denne iteration:**
+1. Fandt et uopfyldt løfte med friske øjne: /scan/ lovede "We'll email you a summary of this scan", men ingen kode sender e-mail. Teksten rettet til kun at love det der faktisk sker — deployet og verificeret live.
+2. Verificerede subscribe-flowet ende-til-ende: POST → KV-nøgle læst tilbage med `--remote`. Det virkede hele tiden; "Value not found" var wranglers lokale cache, ikke en fejl.
+3. Slettede min egen QA-test-lead fra KV, så tilmeldingstallet forbliver et rigtigt 0.
+
+STATUS.md er opdateret. Stadig blokeret på én ting: Bitwarden-unlock (LS API key), hvorefter checkout kan flippes samme time.
+2026-08-24T19:18:57+02:00 iteration 50 afsluttet (exit 0)
+2026-08-24T19:19:18+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T19:24:18+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T19:29:19+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-24T19:34:21+02:00 === iteration 51/60 ===
