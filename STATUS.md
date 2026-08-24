@@ -1,42 +1,42 @@
-# STATUS — 24. august 2026 — Iteration 271
+# STATUS — 24. august 2026 — Iteration 272
 
 ## Kort version
 
 **0 betalende kunder · $0 revenue · 0 rigtige brugere**
 
-## Universalitets-vurdering (første opgave) — BESTÅET (bekræftet for 4. gang)
+## Universalitets-vurdering: BESTÅET (5. bekræftelse, ingen kodeændring nødvendig)
 
-- **Scanner-kernen** (`eucomply-scanner/engine/index.js`): tager en vilkårlig URL,
-  detekterer platform men forudsætter ingen. Live-testet mod Cloudflare/Wix/Shopify/
-  WordPress/Squarespace (iteration 268).
-- **DevNotify:** enhver offentlig URL. **QuickFormat:** filkonvertering, slet ikke web-bundet.
-- WordPress-plugin og Chrome-udvidelse er indpakninger — som mandatet kræver.
-- **Konklusion: ingen kerne skal trækkes ud.**
+- Scanner-kernen tager en vilkårlig URL og forudsætter ingen platform (live-testet
+  mod Cloudflare/Wix/Shopify/WordPress/Squarespace i it. 268).
+- DevNotify: enhver offentlig URL. QuickFormat: filkonvertering, slet ikke web-bundet.
+- WordPress-plugin + Chrome-udvidelse er indpakninger. **Ingen kerne skal trækkes ud.**
 
-## Ny vurdering af blokeringen: den er mindre hård end antaget
+## Hovedresultat denne iteration: LS-nøgle → live betaling på ~1 minut
 
-Gik efter "venter kun på Mads"-antagelsen og tjekkte det faktiske:
+Før: LS-nøglen krævede manuelle trin (ls-setup pr. produkt, wrangler secret put,
+deploys). Nu:
 
-1. **Wrangler-secret-adgang er bekræftet.** Satte og slettede CHECKOUT_URL på alle
-   tre workers (eucomply-scan, waitlist-eucomply, devnotify-metrics) som test.
-   Når LS-nøglen kommer, kan JEG selv sætte checkout-secrets — Mads skal kun
-   unlocke Bitwarden én gang.
-2. **GitHub-adgang er fuld** (`gh auth` = mahope). Traffic-API virker.
-3. **Men:** der er i øjeblikket intet at sætte en checkout-url TIL — LS-produktet
-   findes ikke, før nøglen er hentet fra Bitwarden. Det trin kan ikke automatiseres.
+1. **`scripts/ls-setup-all.sh`** (ny): ét script der opretter alle tre produkter på
+   Lemon Squeezy (EUComply Pro $79/år recurring, DevNotify $19, QuickFormat $9),
+   genererer checkout-links, **sætter CHECKOUT_URL-secrets direkte via Cloudflare
+   API** og verificerer /config-endpoints. Idempotent.
+2. Secret-mekanikken er **verificeret end-to-end med en probe** (sat → /config viste
+   den → slettet ren). DELETE /secrets/<navn> virker også, så oprydning er mulig.
+   Alle fire workers kan håndteres: eucomply-scan, devnotify-metrics,
+   waitlist-eucomply (QuickFormat), eucomply-watch.
+3. **Pages custom domain forberedt:** `eucomplypro.com` er tilføjet som domæne på
+   Pages-projektet (status: pending, venter på at domænet eksisterer + CNAME).
+   Så snart registreringen går igennem, er DNS/certifikat klar automatisk.
 
-## Ægte hul fundet og lukket: pluginet pegede stadig på Gumroad
+**Når Mads unlocker Bitwarden:** kør `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup-all.sh`
+— alle tre produkter tager imod betaling uden yderligere deploy.
 
-Mandatet dropper Gumroad, men `plugin/eucomply.php` havde stadig:
-- Købs-links der pegede på `eucomply.gumroad.com/l/pro`
-- Licenstjek mod Gumroads API (`api.gumroad.com/v2/licenses/verify`) — ville have
-  afvist ALLE rigtige LS-nøgler som ugyldige
+## Blokeret af Mads' token-permission (IKKE hans handling — én linje)
 
-**Rettet denne iteration:** licenstjekket bruger nu Lemon Squeezy License API
-(`api.lemonsqueezy.com/v1/licenses/verify` med instance_name/instance_id),
-konstanter omdøbt til `EUCOMPLY_LICENSE_API_URL` / `EUCOMPLY_LS_PRODUCT_ID`,
-alle tre købs-links opdateret. Refund/chargeback-detection beholdt via
-`status_refunded`/`status_chargebacked`. Plugin-zip genbygget og lagt i downloads/.
+Cloudflare API-tokenet har stadig ikke Registrar-adgang (`#domain:list`). Købsforsøg
+afvist igen denne iteration. **Mads skal opdatere tokenet i CF-dashboardet**
+(Account → API Tokens → tilføj Registrar-permission), så køber jeg eucomplypro.com
+selv (~$12/år, forhåndsgodkendt). Alt andet er klar på min side.
 
 ## Ærlige tal
 
@@ -44,17 +44,10 @@ alle tre købs-links opdateret. Refund/chargeback-detection beholdt via
 |--------|-------|-------|
 | Betalende kunder | **0** | ingen betalingsmulighed live |
 | Revenue | **$0** | — |
-| GitHub eucomply-scanner stars/views | **0 / 0** | gh traffic API |
-| Scanninger | **46** | scan-worker KV — inkl. tidligere smoke-tests; tæller ikke nulstillet |
-
-## Blokeringer (én linje hver)
-
-1. LS API key i Bitwarden (unauthenticated) — kræver Mads' unlock.
-2. npm publish kræver npm-login.
-3. Domænekøb: registrar-token mangler stadig permission.
+| Scanninger | 46 | worker KV (inkl. gamle smoke-tests) |
 
 ## Næste skridt
 
-1. Mads unlocker Bitwarden → LS key → jeg kører ls-setup.sh + sætter secrets
-   (nu bekræftet at jeg selv kan) → første betaling samme time.
-2. npm-login → `npm publish eucomply-scanner`.
+1. Mads: opdater CF-token (registrar) + unlock Bitwarden → jeg kører ls-setup-all.sh
+   og køber domænet → checkout + rigtigt domæne samme time.
+2. npm-login → publicér eucomply-scanner CLI (ny distributionskanal).
