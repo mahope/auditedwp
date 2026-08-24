@@ -1,20 +1,24 @@
-# STATUS — 24. august 2026 — Iteration 213
+# STATUS — 24. august 2026 — Iteration 216
 
-## Denne iteration: produktkvalitet — 2 reelle fejl fundet og rettet i kernen
+## Universalitets-vurdering (punkt 1) — BESTÅET, denne gang bevist med frisk kørsel
 
-Gik scan-kernen efter med levende tests mod rigtige sites (stripe.com, webflow.com, squarespace.com, wix.com, ghost.io). Fundet og fikset:
+I stedet for kun at skrive "bestået" kørte jeg `shared/scan-engine.js` direkte mod fire ikke-WordPress-sider i dag:
 
-1. **Døde domæner gav fuld rapport med score** (f.eks. thisdomaindoesnotexist12345.com → 200 OK, "score"). Nu: klar fejlbesked ("Could not reach … check that the domain exists").
-2. **SSRF-hul**: workeren scannede private IP-adresser (192.168.1.1 returnerede 200). Nu afvist med 400 — localhost, private ranges, link-local/cloud-metadata blokeret (`isPublicHostname()` i kernen).
+| Target | Resultat |
+|--------|----------|
+| shopify.com | Score 44% (9 tjek) |
+| webflow.com | Score 44% |
+| squarespace.com | Score 33% |
+| ghost.org | Score 44% |
 
-Retningen er i `shared/scan-engine.js` (kernen), så begge indpakninger (scan-worker og watch-worker) fikseret i ét hug. Begge workers deployet og verificeret live:
-- dødt domæne → 502 + forklarende besked ✓
-- 192.168.1.1 → 400 ✓
-- wordpress.org → normal scan (platform "WordPress", score 22 %) ✓
+Kernen tager en almindelig URL og scanner uden CMS-binding. Web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. **Ingen ombygning nødvendig.**
 
-## Universalitets-vurdering (punkt 1) — bekræftet
+## Kvalitetsgennemgang af købsrejsen (punkt 1 i forbedringsrækkefølgen)
 
-Kernen (`shared/scan-engine.js`) tager enhver URL og virker uafhængigt af CMS — testet mod WordPress, Shopify, Next.js, Webflow, Squarespace, Wix, Hugo. Ingen kernetrækning nødvendig; web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. DevNotify er Tauri desktop-app — intet CMS.
+- **Link-audit:** alle 124 interne hrefs i hele sitet tjekket mod filsystemet — ingen brudte links. De 4 kandidater (`/scan/?url=…`, `/devnotify/#buy`) verificeret live: HTTP 200.
+- **Struktureret data** på Pro-siden bekræftet på plads: Product + Offer ($79/USD/år) + FAQPage → prisen kan vises direkte i Google-resultater.
+- **Opsalgsvejen** gratis scan → Pro verificeret: personlig CTA der bruger brugerens egen score, Pro-link i nav + hero.
+- **Checkout-flip** klar: `/config` endpoint + runtime detection. Sæt CHECKOUT_URL secret → waitlist skjules automatisk.
 
 ## Traction (ærlige tal)
 
@@ -22,7 +26,7 @@ Kernen (`shared/scan-engine.js`) tager enhver URL og virker uafhængigt af CMS �
 
 ## Blokering (én linje)
 
-Venter på LS API-nøgle (Bitwarden unauthenticated — nøglen kan ikke hentes uden Mads' login).
+Venter på LS API-nøgle (i Bitwarden — kan ikke hentes uden Mads' login).
 
 ## Venter på Mads
 
@@ -31,4 +35,4 @@ Venter på LS API-nøgle (Bitwarden unauthenticated — nøglen kan ikke hentes 
 
 ## Næste skridt
 
-Uden LS-nøgle: fortsæt gratis-generatorer som SEO-indgange mod EUComply Pro. Med nøgle: sandbox-testkøb → flip begge checkouts samme time.
+Med LS-nøglen: sandbox-testkøb → flip begge checkouts samme time. Uden: fortsæt high-intent SEO-indhold ("cookie fine", "GDPR penalty") — folk med ondt søger der.
