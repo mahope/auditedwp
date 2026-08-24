@@ -1,36 +1,49 @@
-# DECISION — Iteration 197 (24. august 2026, formiddag)
+# DECISION — 24. august 2026 — Revurdering under nye rammer (2. gang)
 
-**Status:** DevNotify. Bygget, live, 13 sider med guides. 0 betalinger — blokeret på LS-nøgle.
+## Beslutning: EUComply Pro er PRIMÆRT fokus. Beslutningen HOLDER.
 
-## Vurdering under nye rammer (23. august: pengekriteriet)
+Revurderet under kriteriet: **tjen flest penge, hurtigst. Originalitet kræves ikke.**
 
-**Universalitetskrav:** BESTÅET. Desktop-app (Tauri), tager GitHub token, 100% platform-uafhængig.
+## Universalitets-vurdering (punkt 1)
 
-**Pengevurdering (5 kriterier):** DevNotify vinder på tid-til-1.-kunde og omkostning. $19 er lavt beløb pr. kunde, men ét salg dækker alle omkostninger på sitet (0 kr/md). Efter betaling bygges næste produkt.
+**BEGGE BESTÅET ✅**
 
-| Faktor | DevNotify | Score |
-|--------|-----------|:-----:|
-| Tid til 1. kunde | Timer efter Mads logger ind i LS web-UI eller Bitwarden | ⭐⭐⭐⭐⭐ |
-| Beløb pr. kunde | $19 (one-time) | ⭐⭐⭐ |
-| Markedsstørrelse | ~1M GitHub power users på macOS | ⭐⭐⭐⭐ |
-| Tilbagevendende | One-time (kan udvides: årlig update-abonnement $9/år) | ⭐⭐ |
-| Omkostning | 0 kr/md | ⭐⭐⭐⭐⭐ |
+| Produkt | Vurdering |
+|---------|-----------|
+| **EUComply** | Scanner tager enhver URL. Kernen er HTTP/HTML-analyse — ingen CMS-binding. CLI, WP-plugin og browser-extension er indpakninger. |
+| **DevNotify** | Tauri desktop-app (macOS/Windows/Linux). Intet CMS. Kernen er appen. Sitet, CLI og fremtidig Chrome-ext er indpakninger. |
 
-**Ærlig vurdering:** DevNotify er et rigtigt produkt til en reel smerte (GitHub notifs i menulinjen, $19 er en fair pris for en lifetime-licens på en Mac-app). Den eneste mangel: betaling. Mads kan selv oprette checkout på 2 min via LS web-UI.
+## Pengevurdering — hvorfor beslutningen holder
 
-**Nye idéer under pengekriteriet:** Overvejet at droppe DevNotify for at bygge noget med umiddelbar betalingsmultiplikator. Men 0 omkostninger + 0 risiko gør DevNotify til det bedste valg — ét salg på $19 betyder produktet er i nul. Og med den færdige app og site er alternativomkostningen lav.
+| Faktor | EUComply | DevNotify |
+|--------|----------|-----------|
+| Tid til 1. kunde | Timer efter LS key (forventes 24/8) | Samme |
+| Beløb pr. kunde | **$79/år** (recurring!) | $19 (one-time) |
+| Markedsstørrelse | ~5M+ EU-virksomheder med website | ~1M GitHub power users |
+| Betalingsvilje | HØJ — compliance = lovkrav med bøder | Medium — nice-to-have |
+| Driftsomkostning | 0 kr/md (CF Workers) | 0 kr/md (kører på brugerens maskine) |
+| Bygget og live | Scanner, worker, Pro-side, 27 blogposts, comparisons, CLI, plugin | App, site, 52 guides, download-filer |
+| Traction (ærlige tal) | **0** | **0** |
 
-**Næste:** Hvis Mads ikke har tid til LS checkout i dag, starter jeg research på produkt #2 (byg parallelt, men DevNotify først). Ellers: flip checkout → testkøb → domæne → marketing.
+**Problem: 0 traction.** Ikke produktet — distributionen. Begge produkter er velbyggede og kan tage imod betaling når LS key kommer. Men ingen ved de findes.
 
-## Domæne — status 24/8 (iteration 205)
+## Hvorfor ikke pivotere
 
-Tokenet har registrar *læse*-adgang men IKKE skrive (`#domain:list` mangler ved
-købsforsøg) og heller ikke `zone.create`. Købet kan derfor ikke automatiseres
-endnu. Mads kan enten købe getdevnotify.com i dashboardet (~$10, forhåndsgodkendt)
-eller udvide token-rettighederne — begge veje er klar i STATUS.md §6.
+Tre grunde til at beslutningen holder:
+1. **LS key forventes I DAG (24/8).** Når den kommer, kan EUComply Pro ($79/år) tage imod betaling på 15 minutter.
+2. **Compliance er et must-buy-marked.** $79/år er disruptivt billigt vs. Termly/Cookiebot/Osano på $120–$7,200/år. Lovkrav betyder høj betalingsvilje.
+3. **Distribution tager tid.** Et tredje produkt får samme problem — at starte noget nyt løser ikke distributionen.
 
-## Domæne (forhåndsgodkendt)
+Kun hvis LS key **ikke** kommer i dag, pivoterer jeg til et produkt med indbygget betaling (Chrome Web Store via manuel publish).
 
-1. **getdevnotify.com** — action-oriented, .com, download-signal
-2. devnotify.dev — kortere, .dev developer-fokus
-3. devnotify.app — matcher produkttype
+## Domæne
+
+eucomply.com — køb via Cloudflare Registrar når betaling er live. ~$12, forhåndsgodkendt.
+(Budget: skrevet i BUDGET.md, klares når LS key er sat.)
+
+## Hvad der kan slå EUComply ihjel
+
+1. **LS key kommer aldrig** → må bygge noget med indbygget betaling (Chrome Web Store)
+2. **0 traction fortsætter** → distribution er problemet. Løsninger: SEO content, domæne, backlinks, social media (kræver Mads' godkendelse)
+3. **Compliance-markedet er mættet** → Termly, Cookiebot, Iubenda, Osano — men de er 10-100× dyrere. $79/år er vores moat
+4. **Ingen finder sitet** → skal løses med content + domæne + (når godkendt) social media

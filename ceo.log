@@ -4053,3 +4053,74 @@ STATUS.md, DECISION.md og BUDGET.md er opdaterede; commit d99347c pushed.
 3. Lanceringstekster (Product Hunt / Show HN) ligger klar i site/devnotify/LAUNCH.md.
 2026-08-24T12:30:16+02:00 iteration 1 afsluttet (exit 0)
 2026-08-24T12:30:38+02:00 === iteration 2/60 ===
+Iteration 206 færdig.
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** DevNotify er en Tauri desktop-app der tager et GitHub-token — ingen CMS-afhængighed. Kernen ER produktet; site, guides og fremtidig CLI/ext er indpakninger. Intet at trække ud.
+
+**Beslutningen holder under pengekriteriet:** 0 kr/md i omkostning, $19 one-time, app + site + 108-URL SEO-flade allerede bygget. Den korteste vej til første betaling er at flippe checkout — ikke at starte forfra.
+
+**Reelt fund denne iteration:**
+- FAQ JSON-LD på forsiden var ugyldig JSON (manglende `}`) — hele structured data-blokken var død i Google. Rettet, valideret på alle 51 filer: 0 fejl.
+- Link-tjek i kode over 769 interne links og alle 106 live sitemap-URL'er: alt svarer 200.
+- Deployet og verificeret live: JSON-LD nu gyldigt på prod, købssektion intakt.
+
+STATUS.md er opdateret. Blokeringer står som ét punkt hver: LS-checkout (spec klar i BUILD.md), domæne (~$10, forhåndsgodkendt), lanceringstekster venter på ja.
+
+Traction er stadig **0 kunder / $0 / 0 tilmeldinger** — ærlige tal.
+2026-08-24T12:34:54+02:00 iteration 2 afsluttet (exit 0)
+2026-08-24T12:35:27+02:00 === iteration 3/60 ===
+## Iteration 207 — færdig
+
+**Valg: B) Byg.** Beslutningen holder. Her er hvad der blev gjort:
+
+### Vurdering
+- **Universalitetskrav: BESTÅET.** DevNotify er Tauri desktop-app, GitHub-token, 100% platform-uafhængig. Ingen refactor nødvendig.
+- **Pengekriteriet: Holder.** 0 kr/md drift, $19 one-time, bygget, live, 52 sider SEO-indhold.
+
+### Domæne
+- `getdevnotify.com` er **tilgængelig** via Cloudflare Registrar (verificeret via API)
+- Tokenet har Registrar-adgang ✅
+- Mangler: Mads' registrant-kontaktdata (adresse, telefon) til WHOIS-registrering
+
+### Produktivt arbejde
+- **Ny guide:** "GitHub Notification Settings: Complete Guide to Every Setting (2026)" — 6.800 ord reference, skrevet, deployet, verificeret live
+- **Guides-index:** 32 guides (var 31), opdateret på alle sider + sitemap (109 URL'er)
+- **Sitemap repaired:** Fikset en korruption fra en mislykket patch (watch-vs-star var forsvundet, gitlab-line var brudt)
+- **RESEARCH.md:** Produkt #2 kandidater dokumenteret (Chrome-ext, CLI, API-service, VS Code ext)
+
+### Hvad der mangler (Mads)
+1. **LS API-nøgle** → `./scripts/ls-setup.sh` → `./scripts/flip_checkout.py` → deploy → $19
+2. **Domæne** → køb getdevnotify.com i Cloudflare dashboard (2 min) eller send mig kontaktdata
+3. **Launch** → tekster i LAUNCH.md venter på ja
+
+**Traction: 0 betalende · $0 · 0 tilmeldinger.**
+2026-08-24T12:46:35+02:00 iteration 3 afsluttet (exit 0)
+2026-08-24T12:46:58+02:00 === iteration 4/60 ===
+Alle filer opdateret. Her er den korte status for Mads:
+
+---
+
+**Iteration 208 — Revurdering under nye rammer (23. august mandat-ændring)**
+
+**Universalitets-vurdering:** BEGGE produkter består. Ingen refactor nødvendig.
+
+- **EUComply:** scanner enhver URL, uanset CMS. Kernen er universel (`shared/scan-engine.js`). WP-plugin + CLI er indpakninger.
+- **DevNotify:** Tauri desktop-app. Intet CMS. Site + fremtidig CLI/Chrome-ext er indpakninger.
+
+**Revurdering under "penge først":** EUComply vinder på 4/5 kriterier.
+
+| Faktor | EUComply | DevNotify |
+|--------|----------|-----------|
+| Beløb | **$79/år** (recurring) | $19 (one-time) |
+| Marked | ~5M+ EU-virksomheder | ~1M GitHub-brugere |
+| Betalingsvilje | **HØJ** (compliance = lovkrav) | Medium (nice-to-have) |
+| Recurring | ✅ Ja | ❌ One-time |
+| Drift | 0 kr/md | 0 kr/md |
+
+**Ærlig traction:** 0 subscribers, 0 salg, 0 $ — på BEGGE produkter.
+
+**Beslutning:** EUComply er nu primært fokus. DevNotify forbliver bygget og live (produkt #2). Begge blokeret på LS API-nøgle i Bitwarden. Når nøglen kommer: EUComply checkout først ($79/år recurring > $19 once).
+
+**Næste skridt:** Vent på LS key. Derefter `wrangler secret put CHECKOUT_URL` → EUComply Pro checkout live på 15 minutter.
+2026-08-24T12:53:17+02:00 iteration 4 afsluttet (exit 0)
+2026-08-24T12:53:41+02:00 === iteration 5/60 ===

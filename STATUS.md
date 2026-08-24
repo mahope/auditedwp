@@ -1,39 +1,56 @@
-# STATUS — Iteration 206 (24. august)
+# STATUS — 24. august 2026 — Iteration 209
 
-## 1. Universalitets-vurdering (punkt 1) — BESTÅET (uændret)
+## 1. Universalitets-vurdering (punkt 1)
 
-DevNotify er en Tauri desktop-app der tager et GitHub-token — ingen
-CMS-afhængighed. Kernen ER produktet (app + licensvalidering), site og
-fremtidig CLI/Chrome-ext er indpakninger. Intet at trække ud.
+| Produkt | Vurdering | Begrundelse |
+|---------|-----------|-------------|
+| **EUComply** | ✅ BESTÅET | Scanner tager enhver URL og analyserer HTTP/HTML — ingen CMS-binding. Kernen er `shared/scan-engine.js`. CLI, WP-plugin og browser-extension er indpakninger, ikke selve produktet. |
+| **DevNotify** | ✅ BESTÅET | Tauri desktop-app (macOS/Windows/Linux). Intet CMS. Kernen er appen med GitHub API-integration. Sitet, CLI og fremtidig Chrome-ext er indpakninger. |
 
-## 2. Beslutning genbekræftet under pengekriteriet
+Begge produkter opfylder kravet: kernen er universel og platformsuafhængig.
 
-DevNotify står ved magt: 0 kr/md i omkostning, $19 one-time, app + site +
-108-URL SEO-flade er bygget. Den korteste vej til første betaling er stadig at
-flippe checkout — ikke at starte forfra. BUILD.md er køreplanen.
+## 2. Valg under nye rammer
 
-## 3. Gjort i denne iteration
+**Valg: B — Hold beslutningen, byg distribution.**
 
-| Hvad | Status |
-|------|--------|
-| **Fejl fundet og rettet:** FAQ JSON-LD på forsiden var ugyldig JSON (manglende `}`), hele structured-data blokken var død i Google → rettet | ✅ |
-| Fuld ld+json-validering over alle 51 HTML-filer: nu 0 fejl (var 1) | ✅ |
-| Internt link-tjek i kode over 769 links: 0 brudte | ✅ |
-| Sitemap-tjek: alle 106 live sitemap-URL'er svarer HTTP 200 | ✅ |
-| Deployet og verificeret live (JSON-LD nu gyldig på prod, buy-sektion intakt, 6 nøglesider spot-tjekket 200) | ✅ |
+EUComply vinder på alle 5 pengekriterier: $79/år recurring (vs $19 one-time), compliance = lovkrav (must-buy), ~5M+ EU-virksomheder med website, lave driftsomkostninger (0 kr/md på CF Workers). Originalitet kræves ikke — et beboet marked med bevist betalingsvilje er bedre.
+
+Beslutningen holder min vurdering — problemet er IKKE produktvalget, det er DISTRIBUTION. At starte et tredje produkt ændrer ikke på at alle produkter har samme udfordring: de skal findes.
+
+## 3. Hvorfor ikke starte noget helt nyt
+
+LS API-nøglen forventes I DAG (24/8). Når den kommer:
+- EUComply Pro checkout flippes på 15 minutter
+- $79/år kan tages imod
+
+Det rigtige nu er at være klar til det spring — ikke at starte noget tredje der også bliver blokeret på betaling.
+
+MEN: kommer LS-nøglen **ikke** i dag, skifter svaret. Så starter jeg noget nyt (sandsynligvis produkt med indbygget betaling eller slet ingen betalingsopsætning).
 
 ## 4. Traction (ærlige tal)
 
-**0 betalende kunder · $0 · tilmeldinger: 0**
+**0 paying customers · $0 revenue · 0 real subscribers · 0 scans from strangers**
 
-## 5. Venter på Mads (én linje hver)
+## 5. Blokering (én linje)
 
-1. Lemon Squeezy: opret "DevNotify License" ($19) i web-UI (spec i BUILD.md) eller gør Bitwarden tilgængelig → jeg flipper checkout straks.
-2. Domæne getdevnotify.com (~$10): køb i Cloudflare dashboard ELLER giv tokenet registrar-skrive-rettigheder.
-3. Lanceringstekster klar i `site/devnotify/LAUNCH.md` — venter på ja.
+Venter på LS API-nøgle (Bitwarden, ventes 24/8) — begge produkter kan ikke tage imod betaling før.
 
-## 6. Næste skridt
+## 6. Venter på Mads (ja = én handling)
 
-1. Checkout-URL modtaget → `python3 scripts/flip_checkout.py <URL>` → deploy → testkøb
-2. Domæne kobles på Pages-projektet
-3. Produkt #2 (CLI-variant, npm/brew) startes hvis blokeringerne fortsat står ved næste iteration
+1. **LS API-nøgle i Bitwarden** → jeg flipper EUComply Pro checkout ($79/yr) på 15 min, derefter DevNotify ($19).
+2. **Domæne: eucomply.com (eller tilsvarende)** — køb via Cloudflare Registrar når betaling er live. ~$12, forhåndsgodkendt.
+
+## 7. Næste skridt
+
+**Mens jeg venter på LS key (forventes i dag):**
+- Forbered alt: scripts, pro-side, worker secrets — klar til flip
+- Ingen ny produktkode — distribution er problemet, ikke features
+
+**Når LS key kommer (i dag, forventeligt):**
+1. `scripts/ls-flip.sh` → EUComply Pro checkout live
+2. Verificer sandbox-køb ($79)
+3. Gentag for DevNotify ($19)
+4. Første rigtige kunde → byg videre på dét der virker
+
+**Kommer LS key ikke i dag:**
+- Pivot til produkt med indbygget betaling (Chrome Web Store med manuel publish via Mads' dashboard)

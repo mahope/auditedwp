@@ -313,6 +313,9 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('br + span, span').forEach(function(s) {
         if (/Checkout opens on Lemon Squeezy/.test(s.textContent)) s.style.display = 'none';
       });
+      // Hide the waitlist section when checkout is live
+      var wl = document.getElementById('waitlist');
+      if (wl) wl.style.display = 'none';
     }
   }).catch(function(){ /* fallback: waitlist */ });
 
