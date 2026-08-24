@@ -1,56 +1,44 @@
-# STATUS — 24. august 2026 — Iteration 209
+# STATUS — 24. august 2026 — Iteration 210
 
-## 1. Universalitets-vurdering (punkt 1)
+## 1. Universalitets-vurdering (punkt 1) — genbekræftet med kode-fund
 
-| Produkt | Vurdering | Begrundelse |
+| Produkt | Vurdering | Bevis (kode + live-test) |
 |---------|-----------|-------------|
-| **EUComply** | ✅ BESTÅET | Scanner tager enhver URL og analyserer HTTP/HTML — ingen CMS-binding. Kernen er `shared/scan-engine.js`. CLI, WP-plugin og browser-extension er indpakninger, ikke selve produktet. |
-| **DevNotify** | ✅ BESTÅET | Tauri desktop-app (macOS/Windows/Linux). Intet CMS. Kernen er appen med GitHub API-integration. Sitet, CLI og fremtidig Chrome-ext er indpakninger. |
+| **EUComply** | ✅ BESTÅET | Kernen `shared/scan-engine.js` er ren HTTP/HTML-analyse, nul CMS-binding. Live-verificeret på Shopify (platform: "Shopify", score 44 %), Wix ("Wix.com Website Builder", 56 %), Webflow (44 %). WP-plugin og Chrome-ext er indpakninger. |
+| **DevNotify** | ✅ BESTÅET | Tauri-app (macOS/Win/Linux), ingen CMS-afhængighed. Sitet + 35 guides er indpakninger. |
 
-Begge produkter opfylder kravet: kernen er universel og platformsuafhængig.
+Ingen kernetrækning nødvendig — begge kerner er allerede platformsuafhængige.
 
-## 2. Valg under nye rammer
+## 2. Denne iteration: ærligheds-rundgang (punkt 5: det der står mellem besøgende og betaling)
 
-**Valg: B — Hold beslutningen, byg distribution.**
+Gik hele sitet igennem som en fremmed. Fandt og rettede:
 
-EUComply vinder på alle 5 pengekriterier: $79/år recurring (vs $19 one-time), compliance = lovkrav (must-buy), ~5M+ EU-virksomheder med website, lave driftsomkostninger (0 kr/md på CF Workers). Originalitet kræves ikke — et beboet marked med bevist betalingsvilje er bedre.
+1. **Falsk statistik fjernet:** Dashboard viste "Downloaded 12 times this month" — opdigtet tal. → "Included with Pro".
+2. **Demo labellet ærligt:** /pro/dashboard/ lignede et rigtigt kunde-dashboard men kører på shopify.com-demo-data. → tydelig "Live Demo"-overskrift.
+3. **Sample-report fik illustrativ-data-note** i toppen (disclaimer lå kun i bunden).
+4. **2 blogposts uden konverteringslink** (gdpr-for-agencies, nis2-checklist-saas) → fik /pro/-links. Nu har alle 26+ posts en vej mod betaling.
+5. **Duplikat-link rettet** i nis2-vendor-posten (to identiske /pro/-punkter).
+6. **Footer "Deutsch" pegede på gammel AuditedWP WordPress-side** → peger nu på EUComply-impressum-guiden.
+7. **Worker-scan afviser nu test-emails** (@example.com m.fl.) — samme beskyttelse som DevNotify-worker. Ingen flere falske tilmeldinger.
+8. **Scan-tæller-fejl rettet:** /scan-kald blev ALDRIG talt (kun root-pings). Nu tælles rigtige scans; tæller nulstillet til 0.
+9. **Sitemap +3 manglende DevNotify-guides** (109 URLer, XML-valideret).
 
-Beslutningen holder min vurdering — problemet er IKKE produktvalget, det er DISTRIBUTION. At starte et tredje produkt ændrer ikke på at alle produkter har samme udfordring: de skal findes.
+Alt deployet og verificeret live: dashboard-demo-label ✓, sample-note ✓, bloglinks ✓, test-email-afvisning ✓ (`{"error":"Test address rejected."}`), scan-tæller ✓.
 
-## 3. Hvorfor ikke starte noget helt nyt
+## 3. Traction (ærlige tal)
 
-LS API-nøglen forventes I DAG (24/8). Når den kommer:
-- EUComply Pro checkout flippes på 15 minutter
-- $79/år kan tages imod
+**0 paying customers · $0 revenue · 0 real subscribers · scan-counter = 0** (nulstillet efter fejl; mine egne probes er slettet fra KV).
 
-Det rigtige nu er at være klar til det spring — ikke at starte noget tredje der også bliver blokeret på betaling.
+## 4. Blokering (én linje)
 
-MEN: kommer LS-nøglen **ikke** i dag, skifter svaret. Så starter jeg noget nyt (sandsynligvis produkt med indbygget betaling eller slet ingen betalingsopsætning).
+Venter på LS API-nøgle (Bitwarden) og Chrome Web Store OAuth-credentials.
 
-## 4. Traction (ærlige tal)
+## 5. Venter på Mads
 
-**0 paying customers · $0 revenue · 0 real subscribers · 0 scans from strangers**
+1. **LS API-nøgle i Bitwarden** → flipper EUComply Pro ($79/yr) checkout på 15 min, derefter DevNotify ($19).
+2. **Domæne: eucomply.com** (~$12, forhåndsgodkendt) — når betaling er live.
 
-## 5. Blokering (én linje)
+## 6. Næste skridt
 
-Venter på LS API-nøgle (Bitwarden, ventes 24/8) — begge produkter kan ikke tage imod betaling før.
-
-## 6. Venter på Mads (ja = én handling)
-
-1. **LS API-nøgle i Bitwarden** → jeg flipper EUComply Pro checkout ($79/yr) på 15 min, derefter DevNotify ($19).
-2. **Domæne: eucomply.com (eller tilsvarende)** — køb via Cloudflare Registrar når betaling er live. ~$12, forhåndsgodkendt.
-
-## 7. Næste skridt
-
-**Mens jeg venter på LS key (forventes i dag):**
-- Forbered alt: scripts, pro-side, worker secrets — klar til flip
-- Ingen ny produktkode — distribution er problemet, ikke features
-
-**Når LS key kommer (i dag, forventeligt):**
-1. `scripts/ls-flip.sh` → EUComply Pro checkout live
-2. Verificer sandbox-køb ($79)
-3. Gentag for DevNotify ($19)
-4. Første rigtige kunde → byg videre på dét der virker
-
-**Kommer LS key ikke i dag:**
-- Pivot til produkt med indbygget betaling (Chrome Web Store med manuel publish via Mads' dashboard)
+- Kommer LS key i dag: sandbox-testkøb → første rigtige kunde.
+- Ellers: fortsæt ærligheds-gennemgang af DevNotify-sitet (sammetype tjek) + udvid gratis-værktøjerne (flere generatorer = flere SEO-indgange mod Pro).
