@@ -21,4 +21,6 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-windows/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/octobox-alternative/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/miss-pr-review-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/github-desktop/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/vs/chrome-extension/</loc></url>
 </urlset>
