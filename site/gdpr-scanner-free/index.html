@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free GDPR Scanner — Check Any Website in 10 Seconds | EUComply</title>
+<meta name="description" content="Free GDPR scanner for any website. Paste your URL and instantly check cookie consent, trackers, Consent Mode v2 and security headers against GDPR and ePrivacy rules. No sign-up, no installation — works on WordPress, Shopify, Wix, Webflow, Squarespace or any custom stack.">
+<link rel="canonical" href="https://auditedwp.pages.dev/gdpr-scanner-free/">
+<meta property="og:title" content="Free GDPR Scanner — Any Website, 10 Seconds, No Sign-Up">
+<meta property="og:description" content="Paste your URL and see if your site has the technical gaps behind real EU privacy fines. Free instant scan, every platform.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://auditedwp.pages.dev/gdpr-scanner-free/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{text-align:center;padding:52px 0 32px}
+h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;max-width:720px;margin:0 auto 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto}
+.scanbox{display:flex;gap:10px;max-width:560px;margin:28px auto 8px;flex-wrap:wrap;justify-content:center}
+.scanbox input{flex:1;min-width:220px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
+.scanbox input:focus{border-color:var(--accent)}
+.scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.scanbox button:hover{background:var(--accent-dark)}
+.scanbox button[disabled]{opacity:.6;cursor:wait}
+.err{color:var(--fail);font-size:14px;text-align:center;min-height:20px}
+.examples{margin-top:4px}
+.examples span{color:var(--muted);font-size:13px;margin-right:6px}
+.examples button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;margin:3px 2px}
+.examples button:hover{border-color:var(--accent);color:var(--accent)}
+.results{display:none;margin-top:36px;text-align:left}
+.scorecard{border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;background:var(--soft)}
+.scorebig{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.scorebig.good{color:var(--ok)}.scorebig.mid{color:var(--warn)}.scorebig.bad{color:var(--fail)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.card{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:14px 16px;font-size:14px;text-align:left}
+.card.pass{border-left-color:var(--ok)}.card.fail{border-left-color:var(--fail)}.card.warn{border-left-color:var(--warn)}
+.card b{display:block;margin-bottom:4px}
+.pill{float:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
+.card.pass .pill{background:#e6f4ea;color:var(--ok)}.card.fail .pill{background:#fdeaea;color:var(--fail)}.card.warn .pill{background:#fff3e2;color:var(--warn)}
+.card p{color:var(--muted);font-size:13px;margin-top:4px}
+.pro-cta{margin-top:22px;text-align:center}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;letter-spacing:-.02em;margin-bottom:10px}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin-bottom:12px}
+li{margin-bottom:6px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:18px 0;font-size:14.5px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td:first-child{font-weight:600}
+details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer;font-size:15px}
+details p{margin-top:8px;color:var(--muted);font-size:14.5px}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer a{color:var(--accent)}
+@media(max-width:600px){h1{font-size:25px}h2{font-size:21px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/pro/">Pro $79/year</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <h1>Free GDPR scanner for <em>any website</em> — results in 10 seconds.</h1>
+  <p class="sub">No sign-up, no installation, no trial. Paste your domain and get a plain-language report on the technical checks regulators actually run: cookie consent, pre-consent trackers, Google Consent Mode v2 and security headers. Works on WordPress, Shopify, Wix, Squarespace, Webflow, Next.js — or hand-written HTML.</p>
+
+  <form id="scan-form" class="scanbox">
+    <input id="url-input" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Your website URL" autocomplete="url">
+    <button id="scan-btn" type="submit">Scan my site free</button>
+  </form>
+  <p class="err" id="scan-err" role="alert"></p>
+  <div class="examples">
+    <span>Try:</span>
+    <button type="button" data-url="wordpress.org">wordpress.org</button>
+    <button type="button" data-url="squarespace.com">squarespace.com</button>
+    <button type="button" data-url="example.com">example.com</button>
+  </div>
+
+  <div class="results" id="results" aria-live="polite">
+    <div class="scorecard">
+      <div style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">GDPR score</div>
+      <div class="scorebig" id="score-num">–<small style="font-size:22px;color:var(--muted)">%</small></div>
+      <div style="color:var(--muted);font-size:13px;margin-top:6px" id="score-for"></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="pro-cta">
+      <a class="btn" href="/pro/">Keep checking daily with EUComply Pro — $79/year →</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>What this free GDPR scanner checks</h2>
+    <p>The scan runs nine automated checks against your live page over plain HTTP/HTML. The ones that map directly to enforcement:</p>
+    <table>
+      <tr><th>Check</th><th>GDPR / ePrivacy link</th></tr>
+      <tr><td>Cookies set before consent</td><td>ePrivacy Directive: prior consent required for non-essential cookies. This is the single most common finding in EU enforcement against ordinary business sites.</td></tr>
+      <tr><td>Google Consent Mode v2</td><td>Required since March 2024 for EEA ad personalisation. Missing signals silently restrict Google Ads measurement.</td></tr>
+      <tr><td>IAB TCF signals</td><td>The framework most large ad platforms use to receive consent. Missing wiring means a visitor's "Reject" may never reach them.</td></tr>
+      <tr><td>HTTPS &amp; security headers</td><td>GDPR Art. 32 requires appropriate technical security measures; missing headers are also an OWASP baseline failure.</td></tr>
+      <tr><td>Privacy policy reachable from homepage</td><td>GDPR Art. 13: information must be provided before data collection. An unreachable policy undermines the whole legal basis.</td></tr>
+      <tr><td>Forms with privacy notice links</td><td>Every data-collecting form needs a visible link to your privacy policy.</td></tr>
+    </table>
+    <div class="box">
+      <strong>Fair warning:</strong> a passing score today is not permanent. Marketing adds scripts, CMP settings drift, tag managers change. <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when compliance breaks.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why "free" doesn't mean shallow</h2>
+    <p>Most free GDPR checkers test one thing — whether you have a cookie banner. That misses what regulators actually fine for. This scanner looks at how your site <em>behaves</em>:</p>
+    <ol>
+      <li><strong>Pre-consent tracking.</strong> It detects known analytics and ad scripts (Google Analytics, Meta Pixel, TikTok, Hotjar and more) in the served HTML, alongside whether a consent platform is present to gate them.</li>
+      <li><strong>Consent plumbing.</strong> A banner that exists but isn't wired to Google Consent Mode v2 or IAB TCF means choices may never reach your ad stack — the exact gap behind recent multi-million-euro decisions.</li>
+      <li><strong>Security baseline.</strong> TLS validity plus CSP, HSTS and related headers — GDPR Art. 32's "appropriate technical measures" in their most measurable form.</li>
+    </ol>
+    <p>Deeper background: the <a href="/blog/eu-cookie-consent-guide-2026/">EU cookie consent guide 2026</a>, the <a href="/blog/gdpr-cookie-fines-tracker/">GDPR cookie fines tracker</a>, and our <a href="/blog/website-compliance-scanner-comparison/">scanner comparison</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Frequently asked questions</h2>
+    <details open>
+      <summary>Is this GDPR scanner really free?</summary>
+      <p>Yes. Scanning any URL is free, unlimited, and requires no account or credit card. The paid product, Pro ($79/year), adds daily re-scans, email alerts and auditor-ready PDF documentation — you only need it if you must prove compliance over time.</p>
+    </details>
+    <details>
+      <summary>Does it work outside WordPress?</summary>
+      <p>Yes — that is the point. The scanner analyses HTTP responses and HTML markup, so it works identically on Shopify, Wix, Squarespace, Webflow, Next.js, Drupal, Joomla, static HTML and custom stacks. No plugin, app or server access needed.</p>
+    </details>
+    <details>
+      <summary>Do you store my URL or scan results?</summary>
+      <p>No. Each scan runs in memory and returns its result immediately. No URLs, IPs or scan data are logged or stored.</p>
+    </details>
+    <details>
+      <summary>Is the result a legal opinion?</summary>
+      <p>No. The scanner identifies technical patterns — missing consent signals, trackers without gating, absent security headers. These are strong indicators of compliance risk, but only a qualified lawyer can give legal advice about your specific situation.</p>
+    </details>
+    <details>
+      <summary>What should I do if my site fails?</summary>
+      <p>Start with the failing checks in the report: each one names the concrete pattern found. For consent issues, review your CMP configuration so scripts only load after consent, and connect Google Consent Mode v2. Re-scan after each fix — it takes ten seconds.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/gdpr-compliance-check/">GDPR compliance check</a> · <a href="/cookie-banner-check/">Cookie banner check</a> · <a href="/scan/">Scanner</a> · <a href="/privacy/">Privacy</a></div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Is this GDPR scanner really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Scanning any URL is free, unlimited, and requires no account or credit card. Pro ($79/year) adds daily re-scans, email alerts and auditor-ready PDF documentation."}},
+    {"@type":"Question","name":"Does it work outside WordPress?","acceptedAnswer":{"@type":"Answer","text":"Yes. The scanner analyses HTTP responses and HTML markup, so it works identically on Shopify, Wix, Squarespace, Webflow, Next.js, Drupal, Joomla, static HTML and custom stacks."}},
+    {"@type":"Question","name":"Do you store my URL or scan results?","acceptedAnswer":{"@type":"Answer","text":"No. Each scan runs in memory and returns its result immediately. No URLs, IPs or scan data are logged or stored."}},
+    {"@type":"Question","name":"Is the result a legal opinion?","acceptedAnswer":{"@type":"Answer","text":"No. The scanner identifies technical patterns such as missing consent signals and ungated trackers. Only a qualified lawyer can give legal advice about your specific situation."}},
+    {"@type":"Question","name":"What should I do if my site fails?","acceptedAnswer":{"@type":"Answer","text":"Start with the failing checks in the report, each naming the concrete pattern found. Fix consent gating and Google Consent Mode v2 wiring, then re-scan - it takes ten seconds."}}
+  ]
+}
+</script>
+
+<script>
+(function() {
+  var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
+  var form = document.getElementById('scan-form');
+  var input = document.getElementById('url-input');
+  var btn = document.getElementById('scan-btn');
+  var errEl = document.getElementById('scan-err');
+  var results = document.getElementById('results');
+  var cardsEl = document.getElementById('cards');
+
+  document.querySelectorAll('.examples button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      input.value = b.dataset.url;
+      form.requestSubmit();
+    });
+  });
+
+  function verdict(c) {
+    if (c.warn) return 'warn';
+    return c.pass ? 'pass' : 'fail';
+  }
+  function pillText(c) {
+    if (c.warn && c.pass === false) return 'Check manually';
+    if (c.warn) return 'Warning';
+    return c.pass ? 'Pass' : 'Fix needed';
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var url = input.value.trim();
+    errEl.textContent = '';
+    if (!url) { errEl.textContent = 'Please enter your domain.'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Scanning…';
+    try {
+      var r = await fetch(API + '/scan?url=' + encodeURIComponent(url));
+      var d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Scan failed.');
+      render(d);
+    } catch (ex) {
+      errEl.textContent = ex.message || 'Network error. Try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Scan my site free';
+    }
+  });
+
+  function render(d) {
+    results.style.display = 'block';
+    var pct = d.score.pct;
+    var cls = pct >= 80 ? 'good' : (pct >= 50 ? 'mid' : 'bad');
+    var num = document.getElementById('score-num');
+    num.innerHTML = '';
+    num.appendChild(document.createTextNode(pct));
+    num.className = 'scorebig ' + cls;
+    num.insertAdjacentHTML('beforeend', '<small style="font-size:22px;color:var(--muted)">%</small>');
+    var order = ['trackers','cookies','consent_mode_v2','tcf','ssl','headers','legal','forms','dora'];
+    var keys = Object.keys(d.checks).sort(function(a,b){ return (order.indexOf(a)+1||99)-(order.indexOf(b)+1||99); });
+    document.getElementById('score-for').textContent = 'for ' + d.url;
+    cardsEl.innerHTML = '';
+    keys.forEach(function(k) {
+      var c = d.checks[k];
+      var v = verdict(c);
+      var card = document.createElement('div');
+      card.className = 'card ' + v;
+      card.innerHTML =
+        '<span class="pill">' + pillText(c) + '</span>' +
+        '<b>' + (c.label || k) + '</b>' +
+        '<p>' + (c.detail || '') + '</p>';
+      cardsEl.appendChild(card);
+    });
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+})();
+</script>
+</body>
+</html>
