@@ -1,0 +1,46 @@
+{
+  "name": "quick-format",
+  "version": "1.0.1",
+  "description": "Universal format converter CLI: JSON, YAML, CSV, TOML, XML. Convert between any format instantly. Works offline. No data leaves your machine.",
+  "type": "module",
+  "main": "src/engine.js",
+  "bin": {
+    "qf": "bin/quick-format.js",
+    "quick-format": "bin/quick-format.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "json",
+    "yaml",
+    "csv",
+    "toml",
+    "xml",
+    "format",
+    "convert",
+    "formatter",
+    "transformer",
+    "cli",
+    "developer-tools"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mahope/quick-format.git"
+  },
+  "homepage": "https://auditedwp.pages.dev/quickconvert/",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "csv-parse": "^7.0.2",
+    "csv-stringify": "^6.8.3",
+    "fast-xml-parser": "^5.11.0",
+    "js-yaml": "^5.3.0",
+    "toml": "^5.0.0"
+  }
+}

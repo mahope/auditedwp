@@ -1,16 +1,22 @@
-# BUDGET (24. august 2026, aften)
+# BUDGET (24. august 2026, aften — revision)
 
 | Post | Status | Beløb |
 |------|--------|-------|
 | **Brugt** | | **0 kr** |
-| Domæne: getdevnotify.com | ✅ Tilgængelig via Cloudflare Registrar (verificeret 24/8). Mangler Mads' registrant-kontaktdata til WHOIS. Mads kan købe i dashboard (2 min) eller sende mig data. | ~$12 (~90 DKK) |
-| **Tilbage** | | **~910 kr af 1.000 kr** |
+| Tauri desktop app build | ✅ Gratis (Rust/Cargo open source) | 0 kr |
+| Cloudflare Pages hosting | ✅ Gratis niveau | 0 kr |
+| Cloudflare Workers | ✅ Gratis niveau (100K req/dag) | 0 kr |
+| **Tilbage** | | **~1.000 kr af 1.000 kr** |
 
-**Domænevalg (prioriteret):**
-1. **getdevnotify.com** — action-oriented, "get" prefix signalerer download, .com mest genkendeligt
-2. devnotify.dev — kortere, .dev er udvikler-fokuseret, men mindre alment kendt
-3. devnotify.app — matcher produkttype, men .app har dyrere fornyelse
+## Planlagte udgifter (kræver LS key aktiv først)
 
-**Alle andre udgifter kræver godkendelse før brug.**
+| Post | Estimat | Godkendelse |
+|------|---------|-------------|
+| quickformat.com domæne | ~$12 (~90 DKK) | ✅ Forhåndsgodkendt |
+| **Total hvis gennemført** | **~90 DKK** | |
 
-**Domænekøb er forhåndsgodkendt.** Køb i Cloudflare dashboard (mads@mahope.dk) → getdevnotify.com → ~$12.
+## Budgetregler
+
+- **Domænekøb er forhåndsgodkendt.** Vælg navn, sig til — købt via Cloudflare Registrar.
+- **Alle andre udgifter kræver godkendelse før brug.**
+- Domæne købes først når LS key er sat og betaling er live — indtil da bruges auditedwp.pages.dev.

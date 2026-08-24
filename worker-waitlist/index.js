@@ -39,6 +39,21 @@ export default {
     // CORS preflight
     if (request.method === "OPTIONS") return handleOptions(request);
 
+    // GET /config → return checkout URL for dynamic checkout buttons
+    const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/config") {
+      return new Response(JSON.stringify({
+        service: "quickformat-waitlist",
+        checkout_url: env.CHECKOUT_URL || "",
+      }), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=60",
+        },
+      });
+    }
+
     // GET request → return waitlist count (social proof)
     if (request.method === "GET") {
       return handleGetCount(env);

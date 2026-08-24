@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickFormat</title>
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5;padding:16px;user-select:none;-webkit-user-select:none}
+.app{max-width:600px;margin:0 auto}
+h1{font-size:20px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+h1 span{font-size:14px;font-weight:400;color:var(--muted)}
+.sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
+.panel label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.fmt-row{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.fmt-row button{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .1s}
+.fmt-row button:hover{border-color:var(--accent);color:var(--accent)}
+.fmt-row button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+textarea{width:100%;height:140px;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font:13px/1.5 'SF Mono','Fira Code','Consolas',monospace;resize:vertical;background:var(--bg);color:var(--ink);tab-size:2}
+textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+textarea[readonly]{background:var(--soft);cursor:default}
+.action-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;transition:background .1s}
+.btn:hover{background:var(--accent-dark)}
+.btn.small{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:4px 10px;font-size:11px;font-weight:500}
+.btn.small:hover{border-color:var(--accent);color:var(--accent)}
+.status{text-align:center;font-size:12px;min-height:18px;color:var(--muted)}
+.status.error{color:#b03030}.status.ok{color:var(--ok)}
+.badge{display:inline-block;background:#e8f0fe;color:var(--accent);font-size:10px;padding:1px 6px;border-radius:3px;font-weight:600;margin-left:6px}
+.shortcut-hint{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 4px;margin-left:4px;font-family:monospace}
+footer{text-align:center;font-size:11px;color:var(--muted);padding-top:8px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🔄 QuickFormat <span>v1.0 <span class="shortcut-hint">⌥⌘F</span></span></h1>
+  <p class="sub">Convert between JSON · YAML · CSV · TOML · XML</p>
+
+  <div class="panel">
+    <label>Input</label>
+    <div class="fmt-row" id="input-fmt">
+      <button data-v="auto" class="active">Auto</button>
+      <button data-v="json">JSON</button>
+      <button data-v="yaml">YAML</button>
+      <button data-v="csv">CSV</button>
+      <button data-v="toml">TOML</button>
+      <button data-v="xml">XML</button>
+    </div>
+    <textarea id="input" placeholder="Paste or type data here...&#10;e.g. {&quot;name&quot;: &quot;test&quot;}" spellcheck="false"></textarea>
+  </div>
+
+  <div class="action-row">
+    <button class="btn" id="convert-btn">Convert →</button>
+    <button class="btn small" id="swap-btn">⇄ Swap</button>
+    <button class="btn small" id="copy-btn">📋 Copy Output</button>
+    <button class="btn small" id="clear-btn">Clear</button>
+  </div>
+
+  <div class="panel">
+    <label>Output <span class="badge" id="detected-tag"></span></label>
+    <div class="fmt-row" id="output-fmt">
+      <button data-v="json" class="active">JSON</button>
+      <button data-v="yaml">YAML</button>
+      <button data-v="csv">CSV</button>
+      <button data-v="toml">TOML</button>
+      <button data-v="xml">XML</button>
+    </div>
+    <textarea id="output" placeholder="Converted output will appear here..." readonly></textarea>
+  </div>
+
+  <div class="status" id="status">Ready</div>
+
+  <footer>
+    <span>All conversion runs locally.</span>
+  </footer>
+</div>
+
+<script>
+// Tauri invoke bridge
+const invoke = window.__TAURI_INTERNALS__?.invoke;
+
+let inputFmt = 'auto';
+let outputFmt = 'json';
+let detectedFmt = null;
+
+const $ = id => document.getElementById(id);
+const status = $('status');
+const input = $('input');
+const output = $('output');
+const detectedTag = $('detected-tag');
+
+// Format button handlers
+document.querySelectorAll('#input-fmt button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#input-fmt button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    inputFmt = b.dataset.v;
+    if (input.value.trim()) doConvert();
+  });
+});
+
+document.querySelectorAll('#output-fmt button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#output-fmt button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    outputFmt = b.dataset.v;
+    if (input.value.trim()) doConvert();
+  });
+});
+
+// Auto-detect on input (debounced)
+let debounceTimer;
+input.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (input.value.trim()) doConvert();
+    else { output.value = ''; status.textContent = 'Ready'; detectedTag.textContent = ''; }
+  }, 400);
+});
+
+async function detectOnly(text) {
+  if (!invoke) return 'auto';
+  try {
+    return await invoke('detect', { text });
+  } catch { return null; }
+}
+
+async function doConvert() {
+  const text = input.value.trim();
+  if (!text) { output.value = ''; status.textContent = 'Ready'; return; }
+
+  if (!invoke) {
+    status.textContent = 'Desktop app only — use the web version';
+    status.className = 'status error';
+    return;
+  }
+
+  const from = inputFmt === 'auto' ? 'auto' : inputFmt;
+  try {
+    const result = await invoke('convert', { input: text, from, to: outputFmt });
+    output.value = result;
+
+    // Detect the original format for the badge
+    if (inputFmt === 'auto') {
+      const det = await detectOnly(text);
+      detectedTag.textContent = det ? det.toUpperCase() : '';
+    } else {
+      detectedTag.textContent = '';
+    }
+
+    status.textContent = `Converted ✓`;
+    status.className = 'status ok';
+  } catch (e) {
+    status.textContent = '❌ ' + e;
+    status.className = 'status error';
+  }
+}
+
+$('convert-btn').addEventListener('click', doConvert);
+
+$('swap-btn').addEventListener('click', () => {
+  const tmp = input.value;
+  input.value = output.value;
+  output.value = tmp;
+  const tmpFmt = inputFmt;
+  inputFmt = outputFmt;
+  outputFmt = tmpFmt === 'auto' ? 'json' : tmpFmt;
+  document.querySelectorAll('#input-fmt button').forEach(b => b.classList.toggle('active', b.dataset.v === inputFmt));
+  document.querySelectorAll('#output-fmt button').forEach(b => b.classList.toggle('active', b.dataset.v === outputFmt));
+});
+
+$('copy-btn').addEventListener('click', async () => {
+  if (output.value) {
+    try {
+      await navigator.clipboard.writeText(output.value);
+      $('copy-btn').textContent = '✅ Copied!';
+      setTimeout(() => { $('copy-btn').textContent = '📋 Copy Output'; }, 1500);
+    } catch {
+      status.textContent = '❌ Could not copy';
+      status.className = 'status error';
+    }
+  }
+});
+
+$('clear-btn').addEventListener('click', () => {
+  input.value = '';
+  output.value = '';
+  status.textContent = 'Cleared';
+  status.className = 'status';
+  detectedTag.textContent = '';
+});
+</script>
+</body>
+</html>

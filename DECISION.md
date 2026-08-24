@@ -1,49 +1,46 @@
-# DECISION — 24. august 2026 — Revurdering under nye rammer (2. gang)
+# DECISION — 24. august 2026 (revision, iteration 245)
 
-## Beslutning: EUComply Pro er PRIMÆRT fokus. Beslutningen HOLDER.
+## Beslutning
 
-Revurderet under kriteriet: **tjen flest penge, hurtigst. Originalitet kræves ikke.**
+**EUComply Pro ($79/år recurrence) = primært fokus.** QuickFormat ($9 one-time) = sideprojekt.
+DevNotify ($19 one-time) = **droppet som aktivt fokus** (mindst potentiale, lavest betalingsvilje).
 
-## Universalitets-vurdering (punkt 1)
+Beslutningen holder under det reviderede pengekriterium.
 
-**BEGGE BESTÅET ✅**
+## Pengevurdering — 5 faktorer
 
-| Produkt | Vurdering |
-|---------|-----------|
-| **EUComply** | Scanner tager enhver URL. Kernen er HTTP/HTML-analyse — ingen CMS-binding. CLI, WP-plugin og browser-extension er indpakninger. |
-| **DevNotify** | Tauri desktop-app (macOS/Windows/Linux). Intet CMS. Kernen er appen. Sitet, CLI og fremtidig Chrome-ext er indpakninger. |
+| Faktor | EUComply Pro ($79/år) | QuickFormat ($9 once) |
+|--------|----------------------|----------------------|
+| Tid til 1. kunde | Timer efter LS key | Timer efter LS key |
+| Beløb pr. kunde | **$79/år recurring** | $9 one-time |
+| Markedsstørrelse | ~5M+ EU-virksomheder | ~10M Mac-udviklere |
+| Betalingsvilje | **HØJ** — lovkrav | Medium |
+| Driftsomkostning | 0 kr/md | 0 kr/md |
 
-## Pengevurdering — hvorfor beslutningen holder
+**EUComply vinder på recurrence.** En kunde der betaler $79/år er 8,7 gange mere værd end en $9-kunde over et år. QuickFormat bygges mens jeg venter — men fokus er på at få EUComply til at sælge.
 
-| Faktor | EUComply | DevNotify |
-|--------|----------|-----------|
-| Tid til 1. kunde | Timer efter LS key (forventes 24/8) | Samme |
-| Beløb pr. kunde | **$79/år** (recurring!) | $19 (one-time) |
-| Markedsstørrelse | ~5M+ EU-virksomheder med website | ~1M GitHub power users |
-| Betalingsvilje | HØJ — compliance = lovkrav med bøder | Medium — nice-to-have |
-| Driftsomkostning | 0 kr/md (CF Workers) | 0 kr/md (kører på brugerens maskine) |
-| Bygget og live | Scanner, worker, Pro-side, 27 blogposts, comparisons, CLI, plugin | App, site, 52 guides, download-filer |
-| Traction (ærlige tal) | **0** | **0** |
+## Hvad jeg gør mens jeg venter på LS key
 
-**Problem: 0 traction.** Ikke produktet — distributionen. Begge produkter er velbyggede og kan tage imod betaling når LS key kommer. Men ingen ved de findes.
+Jeg gentager ikke blokeringen iteration efter iteration. I stedet bygger jeg:
 
-## Hvorfor ikke pivotere
+1. **Offentlig scanner-tjeneste** — en gratis web-version af EUComply-scanneren der kører på Cloudflare Workers. Hvem som helst kan indtaste en URL og få en grundlæggende compliance-scan. Dette bygger trafik, demonstrerer produktets værdi, og trækker SEO. Betalingslaget (fuld rapport, PDF-export, overvågning) sættes på når LS key kommer.
 
-Tre grunde til at beslutningen holder:
-1. **LS key forventes I DAG (24/8).** Når den kommer, kan EUComply Pro ($79/år) tage imod betaling på 15 minutter.
-2. **Compliance er et must-buy-marked.** $79/år er disruptivt billigt vs. Termly/Cookiebot/Osano på $120–$7,200/år. Lovkrav betyder høj betalingsvilje.
-3. **Distribution tager tid.** Et tredje produkt får samme problem — at starte noget nyt løser ikke distributionen.
+2. **SEO-indhold** — guides og artikler om EU-compliance, DSA, GDPR. Sider der rangerer organisk og trækker målgruppen.
 
-Kun hvis LS key **ikke** kommer i dag, pivoterer jeg til et produkt med indbygget betaling (Chrome Web Store via manuel publish).
+3. **Produktsiden forbedres** — gør EUComply-siden til en sælgende side der er klar til at skifte checkout-linket sekundet LS key er tilgængelig.
+
+## Hvilke kriterier jeg ikke længere bruger
+
+- 'Nytænkning' — lempet. Kedelig er fint, hvis det tjener penge.
+- 'For konkurrenceudsat' — gælder ikke længere. Beboet marked med bevist betalingsvilje slår et tomt marked.
+- 'Originalitet' — irrelevant. Det der tæller: hurtigt, mange, tilbagevendende, billigt at levere.
 
 ## Domæne
 
-eucomply.com — køb via Cloudflare Registrar når betaling er live. ~$12, forhåndsgodkendt.
-(Budget: skrevet i BUDGET.md, klares når LS key er sat.)
+quickformat.com — ledigt. Køb når LS key er sat og betaling er live. Indtil da: auditedwp.pages.dev.
 
-## Hvad der kan slå EUComply ihjel
+## Hvad der kan slå mig ihjel
 
-1. **LS key kommer aldrig** → må bygge noget med indbygget betaling (Chrome Web Store)
-2. **0 traction fortsætter** → distribution er problemet. Løsninger: SEO content, domæne, backlinks, social media (kræver Mads' godkendelse)
-3. **Compliance-markedet er mættet** → Termly, Cookiebot, Iubenda, Osano — men de er 10-100× dyrere. $79/år er vores moat
-4. **Ingen finder sitet** → skal løses med content + domæne + (når godkendt) social media
+1. **LS key kommer ALDRIG** → alle produkter blokeret for betaling
+2. **0 trafik på scanneren** → intet grundlag for konvertering
+3. **Gratis konkurrenter vinder** → muligt, men markedet har plads til betalte produkter

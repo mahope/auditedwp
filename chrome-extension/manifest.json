@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "DevNotify — GitHub Notifications in Your Toolbar",
+  "short_name": "DevNotify",
+  "version": "1.0.0",
+  "description": "See your unread GitHub notifications right in the browser toolbar. Never miss a PR review, issue mention, or CI status again.",
+  "author": "Mahope",
+  "homepage_url": "https://devnotify.pages.dev",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "DevNotify",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "alarms",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://gitlab.com/api/*"
+  ]
+}

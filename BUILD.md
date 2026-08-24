@@ -1,46 +1,49 @@
-# BUILD — Korteste vej til første betalende kunde (rev. 24. august 2026)
+# BUILD — Korteste vej til første betalende kunde
 
-## Position
+Opdateret: 24. august 2026 (mandat-revision)
 
-**EUComply Pro ($79/år recurring).** Scanner, worker, Pro-side, CLI, plugin, 27 blogposts, 6+ comparison pages, runtime checkout-detection — alt bygget og live. Venter på LS API-nøgle.
+## Blokering
 
-**DevNotify ($19 one-time).** App, site, 52 guides, flip-script klar. Venter på LS.
+**Bitwarden er låst (unauthenticated).** Indeholder LS API key — uden den kan intet produkt tage imod betaling.
 
-## Når LS API-nøgle er tilgængelig
+Indtil blokeringen er løst, arbejder jeg på:
+- Bygge trafik (SEO-indhold, guides)
+- Gøre alt klar til at flippe sekundet LS key kommer
+- Bygge nye produkter der ikke kræver gateway
 
-```bash
-# EUComply Pro — PRIORITET 1 (recurring > one-time)
-# Sæt checkout URL secret — ingen deploy nødvendig
-wrangler secret put CHECKOUT_URL --name eucomply-scan
-# Value: https://eucomply.lemonsqueezy.com/checkout/buy/XXXX
+## Når LS key kommer — tidslinje (minutter, ikke dage)
 
-# Verificer
-curl -s https://eucomply-scan.mahope-eeb.workers.dev/config | jq .checkoutUrl
-# Forventet: "https://eucomply.lemonsqueezy.com/checkout/buy/XXXX"
-
-# Bekræft at Pro-siden skjuler waitlist
-curl -s https://auditedwp.pages.dev/pro/ | grep -c 'Join the waitlist'
-# Forventet: 0
-
-# Sandbox-testkøb (kort 4242 4242 4242 4242) → verificer licensflow
-# Første rigtige kunde → byg videre på dét der virker
-
-# DevNotify — PRIORITET 2
-# Kør flip-script (kræver deploy)
-./scripts/ls-flip.sh "https://devnotify.lemonsqueezy.com/checkout/buy/XXXX"
-./deploy.sh site
+```
+Minute 0:  bw unlock → ls API key
+           curl -s LS_API create product "EUComply Pro $79/yr"
+           curl -s LS_API create checkout link
+           
+Minute 5:  ./scripts/eucomply-flip.sh <checkout-url>
+           curl -s verify: /config returnerer checkoutUrl
+           
+Minute 10: curl -s LS_API create product "QuickFormat $9 once"
+           curl -s LS_API create checkout link
+           ./scripts/quickformat-flip.sh <checkout-url>
+           
+Minute 15: Test checkout med eget kort
+           Første rigtige kunde?
+           
+Minute 20: npm login → npm publish quick-format
+           Chrome Web Store → publish DevNotify extension
 ```
 
-## Flippet er forberedt
+## Prissætning (klar)
 
-- `scripts/eucomply-flip.sh` — guide til at sætte secret (idempotent)
-- `scripts/ls-flip.sh` — DevNotify flip (kræver deploy)
-- Pro-siden (site/pro/index.html) — runtime checkout-detektion via `/config` endpoint:
-  - Opdaterer `buy-pro-btn` href til checkout URL
-  - Skjuler "⏳ Checkout opens on Lemon Squeezy" noten
-  - Skjuler `#waitlist` sektionen
-  - Alt uden deploy — kun wrangler secret put
+| Produkt | Pris | Model | LS klar? |
+|---------|------|-------|----------|
+| EUComply Pro | $79/år | Recurring (abonnement) | ❌ venter på key |
+| QuickFormat | $9 once | One-time | ❌ venter på key |
 
-## Hvis LS key ikke kommer
+## Distribution der er klar til at blive skudt af
 
-Pivot til produkt med indbygget betaling. Chrome Web Store mest sandsynlig (Mads har dev-konto, manuel publish mulig). Alternativ: VS Code marketplace eller helt anden forretningsmodel (affiliate, digitalt produkt på marketplace).
+| Kanal | Produkt | Status | Kræver |
+|-------|---------|--------|--------|
+| Produktside (CLOUDFLARE) | Alle | ✅ Live | LS key |
+| CLI (npm) | QuickFormat | ✅ Code klar | npm login |
+| Chrome Web Store | DevNotify | ❌ Blokeret | CWS credentials (Bitwarden) |
+| Mac App Store | QuickFormat | ❌ Ikke bygget | $99/år, Mads godkendelse |
