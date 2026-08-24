@@ -21,6 +21,7 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-windows/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/octobox-alternative/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/gitify-alternative/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/miss-pr-review-notifications/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/vs/github-desktop/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/chrome-extension/</loc></url>
@@ -29,4 +30,6 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-discord/</loc><changefreq>weekly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-microsoft-teams/</loc></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notification-badge-not-showing/</loc></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-vs-email-digests/</loc></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-sound-alert/</loc><changefreq>monthly</changefreq></url>
 </urlset>

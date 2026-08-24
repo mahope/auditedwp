@@ -1,48 +1,41 @@
-# STATUS — Iteration 165 (24. august, aften)
+# STATUS — Iteration 166 (24. august, aften)
 
 ## 1. Blokering (én linje)
 
 Bitwarden CLI unauthenticated → LS-nøgle kan ikke hentes → checkout venter på Mads.
 
-## 2. Universalitetsvurdering — bestået (10. gang)
+## 2. Universalitetsvurdering — bestået (11. gang, verificeret)
 
 Kernen (`devnotify/src-tauri/src/providers.rs`) er platform-agnostisk:
 normaliseret `NotificationItem` + provider-enum; GitHub er én provider blandt
-flere (GitLab-side findes allerede). macOS-appen og sitet er indpakninger.
-Intet at trække ud. Vurderingen er uændret fra de ni foregående gennemgange.
+flere (GitLab-adapter bekræftet i koden denne iteration). macOS-appen og
+sitet er indpakninger. Intet at trække ud.
 
 ## 3. Penge-linsen — beslutningen holder
 
 DevNotify: $19 lifetime, ~0 kr/md omkostninger, produkt + download + købsrejse
-virker. Første kunde timer efter LS-nøglen. DECISION.md uændret.
+virker. DECISION.md uændret.
 
-## 4. Kvalitetsgennemgang af købsrejsen (prioritet 1)
+## 4. Denne iteration — ny "Gitify alternatives"-guide, deployet og verificeret
 
-Gennemgået forside, buy-sektion, download, vs-sider, guides: intet brudt,
-prisen står på forsiden ($19, one-time), notify-form klar til at flippes til
-LS-checkout (ls-flip.sh). Ingen friktion at fjerne uden checkout-nøglen.
+Stærkest tilbageværende SEO-vinkel: sammenligningssider fra bunden af tragten.
+Gitify (5.3k stjerner) er det gratis værktøj DevNotify erstatter — folk der
+søger "gitify alternative" har dokumenteret købsintention. Ny guide:
+`guides/gitify-alternative/` (ærlig: Gitify konfigureret rigtigt kan være nok;
+DevNotify som native/Electron-alternativ). Sitemap nu 32 URLs. Cross-links fra
+badge-guiden og best-apps-siden. Deployet og spot-verificeret live: ny side,
+forside, download, vs/gitify, badge-guide = alle 200 med korrekt titel.
 
-## 5. Denne iteration — ny SEO-guide, deployet og verificeret live
-
-Ny guide: "GitHub notification sound not playing? 5 fixes" — søgt af folk der
-aktivt kæmper med notifikationer (købsintention). Sitemap nu 31 URLs,
-cross-links fra badge-guiden. Deployet og verificeret: ny side svarer med
-korrekt titel; spot-check af /, download/, vs/gitify/, privacy = 200.
-
-Pitfall igen fundet og håndteret i samme iteration: deploy-staging skal
-rsync'es fra devnotify-site FØR deploy (`rsync -a --delete`), ellers
-udgives gammelt indhold.
-
-## 6. Traction (ærlige tal)
+## 5. Traction (ærlige tal)
 
 **0 betalende kunder · $0 · tilmeldinger: 0.**
 
-## 7. Venter på Mads (uændret)
+## 6. Venter på Mads (uændret)
 
 1. Bitwarden-login / LS-nøgle → produkt + checkout samme time.
 2. Domænekøb getdevnotify.com (forhåndsgodkendt).
 
-## 8. Næste iteration
+## 7. Næste iteration
 
-Ny købsintention-vinkel ELLER begynde porteføljeprodukt nr. 2 (frit valgt
-marked) — DevNotify er færdigt indtil LS-nøglen lander.
+Ny købsintention-guide ELLER porteføljeprodukt nr. 2 — DevNotify er færdigt
+indtil LS-nøglen lander.
