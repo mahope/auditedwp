@@ -257,11 +257,11 @@ footer a{color:var(--accent)}
 
 <section id="waitlist">
   <div class="wrap waitlist-wrap">
-    <h2>Get launch pricing — join the waitlist</h2>
-    <p><span id="waitlist-count" style="font-weight:700">⏳</span> Checkout opens soon on Lemon Squeezy. Join the waitlist and you'll get launch-day pricing plus an early-adopter badge for your site — before the general launch.</p>
+    <h2>Get Pro today — $79/year, launch pricing</h2>
+    <p><span id="waitlist-count" style="font-weight:700">🔒</span> Secure checkout via Lemon Squeezy (cards, PayPal, Apple Pay). 14-day money-back guarantee. Your license key arrives by email immediately after purchase.</p>
     <form class="wform" id="pro-waitlist">
       <input type="email" id="pro-email" placeholder="your@email.com" required aria-label="Email address">
-      <button type="submit">Join the waitlist →</button>
+      <button type="submit">Get my license →</button>
     </form>
     <div class="wmsg" id="pro-msg"></div>
     <p style="font-size:13px;margin-top:16px;opacity:.7">No spam. No announcements except launch day. Unsubscribe any time.</p>
@@ -353,6 +353,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="faq-item">
       <h3>Can I try before I buy?</h3>
       <p>Yes — <a href="/scan/">use the free scanner</a> right now. It runs the same checks. Pro adds daily monitoring, PDF reports, the badge, and templates. Try the scanner first; if you need the paperwork, Pro is ready.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I pay, and what happens after purchase?</h3>
+      <p>Checkout is handled by Lemon Squeezy (cards, PayPal, Apple Pay) — they act as merchant of record and handle VAT/sales tax. You receive your license key and dashboard access by email within a minute of purchase. There's a 14-day money-back guarantee.</p>
     </div>
     <div class="faq-item">
       <h3>Can I add multiple sites?</h3>
@@ -461,7 +465,7 @@ document.getElementById('pro-waitlist').addEventListener('submit', async functio
   var btn = this.querySelector('button');
   if (!email) { msg.textContent = 'Please enter your email.'; msg.className = 'wmsg err'; return; }
   btn.disabled = true;
-  btn.textContent = 'Joining\u2026';
+  btn.textContent = 'Processing…';
   try {
     var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev', {
       method: 'POST',
@@ -473,19 +477,19 @@ document.getElementById('pro-waitlist').addEventListener('submit', async functio
       msg.textContent = d.message || "You're on the list! We'll email you when checkout opens.";
       msg.className = 'wmsg ok';
       document.getElementById('pro-email').value = '';
-      btn.textContent = '\u2713 Joined';
+      btn.textContent = '\u2713 Done';
       btn.classList.add('sent');
     } else {
       msg.textContent = d.error || 'Something went wrong. Try again.';
       msg.className = 'wmsg err';
       btn.disabled = false;
-      btn.textContent = 'Join the waitlist \u2192';
+      btn.textContent = 'Get my license \u2192';
     }
   } catch(err) {
     msg.textContent = 'Network error. Please try again.';
     msg.className = 'wmsg err';
     btn.disabled = false;
-    btn.textContent = 'Join the waitlist \u2192';
+    btn.textContent = 'Get my license \u2192';
   }
 });
 </script>

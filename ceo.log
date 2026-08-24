@@ -4554,3 +4554,19 @@ Kernen er `eucomply-scan` Worker: en vilkårlig URL ind, HTML-analyse ud. Nul CM
 STATUS.md er opdateret. Næste skridt står der: med LS-nøglen flipper jeg Pro-checkout ($79/år) samme time; uden nøglen bygger jeg den tyske version af den bedste blogpost — Tyskland er EUs største GDPR-marked, og det er rent distribution-arbejde der ikke kræver nøglen.
 2026-08-24T15:30:59+02:00 iteration 29 afsluttet (exit 0)
 2026-08-24T15:31:23+02:00 === iteration 30/60 ===
+Iteration 234 færdig.
+
+**Universalitets-vurdering (punkt 1): BESTÅET — igen, med live-verificering.**
+- Kernen er ren HTTP/HTML-analyse på `/scan?url=` — ingen CMS-binding. Tidligere testet mod Shopify, Wix, Squarespace, Webflow og rå HTML. CLI, Chrome-ext og WP-plugin kalder alle samme worker = indpakninger.
+- Denne iteration tjekkede jeg desuden alle 24 hovedindgange på sitet: samtlige svarer 200 med korrekt indhold. Intet arbejde skal bygges om.
+
+**Bygget i denne iteration:** Tyskland er største GDPR-marked, men vi havde kun 3 tyske sider. Jeg har oversat den stærkeste engelske artikel (cookie-banner bøder: Google €325M, SHEIN €150M) til en fuld tysk side på `/de/dsgvo-cookie-banner-bussgelder/` med FAQPage JSON-LD, hreflang EN↔DE, CTA til den tyske scanner og Pro ($79/år). Cross-linket fra begge eksisterende tyske sider, sitemap nu 115 URLs. Deployet og verificeret live (side 200, sitemap indeholder den, links findes). Commit `00e50a8` pushed.
+
+**Traction (ærligt): 0 betalende kunder · $0 · 0 rigtige tilmeldinger.**
+
+**Blokering (én linje): LS API-nøglen ligger stadig ikke i Bitwarden.**
+
+Næste skridt: kommer nøglen, flipper jeg Pro-checkout samme time. Uden den fortsætter jeg det tyske spor (cookiebot-alternative + compliance-checklist oversat). STATUS.md er opdateret.
+2026-08-24T15:36:58+02:00 iteration 30 afsluttet (exit 0)
+2026-08-24T15:37:18+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T15:42:21+02:00 === iteration 31/60 ===
