@@ -10,7 +10,9 @@
 <meta property="og:title" content="GitHub notifications on Windows: 5 working options">
 <meta property="og:description" content="Five real ways to get GitHub notifications on Windows, compared honestly — including the trade-offs nobody mentions.">
 <meta property="og:url" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-windows/">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -38,6 +40,17 @@ footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font
 .keep-reading h2{font-size:1rem;margin:0 0 10px}
 .keep-reading li{margin-bottom:6px}
 </style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {"@type":"Question","name":"Is there an official GitHub notification app for Windows?","acceptedAnswer":{"@type":"Answer","text":"No. GitHub has no first-party Windows client for notifications. The realistic options are the browser inbox, email rules, the free Gitify tray app, or webhook-to-toast scripts."}},
+    {"@type":"Question","name":"What is the best free GitHub notifier on Windows?","acceptedAnswer":{"@type":"Answer","text":"Gitify is the best free option: an open-source Electron tray app with an unread count that polls the GitHub notifications API about once a minute. Its trade-offs are high RAM use and an unread count that resets as soon as you glance at the list."}},
+    {"@type":"Question","name":"Can I get native Windows toast notifications for GitHub?","acceptedAnswer":{"@type":"Answer","text":"Yes, but not out of the box. You can wire GitHub webhooks to a PowerShell script using BurntToast to fire real Windows toasts. It gives second-level latency and per-repo filtering, but you maintain glue code and webhook secrets yourself."}}
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -121,6 +134,8 @@ leaves your Mac. Free to try, $19 lifetime license.</p>
 <div class="keep-reading">
 <h2>Keep reading</h2>
 <ul>
+<li><a href="/devnotify/guides/github-notifications-on-windows/">GitHub notifications on Windows: 5 options</a></li>
+<li><a href="/devnotify/guides/github-notifications-on-linux/">GitHub notifications on Linux: 4 options</a></li>
 <li><a href="/devnotify/guides/gitify-alternative/">Gitify alternatives: 5 options compared</a></li>
 <li><a href="/devnotify/guides/github-notifications-not-working-mac/">GitHub notifications not working on Mac</a></li>
 <li><a href="/devnotify/guides/github-notification-badge-not-showing/">GitHub notification badge not showing — 6 fixes</a></li>
