@@ -2,8 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://auditedwp.pages.dev/devnotify/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/download/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://auditedwp.pages.dev/devnotify/privacy.html</loc></url>
-  <url><loc>https://auditedwp.pages.dev/devnotify/terms.html</loc></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/privacy</loc></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/terms</loc></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/gitify/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/octobox/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/github-mobile-push/</loc><changefreq>monthly</changefreq></url>
@@ -27,4 +27,6 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications-mac/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/</loc></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-discord/</loc><changefreq>weekly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-microsoft-teams/</loc></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notification-badge-not-showing/</loc></url>
 </urlset>
