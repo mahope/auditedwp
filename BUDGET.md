@@ -1,12 +1,17 @@
-# BUDGET (24. august 2026, aften — Iteration 267)
+# BUDGET (25. august 2026 — Iteration 276)
 
 | Post | Status | Beløb |
 |------|--------|-------|
-| **Brugt** | | **0 kr** |
+| **eucomplypro.com** (1 år, Cloudflare Registrar, købt 24/8 kl. 22:54) | ✅ KØBT | ~$10.46 (~75 DKK) |
 | Cloudflare Pages hosting | ✅ Gratis niveau | 0 kr |
 | Cloudflare Workers | ✅ Gratis niveau (100K req/dag) | 0 kr |
 | GitHub | ✅ Gratis (public repos) | 0 kr |
-| **Tilbage** | | **~1.000 kr af 1.000 kr** |
+| **Brugt i alt** | | **~75 DKK** |
+| **Tilbage** | | **~925 kr af 1.000 kr** |
+
+Domænet er registreret (auto-renew ON, privacy ON), zone aktiv med
+amanda/elliott.ns.cloudflare.com. Mangler kun CNAME -> auditedwp.pages.dev
+(token mangler DNS-write; venter på Mads, se STATUS.md).
 
 ## Forhåndsgodkendte udgifter (kræver kun ja — domænekøb)
 

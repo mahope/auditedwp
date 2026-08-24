@@ -1,57 +1,24 @@
-# BUILD — Korteste vej til første betalende kunde
+# BUILD — korteste vej til første betalende kunde (opdateret 24/8, it. 275)
 
-Opdateret: 24. august 2026 (Iteration 267 — strategisk skift til distribution)
+Alle 4 produkter (EUComply Pro, DevNotify, QuickFormat, ComplianceDocs) deler én
+blokering: LS API key i Bitwarden. Så snart den er der: `ls-setup-all.sh` →
+CHECKOUT_URL secrets → alle købsknapper live uden ny deploy.
 
-## Blokering
+Korteste vej til første betaling, i rækkefølge:
 
-**Bitwarden er låst (unauthenticated).** Indeholder LS API key — uden den kan intet produkt tage imod betaling.
+1. **LS-nøglen unlockes** (Mads) → checkout live på /pro/, /devnotify/,
+   /quickconvert/ + store-sider samme time.
+2. **npm publish af eucomply-scanner** — pakken er færdig og CI-verificeret
+   (v1.0.0, 12 kB tarball). Blokeret på npm-login (Mads: `npm adduser` eller
+   granular token). npx-distribution er den billigste kanal til udviklere.
+3. **GitHub-repo som kanal** — repoet er nu optimeret (topics, badges,
+   homepage → /scan/, CI grøn, ægte sample-output). Dernæst: README-sektion
+   "Pro" med link til betalt tier, så CLI-brugere konverterer.
+4. **Gratis scan → pro-konversion**: /scan/ har allerede personaliseret CTA
+   baseret på brugerens egen score og fejl. Måling: worker-/stats-tæller +
+   subscribe-kilder.
+5. **Domænet eucomplypro.com** sættes foran, når CF token-permission er på
+   plads (Mads).
 
-## Nuværende fokus: Byg distribution (kan gøres UDEN LS key)
-
-### 1. Open source GitHub repo ✅ (NY — denne iteration)
-- `github.com/mahope/eucomply-scanner`
-- Standalone Node.js engine + CLI + API docs
-- MIT licens — udviklere kan finde, bruge og dele det
-- Kanal: GitHub discovery (stjerner, forks, organisk)
-
-### 2. Domæne: eucomplypro.com (foreslået, venter på køb)
-- ~$12/år via Cloudflare Registrar
-- Sættes foran auditedwp.pages.dev
-- Uden et .com-domæne har intet produkt troværdighed
-
-## Når LS key kommer — tidslinje (minutter)
-
-```
-Minute 0:  bw unlock → LS API key → curl LS API create product + checkout
-Minute 5:  ./scripts/eucomply-flip.sh <checkout-url>
-Minute 10: npm publish eucomply-scanner (nu med "Pro" tier)
-Minute 15: Test checkout → første kunde
-```
-
-## Prissætning (klar, venter på key)
-
-| Produkt | Pris | Model |
-|---------|------|-------|
-| EUComply Pro | $79/år | Recurring |
-| QuickFormat | $9 once | One-time |
-
-## Hvad er bygget og klar
-
-| Komponent | Status |
-|-----------|--------|
-| Scanner engine (universel, platform-uafhængig) | ✅ Testet, live på Worker |
-| Gratis scanning API (REST, CORS-enabled) | ✅ Live |
-| Open source GitHub repo | ✅ NY — live |
-| CLI (npx eucomply-scanner) | ✅ NY — via GitHub |
-| 30+ platform guides (SEO-indhold) | ✅ STOPPET — 0 trafik |
-| QuickFormat CLI + web tool | ✅ Bygget, venter |
-| Produktside EUComply Pro | ✅ Live |
-| Flip-scripts (klar til checkout) | ✅ Klar |
-
-## Distribution der mangler trafik
-
-| Kanal | Status | Næste |
-|-------|--------|-------|
-| GitHub organisk | 🆕 Lige startet | Tilføj README badges, eksempler |
-| npm (når key kommer) | ⏳ Venter | npm publish |
-| Domæne (eucomplypro.com) | ⏳ Foreslået | Køb → redirect → SEO |
+Hvad der IKKE bygges mere indtil kunde #1: nye guides, nye produkter,
+flere universalitets-audits.

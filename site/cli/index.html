@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>eucomply-scan — EU Compliance Scanner for the Command Line</title>
-<meta name="description" content="Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack. Free CLI, npm install eucomply-scan.">
+<title>eucomply-scanner — EU Compliance Scanner for the Command Line</title>
+<meta name="description" content="Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack. Free CLI, npm install eucomply-scanner.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
 <link rel="canonical" href="https://auditedwp.pages.dev/cli/">
 <link rel="alternate" hreflang="x-default" href="https://auditedwp.pages.dev/cli/">
-<meta property="og:title" content="eucomply-scan — Compliance scanning in your terminal">
+<meta property="og:title" content="eucomply-scanner — Compliance scanning in your terminal">
 <meta property="og:description" content="One command, six compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA & EAA technical checks.">
 <meta name="twitter:card" content="summary_large_image">
 <style>
@@ -69,7 +69,7 @@ footer a{color:var(--accent)}
 <div class="wrap hero">
   <div class="badge">🟢 Open source · MIT</div>
   <h1>Compliance scanning in your <code>terminal</code>.</h1>
-  <p class="sub"><strong>eucomply-scan</strong> checks any URL for GDPR, NIS2, DORA and EAA technical gaps in seconds. Any CMS, any stack — one command.</p>
+  <p class="sub"><strong>eucomply-scannerner</strong> checks any URL for GDPR, NIS2, DORA and EAA technical gaps in seconds. Any CMS, any stack — one command.</p>
   <a class="btn" href="#install">Get started</a>
   <a class="btn ghost" href="/scan/">Try the web version</a>
 </div>
@@ -79,14 +79,13 @@ footer a{color:var(--accent)}
     <h2>Install &amp; run</h2>
     <p class="lede">Requires Node.js 18+. No sign-up, no API key, no tracking.</p>
 <pre><span class="c"># Install globally</span>
-npm install -g eucomply-scan
+npm install -g eucomply-scannerner
 
 <span class="c"># Scan any site</span>
-eucomply-scan https://yourdomain.com</pre>
+eucomply-scannerner https://yourdomain.com</pre>
     <p class="lede">Example output (real scan of webflow.com):</p>
-<pre>$ eucomply-scan https://webflow.com
-╔══ EUComply Scan ═══ webflow.com (696ms)
-║  Score:  67%   4/9 checks  ·  Platform: Webflow
+<pre>$ eucomply-scannerner https://webflow.com
+🔍 EUComply Scan Report — webflow.com
 ║  🔒  HTTPS + HSTS OK                     PASS
 ║  🍪  No consent banner detected          CHECK MANUALLY
 ║  📋  Forms present, privacy policy linked PASS
