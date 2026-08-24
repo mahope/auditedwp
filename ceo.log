@@ -2950,3 +2950,43 @@ Iteration 140 færdig.
 **Blokeringer:** LS-nøgle stadig ikke i Bitwarden (session er unauthenticated); domæne ikke købt endnu. Næste iteration: checkout først hvis nøglen kommer, ellers ny long-tail-guide.
 2026-08-24T00:40:12+02:00 iteration 56 afsluttet (exit 0)
 2026-08-24T00:41:16+02:00 === iteration 57/60 ===
+Iteration 141 færdig.
+
+**Universalitetsvurderingen (punkt 1):** DevNotify består igen. Kernen (`providers.rs`) tager et token og returnerer notifikationer — GitHub og GitLab er adapters, sitet er statisk HTML. Ikke bundet til én platform, intet at trække ud.
+
+**Det reelle fund denne iteration:** guiden "github desktop notifications mac" (iteration 140) linkede til `/devnotify/download/` — en side der aldrig blev bygget. Brudt link midt i købsrejsen. Ret:
+
+- Byggede `site/devnotify/download/index.html`: Apple Silicon + Intel DMG-downloads, $19-lifetime-pris, trial-betingelser, 3-trins opsætning med link til token-guiden.
+- Guidens CTA-knap peger nu direkte på DMG'en (færre klik mod download).
+- Sitemap opdateret (9 URLs), deployet og verificeret live: download-side 200, DMG 200, CTA korrekt.
+
+Commit `ee1b32c`, pushet.
+
+**Blokeringer (uændrede, én linje hver):** LS-nøgle stadig `unauthenticated` i Bitwarden; domæne ikke købt endnu.
+
+**Traction:** 0 betalende, $0, 0 rigtige tilmeldinger.
+
+Næste iteration: checkout så snart LS-nøglen ligger i Bitwarden — ellers ny guide.
+2026-08-24T00:43:49+02:00 iteration 57 afsluttet (exit 0)
+2026-08-24T00:44:59+02:00 === iteration 58/60 ===
+Iteration 142 færdig. Kort:
+
+**Universalitet (opgaven):** Vurderet ærligt — DevNotify-kernen (`providers.rs`) er platform-uafhængig: token ind, notifikationer ud; GitHub og GitLab er adapters. Intet at trække ud. Verificeret i koden, ikke bare påstand.
+
+**Pengevurdering:** Beslutningen holder — produktet er bygget og udgivet ved 0 kr omkostning, timer til første kunde når LS-checkout åbner. Ingen ny idé slår det på tid-til-betaling.
+
+**Bygget/rettet:** Gik alle interne links på alle 7 devnotify-sider igennem som en fremmed. Fandt 3 brudte ankre (`#download` fandtes ikke på landingssiden — CTA'er fra tre guides/vs-sider pegede i tomheden). Rettede dem til `/devnotify/download/`, deployede og verificerede live: alle sider 200, rettelsen bekræftet i den udsendte HTML.
+
+STATUS.md opdateret og pushet. Traction stadig ærlige 0 / $0 — checkout afhænger stadig kun af LS-nøglen i Bitwarden.
+2026-08-24T00:47:18+02:00 iteration 58 afsluttet (exit 0)
+2026-08-24T00:47:38+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T00:52:39+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T00:57:39+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-24T01:04:09+02:00 UPSTREAM - venter 5 min (forsoeg 4/24)
+2026-08-24T01:09:10+02:00 UPSTREAM - venter 5 min (forsoeg 5/24)
+2026-08-24T01:14:49+02:00 === iteration 59/60 ===
+2026-08-24T02:44:49+02:00 iteration 59 afsluttet (exit 0)
+2026-08-24T02:45:09+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T02:50:10+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-24T02:55:10+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-24T03:00:28+02:00 === iteration 60/60 ===
