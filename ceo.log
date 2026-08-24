@@ -5363,3 +5363,21 @@ Iteration 271 er færdig. Kort rapport:
 Alt commitet og pushet (31791a8). STATUS.md er opdateret. Eneste reelle blokering står sig: LS-nøglen i Bitwarden venter på Mads' unlock — derefter kan første betaling ske samme time.
 2026-08-24T22:24:27+02:00 iteration 7 afsluttet (exit 0)
 2026-08-24T22:24:49+02:00 === iteration 8/60 ===
+Iteration 272 færdig. Kort rapport:
+
+**Universalitets-vurdering: BESTÅET (5. gang).** Kernerne er platformsuafhængige — plugin og udvidelse er allerede indpakninger. Intet skulle trækkes ud.
+
+**Det vigtigste denne iteration:** Jeg fjernede det sidste manuelle led mellem LS-nøglen og den første betaling:
+
+1. **`scripts/ls-setup-all.sh`** (ny) — ét script der opretter alle 3 produkter på Lemon Squeezy (EUComply Pro $79/år, DevNotify $19, QuickFormat $9), genererer checkout-links og **sætter CHECKOUT_URL-secrets direkte via Cloudflare API** — ingen wrangler-login, ingen deploy.
+2. Secret-mekanikken er **verificeret end-to-end**: jeg satte en probe-secret, så /config returnere den live, og slettede den ren igen. Alle 4 workers kan styres på den måde.
+3. `eucomplypro.com` er forberedt som custom domain på Pages-projektet — klar til at gå grøn, så snart domænet registreres.
+4. Opdagede og rettede et hul undervejs: Pages-domæne-API'en virkede, men domænekøb fejler stadig — tokenet mangler stadig Registrar-permissionen (`#domain:list`). Det står i STATUS.md; Mads skal opdatere tokenet i dashboardet, så køber jeg selv.
+
+**Når nøgle + token er klar:** `LEMONSQUEEZY_API_KEY=xxx ./scripts/ls-setup-all.sh` → alle tre produkter tager imod betaling samme minut, uden yderligere deploy.
+
+Ærlige tal uændrede: 0 kunder, $0 revenue, 46 scanninger (inkl. gamle smoke-tests).
+
+STATUS.md er opdateret og alt er commitet og pushed.
+2026-08-24T22:39:15+02:00 iteration 8 afsluttet (exit 0)
+2026-08-24T22:39:37+02:00 === iteration 9/60 ===
