@@ -1,37 +1,42 @@
-# STATUS — 25. august 2026 — Iteration 276
+# STATUS — 25. august 2026 — Iteration 277
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere · 🎉 eucomplypro.com er KØBT og aktivt**
+**0 betalende kunder · $0 revenue · 0 rigtige brugere · Domæne-migration klar, venter kun på DNS**
 
-## Denne iterations arbejde — domænet er købt
+## Universalitets-vurdering (punkt 1) — BESTÅET for 8. gang
 
-Universalitets-vurderingen (punkt 1) står ved magt: BESTÅET for 7. gang,
-ingen kerne skal trækkes ud (scanner-kernen tager vilkårlig URL; plugin og
-extension er indpakninger).
+Scanner-kernen (`eucomply-scanner/engine`) tager en vilkårlig URL og virker
+uanset CMS. WordPress-plugin og Chrome-extension er indpakninger, ikke kernen.
+Ingen udtrækning nødvendig. Vurderingen står — jeg bruger ikke flere
+iterationer på at bekræfte den.
 
-1. **eucomplypro.com registreret via Cloudflare Registrar API** (24/8 kl. 22:54):
-   - $10.46/år (~75 DKK) — inden for den forhåndsgodkendte ramme.
-   - Auto-renew ON, WHOIS-privacy ON. Zone aktiv (amanda/elliott NS).
-   - Custom domain tilføjet Pages-projektet `auditedwp` (status: pending).
-2. **Blokerende fund:** API-tokenet mangler **DNS-write**, så jeg kan ikke
-   oprette CNAME-posten selv. Det er nu det eneste mellem domænet og live.
+## Denne iteration: domæne-migrationen gjort klar
 
-## Mads' opsætningsopgave (2 minutter i dashboardet)
+eucomplypro.com er stadig pending (ingen CNAME endnu). I stedet for at vente:
 
-I Cloudflare → eucomplypro.com → DNS: tilføj
-`CNAME @ → auditedwp.pages.dev (proxied)` og `CNAME www → eucomplypro.com (proxied)`.
-Alternativt giv tokenet DNS-write på zonen, så gør jeg det næste iteration.
-Bagefter udløser certifikatet automatisk, og https://eucomplypro.com viser sitet.
+1. **142 filer migreret**: alle kanoniske links, sitemap.xml (122 URL'er),
+   robots.txt, hreflang og interne links peger nu på `https://eucomplypro.com`.
+2. **`scripts/switch_domain.py`** med `--revert` — idempotent, kan køres begge veje.
+3. **Committed men IKKE deployed.** Grunden: indtil CNAME'en findes, ville
+   kanoniske links pege på et domæne der svarer 000 — det broder sitet.
+4. Verificeret: eucomplypro.com svarer i dag 000 (ikke live), pages.dev 200.
+
+## Deploy-plan (når CNAME er sat)
+
+1. `./deploy.sh` → sitet lever på begge adresser, kanoniske = eucomplypro.com.
+2. Tjek: `curl -s https://eucomplypro.com/ | grep canonical`, spot-tjek 5 undersider,
+   sitemap + robots.txt over 200.
+3. Search Console-verificering + sitemap-submit (kræver Mads' konto).
 
 ## Blokeret (én linje hver)
 
-- LS API key: venter på Bitwarden-unlock hos Mads → `ls-setup-all.sh`.
-- npm-login til publish af eucomply-scanner.
-- DNS CNAME til eucomplypro.com (se ovenfor) — ELLER DNS-write på tokenet.
+- LS API key i Bitwarden → `ls-setup-all.sh` sætter checkout på alle 4 produkter.
+- npm-login til publish af eucomply-scanner (pakken færdig, v1.0.0).
+- CNAME @/www → auditedwp.pages.dev på eucomplypro.com — eller DNS-write på tokenet.
 
 ## Næste skridt
 
-1. Nøgler/DNS fra Mads → domæne live + checkout live + npm publish samme dag.
-2. Ublokeret videre: opdatere alle interne links/kanoniske URL'er til
-   eucomplypro.com (klar som patch), måling af gratis-scan → pro via /stats.
+1. CNAME fra Mads → deploy migrationen samme time (plan ovenfor).
+2. LS-nøglen → checkout live på /pro/, /devnotify/, /quickconvert/ + stores.
+3. Efter lancering: gratis-scan → pro-konversion måles via worker-/stats.
