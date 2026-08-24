@@ -1,42 +1,40 @@
-# STATUS — 24. august 2026 — Iteration 268
+# STATUS — 24. august 2026 — Iteration 269
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere**
+**0 betalende kunder · $0 revenue · 0 rigtige brugere · 46 scans (tæller inkl. tidlige smoke-tests, ægte tal ukendt)**
 
-## Universalitets-vurdering (første opgave) — BESTÅET, nu med beviser
+## Universalitets-vurdering (første opgave) — BESTÅET
 
-Kernen er platformsuafhængig og det er testet live denne iteration:
+Alle tre produkter er platformsuafhængige i kernen:
 
-| Testet mod | Platform fundet | Score |
-|---|---|---|
-| cloudflare.com | Astro v6.3.7 | 67% |
-| wix.com | Wix Website Builder | 5/9 |
-| shopify.com | Shopify | 4/9 |
-| wordpress.org | WordPress 7.2-alpha | 2/9 |
-| squarespace.com | Squarespace | 3/9 |
+- **EUComply-scanner:** tager en vilkårlig URL. Testet live i iteration 268 mod
+  Cloudflare/Wix/Shopify/WordPress/Squarespace — detekterer alle, forudsætter ingen.
+  Kernen: `eucomply-scanner/engine/index.js`. WordPress-pluginet er én indpakning.
+- **DevNotify:** overvåger enhver offentlig URL, intet CMS-krav.
+- **QuickFormat:** filkonvertering, slet ikke web-bundet.
 
-Motoren tager en vilkårlig URL, antager intet CMS. WordPress-integrationerne
-(plugin, WooCommerce-guide osv.) er indpakninger — kernen i
-`eucomply-scanner/engine/index.js` bruger dem ikke.
+Ingen kernelogik afhænger af WordPress eller anden platform.
 
-### Kritisk fejl rettet under testen
+## Hvad jeg gjorde denne iteration
 
-`UA`-konstanten var aldrig defineret i den standalone engine — fetch smed,
-fejl blev opslugt som "could not reach", og CLI'en rapporterede HVER side som
-utilgængelig. Det betød at GitHub-repoets hovedfunktion var død ved udgivelsen.
-Fixet (1 linje), verificeret på 6 rigtige sites, committet.
-
-### Fundet undervejs: iteration 267 var ALDRIG committet
-
-Hele distribution-arbejdet lå som umodificerede filer. Alt er nu committet og
-pushet til origin/main (commits 2a12997 + 614ae5d).
+1. **Tjekkede om domænekøb nu kan ske selv.** Tokenet har stadig IKKE
+   registrar-permission (`#domain:list` mangler). Kunne ikke købe eucomplypro.com.
+2. **Link-audit af hele sitet:** 82 interne links tjekket — 0 døde. Alle
+   billeder/badges/zip-filer svarer 200.
+3. **Live-tjek af infrastruktur:** scan-worker `/config` + `/stats` svarer,
+   watch-worker leverer rigtig historik (shopify.com: 50%, 2 dage).
+4. **Rettede uærlig copy på pro-siden:** "Checkout opening today" har stået i
+   flere dage og var ikke sandt. Skiftet til "launch pricing while checkout is
+   finalized" — lover ingen dato vi ikke kan holde. Deployet og verificeret live.
+5. **Bekræftede checkout-flip-mekanismen virker:** pro-siden henter /config fra
+   workeren; sættes CHECKOUT_URL-secret, går betaling live uden ny deploy.
 
 ## Blokeringer (én linje hver)
 
 1. LS API key i Bitwarden (unauthenticated) — kræver Mads' unlock.
-2. npm publish kræver npm-login (ENEEDAUTH) — klar til `npm publish` når adgang findes.
-3. Domænekøb: mit Cloudflare-token mangler registrar-permission (#domain:list) — køb af eucomplypro.com skal ske via Mads' dashboard eller et token med Registrar-adgang.
+2. npm publish kræver npm-login — klar til `npm publish` når adgang findes.
+3. Cloudflare-tokenet mangler registrar-permission (#domain:list) — domænekøb må ske via Mads' dashboard.
 
 ## Ærlige tal
 
@@ -48,6 +46,6 @@ pushet til origin/main (commits 2a12997 + 614ae5d).
 
 ## Næste skridt
 
-1. Mads unlocker Bitwarden → LS key → flip checkout på alle 3 produkter
-2. npm-adgang → `npm publish eucomply-scanner`
-3. Domæne: eucomplypro.com (~$12/år) — kræver registrar-adgang eller manuelt køb
+1. Mads unlocker Bitwarden → LS key → `scripts/eucomply-flip.sh` → første betaling
+2. Mads køber eucomplypro.com i dashboard (~$12/år) — forhåndsgodkendt
+3. npm-adgang → `npm publish eucomply-scanner`

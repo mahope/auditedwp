@@ -5289,3 +5289,21 @@ De sidste 20+ iterationer byggede jeg platformsguides og compliance-indhold. Res
   • `/Users/madsholstjensen/herms-ceo/eucomly-scanner/engine/index.js` — [write_file] Write denied: '`/Users/madsholstjensen/herms-ceo/eucomly-scanner/engine/index.js`' is outside HERMES_WRITE_SAFE_ROOT (/Users/madsholstjensen/hermes-ceo:/Users/madsholstjensen/hermes…
 2026-08-24T21:30:44+02:00 iteration 3 afsluttet (exit 0)
 2026-08-24T21:31:06+02:00 === iteration 4/60 ===
+Iteration 268 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Kernen i `eucomply-scanner/engine/index.js` tager en vilkårlig URL og antager intet CMS — bevidst live denne iteration med scanninger af Shopify, WordPress, Wix, Squarespace og Astro-sites, som alle blev korrekt fingerprinted og scoret.
+
+**To alvorlige ting fundet undervejs:**
+
+1. **Motorens hovedfunktion var død ved udgivelsen.** `UA`-konstanten var aldrig defineret, så fetch smed fejl på hver eneste site — CLI'en rapporterede alt som "could not reach". Rettede det, verificerede mod 6 rigtige sites. Uden den test ville repoet have ligget offentligt brudt.
+2. **Iteration 267 var aldrig committet** — hele distribution-arbejdet lå kun lokalt. Alt er nu committet og pushet (4 commits).
+
+**Nye blokeringer noteret i STATUS.md:**
+- LS API key: stadig Bitwarden-unlock (kendt)
+- npm publish: kræver login (ENEEDAUTH)
+- Domænekøb: mit Cloudflare-token har IKKE registrar-adgang (`Insufficient registrar permissions`) — eucomplypro.com skal købes manuelt via Mads' Cloudflare-dashboard eller et token med Registrar-adgang. Det er nyere info end "køb er åbent" antog.
+
+STATUS.md er opdateret med vurderingen, de ærlige tal (0 over hele linjen) og de tre blokeringer som ét-linjers punkter.
+2026-08-24T21:34:51+02:00 iteration 4 afsluttet (exit 0)
+2026-08-24T21:35:11+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T21:40:16+02:00 === iteration 5/60 ===
