@@ -1,42 +1,44 @@
-# STATUS — Iteration 154 (24. august)
+# STATUS — Iteration 156 (24. august)
 
 ## 1. Blokering (én linje)
 
-Bitwarden: CLI unauthenticated OG desktop-appen kan ikke åbne sit vindue
-(spawner en TCC-tilladelsesdialog der kræver Mads' klik — set i systemlog).
-→ LS-nøglen utilgængelig; venter på Mads.
+LS-nøglen utilgængelig (Bitwarden CLI unauthenticated) → venter på Mads.
 
-## 2. Universalitetsvurdering (punkt 1) — genbekræftet
+## 2. Universalitetsvurdering (punkt 1) — bestået, ingen ændring
 
-Kernen (`fetch_notifications`) tager en git-host-token (GitHub/GitLab) og er
-platform-agnostisk; macOS-appen er én indpakning, sitet er statisk HTML.
-Ingen overtrædelse af punkt 1.
+Kernen i `devnotify/src-tauri/src/providers.rs` er platform-agnostisk
+(normaliseret `NotificationItem`, provider-enum med adapters — nye hosts uden
+UI-ændringer). macOS-appen er én indpakning; sitet er statisk HTML. Intet at
+trække ud.
 
-## 3. Denne iteration — ny guide + intern linkning
+## 3. Penge-linsen — beslutningen holder
 
-- Ny høj-intentions guide:
-  `guides/github-notifications-slack-too-noisy/` ("GitHub Notifications in
-  Slack Are Too Noisy? 6 Ways to Fix It") — fanger søgninger fra folk der har
-  prøvet Slack-integrationen og stadig mangler personlige alerts.
-- Linket fra landingssiden (guides-sektion), fra de to relaterede guides
-  (slack-github-notifications, turn-off-github-email-notifications) og tilføjet
-  til sitemap.xml (nu 25 URLs).
-- Deployet via staging-mappen og verificeret live: ny guide 200 med korrekt
-  titel; backlinks fundet på landing + begge guides; sitemap opdateret;
-  spotcheck af forsiden/download/terms/privacy = 200.
+DevNotify: første kunde timer efter LS-nøglen ($19 one-time), bevist
+betalingsvilje (Gitify 5.3k stjerner), ~0 kr. leveringsomkostning.
+DECISION.md uændret.
 
-## 4. Traction (ærlige tal)
+## 4. Denne iteration — ny guide "GitHub Notifications in Discord"
+
+- Ny side `guides/github-notifications-discord/`: 3 metoder (webhook, bot,
+  lokal menu bar app) sammenlignet i en ærlig tabel — fanger søgninger efter
+  Discord-integration, som vi ikke dækkede.
+- Linket fra landingssiden (nu 13 guide-links), sitemap.xml (nu 27 URLs) og
+  keep-reading på 3 relaterede guides (slack, slack-too-noisy,
+  miss-pr-review).
+- Deployet via staging og verificeret live: ny side 200 med korrekt titel,
+  sitemap viser 27 URLs, interne links bekræftet på live-siderne.
+
+## 5. Traction (ærlige tal)
 
 **2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.**
 
-## 5. Venter på Mads
+## 6. Venter på Mads
 
 1. Bitwarden-login (eller LS-nøglen lagt klar) → LS-produkt via API +
-   checkout + købstest. OBS: desktop-appen viser intet vindue pga. en
-   TCC-dialog der skal godkendes manuelt.
+   checkout + købstest.
 2. Domænekøb getdevnotify.com (forhåndsgodkendt — sig blot til).
 
-## 6. Næste iteration
+## 7. Næste iteration
 
-Ny sammenligningsside ("DevNotify vs GitHub mobile push"), eller opdatering af
-vs/-siderne så de matcher nye søgeord.
+Ny guide med høj søge-intention (fx GitHub + Teams/email-digest), eller
+forbedring af landingssidens CTA over foldet.

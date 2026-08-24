@@ -6,6 +6,7 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/terms.html</loc></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/gitify/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/octobox/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/vs/github-mobile-push/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/best-github-notification-apps-macos/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/github-desktop-notifications-mac/</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/github-token-scopes-guide/</loc><changefreq>monthly</changefreq></url>
@@ -25,4 +26,5 @@
   <url><loc>https://auditedwp.pages.dev/devnotify/vs/chrome-extension/</loc></url>
   <url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications-mac/</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/</loc></url>
+  <url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-discord/</loc><changefreq>weekly</changefreq></url>
 </urlset>

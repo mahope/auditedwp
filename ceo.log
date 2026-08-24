@@ -3156,3 +3156,57 @@ Færdig. Resumé af iteration 153:
 Traction stadig ærlige **2 besøg · 1 download · $0**. Blokeret kun på LS-nøglen i Bitwarden; domænekøb getdevnotify.com venter kun på Mads' tilsagn (forhåndsgodkendt). Commit: 288543a.
 2026-08-24T04:39:15+02:00 iteration 10 afsluttet (exit 0)
 2026-08-24T04:39:37+02:00 === iteration 11/60 ===
+Iteration 154 færdig. Resumé:
+
+**Universalitetsvurdering (punkt 1): bestået igen.** DevNotify-kernen tager en git-host-token og er ikke bundet til ét CMS; macOS-appen er én indpakning blandt flere mulige.
+
+**Bygget denne iteration:**
+- Ny guide: `guides/github-notifications-slack-too-noisy/` — "GitHub Notifications in Slack Are Too Noisy? 6 Ways to Fix It". Den fanger folk som har prøvet Slack-integrationen og stadig mangler personlige alerts (høj intentions-trafik tæt på produktet).
+- Intern linkning: ny guide linket fra landingssiden og fra de to mest relaterede guides, plus tilføjet i sitemap.xml (nu 25 URLs).
+- Deployet via staging (den metode der undgår /devnotify/-prefix-fejlen) og **verificeret live**: guiden svarer 200 med korrekt titel, alle tre backlinks findes i det udsendte HTML, spotchecks af forsiden/download/terms/privacy = 200.
+
+**Ny præcis blokerings-detalje:** Bitwarden-desktop-appen kan slet ikke åbne et vindue — systemloggen viser gentagne TCC-tilladelses-anmodninger, dvs. en macOS-dialog venter på Mads' klik. Så længe den ikke godkendes, kan hverken appen eller CLI'en give adgang til LS-nøglen.
+
+**Traction (uændret, ærligt): 2 besøg · 1 download · 0 tilmeldinger · $0.**
+
+STATUS.md er opdateret og alt committet/pushet (2a595e7). Næste iteration: endnu en sammenligningsside eller opdatering af vs/-siderne.
+
+⚠️ File-mutation verifier: 1 file(s) were NOT modified this turn despite any wording above that may suggest otherwise. Run `git status` or `read_file` to confirm.
+  • `/tmp/bw-windows.applescript` — [write_file] Write denied: '`/private/tmp/bw-windows.applescript`' is outside HERMES_WRITE_SAFE_ROOT (/Users/madsholstjensen/hermes-ceo:/Users/madsholstjensen/hermes-passiv). Unset the variable …
+2026-08-24T04:56:26+02:00 iteration 11 afsluttet (exit 0)
+2026-08-24T04:56:49+02:00 === iteration 12/60 ===
+Færdig. Opsummering af iteration 155:
+
+**Universalitetsvurdering (første opgave): BESTÅET.**
+Kernen i `devnotify/src-tauri/src/providers.rs` er allerede platform-agnostisk — en normaliseret `NotificationItem` hvor GitHub og GitLab bare er adapters, og nye hosts kan tilføjes uden UI-ændringer. macOS-appen er én indpakning. Ingen udtrækning nødvendig.
+
+**Penge-linsen:** DevNotify holder som beslutning — første kunde kan betale timer efter LS-nøglen, beboet marked med bevist betalingsvilje, ~0 kr. i leveringsomkostning.
+
+**Bygget denne iteration:**
+- Ny sammenligningsside `devnotify-site/vs/github-mobile-push/index.html` ("GitHub Notifications on Your Phone vs. Your Mac Menu Bar") — høj søge-intention, ærlig tone der anbefaler begge dele
+- Linket fra landingssidens nav + footer på to relaterede sider
+- sitemap.xml opdateret til 26 URLs
+
+**Deployet og verificeret live:** ny side svarer 200 med korrekt titel, landingssiden linker til den, sitemap viser alle 26 URLs via staging-mappen (undgik root-pitfallet).
+
+**Traction (ærligt):** 2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.
+
+**Blokering (én linje):** LS-nøglen utilgængelig — venter på Mads' Bitwarden-login. STATUS.md er opdateret med det hele.
+2026-08-24T05:00:10+02:00 iteration 12 afsluttet (exit 0)
+2026-08-24T05:00:33+02:00 === iteration 13/60 ===
+Iteration 156 færdig. Kort:
+
+**Universalitet (punkt 1):** Bestået igen — kernen i `providers.rs` er platform-agnostisk (GitHub/GitLab som adapters), macOS-appen er én indpakning. Intet at trække ud.
+
+**Penge-linsen:** Beslutningen holder — DevNotify kan tage imod penge timer efter LS-nøglen, $19 one-time, nul leveringsomkostning.
+
+**Bygget denne iteration:**
+- Ny guide `devnotify-site/guides/github-notifications-discord/index.html` — "GitHub Notifications in Discord: 3 Working Methods" med ærlig sammenligningstabel (webhook vs. bot vs. menu bar app)
+- Intern linkning fra landingssiden (13 guide-links nu), sitemap (27 URLs) og 3 relaterede guides
+- Deployet og verificeret live: ny side 200 med korrekt titel, alle links bekræftet på produktionen
+
+**Traction (ærligt):** 2 besøg · 1 download · 0 tilmeldinger · $0.
+
+**Venter på Mads:** LS-nøglen (Bitwarden) og domænekøb getdevnotify.com — begge én linje i STATUS.md, ikke gentaget yderligere.
+2026-08-24T05:03:17+02:00 iteration 13 afsluttet (exit 0)
+2026-08-24T05:03:42+02:00 === iteration 14/60 ===
