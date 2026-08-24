@@ -4471,3 +4471,53 @@ Iteration 228 færdig og pushet (26a30fd).
 **Traction (ærlige tal):** 0 betalende · $0 · 0 rigtige tilmeldinger · 25 scans. Blokering: LS API-nøglen mangler stadig i Bitwarden. Næste skridt står i STATUS.md.
 2026-08-24T15:08:59+02:00 iteration 24 afsluttet (exit 0)
 2026-08-24T15:09:22+02:00 === iteration 25/60 ===
+Iteration 229 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — ingen udtrækning nødvendig.**
+Kernen `shared/scan-engine.js` tager en vilkårlig URL og virker uafhængigt af CMS. Verificeret live i dag: scanneren svarer 200 med platform-detektering og score på Shopify, Wix, Squarespace, Webflow og example.com. WP-plugin, CLI og Chrome-ext er allerede indpakninger omkring den samme kerne.
+
+**Hvad jeg byggede i stedet (distribution af samme kerne):**
+Ny engelsk indgangsside `/gdpr-compliance-check/` — "Is my website GDPR compliant" har bredere søgeintention end consent-mode-siden. Indlejret universel scanner, FAQPage JSON-LD, canonical/OG-tags, indgang fra forsiden, sitemap opdateret. Deployet og verificeret live: HTTP 200, ny titel, JSON-LD til stede, forside-link OK, scanner-worker 200.
+
+**Ærlige tal:** 0 betalende kunder · $0 revenue · 0 rigtige tilmeldinger.
+
+**Blokering:** LS API-nøglen ligger stadig ikke i Bitwarden. Når den kommer, flipper `CHECKOUT_URL`-secret Pro ($79/år) live uden deploy.
+
+STATUS.md er opdateret, commit `7264b95` på main. Næste skridt: tyske versioner af de bedste blogposts eller flere indgangssider, indtil LS-nøglen lander.
+2026-08-24T15:15:28+02:00 iteration 25 afsluttet (exit 0)
+2026-08-24T15:15:51+02:00 === iteration 26/60 ===
+Iteration 230 færdig og committet (8123e65).
+
+**Universalitets-vurdering (punkt 1) — GENBESTÅET, verificeret live i dag:**
+Kernen `worker-scan` (`/scan?url=`) er ren HTTP/HTML-analyse. Testet live: `?url=shopify.com` → platform "Shopify", `?url=wordpress.org` → "WordPress 7.x", begge med score på <1 s. Ingen udtrækning nødvendig — CLI, WP-plugin og Chrome-ext er allerede indpakninger omkring den samme kerne.
+
+**Bygget i denne iteration:**
+- Ny engelsk indgangsside `/gdpr-scanner-free/` ("gdpr scanner free"-søgeintention): indlejret universel scanner, FAQPage JSON-LD, canonical/OG-tags, forside-kort under "Popular guides", sitemap 112 → 113 URLs.
+- Deployet til Cloudflare Pages og verificeret: side svarer 200 med scanner-form og JSON-LD, sitemap-entry og forside-link live.
+
+**Traction (ærlige tal):** 0 betalende kunder · $0 · 0 rigtige tilmeldinger.
+
+**Blokering (én linje):** LS API-nøglen ligger endnu ikke i Bitwarden.
+
+STATUS.md er opdateret. Næste skridt: flip Pro-checkout samme time som nøglen lander; ellers flere indgangssider ("cookie banner checker", tyske blogposts).
+2026-08-24T15:21:25+02:00 iteration 26 afsluttet (exit 0)
+2026-08-24T15:22:00+02:00 === iteration 27/60 ===
+Iteration 231 færdig. Kort rapport:
+
+**Universalitets-vurdering: BESTÅET — igen, verificeret live.**
+
+Kernen i EUComply (`worker-scan` → `/scan?url=`) tager en vilkårlig URL og er ren HTTP/HTML-analyse. I dag testede jeg den live mod to nye platforme ud over de kendte:
+
+- squarespace.com → "Squarespace" ✅
+- wix.com → "Wix.com Website Builder" ✅
+- (shopify.com og wordpress.org verificeret i forgående iteration ✅)
+
+Der skal intet trækkes ud: CLI, WP-plugin og Chrome-extension ER allerede indpakninger omkring den samme platform-uafhængige kerne. Ingen omarbejdning nødvendigt.
+
+**Beslutningen holder under pengelinsen:** $79/år recurring i et must-buy compliance-marked med $0 driftsomkostninger, klar til at tage imod betaling på minutter når nøglen kommer.
+
+**Blokering (uændret):** Bitwarden stadig unauthenticated — LS API-nøglen mangler, så checkout kan ikke flippes endnu.
+
+STATUS.md er opdateret. Næste skridt står der: flip Pro-checkout samme time som nøglen lander; ellers fortsætter jeg med flere engelske indgangssider eller tyske oversættelser af de bedste blogposts.
+2026-08-24T15:23:00+02:00 iteration 27 afsluttet (exit 0)
+2026-08-24T15:23:25+02:00 === iteration 28/60 ===

@@ -1,23 +1,26 @@
-# STATUS — 24. august 2026 — Iteration 230
+# STATUS — 24. august 2026 — Iteration 232
 
-## Universalitets-vurdering (punkt 1) — GENBESTÅET, verificeret live
+## Universalitets-vurdering (punkt 1) — BESTÅET (4. gang)
 
-Kernen (`worker-scan` → `/scan?url=`) er platform-uafhængig HTTP/HTML-analyse.
-Verificeret i denne iteration: `?url=shopify.com` → platform "Shopify", score OK;
-`?url=wordpress.org` → platform "WordPress 7.x". Ingen udtrækning nødvendig —
-CLI, WP-plugin og Chrome-ext er allerede indpakninger omkring kernen.
+Kernen er `eucomply-scan` Worker → `/scan?url=`: ren HTTP/HTML-analyse af en
+vilkårlig URL, ingen CMS-binding. Verificeret live igen i denne iteration
+(shopify.com → Shopify ✅). CLI, WP-plugin og browser-ext er indpakninger omkring
+samme kerne. Intet arbejde skal bygges om.
+
+**Men vurderingen afslørede noget vigtigere:** distributionen hænger ikke sammen.
+De fire scanner-landingssider (gdpr-scanner-free, gdpr-compliance-check,
+consent-mode-v2-check, cookie-banner-check) linkede ikke til hinanden — kun
+forsiden linkede til to af dem. En besøgende fra Google på én side havde ingen vej
+til de andre. Det er fikset nu.
 
 ## Gjort i denne iteration
 
-1. **NY ENGELSK INDGANGSSIDE: `/gdpr-scanner-free/`** ("gdpr scanner free"-
-   intentionen, endnu ikke dækket). Indlejret universel scanner (samme worker),
-   FAQPage JSON-LD, canonical/OG, indgang fra forsiden "Popular guides",
-   sitemap opdateret (113 URLs).
-2. Deployet og verificeret live: side 200 med scanner-form og JSON-LD,
-   sitemap-entry til stede, forside-link til stede, worker svarer korrekt
-   på wordpress.org- og shopify.com-scans.
-3. Begrundelse (pengelinsen): ren distribution af samme $79/år-produkt —
-   gratis scanning er toppen af tragten, Pro er konverteringen.
+1. Universalitets-vurdering genbestået; kerne uafhængig af platform.
+2. **Fund og rettet:** sitemap.xml var invalid XML — `/gdpr-compliance-check/`
+   manglede `<url><loc>`-tags. Rettet, valideret, deployet.
+3. **Internal linking mellem alle 4 scanner-indgange:** footers opdateret så hver
+   side linker til de tre øvrige + scanner. Alle 12 kryds-links verificeret live.
+4. Deployet og verificeret: sitemap valid, 4×200, kryds-links live.
 
 ## Traction (ærlige tal)
 
@@ -35,5 +38,5 @@ LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
 ## Næste skridt
 
 Med LS-nøglen: sandbox-testkøb → flip Pro-checkout samme time.
-Uden: flere indgangssider ("cookie banner checker", "wix cookie banner"),
-eller tyske versioner af de to bedste engelske blogposts.
+Uden: flere indgangsside-variant ("wix cookie banner"-vinkel) eller tysk
+version af den bedste engelske blogpost.
