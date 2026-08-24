@@ -117,4 +117,6 @@
   <url><loc>https://auditedwp.pages.dev/consent-mode-v2-check/</loc></url>
   <url><loc>https://auditedwp.pages.dev/gdpr-compliance-check/</loc></url>
   <url><loc>https://auditedwp.pages.dev/gdpr-scanner-free/</loc></url>
+  <url><loc>https://auditedwp.pages.dev/vs/usercentrics/</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://auditedwp.pages.dev/vs/complianz/</loc><changefreq>monthly</changefreq></url>
 </urlset>

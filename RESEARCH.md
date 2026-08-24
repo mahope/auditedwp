@@ -52,3 +52,14 @@ Mads' mandat: "Er du blokeret, start noget nyt."
 - VS Code extension wrapper
 - `npm publish quick-format` — CLI distribution
 - Analytics på web tool (hvor mange bruger det? konvertering til desktop?)
+## 24/8-2026 (iteration 258): Complianz + Usercentrics research til /vs/-sider
+
+- **Complianz:** WordPress-only privacy suite, 1M+ installs. Personal €59/år (1 site),
+  Professional €179/år (5 sites), Agency €399/år (25 sites); Multisite kræver Agency.
+  Kilder: complianz.io/pricing, complianz.io/complianz-pricing-faqs,
+  cookiebannerguide.com/complianz-pricing (hentet 24/8-2026).
+  → Stærkest universality-vinkel: produktet kan ikke køre udenfor WordPress overhovedet.
+- **Usercentrics (Cookiebots ejer):** self-serve Pro ~$34/md (3 domæner), Business ~$56/md
+  (10 domæner), custom CSS først på Business. G2-topklage = opsætningssværhed (20 nævnelser);
+  session-baserede auto-upgrades uden nedgradering; "pricing too high for SMEs" er tilbagevendende.
+  Kilder: consently.net/blog/cookiebot-vs-usercentrics, g2.com, trustpilot.com (24/8-2026).

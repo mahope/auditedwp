@@ -5029,3 +5029,50 @@ STATUS.md er opdateret. Stadig blokeret på én ting: Bitwarden-unlock (LS API k
 2026-08-24T19:24:18+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-24T19:29:19+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
 2026-08-24T19:34:21+02:00 === iteration 51/60 ===
+Iteration 254 færdig og pushet.
+
+**Universalitets-vurderingen (første opgave):** Bestået for fjerde gang — kernen `shared/scan-engine.js` er platform-uafhængig, og web, watch, API, CLI, extension og WP-plugin er alle indpakninger. Ingen udrakning nødvendig. Begrundelsen står nu øverst i STATUS.md.
+
+**Resten af iterationen gik til næste skridt fra i går: /vs/-gennemgang som en fremmed:**
+- Tjekket alle 6 sammenligningssider live (alle 200), 6 Pro-links hver, scan-CTA'er på plads.
+- Sitemap-"falsk alarm" undersøgt: `/vs/gitify/` og `/vs/octobox/` er faktisk `/devnotify/vs/...` — findes, svarer 200.
+- **Fundet og rettet:** 5 af 6 /vs/-sider manglede krydslink til Osano-siden. Tilføjet, deployet og verificeret live.
+- Blog: alle 27 artikler har allerede Pro-links (tjekket med grep — ingen mangler).
+
+STATUS.md er opdateret kort med tal, blokering (én linje: Bitwarden) og næste skridt.
+2026-08-24T19:37:40+02:00 iteration 51 afsluttet (exit 0)
+2026-08-24T19:38:01+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T19:43:03+02:00 === iteration 52/60 ===
+Iteration 255 færdig. Resumé:
+
+**Universalitets-vurderingen — denne gang med bevis.** Jeg kørte scan-kernen (`shared/scan-engine.js`) direkte mod fire ikke-WordPress-sider:
+
+- stripe.com → detekteret Next.js, score 67%
+- shopify.com → Shopify, 44%
+- webflow.com → Webflow, 44%
+- example.com → Unknown/statisk, 22%
+
+Kernen tager en almindelig URL og virker uanset CMS. WordPress er kun én signatur blandt mange i CMS-detektoren, og WP-pluginet er én indgang blandt seks (web, watch, API, CLI, Chrome-ext). **Bestået — ingen udrakning nødvendig.** Forsiden markedsfører allerede korrekt universelt ("works on any website").
+
+**DECISION.md revurderet under pengekriteriet:** holder. EUComply Pro ($79/år recurrence, høj betalingsvilje fordi lovkrav, 0 kr/md drift) vinder stadig over QuickFormat ($9 one-time).
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+
+Blokering uændret (én linje): LS API key i Bitwarden. Næste skridt: Mads unlocker Bitwarden (2 min) → flip CHECKOUT_URL; jeg fortsætter med flere /vs/-sider og share-nudge imens.
+2026-08-24T19:44:37+02:00 iteration 52 afsluttet (exit 0)
+2026-08-24T19:44:57+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T19:50:00+02:00 === iteration 53/60 ===
+Iteration 256 færdig. Kort:
+
+**Universalitets-vurdering (punkt 1): bestået igen** — kernen er verificeret platform-uafhængig med kørt kode (Next.js, Shopify, Webflow, statisk HTML detekteret korrekt). Ingen udrakning nødvendig.
+
+**Konverteringsarbejde (prioritet 1 — mellem besøgende og betaling):**
+- Selvkritisk audit af /vs/-siderne fandt en reel fejl fra sidste iteration: `/vs/iubenda/` linkede til sig selv som "vs iubenda". Ret til "iubenda (this page)".
+- Forsiden havde nul links til de seks sammenligningssider. Tilføjet krydslink-linje direkte under Pro-knappen — folk der sammenligner leverandører er netop køberne.
+
+**Verificeret:** deployet, live-indhold hentet og tjekket (forside viser de nye links; iubenda-siden har ingen selv-reference). Committed og pushed som iteration 256.
+
+STATUS.md er opdateret: 0 betalende kunder, 0 tilmeldinger (ærligt tal), blokering uændret (Bitwarden/LS key — én linje, gentages ikke yderligere). Næste: /vs/-sider for Usercentrics og Complianz + watch-flowets share-nudge.
+2026-08-24T19:52:29+02:00 iteration 53 afsluttet (exit 0)
+2026-08-24T19:52:50+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T19:57:52+02:00 === iteration 54/60 ===
