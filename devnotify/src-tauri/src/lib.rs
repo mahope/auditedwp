@@ -267,9 +267,27 @@ fn get_last_check(state: State<AppState>) -> Option<String> {
 
 #[tauri::command]
 fn open_url(url: String) -> Result<(), String> {
-    std::process::Command::new("open")
-        .arg(&url)
-        .spawn()
+    // Cross-platform URL-åbning: macOS `open`, Windows `cmd /c start`,
+    // Linux `xdg-open`. Kernen forbliver platform-agnostisk.
+    #[cfg(target_os = "macos")]
+    let mut cmd = {
+        let mut c = std::process::Command::new("open");
+        c.arg(&url);
+        c
+    };
+    #[cfg(target_os = "windows")]
+    let mut cmd = {
+        let mut c = std::process::Command::new("cmd");
+        c.args(["/C", "start", "", &url]);
+        c
+    };
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let mut cmd = {
+        let mut c = std::process::Command::new("xdg-open");
+        c.arg(&url);
+        c
+    };
+    cmd.spawn()
         .map_err(|e| format!("Failed to open URL: {}", e))?;
     Ok(())
 }
@@ -363,12 +381,12 @@ pub fn run() {
             let check_now =
                 MenuItemBuilder::with_id("check_now", "Check Now").build(app)?;
             let preferences = MenuItemBuilder::with_id("preferences", "Preferences…")
-                .accelerator("Cmd+,")
+                .accelerator("CommandOrControl+,")
                 .build(app)?;
             let separator = PredefinedMenuItem::separator(app)?;
             let quit =
                 MenuItemBuilder::with_id("quit", "Quit DevNotify")
-                    .accelerator("Cmd+Q")
+                    .accelerator("CommandOrControl+Q")
                     .build(app)?;
 
             let menu = MenuBuilder::new(app)
