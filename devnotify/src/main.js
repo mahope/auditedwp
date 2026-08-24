@@ -143,7 +143,13 @@ async function refreshTrialStatus() {
     }
     box.style.display = "block";
     if (t.expired) {
-      badge.textContent = "Trial ended — activate your license to continue";
+      badge.textContent = "Trial ended — buy a $19 license to continue";
+      const st = document.getElementById("license-status");
+      if (st && !st.textContent) {
+        st.textContent =
+          "Your free 7-day trial has ended. Buy a license and paste the key above.";
+        st.className = "status-msg error";
+      }
       showPanel("settings");
     } else if (t.trial_days_left <= 2) {
       badge.textContent = `Trial: ${t.trial_days_left} day${t.trial_days_left !== 1 ? "s" : ""} left`;
@@ -268,6 +274,11 @@ els.showNotifBtn.addEventListener("click", () => showPanel("notifications"));
 document
   .getElementById("activate-license-btn")
   .addEventListener("click", activateLicense);
+
+const BUY_URL = "https://auditedwp.pages.dev/devnotify/#buy";
+document.getElementById("buy-license-btn").addEventListener("click", () => {
+  invoke("open_url", { url: BUY_URL });
+});
 
 // ── Init ─────────────────────────────────────────────────────────
 

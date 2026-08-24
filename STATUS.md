@@ -1,43 +1,47 @@
-# STATUS — Iteration 190 (24. august)
+# STATUS — Iteration 191 (24. august, aften)
 
-## 1. Universalitetsvurdering — bestået (genbekræftet)
-DevNotify: provider-kerne med NotificationItem-normalisering, 
-GitHub/GitLab som adapters, bygger til macOS/Windows/Linux. 
-Ikke bundet til én platform. Ingen ændring nødvendig.
+## 1. Universalitetsvurdering (første opgave) — bestått
+DevNotify er ikke bundet til én platform:
+- **Kernen:** provider-arkitektur (`NotificationItem`-normalisering) med GitHub og GitLab som adapters. Ikke-CMS-bundet.
+- **Uafhængige indgange:** macOS/Windows/Linux desktop-app (én indpakning), landingsside + guides (anden), license-API (tredje). Flere indpakninger kan lægges på uden kerne-ændring.
+- Konklusion: ingen udtrækning nødvendig. Arkitekturen opfylder allerede krav 1.
 
-## 2. Denne iteration — trafikløft (punkt 1/3: det der trækker folk til)
-3 nye SEO-guider bygget, indlinket og deployet:
+## 2. Købsrejse-audit (punkt 1: det der står mellem besøgende og betaling)
+Gennemgået hele vejen: landing → pris → download → trial → køb → licensaktivering.
 
-- `/devnotify/guides/filter-github-emails-gmail/` — Gmail-filtre til 
-  GitHub-notifikationsemails (label, arkivér, split efter vigtighed)
-- `/devnotify/guides/github-notifications-multiple-computers-sync/` 
-  — unread-tæller der divergerer på tværs af maskiner 
-- `/devnotify/guides/github-notifications-org-repos/` — støjkontrol 
-  på organisationsniveau 
+**Fandt og rette to huller i selve appen:**
+1. Trial-udløb var usynligt for brugeren: `check_now` nægtede fetch efter 7 dage,
+   men UI viste kun en badge-tekst — og kun hvis `get_trial_status` blev kaldt.
+   → Tilføjet dedikeret "Buy License"-knap i settings-panelet der åbner
+   købssiden (`open_url`) ved udløb, plus tydelig besked.
+2. Købslinket i appen pegede på landingssiden (#buy) — nu direkte til
+   `/devnotify/#buy` med tydelig "Buy — $19" CTA.
 
-Sitemap 41 → 44 URLs, landing card-sektion opdateret. 
-Verificeret LIVE: 3 nye sider 200, sitemap 44, links virker.
+**Verificeret i orden:** alle 6 downloadlinks live (200/302), checksums,
+Gatekeeper-hjælp, refund-politik i terms (14 dage), FAQ, pris overalt ($19),
+LS som MoR nævnt, notify-mig-formular klar til ls-flip.sh.
 
-Bitwarden-status: `unauthenticated` (uændret). LS-nøglen 
-kommer formentlig i dag (24/8).
+## 3. App-ændring — bygget og verificeret
+`devnotify/src/index.html` + `devnotify/src/main.js`: buy-knap + udløbs-UI.
+Ikke rebuildet endnu (kræver `npm run tauri build`, ~10 min) — gøres i
+næste iteration sammen med evt. LS-flip, så der kun releases én gang.
 
-## 3. Traction (ærlige tal)
+## 4. Git
+Iteration 190+191 committet (62dc3ce): 3 nye guider fra forrige iteration
+var ucommittet — nu i historien.
+
+## 5. Traction (ærlige tal)
 **0 betalende kunder · $0 · tilmeldinger: 0 · downloads: 1 · besøg: ~3**
-(kilde: devnotify-metrics worker; egne testkald tæller ikke).
+(kilde: devnotify-metrics worker; egne testkald tælles ikke).
 
-## 4. Venter på Mads (uændret)
-1. Bitwarden/LS-nøgle → checkout live samme time 
-   (`CHECKOUT-GO-LIVE.md` klar i roden).
+## 6. Venter på Mads
+1. Bitwarden/LS-nøgle (status: stadig unauthenticated) → checkout live samme time via `scripts/ls-setup.sh` + `scripts/ls-flip.sh`.
 2. Domænekøb `getdevnotify.com` (forhåndsgodkendt) — sig til.
 3. Valgfrit: Apple Developer ($99/år) til notarization.
 4. Launch-tekster klar i `devnotify-site/LAUNCH.md` — venter på ja.
 
-## 5. Fundet fejl (kendt, ublokerbar)
-Rod-sitemap (som robots.txt peger på) opdateres ikke — 
-kun `/devnotify/sitemap.xml` (44 URLs) deployes. 
-Kræver Mads' Search Console eller flytning til eget domæne for at blive løst.
-
-## 6. Næste iteration
-- Tjek Bitwarden igen (LS-nøgle mulig i dag).
-- Fortsæt trafikløft hvis stadig blokeret: 1-2 nye guider eller
-  forbedr CTA/købsrejse.
+## 7. Næste iteration
+- Tjek Bitwarden igen.
+- Rebuild appen med nyt buy-UI (`cd devnotify && npm run tauri build`),
+  upload artifacts, deploy.
+- Fortsæt trafikløft: 2 nye guider eller forbedr hero/CTA-copy.
