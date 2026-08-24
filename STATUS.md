@@ -1,28 +1,26 @@
-# STATUS — Iteration 205 (24. august)
+# STATUS — Iteration 206 (24. august)
 
 ## 1. Universalitets-vurdering (punkt 1) — BESTÅET (uændret)
 
 DevNotify er en Tauri desktop-app der tager et GitHub-token — ingen
-CMS-afhængighed. Kernen ER produktet. Intet at trække ud.
+CMS-afhængighed. Kernen ER produktet (app + licensvalidering), site og
+fremtidig CLI/Chrome-ext er indpakninger. Intet at trække ud.
 
-## 2. Blokerings-check denne iteration (nye fund, ikke gentagelser)
+## 2. Beslutning genbekræftet under pengekriteriet
 
-| Hvad | Fund |
-|------|------|
-| Bitwarden | Stadig `unauthenticated`; nøglen i Keychain er tom — kan ikke hentes programmatisk |
-| Domæne **køb** via API | Tokenet mangler registrar-skrive-rettigheder (`Insufficient registrar permissions. Required: #domain:list`) |
-| Zone-oprettelse | Samme token mangler også `zone.create` |
+DevNotify står ved magt: 0 kr/md i omkostning, $19 one-time, app + site +
+108-URL SEO-flade er bygget. Den korteste vej til første betaling er stadig at
+flippe checkout — ikke at starte forfra. BUILD.md er køreplanen.
 
-Konsekvens: både checkout og domæne kræver Mads' handling. Se §6.
-
-## 3. Gjort i denne iteration (forbedring af købsrejsen)
+## 3. Gjort i denne iteration
 
 | Hvad | Status |
 |------|--------|
-| Alle 48 undersiders header-nav fik **Guides** + **Buy — $19** links (36 ens + 10 custom navs normaliseret) — hver side fører nu mod betaling | ✅ |
-| 2 forældreløse SEO-sider (`gitify-alternative`, `octobox-alternative`) var ikke linket fra guide-indeks — rettet (intern linkvægt tabt) | ✅ |
-| Fuldt internt link-tjek over alle 51 HTML-filer: **0 broken links** | ✅ |
-| Deployet til auditedwp.pages.dev og verificeret live (nav-links + nye sider svarer med indhold) | ✅ |
+| **Fejl fundet og rettet:** FAQ JSON-LD på forsiden var ugyldig JSON (manglende `}`), hele structured-data blokken var død i Google → rettet | ✅ |
+| Fuld ld+json-validering over alle 51 HTML-filer: nu 0 fejl (var 1) | ✅ |
+| Internt link-tjek i kode over 769 links: 0 brudte | ✅ |
+| Sitemap-tjek: alle 106 live sitemap-URL'er svarer HTTP 200 | ✅ |
+| Deployet og verificeret live (JSON-LD nu gyldig på prod, buy-sektion intakt, 6 nøglesider spot-tjekket 200) | ✅ |
 
 ## 4. Traction (ærlige tal)
 
@@ -30,12 +28,12 @@ Konsekvens: både checkout og domæne kræver Mads' handling. Se §6.
 
 ## 5. Venter på Mads (én linje hver)
 
-1. Lemon Squeezy: opret produkt manuelt i web-UI (2 min, spec i BUILD.md) eller gør Bitwarden tilgængelig → jeg flipper checkout straks.
-2. Domæne getdevnotify.com (~$10): køb i Cloudflare dashboard ELLER giv API-tokenet `#domain:list` + registrar-write rettigheder, så køber jeg det selv.
-3. Lanceringstekster klar i `site/devnotify/LAUNCH.md` (Product Hunt / Show HN) — venter på ja.
+1. Lemon Squeezy: opret "DevNotify License" ($19) i web-UI (spec i BUILD.md) eller gør Bitwarden tilgængelig → jeg flipper checkout straks.
+2. Domæne getdevnotify.com (~$10): køb i Cloudflare dashboard ELLER giv tokenet registrar-skrive-rettigheder.
+3. Lanceringstekster klar i `site/devnotify/LAUNCH.md` — venter på ja.
 
 ## 6. Næste skridt
 
 1. Checkout-URL modtaget → `python3 scripts/flip_checkout.py <URL>` → deploy → testkøb
 2. Domæne kobles på Pages-projektet
-3. Produkt #2 startes, hvis blokeringerne stadig står ved næste iteration
+3. Produkt #2 (CLI-variant, npm/brew) startes hvis blokeringerne fortsat står ved næste iteration
