@@ -3962,3 +3962,55 @@ Iteration 200 færdig. Resumé:
 STATUS.md er opdateret med et vigtigt procesnotat: der findes to træer (site/devnotify/ = live, devnotify-site/ = arbejdskopi), og næste iteration bør fjerne dobbelt-træet, så denne fejlklasse ikke gentager sig.
 2026-08-24T12:00:21+02:00 iteration 56 afsluttet (exit 0)
 2026-08-24T12:00:44+02:00 === iteration 57/60 ===
+Iteration 201 færdig. Kort:
+
+**Universalitets-vurdering (punkt 1):** DevNotify består stadig — det ER en platform-uafhængig kerne (Tauri desktop-app, tager en GitHub token). Intet at trække ud.
+
+**Gjort i stedet for at vente på LS-nøglen:**
+- Fjernede dobbelt-træet: `devnotify-site/` var en forældet kopi af `site/devnotify/`. `LAUNCH.md` og `.deploy-staging` er flyttet over, og `devnotify-site` er nu et symlink — én kilde fremover, så den fejl fra iteration 199/200 ikke kan gentage sig.
+- Deployet og verificeret: forsiden, /devnotify/, download, guides-hub og guide-sider = 200; root-sitemap har 106 URL'er.
+- Committed og pushed (`ccfb984`). STATUS.md opdateret.
+
+**Traction (ærligt):** 0 kunder, $0, 0 tilmeldinger.
+
+**Blokering (én linje):** Bitwarden unauthenticated → ingen LS-nøgle endnu; alternativt opretter Mads checkout manuelt i LS web-UI på 2 minutter.
+
+Næste iteration: flip checkout når nøglen/find-linket kommer, domæne getdevnotify.com, lanceringstekster klar i `site/devnotify/LAUNCH.md` (venter på ja til Reddit/HN).
+2026-08-24T12:03:40+02:00 iteration 57 afsluttet (exit 0)
+2026-08-24T12:04:06+02:00 === iteration 58/60 ===
+Iteration 202 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1):** DevNotify BESTÅR stadig — det er en Tauri desktop-app der tager en GitHub token og virker uanset platform. Kernen er produktet; intet at trække ud.
+
+**Gjort i denne iteration:**
+- Programmatisk link-tjek af alle 49 DevNotify-sider: **0 døde links**, 0 404'ere
+- Downloads bekræftet som reelle filer (universal.dmg = 8,9 MB, HTTP 200)
+- **Tørkørsel af `flip_checkout.py`**: scriptet flipper købsknappen korrekt til en LS-checkout-URL. Live-siden gendannet bagefter og verificeret byte-identisk med deployet version
+- Bekræftet at appens Buy-knap peger på sitets #buy-sektion → ingen app-rebuild nødvendig når checkout åbner. Hele betalingsvejen er nu testet på nær undtagen det rigtige LS-kald
+
+**Blokering (én linje):** Bitwarden stadig unauthenticated → LS-nøglen kan ikke hentes.
+
+STATUS.md opdateret og pushet (`5b51fc4`). Næste iteration: hvis blokeringen stadig står, starter jeg produkt #2 — DevNotify kan ikke komme videre uden nøglen eller et manuelt checkout fra dig.
+2026-08-24T12:09:06+02:00 iteration 58 afsluttet (exit 0)
+2026-08-24T12:09:28+02:00 === iteration 59/60 ===
+Iteration 203 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — uændret.**
+Jeg gencheckede det mod den faktiske kode i stedet for at stole på tidligere noter:
+- DevNotify er en Tauri desktop-app, der tager en GitHub PAT — ingen CMS-afhængighed overhovedet. Kernen ER produktet, intet at trække ud.
+- Site-siden: scan-motoren ligger separat i `shared/scan-engine.js` og `worker-scan/` (tager vilkårlig URL) — DevNotify er allerede struktureret som én indpakning.
+
+**Købsrejse gennemgået live (friske øjne, som en fremmed):**
+- Landingsside sælger klart: H1, $19, FAQ, struktureret data ✅
+- Download-side: alle platforme linket, DMG er reel fil ✅
+- Buy-flow: knappen kan ikke tage imod penge endnu ⛔ — eneste manglende led er LS-checkout-linket.
+
+**Blokering (én linje):** Bitwarden tjekket i kode — stadig `unauthenticated`, så LS-nøglen kan ikke hentes. Alternativ: Mads opretter checkout manuelt i Lemon Squeezy web-UI (2 min, spec står i BUILD.md).
+
+Traction: **0 betalende kunder · $0 · 0 tilmeldinger** (ærlige tal).
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+
+Næste skridt: flip checkout når URL findes → testkøb → domæne getdevnotify.com → lancering (tekster klar i site/devnotify/LAUNCH.md, venter på Mads' ja).
+2026-08-24T12:12:42+02:00 iteration 59 afsluttet (exit 0)
+2026-08-24T12:13:07+02:00 === iteration 60/60 ===
