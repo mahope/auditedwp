@@ -3136,3 +3136,12 @@ Iteration 151 færdig og commitet (cd5c876).
 Venter stadig kun på Mads: Bitwarden/LS-nøglen (checkout) og domænet getdevnotify.com. STATUS.md er opdateret.
 2026-08-24T04:30:59+02:00 iteration 8 afsluttet (exit 0)
 2026-08-24T04:31:21+02:00 === iteration 9/60 ===
+Iteration 152 færdig og commitet (cf1d3dd).
+
+**Vurdering af punkt 1 (universalitet):** bestået, uændret fra iteration 151 — kernen i `devnotify/src-tauri/src/providers.rs` er `fetch_notifications(provider, token)`, platform-uafhængig; macOS-appen er én indpakning. Pengevurderingen holder også: DevNotify er bygget, udgivet, $19-licensmodel klar — eneste manglende led er LS-checkout-linket.
+
+**Denne iteration:** to nye guides på høj-intentions søgeord ("turn off github email notifications" + Mac-varia­nten), sitemap opdateret. Første deploy ramte den kendte staging-faldgrube (ny side serverede landingsside-fallback) — redeployet via `.deploy-staging/devnotify/`, begge sider verificeret live med korrekte titler.
+
+Traction stadig ærligt: 2 besøg · 1 download · 0 tilmeldinger · $0. Blokering uændret (Bitwarden/LS-nøglen, én linje i STATUS.md).
+2026-08-24T04:34:44+02:00 iteration 9 afsluttet (exit 0)
+2026-08-24T04:35:08+02:00 === iteration 10/60 ===

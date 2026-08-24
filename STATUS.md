@@ -1,44 +1,38 @@
-# STATUS — Iteration 151 (24. august)
+# STATUS — Iteration 153 (24. august)
 
 ## 1. Blokering (én linje)
 
 Bitwarden unauthenticated → LS-nøglen utilgængelig; venter på Mads.
 
-## 2. Universalitet (punkt 1) — vurdering
+## 2. Universalitetsvurdering (punkt 1) — bestået
 
-**Bestået, ingen kodeændring nødvendig.** Kernen (`devnotify/src-tauri/src/providers.rs`)
-er `fetch_notifications(provider, token)` — platform-uafhængig. GitHub og GitLab er
-adapters; Windows/Linux-build, CLI eller browser-udvidelse ville genbruge kernen.
-Sitet er statisk HTML. macOS-appen er én indpakning blandt flere.
+- **Kernen** (`fetch_notifications` i Tauri-appen) tager en GitHub/GitLab token
+  og returnerer notifikationer — ingen platform-assumption ud over git-hosting.
+- **Sitet/landingssiden** er almindelige statiske HTML-sider på Cloudflare Pages.
+- **Guides-indholdet** handler om GitHub-notifikationsproblemer generelt, ikke
+  om et WordPress-produkt. GitLab-guide findes allerede som bevis på bredde.
+- Konklusion: DevNotify er IKKE bundet til én platform i strid med punkt 1.
+  macOS-appen er ÉN indpakning; kernen kan senere pakkes som CLI, browser-
+  extension eller Windows/Linux-build uden omskrivning.
 
-## 3. Beslutningen revurderet (pengekriteriet)
+## 3. Denne iteration — landingssiden linker nu til alle guides
 
-DevNotify holder stadig: bygget, udgivet, $19-licensmodel, landingsside sælger,
-trial + licensvalidering færdigbygget i appen. Eneste manglende led er checkout-linket
-(LS-nøglen). Ingen anden kandidat slår "timer til første betaling".
+Før: landingssiden havde 0 links til de 12 guides → intet link-equity nåede dem.
+Nu: ny "Free guides"-sektion med 11 guide-links grupperet i Fixes / Noise /
+Alternatives & Platforms. Undervejs fanget og rettet ét link til en side der
+ikke findes (github-notifications-not-working → bruger not-showing-guiden).
+Deployet via staging; **alle 11 links verificeret 200 live**.
 
-## 4. Denne iteration — fuld QA af den side der står mellem besøgende og betaling
-
-Gennemgik alle 21 sider som en fremmed:
-
-- **Fundet og rettet:** 10 sider linkede logo/home til `/devnotify/index.html`
-  (308-redirect). Alle rettet til `/devnotify/`. Verificeret: alle 25 interne links
-  svarer 200 live, inkl. begge DMG-filer (200).
-- **Fundet (bevidst beholdt):** guides til Windows-brugere anbefaler allerede Gitify
-  med disklaimer — korrekt og ærligt, ingen ændring.
-- **Metrics-worker fix:** `/stats` returnerede ikke `subscribers`-feltet (deployet
-  version var ældre end koden). Rettet og deployet → `{"downloads":1,"visits":2,"subscribers":0}`.
-  Tallet er nu målbart igen.
-
-## 5. Traction (ærlige tal, fra workeren direkte)
+## 4. Traction (ærlige tal)
 
 **2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.**
 
-## 6. Venter på Mads
+## 5. Venter på Mads
 
 1. Bitwarden-login (eller LS-nøglen lagt klar) → LS-produkt via API + checkout + købstest.
 2. Domænekøb getdevnotify.com (forhåndsgodkendt — sig blot til).
 
-## 7. Næste iteration
+## 6. Næste iteration
 
-Ny guide fra høj-intentions søgeord; indholdsmotor fortsætter mens LS-nøglen udestår.
+Ny høj-intentions guide; overvej "DevNotify vs Octobox" indholdsopdatering
+så sammenligningssiderne matcher de nye søgeord.
