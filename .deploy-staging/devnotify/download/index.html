@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download DevNotify — GitHub Notifications in Your Mac Menu Bar</title>
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="description" content="Download DevNotify for macOS. See your GitHub notifications in the menu bar — unread count at a glance, one click to open. Free to try, $19 lifetime license.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/download/">
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px}
+  a{color:var(--accent)}
+  header{padding:16px 0;border-bottom:1px solid var(--border)}
+  header a{color:var(--text);text-decoration:none;font-weight:600}
+  h1{font-size:2rem;margin:32px 0 8px;line-height:1.2}
+  .sub{color:var(--muted);font-size:1.1rem;margin-bottom:32px}
+  .dl{display:block;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px;text-decoration:none;color:var(--text);transition:border-color .15s}
+  .dl:hover{border-color:var(--accent)}
+  .dl strong{display:block;font-size:1.05rem;margin-bottom:4px}
+  .dl span{color:var(--muted);font-size:.92rem}
+  .price{display:inline-block;background:rgba(63,185,80,.12);color:var(--green);border-radius:999px;padding:2px 12px;font-size:.85rem;font-weight:600;margin-top:8px}
+  .steps{margin:40px 0 0;padding-left:20px;color:var(--muted)}
+  .steps li{margin-bottom:10px}
+  footer{margin-top:48px;padding:24px 0;border-top:1px solid var(--border);color:var(--muted);font-size:.88rem;display:flex;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a href="/devnotify/">&larr; DevNotify</a></header>
+
+<h1>Download DevNotify</h1>
+<p class="sub">GitHub notifications in your macOS menu bar. Free 7-day trial, then <strong>$19 once</strong> — yours forever.</p>
+<span class="price">Free trial &middot; $19 lifetime license</span>
+
+<div style="height:24px"></div>
+
+<a class="dl" href="/devnotify/download/DevNotify_0.2.0_aarch64.dmg" download>
+  <strong>&#63743; Download for Apple Silicon (M1/M2/M3/M4)</strong>
+  <span>DevNotify_0.2.0_aarch64.dmg</span>
+</a>
+
+<a class="dl" href="/devnotify/download/DevNotify_0.2.0_x64.dmg" download>
+  <strong>&#63743; Download for Intel Macs</strong>
+  <span>DevNotify_0.2.0_x64.dmg</span>
+</a>
+
+<ol class="steps">
+  <li>Open the DMG and drag DevNotify to Applications.</li>
+  <li>On first launch, paste a <a href="/devnotify/github-token-scopes-guide/">GitHub personal access token</a>.</li>
+  <li>Your unread count appears in the menu bar. That's it.</li>
+</ol>
+
+<div style="margin-top:32px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-radius:10px">
+  <strong>macOS says the app &ldquo;can't be opened&rdquo;?</strong>
+  <p style="color:var(--muted);font-size:.95rem;margin-top:6px">DevNotify is an independent app and is not notarized by Apple yet. macOS shows this warning for every app without an Apple certificate &mdash; it does not mean anything is wrong. Two ways past it:</p>
+  <ol style="color:var(--muted);font-size:.92rem;padding-left:20px;margin-top:8px">
+    <li style="margin-bottom:6px"><strong>Right-click</strong> DevNotify.app in Applications and choose <strong>Open</strong>, then click <strong>Open</strong> again in the dialog. You only do this once.</li>
+    <li>Or remove the quarantine flag in Terminal:<br><code style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:4px 10px;margin-top:6px;font-size:.85rem">xattr -d com.apple.quarantine /Applications/DevNotify.app</code></li>
+  </ol>
+  <p style="color:var(--muted);font-size:.85rem;margin-top:10px">Verify your download (SHA-256):<br>
+  <code style="font-size:.78rem;word-break:break-all">Apple silicon: d68da705b8a0022912aa8e44245c92231e3c091ff9cf86a68a3873f36392beea</code><br>
+  <code style="font-size:.78rem;word-break:break-all">Intel:&nbsp;96901b076afadcc6b25eecf0cc8fd9bd4c05c780e35d7588e9b158710eb53885</code></p>
+</div>
+
+<div style="margin-top:32px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-radius:10px">
+  <strong>Using it past the 7-day trial?</strong>
+  <p style="color:var(--muted);font-size:.95rem;margin-top:6px">A license is $19 once — lifetime, including all 1.x updates. VAT is handled at checkout by Lemon Squeezy.</p>
+  <a class="dl" style="margin-top:12px;margin-bottom:0" href="/devnotify/#buy">Get a license &rarr;</a>
+</div>
+
+<footer>
+  <a href="/devnotify/terms">Terms</a>
+  <a href="/devnotify/privacy">Privacy</a>
+  <a href="/devnotify/#buy">Buy a license</a>
+</footer>
+</div>
+</body>
+</html>

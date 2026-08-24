@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Desktop Notifications Not Working on Mac? 5 Fixes (2026) — DevNotify</title>
+<meta name="description" content="Not getting GitHub notifications on your Mac? Five fixes, from notification settings and token scopes to a menu bar app that always shows your unread count locally.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-working-mac/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub Notifications Not Working on Mac — 5 Fixes">
+<meta property="og:description" content="Why GitHub notifications silently fail on macOS, and five fixes ranked from quickest to most reliable.">
+<meta property="og:url" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-working-mac/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notifications not working on your Mac? 5 fixes that actually work</h1>
+<p class="meta">Updated August 2026 · 4 min read</p>
+
+<p>You know the pattern: a teammate pings you on Slack asking if you saw their
+review request — and no, you never got a notification. GitHub's notifications
+are one of the most common silent failures on macOS because they don't come
+from an app at all. They come from a browser tab or an email digest, and both
+have multiple ways to quietly break.</p>
+
+<h2>Fix 1: Check macOS notification settings for your browser</h2>
+<p>If you rely on Chrome or Firefox web push from github.com, macOS may simply
+be suppressing them. Open <strong>System Settings → Notifications</strong> and
+find your browser in the list. Make sure <strong>Allow notifications</strong> is
+on, style is set to Banners or Alerts, and it isn't set to deliver quietly.
+While you're there, check that <strong>Do Not Disturb / Focus</strong> modes
+aren't swallowing them during working hours.</p>
+<p>If github.com doesn't appear in the list at all, web push was never granted:
+open GitHub in the browser, click your avatar → Settings → Notifications, and
+enable <strong>Web notifications</strong>, then accept the browser permission
+prompt.</p>
+
+<h2>Fix 2: Audit your GitHub watching settings</h2>
+<p>The most common cause isn't technical at all — you're only notified about
+conversations you participate in. On GitHub go to
+<strong>Settings → Notifications</strong> and check:</p>
+<ul><li><a href="/devnotify/guides/github-notification-badge-not-showing/">GitHub notification badge not showing? 6 fixes</a></li>
+<li><strong>Watching:</strong> "Participating and @mentions" means repos you own or contribute to won't notify unless someone @-mentions you. Switch important repos to <strong>Watch</strong> individually.</li>
+<li><strong>Subscriptions:</strong> you may be subscribed to dozens of long-running threads without realizing it.</li>
+<li><strong>Email vs Web:</strong> each channel has its own toggles per event type.</li>
+</ul>
+
+<h2>Fix 3: Email digests are being delayed or filtered</h2>
+<p>GitHub batches email notifications, and fast-moving threads can resolve
+before the email lands. Worse, Gmail and Outlook sometimes classify them as
+Promotions or spam. Search your inbox for
+<code>notifications@github.com</code> and check spam/promotions tabs. If they're
+there, create a filter that marks them as primary — but note this fixes delivery,
+not latency. Digests are inherently minutes-to-hours behind real time.</p>
+
+<h2>Fix 4: Re-authorize or replace a stale personal access token</h2>
+<p>Third-party tools that poll the GitHub API stop silently when a fine-grained
+token expires or its scope changes. If you use any client (including DevNotify),
+regenerate the token under <strong>Settings → Developer settings → Personal
+access tokens</strong> and make sure it retains read access to
+<strong>Notifications</strong>. Classic tokens need the
+<code>notifications</code> scope; fine-grained tokens need "Notifications"
+read permission.</p>
+<p>A quick test in Terminal:</p>
+<p><code>curl -H "Authorization: Bearer YOUR_TOKEN" https://api.github.com/notifications</code></p>
+<p>If that returns a JSON list, your token works and the problem is elsewhere.
+If it returns <code>401</code> or <code>403</code>, the token is dead or missing scope.</p>
+
+<h2>Fix 5: Use a menu bar app that can't be suppressed by a closed browser</h2>
+<p>All of the above share one weakness: they depend on a browser tab staying
+open or an inbox behaving. A native menu bar app polls the GitHub API directly
+from your Mac and shows an unread badge next to the clock — visible even when
+every browser window is closed and Focus mode is on (it uses the same macOS
+notification center as every other app).</p>
+<p>This is exactly what <strong>DevNotify</strong> does: unread count in the
+menu bar, one click to open the PR or issue, polling the official GitHub API
+every 60 seconds with your own token stored locally. It also supports GitLab
+todos via the same interface.</p>
+
+<div class="cta">
+<strong>Stop wondering whether you missed something</strong>
+<br>DevNotify puts your GitHub notifications where you can't miss them — your Mac menu bar. Free 7-day trial, $19 lifetime.
+<br><a class="btn" href="/devnotify/">Learn more &amp; download</a>
+</div>
+
+<h2>Still nothing?</h2>
+<ul>
+<li>Check <a href="https://www.githubstatus.com">githubstatus.com</a> — notifications have had partial outages before.</li>
+<li>If you use Safari, note github.com's web push support has historically been less reliable than Chrome/Firefox.</li>
+<li>Log out and back into github.com — stale sessions occasionally drop push registrations.</li>
+</ul>
+
+</article>
+
+<footer>
+  <div class="wrap">© 2026 DevNotify · <a href="/devnotify/terms">Terms</a> · <a href="/devnotify/privacy">Privacy</a></div>
+
+<nav class="keep-reading" aria-label="Related guides">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-email-notifications-not-working/">GitHub Email Notifications Not Working? 6 Fixes</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-working-iphone/">GitHub Notifications Not Working on iPhone? How to Fix It</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-showing/">GitHub Notifications Not Showing? 7 Fixes</a></li>
+</ul>
+</nav>
+</footer>
+
+</body>
+</html>

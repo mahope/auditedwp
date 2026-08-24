@@ -105,7 +105,7 @@ const FORM_PLUGIN_SIGNATURES = [
 ];
 
 const PLATFORM_SIGNATURES = [
-  { re: /wp-content|wp-includes|wp-json|wordpress\.org|wp-|wordpress_|class="wp-/i, name: "WordPress" },
+  { re: /wp-content|wp-includes|wp-json|wordpress\.org|\/wp-(?:admin|includes|content|json|login|config)|\bwp-(?:emoji|userdata)\b|wordpress_[a-z]|class="wp-/i, name: "WordPress" },
   { re: /cdn\.shopify|shopify\.com|shopify[_-]?checkout/i, name: "Shopify" },
   { re: /wix[_-]?site|wix\.com|wixstatic/i, name: "Wix" },
   { re: /squarespace\.com|squarespace[_-]?cdn/i, name: "Squarespace" },

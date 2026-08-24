@@ -3381,3 +3381,142 @@ STATUS.md opdateret, committet og pushet (d4ec611). Blokeret stadig kun på Bitw
 2026-08-24T05:46:42+02:00 iteration 23 afsluttet (exit 0)
 2026-08-24T05:47:02+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-24T05:52:24+02:00 === iteration 24/60 ===
+Iteration 168 færdig.
+
+**Universalitetsvurdering:** Bestået igen. Kernen i DevNotify (`devnotify/src-tauri/src/providers.rs`) er platform-agnostisk — `Provider`-enum med GitHub og GitLab, normaliserede notifikationer. macOS-appen og sitet er indpakninger. Intet at trække ud.
+
+**Denne iteration:**
+- Ny SEO-guide udgivet: "GitHub Notifications on Windows: 5 Working Options" — rettet mod Windows-udviklere, det største segment, hvor DevNotify endnu ikke findes men guiden bygger søgetrafik og linker ærligt videre.
+- Sitemap opdateret til 33 URLs, internt link tilføjet fra Gitify-guiden.
+- Deployet og verificeret live (guide + sitemap returnerer korrekt indhold). Committed som e98f62b.
+
+**Traction (ærlige tal):** 0 betalende kunder · $0 · 0 tilmeldinger.
+
+**Blokering (én linje):** Bitwarden unauthenticated → LS-nøgle mangler → checkout venter på Mads.
+
+STATUS.md er opdateret. Næste iteration: ny købsintention-guide eller porteføljeprodukt nr. 2.
+2026-08-24T05:56:08+02:00 iteration 24 afsluttet (exit 0)
+2026-08-24T05:56:28+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T06:01:47+02:00 === iteration 25/60 ===
+Iteration 169 færdig. Kort rapport:
+
+**Universalitetsvurdering: bestået (14. gang).**
+Kernen i DevNotify (`devnotify/src-tauri/src/providers.rs`) har en `Provider`-enum med GitHub + GitLab og en normaliseret `NotificationItem` — platform-agnostisk kerne. macOS-appen, sitet og guides er indpakninger. Intet at trække ud; kravet er opfyldt.
+
+**Denne iterations arbejde — fuld QA af købsrejsen:**
+- Verificerede alle relative links i alle HTML-filer lokalt: 0 manglende
+- Live-testede alle absolutte URLs og sitemap (33 URLs): 0 brudte
+- Begge DMG-downloads svarer 200 med korrekt størrelse (~4.5 MB)
+- Terms og Privacy ligger live og linkes fra footer
+- Fandt og rette én fejl: `twitter:title`-meta havde `name=` i stedet for `property=` — deployet og verificeret live
+
+Konklusion: alt teknisk mellem besøgende og betaling virker. Det eneste manglende er LS-checkout-URL'en.
+
+**Blokering (uændret, én linje):** Bitwarden CLI unauthenticated → LS-nøgle kan ikke hentes → checkout venter på Mads.
+
+**Traction:** 0 betalende kunder · $0 · 0 tilmeldinger.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+
+Næste iteration: porteføljeprodukt nr. 2, som ikke venter på Mads' konti — CLI-værktøj via npm eller digitalt produkt på en markedsplads med indbygget betaling.
+2026-08-24T06:05:17+02:00 iteration 25 afsluttet (exit 0)
+2026-08-24T06:05:39+02:00 === iteration 26/60 ===
+Iteration 170 færdig. Kort:
+
+**Universalitetsvurderingen bestod ikke helt — og det var godt.**
+
+Kernen (`shared/scan-engine.js`) er universel, men WP-fingerprintet havde en ægte fejl: regexet matchede `wp-` som vilkårligt substring, så **github.com blev fejldetekteret som WordPress** (GitHub har bare en asset der hedder `wp-runtime-<hash>.js`). Det er præcis den slags der ødelægger troværdigheden for et universelt værktøj.
+
+**Rettet og verificeret live** (Worker deployet 2 gange):
+- github.com: WordPress ❌ → Unknown ✅
+- wordpress.org: stadig korrekt detekteret (WordPress 7.2-alpha)
+- cloudflare.com: stadig Astro v6.3.7 ✅
+
+CLI'en (eucomply-scan) verificeret mod live API efter fix.
+
+STATUS.md er opdateret med tabellen og vurderingen. DevNotify holder under pengekriteriet ($19 lifetime, klar til checkout så snart LS-nøglen ligger i Bitwarden). Traction stadig ærligt: 0 / $0.
+2026-08-24T06:10:29+02:00 iteration 26 afsluttet (exit 0)
+2026-08-24T06:10:51+02:00 === iteration 27/60 ===
+Iteration 171 færdig. Kort resumé:
+
+**Universalitet (punkt 1):** bestået. Kernen (eucomply-scan) er platform-agnostisk og blev strammet i sidste iteration; DevNotify er en native macOS-app og ikke CMS-bundet. Ingen udtrækning nødvendig.
+
+**Sitewide-audit:** alle 33 sitemap-URLs 200, begge DMG'er downloadbare, sidehastighed 0,18 s, ingen brudte links eller pladsholdere.
+
+**Fundet og rettet:** hele sitet manglede `og:image` — delinger på sociale medier viste intet kort. Bygget et social share card (visuelt verificeret), tilføjet OG/Twitter-tags til alle 30 sider, deployet og verificeret live (billede serveres som image/png, tags på plads).
+
+**Blokering (uændret, én linje):** Bitwarden er stadig unauthenticated, så Lemon Squeezy-nøglen kan ikke hentes — checkout venter på Mads. Alt andet er klar: produkt, licensvalidering, launch-tekster.
+
+**Traction, ærligt: 0 kunder · $0.**
+
+Detaljer i /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-24T06:40:29+02:00 iteration 27 afsluttet (exit 0)
+2026-08-24T06:40:52+02:00 === iteration 28/60 ===
+Iteration 172 færdig. Kort:
+
+**Universalitet (punkt 1):** Bestået igen. DevNotify er en native macOS-app — ikke CMS-bundet, ingen udtrækning nødvendig.
+
+**Pengevurdering:** Beslutningen holder. DevNotify er bygget og udgivet; intet andet spor når en betalende kunde hurtigere end "LS-nøgle → checkout samme time".
+
+**Det jeg byggede denne iteration:** Egen audit afslørede en reel konverteringsdræber mellem besøgende og prøveperiode — DMG'erne er kun ad-hoc-signerede (verificeret med `codesign`/`spctl`), så Gatekeeper blokerer første lancering, og download-siden sagde ingenting om det. Tilføjet sektion på download-siden med right-click→Open-instruktioner, xattr-kommandoen og SHA-256 checksums for begge DMG'er.
+
+**Verificeret live:** Ny tekst + checksums serveres på /devnotify/download/, forsiden og alle guides stadig 200, DMG'er downloader korrekt (4,5 MB).
+
+**Traction:** 0 betalende kunder · $0 · tilmeldinger: 0.
+
+**Venter på Mads:** LS-nøgle (Bitwarden), domænekøb getdevnotify.com, evt. Apple Developer-konto til notarization ($99/år), ja til launch-teksterne.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-24T06:49:56+02:00 iteration 28 afsluttet (exit 0)
+2026-08-24T06:50:19+02:00 === iteration 29/60 ===
+Iteration 173 færdig. Resumé:
+
+**Universalitet (punkt 1):** Bestået igen. DevNotify er en native macOS-app — ikke bundet til noget CMS. Sitets guides er platform-agnostiske. Ingen udtrækning nødvendig.
+
+**Beslutningen holder under pengekriteriet:** Bygget, udgivet, $19, 0 kr/md at drive. Ingen kandidat når en betalende kunde hurtigere end "LS-nøgle → checkout samme time". Derfor forbedring frem for nyt spor.
+
+**Udført i denne iteration:**
+- Egen audit fandt 8 publicerede sider (badge-fix, Teams, iPhone, sound-alert, email-digests, Gitify-alternative, vs GitHub Desktop, vs Octobox) med nul indgående links — usynlige for både Google og besøgende. Alle 8 er nu linket fra forsiden.
+- Deployet og verificeret live: alle 8 links på /devnotify/, alle 33 sitemap-URLs svarer 200 med korrekt indhold.
+- Diagnosticerede at rod-URL `/` serverede en udløbt edge-cache af et gammelt eksperiment — det har aldrig været en del af DevNotify-deploysne; produktet på /devnotify/ har altid tjekket ud.
+
+**Traction (ærlige tal):** 0 betalende kunder · $0 · tilmeldinger: 0.
+
+**Venter på Mads:** Bitwarden-login/LS-nøgle (tjekket igen i dag, stadig låst), domænekøb getdevnotify.com (forhåndsgodkendt), evt. Apple Developer-konto ($99/år), og ja til launch-teksterne i devnotify-site/LAUNCH.md.
+
+Detaljer i /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-24T07:05:26+02:00 iteration 29 afsluttet (exit 0)
+2026-08-24T07:05:48+02:00 === iteration 30/60 ===
+Iteration 174 færdig. Resumé:
+
+**Universalitet:** bestået igen (19. gang) — DevNotify er en native macOS-app, ikke bundet til noget CMS.
+
+**Beslutningen holder under pengekriteriet** — DevNotify scorer stadig højest på de fem pengefaktorer (timer til første kunde når LS-nøglen lander, $19 one-time, ~0 kr i drift), så der blev bygget videre på den frem for et nyt spor.
+
+**Denne iteration: fuld teknisk SEO-audit af alle 33 sider + terms/privacy**
+- Fandt og rettede ét brudt link (gitify-alternative → forkert sti til best-apps-guiden)
+- Tilføjede manglende Open Graph-tags + delingsbillede på forsiden (1200×630 verificeret)
+- Verificerede: sitemap ↔ sider matcher 1:1, ingen andre brudte links, canonical/meta description overalt, DMG-downloads serveres korrekt
+- Deployet og verificeret live på auditedwp.pages.dev/devnotify/
+
+Traction er og forbliver ærligt **0 kunder · $0 · 0 tilmeldinger**, indtil LS-checkout kan sættes live. STATUS.md er opdateret.
+2026-08-24T07:11:48+02:00 iteration 30 afsluttet (exit 0)
+2026-08-24T07:12:09+02:00 === iteration 31/60 ===
+Iteration 175 færdig, committet og pushet.
+
+**Universalitetsvurdering (punkt 1): bestået — 20. gang.** DevNotify er en native macOS-app, ikke CMS-bundet, og alle guides er platform-agnostiske. Ingen udtrækning nødvendig; vurderingen står i STATUS.md.
+
+**Hvad jeg byggede denne iteration:**
+1. Ny guide: "GitHub notifications on Linux: 4 working options" — browser, email, Gitify, notify-send-scripts (med kodeeksempel), ærlige trade-offs og CTA til DevNotify. Fylder det sidste platforms-hul: mac ✓, Windows ✓, iPhone ✓ — Linux nu også ✓.
+2. Fejl fundet og rettet: sitemap havde Windows-URL'en stående to gange (33 locs, kun 32 unikke). Deduplikeret + ny guide tilføjet → 34 URLs, XML-valideret.
+3. FAQ-rich-snippets (JSON-LD) tilføjet Windows-guiden.
+4. Cross-links fra forside og Windows-guide; fuldt link-check: 0 brudte interne links på tværs af 33 sider.
+5. Deployet til Cloudflare Pages og verificeret live: linux-guiden svarer 200 med indhold, sitemap indeholder den nye URL.
+
+**Traction (ærlige tal):** 0 betalende kunder · $0 · tilmeldinger 0 · downloads 1 · besøg 2.
+
+**Blokering (én linje):** LS-checkout venter fortsat på Bitwarden/LS-nøglen — `bw status` er stadig unauthenticated.
+
+Næste iteration: flere long-tail guides eller købsrejse-forbedringer, indtil nøglen lander. STATUS.md er opdateret.
+2026-08-24T07:18:18+02:00 iteration 31 afsluttet (exit 0)
+2026-08-24T07:18:40+02:00 === iteration 32/60 ===

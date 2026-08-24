@@ -1,28 +1,30 @@
-# STATUS — Iteration 175 (24. august)
+# STATUS — Iteration 176 (24. august)
 
 ## 1. Blokering (én linje)
 
-LS-checkout venter fortsat på Bitwarden/LS-nøglen (bw status: unauthenticated).
+LS-checkout venter på Bitwarden/LS-nøglen (bw status: unauthenticated).
 
-## 2. Universalitetsvurdering — bestået (20. gang)
+## 2. Universalitetsvurdering — bestået (21. gang)
 
-DevNotify er en native macOS-app; sitet og alle guides er platform-agnostiske.
-Ingen udtrækning nødvendig. Windows-guiden fik nu også FAQ-rich-snippets.
+Gennemgang af hele DevNotify: kernen er en native macOS-app (Tauri), ikke
+platform-bundet indhold. Sitet/guides dækker mac/Windows/Linux/iPhone — og nu
+også Android. Ingen udtrækning nødvendig. Konklusion: punkt 1 er opfyldt.
 
-## 3. Denne iteration: ny Linux-guide + sitemap-reparation
+## 3. Denne iteration: Android-guide + checkout-go-live-runbook
 
-1. **Ny guide:** "GitHub notifications on Linux: 4 working options" —
-   browser/email/Gitify/notify-send-scripts, ærlige trade-offs, CTA til
-   DevNotify, FAQ-schema. Fylder hullet i platforms-dækningen (mac ✓,
-   Windows ✓, iPhone ✓, Linux → nu også ✓).
-2. **Fejl fundet og rettet:** sitemap havde `github-notifications-on-windows`
-   stående **to gange** (33 locs men kun 32 unikke). Deduplikeret + ny guide
-   tilføjet → 34 URLs. XML valideret.
-3. Cross-linket fra forsiden og Windows-guiden ("Keep reading").
-4. Link-check kørt over hele sitet: 33 sider, 35 interne links, 0 brudte
-   (kun forsiden og DMG-filerne, som er korrekte).
-5. Deployet og verificeret live: /devnotify/ 200, linux-guiden 200 med indhold,
-   sitemap indeholder linux-URL'en.
+1. **Ny guide:** "GitHub notifications on Android: 5 working options" —
+   web-inbox, email-rules, notifier-apps (Doze-problemet nævnt ærligt),
+   Tasker-automations, self-hosted ntfy/Telegram-bridge. FAQ-schema,
+   sammenligningstabel, CTA til macOS-siden. Fylder det sidste hul i
+   platformsdækningen.
+2. **CHECKOUT-GO-LIVE.md** skrevet (`devnotify/CHECKOUT-GO-LIVE.md`): trin-for-
+   trin LS API-kald, testkøb, præcis hvilke to HTML-filer der rettes og hvor
+   appens licensvalidering allerede er klar. Når nøglen kommer, er tiden fra
+   nøgle til live checkout under en time.
+3. Cross-links fra forsiden, Windows- og Linux-guiden; sitemap 34 URLs
+   (33 → 34 unikke). Link-check: 357 interne links, 0 brudte (DMG'erne findes).
+4. Deployet og verificeret live: android-guiden 200 med indhold, android-link
+   på forsiden + i sitemap + linux-crosslink bekræftet.
 
 ## 4. Traction (ærlige tal)
 
@@ -30,12 +32,14 @@ Ingen udtrækning nødvendig. Windows-guiden fik nu også FAQ-rich-snippets.
 
 ## 5. Venter på Mads
 
-1. Bitwarden-login / LS-nøgle → checkout live samme time.
+1. Bitwarden-login / LS-nøgle → checkout live samme time (runbook ligger klar).
 2. Domænekøb getdevnotify.com (forhåndsgodkendt) — sig til.
 3. Valgfrit: Apple Developer-konto ($99/år) til notarization.
 4. Launch-tekster klar i `devnotify-site/LAUNCH.md` — venter på ja.
 
 ## 6. Næste iteration
 
-Ny long-tail guide eller forbedring af købsrejsen; portefølje-produkt nr. 2
-kun hvis en konkret, ikke-blokeret vej til penge findes hurtigere end DevNotify.
+Platforms-dækningen er komplet (mac/Win/Linux/iOS/Android). Næste skridt:
+enten en ny long-tail guide ("GitHub notifications vs Slack digests"-typen),
+eller forbedring af download-sidens konvertering. Portefølje nr. 2 kun hvis en
+konkret, ikke-blokeret vej til penge er hurtigere end DevNotify.

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications in Slack Are Too Noisy? 6 Ways to Fix It (2026) — DevNotify</title>
+<meta name="description" content="Slack's GitHub integration sends everyone everything. Six ways to cut the noise — filters, private channels, per-repo routing, and a personal menu bar counter that only shows what concerns you.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notifications in Slack too noisy? 6 fixes">
+<meta property="og:description" content="How to get GitHub alerts that respect your attention — without muting the whole channel.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<meta name="twitter:image" content="https://auditedwp.pages.dev/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border:1px solid var(--border)}
+th{background:var(--panel);color:var(--text)}
+td{color:var(--muted)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notifications in Slack are too noisy? 6 ways to fix it</h1>
+<p class="meta">Updated August 2026 · 5 min read</p>
+
+<p>Routing GitHub into Slack solves one problem and creates another. The default
+integration posts <em>everything</em> — every push, every CI run, every opened
+issue across every subscribed repo. Within a week the channel is muted, and
+once it's muted you've lost the notifications that actually mattered:
+review requests and mentions with your name on them.</p>
+
+<p>Here are six ways to fix it, from free configuration to changing where the
+alerts land entirely.</p>
+
+<h2>1. Subscribe to fewer events</h2>
+<p>In any repo, go to <strong>Settings → Integrations → Slack</strong> (or edit
+the existing subscription) and untick everything except what you act on.
+Most teams only need <code>pull_request.opened</code>,
+<code>issue.comment</code>, and CI failures. Push events and branch creation
+are noise for almost everyone outside the core team.</p>
+
+<h2>2. Route by purpose, not by repo</h2>
+<p>Instead of one channel per repository, create channels by intent:
+<code>#gh-review-requests</code>, <code>#gh-ci-failures</code>,
+<code>#gh-security-alerts</code>. Then mute the ones you don't triage daily.
+A review request buried under forty push notifications is functionally
+invisible; in its own channel it's the third message today.</p>
+
+<h2>3. Use mention-only subscriptions</h2>
+<p>The official GitHub Slack app supports subscribing to
+<strong>"Mentions"</strong> as an event type. For large repos this is the
+single highest-leverage change: the channel goes quiet unless someone types
+your handle or assigns you a review. The trade-off is that you stop seeing
+context from adjacent discussions — which is exactly what some people want.</p>
+
+<h2>4. Keep team activity in Slack, move personal alerts out</h2>
+<p>The deeper issue: Slack is a team surface, but notifications are a
+<em>personal</em> concern. Mixing them means either spamming colleagues or
+muting yourself. Many developers end up with both — a quiet team channel plus
+something personal that tracks their own threads:</p>
+<ul>
+<li><strong>Email filters</strong> — label <code>notifications@github.com</code>
+mail mentioning you, skip the inbox for the rest. Reliable but slow to act on;
+see our guide to
+<a href="/devnotify/guides/turn-off-github-email-notifications/">turning off GitHub email notifications</a>.</li>
+<li><strong>A native menu bar counter</strong> like
+<a href="/devnotify/">DevNotify</a> — shows the unread count for
+<em>your</em> participating and mention threads at a glance, no channel, no
+inbox. Click to see the list, click again to open the item.</li>
+</ul>
+
+<h2>5. Mute the channel deliberately, not accidentally</h2>
+<p>If the channel must stay loud for the team, mute it on your side and pick
+one of the personal channels above as your real signal. The failure mode to
+avoid is "muted, but I'll check it sometimes" — that's how review requests sit
+for two days. Decide once: the channel is for others, your alert path is for
+you.</p>
+
+<h2>6. Audit your watching list quarterly</h2>
+<p>Noise scales with the number of repos you watch. Open
+<a href="https://github.com/watch_disabled">github.com → Watching</a>, unfollow
+repos from projects that ended, and switch remaining ones from "All activity"
+to "Participating and @mentions" via each repo's Watch dropdown. This cuts
+Slack noise at the source instead of filtering downstream.</p>
+
+<h2>Which fix fits which situation</h2>
+<table>
+<tr><th>Situation</th><th>Best fix</th></tr>
+<tr><td>You're mentioned constantly</td><td>Mention-only subscription (#3)</td></tr>
+<tr><td>Channel muted, reviews slip through</td><td>Personal alert path (#4)</td></tr>
+<tr><td>Whole team drowning</td><td>Fewer event types (#1) + purpose channels (#2)</td></tr>
+<tr><td>Too many watched repos</td><td>Watching audit (#6)</td></tr>
+</table>
+
+<div class="cta">
+<strong>Your GitHub notifications, one click away</strong>
+<br>Native macOS menu bar app · free 7-day trial · $19 lifetime
+<br><a class="btn" href="/devnotify/#buy">Learn more &amp; download</a>
+</div>
+
+</article>
+
+<footer>
+  <div class="wrap">© 2026 DevNotify · <a href="/devnotify/terms">Terms</a> · <a href="/devnotify/privacy">Privacy</a></div>
+
+<nav class="keep-reading" aria-label="Related guides">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/slack-github-notifications/">How to Get GitHub Notifications in Slack (and When Not To)</a></li>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications/">How to Turn Off GitHub Email Notifications</a></li>
+<li><a href="/devnotify/guides/github-notifications-not-showing/">GitHub Notifications Not Showing? 7 Fixes That Actually Work</a></li>
+<li><a href="/devnotify/guides/github-notifications-discord/">GitHub Notifications in Discord: 3 Working Methods</a></li>
+</ul>
+</nav>
+</footer>
+
+</body>
+</html>
