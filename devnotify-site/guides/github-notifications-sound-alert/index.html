@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Notifications Sound / Alert Not Playing? 5 Fixes (2026) — DevNotify</title>
+<meta name="description" content="GitHub notifications arrive but make no sound or desktop alert? Five real causes — browser notification permissions, OS sound settings, Focus mode and more — plus a menu bar app with a proper alert.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/github-notifications-sound-alert/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub notification sound not playing? 5 real fixes">
+<meta property="og:description" content="Five actual causes of silent GitHub notifications on macOS — and how to fix each one.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/guides/github-notifications-sound-alert/">
+<meta name="twitter:card" content="summary">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted)}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>GitHub notification sounds not playing? Here are the 5 real causes</h1>
+<p class="meta">Updated August 2026 · 4 min read</p>
+
+<p>You get GitHub notifications — you can see them if you look — but nothing
+ever pings, dings or pops up. On a busy team that means missed review
+requests and hours of delay on every PR. One of these five things explains
+almost every case of silent GitHub notifications.</p>
+
+<h2>1. You're relying on email, which is intentionally silent</h2>
+<p>By default GitHub sends important notifications by <strong>email</strong>,
+and your mail client may not play a sound for them at all — especially if
+they land in a filtered folder or a tab your inbox rules created. Check
+<strong>Settings → Notifications → Email</strong> on github.com to see what
+actually triggers an email, then check where those emails land in your mail
+client. If they're being filed away silently, no amount of sound settings
+will help.</p>
+
+<h2>2. Browser notifications are allowed but muted</h2>
+<p>If you use github.com in Chrome, Edge or Firefox, web notifications need
+two switches on: the site permission <em>and</em> the OS-level sound.</p>
+<ol>
+<li>In the browser: <strong>Settings → Privacy → Site settings →
+github.com → Notifications → Allow</strong>.</li>
+<li>In macOS: <strong>System Settings → Notifications → [your browser] →
+enable "Play sound for notifications"</strong>. Browsers deliver their own
+notifications through this single system entry — if the browser's sound is
+off, every website is silent.</li>
+<li>Note: browser notifications only work while the browser is running.
+Close it and the ping stops with it.</li>
+</ol>
+
+<h2>3. Focus / Do Not Disturb is silencing everything</h2>
+<p><strong>Focus modes</strong> and <strong>Scheduled Sleep</strong> suppress
+notification sounds system-wide without telling you per-app. Open
+<strong>Control Centre</strong> and confirm Focus is actually off — and check
+<strong>System Settings → Focus</strong> for schedules that turn themselves
+on automatically (many people have a work-hours schedule they forgot about).
+Also look at the app's entry under System Settings → Notifications: if it
+shows a moon icon, deliveries are being held.</p>
+
+<h2>4. The app's own sound setting is off — or the volume routing is wrong</h2>
+<p>Dedicated GitHub clients each have their own alert toggle, separate from
+the OS. In DevNotify, Gitify or similar, open preferences and check the
+sound/alert switch directly. Then verify macOS is playing anything at all:
+click the volume icon, play any system alert, and check
+<strong>Sound → Output</strong> isn't routed to a disconnected monitor or
+Bluetooth device. A surprising number of "silent notification" reports are
+just audio going nowhere.</p>
+
+<h2>5. Watching too few repos — so there's simply nothing to alert on</h2>
+<p>Sounds only fire for notifications GitHub actually sends. If you've
+mass-unwatched repositories, mentions-only is on, or Custom settings exclude
+review requests, your client has nothing to notify about. Go to
+<strong>github.com → Settings → Notifications → Subscriptions</strong> and
+<strong>Watching</strong>, and confirm the repos you care about are watched
+with the events you want. Test end-to-end: have a teammate mention you or
+request your review, and see whether it appears within a minute or two.</p>
+
+<div class="cta">
+<h2>A sound is not enough — you need to see who needs you</h2>
+<p style="max-width:520px;margin:0 auto">DevNotify puts your live unread
+count in the macOS menu bar, shows the full list one click away, and alerts
+you when a new review request lands — no browser tab required. Free to try,
+$19 for a lifetime license.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify for macOS</a>
+</div>
+
+<h2>Still silent?</h2>
+<p>Confirm notifications exist at all by opening
+<strong>github.com/notifications</strong>. Items there but silence everywhere
+else means the delivery chain is broken — items 2–4 above. No items there
+means the problem is upstream: watching and subscription settings (items
+1 and 5).</p>
+
+<div class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/github-notifications-not-working-mac/">GitHub notifications not working on Mac</a></li>
+<li><a href="/devnotify/guides/github-notification-badge-not-showing/">GitHub notification badge not showing? 6 fixes</a></li>
+<li><a href="/devnotify/guides/miss-pr-review-notifications/">Missing PR review request notifications</a></li>
+<li><a href="/devnotify/guides/github-notifications-vs-email-digests/">GitHub notifications vs email digests</a></li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 DevNotify · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+</body>
+</html>

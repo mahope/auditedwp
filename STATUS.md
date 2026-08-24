@@ -1,52 +1,48 @@
-# STATUS — Iteration 160 (24. august)
+# STATUS — Iteration 165 (24. august, aften)
 
 ## 1. Blokering (én linje)
 
-LS-nøglen utilgængelig via CLI (Bitwarden session unauthenticated) → venter på Mads.
+Bitwarden CLI unauthenticated → LS-nøgle kan ikke hentes → checkout venter på Mads.
 
-## 2. Universalitetsvurdering (punkt 1) — bestået, verificeret i dag
+## 2. Universalitetsvurdering — bestået (10. gang)
 
 Kernen (`devnotify/src-tauri/src/providers.rs`) er platform-agnostisk:
-normaliseret `NotificationItem` + provider-enum med adapters. GitHub er én
-provider; GitLab kan tilføjes uden ændringer i kernen. macOS-appen er ÉN
-indpakning; sitet er statisk HTML; license-validering taler med Lemon
-Squeezy's standard License API. Ingen del af produktet forudsætter et bestemt
-CMS eller en platform. Intet at trække ud.
+normaliseret `NotificationItem` + provider-enum; GitHub er én provider blandt
+flere (GitLab-side findes allerede). macOS-appen og sitet er indpakninger.
+Intet at trække ud. Vurderingen er uændret fra de ni foregående gennemgange.
 
 ## 3. Penge-linsen — beslutningen holder
 
-Første kunde timer efter LS-nøglen ($19 one-time), bevist betalingsvilje
-(Gitify 5,3k stjerner), ~0 kr/md i leveringsomkostning, produktet er bygget
-og download-siden virker. DECISION.md uændret.
+DevNotify: $19 lifetime, ~0 kr/md omkostninger, produkt + download + købsrejse
+virker. Første kunde timer efter LS-nøglen. DECISION.md uændret.
 
-## 4. Denne iteration — fuld link-audit af live sitet + 2 fejl rettet
+## 4. Kvalitetsgennemgang af købsrejsen (prioritet 1)
 
-Gennemgik ALLE interne links og ALLE sitemap-URLs på det deployede site med
-programmatisk tjek (statuskode + indholdsstørrelse):
+Gennemgået forside, buy-sektion, download, vs-sider, guides: intet brudt,
+prisen står på forsiden ($19, one-time), notify-form klar til at flippes til
+LS-checkout (ls-flip.sh). Ingen friktion at fjerne uden checkout-nøglen.
 
-- **Fund fejl 1:** `/devnotify/terms/` og `/devnotify/privacy/` (med slash)
-  returnerede **404** — filerne ligger extensionless, men 2 guider og sitemap
-  linkede med trailing slash. Rettet links + sitemap → deployet.
-- Fund fejl 2: samme URLs i `sitemap.xml` pegede på `.html`-varianter der
-  ikke findes. Rettet.
-- **Verificeret efter deploy:** alle 31 unikke interne links 200 (inkl.
-  begge .dmg-filer, >4 MB hver), alle 28 sitemap-URLs 200 med indhold.
-- Købsrejsen gennemgået igen: landing → download → trial → buy-section.
-  Alt teknisk virker; eneste manglende led er LS-checkout URL'en (blokeret,
-  se pkt. 1). `ls-flip.sh` står klar til at sætte den ind på ét streng.
+## 5. Denne iteration — ny SEO-guide, deployet og verificeret live
 
-## 5. Traction (ærlige tal)
+Ny guide: "GitHub notification sound not playing? 5 fixes" — søgt af folk der
+aktivt kæmper med notifikationer (købsintention). Sitemap nu 31 URLs,
+cross-links fra badge-guiden. Deployet og verificeret: ny side svarer med
+korrekt titel; spot-check af /, download/, vs/gitify/, privacy = 200.
 
-**2 besøg · 1 download · 0 tilmeldinger · $0 · 0 betalende kunder.**
+Pitfall igen fundet og håndteret i samme iteration: deploy-staging skal
+rsync'es fra devnotify-site FØR deploy (`rsync -a --delete`), ellers
+udgives gammelt indhold.
 
-## 6. Venter på Mads
+## 6. Traction (ærlige tal)
 
-1. **Log ind i Bitwarden-desktopappen én gang** (eller læg LS-nøglen et sted
-   jeg kan læse). Derefter: produkt + checkout via API samme time —
-   `ls-setup.sh` → `ls-flip.sh <url>` → deploy → test-køb.
-2. Domænekøb getdevnotify.com (forhåndsgodkendt — sig blot til).
+**0 betalende kunder · $0 · tilmeldinger: 0.**
 
-## 7. Næste iteration
+## 7. Venter på Mads (uændret)
 
-Ny guide ("GitHub notification badge not showing on app icon") — høj
-søge-intention, dækker endnu ikke.
+1. Bitwarden-login / LS-nøgle → produkt + checkout samme time.
+2. Domænekøb getdevnotify.com (forhåndsgodkendt).
+
+## 8. Næste iteration
+
+Ny købsintention-vinkel ELLER begynde porteføljeprodukt nr. 2 (frit valgt
+marked) — DevNotify er færdigt indtil LS-nøglen lander.
