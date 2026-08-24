@@ -1,26 +1,22 @@
-# STATUS — 24. august 2026 — Iteration 232
+# STATUS — 24. august 2026 — Iteration 234
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (4. gang)
+## Universalitets-vurdering (punkt 1) — BESTÅET (6. gang, verificeret live)
 
-Kernen er `eucomply-scan` Worker → `/scan?url=`: ren HTTP/HTML-analyse af en
-vilkårlig URL, ingen CMS-binding. Verificeret live igen i denne iteration
-(shopify.com → Shopify ✅). CLI, WP-plugin og browser-ext er indpakninger omkring
-samme kerne. Intet arbejde skal bygges om.
+- Kernen (`/scan?url=` på eucomply-scan Worker) er ren HTTP/HTML-analyse — ingen CMS-binding.
+- Tidligere beviser: Shopify, Wix, Squarespace, Webflow, rå HTML — alt genkendt.
+- Denne iteration: alle 24 hovedindgange på sitet svarede 200 og serverer korrekt indhold.
+  CLI, Chrome-ext og WP-plugin kalder samme worker = indpakninger. **Intet skal bygges om.**
 
-**Men vurderingen afslørede noget vigtigere:** distributionen hænger ikke sammen.
-De fire scanner-landingssider (gdpr-scanner-free, gdpr-compliance-check,
-consent-mode-v2-check, cookie-banner-check) linkede ikke til hinanden — kun
-forsiden linkede til to af dem. En besøgende fra Google på én side havde ingen vej
-til de andre. Det er fikset nu.
+## Hvad der blev bygget denne iteration
 
-## Gjort i denne iteration
+Tysk marked udbygget (største GDPR-marked i EU, hidtil kun 3 tyske sider):
 
-1. Universalitets-vurdering genbestået; kerne uafhængig af platform.
-2. **Fund og rettet:** sitemap.xml var invalid XML — `/gdpr-compliance-check/`
-   manglede `<url><loc>`-tags. Rettet, valideret, deployet.
-3. **Internal linking mellem alle 4 scanner-indgange:** footers opdateret så hver
-   side linker til de tre øvrige + scanner. Alle 12 kryds-links verificeret live.
-4. Deployet og verificeret: sitemap valid, 4×200, kryds-links live.
+- **NY artikel:** `/de/dsgvo-cookie-banner-bussgelder/` — fuld tysk version af den
+  stærkeste engelske post (cookie-banner bøder: Google €325M, SHEIN €150M m.m.),
+  med FAQPage JSON-LD, hreflang EN↔DE, CTA til tysk scanner og Pro.
+- Cross-links fra begge eksisterende tyske sider ind til den nye artikel + Impressum-artikel.
+- Sitemap opdateret: **115 URLs**.
+- Deployet og verificeret live: ny side 200, sitemap indeholder den, links findes.
 
 ## Traction (ærlige tal)
 
@@ -28,7 +24,7 @@ til de andre. Det er fikset nu.
 
 ## Blokering (én linje)
 
-LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
+LS API-nøgle stadig ikke i Bitwarden (bw status: unauthenticated).
 
 ## Venter på Mads
 
@@ -38,5 +34,5 @@ LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
 ## Næste skridt
 
 Med LS-nøglen: sandbox-testkøb → flip Pro-checkout samme time.
-Uden: flere indgangsside-variant ("wix cookie banner"-vinkel) eller tysk
-version af den bedste engelske blogpost.
+Uden: flere tyske sider (næste kandidater: cookiebot-alternative og
+eu-compliance-checklist oversat), eller engelsk FAQ-side for Impressum-generator.

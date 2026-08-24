@@ -4521,3 +4521,36 @@ Der skal intet trækkes ud: CLI, WP-plugin og Chrome-extension ER allerede indpa
 STATUS.md er opdateret. Næste skridt står der: flip Pro-checkout samme time som nøglen lander; ellers fortsætter jeg med flere engelske indgangssider eller tyske oversættelser af de bedste blogposts.
 2026-08-24T15:23:00+02:00 iteration 27 afsluttet (exit 0)
 2026-08-24T15:23:25+02:00 === iteration 28/60 ===
+Iteration 232 færdig. Resumé:
+
+**Universalitets-vurdering: BESTÅET (4. gang).** Kernen (`eucomply-scan` Worker, `/scan?url=`) er ren HTTP/HTML-analyse og virker på enhver URL — verificeret live igen mod Shopify. CLI, WP-plugin og browser-ext ER allerede indpakninger. Intet skal bygges om.
+
+**Men vurderingen fandt to reelle problemer — begge rettet og deployet:**
+
+1. **sitemap.xml var invalid XML** — `/gdpr-compliance-check/`-linjen manglede `<url><loc>`-tags (fra iteration 229). Det kan have blokeret Google-inddeksering af hele sitet. Rettet, valideret med Python XML-parser, live-verificeret.
+2. **De fire scanner-landingssider linkede ikke til hinanden.** En besøgende fra Google på fx /consent-mode-v2-check/ havde ingen vej til de andre tre indgange. Footers opdateret så alle fire sider kryds-linker (12 links), alle verificeret live.
+
+Deployet til https://auditedwp.pages.dev, commit `5f92967`, STATUS.md opdateret.
+
+Traction er stadig ærligt: **0 betalende kunder, $0.** Blokering uændret: LS API-nøglen mangler i Bitwarden — flip-scriptet står klar til at sætte Pro-checkout ($79/år) live samme time nøglen lander.
+
+Næste iteration: flere indgangsside-varianter ("wix cookie banner"-vinkel) eller tysk version af den bedste blogpost, indtil checkout kan flippes.
+2026-08-24T15:29:03+02:00 iteration 28 afsluttet (exit 0)
+2026-08-24T15:29:25+02:00 === iteration 29/60 ===
+Iteration 233 færdig. Kort rapport:
+
+**Universalitets-vurderingen (første opgave): BESTÅET — denne gang med beviser, ikke påstande.**
+
+Jeg testede kernen mod tre platforme den aldrig havde mødt før:
+- **Wix** → genkendt som "Wix.com Website Builder" ✅
+- **Squarespace** → genkendt ✅
+- **Webflow** → genkendt ✅
+- Plus apple.com (håndskrevet HTML) → scannet uden fejl ✅
+
+Kernen er `eucomply-scan` Worker: en vilkårlig URL ind, HTML-analyse ud. Nul CMS-binding. Jeg verificerede også i koden at CLI'en (`cli/bin/eucomply-scan.js`) og Chrome-udvidelsen (`popup.js`) kalder præcis samme worker-URL — de er rene indpakninger, ligesom WP-pluginet. Intet arbejde skal bygges om.
+
+**Blokering (uændret, én linje):** LS API-nøglen ligger stadig ikke i Bitwarden (`bw status`: unauthenticated).
+
+STATUS.md er opdateret. Næste skridt står der: med LS-nøglen flipper jeg Pro-checkout ($79/år) samme time; uden nøglen bygger jeg den tyske version af den bedste blogpost — Tyskland er EUs største GDPR-marked, og det er rent distribution-arbejde der ikke kræver nøglen.
+2026-08-24T15:30:59+02:00 iteration 29 afsluttet (exit 0)
+2026-08-24T15:31:23+02:00 === iteration 30/60 ===
