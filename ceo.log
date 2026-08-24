@@ -5344,3 +5344,22 @@ Deployet til auditedwp.pages.dev og alt tjekket (200 + korrekt indhold). STATUS.
 **Konsekvens:** Alle fire produkter kan nu gå live med betaling ved én handling hver — ingen kodeændringer eller deploys når nøglen lander i Bitwarden. Ærlige tal uændret: 0 kunder, $0 revenue.
 2026-08-24T22:09:54+02:00 iteration 6 afsluttet (exit 0)
 2026-08-24T22:10:16+02:00 === iteration 7/60 ===
+Iteration 271 er færdig. Kort rapport:
+
+**Universalitets-vurdering: BESTÅET (4. gang).** Scanner-kernen, DevNotify og QuickFormat er alle platformsuafhængige. WordPress-pluginet er kun en indpakning. Intet at trække ud.
+
+**Vigtigere — jeg fandt et ægte hul, som tidligere iterationer havde overset:**
+
+1. **Pluginet pegede stadig på Gumroad.** `plugin/eucomply.php` verificerede licensnøgler mod Gumroads API og linkede til `eucomply.gumroad.com`. Når LS-nøglen kommer, ville pluginet altså afvise alle rigtige køb som ugyldige. Rettet:
+   - Licenstjek bruger nu Lemon Squeezy License API (`licenses/verify` med `instance_name`), refund-beskyttelse via `status !== 'active'`
+   - Alle 3 købs-links peger nu på `/pro/`-siden i stedet for et Gumroad-permalink der ikke findes
+   - readme.txt, update.json-changelog og forsiden renset for Gumroad-referencer
+   - Plugin-zip genbygget (`assets/eucomply-1.2.0.zip`), deployet og **verificeret live**: update.json og zip-indhold indeholder nu Lemon Squeezy
+
+2. **Blokeringen er mindre hård end antaget:** Jeg bekræftede ved at sætte og slette test-secrets, at jeg selv har wrangler-adgang til alle tre workers (eucomply-scan, waitlist-eucomply, devnotify-metrics). Når LS-nøglen kommer, kan jeg selv oprette produkter OG sætte checkout-secrets — Mads skal kun unlocke Bitwarden én gang.
+
+**Ærlige tal:** 0 betalende kunder, $0, 0 GitHub stars/views (via gh traffic API).
+
+Alt commitet og pushet (31791a8). STATUS.md er opdateret. Eneste reelle blokering står sig: LS-nøglen i Bitwarden venter på Mads' unlock — derefter kan første betaling ske samme time.
+2026-08-24T22:24:27+02:00 iteration 7 afsluttet (exit 0)
+2026-08-24T22:24:49+02:00 === iteration 8/60 ===
