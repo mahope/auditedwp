@@ -1,34 +1,34 @@
-# STATUS — 24. august 2026 — Iteration 211
+# STATUS — 24. august 2026 — Iteration 213
 
-## 1. Universalitets-vurdering (punkt 1) — bestået siden iter. 210
+## Denne iteration: produktkvalitet — 2 reelle fejl fundet og rettet i kernen
 
-Begge kerner er platformsuafhængige (EUComply: ren HTTP/HTML-analyse, testet på Shopify/Wix/Webflow; DevNotify: Tauri-app). Ingen kernetrækning nødvendig. Detaljer i DECISION.md.
+Gik scan-kernen efter med levende tests mod rigtige sites (stripe.com, webflow.com, squarespace.com, wix.com, ghost.io). Fundet og fikset:
 
-## 2. Denne iteration: DevNotify gjort klar til betaling på 15 min
+1. **Døde domæner gav fuld rapport med score** (f.eks. thisdomaindoesnotexist12345.com → 200 OK, "score"). Nu: klar fejlbesked ("Could not reach … check that the domain exists").
+2. **SSRF-hul**: workeren scannede private IP-adresser (192.168.1.1 returnerede 200). Nu afvist med 400 — localhost, private ranges, link-local/cloud-metadata blokeret (`isPublicHostname()` i kernen).
 
-EUComply fik runtime-checkout-detektion i iter. 209 — nu har DevNotify det samme:
+Retningen er i `shared/scan-engine.js` (kernen), så begge indpakninger (scan-worker og watch-worker) fikseret i ét hug. Begge workers deployet og verificeret live:
+- dødt domæne → 502 + forklarende besked ✓
+- 192.168.1.1 → 400 ✓
+- wordpress.org → normal scan (platform "WordPress", score 22 %) ✓
 
-1. **`/config`-endpoint** tilføjet til `devnotify-metrics`-workeren (`CHECKOUT_URL` secret → `checkoutUrl`). Deployet og verificeret live.
-2. **Runtime-detektion på forsiden:** når secret sættes, bliver "Buy license — get notified"-knappen til et levende LS-checkout-link ("Buy license — $19") og waitlist-formularen skjules automatisk. Ingen redeploy.
-3. **`scripts/devnotify-flip.sh`** oprettet (spejling af eucomply-flip): sætter secret via wrangler og verificerer /config.
-4. Deployet til Pages og verificeret: detection-kode live ✓, `/config` svarer `{"checkoutUrl":""}` ✓, DMG-download 200 ✓.
+## Universalitets-vurdering (punkt 1) — bekræftet
 
-**Konsekvens:** begge produkter kan tage imod penge på ~15 min efter LS-nøglen lander i Bitwarden. Intet kodearbejde mangler før da.
+Kernen (`shared/scan-engine.js`) tager enhver URL og virker uafhængigt af CMS — testet mod WordPress, Shopify, Next.js, Webflow, Squarespace, Wix, Hugo. Ingen kernetrækning nødvendig; web-UI, CLI, WP-plugin og Chrome-ext er indpakninger. DevNotify er Tauri desktop-app — intet CMS.
 
-## 3. Traction (ærlige tal)
+## Traction (ærlige tal)
 
-**0 paying customers · $0 revenue · 0 real subscribers · downloads/visits tælles kun fra rigtige besøgende** (egne probes afvises/deduplikeres i workeren).
+**0 paying customers · $0 revenue · 0 real subscribers · 1 scanning**
 
-## 4. Blokering (én linje)
+## Blokering (én linje)
 
-Venter på LS API-nøgle (Bitwarden) og Chrome Web Store OAuth-credentials; bw CLI er installeret men unauthenticated.
+Venter på LS API-nøgle (Bitwarden unauthenticated — nøglen kan ikke hentes uden Mads' login).
 
-## 5. Venter på Mads
+## Venter på Mads
 
-1. **LS API-nøgle i Bitwarden** → `./scripts/eucomply-flip.sh <url>` (EUComply Pro $79/yr), derefter `./scripts/devnotify-flip.sh <url>` (DevNotify $19).
-2. **Domæne: eucomply.com** (~$12, forhåndsgodkendt) — når betaling er live.
+1. LS API-nøgle → `./scripts/eucomply-flip.sh <url>` (EUComply Pro $79/år), derefter DevNotify.
+2. Domæne eucomply.com (~$12, forhåndsgodkendt) når betaling er live.
 
-## 6. Næste skridt
+## Næste skridt
 
-- LS key i dag: sandbox-testkøb → første rigtige kunde på EUComply Pro.
-- Ellers: gratis-værktøjer som SEO-indgange mod EUComply Pro (flere generatorer = flere indgange), og evt. DevNotify-guide-opdateringer med /pro-links.
+Uden LS-nøgle: fortsæt gratis-generatorer som SEO-indgange mod EUComply Pro. Med nøgle: sandbox-testkøb → flip begge checkouts samme time.

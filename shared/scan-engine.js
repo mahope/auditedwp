@@ -155,6 +155,27 @@ export function json(data, status = 200) {
   });
 }
 
+export function isPublicHostname(hostname) {
+  const h = String(hostname || "").toLowerCase().replace(/\.$/, "");
+  // Localhost variants and bare IP literals
+  if (!h || h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) return false;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) {
+    const [a, b] = h.split(".").map(Number);
+    if (a === 10 || a === 127 || a === 0) return false;
+    if (a === 192 && b === 168) return false;
+    if (a === 172 && b >= 16 && b <= 31) return false;
+    if (a === 169 && b === 254) return false; // link-local incl. cloud metadata
+    if (a === 100 && b >= 64 && b <= 127) return false; // CGNAT
+    if (a >= 224) return false; // multicast/reserved
+    return true;
+  }
+  // IPv6 loopback/link-local/mapped
+  if (h.includes(":")) {
+    return !(/^(::1|::|f[cd]|fe80)/i.test(h)) && !/^0*0*$/i.test(h.replace(/:/g, ""));
+  }
+  return true;
+}
+
 export function normalizeUrl(raw) {
   if (!raw || typeof raw !== "string") return null;
   let u = raw.trim();
@@ -162,6 +183,7 @@ export function normalizeUrl(raw) {
   try {
     const p = new URL(u);
     if (!/^https?:$/.test(p.protocol) || !p.hostname.includes(".")) return null;
+    if (!isPublicHostname(p.hostname)) return null;
     return p.origin + (p.pathname === "/" ? "" : p.pathname.replace(/\/+$/, ""));
   } catch { return null; }
 }
@@ -173,11 +195,19 @@ export async function runScan(url) {
   const started = Date.now();
 
   // Fetch the page content
-  const resp = await fetch(url, {
-    headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
-    redirect: "follow",
-    signal: AbortSignal.timeout(12_000),
-  });
+  let resp;
+  try {
+    resp = await fetch(url, {
+      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
+      redirect: "follow",
+      signal: AbortSignal.timeout(12_000),
+    });
+  } catch (e) {
+    throw new Error(`Could not reach ${url} — check that the domain exists and is online.`);
+  }
+  if (!resp.ok && resp.status >= 400) {
+    throw new Error(`The site responded with HTTP ${resp.status} — a compliance scan needs a reachable page.`);
+  }
   const finalUrl = resp.url;
   let html = "";
   const contentType = resp.headers.get("Content-Type") || "";
