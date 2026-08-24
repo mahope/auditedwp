@@ -4330,3 +4330,41 @@ Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og forudsætter intet C
 STATUS.md er opdateret. Traction er stadig ærligt **0**. Eneste blokering: LS API-nøglen ligger endnu ikke i Bitwarden (bw status: unauthenticated).
 2026-08-24T14:19:36+02:00 iteration 16 afsluttet (exit 0)
 2026-08-24T14:19:58+02:00 === iteration 17/60 ===
+Iteration 221 færdig.
+
+**Universalitets-vurdering:** Bestået igen — kernen `shared/scan-engine.js` er CMS-uafhængig, og WP-plugin/CLI/extension er allerede indpakninger. Ingen udtrækning nødvendig.
+
+**Beslutningen holder:** EUComply Pro ($79/år recurring) vurderes stadig højest på de fem penge-kriterier (compliance = lovkrav = høj betalingsvilje, 0 kr/md drift).
+
+**Gjort denne iteration** (ventetid er arbejdstid — prioritet 3: det der trækker folk til):
+- Opgraderede /blog/gdpr-cookie-banner-fines/ med en verificeret enforcement-tabel: Google €325M og SHEIN €150M (CNIL sep. 2025), ICO's top-1.000-sweep (564 fejlede indledende, 17 PENs), Kruidvat €600k, svenske IMY-advarsler — alle tal tjekket mod CNILs egen pressemeddelelse, EDPB og ICOs nyheder.
+- FAQPage JSON-LD med 4 spørgsmål (valideret).
+- Deployet og verificeret live på https://auditedwp.pages.dev/blog/gdpr-cookie-banner-fines/ (indhold + 200). Committed og pushed.
+
+**Traction (ærlige tal):** 0 betalende kunder · $0 · 0 rigtige tilmeldinger · 1 scanning.
+
+**Blokeret på (én linje):** LS API-nøglen mangler i Bitwarden (bw status: unauthenticated).
+
+STATUS.md er opdateret. Næste skridt står der: ved nøgle → sandbox-testkøb og checkout-flip samme time; ellers fortsæt SEO-arbejdet på næste high-intent side.
+2026-08-24T14:23:20+02:00 iteration 17 afsluttet (exit 0)
+2026-08-24T14:23:42+02:00 === iteration 18/60 ===
+Iteration 222 færdig.
+
+**Universalitets-vurdering (punkt 1): BESTÅET — ingen ændring nødvendig.**
+Kernen `shared/scan-engine.js` tager en vilkårlig URL og virker uanset CMS (beviest igen i it. 219 med shopify/webflow/squarespace/example). WP-plugin, CLI og browser-ext er allerede indpakninger omkring kernen. Det samme gælder DevNotify (Tauri-app = kernen, intet CMS).
+
+**Pengekriteriet:** Beslutningen holder. EUComply Pro ($79/år recurring, compliance = lovkrav) forbliver primær; begge produkter kan tage imod betaling så snart LS-nøglen ligger i Bitwarden.
+
+**Bygget i denne iteration** (prioritet 3 — det der trækker folk til):
+- `/blog/eu-cookie-consent-guide-2026/` opgraderet med det mønster der virkede på fines-siderne: FAQPage JSON-LD (4 spørgsmål, valideret), verificeret enforcement-tabel (Google €325M, SHEIN €150M, ICO-sweepet, Kruidvat €600k) med kilder, IMY/Sverige tilføjet.
+- Ret en nested `<p>` markup-fejl og tilføjet internal links til fines-trackeren.
+- Deployet og verificeret live: HTTP 200 + alt nyt indhold på siden.
+
+**Traction (ærlige tal):** 0 paying customers · $0 · 0 subscribers · 1 scanning.
+
+**Blokering (én linje):** LS API-nøglen mangler stadig i Bitwarden.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-24T14:28:16+02:00 iteration 18 afsluttet (exit 0)
+2026-08-24T14:28:37+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-24T14:33:39+02:00 === iteration 19/60 ===

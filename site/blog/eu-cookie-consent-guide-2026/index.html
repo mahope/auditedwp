@@ -12,6 +12,46 @@
 <meta property="og:description" content="Full guide to cookie consent under EU law: ePrivacy Directive, GDPR, consent platforms, and compliance checklist.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://auditedwp.pages.dev/blog/eu-cookie-consent-guide-2026/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need cookie consent for Google Analytics in the EU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Analytics cookies that track users or share data with third parties require prior consent under the ePrivacy Directive Article 5(3). Google Analytics without consent has already led to enforcement — several EU DPAs found its original configuration unlawful, which is why every major consent platform treats analytics as opt-in."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my website has no cookie banner?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If your site serves users in the EU and places non-essential cookies, operating without a consent mechanism is a violation of the ePrivacy Directive. In December 2025 the UK ICO found that 564 of the UK's 1,000 biggest websites failed initial cookie checks. Enforcement typically starts with a user complaint to your national data protection authority; SME fines commonly range from €2,000 to €100,000."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is 'Accept All' as the only option allowed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Consent must be freely given and granular: users must be able to reject non-essential cookies as easily as they accept them, and to choose categories separately. France's CNIL fined Google €150 million and Meta €60 million partly for making refusal harder than acceptance, and SHEIN €150 million in September 2025 for ineffective rejection mechanisms."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does GDPR cookie compliance cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A compliant consent banner can be free (open-source tools like Klaro or Tarteaucitron) or start around $10 per month hosted. The larger cost is getting the setup right — correct blocking before consent, granular categories and documented consent — which is why automated scanners that check any URL, such as EUComply's free scan, are a practical first step."
+      }
+    }
+  ]
+}
+</script>
 <style>
   :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -39,6 +79,11 @@
   footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
   footer a{color:var(--accent)}
   @media(max-width:600px){h1{font-size:26px}}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading h2{font-size:20px;margin-bottom:12px}
+.keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -175,14 +220,26 @@
 
 <h2 id="penalties">6. Enforcement and penalties</h2>
 
-<p>Cookie consent enforcement has intensified across the EU in 2025-2026. Key trends:</p>
+<p>Cookie consent enforcement has intensified across the EU in 2025-2026. Recent decisions, each verified against the authority's own announcement:</p>
+
+<table>
+  <tr><th>When</th><th>Who</th><th>Fine / action</th><th>What went wrong</th></tr>
+  <tr><td>Sep 2025</td><td>Google (France, CNIL)</td><td>€325M</td><td>Ads in Gmail without valid consent; coercive cookie practices. Third CNIL fine for Google's cookies (€100M in 2020, €150M in 2021).</td></tr>
+  <tr><td>Sep 2025</td><td>SHEIN (France, CNIL)</td><td>€150M</td><td>Advertising cookies placed before any user choice; ineffective reject/withdrawal mechanisms.</td></tr>
+  <tr><td>Dec 2025</td><td>UK top-1,000 sites (ICO)</td><td>Enforcement sweep</td><td>564 of the UK's biggest websites failed initial cookie checks; 17 preliminary enforcement notices; 21 still non-compliant.</td></tr>
+  <tr><td>2024</td><td>Kruidvat / AS Watson (Netherlands)</td><td>€600,000</td><td>Tracking cookies without valid consent.</td></tr>
+</table>
+<p style="font-size:.85rem;color:var(--muted)">Sources: CNIL press releases (cnil.fr, Sep 2025), EDPB case register, ICO news release (4 Dec 2025), Dutch DPA decision on AS Watson.</p>
+
+<p>Beyond the headline cases:</p>
 
 <table>
   <tr><th>Country</th><th>DPA</th><th>Notable recent actions</th></tr>
-  <tr><td>France</td><td>CNIL</td><td>Multiple €100K+ fines for inadequate cookie consent, including dark pattern violations. CNIL is the most active enforcer.</td></tr>
+  <tr><td>France</td><td>CNIL</td><td>The EU's most active enforcer — multiple €100K+ fines for inadequate cookie consent and dark patterns.</td></tr>
   <tr><td>Belgium</td><td>APD/GBA</td><td>€250K+ fines for Meta and other platforms for cookie consent violations. Strong focus on documentation.</td></tr>
   <tr><td>Italy</td><td>Garante</td><td>€5M+ total fines for cookie-related GDPR violations in 2025. Active on small and medium businesses.</td></tr>
   <tr><td>Spain</td><td>AEPD</td><td>Systematic sweeps of cookie consent compliance across sectors. Focus on "consent by scrolling" violations.</td></tr>
+  <tr><td>Sweden</td><td>IMY</td><td>Formal warnings to Warner Music Sweden, Aller Media et al. (Apr 2025) for banners favouring "Accept" over "Reject".</td></tr>
   <tr><td>Germany</td><td>Multiple state DPAs</td><td>Cookie consent fines under GDPR up to €20M. Increasingly coordinated enforcement across states.</td></tr>
 </table>
 
@@ -198,7 +255,8 @@
 
 <h3>EUComply Free Scanner</h3>
 <p>Our <a href="/scan/">free compliance scanner</a> checks your website for cookie consent platforms, privacy-policy links, legal pages, and security headers. Enter any URL and get results in seconds — no sign-up required.</p>
-<p><a href="/scan/" class="btn">Run free scan →</a><p style="font-size:.9rem;margin-top:.5rem">🛡️ Passed? <a href="/badge/">Add a free compliance badge</a> to your site — client trust plus a dofollow backlink.</p></p>
+<p><a href="/scan/" class="btn">Run free scan →</a></p>
+<p style="font-size:.9rem;margin-top:.5rem">🛡️ Passed? <a href="/badge/">Add a free compliance badge</a> to your site — client trust plus a dofollow backlink.</p>
 
 <h3>Free Cookie Consent Documentation</h3>
 <p>Use our <a href="/tools/">free compliance document generator</a> to create a privacy policy that includes your cookie consent practices — instantly, no sign-up.</p>
@@ -222,7 +280,8 @@
 <div class="further-reading">
 <h2>Further reading</h2>
 <ul>
-  <li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Fine Risks</a></li>
+  <li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Fine Risks: What Sites Actually Get Fined For</a></li>
+  <li><a href="/blog/gdpr-cookie-fines-tracker/">GDPR cookie fines tracker — Google €325M, SHEIN €150M and every major decision</a></li>
   <li><a href="/blog/eu-compliance-checklist-2026/">EU Compliance Checklist 2026</a></li>
   <li><a href="/cookie-policy-generator/">Generate a cookie policy →</a></li>
   <li><a href="/pro/vs-cookiebot/">EUComply vs Cookiebot</a></li>
@@ -230,6 +289,7 @@
 </ul>
 </div>
 
+<nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Banner Fines: What Websites Actually Get Fined For (2026)</a></li><li><a href="/blog/gdpr-cookie-fines-tracker/">GDPR Cookie Fines Tracker: Every Major Consent Penalty (2025–2026)</a></li><li><a href="/blog/google-analytics-gdpr-consent/">Google Analytics and GDPR: Is Your Tracking Legal in 2026?</a></li><li><a href="/blog/cookiebot-alternative-2026/">Cookiebot Alternative 2026: Why Site Owners Are Switching (Pricing + Options)</a></li><li><a href="/blog/server-side-vs-client-side-cookie-consent/">Server-Side vs Client-Side Cookie Consent: Which Pattern Fits Your Stack (2026)</a></li></ul></nav>
 <footer>
   <p><strong>Disclaimer:</strong> This guide provides general information about EU cookie consent requirements. It does not constitute legal advice. Laws and enforcement practices vary by jurisdiction. Consult a qualified legal professional for advice specific to your situation.</p>
   <p><a href="/">Home</a> · <a href="/blog/">Blog</a> · <a href="/scan/">Scanner</a> · <a href="/tools/">Generators</a> · <a href="/refund-policy-generator/">Refund Policy</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
