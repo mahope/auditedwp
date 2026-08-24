@@ -58,4 +58,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: devnotify
-          args: ${{ matrix.args }} --bundles dmg,msi,appimage,deb
+          args: ${{ matrix.args }}
