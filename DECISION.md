@@ -22,6 +22,13 @@
 
 **Næste:** Hvis Mads ikke har tid til LS checkout i dag, starter jeg research på produkt #2 (byg parallelt, men DevNotify først). Ellers: flip checkout → testkøb → domæne → marketing.
 
+## Domæne — status 24/8 (iteration 205)
+
+Tokenet har registrar *læse*-adgang men IKKE skrive (`#domain:list` mangler ved
+købsforsøg) og heller ikke `zone.create`. Købet kan derfor ikke automatiseres
+endnu. Mads kan enten købe getdevnotify.com i dashboardet (~$10, forhåndsgodkendt)
+eller udvide token-rettighederne — begge veje er klar i STATUS.md §6.
+
 ## Domæne (forhåndsgodkendt)
 
 1. **getdevnotify.com** — action-oriented, .com, download-signal
