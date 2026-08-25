@@ -7980,3 +7980,71 @@ Kun én ting: **LS API key i Bitwarden (unauthenticated).** Alt andet er klart �
 ### Status: 0 kr brugt af 1.000 DKK budget
 2026-08-25T21:40:52+02:00 iteration 24 afsluttet (exit 0)
 2026-08-25T21:41:19+02:00 === iteration 25/60 ===
+Iteration 401 færdig og commitet (d073e4e).
+
+Universalitetsvurdering: OPFYLT. DeskUptime-kernen (engine.js + checkers) tager en vilkårlig URL, virker på enhver stack — re-testet live i denne iteration. CLI/watch/desktop er indpakninger; ingen udtrækning nødvendig.
+
+Det vigtigste fund: der var et hul mellem besøgende og betaling. `deskuptime watch` — selve kerneproduktet "baggrundsmonitorering" — var en stub, der kun skrev "køb Pro". En gratis CLI uden monitorering giver ingen grund til at købe desktop-appen.
+
+Bygget denne iteration:
+- src/watch.js — ægte baggrundsmonitorering i den gratis CLI (op til 3 URLs): UP/DOWN-detektion, SSL-advarsel ved ≤14 dage, content-change alerts, state i ~/.deskuptime/state.json med resume efter genstart
+- Testet for alvor: example.com gav ✅ UP-begivenhed + persistens; localhost:9999 gav 🚨 DOWN-begivenhed
+- Fundet og rettet en parsing-fejl under test (`--interval 60`'s værdi blev behandlet som URL)
+- Landing page + README opdateret: watch er nu gratis; Pro = desktop app, native notifikationer, >3 URLs
+- Deployet og verificeret live på https://auditedwp.pages.dev/deskuptime/ (200 + nyt indhold bekræftet)
+
+Salg: 0 (ingen LS key endnu — én blokering, ikke gentaget videre). Næste skridt står i STATUS.md: GitHub release workflow og Tauri desktop app.
+2026-08-25T21:46:29+02:00 iteration 25 afsluttet (exit 0)
+2026-08-25T21:46:56+02:00 === iteration 26/60 ===
+Iteration 402 færdig. Kort:
+
+**Universalitetsvurdering (punkt 1): OPFYLT.**
+DeskUptime-kernen er allerede platform-uafhængig — bekræftet med en live CLI-kørsel denne iteration: example.com → 200 OK, 81ms, SSL 63 dage. CLI, watch mode og den kommende Tauri-app er indpakninger omkring samme kerne. Intet at trække ud.
+
+**Det vigtigste fund — datarensning:**
+Jeg gik direkte i Cloudflare-KV'en og tjekkede ventelisten "bag tallene". De 2 tilmeldinger var mine egne gamle smoke-tests (`probe@mahope.dk` fra iter. 364 og `smoke@test.invalid`). Begge slettet. **Ægte tal: 0 tilmeldinger, 0 salg.** Det står nu sådan i STATUS.md.
+
+**Bygget denne iteration:**
+1. /deskuptime/ Pro-boksen hang på en død Mailchimp-placeholder-formular (`u=PLACEHOLDER&id=PLACEHOLDER`). Den er erstattet af en fungerende formular koblet på waitlist-workeren (POST + live tæller, testdomæner afvises server-side).
+2. Samme boks læser worker `/config`: når LS-key kommer, sætter jeg `CHECKOUT_URLS=deskuptime:<url>` med wrangler, og formularen bliver automatisk til en rigtig Buy-knap — uden ny deploy.
+3. Navlink til Monitor tilføjet på /scan/, /pro/ og /book/.
+4. Deployet, alle 5 testsider verificeret i live HTML (200 + nyt indhold), commitet og pushet.
+
+**Blokering:** LS API key stadig ikke i Bitwarden — alt betaling er bygget klar rundt om den.
+
+Næste iteration: GitHub release workflow for CLI-binaries + SEO-lanceringsside.
+2026-08-25T21:54:38+02:00 iteration 26 afsluttet (exit 0)
+2026-08-25T21:55:04+02:00 === iteration 27/60 ===
+Iteration 403 færdig. Resumé:
+
+**Universalitetsvurdering (første opgave):** DeskUptime opfylder punkt 1. Kernen (engine.js + checkers) tager enhver URL og er platformuafhængig; CLI/watch/fremtidig desktop-app er indpakninger. Bekræftet igen med live kørsel.
+
+**Det store fund denne iteration:** Produktet var bygget, men ingen kunne faktisk installere det. `npx deskuptime` på landingssiden pegede på en npm-pakke der aldrig er udgivet (404 på registry), og npm-udgivelse kræver en konto jeg ikke har.
+
+**Løsning — implementeret og verificeret:**
+1. Oprettet github.com/mahope/deskuptime (gh CLI var allerede logget ind som mahope)
+2. Pushet hele CLI'en (check + watch mode + universal engine)
+3. Verificeret fra ren klon: `npx github:mahope/deskuptime check https://example.com` → 200 OK, 66ms, SSL 63 dage
+4. Landing page /deskuptime/ rettet fra den døde kommando til den virkende
+5. Deployet til auditedwp.pages.dev — nyt indhold bekræftet i live HTML
+
+**Status:** 0 salg, 0 ægte tilmeldinger (skrevet ærligt i STATUS.md). Blokeret stadig kun på LS API key; npm-konto nævnt som ny én-linjes blokering, men GitHub-vejen virker uden.
+
+**Næste:** SEO-indholdsside ("free uptime monitoring tool") for at trække organisk trafik, derefter Tauri desktop app.
+2026-08-25T21:57:50+02:00 iteration 27 afsluttet (exit 0)
+2026-08-25T21:58:10+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T22:03:12+02:00 === iteration 28/60 ===
+Iteration 404 færdig.
+
+**Universalitetsvurderingen:** DeskUptime opfylder punkt 1 — kernen (engine.js + checkers) tager en vilkårlig URL og virker uafhængigt af CMS, allerede verificeret live på Shopify, Webflow, Squarespace, Wix m.fl. Ingen udtrækning nødvendig.
+
+**Bygget denne iteration:**
+- Ny SEO-artikel live: https://auditedwp.pages.dev/blog/free-uptime-monitoring-tools-2026/ — sammenligner UptimeRobot, Pingdom, StatusCake, Better Stack og Uptime Kuma på pris/interval/grænser og positionerer DeskUptime som det gratis lokale alternativ. Skrevet ærligt (nævner selv trade-offet ved lokale checks), med de virkende npx-kommandoer.
+- Linket fra blog-index.
+- Bonusfund: ødelagt JSON-LD script-tag på en eksisterende blogartikel (`<script type="<script type=...`) — rettet og verificeret live.
+
+Alt deployet og verificeret med curl (200, korrekt titel, artikel synlig i index). Commit 8b39df4 pushet. STATUS.md opdateret.
+
+Tallene er stadig ægte 0: 0 salg, 0 tilmeldinger. Næste skridt: flere SEO-sider i uptime-vinklen og Tauri-appen, mens LS-key stadig er blokeringen for betaling.
+2026-08-25T22:08:40+02:00 iteration 28 afsluttet (exit 0)
+2026-08-25T22:09:03+02:00 === iteration 29/60 ===
