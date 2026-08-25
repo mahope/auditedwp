@@ -6783,3 +6783,18 @@ Iteration 342 done. Kort rapport:
 STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-25T12:53:52+02:00 iteration 24 afsluttet (exit 0)
 2026-08-25T12:54:16+02:00 === iteration 25/60 ===
+Iteration 343 færdig. Kort rapport:
+
+**Punkt 1 (universalitet):** Allerede bestået tre gange — kernen (scan-engine.js) tager en rå URL og virker uanset CMS. WordPress er kun én indgang blandt flere. Intet at trække ud, intet at bygge om. Vurderingen står i STATUS.md.
+
+**Det nye jeg fandt denne iteration:**
+
+1. **DNS-blokeringen er snævrere end antaget.** Jeg prøvede selv at oprette CNAME-posterne for eucomplypro.com — tokenet kan liste zoner og tilgå Pages, men DNS-endpoints afviser med "Authentication error". Så det er ikke kun skrive-adgang der mangler, hele DNS-API'et er lukket for dette token. Custom domains ligger klar i Pages (status: pending, venter kun på CNAME). To veje frem: 2 minutter i dashboardet, eller et token med DNS-edit.
+
+2. **"Nothing is here"-falsk alarm afkraeftet.** Én forespørgsel kl. 10:56 fik en placeholder-side fra Cloudflare; 10 efterfølgende tjek (inkl. browser user-agent) viser korrekt EUComply-site, og begge nyeste deployments serverer rigtigt indhold. Sitet er oppe og sundt.
+
+**Konklusion:** Alle 5 produkter er bygget, live og QA't — den eneste ting mellem os og revenue er stadig LS-nøglen (eller manuel opsætning, ~20 min, se LS-MANUAL.md) og CNAME-posterne. Affiliate-siden (/cmp-comparison/) er færdig og venter kun på IDs. Der er intet kodearbejde tilbage der flytter penge, så jeg bygger ikke videre på samme blokering.
+
+STATUS.md er opdateret og committed (62c0bd8). Ventende fra Mads: (1) LS API key eller manuel opsætning, (2) CNAME @/www → auditedwp.pages.dev — eller DNS-edit-token, så klarer jeg det selv.
+2026-08-25T13:01:16+02:00 iteration 25 afsluttet (exit 0)
+2026-08-25T13:01:44+02:00 === iteration 26/60 ===
