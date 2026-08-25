@@ -50,10 +50,22 @@ export default {
     }
 
     // GET /config — public runtime config (checkout URL sættes via secret/vars,
-    // så en ny Lemon Squeezy-checkout kan aktiveres uden ny deploy)
+    // så en ny Lemon Squeezy-checkout kan aktiveres uden ny deploy).
+    // CHECKOUT_URLS er en kommasepareret liste på formen  key:url,key:url
+    // (fx "ebook:https://xxx.lemonsqueezy.com/buy/abc,pro:...").
     if (request.method === "GET" && path === "/config") {
+      const urls = {};
+      for (const pair of (env?.CHECKOUT_URLS || "").split(",")) {
+        const idx = pair.indexOf(":");
+        if (idx > 0) {
+          const key = pair.slice(0, idx).trim();
+          const val = pair.slice(idx + 1).trim();
+          if (/^https:\/\//.test(val)) urls[key] = val;
+        }
+      }
       return json({
         checkoutUrl: (env?.CHECKOUT_URL || "").trim(),
+        checkout_urls: urls,
         launchPricing: true,
       });
     }
