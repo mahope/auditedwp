@@ -151,7 +151,7 @@ footer a{color:var(--accent);text-decoration:none}
     <p class="price-note" style="margin-top:10px">Free while in beta. Buy a license below when you're convinced — $9 one-time, yours forever.</p>
 
     <div style="margin-top:14px">
-      <a href="#" class="btn secondary" id="buy-btn" style="padding:10px 24px;font-size:14px">Buy License — $9</a>
+      <a href="#waitlist-form" class="btn secondary" id="buy-btn" style="padding:10px 24px;font-size:14px">Buy License — $9</a>
     </div>
 
     <div class="badge-row">
@@ -163,10 +163,11 @@ footer a{color:var(--accent);text-decoration:none}
 
     <div id="waitlist-form">
       <p>QuickFormat is built and ready. Payment is being finalized on Lemon Squeezy — leave your email and we'll send you the download link the moment checkout is live.</p>
-      <form action="https://eucomplypro.com/worker-waitlist" method="POST">
-        <input type="email" name="email" placeholder="you@yourcompany.com" required>
+      <form id="wf-quickconvert" onsubmit="return false">
+        <input type="email" id="wf-email" placeholder="you@yourcompany.com" required>
         <button type="submit" class="btn" style="padding:10px 16px;font-size:13px">Notify Me</button>
       </form>
+      <p id="wf-status" style="font-size:13px;color:var(--ok);margin-top:8px;display:none"></p>
     </div>
   </div>
 </div>
@@ -368,6 +369,31 @@ footer a{color:var(--accent);text-decoration:none}
   // Fallback: show waitlist
   btns.forEach(b => { b.onclick = function(e){ e.preventDefault(); wl.style.display='block'; }; });
 })();
+
+// Waitlist form — POST JSON to worker
+document.getElementById('wf-quickconvert')?.addEventListener('submit', async function(e){
+  e.preventDefault();
+  const el = document.getElementById('wf-email');
+  const st = document.getElementById('wf-status');
+  const email = el.value.trim();
+  st.style.display = 'none';
+  try{
+    const r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, source: 'quickformat'})
+    });
+    const data = await r.json();
+    st.textContent = data.message || data.error || 'Something went wrong.';
+    st.style.color = r.ok ? 'var(--ok)' : 'var(--fail)';
+    st.style.display = 'block';
+    if(r.ok) el.value = '';
+  }catch(e){
+    st.textContent = 'Could not reach server. Try again later.';
+    st.style.color = 'var(--fail)';
+    st.style.display = 'block';
+  }
+});
 </script>
 
 </body>

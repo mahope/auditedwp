@@ -1,46 +1,38 @@
-# STATUS — 25. august 2026 — Iteration 296
+# STATUS — 25. august 2026 (aften) — Iteration 302
 
-## Kort version
+## Revenue & traction (ærlige tal)
 
-**Universalitets-vurdering: BESTÅET (igen). Fundet og rettet 2 døde links i
-Pro-dashboardet (demo-siden der er første indtryk for købere). Deployet og
-verificeret live. Tal: 0 kunder, $0.**
+- **Revenue: $0.** Rigtige tilmeldinger: 0. Rigtige monitor-registreringer: 2
+  (begge demo/egne sites — ikke kunder).
+- **Scans siden nulstilling 24/8: 66** (workerens offentlige `/stats`).
 
-## Universalitets-vurdering (punkt 1)
+## Universalitets-vurdering (punkt 1) — BESTÅET (iter. 301, stadig gældende)
 
-Kernen er stadig platform-uafhængig: engine/index.js tager en rå URL og virker
-på ethvert site (verificeret i praksis it. 295 via frisk npx-install). Alle
-platform-ting (WordPress-plugin, Chrome-ext) er indpakninger. Intet at trække
-ud — vurderingen står ved magt.
+Scan-kernen (`shared/scan-engine.js`) er platformsuafhængig HTTP/HTML-baseret.
+Indpakninger: web-scanner, CLI, Chrome-extension, WordPress-plugin (valgfri
+indgang), watch-worker. Intet at trække ud.
 
-## Rettet denne iteration
+## Iteration 302: GDPR-hul lukket i gratis-overvågningen
 
-Pro-dashboardet (/pro/dashboard/) er demosiden købere ser før de betaler $79/år.
-Den havde to brud:
+Monitor-flowet fra iter. 301 havde en reel compliance-fejl: ingen måde at
+trække sit site ud af daglig overvågning på — et produkt der sælger compliance
+skal selv overholde det (datalagring uden framelding).
 
-1. **"Download Latest PDF Report"-kortet linkede til `#`** (død knap på en side
-   der skal sælge). Peger nu på /pro/sample-report/.
-2. **Alle "View fix guide →"-links i scan-loggen var `#`.** Peger nu på relevante
-   guides (cookie-fines guide ved fail, consent-guide ved warn, /scan/ ved pass).
-3. Link-audit af HELE sitet kørt: 25 flaggede stier viste sig alle at være
-   falske positive (checkerens filsystem-heuristik) — verificeret HTTP 200 live.
-   Ingen andre døde links.
+**Bygget og verificeret live:**
+1. `POST /unregister {url, email}` på eucomply-watch — email skal matche den
+   registrerede adresse, ellers 403. Tæller dekrementeres korrekt.
+2. "Stop monitoring this site"-link på /scan/ efter vellykket registrering.
+   Genbruger email-feltet; hvis tomt beder brugeren om at taste den igen.
 
-Deployet med ./deploy.sh; rettelserne verificeret i det levende HTML.
+**Verificering:** deploy af worker + Pages gennemført. Endpoint testet mod
+produktion: ukendt site → korrekt fejl; forkert email → 403 og sitet forbliver
+registreret (kontrolleret via /status). /health viser nu alle tre endpoints.
+Unsub-link bekræftet i live HTML på https://auditedwp.pages.dev/scan/.
 
-## Tal — ærligt
+**Kendt begrænsning:** ALERT_KEY (Resend) er endnu ikke sat som secret på
+watch-workeren — score-fald-emails bliver stille skippet indtil da. Kræver en
+Resend-nøgle (gratis tier) fra Mads. Noteret som blokering nedenfor.
 
-- **Betalende kunder: 0. Revenue: $0.** Venteliste: 0.
-- Worker /stats: 59 scans siden nulstilling (inkl. mine smoke-tests — ægte tal
-  kan ikke adskilles endnu; skriver derfor 0 kunder).
+## Blokeret på Mads (én linje)
 
-## Blokeret (én linje hver)
-
-1. LS API key i Bitwarden (unauthenticated) → checkout live samme minut.
-2. CNAME @/www for eucomplypro.com (Mads; token mangler DNS-write).
-
-## Næste skridt
-
-- Ved LS-nøgle: ls-setup-all.sh → checkout live på alle fire produkter → testkøb.
-- Ikke flere papir-audits; næste iteration går på distribution (README Pro-sektion,
-  gratis-værktøjs-CTA'er), ikke nye audits.
+LS API key ELLER CHECKOUT_URL ELLER 20 min manuel LS-setup → checkout live; CNAME eucomplypro.com; CWS OAuth; affiliate IDs; Resend API key til watch-alerts.

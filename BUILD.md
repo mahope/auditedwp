@@ -1,26 +1,63 @@
-# BUILD — korteste vej til første betalende kunde (opdateret 24/8, it. 275)
+# BUILD — Korteste vej til første betalende kunde (25. august 2026)
 
-Alle 4 produkter (EUComply Pro, DevNotify, QuickFormat, ComplianceDocs) deler én
-blokering: LS API key i Bitwarden. Så snart den er der: `ls-setup-all.sh` →
-CHECKOUT_URL secrets → alle købsknapper live uden ny deploy.
+## Realiteten
 
-Korteste vej til første betaling, i rækkefølge:
+5 produkter bygget, testet, live. 0 betalende kunder. Blokeringen er IKKE kode —
+det er konti og opsætning der sidder hos Mads.
 
-1. **LS-nøglen unlockes** (Mads) → checkout live på /pro/, /devnotify/,
-   /quickconvert/ + store-sider samme time.
-2. **npm publish af eucomply-scanner** — pakken er færdig og CI-verificeret
-   (v1.0.0, 12 kB tarball). Blokeret på npm-login (Mads: `npm adduser` eller
-   granular token). **Alternativ virker NU (25/8):** `npx github:mahope/eucomply-scanner`
-   er verificeret end-to-end efter TDZ-fixen (commit 2773dcf) — udviklere kan
-   bruge CLI'en i dag uden registry.
-3. **GitHub-repo som kanal** — repoet er nu optimeret (topics, badges,
-   homepage → /scan/, CI grøn, ægte sample-output). Dernæst: README-sektion
-   "Pro" med link til betalt tier, så CLI-brugere konverterer.
-4. **Gratis scan → pro-konversion**: /scan/ har allerede personaliseret CTA
-   baseret på brugerens egen score og fejl. Måling: worker-/stats-tæller +
-   subscribe-kilder.
-5. **Domænet eucomplypro.com** sættes foran, når CF token-permission er på
-   plads (Mads).
+**Tre parallelle veje, alle kræver lidt af Mads:**
 
-Hvad der IKKE bygges mere indtil kunde #1: nye guides, nye produkter,
-flere universalitets-audits.
+| Vej | Mads' tid | Indtjening | Status |
+|-----|-----------|------------|--------|
+| A: LS manuel fallback | ~20 min i LS dashboard | $29-$149/tx | ⏳ Klar — venter på Mads |
+| B: Affiliate links | ~15 min signup (3 programmer) | 30% recurring på CMP-salg | 🏗️ Side bygget, links mangler IDs |
+| C: Polar.sh ny konto | ~10 min signup | $29-$149/tx (4% fee) | 🆕 Alternativ hvis LS ikke virker |
+
+## Vej A: LS manuel fallback (anbefalet — hurtigst)
+
+Mads har ALLEREDE en Lemon Squeezy-konto (`mads@mahope.dk`). Bitwarden blokeringen
+stopper kun den automatiserede API-script. Plan B: log ind manuelt i dashboardet.
+
+**Mads skal gøre (20 min):**
+1. Gå til https://app.lemonsqueezy.com — log ind
+2. Products → New product (6 gange, se LS-MANUAL.md for exact indstillinger)
+3. Upload PDF fra `gumroad/products/`, indsæt titel/beskrivelse/pris
+4. Publicér → kopier checkout-URL → send til agenten
+
+**Agenten gør:**
+- Sætter checkout-URL'er ind i site/store/index.html
+- Fjerner waitlist-bannere
+- Deployer
+- Kører sandbox-testkøb (kort 4242 4242 4242 4242)
+
+**First $1:** Samme time som Mads sender URLs.
+
+## Vej B: Affiliate-links (kører i parallel)
+
+Cookiebot: 30% recurring commission i 12 måneder. Complianz: 30% one-time.
+iubenda: op til 40%. Ingen Bitwarden, ingen LS key. Kun Mads' signup.
+
+**Mads skal gøre (15 min):**
+1. Tilmeld Cookiebot affiliate: cookiebot.com/us/affiliates/ (PayPal til udbetaling)
+2. Tilmeld Complianz affiliate: complianz.io/affiliates/
+3. Tilmeld iubenda affiliate: iubenda.com/partners/affiliates
+
+**Agenten gør (allerede klar):**
+- CMP comparison page (/cmp-comparison/) — bygget, deployes når IDs er klar
+- Affiliate-disclosure på privacy policy — klar til deploy
+- Scanner-resultater anbefaler specifik CMP via affiliate-link — backend klar
+
+**First $1:** Indenfor dage efter Mads' signup (første gang nogen scanner, klikker, og køber en CMP).
+
+## Det jeg IKKE gør mere
+
+- Nye produkter indtil vej A eller B har givet revenue
+- Flere universality-audits (produkterne er allerede universelle)
+- Flere guides, blog posts, eller indhold der kræver trafik
+- Nogen som helst kodeændring der ikke handler om at få penge ind
+
+## Måling
+
+- Betalinger: LS dashboard (Vej A) — tjek dagligt
+- Affiliate-kommissioner: Cookiebot/Complianz/iubenda dashboards (Vej B)
+- Status: $0 indtil en af vejene aktiveres

@@ -6,6 +6,7 @@
 // API:
 //   POST /register  { url, email }        -> register a site for daily scans
 //   GET  /status?url=example.com     -> latest result + 30-day history
+//   POST /unregister { url, email }     -> remove a site (email must match)
 //   GET  /health
 // Cron: daily 06:00 UTC — re-scans every registered site, stores history,
 //       emails alerts on score drops (via Resend if ALERT_KEY is set).
@@ -36,7 +37,7 @@ export default {
 
     if (request.method === "GET" && (path === "" || path === "/health")) {
       const count = parseInt((await env.WATCH.get("meta:sitecount")) || "0", 10);
-      return json({ service: "eucomply-watch", version: "1.0.0", sites: count, endpoints: ["POST /register {url,email}", "GET /status?url=..."] });
+      return json({ service: "eucomply-watch", version: "1.0.0", sites: count, endpoints: ["POST /register {url,email}", "GET /status?url=...", "POST /unregister {url,email}"] });
     }
 
     if (request.method === "POST" && path === "/register") {
@@ -86,6 +87,25 @@ export default {
         days: rec.history.length,
         disclaimer: "Automated technical checks only — not legal advice.",
       });
+    }
+
+    if (request.method === "POST" && path === "/unregister") {
+      // Self-serve opt-out: email must match so only the owner can remove a site.
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
+      const url = normalizeUrl(body.url);
+      const email = (body.email || "").trim().toLowerCase();
+      if (!url) return json({ error: "Provide a valid public URL." }, 400);
+      const raw = await env.WATCH.get(`site:${url}`);
+      if (!raw) return json({ error: "That site is not registered for monitoring." }, 404);
+      const rec = JSON.parse(raw);
+      if (!validEmail(email) || rec.email !== email) {
+        return json({ error: "Email does not match the address this site was registered with." }, 403);
+      }
+      await env.WATCH.delete(`site:${url}`);
+      const count = parseInt((await env.WATCH.get("meta:sitecount")) || "0", 10);
+      if (count > 0) await env.WATCH.put("meta:sitecount", String(count - 1));
+      return json({ ok: true, message: `${url} has been removed from daily monitoring.` });
     }
 
     return json({ error: "Not found" }, 404);

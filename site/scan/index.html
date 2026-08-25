@@ -6,12 +6,12 @@
 <title>Free EU Compliance Scan for Any Website — EUComply</title>
 <meta name="description" content="Enter any URL and get a free EU compliance check: HTTPS/HSTS, cookie consent, privacy policy links, forms, and security headers. Works on WordPress, Shopify, Webflow, Next.js, Squarespace — any website.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
-<link rel="canonical" href="https://eucomplypro.com/scan/">
+<link rel="canonical" href="https://auditedwp.pages.dev/scan/">
   <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/scan/">
   
 <meta property="og:title" content="Free EU Compliance Scan for Any Website">
 <meta property="og:description" content="Scan any URL for GDPR, NIS2 & EAA compliance gaps. Free. Works on every platform.">
-<meta property="og:url" content="https://eucomplypro.com/scan/">
+<meta property="og:url" content="https://auditedwp.pages.dev/scan/">
 <meta property="og:type" content="website">
 <style>
   :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
@@ -136,6 +136,18 @@
       <button type="button" class="btn ghost" id="print-btn" style="margin-left:8px">🖨️ Save as PDF</button>
       <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
       <p style="font-size:12.5px;margin:6px 0 0"><a class="btn green" href="/assets/eucomply-1.2.0.zip" style="padding:8px 14px;font-size:13px">↓ WordPress plugin (free)</a></p>
+
+      <!-- Free monitoring trial — register this site for daily scans -->
+      <div id="monitor-box" style="margin-top:20px;border:2px solid var(--accent);border-radius:10px;padding:18px;background:#f8faff;text-align:center">
+        <h3 style="font-size:16px;margin-bottom:6px">📡 Monitor <span id="mon-host" style="word-break:break-all"></span> daily — free</h3>
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:14px">We re-scan this site every morning and email you the day anything breaks — a dropped header, an expired certificate, a consent regression. Free while in beta, no card required.</p>
+        <form id="mon-form" style="display:flex;gap:8px;max-width:420px;margin:0 auto;flex-wrap:wrap;justify-content:center">
+          <input type="email" id="mon-email" placeholder="you@yourcompany.com" required aria-label="Email address" style="flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;outline:none">
+          <button type="submit" id="mon-btn" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Start daily monitoring →</button>
+        </form>
+        <p id="mon-msg" role="status" style="font-size:13px;margin-top:10px;min-height:18px"></p>
+        <p id="mon-unsub" style="display:none;font-size:12.5px;margin-top:4px"><a href="#" id="mon-unsub-link" style="color:var(--muted)">Stop monitoring this site</a></p>
+      </div>
       <p class="printfriendly-note" id="print-note"></p>
     </div>
 
@@ -345,8 +357,90 @@
   render = function(d) {
     lastUrl = d.url || '';
     lastScore = d.score ? d.score.pct : null;
+    // Free-monitoring box: show the scanned host and remember it for registration
+    try {
+      var mh = document.getElementById('mon-host');
+      if (mh) mh.textContent = host(lastUrl);
+    } catch (e) {}
     origRender(d);
   };
+
+  // Free monitoring trial → eucomply-watch /register
+  var monForm = document.getElementById('mon-form');
+  if (monForm) {
+    monForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var msgEl = document.getElementById('mon-msg');
+      var email = (document.getElementById('mon-email') || {}).value || '';
+      var btnM = document.getElementById('mon-btn');
+      msgEl.textContent = '';
+      msgEl.style.color = '';
+      var target = lastUrl ? host(lastUrl) : input.value.trim();
+      if (!target) { msgEl.textContent = 'Run a scan first, then register the site.'; msgEl.style.color = 'var(--fail)'; return; }
+      btnM.disabled = true;
+      btnM.textContent = 'Registering…';
+      try {
+        var r = await fetch('https://eucomply-watch.mahope-eeb.workers.dev/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: target, email: email.trim() })
+        });
+        var d = await r.json();
+        if (r.ok && d.ok) {
+          msgEl.style.color = 'var(--ok)';
+          msgEl.textContent = d.message || ('Registered. ' + target + ' is now checked daily.');
+          btnM.textContent = '✓ Monitoring';
+          document.getElementById('mon-email').value = '';
+          document.getElementById('mon-unsub').style.display = 'block';
+        } else {
+          msgEl.textContent = d.error || 'Registration failed — try again.';
+          msgEl.style.color = 'var(--fail)';
+          btnM.disabled = false;
+          btnM.textContent = 'Start daily monitoring →';
+        }
+      } catch (ex) {
+        msgEl.textContent = 'Network error. Try again.';
+        msgEl.style.color = 'var(--fail)';
+        btnM.disabled = false;
+        btnM.textContent = 'Start daily monitoring →';
+      }
+    });
+  }
+  // Unsubscribe: reuses the email the user just typed (kept in memory until page reload)
+  var unsubLink = document.getElementById('mon-unsub-link');
+  if (unsubLink) {
+    unsubLink.addEventListener('click', async function(e) {
+      e.preventDefault();
+      var msgEl = document.getElementById('mon-msg');
+      var target = lastUrl ? host(lastUrl) : input.value.trim();
+      var email = ((document.getElementById('mon-email') || {}).value || '').trim();
+      if (!email) {
+        msgEl.style.color = 'var(--fail)';
+        msgEl.textContent = 'Enter the email you registered with above, then click again.';
+        document.getElementById('mon-email').focus();
+        return;
+      }
+      try {
+        var r = await fetch('https://eucomply-watch.mahope-eeb.workers.dev/unregister', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: target, email: email })
+        });
+        var d = await r.json();
+        msgEl.style.color = r.ok ? 'var(--ok)' : 'var(--fail)';
+        msgEl.textContent = d.message || d.error || '';
+        if (r.ok) {
+          document.getElementById('mon-unsub').style.display = 'none';
+          var b = document.getElementById('mon-btn');
+          b.textContent = 'Start daily monitoring →';
+          b.disabled = false;
+        }
+      } catch (ex) {
+        msgEl.style.color = 'var(--fail)';
+        msgEl.textContent = 'Network error. Try again.';
+      }
+    });
+  }
   if (subForm) {
     subForm.addEventListener('submit', async function(e) {
       e.preventDefault();
