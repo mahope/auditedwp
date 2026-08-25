@@ -63,8 +63,10 @@ export default {
         const scan = await runScan(url);
         rec.lastScore = scan.score.pct;
         rec.lastScan = scan.scannedAt;
-        rec.history.push({ date: todayKey(), score: scan.score.pct, passed: scan.score.passed, total: scan.score.total });
-        if (rec.history.length > MAX_HISTORY_DAYS) rec.history = rec.history.slice(-MAX_HISTORY_DAYS);
+        // Same-day dedupe: replace any existing entry for today (cron may also
+        // have run) so the first scan never creates two history entries.
+        const entry = { date: todayKey(), score: scan.score.pct, passed: scan.score.passed, total: scan.score.total };
+        rec.history = [...rec.history.filter(h => h.date !== entry.date), entry].slice(-MAX_HISTORY_DAYS);
         await env.WATCH.put(key, JSON.stringify(rec));
         return json({ ok: true, message: `Site registered. First scan complete — score ${scan.score.pct}%.`, score: scan.score, history: rec.history });
       } catch (e) {
