@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply</title>
+<meta name="description" content="A practical NIS2 compliance checklist for SaaS companies: find out if you're in scope, what Art. 21 requires, which security measures to implement first, and how to document compliance for enterprise customers.">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/nis2-compliance-checklist-saas/">
+  <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/blog/nis2-compliance-checklist-saas/">
+  
+<meta property="og:title" content="NIS2 Compliance Checklist for SaaS Companies (2026)">
+<meta property="og:description" content="Are you in NIS2 scope? A practical checklist for SaaS companies: Art. 21 measures, supplier security, incident handling, and documentation — with a free scanner to check your own site.">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/nis2-compliance-checklist-saas/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--ok:#1a7a44;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  .meta{color:var(--muted);font-size:13px;margin:32px 0 8px}
+  h1{font-size:30px;line-height:1.3;letter-spacing:-.025em;margin-bottom:12px}
+  .sub{color:var(--muted);font-size:16px;margin-bottom:24px}
+  h2{font-size:22px;margin:36px 0 8px;letter-spacing:-.015em}
+  h3{font-size:17px;margin:24px 0 6px}
+  p,li{font-size:15px;color:var(--ink);margin-bottom:10px}
+  ul,ol{padding-left:24px;margin-bottom:16px}
+  li{margin-bottom:6px}
+  .callout{background:var(--soft);border-left:4px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0}
+  .callout p{margin:0;font-size:14px}
+  .callout.warn{border-left-color:#b85a0a}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+  .btn:hover{background:#1a4f9e}
+  .cta-section{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;margin:32px 0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}
+  th{background:var(--soft);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;margin-top:48px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:24px}nav a:not(.cta){display:none}}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading h2{font-size:20px;margin-bottom:12px}
+.keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a:hover{text-decoration:underline}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply", "description": "Are you in NIS2 scope? A practical checklist for SaaS companies: Art. 21 measures, supplier security, incident handling, and documentation — with a free scanner to check your own site.", "mainEntityOfPage": "/blog/nis2-compliance-checklist-saas/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/scan/">Scanner</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/scan/">Scan your site →</a>
+    </nav>
+  </div>
+</header>
+
+<article class="wrap">
+  <p class="meta">Aug 23, 2026 · 9 min read · NIS2</p>
+  <h1>NIS2 Compliance Checklist for SaaS Companies (2026)</h1>
+  <p class="sub">Many SaaS founders assume NIS2 only applies to banks and utilities. It doesn't. If you sell software to EU businesses, chances are your customers are asking about it — and some of them need <em>you</em> to be compliant before they can sign.</p>
+
+  <div class="callout warn">
+    <p><strong>Not legal advice.</strong> This is a practical engineering-oriented checklist based on the public text of Directive (EU) 2022/2555. For formal obligations, consult the directive itself and your national transposition law.</p>
+  </div>
+
+  <h2>Step 1: Are you actually in scope?</h2>
+  <p>NIS2 distinguishes between <strong>essential entities</strong> (large energy, transport, banking, health, digital infrastructure providers) and <strong>important entities</strong> — which includes most other medium and large companies operating in the EU. The size thresholds follow the standard SME definition:</p>
+  <ul>
+    <li><strong>In scope if:</strong> 50+ employees <em>or</em> €10M+ annual turnover, and you provide services within the EU in one of the covered sectors (Annex I or II).</li>
+    <li><strong>Important nuance for SaaS:</strong> even if you're under the thresholds, you may still be affected as a <em>supplier</em>. Essential and important entities must manage cybersecurity risks from their supply chain (Art. 21(2)(d)) — meaning your enterprise customers will send you their security questionnaires and contract clauses regardless of your own size.</li>
+    <li><strong>Digital providers get special treatment:</strong> DNS service providers, cloud computing service providers, data centre providers, CDNs, managed service providers (MSPs), and managed security service providers fall under Annex I as essential/important regardless of sector.</li>
+  </ul>
+  <p>If none of that applies today, treat this checklist as preparation for your customers' vendor reviews — which is where most SaaS companies feel NIS2 first.</p>
+
+  <h2>Step 2: The ten measures of Art. 21 — mapped to SaaS practice</h2>
+  <p>Article 21 lists the risk-management measures member states must require. Here is what each means for a typical SaaS company:</p>
+
+  <table>
+    <tr><th>Art. 21 requirement</th><th>What it looks like in a SaaS company</th></tr>
+    <tr><td>Risk analysis &amp; information system security policies</td><td>A written security policy, a threat model for your product, documented acceptance of major risks</td></tr>
+    <tr><td>Incident handling</td><td>A documented process: detect → triage → contain → notify (see Step 4) → post-mortem. Test it once a year.</td></tr>
+    <tr><td>Business continuity, backup, disaster recovery</td><td>Tested backups with defined RTO/RPO, a DR plan that isn't just a wiki page nobody has read</td></tr>
+    <tr><td>Supply chain security</td><td>Vendor register, security review of critical dependencies, DPA/security clauses with sub-processors</td></tr>
+    <tr><td>Security in acquisition, development and maintenance</td><td>Secure SDLC basics: dependency scanning, code review, secrets management, vulnerability disclosure policy</td></tr>
+    <tr><td>Policies to assess effectiveness of measures</td><td>Periodic testing — pentest reports, tabletop exercises, metrics reviewed by management</td></tr>
+    <tr><td>Cyber hygiene and training</td><td>Security training at onboarding and annually, MFA everywhere, patch discipline</td></tr>
+    <tr><td>Cryptography / encryption policies</td><td>TLS everywhere, encryption at rest for customer data, key management that is actually written down</td></tr>
+    <tr><td>HR security, access control, asset management</td><td>Least-privilege access, offboarding checklists, an inventory of systems holding customer data</td></tr>
+    <tr><td>MFA / secured communications</td><td>Multi-factor authentication for admin access and internal systems (explicitly required)</td></tr>
+  </table>
+
+  <h3>Where to start if you can only do three things this quarter</h3>
+  <ol>
+    <li><strong>MFA on everything</strong> — cheapest control with the highest impact, and explicitly named in the directive.</li>
+    <li><strong>Write down incident handling</strong> — regulators judge you on process, not perfection. One page beats nothing.</li>
+    <li><strong>Fix the technical baseline of your public site</strong> — HTTPS/HSTS, security headers, no trackers firing before consent. This is what automated checks measure, and it's what shows up in your customers' scans of <em>your</em> domain.</li>
+  </ol>
+
+  <h2>Step 3: Supply chain cuts both ways</h2>
+  <p>The most underrated part of NIS2 for SaaS: your position in two supply chains at once.</p>
+  <ul>
+    <li><strong>Upstream:</strong> you must assess your own vendors — hosting, payment processors, analytics tools, email providers. Keep a simple register: who they are, what data they touch, what security commitments they've given you.</li>
+    <li><strong>Downstream:</strong> your enterprise customers must assess <em>you</em>. They will ask for your security documentation. Companies that answer vendor questionnaires in days instead of weeks win deals. A short, honest security overview (what's encrypted, how incidents are handled, where data lives) pays for itself in sales cycles.</li>
+  </ul>
+
+  <h2>Step 4: Incident reporting timelines</h2>
+  <p>If you're an in-scope entity, significant incidents trigger a three-stage clock:</p>
+  <ul>
+    <li><strong>24 hours</strong> — early warning to the national CSIRT/authority</li>
+    <li><strong>72 hours</strong> — incident notification with initial assessment</li>
+    <li><strong>Final report</strong> — within one month</li>
+  </ul>
+  <p>You cannot improvise this during an outage. Decide today who declares an incident, who writes the notifications, and where the authority contact details live.</p>
+
+  <h2>Step 5: Documentation is the deliverable</h2>
+  <p>Regulators and enterprise buyers don't audit your infrastructure directly — they audit your <em>evidence</em>. For each Art. 21 measure, keep something reviewable: the policy document, the test result, the training log, the signed vendor clause. A quarterly compliance narrative that maps evidence to requirements turns "we're probably fine" into a defensible answer.</p>
+
+  <div class="cta-section">
+    <h3 style="margin-top:0">Check the technical baseline now</h3>
+    <p>EUComply scans any website for the externally visible parts of the baseline: TLS/HSTS, security headers, consent mechanisms, legal pages, and pre-consent trackers. Free, no sign-up, works on any stack.</p>
+    <a class="btn" href="/scan/">Run a free scan →</a>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px"><a href="/pro/" style="color:var(--accent)">EUComply Pro ($79/yr)</a> generates auditor-ready PDF reports and NIS2 vendor clause templates.</p>
+  </div>
+
+  <h2>Further reading</h2>
+  <ul>
+    <li><a href="/blog/nis2-vendor-supply-chain-compliance/" style="color:var(--accent)">NIS2 Vendor &amp; Supply Chain Compliance Guide</a></li>
+    <li><a href="/blog/dora-nis2-gdpr-differences/" style="color:var(--accent)">DORA vs NIS2 vs GDPR: What's the Difference?</a></li>
+    <li><a href="/nis2-checklist/" style="color:var(--accent)">Interactive NIS2 Checklist</a></li>
+    <li><a href="/blog/nis2-board-liability/" style="color:var(--accent)">NIS2 Board Liability Explained</a></li>
+  </ul>
+<p>How does EUComply compare with the established tools? See <a href="/pro/vs-osano/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
+<nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/nis2-board-liability/">NIS2 Board & Director Liability: What Executives Must Know — EUComply</a></li><li><a href="/blog/nis2-vendor-supply-chain-compliance/">NIS2 Vendor & Supply Chain Compliance Guide 2026 — EUComply</a></li><li><a href="/blog/dora-compliance-guide/">DORA Compliance: What Financial Websites Need to Know (2026 Practical Guide)</a></li><li><a href="/blog/hsts-preload-guide/">HSTS Preload Guide 2026: How to Enable HTTP Strict Transport Security Correctly</a></li></ul></nav>
+</article>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — free EU compliance scanning for any website.<br>⚖️ Automated technical checks and general guidance. Not legal advice.</div>
+    <div><a href="/" style="color:var(--accent)">Home</a> · <a href="/blog/" style="color:var(--accent)">All guides</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

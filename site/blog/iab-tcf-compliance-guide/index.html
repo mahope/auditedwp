@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IAB Transparency & Consent Framework (TCF) — Compliance Guide 2026</title>
+<meta name="description" content="What the IAB TCF is, who needs it, how to check if your site uses it, and how TCF relates to Google Consent Mode v2. Includes a free scanner.">
+<meta property="og:title" content="IAB Transparency & Consent Framework (TCF) — Compliance Guide 2026">
+<meta property="og:description" content="Free IAB TCF check for any website. How the Transparency & Consent Framework works and why publishers and ad-tech platforms need it.">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/iab-tcf-compliance-guide/">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/iab-tcf-compliance-guide/">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;padding:0}
+.wrap{max-width:750px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:16px 0;position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);z-index:10}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+h1{font-size:32px;line-height:1.25;letter-spacing:-.025em;margin:40px 0 12px}
+h2{font-size:23px;margin:36px 0 10px;letter-spacing:-.015em}
+h3{font-size:18px;margin:24px 0 8px}
+p,li{color:var(--muted);font-size:15.5px;margin-bottom:14px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{margin-bottom:6px}
+a{color:var(--accent)}
+code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#0d1522;color:#dbe6f5;border-radius:8px;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.55;margin:16px 0}
+.infobox{border:1px solid var(--line);border-radius:8px;padding:20px;background:var(--soft);margin:24px 0}
+.infobox h3{margin-top:0}
+.cta{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;margin:12px 0}
+.cta:hover{background:var(--accent-dark)}.ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}.fail{color:var(--fail);font-weight:600}
+footer{border-top:1px solid var(--line);padding:28px 0;margin-top:48px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}
+@media(max-width:600px){h1{font-size:26px}nav a:not(.cta){display:none}}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading h2{font-size:20px;margin-bottom:12px}
+.keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a:hover{text-decoration:underline}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "IAB Transparency & Consent Framework (TCF) — Compliance Guide 2026", "description": "Free IAB TCF check for any website. How the Transparency & Consent Framework works and why publishers and ad-tech platforms need it.", "mainEntityOfPage": "/blog/iab-tcf-compliance-guide/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+</head>
+<body>
+
+<header>
+<div class="wrap">
+<a class="logo" href="/">EU<span>Comply</span></a>
+<nav>
+<a href="/pro/">Pro</a>
+<a href="/scan/">Scan</a>
+<a href="/store/">Templates</a>
+<a href="/blog/">Guides</a>
+<a class="cta" href="/pro/">Pro $79/yr</a>
+</nav>
+</div>
+</header>
+
+<div class="wrap">
+
+<h1>IAB Transparency &amp; Consent Framework (TCF) — What It Is and How to Check</h1>
+
+<p><strong>Updated August 2026</strong> — If your website serves programmatic advertising to EU users, you have likely encountered the IAB TCF. This guide explains what it is, who needs it, and how to verify your implementation with a free scan.</p>
+
+<div class="infobox">
+<h3>📢 Free IAB TCF Check</h3>
+<p>Use our free scanner to check if your site (or any site) uses the IAB Transparency &amp; Consent Framework:</p>
+<a class="cta" href="/scan/">Run free scan →</a>
+<p style="font-size:13px;margin:8px 0 0">The scanner checks for <code>__tcfapi</code>, TCF cookies, consent strings, and GDPR applies signals — no signup required.</p>
+</div>
+
+<h2>What is the IAB TCF?</h2>
+<p>The <a href="https://iabeurope.eu/tcf/" target="_blank">IAB Transparency &amp; Consent Framework (TCF)</a> is an industry standard developed by IAB Europe that enables digital advertising companies to collect and process personal data in compliance with the GDPR and ePrivacy Directive. It provides a standardised way for publishers, advertisers, and ad-tech vendors to manage user consent across the programmatic advertising supply chain.</p>
+
+<p>TCF is currently in its second major version (TCF v2), which was introduced in 2019 and became mandatory for IAB Europe members in August 2020. A v3 update is under development as of 2026.</p>
+
+<h3>How it works:</h3>
+<ol>
+<li>A user visits a website that uses a Consent Management Platform (CMP) implementing TCF.</li>
+<li>The CMP presents a consent dialog with vendor-specific and purpose-specific options.</li>
+<li>The user's choices are encoded into a TC string (Transparency &amp; Consent string) — a base64-encoded string stored in a first-party cookie or local storage.</li>
+<li>Ad-tech vendors in the programmatic chain read the TC string to determine which purposes and vendors the user has consented to.</li>
+<li>The <code>__tcfapi</code> JavaScript API allows vendors and CMPs to communicate consent status in real time.</li>
+</ol>
+
+<h2>Who needs TCF?</h2>
+<p>TCF is relevant for any organisation that participates in programmatic advertising with EU users:</p>
+<ul>
+<li><strong>Publishers</strong> who sell ad inventory through ad exchanges or SSPs</li>
+<li><strong>Advertisers</strong> using programmatic buying or retargeting in the EEA</li>
+<li><strong>Ad-tech companies</strong> — DSPs, SSPs, DMPs, analytics providers</li>
+<li><strong>Any website</strong> using Google Ad Manager, Google Ads, or other ad platforms that require TCF signals</li>
+</ul>
+<p>Google has integrated TCF into its ad platforms, requiring publishers using Google Ad Manager or AdSense for EU traffic to register with a TCF-compliant CMP.</p>
+
+<h2>TCF vs Google Consent Mode v2</h2>
+<p>These two frameworks serve different but complementary purposes:</p>
+<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px">
+<tr style="background:var(--soft)"><th style="padding:8px 12px;border:1px solid var(--line);text-align:left">Aspect</th><th style="padding:8px 12px;border:1px solid var(--line);text-align:left">IAB TCF</th><th style="padding:8px 12px;border:1px solid var(--line);text-align:left">Google Consent Mode v2</th></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--line)">Scope</td><td style="padding:8px 12px;border:1px solid var(--line)">Programmatic advertising supply chain</td><td style="padding:8px 12px;border:1px solid var(--line)">Google tags (Ads, Analytics, Floodlight)</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--line)">Standard body</td><td style="padding:8px 12px;border:1px solid var(--line)">IAB Europe</td><td style="padding:8px 12px;border:1px solid var(--line)">Google (proprietary)</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--line)">Signal format</td><td style="padding:8px 12px;border:1px solid var(--line)">TC string (base64 encoded)</td><td style="padding:8px 12px;border:1px solid var(--line)">gtag/datalayer consent defaults and updates</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--line)">Required since</td><td style="padding:8px 12px;border:1px solid var(--line)">2020 (IAB) / 2024 (Google integration)</td><td style="padding:8px 12px;border:1px solid var(--line)">March 2024 (Google requirement)</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--line)">Best practice</td><td style="padding:8px 12px;border:1px solid var(--line)" colspan="2">Use a CMP that supports <strong>both</strong> TCF and Google Consent Mode v2</td></tr>
+</table>
+
+<p>A single CMP can implement both frameworks simultaneously. When a user sets their consent preferences, the CMP writes both the TCF TC string and the Google Consent Mode defaults — covering the entire ad-tech ecosystem.</p>
+
+<h2>How to check if a site uses TCF</h2>
+<ol>
+<li><strong>Browser console:</strong> Open DevTools and type <code>typeof __tcfapi</code>. If it returns <code>"function"</code>, TCF is active.</li>
+<li><strong>Check cookies:</strong> Look for cookies starting with <code>IABTCF_</code> (e.g. <code>IABTCF_TCString</code>, <code>IABTCF_VendorConsents</code>).</li>
+<li><strong>Use our free scanner:</strong> Enter any URL below and see the "IAB TCF" check result instantly.</li>
+</ol>
+
+<h2>Common TCF issues</h2>
+<ul>
+<li><span class="fail">Missing __tcfapi:</span> The TCF API is not available on the page — vendors cannot read consent signals.</li>
+<li><span class="warn">Partial implementation:</span> TCF cookies exist but the API is missing, or vice versa. This can cause inconsistent consent signalling.</li>
+<li><span class="warn">TCF present but no Google Consent Mode v2:</span> Your CMP may handle programmatic consent but leave Google tags without the required Consent Mode defaults.</li>
+<li><span class="ok">Full TCF + Consent Mode v2:</span> Both frameworks detected — CMP is covering the full advertising ecosystem.</li>
+</ul>
+
+<h2>Free TCF Compliance Check</h2>
+<p>Run our free scanner on any URL to check for IAB TCF, Google Consent Mode v2, cookie consent platforms, and 6 other compliance checks. It works on any website — WordPress, Shopify, Webflow, Next.js, or hand-written HTML.</p>
+
+<a class="cta" href="/scan/">Run free scan →</a>
+
+<p style="font-size:13px;color:var(--muted);margin-top:20px"><em>Disclaimer: Automated technical checks only — not legal advice. Full compliance review requires a qualified professional.</em></p>
+
+</div>
+
+<div class="further-reading">
+<h2>Further reading</h2>
+<ul>
+  <li><a href="/pro/vs-termly/">EUComply vs Termly</a></li>
+  <li><a href="/pro/vs-iubenda/">EUComply vs iubenda</a></li>
+</ul>
+</div>
+
+<nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/eu-cookie-consent-guide-2026/">EU Cookie Consent Requirements 2026: Complete Guide for Website Owners</a></li><li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Banner Fines: What Websites Actually Get Fined For (2026)</a></li><li><a href="/blog/gdpr-cookie-fines-tracker/">GDPR Cookie Fines Tracker: Every Major Consent Penalty (2025–2026)</a></li></ul></nav>
+<footer>
+<div class="wrap">
+<div>EUComply — EU compliance scanning for every website.</div>
+<div><a href="/">Home</a> · <a href="/scan/">Scan</a> · <a href="/pro/">Pro</a> · <a href="/privacy/">Privacy</a></div>
+</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDPR Compliance for Digital Agencies: Managing 20+ Client Sites (2026) — EUComply</title>
+<meta name="description" content="A practical GDPR compliance workflow for digital agencies: audit every client site, catch consent and cookie issues before regulators or clients do, and turn compliance into a billable service line.">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/gdpr-compliance-for-agencies/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/blog/gdpr-compliance-for-agencies/">
+<meta property="og:title" content="GDPR Compliance for Digital Agencies: Managing 20+ Client Sites (2026)">
+<meta property="og:description" content="Agencies are exposed twice: their own site, and every client site they built. A practical workflow for auditing client sites at scale — and turning compliance into a billable service.">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/gdpr-compliance-for-agencies/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--ok:#1a7a44;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  .meta{color:var(--muted);font-size:13px;margin:32px 0 8px}
+  h1{font-size:30px;line-height:1.3;letter-spacing:-.025em;margin-bottom:12px}
+  .sub{color:var(--muted);font-size:16px;margin-bottom:24px}
+  h2{font-size:22px;margin:36px 0 8px;letter-spacing:-.015em}
+  h3{font-size:17px;margin:24px 0 6px}
+  p,li{font-size:15px;color:var(--ink);margin-bottom:10px}
+  ul,ol{padding-left:24px;margin-bottom:16px}
+  li{margin-bottom:6px}
+  .callout{background:var(--soft);border-left:4px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0}
+  .callout p{margin:0;font-size:14px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+  .btn:hover{background:#1a4f9e}
+  .cta-section{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;margin:32px 0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}
+  th{background:var(--soft);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;margin-top:48px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:24px}nav a:not(.cta){display:none}}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading h2{font-size:20px;margin-bottom:12px}
+.keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a:hover{text-decoration:underline}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "GDPR Compliance for Digital Agencies: Managing 20+ Client Sites (2026) — EUComply", "description": "Agencies are exposed twice: their own site, and every client site they built. A practical workflow for auditing client sites at scale — and turning compliance into a billable service.", "mainEntityOfPage": "/blog/gdpr-compliance-for-agencies/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/scan/">Scanner</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/scan/">Scan your site →</a>
+    </nav>
+  </div>
+</header>
+
+<article class="wrap">
+  <div class="meta">August 25, 2026 · 9 min read · For agency owners &amp; account managers</div>
+  <h1>GDPR Compliance for Digital Agencies: Managing 20+ Client Sites Without Losing Your Mind</h1>
+  <p class="sub">Your agency is exposed twice: your own website, and every client site you've ever shipped. Here's a workflow that catches problems before a regulator — or worse, your client's DPO — does.</p>
+
+  <p>If you run an agency, here's an uncomfortable thought experiment: pick five client sites you launched in the last three years. Check whether the cookie banner actually blocks Google Analytics before consent. Whether there's an imprint/legal notice where it's required. Whether the security headers match what you promised in the proposal.</p>
+  <p>In most audits we've seen discussed publicly, at least one of those five fails on something the agency itself installed. That's not just a client problem — when you configured the tracking script, you became part of the compliance story.</p>
+
+  <h2>Why agencies get dragged into GDPR problems</h2>
+  <ul>
+    <li><strong>You chose the stack.</strong> The analytics tool, the marketing pixels, the chat widget, the embedded fonts — someone at your agency made each of those decisions. Under GDPR, tools that transfer personal data without a proper legal basis create liability for the site owner first, but "our agency set it up" is not a defence clients accept gracefully.</li>
+    <li><strong>Maintenance stopped, exposure didn't.</strong> Most agencies hand over the site and move on. Two years later the consent script is outdated, a plugin update broke the banner, and nobody noticed.</li>
+    <li><strong>The client blames whoever touched the site last.</strong> Even when the contract says compliance is the client's responsibility, the first phone call when something goes wrong goes to you.</li>
+  </ul>
+
+  <div class="callout"><p><strong>The reframe:</strong> compliance drift is not an agency embarrassment — it's an unbilled service line. Every client site you've built needs periodic compliance checks. Almost no client is buying that today.</p></div>
+
+  <h2>The four failure modes we see most</h2>
+  <table>
+    <tr><th>Failure</th><th>What it looks like</th><th>Typical cause</th></tr>
+    <tr><td>Consent theatre</td><td>A banner exists, but analytics/pixel scripts fire on page load regardless of the user's choice</td><td>Tag added directly to the template instead of through the consent management tool</td></tr>
+    <tr><td>Missing legal pages</td><td>No privacy policy, no imprint (required in several EU markets), policy last updated 2021</td><td>Page was "coming soon" at launch and never got finished</td></tr>
+    <tr><td>Weak technical baseline</td><td>No HSTS, missing security headers, mixed content after a migration</td><td>Nobody owns post-launch infrastructure</td></tr>
+    <tr><td>Third-party sprawl</td><td>Six tracking tools loaded, three of them unused since the campaign ended</td><td>Tools accumulate; nobody audits what's actually firing</td></tr>
+  </table>
+  <p>All four are externally visible. All four can be caught with automated scanning before they become a client conversation.</p>
+
+  <h2>A workable workflow for a portfolio of client sites</h2>
+
+  <h3>Step 1: Baseline-scan everything once</h3>
+  <p>Run every active client URL through an automated check: HTTPS/HSTS, security headers, presence and behaviour of consent mechanisms, required legal pages, pre-consent trackers. This takes minutes per site with a scanner, days if done manually. Sort the results into red / amber / green.</p>
+
+  <h3>Step 2: Fix the reds as a batch</h3>
+  <p>Red items — trackers firing before consent, missing privacy policy on a site collecting form data — are the ones that map to actual enforcement practice. Fix them across the portfolio in one sprint, not client-by-client over six months.</p>
+
+  <h3>Step 3: Put the portfolio on a schedule</h3>
+  <p>Compliance isn't a launch checklist item; it decays. A monthly or quarterly automated scan per client site catches drift: the new tag someone pasted into the footer, the header config lost in a server migration, the policy page deleted in a redesign.</p>
+
+  <h3>Step 4: Sell it forward</h3>
+  <p>This is the part most agencies miss. You now have, for every client, a documented report showing exactly what was checked and what was fixed. Three ways to monetise it:</p>
+  <ul>
+    <li><strong>Care-plan add-on:</strong> "monthly compliance monitoring + quarterly report" as a line item on existing retainers. Priced at even $20–50/month per client, twenty clients is real revenue for near-zero marginal cost.</li>
+    <li><strong>Win-back trigger:</strong> dormant clients get a free scan summary with two concrete findings. It's a reason to call that isn't "just checking in."</li>
+    <li><strong>New-business proof:</strong> prospects in regulated industries (health, finance, e-commerce) choose agencies that demonstrate systematic quality checks over ones that don't mention it.</li>
+  </ul>
+
+  <div class="cta-section">
+    <h3 style="margin-top:0">Scan a client site right now</h3>
+    <p>EUComply scans any website — WordPress, Shopify, Webflow, custom stacks — for TLS/HSTS, security headers, consent mechanisms, legal pages, and pre-consent trackers. Free, no sign-up.</p>
+    <a class="btn" href="/scan/">Run a free scan →</a>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px">Monitoring a portfolio? EUComply Pro ($79/yr) adds scheduled daily scans and branded PDF reports you can forward to clients.</p>
+  </div>
+
+  <h2>Common objections, honestly answered</h2>
+  <ul>
+    <li><strong>"Our contracts put compliance on the client."</strong> Fine — that may hold legally. It doesn't stop the client from blaming you publicly or quietly not renewing. And if your own template ships non-compliant defaults, that part genuinely is yours.</li>
+    <li><strong>"We're too small to be a target."</strong> Enforcement against agencies specifically is rare, but complaints flow through data protection authorities regardless of company size, and small consultancies have received supervision inquiries. More importantly, enterprise clients increasingly run procurement questionnaires that ask how <em>you</em> handle data protection.</li>
+    <li><strong>"Automated scans only see the outside."</strong> True — external scans don't read your server logs or contracts. They cover exactly the layer clients, competitors, and regulators can also see, which makes them the right first filter. Deep reviews stay manual; automation just tells you where to look.</li>
+  </ul>
+
+  <h2>Getting started this week</h2>
+  <ol>
+    <li>List every client domain you're still proud to have in your portfolio.</li>
+    <li>Scan all of them — free, a few minutes total.</li>
+    <li>Fix the reds. Batch the fixes by type across sites.</li>
+    <li>Add "compliance monitoring" to your care-plan menu with a price on it.</li>
+    <li>Re-scan monthly. Send the client a one-page summary each quarter.</li>
+  </ol>
+
+  <h2>Further reading</h2>
+  <ul>
+    <li><a href="/blog/eu-cookie-consent-guide-2026/" style="color:var(--accent)">EU Cookie Consent Guide 2026</a></li>
+    <li><a href="/blog/nis2-vendor-supply-chain-compliance/" style="color:var(--accent)">NIS2 Vendor &amp; Supply Chain Compliance Guide</a></li>
+    <li><a href="/blog/website-compliance-scanner-comparison/" style="color:var(--accent)">Website Compliance Scanner Comparison</a></li>
+    <li><a href="/vs/cookiebot/" style="color:var(--accent)">EUComply vs Cookiebot</a></li>
+    <li><a href="/pro/" style="color:var(--accent)">EUComply Pro — daily compliance monitoring for client sites ($79/yr)</a></li>
+  </ul>
+<p>How does EUComply compare with the established tools? See <a href="/pro/vs-termly/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
+<nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/abmahnung-risk-ecommerce/">Abmahnung Risk for E-Commerce: What a German Warning Letter Costs and How to Avoid One</a></li><li><a href="/blog/german-impressum-foreign-sellers/">Do Foreign Sellers Need a German Impressum? Yes — Here's Who and Why</a></li><li><a href="/blog/eaa-compliance-ecommerce/">EAA Compliance for E-Commerce: 2026 Checklist for Online Stores — EUComply</a></li></ul></nav>
+</article>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — free EU compliance scanning for any website.<br>⚖️ Automated technical checks and general guidance. Not legal advice.</div>
+    <div><a href="/" style="color:var(--accent)">Home</a> · <a href="/blog/" style="color:var(--accent)">All guides</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

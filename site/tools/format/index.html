@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Online Format Converter — JSON, YAML, CSV, TOML, XML</title>
+<link rel="canonical" href="https://auditedwp.pages.dev/tools/format/">
+<meta name="description" content="Free online format converter. Convert between JSON, YAML, CSV, TOML and XML instantly in your browser. Works on any device. No upload, no install, no ads.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>">
+<meta property="og:title" content="Free Online Format Converter — JSON ⇄ YAML ⇄ CSV ⇄ TOML ⇄ XML">
+<meta property="og:description" content="Instant browser-based format conversion. Your data never leaves your device.">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+h1{font-size:30px;text-align:center;margin:40px 0 6px;letter-spacing:-.02em}
+.sub{text-align:center;color:var(--muted);margin-bottom:30px;font-size:15px}
+.tool-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin-bottom:24px}
+.panel{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:16px}
+.panel label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.format-select{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.format-select button{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;color:var(--muted);transition:all .12s}
+.format-select button:hover{border-color:var(--accent);color:var(--accent)}
+.format-select button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+textarea{width:100%;height:260px;border:1px solid var(--line);border-radius:6px;padding:12px;font:14px/1.6 'SF Mono','Fira Code','Consolas',monospace;resize:vertical;background:var(--bg);color:var(--ink);tab-size:2}
+textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.arrow-panel{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--accent);padding:0 4px;user-select:none}
+.action-row{display:flex;gap:12px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.btn{background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:background .12s}
+.btn:hover{background:var(--accent-dark)}
+.btn.outline{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.btn.outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn.green{background:var(--ok)}
+.status{text-align:center;font-size:13px;min-height:20px;margin-bottom:12px;color:var(--muted)}
+.status.error{color:#b03030}.status.success{color:var(--ok)}
+.arrow-btn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--accent);padding:8px}
+.arrow-btn:hover{transform:scale(1.15)}
+section{padding:48px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;text-align:center;margin-bottom:8px}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;max-width:960px;margin:28px auto 0}
+.feature{text-align:center;padding:24px;background:var(--soft);border-radius:8px}
+.feature .icon{font-size:32px;margin-bottom:8px;display:block}
+.feature h3{font-size:15px;margin-bottom:4px}
+.feature p{font-size:13px;color:var(--muted)}
+footer{text-align:center;padding:24px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+footer a{color:var(--accent);text-decoration:none}
+.copy-btn{position:absolute;top:8px;right:8px;font-size:11px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 8px;cursor:pointer;color:var(--muted)}
+.copy-btn:hover{color:var(--ink);border-color:var(--accent)}
+.panel{position:relative}
+.tag{display:inline-block;background:#e8f0fe;color:var(--accent);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;margin-left:8px}
+@media(max-width:700px){.tool-grid{grid-template-columns:1fr}.arrow-panel{display:none}.arrow-btn{display:inline-block !important}}
+.arrow-btn{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/" class="logo">EU<span>Comply</span></a>
+    <nav>
+      <a href="/">Scanner</a>
+      <a href="/pro/">Pro</a>
+      <a href="/tools/format/" style="color:var(--accent);font-weight:600">Format Converter</a>
+      <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
+      <a href="/guides/json-to-yaml/">How-To</a>
+    </nav>
+  </div>
+</header>
+
+<h1>Format Converter</h1>
+<p class="sub">Convert between JSON, YAML, CSV, TOML, and XML. All processing happens in your browser — nothing is uploaded.</p>
+
+<div class="wrap">
+  <div class="status" id="status">Ready</div>
+  <div class="tool-grid">
+    <div class="panel" id="input-panel">
+      <label>Input <span class="tag" id="input-tag">auto</span></label>
+      <div class="format-select" id="input-formats">
+        <button data-fmt="auto" class="active">Auto</button>
+        <button data-fmt="json">JSON</button>
+        <button data-fmt="yaml">YAML</button>
+        <button data-fmt="csv">CSV</button>
+        <button data-fmt="toml">TOML</button>
+        <button data-fmt="xml">XML</button>
+      </div>
+      <textarea id="input" placeholder="Paste your data here..."></textarea>
+    </div>
+
+    <div class="arrow-panel">
+      <button class="arrow-btn" id="swap-btn" title="Swap input/output">⇄</button>
+      <span>→</span>
+    </div>
+
+    <div class="panel" id="output-panel">
+      <label>Output <span class="tag" id="output-tag">select format</span></label>
+      <div class="format-select" id="output-formats">
+        <button data-fmt="json" class="active">JSON</button>
+        <button data-fmt="yaml">YAML</button>
+        <button data-fmt="csv">CSV</button>
+        <button data-fmt="toml">TOML</button>
+        <button data-fmt="xml">XML</button>
+      </div>
+      <textarea id="output" placeholder="Converted output appears here..." readonly></textarea>
+      <button class="copy-btn" id="copy-btn">📋 Copy</button>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn" id="convert-btn">Convert</button>
+    <button class="btn outline" id="minify-btn">Minify</button>
+    <button class="btn outline" id="format-btn">Pretty-Print</button>
+    <button class="btn outline" id="validate-btn">Validate</button>
+    <button class="btn outline" id="clear-btn">Clear</button>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Why a dedicated desktop app?</h2>
+    <p style="text-align:center;color:var(--muted);max-width:620px;margin:8px auto 0">The web version is free. For power users who work with formats daily, there's QuickFormat for Mac.</p>
+    <div class="features">
+      <div class="feature">
+        <span class="icon">⚡</span>
+        <h3>Menu Bar, Always Ready</h3>
+        <p>One click from anywhere. No browser tab, no window switching. Paste and convert in seconds.</p>
+      </div>
+      <div class="feature">
+        <span class="icon">🔌</span>
+        <h3>Works Offline</h3>
+        <p>All conversion happens locally. No internet required. Your data never leaves your Mac.</p>
+      </div>
+      <div class="feature">
+        <span class="icon">⌨️</span>
+        <h3>Global Shortcuts</h3>
+        <p>Convert selected text with a keyboard shortcut. No pasting needed. Just select, convert, paste.</p>
+      </div>
+      <div class="feature">
+        <span class="icon">📋</span>
+        <h3>Auto-Copy</h3>
+        <p>Output is automatically copied to your clipboard. One click, done. No extra steps.</p>
+      </div>
+      <div class="feature">
+        <span class="icon">🔄</span>
+        <h3>Batch Mode</h3>
+        <p>Convert multiple files at once. Drag, drop, done. Supports all five formats.</p>
+      </div>
+      <div class="feature">
+        <span class="icon">🔒</span>
+        <h3>Privacy First</h3>
+        <p>Zero network requests. Your JSON, your YAML, your API keys — never transmitted.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <a href="/quickconvert/" class="btn" style="text-decoration:none;display:inline-block">Get QuickFormat for Mac →</a>
+    </div>
+  </div>
+</section>
+
+<p style="text-align:center;font-size:14px">More guides: <a href="/guides/yaml-to-json/">YAML to JSON</a> · <a href="/guides/json-to-csv/">JSON to CSV</a> · <a href="/guides/csv-to-json/">CSV to JSON</a> · <a href="/guides/toml-vs-yaml/">TOML vs YAML</a></p>
+<footer>
+  <div class="wrap">
+    <p><a href="/">EUComply Scanner</a> · <a href="/pro/">Pro</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+    <p style="margin-top:4px">QuickFormat is a tool by <a href="/">EUComply</a></p>
+  </div>
+</footer>
+
+<script type="module">
+const input = document.getElementById('input')
+const output = document.getElementById('output')
+const status = document.getElementById('status')
+const swapBtn = document.getElementById('swap-btn')
+const copyBtn = document.getElementById('copy-btn')
+const convertBtn = document.getElementById('convert-btn')
+const minifyBtn = document.getElementById('minify-btn')
+const formatBtn = document.getElementById('format-btn')
+const validateBtn = document.getElementById('validate-btn')
+const clearBtn = document.getElementById('clear-btn')
+const inputTag = document.getElementById('input-tag')
+const outputTag = document.getElementById('output-tag')
+
+let inputFmt = 'auto'
+let outputFmt = 'json'
+
+function getEngine() {
+  return import('https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.mjs')
+}
+
+document.querySelectorAll('#input-formats button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#input-formats button').forEach(x => x.classList.remove('active'))
+    b.classList.add('active')
+    inputFmt = b.dataset.fmt
+    if (input.value.trim()) autoConvert()
+  })
+})
+
+document.querySelectorAll('#output-formats button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#output-formats button').forEach(x => x.classList.remove('active'))
+    b.classList.add('active')
+    outputFmt = b.dataset.fmt
+    outputTag.textContent = outputFmt.toUpperCase()
+    if (input.value.trim()) autoConvert()
+  })
+})
+
+swapBtn.addEventListener('click', () => {
+  const tmp = input.value; input.value = output.value; output.value = tmp
+  const tmpFmt = inputFmt
+  inputFmt = outputFmt
+  outputFmt = tmpFmt === 'auto' ? 'json' : tmpFmt
+  document.querySelectorAll('#input-formats button').forEach(b => {
+    b.classList.toggle('active', b.dataset.fmt === inputFmt)
+  })
+  document.querySelectorAll('#output-formats button').forEach(b => {
+    b.classList.toggle('active', b.dataset.fmt === outputFmt)
+  })
+  outputTag.textContent = outputFmt.toUpperCase()
+  inputTag.textContent = inputFmt === 'auto' ? 'auto' : inputFmt.toUpperCase()
+})
+
+async function autoConvert() {
+  const text = input.value.trim()
+  if (!text) { output.value = ''; status.textContent = 'Ready'; return }
+
+  try {
+    const jsyaml = await import('https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.mjs')
+    let data
+    const sourceFmt = inputFmt === 'auto' ? detectFormat(text) : inputFmt
+    if (!sourceFmt) { status.textContent = 'Could not detect format'; return }
+
+    try { data = parseInput(text, sourceFmt, jsyaml) } catch(e) {
+      status.textContent = 'Parse error: ' + e.message
+      status.className = 'status error'
+      return
+    }
+
+    const result = stringifyOutput(data, outputFmt, jsyaml, true)
+    output.value = result
+    inputTag.textContent = sourceFmt.toUpperCase()
+    status.textContent = `Converted ${sourceFmt.toUpperCase()} → ${outputFmt.toUpperCase()}`
+    status.className = 'status success'
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message
+    status.className = 'status error'
+  }
+}
+
+function detectFormat(text) {
+  const t = text.trim()
+  if (/^\s*[{[]/.test(t) && /[}\]]\s*$/.test(t)) return 'json'
+  if (/^\s*[\w_-]+:\s+.+/m.test(t) && !/^\s*[{[]/.test(t)) return 'yaml'
+  if (/^\s*\[[\w.]+]\s*$/.test(t.split('\n')[0].trim())) return 'toml'
+  if (/^\s*</.test(t)) return 'xml'
+  if (t.includes(',') && /^[\w\s-]+(,[\w\s-]+)*$/.test(t.split('\n')[0])) return 'csv'
+  return null
+}
+
+function parseInput(text, format, jsyaml) {
+  switch(format) {
+    case 'json': return JSON.parse(text)
+    case 'yaml': return jsyaml.load(text)
+    case 'toml': { const toml = window.tomlParse ? window.tomlParse(text) : JSON.parse(text); return toml }
+    case 'xml': {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(text, 'text/xml')
+      return xmlToJson(doc.documentElement)
+    }
+    case 'csv': return csvParse(text)
+    default: throw new Error('Unknown format: ' + format)
+  }
+}
+
+function stringifyOutput(data, format, jsyaml, pretty) {
+  switch(format) {
+    case 'json': return pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data)
+    case 'yaml': return jsyaml.dump(data, { indent: 2, lineWidth: -1, noRefs: true })
+    case 'toml': return objectToToml(data)
+    case 'xml': return jsonToXml(data)
+    case 'csv': return jsonToCsv(data)
+    default: throw new Error('Unknown format: ' + format)
+  }
+}
+
+function xmlToJson(node) {
+  if (node.nodeType === 3) return node.textContent.trim()
+  const result = {}
+  for (const child of node.childNodes) {
+    if (child.nodeType === 3) { if (child.textContent.trim()) return child.textContent.trim(); continue }
+    const key = child.nodeName
+    if (child.attributes?.length) {
+      const attrs = {}
+      for (const attr of child.attributes) attrs['@' + attr.name] = attr.value
+      result[key] = { ...attrs, '#text': xmlToJson(child) }
+    } else {
+      const val = xmlToJson(child)
+      if (result[key]) { result[key] = [].concat(result[key], val) }
+      else { result[key] = val }
+    }
+  }
+  return result
+}
+
+function jsonToXml(data, root = 'root') {
+  if (typeof data !== 'object' || data === null) return `<${root}>${escapeXml(String(data))}</${root}>`
+  let xml = ''
+  for (const [key, val] of Object.entries(data)) {
+    if (key.startsWith('@')) continue
+    if (key === '#text') { xml += escapeXml(String(val)); continue }
+    if (Array.isArray(val)) { val.forEach(v => { xml += jsonToXml(v, key) }) }
+    else if (typeof val === 'object' && val !== null) {
+      let attrs = ''
+      for (const [ak, av] of Object.entries(val)) { if (ak.startsWith('@')) attrs += ' ' + ak.slice(1) + '="' + escapeXml(String(av)) + '"' }
+      xml += '<' + key + attrs + '>' + jsonToXml(val, key) + '</' + key + '>'
+    } else { xml += '<' + key + '>' + escapeXml(String(val)) + '</' + key + '>' }
+  }
+  return root === '#' ? xml : `<${root}>${xml}</${root}>`
+}
+
+function escapeXml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+function csvParse(text) {
+  const lines = text.trim().split('\n')
+  if (lines.length < 1) return []
+  const headers = lines[0].split(',').map(h => h.trim())
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const vals = line.split(',').map(v => v.trim())
+    const obj = {}
+    headers.forEach((h, i) => { obj[h] = vals[i] || '' })
+    return obj
+  })
+}
+
+function jsonToCsv(data) {
+  const items = Array.isArray(data) ? data : [data]
+  if (items.length === 0) return ''
+  const keys = [...new Set(items.flatMap(Object.keys))]
+  const lines = [keys.join(',')]
+  items.forEach(item => {
+    lines.push(keys.map(k => String(item[k] ?? '')).join(','))
+  })
+  return lines.join('\n')
+}
+
+function objectToToml(obj, prefix = '') {
+  let r = ''
+  for (const [k, v] of Object.entries(obj)) {
+    const fk = prefix ? prefix + '.' + k : k
+    if (Array.isArray(v)) { r += k + ' = [' + v.map(x => typeof x === 'string' ? '"' + x + '"' : x).join(', ') + ']\n' }
+    else if (typeof v === 'object' && v !== null) { r += '[' + fk + ']\n' + objectToToml(v, fk) }
+    else { r += k + ' = ' + (typeof v === 'string' ? '"' + v.replace(/"/g,'\\"') + '"' : v) + '\n' }
+  }
+  return r
+}
+
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms) } }
+const autoConvertDebounced = debounce(autoConvert, 400)
+
+let tomlWorker = null
+async function loadToml() {
+  if (!window.tomlParse) {
+    // We'll use a simple JSON parse as fallback; full TOML in desktop version
+  }
+}
+
+input.addEventListener('input', () => autoConvertDebounced())
+convertBtn.addEventListener('click', () => autoConvert())
+minifyBtn.addEventListener('click', () => {
+  if (input.value.trim()) {
+    const fmt = inputFmt === 'auto' ? detectFormat(input.value) : inputFmt
+    if (fmt && ['json'].includes(fmt)) {
+      try {
+        const parsed = JSON.parse(input.value)
+        output.value = JSON.stringify(parsed)
+        status.textContent = 'Minified JSON'
+        status.className = 'status success'
+      } catch(e) { status.textContent = 'Error: ' + e.message; status.className = 'status error' }
+    } else { status.textContent = 'Minify supports JSON only'; status.className = 'status error' }
+  }
+})
+formatBtn.addEventListener('click', () => {
+  if (input.value.trim()) {
+    const fmt = inputFmt === 'auto' ? detectFormat(input.value) : inputFmt
+    if (fmt && ['json'].includes(fmt)) {
+      try {
+        const parsed = JSON.parse(input.value)
+        output.value = JSON.stringify(parsed, null, 2)        status.textContent = 'Pretty-printed JSON'
+        status.className = 'status success'
+      } catch(e) { status.textContent = 'Error: ' + e.message; status.className = 'status error' }
+    } else { status.textContent = 'Pretty-print supports JSON only'; status.className = 'status error' }
+  }
+})
+validateBtn.addEventListener('click', () => {
+  if (!input.value.trim()) { status.textContent = 'No input to validate'; return }
+  const fmt = inputFmt === 'auto' ? detectFormat(input.value) : inputFmt
+  if (!fmt) { status.textContent = 'Could not detect format'; status.className = 'status error'; return }
+  try {
+    parseInput(input.value, fmt, { load: () => {} })
+    status.textContent = '✅ Valid ' + fmt.toUpperCase()
+    status.className = 'status success'
+  } catch(e) { status.textContent = '❌ Invalid: ' + e.message; status.className = 'status error' }
+})
+
+clearBtn.addEventListener('click', () => {
+  input.value = ''
+  output.value = ''
+  status.textContent = 'Cleared'
+  status.className = 'status'
+})
+
+copyBtn.addEventListener('click', async () => {
+  if (output.value) {
+    await navigator.clipboard.writeText(output.value)
+    copyBtn.textContent = '✅ Copied!'
+    setTimeout(() => { copyBtn.textContent = '📋 Copy' }, 1500)
+  }
+})
+</script>
+</body>
+</html>

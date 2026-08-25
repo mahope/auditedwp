@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn Off GitHub Email Notifications on Mac — Full Walkthrough — DevNotify</title>
+<meta name="description" content="A Mac-specific walkthrough for silencing GitHub notification emails — including Mail rules as a middle ground, and how to replace email with menu bar alerts.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications-mac/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Turn Off GitHub Email Notifications on Mac — Full Walkthrough">
+<meta property="og:description" content="Silence the GitHub email flood on macOS — settings, Mail rules, and a faster replacement.">
+<meta property="og:url" href="https://eucomplypro.com/devnotify/guides/turn-off-github-email-notifications-mac/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="/devnotify/og-image.png">
+<meta name="twitter:image" content="/devnotify/og-image.png">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;text-decoration:none;color:var(--text)}
+nav a{text-decoration:none;font-size:.95rem;color:var(--muted);margin-left:14px}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2;margin:48px 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+h2{font-size:1.35rem;margin:36px 0 12px}
+p,li{color:var(--muted)}
+p strong,li strong{color:var(--text)}
+ol li,ul li{margin-bottom:14px}
+code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
+.cta{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:40px 0;text-align:center}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem;margin-top:60px}
+.keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
+.keep-reading h2{font-size:1rem;margin:0 0 10px}
+.keep-reading li{margin-bottom:6px}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Turn Off GitHub Email Notifications on Mac — Full Walkthrough — DevNotify", "description": "Silence the GitHub email flood on macOS — settings, Mail rules, and a faster replacement.", "mainEntityOfPage": "/devnotify/guides/turn-off-github-email-notifications-mac/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/devnotify/">DevNotify</a>
+    <nav><a href="/devnotify/">Home</a><a href="/devnotify/guides/see-github-notifications-on-mac/">See notifications on Mac</a><a href="/devnotify/guides/">Guides</a><a href="/devnotify/#buy">Buy — $19</a></nav>
+  </div>
+</header>
+
+<article class="wrap">
+<h1>Turn off GitHub email notifications on Mac: the full walkthrough</h1>
+<p class="meta">Updated August 2026 · 4 min read</p>
+
+<p>If you're on macOS and your Mail.app is drowning in GitHub messages, you have
+three moves, in increasing order of commitment: filter in Mail, dial back the
+settings at GitHub, or replace email with something that lives on your desktop.
+This walkthrough covers all three.</p>
+
+<h2>Step 1 — Filter first (reversible, zero risk)</h2>
+<p>Open <strong>Mail → Settings → Rules → Add Rule</strong>:</p>
+<ul>
+<li>If <em>From</em> <strong>contains</strong> <code>notifications@github.com</code></li>
+<li>Then: <strong>Move to mailbox</strong> → create a "GitHub" mailbox</li>
+<li>Optionally add a second condition on the subject (<code>[Repo]</code> prefix) to
+split per-project mailboxes.</li>
+</ul>
+<p>This keeps everything searchable but out of your face. Do this today while
+you decide how far to go.</p>
+
+<h2>Step 2 — Cut it off at the source</h2>
+<p>Mail rules hide the symptom; the settings page removes the cause.</p>
+<ol>
+<li>Open <strong>github.com/settings/notifications</strong>.</li>
+<li>Under <em>Subscriptions</em> (Watching), uncheck <strong>Email</strong>.</li>
+<li>Under <em>Participating and @mentions</em>, decide: keep <strong>Web</strong>, drop
+<strong>Email</strong>.</li>
+<li>Uncheck <strong>"Automatically watch repositories"</strong> so new projects don't
+re-add you to the flood.</li>
+<li>Scroll to <strong>Security alert notifications</strong> and leave email ON —
+dependency CVEs should not live only in a web inbox.</li>
+</ol>
+<p>Per-repo noise: open the repo → <strong>Watch</strong> dropdown →
+<em>Participating and @mentions only</em>.</p>
+
+<h2>Step 3 — Replace the useful part of the email</h2>
+<p>The honest reason people keep GitHub email is that a review request arriving
+in Mail is hard to miss. Take that away and you need a replacement that's at
+least as visible:</p>
+<ul>
+<li><strong>GitHub Mobile</strong> push notifications — good, but they buzz your
+phone during focus time.</li>
+<li><strong>A menu bar app</strong> — an unread badge on your Mac, click to see
+what's new. Visible without being interruptive.</li>
+</ul>
+
+<div class="cta">
+<p><strong>DevNotify</strong> is exactly that: your GitHub notification count lives in the macOS menu bar, one click shows PRs, issues and mentions, click a row to open it. Free trial, $19 lifetime.</p>
+<a class="btn" href="/devnotify/download/">Download DevNotify for macOS</a>
+<a class="btn btn-buy" href="/devnotify/#buy">Buy license — $19</a>
+</div>
+
+<h2>Verify it worked</h2>
+<p>After changing settings, GitHub stops new email within a minute or two —
+anything already sent stays in your inbox. Check the next morning: your GitHub
+mailbox should be empty except for security alerts. If mail keeps arriving,
+you're still <em>watching</em> a repo that has email enabled at the repo level —
+the Watch dropdown on that repo overrides account defaults.</p>
+
+<nav class="keep-reading">
+<h2>Keep reading</h2>
+<ul>
+<li><a href="/devnotify/guides/turn-off-github-email-notifications/">How to Turn Off GitHub Email Notifications (and What to Use Instead)</a></li>
+<li><a href="/devnotify/guides/github-email-notifications-not-working/">GitHub Email Notifications Not Working? 6 Fixes</a></li>
+<li><a href="/devnotify/guides/see-github-notifications-on-mac/">How to See GitHub Notifications on Mac</a></li>
+</ul>
+</nav>
+</article>
+
+<footer>
+  <div class="wrap">
+    <p>DevNotify · GitHub notifications in your menu bar · <a href="/devnotify/download/">Download</a> · <a href="/devnotify/privacy">Privacy</a> · <a href="/devnotify/terms">Terms</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

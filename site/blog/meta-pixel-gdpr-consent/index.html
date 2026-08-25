@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta Pixel and GDPR: When the Facebook Pixel Is Illegal in the EU (2026)</title>
+<meta name="description" content="The Meta Pixel transfers visitor data to the US — EU courts have ruled that illegal without consent. What the law requires, what fines look like, and how to check your site in 10 seconds with a free scanner.">
+<link rel="canonical" href="https://auditedwp.pages.dev/blog/meta-pixel-gdpr-consent/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/blog/meta-pixel-gdpr-consent/">
+<meta property="og:title" content="Meta Pixel and GDPR: When the Facebook Pixel Is Illegal in the EU">
+<meta property="og:description" content="Why the Meta Pixel breaches GDPR without prior consent, what regulators have done about it, and how to check your own site free.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://auditedwp.pages.dev/blog/meta-pixel-gdpr-consent/">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;max-width:780px;margin:0 auto;padding:32px 24px}
+  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{font-size:22px;margin:40px 0 12px;letter-spacing:-.015em;padding-top:16px;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 8px}
+  p{margin-bottom:14px}
+  li{margin-bottom:6px}
+  ul,ol{padding-left:22px;margin-bottom:16px}
+  .box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+  .box.warn{background:#fff8ef;border-color:#ffd699}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
+  .btn:hover{background:#1557b0}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  code{background:#f2f4f7;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:.9em}
+  .tag{display:inline-block;background:#e5effa;color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer a{color:var(--accent)}
+  @media(max-width:600px){h1{font-size:26px}}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading h2{font-size:20px;margin-bottom:12px}
+.keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav style="margin-bottom:24px;font-size:13px">
+  <a href="/" style="color:var(--muted);text-decoration:none">← EUComply</a> ·
+  <a href="/blog/" style="color:var(--muted);text-decoration:none">Blog</a>
+</nav>
+
+<h1>Meta Pixel and GDPR: when the Facebook Pixel is illegal in the EU</h1>
+<p class="meta">Published 29 August 2026 · 7 min read · <span class="tag">GDPR</span> <span class="tag">Meta Pixel</span> <span class="tag">Consent</span></p>
+
+<p>The Meta Pixel (formerly Facebook Pixel) is one of the most widely used tracking tools on the web — and one of the most frequently challenged under the GDPR. European courts and data protection authorities have repeatedly found that firing the pixel without valid, prior consent is unlawful. If your site loads the pixel on page view and only asks afterwards, you have the exact setup that regulators keep penalising.</p>
+
+<div class="box">
+  <strong>💡 Check your own site first:</strong> our <a href="/scan/">free compliance scanner</a> detects the Meta Pixel — and whether it loads alongside a consent platform or before one — on any URL, no sign-up.
+</div>
+
+<h2>Why the pixel is a GDPR problem at all</h2>
+<p>The pixel sends data to Meta every time it fires: the page URL, an identifier hashed from your email if you use advanced matching, device and browser characteristics, and increasingly event-level detail for conversion optimisation. Two GDPR articles bite:</p>
+<ul>
+  <li><strong>Art. 6 (lawful basis).</strong> Tracking for advertising is not "legitimate interest" in the EU after the <em>Planet49</em> CJEU ruling and Meta's own enforcement history. It requires consent.</li>
+  <li><strong>ePrivacy Directive Art. 5(3).</strong> The pixel sets or reads cookies on the visitor's device. Consent is needed <em>before</em> storage or access — not after.</li>
+</ul>
+<p>There is also a cross-border dimension: pixel data goes to US-based Meta platforms. After the <em>Schrems II</em> decision, several EU authorities concluded this transfer lacked a valid legal basis for standard pixel setups — the core of the Danish and Norwegian DPA decisions against websites using the pixel.</p>
+
+<h2>What regulators have actually done</h2>
+<table>
+  <thead><tr><th>Action</th><th>Where / who</th><th>Outcome</th></tr></thead>
+  <tbody>
+    <tr><td>Danish DPA order (2021–2022)</td><td>Businesses using Meta Pixel without consent</td><td>Pixel use declared unlawful without prior consent; referred to police for possible fines</td></tr>
+    <tr><td>Norwegian DPA vs. Tolteq/Grindr-type cases</td><td>Ad-tech tracking without consent</td><td>Interim bans and multi-million NOK fines, later upheld by EDPB</td></tr>
+    <tr><td>CNIL enforcement line (2022+)</td><td>French sites with trackers pre-consent</td><td>Banner "reject must be as easy as accept"; fines up to €150M for large platforms</td></tr>
+    <tr><td>German Abmahnung wave</td><td>E-commerce shops with non-compliant pixels/banners</td><td>Cease-and-desist letters costing €1,500–€10,000 each</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <strong>⚠️ The realistic risk for a small business isn't a €150M fine.</strong> It's a complaint-driven order, an Abmahnung, or losing ad-account trust while you remediate. All three start with the same detectable fact: pixel fires before consent.
+</div>
+
+<h2>The four setups — which one is yours?</h2>
+<ol>
+  <li><strong>No consent banner + pixel.</strong> Clearly unlawful in the EU. Highest risk profile.</li>
+  <li><strong>Banner exists, but pixel loads on page load anyway.</strong> The most common failure. The banner is decoration — the tracking already happened.</li>
+  <li><strong>Consent Mode v2 default-deny + pixel gated.</strong> Compliant baseline since March 2024. Pixels fire only after "granted".</li>
+  <li><strong>Gated + Consent Mode v2 + IAB TCF where relevant.</strong> Required if you run programmatic ads or Google/Meta integrations at scale.</li>
+</ol>
+
+<h3>How to tell in 60 seconds which setup you have</h3>
+<ol>
+  <li>Open your homepage in an incognito window with dev tools → Network tab.</li>
+  <li>Filter for <code>connect.facebook.net</code> and <code>facebook.com/tr</code>.</li>
+  <li>If those requests fire <em>before</em> you click anything on the banner, the pixel runs pre-consent — setup 1 or 2.</li>
+</ol>
+
+<h2>How to fix it properly</h2>
+<ul>
+  <li><strong>Gate the pixel behind consent.</strong> Load <code>fbevents.js</code> only from your CMP's consent callback — never as a plain script tag in the header.</li>
+  <li><strong>Add Google Consent Mode v2 with denied defaults</strong> (<code>ad_storage: 'denied'</code>, <code>analytics_storage: 'denied'</code>) so tags stay dormant until consent.</li>
+  <li><strong>Name Meta Platforms Ireland Ltd.</strong> as a recipient in your privacy policy, with transfer basis stated.</li>
+  <li><strong>Re-test after every theme, plugin or tag-manager change.</strong> This is where compliant setups silently break — someone re-adds the raw pixel snippet and nobody notices for months.</li>
+</ul>
+
+<h2>Check items 1–3 automatically</h2>
+<p>Our free scanner checks any URL — WordPress, Shopify, Webflow, Next.js, Squarespace or plain HTML — for the Meta Pixel, consent-platform presence, Consent Mode v2 signals, and whether trackers load without a consent mechanism:</p>
+<p><a class="btn" href="/scan/">Run a free scan →</a></p>
+<p style="font-size:.9rem;margin-top:.5rem">🛡️ Running a clean scan? Pro monitors your site daily and emails you the moment a tracker starts loading without consent again — plus auditor-ready PDF reports. See <a href="/pro/">EUComply Pro ($79/year)</a>.</p>
+
+<div class="further-reading">
+<h2>Further reading</h2>
+<ul>
+  <li><a href="/blog/google-analytics-gdpr-consent/">Google Analytics and GDPR: Is Your Tracking Legal?</a></li>
+  <li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Banner Fines: What Sites Actually Get Fined For</a></li>
+  <li><a href="/blog/eu-cookie-consent-guide-2026/">EU Cookie Consent Guide 2026</a></li>
+  <li><a href="/scan/">Scan your website free →</a></li>
+  <li><a href="/pro/vs-cookiebot/">EUComply vs Cookiebot</a></li>
+</ul>
+</div>
+
+<nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/eu-cookie-consent-guide-2026/">EU Cookie Consent Requirements 2026: Complete Guide for Website Owners</a></li><li><a href="/blog/gdpr-cookie-banner-fines/">GDPR Cookie Banner Fines: What Websites Actually Get Fined For (2026)</a></li><li><a href="/blog/gdpr-cookie-fines-tracker/">GDPR Cookie Fines Tracker: Every Major Consent Penalty (2025–2026)</a></li><li><a href="/blog/iab-tcf-compliance-guide/">IAB Transparency & Consent Framework (TCF) — Compliance Guide 2026</a></li></ul></nav>
+<footer>
+  <p>This article is general information, not legal advice. For binding guidance consult a lawyer or your local data protection authority.</p>
+  <p><a href="/">EUComply</a> · <a href="/scan/">Free scan</a> · <a href="/pro/">Pro monitoring</a> · <a href="/cookie-policy-generator/">Cookie policy generator</a></p>
+</footer>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Meta Pixel and GDPR: When the Facebook Pixel Is Illegal in the EU",
+  "description": "Why the Meta Pixel breaches GDPR without prior consent, what regulators have done, and how to check your own site free.",
+  "datePublished": "2026-08-29",
+  "author": {"@type": "Organization", "name": "EUComply"},
+  "publisher": {"@type": "Organization", "name": "EUComply"}
+}
+</script>
+</body>
+</html>

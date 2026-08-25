@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is My Cookie Banner Compliant? Free Check in 10 Seconds — EUComply</title>
+<meta name="description" content="Paste your URL and get a free, instant cookie banner compliance check: pre-consent tracking, Consent Mode v2, reject button parity, HTTPS and privacy-policy linking. Works on any platform — WordPress, Shopify, Webflow, Wix, Squarespace or hand-coded HTML.">
+<link rel="canonical" href="https://auditedwp.pages.dev/cookie-banner-check/">
+<meta property="og:title" content="Is My Cookie Banner Compliant? Free Check in 10 Seconds">
+<meta property="og:description" content="Free instant cookie consent check for any website. Based on the same patterns behind the Google €325M and SHEIN €150M fines. No sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://auditedwp.pages.dev/cookie-banner-check/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.hero{text-align:center;padding:52px 0 32px}
+h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;max-width:720px;margin:0 auto 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto}
+.scanbox{display:flex;gap:10px;max-width:560px;margin:28px auto 8px;flex-wrap:wrap;justify-content:center}
+.scanbox input{flex:1;min-width:220px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
+.scanbox input:focus{border-color:var(--accent)}
+.scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.scanbox button:hover{background:var(--accent-dark)}
+.scanbox button[disabled]{opacity:.6;cursor:wait}
+.err{color:var(--fail);font-size:14px;text-align:center;min-height:20px}
+.examples{margin-top:4px}
+.examples span{color:var(--muted);font-size:13px;margin-right:6px}
+.examples button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;margin:3px 2px}
+.examples button:hover{border-color:var(--accent);color:var(--accent)}
+.results{display:none;margin-top:36px;text-align:left}
+.scorecard{border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;background:var(--soft)}
+.scorebig{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.scorebig.good{color:var(--ok)}.scorebig.mid{color:var(--warn)}.scorebig.bad{color:var(--fail)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.card{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:14px 16px;font-size:14px}
+.card.pass{border-left-color:var(--ok)}.card.fail{border-left-color:var(--fail)}.card.warn{border-left-color:var(--warn)}
+.card b{display:block;margin-bottom:4px}
+.pill{float:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
+.card.pass .pill{background:#e6f4ea;color:var(--ok)}.card.fail .pill{background:#fdeaea;color:var(--fail)}.card.warn .pill{background:#fff3e2;color:var(--warn)}
+.card p{color:var(--muted);font-size:13px;margin-top:4px}
+.pro-cta{margin-top:22px;text-align:center}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;letter-spacing:-.02em;margin-bottom:10px}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin-bottom:12px}
+li{margin-bottom:6px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:18px 0;font-size:14.5px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td:first-child{font-weight:600}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer a{color:var(--accent)}
+@media(max-width:600px){h1{font-size:25px}h2{font-size:21px}}
+</style>
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/cookie-banner-check/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/cookie-banner-check/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/cookie-banner-check/">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/scan/">Scanner</a>
+      <a href="/blog/">Guides</a>
+      <a class="cta" href="/pro/">Pro $79/year</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <h1>Is your cookie banner <em>actually compliant?</em> Check it free — right here.</h1>
+  <p class="sub">Regulators fined Google €325M and SHEIN €150M over consent failures. Most sites make at least one of the same three mistakes. Paste your URL and find out in seconds — no sign-up, works on every platform.</p>
+
+  <form id="scan-form" class="scanbox">
+    <input id="url-input" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Your website URL" autocomplete="url">
+    <button id="scan-btn" type="submit">Check my banner</button>
+  </form>
+  <p class="err" id="scan-err" role="alert"></p>
+  <div class="examples">
+    <span>Try:</span>
+    <button type="button" data-url="shopify.com">shopify.com</button>
+    <button type="button" data-url="webflow.com">webflow.com</button>
+    <button type="button" data-url="wix.com">wix.com</button>
+  </div>
+
+  <div class="results" id="results" aria-live="polite">
+    <div class="scorecard">
+      <div style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Compliance score</div>
+      <div class="scorebig" id="score-num">–<small style="font-size:22px;color:var(--muted)">%</small></div>
+      <div style="color:var(--muted);font-size:13px;margin-top:6px" id="score-for"></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="pro-cta">
+      <a class="btn" href="/pro/">Monitor this automatically with EUComply Pro — $79/year →</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>What this free check looks at</h2>
+    <p>The scan runs nine technical checks against your live page. The ones regulators actually fine for:</p>
+    <table>
+      <tr><th>Check</th><th>Why it matters</th></tr>
+      <tr><td>Pre-consent tracking</td><td>Analytics or ad cookies firing before the visitor clicks anything is the pattern behind the SHEIN €150M and American Express €1.5M decisions.</td></tr>
+      <tr><td>Consent Mode v2</td><td>Google requires Consent Mode v2 signals for EEA ad personalisation since March 2024 — missing it quietly breaks Google Ads measurement.</td></tr>
+      <tr><td>Reject-button reality</td><td>A reject option that exists but doesn't stop trackers counts as a knowing violation after the CNIL benchmark decisions.</td></tr>
+      <tr><td>HTTPS &amp; security headers</td><td>NIS2 and GDPR Art. 32 expectations — unencrypted pages fail basic technical compliance.</td></tr>
+      <tr><td>Privacy policy linking</td><td>ePrivacy requires clear information before consent; an unreachable policy undermines the whole legal basis.</td></tr>
+    </table>
+    <div class="box">
+      <strong>Fair warning:</strong> a passing banner today doesn't stay passing. Scripts get added by marketing, CMP settings drift, tag managers change. That's why <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when something regresses.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The three mistakes that cost real companies millions</h2>
+    <ol>
+      <li><strong>Cookies fire before the click.</strong> Open your own site in an incognito window with dev tools open — if network requests to analytics or ad domains appear before you touch the banner, you have pre-consent tracking.</li>
+      <li><strong>"Reject all" is harder than "Accept".</strong> Equal prominence, equal number of clicks, first layer of the banner. Anything else is a dark pattern under the standard set by the CNIL's Meta and Google decisions.</li>
+      <li><strong>Rejecting changes nothing.</strong> Click Reject all, reload, and watch whether the same cookies still fire. Misconfigured tag managers make this one of the most common audit findings.</li>
+    </ol>
+    <p>Want the full enforcement history? See the <a href="/blog/gdpr-cookie-fines-tracker/">GDPR cookie fines tracker</a>, or the complete <a href="/blog/eu-cookie-consent-guide-2026/">EU cookie consent guide for 2026</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
+    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/gdpr-compliance-check/">GDPR compliance check</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a></div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How do I know if my cookie banner is compliant?","acceptedAnswer":{"@type":"Answer","text":"Check three things: no tracking cookies fire before the visitor consents, the reject button is as prominent and easy as accept, and rejecting actually stops the cookies. The free EUComply check above automates these and other tests on any URL in seconds."}},
+    {"@type":"Question","name":"What happens if my cookie banner is not compliant?","acceptedAnswer":{"@type":"Answer","text":"EU data protection authorities can impose fines up to €20 million or 4% of global turnover under GDPR, plus ePrivacy sanctions. Recent decisions include €325 million against Google and €150 million against SHEIN for consent violations. Most enforcement against ordinary business sites starts with a single user complaint."}},
+    {"@type":"Question","name":"Does my website platform handle cookie compliance automatically?","acceptedAnswer":{"@type":"Answer","text":"No platform guarantees compliance out of the box. WordPress plugins, Shopify apps and Squarespace banners all require correct configuration, and misconfiguration is itself a common violation. Compliance depends on how scripts and the consent tool are set up, which is why testing your live page matters regardless of platform."}},
+    {"@type":"Question","name":"Does this check work on Shopify, Wix, Squarespace or Webflow?","acceptedAnswer":{"@type":"Answer","text":"Yes. The checker analyses the rendered HTML of any public URL, so it works identically on WordPress, Shopify, Wix, Squarespace, Webflow, Next.js or hand-coded sites. Nothing needs to be installed."}}
+  ]
+}
+</script>
+
+<script>
+(function() {
+  var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
+  var form = document.getElementById('scan-form');
+  var input = document.getElementById('url-input');
+  var btn = document.getElementById('scan-btn');
+  var errEl = document.getElementById('scan-err');
+  var results = document.getElementById('results');
+  var cardsEl = document.getElementById('cards');
+
+  document.querySelectorAll('.examples button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      input.value = b.dataset.url;
+      form.requestSubmit();
+    });
+  });
+
+  function verdict(c) {
+    if (c.warn) return 'warn';
+    return c.pass ? 'pass' : 'fail';
+  }
+  function pillText(c) {
+    if (c.warn && c.pass === false) return 'Check manually';
+    if (c.warn) return 'Warning';
+    return c.pass ? 'Pass' : 'Fix needed';
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var url = input.value.trim();
+    errEl.textContent = '';
+    if (!url) { errEl.textContent = 'Please enter your domain.'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    try {
+      var r = await fetch(API + '/scan?url=' + encodeURIComponent(url));
+      var d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Scan failed.');
+      render(d);
+    } catch (ex) {
+      errEl.textContent = ex.message || 'Network error. Try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Check my banner';
+    }
+  });
+
+  function render(d) {
+    results.style.display = 'block';
+    var pct = d.score.pct;
+    var cls = pct >= 80 ? 'good' : (pct >= 50 ? 'mid' : 'bad');
+    var num = document.getElementById('score-num');
+    num.innerHTML = '';
+    num.appendChild(document.createTextNode(pct));
+    num.className = 'scorebig ' + cls;
+    num.insertAdjacentHTML('beforeend', '<small style="font-size:22px;color:var(--muted)">%</small>');
+    document.getElementById('score-for').textContent = 'for ' + d.url;
+    cardsEl.innerHTML = '';
+    Object.keys(d.checks).forEach(function(k) {
+      var c = d.checks[k];
+      var v = verdict(c);
+      var card = document.createElement('div');
+      card.className = 'card ' + v;
+      card.innerHTML =
+        '<span class="pill">' + pillText(c) + '</span>' +
+        '<b>' + (c.label || k) + '</b>' +
+        '<p>' + (c.detail || '') + '</p>';
+      cardsEl.appendChild(card);
+    });
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+})();
+</script>
+</body>
+</html>

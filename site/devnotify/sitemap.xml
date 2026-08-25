@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/meta-pixel-gdpr-consent/</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/google-analytics-gdpr-consent/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/scan/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/pro/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/checklist/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/nis2-checklist/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/eaa-checklist/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/check-eu-compliance/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/store/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/tools/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/privacy-policy-generator/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/cookie-policy-generator/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/terms-of-service-generator/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/refund-policy-generator/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/impressum-generator/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/extension/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/cli/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/badge/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/plugin/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/privacy/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/terms/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/de/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/server-side-vs-client-side-cookie-consent/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/nis2-board-liability/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/hsts-preload-guide/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/abmahnung-risk-ecommerce/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/de/was-ist-ein-impressum/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/german-impressum-foreign-sellers/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/do-you-need-a-refund-policy/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/dora-compliance-guide/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/dora-for-ecommerce-2026/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/dora-nis2-gdpr-differences/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/gdpr-cookie-banner-fines/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/eu-compliance-checklist-2026/</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/nis2-vendor-supply-chain-compliance/</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/european-accessibility-act-guide/</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/eu-cookie-consent-guide-2026/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/shopify-gdpr-compliance-guide/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/pro/dashboard/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+<url>
+    <loc>https://auditedwp.pages.dev/pro/sample-report/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+<url>
+    <loc>https://auditedwp.pages.dev/blog/iab-tcf-compliance-guide/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/squarespace-gdpr-compliance-guide/</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/webflow-gdpr-compliance-guide/</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+      <loc>https://auditedwp.pages.dev/blog/webflow-gdpr-compliance-guide/</loc>
+      <lastmod>2026-08-29</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
+    <url>
+      <loc>https://auditedwp.pages.dev/blog/cookiebot-alternative-2026/</loc>
+      <lastmod>2026-08-24</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
+    <url>
+      <loc>https://auditedwp.pages.dev/vs/cookiebot/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/termly/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/iubenda/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/onetrust/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/enzuzo/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/vs/osano/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/gdpr-compliance-for-agencies/</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/eaa-compliance-ecommerce/</loc>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/blog/nis2-compliance-checklist-saas/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/vs/gitify/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/best-github-notification-apps-macos/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/github-token-scopes-guide/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/gitlab-notifications-mac/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditedwp.pages.dev/devnotify/github-desktop-notifications-mac/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+<url><loc>https://auditedwp.pages.dev/devnotify/best-github-notification-apps-macos/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/download/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/github-desktop-notifications-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/github-token-scopes-guide/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/gitlab-notifications-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/filter-github-emails-gmail/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-email-notifications-not-working/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-emails-after-unsubscribing/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notification-badge-not-showing/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-coming-back-unread/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-discord/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-microsoft-teams/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-multiple-computers-sync/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-showing-menu-bar/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-showing-windows/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-showing/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-working-iphone/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-not-working-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-android/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-linux/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-on-windows/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-org-repos/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-slack-too-noisy/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-sound-alert/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-vs-email-digests/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-phantom-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-watch-vs-star/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notification-settings/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/gitify-alternative/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/gitlab-notifications-on-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/miss-pr-review-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/octobox-alternative/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/see-github-notifications-on-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/slack-github-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-telegram/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/github-notifications-apple-watch/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/too-many-github-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications-mac/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/guides/turn-off-github-email-notifications/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/privacy</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/terms</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/chrome-extension/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/github-desktop/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/github-mobile-push/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/gitify/</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://auditedwp.pages.dev/devnotify/vs/octobox/</loc><changefreq>monthly</changefreq></url>
+</urlset>

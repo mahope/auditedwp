@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Convert JSON to YAML (3 Ways: CLI, Web, Desktop)</title>
+<meta name="description" content="Learn 3 ways to convert JSON to YAML: CLI tools, free online converter, and a Mac desktop app. Step-by-step guide with code examples for developers.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<meta property="og:title" content="How to Convert JSON to YAML (3 Ways: CLI, Web, Desktop)">
+<meta property="og:description" content="Step-by-step guide to converting JSON to YAML. Includes CLI commands, a free web tool, and a Mac menu bar app.">
+<meta property="og:type" content="article">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.2;margin:40px 0 8px;letter-spacing:-.02em}
+.meta{color:var(--muted);font-size:14px;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}
+h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.01em;padding-top:8px}
+h3{font-size:18px;margin:24px 0 8px}
+p{margin-bottom:16px}
+code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono','Fira Code','Consolas',monospace}
+pre{background:#1a1f2e;color:#e4e8f0;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.6;margin:16px 0;font-family:'SF Mono','Fira Code','Consolas',monospace}
+pre .kw{color:#7eb8f0}pre .str{color:#a8d88a}pre .cm{color:#6a7a8a}pre .nm{color:#e4e8f0}pre .prompt{color:#6a7a8a}
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--soft);font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
+blockquote{border-left:3px solid var(--accent);padding:12px 16px;margin:16px 0;background:var(--soft);border-radius:0 6px 6px 0}
+blockquote p{margin:0;color:var(--muted);font-size:14px}
+ul,ol{margin:12px 0 16px;padding-left:24px}
+li{margin-bottom:6px}
+.cta-box{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:24px;text-align:center;margin:32px 0}
+.cta-box h3{font-size:18px;margin-bottom:6px}
+.cta-box p{font-size:14px;color:var(--muted);margin-bottom:16px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 22px;border-radius:6px;font-size:14px;transition:background .12s}
+.btn:hover{background:var(--accent-dark)}
+.btn.green{background:#1a7a44}
+footer{text-align:center;padding:32px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:48px}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:26px}h2{font-size:20px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/" class="logo">Quick<span>Format</span></a>
+    <nav>
+      <a href="/tools/format/">Free Converter</a>
+      <a href="/quickconvert/">Desktop App</a>
+      <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>How to Convert JSON to YAML (3 Ways)</h1>
+<p class="meta">📅 August 24, 2026 · 5 min read · <a href="/tools/format/">Try the free converter →</a></p>
+
+<p>If you work with APIs and configuration files, you've been there: a Kubernetes manifest needs your API response in YAML, a Docker Compose file needs values from a JSON config, or a colleague sent you data in the wrong format.</p>
+
+<p>Here are three ways to convert JSON to YAML — from quick one-liners to a daily-driver desktop app.</p>
+
+<h2>Method 1: CLI Tools (Fastest for Developers)</h2>
+
+<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
+<p>The <code>qf</code> CLI is a zero-dependency tool that detects format automatically and converts in one command:</p>
+
+<pre><span class="prompt">$</span> <span class="kw">echo</span> <span class="str">'{"name":"test","version":2}'</span> | <span class="kw">qf</span> --to yaml
+<span class="nm">name</span>: <span class="str">test</span>
+<span class="nm">version</span>: <span class="str">2</span></pre>
+
+<p>Install it with:</p>
+<pre><span class="prompt">$</span> <span class="kw">npm install -g quick-format</span></pre>
+
+<p>Or run without installing:</p>
+<pre><span class="prompt">$</span> <span class="kw">npx</span> quick-format --help</pre>
+
+<p>The CLI also handles file input:</p>
+<pre><span class="prompt">$</span> <span class="kw">cat</span> data.json | <span class="kw">qf</span> --to yaml > config.yml
+<span class="prompt">$</span> <span class="kw">qf</span> --from json --to yaml < data.json > output.yml</pre>
+
+<h3>Using <code>yq</code> (Alternative)</h3>
+<p>The popular <code>yq</code> tool also converts between formats:</p>
+<pre><span class="prompt">$</span> <span class="kw">yq</span> -P '.' data.json > data.yml  <span class="cm"># -P = pretty print</span></pre>
+
+<p>However, <code>yq</code> only handles JSON ↔ YAML. QuickFormat's <code>qf</code> handles <strong>all five formats</strong> (JSON, YAML, CSV, TOML, XML) — one tool for every conversion.</p>
+
+<h2>Method 2: Free Online Web Tool (No Install)</h2>
+
+<p>Don't want to install anything? Use the <a href="/tools/format/">QuickFormat Web Converter</a>. It runs entirely in your browser — nothing is uploaded to any server.</p>
+
+<ol>
+<li>Open <a href="/tools/format/">the JSON→YAML converter</a></li>
+<li>Paste your JSON in the input panel</li>
+<li>Select "YAML" as the output format</li>
+<li>Copy the converted YAML</li>
+</ol>
+
+<p>The web tool supports auto-detection, so you can paste any format and it guesses the source. It also includes a "Swap" button to reverse the conversion instantly.</p>
+
+<p><strong>Best for:</strong> Occasional use, when you're on someone else's machine, or when you want to try before you buy the desktop app.</p>
+
+<blockquote>
+  <p>💡 <strong>Privacy note:</strong> Unlike many online converters that upload your data to a server, QuickFormat's web tool processes everything in your browser using standard JavaScript parsing. Your API keys, database configs, and secrets never leave your computer.</p>
+</blockquote>
+
+<h2>Method 3: QuickFormat Desktop App (For Daily Power Users)</h2>
+
+<p>If you convert formats more than a few times a week, the <a href="/quickconvert/">QuickFormat desktop app</a> lives in your Mac menu bar and converts in <strong>one click</strong> — no browser tab, no window switching.</p>
+
+<h3>Why upgrade from the free web tool?</h3>
+
+<div class="table-wrap">
+<table>
+<tr><th>Feature</th><th>Free Web Tool</th><th>QuickFormat Desktop</th></tr>
+<tr><td>Price</td><td>Free</td><td><strong>$9 one-time</strong></td></tr>
+<tr><td>Works offline</td><td class="cross">❌</td><td class="check">✅</td></tr>
+<tr><td>Menu bar access</td><td class="cross">❌</td><td class="check">✅ One click</td></tr>
+<tr><td>Global keyboard shortcut</td><td class="cross">❌</td><td class="check">✅ ⌥⌘F</td></tr>
+<tr><td>Auto-copy to clipboard</td><td class="cross">❌</td><td class="check">✅</td></tr>
+<tr><td>Batch file conversion</td><td class="cross">❌</td><td class="check">✅</td></tr>
+<tr><td>All 5 formats</td><td class="check">✅</td><td class="check">✅</td></tr>
+<tr><td>Privacy (local processing)</td><td class="check">✅</td><td class="check">✅</td></tr>
+<tr><td>CLI included</td><td class="cross">❌</td><td class="check">✅</td></tr>
+</table>
+</div>
+
+<p>The desktop app is for developers who convert multiple times per day — working with Kubernetes manifests, CI/CD pipelines, API responses, or data files. The global shortcut alone saves hundreds of clicks per week.</p>
+
+<div class="cta-box">
+  <h3>🔄 Convert JSON → YAML in one click</h3>
+  <p>QuickFormat for Mac — $9 one-time. Works offline. Your data stays on your Mac.</p>
+  <a href="/quickconvert/" class="btn">Download QuickFormat →</a>
+  <span style="display:inline-block;margin:0 12px;color:var(--muted)">or</span>
+  <a href="/tools/format/" class="btn green">Try Free Web Tool</a>
+</div>
+
+<h2>Quick Reference: JSON to YAML Mapping</h2>
+
+<p>If you prefer to convert manually (or want to double-check the tool's output), here's how JSON types map to YAML:</p>
+
+<table>
+<tr><th>JSON</th><th>YAML</th><th>Example</th></tr>
+<tr><td>Object <code>{}</code></td><td>Mapping (indented)</td><td><code>key: value</code></td></tr>
+<tr><td>Array <code>[]</code></td><td>Sequence (<code>- </code> prefix)</td><td><code>- item1\n- item2</code></td></tr>
+<tr><td>String</td><td>Plain/quoted string</td><td><code>hello</code> or <code>"hello"</code></td></tr>
+<tr><td>Number</td><td>Number</td><td><code>42</code> or <code>3.14</code></td></tr>
+<tr><td>Boolean</td><td>Boolean</td><td><code>true</code> / <code>false</code></td></tr>
+<tr><td>null</td><td>null / ~</td><td><code>null</code> or <code>~</code></td></tr>
+<tr><td>Nested object</td><td>Nested indentation</td><td><code>parent:\n  child: value</code></td></tr>
+</table>
+
+<h2>Which Method Should You Use?</h2>
+
+<ul>
+<li><strong>Once or twice:</strong> Use the <a href="/tools/format/">free web tool</a> — no install, no setup, just paste and go.</li>
+<li><strong>Scripting/automation:</strong> Use <a href="/quickconvert/">qf CLI</a> — pipe data in, pipe YAML out.</li>
+<li><strong>Daily use:</strong> Get the <a href="/quickconvert/">QuickFormat desktop app</a> — $9 one-time, menu bar access, global shortcut, offline.</li>
+</ul>
+
+</div>
+
+<p>More conversion guides: <a href="/guides/yaml-to-json/">YAML to JSON</a> · <a href="/guides/json-to-csv/">JSON to CSV</a> · <a href="/guides/csv-to-json/">CSV to JSON</a> · <a href="/guides/toml-vs-yaml/">TOML vs YAML</a></p>
+<footer>
+  <div class="wrap">
+    <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/quickconvert/">QuickFormat for Mac</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

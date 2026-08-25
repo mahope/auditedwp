@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Convert CSV to JSON (CLI, Python and Online Tools)</title>
+<meta name="description" content="Turn CSV into clean JSON: type-correct numbers and booleans, nested columns via dot notation. CLI, Python and free online methods compared.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<meta property="og:title" content="How to Convert CSV to JSON (CLI, Python and Online Tools)">
+<meta property="og:description" content="Turn CSV into clean JSON: type-correct numbers and booleans, nested columns via dot notation. CLI, Python and free online methods compared.">
+<meta property="og:type" content="article">
+<style>
+:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+nav a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.2;margin:40px 0 8px;letter-spacing:-.02em}
+.meta{color:var(--muted);font-size:14px;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}
+h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.01em;padding-top:8px}
+h3{font-size:18px;margin:24px 0 8px}
+p{margin-bottom:16px}
+code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono','Fira Code','Consolas',monospace}
+pre{background:#1a1f2e;color:#e4e8f0;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.6;margin:16px 0;font-family:'SF Mono','Fira Code','Consolas',monospace}
+pre .kw{color:#7eb8f0}pre .str{color:#a8d88a}pre .cm{color:#6a7a8a}pre .nm{color:#e4e8f0}pre .prompt{color:#6a7a8a}
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--soft);font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
+blockquote{border-left:3px solid var(--accent);padding:12px 16px;margin:16px 0;background:var(--soft);border-radius:0 6px 6px 0}
+blockquote p{margin:0;color:var(--muted);font-size:14px}
+ul,ol{margin:12px 0 16px;padding-left:24px}
+li{margin-bottom:6px}
+.cta-box{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:24px;text-align:center;margin:32px 0}
+.cta-box h3{font-size:18px;margin-bottom:6px}
+.cta-box p{font-size:14px;color:var(--muted);margin-bottom:16px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 22px;border-radius:6px;font-size:14px;transition:background .12s}
+.btn:hover{background:var(--accent-dark)}
+.btn.green{background:#1a7a44}
+footer{text-align:center;padding:32px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:48px}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:26px}h2{font-size:20px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/" class="logo">Quick<span>Format</span></a>
+    <nav>
+      <a href="/tools/format/">Free Converter</a>
+      <a href="/quickconvert/">Desktop App</a>
+      <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>How to Convert CSV to JSON</h1>
+<p class="meta">📅 August 24, 2026 · 5 min read · <a href="/tools/format/">Try the free converter →</a></p>
+
+
+<p>Spreadsheets are where product data lives and APIs are where it goes. Converting CSV to JSON sounds trivial until you hit types, empty cells and commas inside quoted fields.</p>
+
+<h2 id="cli">Method 1: CLI</h2>
+
+<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
+
+<pre><span class="prompt">$</span> <span class="kw">cat</span> users.csv | <span class="kw">qf</span> --to json
+<span class="nm">[
+  { "id": 1, "name": "Alice", "active": true },
+  { "id": 2, "name": "Bob", "active": false }
+]</span></pre>
+
+<p><code>qf</code> converts values that look like numbers, booleans and nulls into their JSON types, and uses the header row as keys. Columns named with dot notation (<code>address.city</code>) become nested objects.</p>
+
+<h3>Using <code>jq</code>+<code>mlr</code> alternatives</h3>
+<p><code>jq</code> alone doesn't parse CSV. Miller (<code>mlr --csv put -j</code>) does if you have it installed; otherwise a tiny script is simpler than a new dependency.</p>
+
+<h2 id="python">Method 2: Python (stdlib only)</h2>
+
+<pre><span class="kw">import</span> csv, json
+<span class="kw">with</span> open(<span class="str">"users.csv"</span>) <span class="kw">as</span> f:
+    data = list(csv.DictReader(f))
+print(json.dumps(data, indent=2))</pre>
+
+<p>No dependencies — but everything comes out as strings. Add your own type coercion if the consumer cares about numbers vs strings.</p>
+
+<h2 id="web">Method 3: Free Online Converter</h2>
+<p>Paste CSV into the <a href="/tools/format/">browser converter</a> and copy JSON out. It runs locally in your browser — customer lists and pricing sheets never leave your machine.</p>
+
+<h2>Gotchas</h2>
+<ul>
+<li><strong>Types:</strong> CSV has no types. Decide whether <code>"007"</code> stays a string or becomes <code>7</code> (it shouldn't become 7 — IDs with leading zeros are strings).</li>
+<li><strong>BOM:</strong> Excel-exported CSVs often start with a UTF-8 BOM that shows up as garbage in the first key. Strip it.</li>
+<li><strong>Quoted commas:</strong> any correct parser handles <code>"Smith, John"</code> — if your hand-rolled <code>split(",")</code> doesn't, stop hand-rolling.</li>
+</ul>
+
+<ul>
+<li><strong>Scripts:</strong> <a href="/quickconvert/">qf CLI</a>.</li>
+<li><strong>One-off:</strong> <a href="/tools/format/">web converter</a>.</li>
+<li><strong>Every day:</strong> <a href="/quickconvert/">QuickFormat for Mac</a>, $9 one-time.</li>
+</ul>
+
+
+<div class="cta-box">
+  <h3>Convert CSV → JSON in one click</h3>
+  <p>QuickFormat lives in your Mac menu bar. Paste, click, done — JSON, YAML, CSV, TOML and XML, offline.</p>
+  <a href="/quickconvert/" class="btn green">Get QuickFormat for Mac — $9 →</a>
+  &nbsp;
+  <a href="/tools/format/" class="btn">Or use the free web converter</a>
+</div>
+
+</div>
+
+<h2>Related guides</h2><ul><li><a href="/guides/json-to-yaml/">Json To Yaml</a></li><li><a href="/guides/json-vs-yaml/">Json Vs Yaml</a></li><li><a href="/guides/yaml-to-json/">Yaml To Json</a></li><li><a href="/guides/json-to-csv/">Json To Csv</a></li><li><a href="/guides/toml-vs-yaml/">Toml Vs Yaml</a></li></ul>
+<footer>
+  <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/quickconvert/">QuickFormat for Mac</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+  <p style="margin-top:8px">© 2026 Mahope. All conversions run locally in your browser or on your machine.</p>
+</footer>
+
+</body>
+</html>

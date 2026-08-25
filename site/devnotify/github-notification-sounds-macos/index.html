@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Sounds & Quiet Hours for GitHub Notifications on macOS | DevNotify</title>
+<meta name="description" content="GitHub's default notification sound trains you to ignore it. Set a distinct sound for review requests and real quiet hours on your Mac.">
+<link rel="canonical" href="https://auditedwp.pages.dev/devnotify/github-notification-sounds-macos/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Custom Sounds & Quiet Hours for GitHub Notifications on macOS | DevNotify">
+<meta property="og:description" content="GitHub's default notification sound trains you to ignore it. Set a distinct sound for review requests and real quiet hours on your Mac.">
+<meta property="og:url" content="https://auditedwp.pages.dev/devnotify/github-notification-sounds-macos/">
+<meta property="og:image" content="/assets/devnotify-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/assets/devnotify-og.png">
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+  --accent:#fc6d26;--green:#3fb950;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+header{padding:18px 0;border-bottom:1px solid var(--border)}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.logo .dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block}
+nav a{margin-left:20px;text-decoration:none;font-size:.95rem;color:var(--muted)}
+nav a:hover{color:var(--text)}
+.hero{text-align:center;padding:70px 0 40px}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);line-height:1.15;margin-bottom:16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.sub{color:var(--muted);font-size:1.15rem;max-width:640px;margin:0 auto 28px}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;font-size:1rem}
+.btn-primary{background:var(--green);color:#04180a}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--muted)}
+.price-note{color:var(--muted);font-size:.95rem}
+.price-note strong{color:var(--text)}
+.mockup{max-width:360px;margin:36px auto 0;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.mockup .bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.mockup .bar span{width:10px;height:10px;border-radius:50%;background:var(--border)}
+.mockup ul{list-style:none;padding:8px 0}
+.mockup li{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #21262d;font-size:.85rem}
+.mockup li:last-child{border-bottom:none}
+.mockup .repo{color:var(--muted)}
+.badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;background:#4a2c12;color:#f5b98a}
+.features{padding:60px 0}
+.features h2,.how h2,.faq h2{text-align:center;font-size:1.8rem;margin-bottom:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.card h3{font-size:1.05rem;margin-bottom:8px}
+.card p{color:var(--muted);font-size:.92rem}
+.how{padding:60px 0;border-top:1px solid var(--border)}
+.steps{max-width:640px;margin:0 auto}
+.step{display:flex;gap:18px;margin-bottom:24px}
+.step .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step p{color:var(--muted)}.step strong{color:var(--text)}
+.faq{padding:60px 0;border-top:1px solid var(--border)}
+.faq details{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;padding:16px 20px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{color:var(--muted);margin-top:10px;font-size:.95rem}
+footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(max-width:600px){.hero{padding:48px 0 30px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo">DevNotify<span class="dot"></span></div>
+<nav><a href="/devnotify/">Home</a><a href="/devnotify/download/">Download</a><a href="/devnotify/guides/">Guides</a><a href="/devnotify/#buy">Buy — $19</a></nav></div></header>
+<main>
+<div class="wrap article">
+<h1>A sound you can <em>trust</em> — not another ping.</h1>
+
+<p>macOS plays the same alert for a code-owner review request as it does for a Dependabot bump.
+After a week of that, your brain learns the sound means nothing, and you start missing
+the pings that actually matter.</p>
+
+<h2>The problem with one-size-fits-all alerts</h2>
+<ul>
+<li><strong>Habituation.</strong> Identical sounds for important and trivial events train you to ignore both.</li>
+<li><strong>No schedule.</strong> Notifications don't respect your focus time or time zone — a merge from the EU office buzzes during your dinner.</li>
+<li><strong>Wrong channel.</strong> Email notifications pile up unseen; browser badges vanish when the tab closes.</li>
+</ul>
+
+<h2>A setup that survives week two</h2>
+<ol>
+<li>Pick one app as your single GitHub surface. For this walkthrough we'll use
+    <a href="/devnotify/download/">DevNotify</a>, which lives in the menu bar rather than a tab.</li>
+<li>Enable its notification sound only for <em>mentions and review requests</em>. Everything else updates the badge silently.</li>
+<li>Set quiet hours for evenings and weekends. The unread count still accumulates — it just waits until morning to speak.</li>
+<li>Turn off GitHub email notifications entirely. One inbox, one source of truth.</li>
+</ol>
+
+<h2>Why menu bar beats browser badges</h2>
+<p>A badge tied to a browser tab dies the moment you close it. A menu-bar count is visible
+in every app, all day — so "silent but visible" becomes possible. Loud when it matters,
+quiet when it doesn't.</p>
+
+<p class="cta-inline"><a class="btn btn-primary" href="/devnotify/download/">Download DevNotify (free trial)</a></p>
+<p style="margin-top:14px">macOS 13+. Apple Silicon and Intel. $19 lifetime license after the 7-day trial.</p>
+
+</div>
+</main>
+<footer><div class="wrap">
+  <div>© 2026 DevNotify · Made for developers, by developers</div>
+  <div><a href="/devnotify/terms.html">Terms</a> · <a href="/devnotify/privacy.html">Privacy</a></div>
+</div></footer>
+</body>
+</html>
