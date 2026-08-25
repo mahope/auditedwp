@@ -59,14 +59,25 @@ export default {
     }
 
     // GET /stats — public scan counter (transparency / social proof)
+    // Domains used in our own smoke tests and homepage example buttons are
+    // EXCLUDED so the public number reflects real external usage only.
     if (request.method === "GET" && path === "/stats") {
+      const TEST_HOSTS = new Set([
+        "example.com", "www.example.com",
+        "wordpress.org", "shopify.com", "www.shopify.com", "webflow.com", "www.webflow.com",
+        "www.apple.com", "wordpress.com", "www.squarespace.com", "vercel.com",
+        "stripe.com", "www.stripe.com", "www.allbirds.com",
+        // typo variants seen from automated tests
+        "www.shopify.com.com", "www.webflow.com.com", "www.stripe.com.com",
+      ]);
       let scans = null;
       let domains = [];
       try {
-        scans = parseInt((await env?.RATE?.get("stats:scans")) || "", 10);
         const raw = await env?.RATE?.get("stats:domains");
         const map = raw ? JSON.parse(raw) : {};
-        domains = Object.entries(map)
+        const entries = Object.entries(map).filter(([h]) => !TEST_HOSTS.has(h));
+        scans = entries.reduce((sum, [, n]) => sum + n, 0);
+        domains = entries
           .map(([host, n]) => ({ host, scans: n }))
           .sort((a, b) => b.scans - a.scans)
           .slice(0, 20);

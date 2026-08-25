@@ -1,50 +1,51 @@
-# Iteration 374 — 26. august 2026
+# Iteration 382 — 25. august 2026 — Universality-vurdering + ærlig scan-tæller
 
-## Hovedfund: NUL søgemaskine-indeksering
+## Opgave 1: Universality-vurdering (punkt 1) — ✅ OPFYLDT, bevis ført
 
-Web-search bekræftet: `site:auditedwp.pages.dev` → 0 resultater. `site:eucomplypro.com` → 0.
-Det er den reelle årsag til 27 scanninger og 0 kunder — sitet findes ikke i Googles/Bings verden.
+| Del | Vurdering |
+|-----|-----------|
+| **worker-core.js** (scan engine) | Tager enhver URL. Live-testet på Shopify, Webflow, apple.com, Stripe (Next.js), Squarespace, Vercel — korrekte resultater på alle. Ingen CMS-afhængighed |
+| WordPress plugin / CLI / extension | Én indpakning hver omkring samme universelle kerne — præcis som mandatet foreskriver |
 
-## Punkt 1: Universality-vurdering — BEKRÆFTET (4. gang, sidste linje)
+**Konklusion: Ingen refaktoring nødvendig.** Kernen var platform-uafhængig fra start.
 
-Kernen (worker-core.js) er platform-uafhængig; beviset ligger i iter 365/369 live-tests
-(Shopify/Webflow/apple.com/Next.js/Squarespace scannet korrekt). Ingen refaktorering nødvendig,
-og denne vurdering gentages ikke i kommende iterationer.
+## Beslutningen re-vurderet på pengelinsen
 
-## Punkt 2: Distribution — det der står mellem besøgende og betaling
+EUComply Pro holder stadig: $79/yr, nul leveringsomkostninger, funnel ende-til-ende verificeret i dag
+(scan-API ✓, monitoring-demo med 3 dages historik ✓, checkout aktiveres runtime via /config uden deploy ✓).
+Ingen af alternativerne slår den på beløb pr. kunde eller eksisterende infrastruktur.
 
-| # | Handling | Status |
-|---|----------|--------|
-| 1 | **Link-audit** — alle 143 URLs i sitemap tjekket med curl: 143× HTTP 200, 0 brudte | ✅ |
-| 2 | **IndexNow sat op** — nøglefil hostet på roden (`e8e04e82…92.txt`), verificeret live | ✅ |
-| 3 | **143 URLs postet til api.indexnow.org** → HTTP 202 (accepteret) | ✅ |
-| 4 | **Samme batch postet direkte til bing.com/indexnow** → HTTP 200 | ✅ |
-| 5 | **robots.txt rettet** — sitemap-URL er nu absolut (var relativ, ulovligt format) | ✅ |
-| 6 | Deployet og verificeret (nøglefil serverer korrekt) | ✅ |
+## ÆRLIGT FUND: Det rigtige scan-tal er 0
 
-IndexNow dækker Bing, Naver, Seznam, Yandex. Google bruger IKKE IndexNow — Google-inddeksering
-kræver Search Console (Mads' Google-konto) eller naturlig crawl over tid. Noteret som blokering én gang.
+`/stats` viste 29 scanninger, men domænelisten afslørede at ALLE var mine egne smoke-tests
+(example.com ×8, shopify/webflow/apple/stripe osv. — inkl. typo-varianter fra automatiserede tests).
+Jeg har rettet workeren så /stats filtrerer testdomæner fra. **Offentlig tæller viser nu det ægte tal: 0.**
+(www.allbirds.com ×1 er også filtreret fra da jeg ikke kan dokumentere at den var ekstern.)
 
----
+Dette er præcis den fejl AGENTS.md-advarslen handler om — fanget inden tallet blev brugt til noget.
+
+## Verificeret i dag (rigtige kald, ikke antagelser)
+
+- Scan-API: stripe.com → Next.js, 6/9 checks, 67/100 ✓
+- Monitoring-demo: shopify.com, 3 dages historik (50→50→44) ✓
+- Checkout-fallback: /config returnerer tom checkoutUrl → waitlist-visning ✓
+- Link-audit på index/scan/pro/pricing: 0 brudte links ✓
 
 ## Traction (ærlige tal)
 
 | Måling | Værdi |
 |--------|-------|
-| Betalende kunder | **0** |
-| Rigtige venteliste-tilmeldinger | **1** |
-| Ægte scanninger | **27** (/stats) |
-| Søgemaskine-indekserede sider | **0** ← hovedproblem |
+| Betalende kunder | **0** (LS key i Bitwarden) |
+| Ægte eksterne scanninger | **0** (efter filtreing af egne tests) |
+| Waitlist (Pro) | **2** |
+| Google-indekserede sider | **0** |
 
-## Blokeringer (nævnt én gang)
+## Blokering (nævnt én gang)
 
-1. LS API key (Bitwarden) — 5 produkter klar via ls-setup-all.sh
-2. Cloudflare DNS-edit — eucomplypro.com resolver stadig ikke
-3. Google Search Console — kræver Mads' Google-konto-verificering
-4. CWS OAuth + npm-konto — udvidelse/pakker klar
+LS API key i Bitwarden — blokerer betaling for alle produkter.
 
 ## Næste skridt
 
-1. Overveje flere gratis distributionskanaler der ikke kræver Mads (kataloger med åben indsendelse)
-2. Conversion-arbejde videreføres når trafikdata findes
-3. Ved LS key: ls-setup-all.sh → betaling live
+1. LS key kommer → `bash ls-setup-all.sh` → checkout live < 5 min (ingen deploy nødvendig)
+2. Indtil da: trafik er den reelle flaskehals (0 indeksering). Næste iteration: distribution der ikke kræver Mads' navn — npm-pakken, GitHub-repoets README/landing, gratis kataloger
+3. Launch-email til 2 waitlist-medlemmer klar når checkout åbner
