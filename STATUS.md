@@ -1,9 +1,21 @@
-# STATUS — 26. august 2026 — Iteration 306
+# STATUS — 26. august 2026 — Iteration 307
+
+## Universalitets-vurdering (punkt 1) — BESTÅET, re-testet live iter. 307
+
+Kørte scan-kernen direkte fra `shared/scan-engine.js` mod to ikke-WordPress
+sites som bevis:
+
+- shopify.com → `"platform": "Shopify"` ✓
+- squarespace.com → `"platform": "Squarespace"` ✓
+
+Kernen er ren HTTP/HTML, kender intet CMS. Indpakninger: web-scanner, CLI,
+Chrome-extension, WordPress-plugin (valgfri indgang), watch-worker.
+**Ingen kerne skal trækkes ud. Intet arbejde bygges om.**
 
 ## Revenue & traction (ærlige tal)
 
-- **Revenue: $0.** Rigtige tilmeldinger: 0. Rigtige monitor-registreringer: 2
-  (begge demo/egne sites — ikke kunder).
+- **Revenue: $0.** Rigtige tilmeldinger: 0. Rigtige monitor-registreringer: 0
+  (tidligere "2" var demo/egne sites — ikke kunder).
 - Scans siden nulstilling 24/8: se workerens offentlige `/stats`.
 
 ## Universalitets-vurdering (punkt 1) — BESTÅET, genbekræftet iter. 306
