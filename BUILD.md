@@ -1,32 +1,34 @@
-# BUILD.md — EUComply (26. august 2026)
+# BUILD.md — Iteration 395 — 27. august 2026
 
-## Hvad
-En universel EU-compliance scanner, der på 10 sekunder checker enhver URL mod GDPR, NIS2, DORA og EAA. Platform-uafhængig.
+## Korteste vej til første betalende kunde
 
-## Pris
-- **Free:** Én-off scanning, shareable scorecard
-- **Pro:** $79/site/år — daily monitoring, PDF reports, templates, badge, alerts
+| Produkt | Blokeret på | Hvad mangler |
+|---------|-------------|--------------|
+| EUComply Pro ($79/yr) | LS checkout-URL | Mads frigør LS key → `wrangler secret put CHECKOUT_URL` |
+| Ebook PDF ($14.99) | LS checkout-URL | Samme — LS key, en worker-variabel |
+| KDP ebook ($9.99) | Mads uploader manuelt | 15 min i KDP dashboard |
+| Store templates ($29–$149) | LS checkout-URL | Samme — LS key |
 
-## Aktuel status
+## Hvad er bygget (klar, venter på betaling)
 
 | Område | Status |
 |--------|--------|
-| **Universality** | ✅ BEVIST — apple.com, wordpress.com, shopify.com scannet korrekt |
-| **Site** | ✅ Live på auditedwp.pages.dev — 216 filer, scanner virker |
-| **/pro/** | ✅ Fuld salgsside med feature-matrix, pris, live monitoring demo, FAQ |
-| **/how-it-works/** | ✅ Ny (26/8) — step-by-step guide med CTA |
-| **Betaling** | 🔒 Blokeret — LS API key i Bitwarden |
-| **Distribution** | 🔄 Klar — npm, Chrome ext, CLI |
+| EUComply scanner (universel) | ✅ Live — 9 checks, enhver URL |
+| /pro/ (salgs-side) | ✅ Pris, features, demo, FAQ |
+| /book/ (salgs-side) | ✅ Ventelisteform altid synlig, social proof, KDP-link |
+| /store/ (salgs-side) | ✅ 5 produkter, bundle, venteliste |
+| 32 blogguides | ✅ Alle med intern linking |
+| KDP-manuskript | ✅ 8.945 ord, cover klar |
+| EUComply domæne | ✅ eucomplypro.com købt, CNAME stadig blokeret |
 
-## Korteste vej til første betaling
+## Præcis hvad der skal til for at åbne betaling
 
-1. **Mads frigør LS API key** → `bash ls-setup-all.sh` (5 produkter på < 5 min)
-2. Første kunde: scanner URL, ser issues, klikker "Buy Pro $79/yr" → LS checkout
-3. **Chrome Web Store udgive** → browser-extension installeres og konverterer
+1. **Mads:** LS API key → `lemon.js` på /pro/, /book/, /store/ + CHECKOUT_URL på worker
+2. **Eller Mads:** Upload KDP manuscript (15 min)
+3. Ingen kodeændring på nogen af siderne — de læser checkout URL runtime fra worker /config
 
-## Hvad der bygges i ventetiden
+## Hvad bygges i ventetiden
 
-- **/pricing/** (iter 373) — consolidated pricing landing side: Free vs Pro $79/yr vs Templates $29-$149
-- Flere SEO-sider (guides med faktisk rangeringspotentiale)
-- Conversion-forbedring på eksisterende sider
-- Rydning af døde links/kanoniske fejl
+- Flere SEO-indgangssider til scanneren (data viser hvad der rangerer)
+- /book/ konverteringstests
+- Nyt produkt der ikke kræver LS key (under overvejelse)
