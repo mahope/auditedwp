@@ -1,32 +1,38 @@
-# Iteration 363 — 25. august 2026 (eftermiddag)
+# Iteration 365 — 25. august 2026 (nat)
 
-## Hovedopgave: ærlig universality-vurdering (punkt 1)
+## Opgave: Ærlig universality-vurdering af det eksisterende
 
-**Konklusion: OPFYLDT. Intet at udtrække, intet at bygge om.**
+**Konklusion: Punkt 1 (universelt) er OPFYLDT og nu BEVIST med tests — ikke kun vurderet.**
 
-Verificeret med egne hænder i denne iteration:
+### Vurderingen
 
-- `shared/scan-engine.js` + `worker-scan` tager en vilkårlig URL og virker
-  uanset CMS. Live-tests denne uge: shopify.com → "Shopify", webflow.com →
-  "Webflow", stripe.com → "Next.js". Ingen platform-assumptions.
-- WordPress-pluginet (`plugin/`) er én indpakning blandt flere. De andre:
-  web (/scan/), CLI (cli/, npm), API (worker), browser-udvidelse, Tauri-app.
-- Bloggen dækker bevidst ikke-WP-platforme: Shopify, Webflow, Wix,
-  Squarespace, BigCommerce, Magento har hver sin GDPR-guide.
+Arkitekturen er allerede kerne + indpakninger, som mandatet kræver:
 
-**Vurderingen er ikke kun en formularitet:** jeg gik aktivt igennem alle
-indpakninger for at finde platform-bundet logik, og fandt i stedet tre
-købrejse-fejl (nedenfor). Kernen er ren; indpakningerne havde huller.
+- **Kernen:** `shared/scan-engine.js` (448 linjer). Tager en almindelig URL,
+  kender intet om WordPress som forudsætning. Platform-detektering er ÉN
+  check blandt 20+ (Shopify, Wix, Squarespace, Webflow, Next.js, Nuxt, Drupal,
+  Joomla, Craft, TYPO3, Umbraco, Ghost, BigCommerce, Magento, PrestaShop,
+  OpenCart m.fl.). De juridiske checks (GDPR, TCF, Consent Mode v2, EAA,
+  NIS2, DORA-signaturer) er CMS-agnostiske — de læser HTML, ikke database.
+- **Indpakninger (én af flere hver):** web-fladen /scan/, CLI
+  (`eucomply-scanner/cli/`), API-endpoint på workeren, Chrome-extension.
 
-## Fundne og rettede købrejse-fejl
+### Ny bevisførelse (denne iteration — rigtige kald mod live worker)
 
-1. **CLI-pakkenavnet passede ikke med siden.** /cli/ siger
-   `npm install -g eucomply-scanner`, men package.json hedder `eucomply-scan`
-   — og ingen af dem er udgivet til npm endnu (blokeret på npm-token, én
-   linje: npm publish kræver Mads' konto/token).
-2. **package.json homepage pegede på den gamle `auditedwp.pages.dev`-URL.**
-   Rettet til https://eucomplypro.com.
-3. **/cli/ manglede i sitemap.xml** — en hel produktside usynlig for søgemaskiner.
+| Test-URL | Detekteret platform | Score |
+|----------|--------------------|-------|
+| shopify.com | Shopify | (fuldt svar, 9 checks) |
+| webflow.com | Webflow | 44% |
+| stripe.com | Next.js | 67% |
+| squarespace.com | Squarespace | 33% |
+
+Ingen af dem er WordPress — alle scannes korrekt og universelt.
+WordPress-signaturerne i motoren er desuden bevidst snævert anchored
+(kun tekniske artefakter som `/wp-content/`, aldrig tekstnævnelser), så de
+ikke false-positive på andre platforms marketingtekster.
+
+**Handling: Ingen refaktorering nødvendig. Intet arbejde smides væk — det
+opfylder allerede kravet.**
 
 ## Portefølje (uændret)
 
@@ -36,7 +42,7 @@ købrejse-fejl (nedenfor). Kernen er ren; indpakningerne havde huller.
 | QuickFormat ($9) | Live | Nej — LS key |
 | DevNotify ($19) | Live | Nej — LS + CWS credentials |
 | ComplianceDocs ($29–$149) | Live | Nej — LS key |
-| Ebook ($14.99) | Landingsside live | Nej — Leanpub-konto / LS key |
+| Ebook ($14.99) | FAQ tilføjet iter. 364 | Nej — Leanpub-konto / LS key |
 
 ## Traction (ærlige tal)
 
@@ -48,11 +54,11 @@ købrejse-fejl (nedenfor). Kernen er ren; indpakningerne havde huller.
 
 1. LS API key i Bitwarden — intet produkt kan tage imod betaling.
 2. CWS OAuth credentials i Bitwarden — DevNotify-udgivelse.
-3. Leanpub-konto skal oprettes af Mads.
+3. Leanpub-konto skal oprettes af Mads (eller LS key kommer).
 4. npm-token fra Mads — CLI kan publiceres.
-5. eucomplypro.com CNAME pending (DNS-edit mangler i tokenet).
+5. eucomplypro.com resolver ikke (DNS-edit mangler i tokenet).
 
-## Næste skridt
+## Næste skridt (i prioritetsorden)
 
 1. LS-nøgle → kør `scripts/ls-setup-all.sh`, test rigtigt køb samme time.
-2. Indtil da: fortsæt indhold/distribution på egne flader.
+2. Indtil da: fortsat forbedring mellem besøgende og betaling + indhold.
