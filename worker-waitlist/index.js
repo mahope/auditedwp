@@ -42,9 +42,12 @@ export default {
     // GET /config → return checkout URL for dynamic checkout buttons
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/config") {
+      let urls = {};
+      try { urls = JSON.parse(env.CHECKOUT_URLS_JSON || "{}") || {}; } catch (e) {}
       return new Response(JSON.stringify({
         service: "quickformat-waitlist",
         checkout_url: (env.CHECKOUT_URL || "").trim(),
+        checkout_urls: urls,
       }), {
         headers: {
           "Content-Type": "application/json",

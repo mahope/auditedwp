@@ -113,13 +113,8 @@
     <a class="logo" href="/">EU<span>Comply</span></a>
     <nav>
       <a href="/pro/">Pro</a>
-      <a href="/store/">Templates</a>
-      <a href="/checklist/">Checklist</a>
-      <a href="/compare/">Compare</a>
-      <a href="/tools/">Generator</a>
-      <a href="/extension/">Extension</a>
-      <a href="/cli/">CLI</a>
       <a href="/guides/">Guides</a>
+      <a href="/store/">Templates</a>
       <a class="cta" href="/pro/">Pro $79/yr</a>
     </nav>
   </div>
@@ -153,19 +148,16 @@
     <div class="procta" id="procta">
       <h3 id="procta-title">Need documented proof — not just flags?</h3>
       <p id="procta-body">The Pro tier turns findings into auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and accessibility statements you can forward to clients, auditors and insurers.</p>
-      <a class="btn" href="/pro/">See Pro — $79/year</a>
-      <button type="button" class="btn ghost" id="share-btn" style="margin-left:8px">🔗 Copy link</button>
-      <button type="button" class="btn ghost" id="share-x-btn" style="margin-left:8px">🐦 Share on X</button>
-      <button type="button" class="btn ghost" id="share-li-btn" style="margin-left:8px">💼 LinkedIn</button>
-      <button type="button" class="btn ghost" id="print-btn" style="margin-left:8px">🖨️ Save as PDF</button>
-      <button type="button" class="btn ghost" id="scorecard-btn" style="margin-left:8px">🖼️ Download score card</button>
-      <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
-      <p style="font-size:12.5px;margin:6px 0 0"><a class="btn green" href="/assets/eucomply-1.2.0.zip" style="padding:8px 14px;font-size:13px">↓ WordPress plugin (free)</a></p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0">
+        <a class="btn" href="/pro/" style="font-size:16px;padding:14px 32px">See Pro — $79/year →</a>
+        <button type="button" class="btn ghost" id="share-btn" style="margin-left:0">🔗 Copy link</button>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:6px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
 
       <!-- Free monitoring trial — register this site for daily scans -->
-      <div id="monitor-box" style="margin-top:20px;border:2px solid var(--accent);border-radius:10px;padding:18px;background:#f8faff;text-align:center">
-        <h3 style="font-size:16px;margin-bottom:6px">📡 Monitor <span id="mon-host" style="word-break:break-all"></span> daily — free</h3>
-        <p style="font-size:13.5px;color:var(--muted);margin-bottom:14px">We re-scan this site every morning and email you the day anything breaks — a dropped header, an expired certificate, a consent regression. Free while in beta, no card required.</p>
+      <div id="monitor-box" style="margin-top:20px;border-top:1px solid var(--line);padding-top:18px">
+        <h3 style="font-size:15px;margin-bottom:6px">📡 Monitor <span id="mon-host" style="word-break:break-all"></span> daily — free</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">We re-scan this site every morning. Free while in beta, no card required.</p>
         <form id="mon-form" style="display:flex;gap:8px;max-width:420px;margin:0 auto;flex-wrap:wrap;justify-content:center">
           <input type="email" id="mon-email" placeholder="you@yourcompany.com" required aria-label="Email address" style="flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;outline:none">
           <button type="submit" id="mon-btn" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Start daily monitoring →</button>

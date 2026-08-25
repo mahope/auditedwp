@@ -148,6 +148,26 @@ set_worker_secret "waitlist-eucomply" "$URL" "CHECKOUT_URL"
 echo "worker config: $(verify_config https://waitlist-eucomply.mahope-eeb.workers.dev/config)"
 echo "(note: QuickFormat page reads checkout_url from this config)"
 
+# ── ComplianceDocs INDIVIDUAL products → waitlist-eucomply via CHECKOUT_URLS_JSON.
+#    Each product page reads checkout_urls[productId] from the waitlist worker's /config.
+echo ""
+echo "== ComplianceDocs individual documents -> waitlist-eucomply =="
+DOCS=("dpa|DPA (Art.28 GDP|GDPR Data Processing Agreement (Art. 28)|A complete controller→processor DPA following GDPR Art. 28, with annex structure, sub-processor terms and EU-hosting clauses.|5900|Single copy"
+"nis2|NIS2/DORA Vendor |NIS2/DORA Vendor Clause Set|Audit-trail, incident-reporting and subcontractor clauses you can paste into any supplier contract.|4900|Single copy"
+"nda|Mutual NDA Clause|Mutual NDA Clause Set|Balanced mutual NDA including the no-client-contact and IP-clarity clauses agencies actually need.|2900|Single copy"
+"eaa|EAA Statement T|EAA Accessibility Statement Template|European Accessibility Act conformance statement template with required disclosures.|3900|Single copy"
+"reportk|Client Complian|Client Compliance Report Kit|Monthly/quarterly report templates + change-log format that make your maintenance work look audit-ready.|6900|Single copy")
+DOC_MAPS=""
+for doc in "${DOCS[@]}"; do
+  IFS='|' read -r slug name desc price <<< "$doc"
+  create_product "$name" "compliancedocs-$slug" "'$desc'" $price "Single copy"
+  VID=$(variant_id_for "$name")
+  URL=$(checkout_url_for "$VID" $price)
+  echo "checkout $slug: $URL"
+  DOC_MAPS="${DOC_MAPS}${slug}:${URL}|"
+done
+echo "waitlist-eucomply config: $(verify_config https://waitlist-eucomply.mahope-eeb.workers.dev/config)"
+
 # ── Ebook + ComplianceDocs bundle share devnotify-metrics via CHECKOUT_URLS_JSON.
 #    These products must NEVER fall back to another product's checkout URL, so
 #    they read a per-product map (checkout_urls) instead of the shared scalar.
@@ -166,6 +186,20 @@ create_product "ComplianceDocs Bundle" "compliancedocs-bundle" \
 BUNDLE_VID=$(variant_id_for "ComplianceDocs Bundle")
 BUNDLE_URL=$(checkout_url_for "$BUNDLE_VID" 14900)
 echo "checkout: $BUNDLE_URL"
+
+# Build the per-product map for waitlist-eucomply (5 docs + bundle)
+DOC_MAPS_JSON=$(python3 -c "
+import json, sys
+pairs = sys.argv[1].rstrip('|').split('|')
+m = {}
+for p in pairs:
+    k, v = p.split(':', 1)
+    m[k] = v
+m['bundle'] = sys.argv[2]
+print(json.dumps(m))
+" "$DOC_MAPS" "$BUNDLE_URL")
+set_worker_secret "waitlist-eucomply" "$DOC_MAPS_JSON" "CHECKOUT_URLS_JSON"
+echo "waitlist-eucomply config: $(verify_config https://waitlist-eucomply.mahope-eeb.workers.dev/config)"
 
 MAP_JSON=$(python3 -c 'import json,sys;print(json.dumps({"ebook":sys.argv[1],"bundle":sys.argv[2]}))' "$EBOOK_URL" "$BUNDLE_URL")
 set_worker_secret "devnotify-metrics" "$MAP_JSON" "CHECKOUT_URLS_JSON"

@@ -40,6 +40,7 @@
   <url><loc>https://auditedwp.pages.dev/de/was-ist-ein-impressum/</loc></url>
   <url><loc>https://auditedwp.pages.dev/blog/german-impressum-foreign-sellers/</loc></url>
   <url><loc>https://auditedwp.pages.dev/blog/do-you-need-a-refund-policy/</loc></url>
+  <url><loc>https://auditedwp.pages.dev/blog/best-free-gdpr-compliance-checkers-2026/</loc><lastmod>2026-08-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://auditedwp.pages.dev/blog/website-compliance-scanner-comparison/</loc></url>
   <url><loc>https://auditedwp.pages.dev/blog/woocommerce-gdpr-compliance-guide/</loc></url>
   <url><loc>https://auditedwp.pages.dev/blog/dora-compliance-guide/</loc></url>
@@ -139,4 +140,12 @@
   <url><loc>https://auditedwp.pages.dev/pro/vs-osano/</loc></url>
   <url><loc>https://auditedwp.pages.dev/pro/vs-termly/</loc></url>
   <url><loc>https://auditedwp.pages.dev/book/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/regex/</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://auditedwp.pages.dev/regex/cheat-sheet/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/regex/tutorial/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/compare/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/pricing/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/sample/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/template/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditedwp.pages.dev/how-it-works/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

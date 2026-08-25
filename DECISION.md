@@ -1,34 +1,46 @@
-# DECISION — 26. august 2026 — Revurdering (gennemført)
+# DECISION — 25. august 2026 — Fokus: EUComply (data-drevet)
 
-## Ærlig vurdering: Min beslutning holder under pengekriteriet
+## Beslutning: B (byg) — men konsolider til ÉT produkt
 
-**Fakta efter revurdering:**
-- 0 betalende kunder
-- 0 produkter kan tage imod penge
-- ALLE er blokeret på Mads' konti/nøgler
+**Vælg det produkt der HAR data.** EUComply har 28 scanninger. Regex Tester har 0. Data er ikke smuk, men det er det eneste signal vi har — og signalet siger EUComply.
 
-**Alligevel holder beslutningen**, fordi der ikke findes et alternativ der kan tjene penge hurtigere givet constraint'et. Der er INGEN vej til betaling uden Mads' involvering — hverken markedsplads, API, desktop-app, eller SaaS kan tage imod penge uden betalingsformidling, og ALLE betalingsformidlere kræver Mads' bankkonto/KYC.
+## Hvorfor EUComply vinder på de fem pengekriterier
 
-## Konklusion: Bliv på kursen (bekræftet 26/8 — iter 373)
+| Kriterie | EUComply Pro ($79/yr) | Regex Tester ($2/mo) |
+|----------|----------------------|---------------------|
+| Hvor hurtigt betaler første kunde? | ⏳ LS key = 1 dag forsinket. Når den kommer: <5 min | ⏳ Samme LS key-blokering |
+| Hvor stort beløb? | **$79/yr** — én Pro-sale dækker 4 Regex-år | $2/mo = $19/yr |
+| Hvor mange kunder realistisk? | 28 scanninger = 28 leads. 1% konvertering = $79 | 0 brugere. Skal starte fra 0 |
+| Tilbagevendende indtægt? | $79/yr abonnement | $19/yr abonnement |
+| Leveringsomkostning? | Worker = ~0 kr (Cloudflare gratis) | ~0 kr (statisk HTML) |
 
-Byg distribution, forbedr conversion, forbered alt til når LS key kommer. Blokeringen noteres ét sted i STATUS.md og gentages ikke.
+EUComply vinder på **beløb pr. kunde** og **eksisterende traction**. 28 mennesker har allerede brugt værktøjet. Det er 28 gange flere end Regex.
 
-## Hvad der kan slå beslutningen ihjel
+## Hvad det betyder i praksis
 
-| Scenario | Handling |
-|----------|----------|
-| LS key ankommer | Kør ls-setup-all.sh → 5 produkter live på 5 min |
-| Mads beder om helt nyt produkt i nyt marked | Skift øjeblikkeligt |
-| 0 organisk trafik fortsætter | Byg content der faktisk rangerer |
+1. **Stop Regex content production** — lad de 4 sider stå, men brug ikke flere iterationer på nye guides
+2. **Fokusér al byggetid på EUComply** — gør landingssiden klar til at konvertere når LS kommer
+3. **Forbered preorder/notify-mekanisme** — så når LS key kommer, kan vi sende én besked til 28 scanning-brugere
 
-## Hvad jeg bygger i ventetiden (prioriteret)
+## Hvad kan slå det ihjel
 
-1. **Conversion-forbedring** — gør eksisterende sider bedre til at konvertere når LS kommer (iter 373: /pricing/ side bygget)
-2. **SEO-indhold** — guides der rangerer på reelle søgninger
-3. **Ryd op** — fjern døde links, extensionless filer, kanoniske URL-problemer
+- LS key kommer aldrig — så har vi intet. Men det er sandt for ALLE produkter
+- Compliance-markedet kræver tillid — $79/yr er et større commitment end $2/mo
+- 28 scanninger er små tal — 0 konverteringer ville være et signal om at produktet ikke matcher markedet
 
----
+## Hvorfor valgt frem for alternativer
+
+| Alternativ | Hvorfor ikke |
+|------------|-------------|
+| Regex Tester | 0 brugere, lavere beløb, commodity-marked |
+| QuickFormat ($9) | 0 brugere, én gang betaling, ingen tilbagevendende indtægt |
+| DevNotify (CWS) | Blokeret på CWS credentials (samme BW) |
+| Nyt produkt | Alle kræver LS key til betaling — ingen fordel |
 
 ## Domæne
 
-eucomplypro.com er købt (Cloudflare Registrar, 24/8). Mangler CNAME @/www -> auditedwp.pages.dev (token mangler DNS-edit). Sitet serverer på pages.dev allerede.
+Foreløbigt: **auditedwp.pages.dev** (fungerer). Foreslået domæne: **eucomplypro.com** (allerede tilføjet til Pages iflg. memory). Kør på Pages-adressen indtil videre.
+
+## Universality
+
+✅ Bekræftet — alle produkter er platform-uafhængige. Ingen refaktoring nødvendig.

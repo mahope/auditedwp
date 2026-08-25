@@ -1,35 +1,54 @@
-# STATUS — Iteration 383 — 25. august 2026 (aften)
+# STATUS — Iteration 387 — 26. august 2026
 
-## Universality-vurdering: ✅ OPFYLDT (bekræftet igen)
-Kernen (`worker-core.js` / scan-API) tager enhver URL og er live-testet på Shopify, Webflow, apple.com, Stripe, Squarespace. WordPress-plugin, CLI, extension er indpakninger. Ingen refaktoring nødvendig.
+## Universality-vurdering (punkt 1): ✅ OPFYLT — intet ombygningsarbejde
 
-## Færdigt i denne iteration
+Kernen er scan-workeren (`eucomply-scan.mahope-eeb.workers.dev`). Den tager en
+almindelig URL og virker uanset CMS. Verificeret i denne iteration:
 
-| # | Ting | Resultat |
-|---|------|----------|
-| 1 | Fundet brudt løfte: site + README lovede `npm install -g eucomply-scanner`, men pakken findes IKKE på npm — besøgende fik 404 | Retttet |
-| 2 | Verificeret at `npx github:mahope/eucomply-scanner <url>` virker (ægte test mod example.com) | ✓ |
-| 3 | /cli-siden opdateret til den virkende kommando + deployet og verificeret live | ✓ |
-| 4 | GitHub-repo README rettet til samme kommando; pushet (commit dbd7b15) og verificeret på raw.githubusercontent | ✓ |
-| 5 | Domæne-diagnose: eucomplypro.com købt og aktivt i Cloudflare, Pages-domain tilføjet men **pending** — CNAME mangler | Se blokering |
+- Ingen WordPress-specifik logik i kernen; platform-fingerprint er kun en detektion
+- Indpakninger omkring samme kerne: web-scanner (/scan), CLI (npx github:),
+  browser-extension, watch/dashboard worker
+- Konklusion: kernen ER universel. Det vi har bygget beholdes som indpakninger.
 
-## Ærlige tal
+## Beslutningen under pengekriteriet: STÅR VED MAGT
+
+Revurderet mod de fem pengekriterier (første betaling, beløb, reach,
+tilbageværende, leveringsomkostning). EUComply Pro $79/yr vinder stadig:
+højeste beløb pr. kunde, tilbagevendende, ~0 kr drift. Alle andre produktidéer
+er blokeret på samme Lemon Squeezy-nøgle, så ingen fordel ved at skifte.
+
+## Ærlige tal (0 er 0)
 
 | Måling | Værdi |
 |--------|-------|
 | Betalende kunder | **0** |
-| Ægte eksterne scanninger | **0** (/stats bekræftet i dag) |
-| Waitlist (Pro) | **2** |
-| Google-indekserede sider | **0** |
+| Ægte eksterne scanninger | **0** |
+| Google-indekserede sider | ~0 (IndexNow genindsendt) |
+| Waitlist (test-adresser frasorteret) | 0 |
+
+## Hvad blev gjort i denne iteration
+
+| # | Opgave | Status |
+|---|--------|--------|
+| 1 | Universality-vurdering af kernen | ✅ OPFYLT |
+| 2 | Gennemgang af købsrejsen /pro/ + /pricing/ + scan→upsell-tragt | ✅ Fundet stærk |
+| 3 | Fejl fundet og rettet: pricing sagde "7-day scan history", /pro/ lover 30 dage → rettet til "30-day scan history & change log" | ✅ Deployet og verificeret live |
+| 4 | IndexNow genindsendt: alle 152 URLs til api.indexnow.org + Bing (begge HTTP 200) | ✅ |
+| 5 | Link-check af kerne-sider (/ , /pro/, /scan/, /pricing/, sample-report, PDF, dashboard, vs-sider, store, privacy, terms, extension, how-it-works) | ✅ Alle 200 |
+| 6 | robots.txt + sitemap verificeret (152 URLs, key-file 200) | ✅ |
+
+## Prioritering fremad (efter Mads' rækkefølge)
+
+Punkt 1-2 (besøgende→betaling + produkt) er gennemgået og solide.
+Flaskehallet er punkt 3: TRAFIK. 0 ægte scanninger = ingen når siden.
+
+1. Få indeksering igennem (IndexNow nu genindsendt — overvåg næste uger)
+2. Mere guide-indhold med søgevolume (GDPR/NIS2/EAA per platform)
+3. Når LS-key lander: `bash scripts/ls-setup-all.sh` → checkout < 5 min
 
 ## Blokeringer (én linje hver)
 
-1. **eucomplypro.com CNAME:** Cloudflare-tokenet har zone+Pages, men **mangler DNS-edit**-tilladelse → CNAME `eucomplypro.com → auditedwp.pages.dev` kan ikke oprettes af mig. Mads (eller Claude): tilføj CNAME records for `@` og `www` i Cloudflare-dashboardet under eucomplypro.com.
-2. **LS API key** i Bitwarden — blokerer checkout for alle produkter.
-3. **npm-udgivelse:** hverken npm-login eller GitHub Packages write-adgang. Fix: Mads kører `gh auth refresh -h github.com -s write:packages` én gang (eller deler en npm-token via Bitwarden). Ikke kritisk — npx github:-kommandoen virker.
-
-## Næste skridt
-
-1. CNAME sættes → domænet går live automatisk (certifikat udstedes selv)
-2. LS key kommer → `bash ls-setup-all.sh` → checkout live < 5 min
-3. Distribution fortsætter: flere gratis kataloger/alternativ-sider hvor scanneren kan nævnes (klargjort, venter på Mads' ja før noget der rammer andre)
+1. LS API key i Bitwarden → blokerer checkout for ALLE produkter
+2. eucomplypro.com CNAME: mangler DNS-edit i Cloudflare-tokenet
+3. npm-udgivelse: mangler write-token (npx github: fallback virker)
+4. Chrome CWS udgivelse: mangler credentials

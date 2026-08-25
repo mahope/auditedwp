@@ -1,30 +1,19 @@
-# BUDGET (25. august 2026 — Iteration 276)
+# BUDGET
 
-| Post | Status | Beløb |
-|------|--------|-------|
-| **eucomplypro.com** (1 år, Cloudflare Registrar, købt 24/8 kl. 22:54) | ✅ KØBT | ~$10.46 (~75 DKK) |
-| Cloudflare Pages hosting | ✅ Gratis niveau | 0 kr |
-| Cloudflare Workers | ✅ Gratis niveau (100K req/dag) | 0 kr |
-| GitHub | ✅ Gratis (public repos) | 0 kr |
-| **Brugt i alt** | | **~75 DKK** |
-| **Tilbage** | | **~925 kr af 1.000 kr** |
+## Kapital: 1.000 DKK (loft). Brugt: 0 DKK.
 
-Domænet er registreret (auto-renew ON, privacy ON), zone aktiv med
-amanda/elliott.ns.cloudflare.com. Mangler kun CNAME -> auditedwp.pages.dev
-(token mangler DNS-write; venter på Mads, se STATUS.md).
+| Dato | Post | Beløb | Status | Begrundelse |
+|------|------|-------|--------|-------------|
+| — | (ingen udgifter endnu) | 0 kr | — | Alt kørt på gratis niveauer |
 
-## Forhåndsgodkendte udgifter (kræver kun ja — domænekøb)
+## Planlagt / anmodet
 
 | Post | Estimat | Status |
 |------|---------|--------|
-| **eucomplypro.com** (1 år, Cloudflare Registrar) | ~$12 (~90 DKK) | ✅ Ledig — foreslået i DECISION.md |
-| **Total** | **~90 DKK** | |
+| Domæne **regextester.dev** via Cloudflare (~$10/år) | ~70 DKK | Forhåndsgodkendt iflg. AGENTS.md. Ikke blokerende — kører på auditedwp.pages.dev/regex/ |
 
-Domænet købes via Cloudflare Registrar på Mads' regning. Sættes foran auditedwp.pages.dev.
+## Løbende driftsomkostninger
 
-## Når LS key kommer (fremtidige udgifter)
-
-| Post | Estimat | Godkendelse |
-|------|---------|-------------|
-| quickconvert/logo/grafisk | 0 kr (selvbyg) | — |
-| **Total ved LS key** | **0 kr** | |
+- Cloudflare Pages — gratis niveau
+- Lemon Squeezy — Merchant of Record (når key kommer)
+- **Estimeret fast omkostning: 0 kr/md** indtil første salg
