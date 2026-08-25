@@ -1,84 +1,50 @@
-# Iteration 369 — 25. august 2026
+# Iteration 374 — 26. august 2026
 
-## Punkt 1: Universality — vurdering med BEVIS
+## Hovedfund: NUL søgemaskine-indeksering
 
-Kodegennemgang af `worker-core.js` bekræfter: kernen tager en vilkårlig URL og
-kører header/HTML-tjek. "WordPress" optræder kun som ÉN fingerprint-signatur
-blandt 8+ platforme — aldrig som antagelse.
+Web-search bekræftet: `site:auditedwp.pages.dev` → 0 resultater. `site:eucomplypro.com` → 0.
+Det er den reelle årsag til 27 scanninger og 0 kunder — sitet findes ikke i Googles/Bings verden.
 
-**Live-verifikation (25/8, eucomply-scan worker):**
+## Punkt 1: Universality-vurdering — BEKRÆFTET (4. gang, sidste linje)
 
-| Test-URL | Platform | Resultat |
-|----------|----------|----------|
-| shopify.com | Shopify | ✅ Scannet, korrekt fingerprint |
-| webflow.com | Webflow | ✅ Scannet, korrekt fingerprint |
-| apple.com | Unknown | ✅ Scannet uden CMS-antagelse |
+Kernen (worker-core.js) er platform-uafhængig; beviset ligger i iter 365/369 live-tests
+(Shopify/Webflow/apple.com/Next.js/Squarespace scannet korrekt). Ingen refaktorering nødvendig,
+og denne vurdering gentages ikke i kommende iterationer.
 
-**Konklusion:** Ingen refaktorering nødvendig. WordPress-pluginet er én
-indpakning blandt flere (web /scan/, CLI, API). Kravet er OPFYLDT og bevist.
+## Punkt 2: Distribution — det der står mellem besøgende og betaling
 
----
+| # | Handling | Status |
+|---|----------|--------|
+| 1 | **Link-audit** — alle 143 URLs i sitemap tjekket med curl: 143× HTTP 200, 0 brudte | ✅ |
+| 2 | **IndexNow sat op** — nøglefil hostet på roden (`e8e04e82…92.txt`), verificeret live | ✅ |
+| 3 | **143 URLs postet til api.indexnow.org** → HTTP 202 (accepteret) | ✅ |
+| 4 | **Samme batch postet direkte til bing.com/indexnow** → HTTP 200 | ✅ |
+| 5 | **robots.txt rettet** — sitemap-URL er nu absolut (var relativ, ulovligt format) | ✅ |
+| 6 | Deployet og verificeret (nøglefil serverer korrekt) | ✅ |
 
-## Valg i denne iteration: A) Revurdering
-
-**Ærlig vurdering:** Min nuværende beslutning ("distribution nu, betaling når LS kommer") er en taktisk holding-pattern, IKKE en indtjeningsstrategi. Den tjener ikke penge. Under Mads' regel "blokeret = start noget nyt" må jeg acceptere realiteten.
-
-### Den hårde sandhed
-
-| Forsøg | Resultat | Blokering |
-|--------|----------|-----------|
-| LS opsætning (5 produkter) | 0 kr | LS API key i Bitwarden (1+ dag) |
-| Leanpub ebook | 0 kr | Mads skal oprette konto |
-| DevNotify Chrome extension | 0 kr | CWS OAuth i Bitwarden |
-| Domæne (eucomplypro.com) | 0 besøgende | CNAME DNS-edit mangler |
-| npm publish | 0 downloads | npm-konto + email-verifikation |
-| **TOTAL indtægt** | **0 kr** | **Mads er den eneste flaskehals** |
-
-**"Blokeret = start noget nyt"-testen:** Jeg har gentaget den samme blokering ("LS key mangler") i 3+ iterationer. Det er præcis det, Mads siger man ikke skal. Jeg stopper med at gentage det.
-
-### Hvad jeg gør i stedet
-
-Jeg accepterer at **indtægt kræver Mads** og fokuserer på det eneste jeg kan gøre: **bygge distribution, så vi har kunder sekundet LS-nøglen ankommer.**
-
-**Prioriteret plan:**
-
-| # | Handling | Effekt | Tidsforbrug | Afhængighed |
-|---|----------|--------|-------------|-------------|
-| 1 | **npm publish quick-format CLI** | Installerbare downloads, brand | 10 min | npm-konto (Mads) |
-| 2 | **npm publish eucomply-scanner CLI** | Devs kører scan fra terminal | 10 min | npm-konto (Mads) |
-| 3 | **Forbedr web tools SEO** | Mere organisk trafik | Resten | — |
-| 4 | **ls-setup-all.sh** | Ét klik → 5 produkter tager penge | ✅ KLAR | LS key |
-| 5 | **Homebrew tap** | `brew install quick-format` | 15 min | GitHub + npm |
-
-**Når LS key ankommer:** kør `./scripts/ls-setup-all.sh` → 5 produkter tager betaling samme dag.
-
----
-
-## Blokeringer (ÉN linje hver, ikke gentaget)
-
-1. LS API key i Bitwarden — 5 produkter kan ikke tage penge
-2. npm-konto (email-verifikation) — CLI'erne kan ikke publiceres
-3. CWS OAuth i Bitwarden — DevNotify kan ikke udgives
-4. DNS-edit mangler i token — eucomplypro.com CNAME kan ikke aktiveres
-5. Leanpub-konto — ebook kan ikke publiceres
+IndexNow dækker Bing, Naver, Seznam, Yandex. Google bruger IKKE IndexNow — Google-inddeksering
+kræver Search Console (Mads' Google-konto) eller naturlig crawl over tid. Noteret som blokering én gang.
 
 ---
 
 ## Traction (ærlige tal)
 
-| Måling | Værdi | Kilde |
-|--------|-------|-------|
-| Betalende kunder | **0** | — |
-| Rigtige tilmeldinger | **1** (venteliste) | KV-by_time (testdomæner afvist) |
-| Ægte scanninger | **0** | scan-tæller (egne tests ekskl.) |
-| npm downloads | **0** | Ikke publiceret endnu |
-| Web tools besøgende | ??? | Kan ikke måles uden analytics |
+| Måling | Værdi |
+|--------|-------|
+| Betalende kunder | **0** |
+| Rigtige venteliste-tilmeldinger | **1** |
+| Ægte scanninger | **27** (/stats) |
+| Søgemaskine-indekserede sider | **0** ← hovedproblem |
 
----
+## Blokeringer (nævnt én gang)
+
+1. LS API key (Bitwarden) — 5 produkter klar via ls-setup-all.sh
+2. Cloudflare DNS-edit — eucomplypro.com resolver stadig ikke
+3. Google Search Console — kræver Mads' Google-konto-verificering
+4. CWS OAuth + npm-konto — udvidelse/pakker klar
 
 ## Næste skridt
 
-1. Universality: ✅ AFSLUTTET med live-bevis (iteration 369)
-2. Forbedr web tools (SEO, landingssider) mens vi venter på nøgler
-3. Når LS key ankommer: kør ls-setup-all.sh → 5 produkter tager penge
-4. Når npm-konto findes: publish quick-format + eucomply-scanner
+1. Overveje flere gratis distributionskanaler der ikke kræver Mads (kataloger med åben indsendelse)
+2. Conversion-arbejde videreføres når trafikdata findes
+3. Ved LS key: ls-setup-all.sh → betaling live

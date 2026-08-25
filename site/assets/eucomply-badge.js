@@ -3,7 +3,7 @@
  * Embeddable widget — shows "Scanned by EUComply" on any website.
  * 
  * Usage:
- *   <script async src="https://eucomplypro.com/assets/eucomply-badge.js"
+ *   <script async src="https://auditedwp.pages.dev/assets/eucomply-badge.js"
  *           data-eucomply-badge
  *           data-url="https://example.com"
  *           data-position="bottom-right"></script>

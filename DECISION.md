@@ -1,61 +1,34 @@
-# DECISION — 25. august 2026 (aften) — Revurdering
+# DECISION — 26. august 2026 — Revurdering (gennemført)
 
-## Ærlig vurdering: Min beslutning tjener ikke penge — den er en holding pattern
+## Ærlig vurdering: Min beslutning holder under pengekriteriet
 
-**Fakta:** Efter 3+ iterationer med "distribution nu, betaling når LS kommer" har jeg:
+**Fakta efter revurdering:**
 - 0 betalende kunder
-- 0 rigtige scanninger  
-- 0 npm downloads
-- 5 produkter der alle er klar til betaling, men blokeret på Mads
+- 0 produkter kan tage imod penge
+- ALLE er blokeret på Mads' konti/nøgler
 
-**Under "blokeret = start noget nyt" må jeg acceptere:** Jeg har gentaget den samme blokering for mange gange. Det stopper her.
+**Alligevel holder beslutningen**, fordi der ikke findes et alternativ der kan tjene penge hurtigere givet constraint'et. Der er INGEN vej til betaling uden Mads' involvering — hverken markedsplads, API, desktop-app, eller SaaS kan tage imod penge uden betalingsformidling, og ALLE betalingsformidlere kræver Mads' bankkonto/KYC.
 
-## Revurderingens konklusion
+## Konklusion: Bliv på kursen (bekræftet 26/8 — iter 373)
 
-**Jeg kan ikke tjene én krone uden Mads' handling.** Perioden. Det gælder:
-- Alle produkter (kræver LS key i Bitwarden)
-- Alle markedspladser (kræver KYC, payout-konti)
-- Alle annoncer/sponsorater (kræver Mads' godkendelse)
-- Alt salg (kræver betalingsformidling kun Mads kan sætte op)
+Byg distribution, forbedr conversion, forbered alt til når LS key kommer. Blokeringen noteres ét sted i STATUS.md og gentages ikke.
 
-## Hvad jeg gør i stedet — to spor
+## Hvad der kan slå beslutningen ihjel
 
-### Spor A: Distribution klar til LS (fortsat, reduceret)
-Forbered alt så vi har kunder sekundet LS key ankommer.
+| Scenario | Handling |
+|----------|----------|
+| LS key ankommer | Kør ls-setup-all.sh → 5 produkter live på 5 min |
+| Mads beder om helt nyt produkt i nyt marked | Skift øjeblikkeligt |
+| 0 organisk trafik fortsætter | Byg content der faktisk rangerer |
 
-| Handling | Status | Hvornår |
-|----------|--------|---------|
-| npm publish quick-format CLI | 🔄 Forberedt, venter npm-konto | Når Mads opretter |
-| npm publish eucomply-scanner CLI | 🔄 Forberedt, venter npm-konto | Når Mads opretter |
-| ls-setup-all.sh (5 produkter) | ✅ KLAR | Når LS key kommer |
-| Web tools SEO | 🔄 Løbende | Nu |
+## Hvad jeg bygger i ventetiden (prioriteret)
 
-### Spor B: Find en indtægtskilde der IKKE kræver Mads
-**Den eneste mulighed:** Byg noget der kan sælges på en markedsplads hvor Mads ALLEREDE har en konto.
-
-Mads har bekræftet:
-- **Lemon Squeezy-konto** (mads@mahope.dk) — ✅ men key i Bitwarden
-- **Chrome Web Store-udviklerkonto** — ✅ men OAuth i Bitwarden
-- **Cloudflare-konto** — ✅ men token mangler DNS-edit
-
-**REALITETSTJEK:** Der er INTET jeg kan gøre uden at vente på Mads' nøgler/konti. Men jeg skal stoppe med at rapportere den samme blokering iteration efter iteration.
-
-### Endelig beslutning: Byg distribution + forbedr web tools
-Indtil Mads siger noget andet, eller nøglerne ankommer, bygger jeg:
-1. Bedre web tools til organisk SEO-trafik
-2. Blog-indhold der trækker folk til
-3. Klargør npm-pakker til publish
+1. **Conversion-forbedring** — gør eksisterende sider bedre til at konvertere når LS kommer (iter 373: /pricing/ side bygget)
+2. **SEO-indhold** — guides der rangerer på reelle søgninger
+3. **Ryd op** — fjern døde links, extensionless filer, kanoniske URL-problemer
 
 ---
 
 ## Domæne
 
-eucomplypro.com er købt (Cloudflare Registrar, 25/8). Mangler CNAME @/www -> auditedwp.pages.dev (token mangler DNS-edit). Sitet serverer på pages.dev allerede.
-
----
-
-## Hvad der kan slå beslutningen ihjel
-
-- LS key ankommer → skulle have ventet på den istedet for at pudse SEO
-- Mads vil hellere have jeg bygger et helt nyt produkt i et andet marked
-- Ingen besøgende på web tools → spildt tid på SEO
+eucomplypro.com er købt (Cloudflare Registrar, 24/8). Mangler CNAME @/www -> auditedwp.pages.dev (token mangler DNS-edit). Sitet serverer på pages.dev allerede.
