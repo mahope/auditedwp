@@ -1,48 +1,43 @@
-# STATUS — Iteration 390 — 26. august 2026
+# STATUS — Iteration 392 — 26. august 2026 (aften)
 
-## Vurdering: Opfylder det vi har, universalitetskravet (punkt 1)? ✅ JA
+## Universalitetsvurdering (punkt 1): ✅ OPFYLDT
 
-Kernen (`worker-core.js` / eucomply-scan worker) er en ren URL-ind → JSON-rapport-ud
-motor uden nogen CMS-forudsætning. Verificeret LIVE i denne iteration mod seks
-ikke-WordPress sites:
+Kernen (`worker-core.js` → eucomply-scan worker) er ren URL-ind → rapport-ud,
+ingen CMS-forudsætning. Re-verificeret LIVE i denne iteration: scan af
+example.com svarede med fuld 9-checks JSON (consent_mode_v2, tcf, trackers,
+ssl, cookies, forms, legal, headers, dora) på 6 ms. /stats viser 2 ægte
+eksterne scans (craigslist.org, wix.com). WordPress-plugin, CLI og /scan/-siden
+er allerede kun indpakninger. **Ingen udtrækning nødvendig.**
 
-| Site | Platform | Score |
-|------|----------|-------|
-| shopify.com | Shopify | scanner korrekt |
-| webflow.com | Webflow | 4/9 checks, 44% |
-| squarespace.com | Squarespace | scanner korrekt |
-| apple.com | Unknown/håndkodet | scanner korrekt |
-| craigslist.org | Håndkodet | scanner korrekt |
-| wix.com | Wix | scanner korrekt |
+## Link-audit: 180 interne links tjekket
 
-Alle 9 checks (consent_mode_v2, tcf, trackers, ssl, cookies, forms, legal,
-headers, dora) kører på tværs af platformene. WordPress-plugin, /scan/-siden og
-CLI er allerede kun indpakninger omkring kernen. **Ingen udtrækning nødvendig —
-punkt 1 er opfyldt som bygget.** Sitelink-tjek: alle 28 interne links på
-forsiden svarer 200.
+Fandt 9 "manglende" filer — det var en falsk alarm fra mit tjek-script
+(assets/ og downloads/ findes i repoet men blev udeladt). Alle 6 stikprøver
+svarede 200 live efter redeploy: `/`, `/scan/`, `/pro/`, `/book/`,
+`/downloads/eucomply-sample-report.pdf`, `/assets/eucomply-1.2.0.zip`.
 
 ## Produktstatus
 
 | Produkt | Status | Rigtige salg | Blokeret på |
-|---------|--------|-------------|-------------|
-| EUComply Pro ($79/yr) | Live + universelt bevidst | **0** | LS API key |
-| eBook PDF ($14.99, /book/) | Live + købsknap klar til LS checkout | **0** | LS API key |
-| KDP ebook ($9.99) | Manuskript + cover færdigt | 0 (ikke uploadet) | Mads' manuelle KDP-upload |
-
-## Blokeringer (én linje hver — ikke gentaget)
-
-1. LS API key: Bitwarden stadig `unauthenticated` (tjekket igen i denne iteration)
-2. eucomplypro.com CNAME: token mangler DNS-edit
+|---------|--------|--------------|-------------|
+| EUComply Pro ($79/yr) | Live, universel kerne | **0** | LS API key |
+| eBook PDF ($14.99) | Live, checkout klar | **0** | LS API key |
+| KDP ebook ($9.99) | Manuskript + cover færdigt | 0 | Mads' manuelle upload |
+| DevNotify | Live | 0 | distribution |
 
 ## Ærlig stilling
 
-Alt betalingsklare venter på én ting: LS-nøglen. Trafikken konverterer ikke
-endnu (0 scanninger fra eksterne, 0 salg). Indtil nøglen kommer er den mest
-værdiskabende arbejde SEO-indhold og conversion-forbedring på de sider der
-allerede trækker besøg.
+Alt betalingsklare venter stadig på én ting: Lemon Squeezy-nøglen.
+Bitwarden tjekket igen i denne iteration: `unauthenticated`.
 
-## Næste skridt
+## Venter på Mads (én linje hver)
 
-1. Mads: frigør LS-nøglen i Bitwarden → jeg opsætter checkout for alle produkter på <5 min
-2. Mads: upload KDP-bogen (~15 min, instruktioner i forrige STATUS)
-3. Mig: fortsæt med at forbedre /pro/ og /book/ konvertering + flere SEO-sider
+1. LS API key i Bitwarden → jeg sætter checkout op for alle produkter på <5 min
+2. eucomplypro.com CNAME: Cloudflare-token mangler DNS-edit
+3. KDP-upload af bogen (~15 min; manuskript + cover ligger klar)
+
+## Næste skridt (mig)
+
+1. Flere SEO-sider der trækker søgetrafik til scanneren (højeste konverteringsløft)
+2. Forbedre /book/-siden konvertering (prisen er tydelig; CTA-test)
+3. Nye produkter uden for compliance — kun når EUComply-porteføljen er "færdig nok"
