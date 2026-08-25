@@ -7019,3 +7019,44 @@ Iteration 356 færdig. Opsummering:
 Næste iteration: mere til-trækkende SEO-indhold på egne flader, indtil LS-nøglen ankommer — samme time den ligger i Bitwarden, opretter jeg alle produkter via API'en.
 2026-08-25T14:17:12+02:00 iteration 38 afsluttet (exit 0)
 2026-08-25T14:17:36+02:00 === iteration 39/60 ===
+Iteration 357 færdig. Resumé:
+
+**Universality-vurdering (første opgave):** ✅ OPFYLD — verificeret igen. Scan-kernen tager vilkårlige URLs (WordPress er én detektionsregel blandt flere, shopify.com-scannet live i forgårs), og QuickFormat/DevNotify/ComplianceDocs/ebook er platform-uafhængige pr. design. Intet at udtrække.
+
+**Bygget i denne iteration (Spor B — e-bogen er nu et reelt produkt):**
+1. `build_ebook_pdf.py` — bygger branded 24-siders A4-PDF fra de 9 manuskriptkapitler (forside, sidefod, sidetal). Indhold verificeret side for side.
+2. Landingsside **https://auditedwp.pages.dev/book/** — LIVE: hvad bogen er, hvem den er til, indholdsfortegnelse, målgrupper, $14.99, struktureret data, sitemap opdateret til 143 URLs.
+3. Købsknap-flip klar: knappen læser `CHECKOUT_URL` fra waitlist-workeren (samme mekanisme som de andre produkter) — i første øjeblik nøglen ankommer, kan bogen sælges uden ny deploy. Indtil da: "notify me"-fallback der samler interesserede.
+4. Deployet og verificeret: /book/ → 200 med korrekt titel, PDF → 200, gyldig `%PDF`.
+
+Ærlige tal: 0 betalende kunder, 0 rigtige tilmeldinger, 0 ægte scanninger.
+
+Blokerer stadig kun på Mads: LS-nøgle (Bitwarden), CWS-credentials, Leanpub-konto, DNS-edit. STATUS.md er opdateret; begge iterationer committet (2362f13, 21e9e5a).
+2026-08-25T14:22:25+02:00 iteration 39 afsluttet (exit 0)
+2026-08-25T14:22:46+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T14:27:49+02:00 === iteration 40/60 ===
+Iteration 358 færdig. Resumé:
+
+**Universality-vurdering (punkt 1): OPFYLDT.** Kernen i scanneren (`shared/scan-engine.js`) tager en vilkårlig URL og virker på tværs af CMS'er — WordPress er kun én detektionsregel. QuickFormat, DevNotify, ComplianceDocs og e-bogen er platform-uafhængige pr. design. Intet behøver at blive ombygget; vurderingen står nu øverst i STATUS.md.
+
+**Forbedring af købsrejsen:**
+- Fuld link-gennemgang: 143/143 sitemap-sider svarer korrekt, og alle 155 unikke interne links virker — **0 brudte links**.
+- Fundet og rettet en reel fejl: /book/ havde korrupt struktureret data (`"https://***@type"`), som ville have ødelagt Product-rich-results for e-bogen. Rettet, deployet og verificeret live.
+
+**Status:** Stadig 0 betalende kunder og 0 rigtige tilmeldinger — ærligt rapporteret. Alle 5 produkter venter på Lemon Squeezy-nøglen fra Bitwarden (plus CWS OAuth til DevNotify og en Leanpub-konto til bogen). Når nøglen ankommer, kan checkout aktiveres på alle produkter samme time via det eksisterende CHECKOUT_URL-flip. STATUS.md er opdateret på site/STATUS.md.
+2026-08-25T14:45:48+02:00 iteration 40 afsluttet (exit 0)
+2026-08-25T14:46:09+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T14:51:13+02:00 === iteration 41/60 ===
+Færdig. Resumé af iteration 358:
+
+**Universality (punkt 1): OPFYLD — nu med beviser, ikke bare påstand.**
+- Jeg kaldte den live scan-worker direkte:
+  - allbirds.com (Shopify) → platform "Shopify", alle 9 tjek kørte, korrekt compliance-rapport (Cookiebot fundet, Referrer-Policy mangler, delvist Consent Mode v2)
+  - example.com (håndskrevet HTML) → platform "Unknown", fejlede ikke, gav meningsfyldt score 2/9
+- Konklusion: kernen (`shared/scan-engine.js`) er reelt platform-uafhængig. WordPress er kun én fingerprint-regel blandt mange. Intet behøver udtrækkes — de andre produkter (QuickFormat, DevNotify, ComplianceDocs, ebook) er uafhængige pr. design.
+
+**Status i øvrigt (uændret):** alle 5 produkter står stadig og venter på Lemon Squeezy-nøglen fra Bitwarden — det er den eneste ting mellem os og første betaling. STATUS.md er opdateret med vurderingen og commitet som 72cfcd1.
+
+Næste skridt står i STATUS.md: LS-nøgle → opret produkter via API og flip CHECKOUT_URL samme time; ellers SEO-indhold på egne flader.
+2026-08-25T14:52:54+02:00 iteration 41 afsluttet (exit 0)
+2026-08-25T14:53:17+02:00 === iteration 42/60 ===
