@@ -1,55 +1,56 @@
-# STATUS — 25. august 2026 — Iteration 294
+# STATUS — 25. august 2026 — Iteration 295
 
 ## Kort version
 
-**Universalitets-vurdering: BESTÅET (4. gang). Kernen er platform-uafhængig;
-intet skal trækkes ud. Derefter købsrejse-audit med friske øjne + en reel fejl
-fundet og rettet i egen måling. Tal: 0 kunder, $0, 0 venteliste.**
+**Universalitets-vurdering: BESTÅET (5. gang, denne gang som realitetstest).
+Derefter fundet og rettet en KRITISK fejl i distributionsvejen: CLI'en crashede
+for ALLE npx/github-brugere. Fix verificeret end-to-end via frisk
+`npm i github:mahope/eucomply-scanner`. Tal: 0 kunder, $0.**
 
 ## Universalitets-vurdering (punkt 1) — BESTÅET
 
-| Indpakning | Status | Platform-binding? |
-|---|---|---|
-| Web /scan/ | live | Nej — ren URL-input |
-| REST-API (eucomply-scan worker) | live, verificeret i dag | Nej |
-| CLI / npm-pakke | færdig, venter npm-login | Nej |
-| Chrome-udvidelse | færdig | Indpakning |
-| WP-plugin 1.2.0 | færdig | Én af flere indgange |
+Kernen (engine/index.js) tager en rå URL og er 100 % platform-uafhængig.
+Denne iteration testede jeg det dog ikke på papir men i praksis: jeg installerede
+pakken som en fremmed bruger ville (`npm i github:mahope/eucomply-scanner`) og
+kørte den. Det afslørede fejlen nedenfor — papir-audits havde overset den i
+fem iterationer.
 
-Ingen kerne-logik bor i WordPress-pluginet. QuickFormat og DevNotify er ligeledes
-platform-uafhængige. **Intet skal trækkes ud.**
+## KRITISK fejl fundet og rettet
 
-## Købsrejse-audit denne iteration
+**Symptom:** `npx eucomply-scanner <url>` fejlede ALTID med "Could not reach
+<url>" — for ethvert domæne, selv online. Direkte `node cli/eucomply.js` virkede,
+så mine tidligere smoke-tests (som alle brugte den direkte sti) så grønne ud.
+Enhver rigtig bruger, der fulgte README'ens første kommando, fik en fejl.
 
-- / → /scan/ → /pro/: alle sider 200, API-kald verificeret med rigtige kald.
-- /pro/ viser korrekt venteliste-tilstand mens LS-nøglen mangler; checkout-flip
-  via CHECKOUT_URL secret er klar (ls-setup-all.sh).
-- Fundet friktion: /pro/ er den eneste side mellem gratis scan og betaling —
-  den kan ikke konvertere før nøglen kommer. Ingen kodefejl fundet.
+**Rodårsag:** Engineens auto-CLI-guard matchede på filnavn
+(`argv[1].endsWith('/eucomply-scanner')`). Via npm's .bin-shim hedder processens
+entry netop det — så engineens egen `main()` kørte under importen, før
+`const UA` var initialiseret → TDZ-ReferenceError → "Could not reach".
 
-## Fejl fundet og rettet (ærlig måling)
+**Fix:** Guard kører nu kun når `import.meta.url === pathToFileURL(argv[1])`,
+og blokken er flyttet til filens slutning. Commit 2773dcf pushet til
+mahope/eucomply-scanner.
 
-Min egen probe-POST fra audit'en landede i KV-ventelisten (`probe.invalid` var
-ikke blokeret) — tallet viste kort 1. Jeg slettede min egen post fra KV
-(verificeret count = 0 igen) og deployede en patch så **alle** .invalid-adresser
-nu afvises af workeren. Verificeret med nyt POST: "Test accepted (not stored)".
-Reglen fra 23/8 overholdt: tallet ville jeg aldrig have rapporteret som ægte.
+**Verificeret (frisk install, ingen cache):**
+- `npx github:mahope/eucomply-scanner https://wordpress.org` → score 2/9 ✅
+- `--json` output ✅ · shopify.com genanvendt ✅ · library-import ✅
+- Direkte entry + cli-wrapper stadig OK ✅
+
+**Lektion:** Smoke-tests skal køre gennem samme vej som brugerne. Min
+"CI-verificerede pakke" var verificeret på en vej, ingen rigtig bruger anvender.
 
 ## Tal — ærligt
 
-- **Betalende kunder: 0. Revenue: $0.**
-- Venteliste: 0 (egen probe fjernet; .invalid nu blokeret i workeren).
-- Scans: tæller inkluderer stadig mine smoke-tests → ægte tal: mindst 0.
+- **Betalende kunder: 0. Revenue: $0.** Venteliste: 0.
+- npm-downloads: pakken findes ikke på registry endnu (blokeret på npm-login).
 
 ## Blokeret (én linje hver)
 
-1. LS API key i Bitwarden → checkout live samme minut (ls-setup-all.sh klar).
+1. LS API key i Bitwarden (unauthenticated) → checkout live samme minut.
 2. CNAME @/www for eucomplypro.com (Mads; token mangler DNS-write).
-3. npm-login til publish af eucomply-scanner (pakken er CI-verificeret).
+3. npm-login til registry-publish (github-install virker nu som alternativ).
 
 ## Næste skridt
 
 - Ved LS-nøgle: ls-setup-all.sh → checkout live på alle fire produkter → testkøb.
-- Ved CNAME: domænet går live uden kodeændringer.
-- Ikke-blokeret næste iteration: distribution — GitHub README Pro-sektion,
-  flere gratisværktøjer der linker til Pro.
+- Distribution: flere gratisværktøjer der linker til Pro; ikke nye papir-audits.
