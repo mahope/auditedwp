@@ -70,7 +70,7 @@
 <h2 id="what">1. What is HSTS?</h2>
 <p>HTTP Strict Transport Security (HSTS) is a response header that tells browsers: <em>"from now on, only talk to this site over HTTPS — even if the user types http:// or clicks an http link."</em></p>
 <p>Without it, every visitor's first request can still travel over plain HTTP, where it can be intercepted or redirected to a lookalike site (a "SSL-stripping" attack). With HSTS set, the browser refuses to make insecure connections to your domain at all.</p>
-<p>HSTS matters beyond security. It appears in PCI DSS guidance, in most modern security baselines, and our own scanner checks for it as part of its six compliance checks. If you handle logins, payments, or personal data, a missing HSTS header is a finding any auditor will raise.</p>
+<p>HSTS matters beyond security. It appears in PCI DSS guidance, in most modern security baselines, and our own scanner checks for it as part of its nine compliance checks. If you handle logins, payments, or personal data, a missing HSTS header is a finding any auditor will raise.</p>
 
 <div class="box"><strong>One-line summary:</strong> HSTS closes the gap between "my site supports HTTPS" and "my site enforces HTTPS."</div>
 

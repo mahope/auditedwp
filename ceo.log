@@ -5740,3 +5740,45 @@ STATUS.md opdateret med vurderingen, tallene (0 kunder, $0 — ærligt) og næst
 2026-08-25T04:07:49+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T04:12:50+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-25T04:17:58+02:00 === iteration 28/60 ===
+Iteration 288 færdig. Resumé:
+
+**Universalitets-vurdering (punkt 1): BESTÅET.** Kernen `shared/scan-engine.js` er platform-neutral — WordPress nævnes kun som én fingerprint-signal ved siden af Shopify/Wix. Kernen findes allerede i tre platform-uafhængige indpakninger: web-app, open source npm-pakke og offentlig REST-API. Pluginet er én indgang blandt flere, som krævet.
+
+**Fuld intern link-audit:** 168 filer, 2634 hrefs tjekket med et script — 0 rigtige brudte links (4 falske positiver var querystring-links til /scan/, som findes). Iteration 287's bekymring om flere skjulte fallback-404'ere er afkræftet.
+
+**Reel fejl fundet og rettet:** GitHub-repoet `mahope/eucomply-scanner` pegede i README og begge eksempler på en API-URL der returnerer 404 (`mahope.workers.dev` i stedet for `mahope-eeb.workers.dev`). Enhver udvikler der fulgte dokumentationen ramte en væg. Rettet, verificeret med curl (gammel URL 404, ny 200 + gyldig JSON), pushet som ba71e28.
+
+STATUS.md er opdateret med ærlige tal: 0 kunder, $0, scan-tæller 53 (kan ikke skille egne tests fra ægte trafik). Stadig blokeret på: LS-nøgle i Bitwarden og CNAME/DNS-write for eucomplypro.com. Næste skridt: npm-konto/token til publicering af scanneren, eller klar-lægge en dev.to-artikel som ny distributionskanal.
+2026-08-25T04:23:46+02:00 iteration 28 afsluttet (exit 0)
+2026-08-25T04:24:13+02:00 === iteration 29/60 ===
+Færdig. Resumé af iteration 289:
+
+**Universalitets-vurderingen (punkt 1): BESTÅET — denne gang med beviser, ikke påstande.**
+Jeg kørte scan-kernen direkte mod fire ikke-WordPress-sites: shopify.com → "Shopify", webflow.com → "Webflow", squarespace.com → "Squarespace", stripe.com → "Next.js". Alle fingerprintet korrekt. Kernen er platform-neutral, og WordPress er allerede kun én indpakning blandt tre (web-app, npm/CLI, REST-API). Ingen ombygning nødvendig.
+
+**Øvrigt verificeret i samme iteration:**
+- Worker-URL-audit: 27 API-referencer i sitet, alle fire worker-hosts svarer 200. Ingen døde endpoints.
+- Lanceringsmaterialet (LAUNCH-EUCOMPLY.md) peger på den rigtige, virkende API-URL — sidste iterations README-fejl er ikke gentaget.
+- Købsrejsen: /pro henter checkout runtime fra workerens /config. Sættes CHECKOUT_URL-secret, går betaling live uden ny deploy. Infrastrukturen venter kun på LS-nøglen.
+
+**Tal:** 0 betalende kunder, $0 revenue. Scan-tæller 53 siden nulstilling, men inkluderer mine egne smoke-tests — ægte tal: ukendt, mindst 0.
+
+STATUS.md er opdateret, committed og pushet (af243be). Blokeringer uændrede: LS-nøgle i Bitwarden og CNAME for eucomplypro.com.
+2026-08-25T04:27:41+02:00 iteration 29 afsluttet (exit 0)
+2026-08-25T04:28:01+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T04:33:05+02:00 === iteration 30/60 ===
+Iteration 290 færdig og pushet (8fd0985).
+
+**Universalitets-vurderingen (opgaven): BESTÅET — ingen ændring nødvendig.** Det blev allerede empirisk bevist i it. 289: kernen scannet live mod Shopify, Webflow, Squarespace og Next.js, alle korrekt fingerprintet. Kernen er platform-neutral med tre indpakninger (web-app /scan/, npm/CLI, offentlig REST-API); WordPress-pluginet er én indgang blandt flere.
+
+**Hvad jeg ellers gjorde denne iteration — købsrejse-audit:**
+
+- Tjekket alle interne links fra de tre produktsider (/pro/, /quickconvert/, /devnotify/) — 45+ unikke links, alle findes lokalt og svarer 200 live. Ingen døde ankre.
+- Live end-to-end test af scan-API'en: `GET /scan?url=...` returnerer korrekt rapport. /stats viser 55 scans siden nulstilling — mine egne smoke-tests kan ikke adskilles, så det ægte tal er mindst 0.
+- Bekræftede checkout-flip-infrastrukturen igen: alle tre workers' /config endpoints klar; ls-setup-all.sh sætter URL'erne samme minut LS-nøglen ligger i Bitwarden.
+
+**Ét reelt problem fundet og rettet:** GitHub-repoets README linkede til eucomplypro.com/pro/ — domænet har stadig ingen DNS-poster (bekræftet via DNS-query), så linket var dødt for alle der klikker fra repoet. Rettede til den levende pages.dev-URL, pushede til GitHub og verificerede raw-indholdet.
+
+STATUS.md er opdateret med tallene (0 kunder, $0), blokeringerne (LS-nøgle, CNAME) og næste skridt.
+2026-08-25T04:44:32+02:00 iteration 30 afsluttet (exit 0)
+2026-08-25T04:44:55+02:00 === iteration 31/60 ===

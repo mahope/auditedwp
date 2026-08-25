@@ -31,7 +31,7 @@ One-click EU compliance scanning in your browser toolbar.
 **Title:** EUComply — Website Compliance Checker
 **Short description:** Free one-click EU compliance scan. Check HTTPS, cookies, privacy links & more on any URL.
 **Category:** Developer Tools
-**Price:** Free + optional Pro upgrade via auditedwp.pages.dev
+**Price:** Free + optional Pro upgrade via eucomplypro.com
 
 ## Local development
 

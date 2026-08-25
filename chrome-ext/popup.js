@@ -90,7 +90,7 @@
   }
 
   function icon(k) {
-    return ({ssl:'🔒',cookies:'🍪',forms:'📋',legal:'📄',headers:'🛡️'})[k] || '•';
+    return ({ssl:'🔒',cookies:'🍪',forms:'📋',legal:'📄',headers:'🛡️',consent_mode_v2:'📊',tcf:'🏛️',trackers:'🎯',dora:'🏦'})[k] || '•';
   }
 
   function esc(s) {

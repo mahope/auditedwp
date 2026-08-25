@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "One-click EU compliance scan for any website. Check HTTPS, cookie consent, privacy links, forms and security headers.",
   "author": "EUComply",
-  "homepage_url": "https://auditedwp.pages.dev",
+  "homepage_url": "https://eucomplypro.com",
   "permissions": [
     "activeTab",
     "storage",

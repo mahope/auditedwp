@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://eucomplypro.com/cli/">
 <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/cli/">
 <meta property="og:title" content="eucomply-scanner — Compliance scanning in your terminal">
-<meta property="og:description" content="One command, six compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA & EAA technical checks.">
+<meta property="og:description" content="One command, nine compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA & EAA technical checks.">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
@@ -69,7 +69,7 @@ footer a{color:var(--accent)}
 <div class="wrap hero">
   <div class="badge">🟢 Open source · MIT</div>
   <h1>Compliance scanning in your <code>terminal</code>.</h1>
-  <p class="sub"><strong>eucomply-scannerner</strong> checks any URL for GDPR, NIS2, DORA and EAA technical gaps in seconds. Any CMS, any stack — one command.</p>
+  <p class="sub"><strong>eucomply-scanner</strong> checks any URL for GDPR, NIS2, DORA and EAA technical gaps in seconds. Any CMS, any stack — one command.</p>
   <a class="btn" href="#install">Get started</a>
   <a class="btn ghost" href="/scan/">Try the web version</a>
 </div>
@@ -79,12 +79,12 @@ footer a{color:var(--accent)}
     <h2>Install &amp; run</h2>
     <p class="lede">Requires Node.js 18+. No sign-up, no API key, no tracking.</p>
 <pre><span class="c"># Install globally</span>
-npm install -g eucomply-scannerner
+npm install -g eucomply-scanner
 
 <span class="c"># Scan any site</span>
-eucomply-scannerner https://yourdomain.com</pre>
+eucomply-scanner https://yourdomain.com</pre>
     <p class="lede">Example output (real scan of webflow.com):</p>
-<pre>$ eucomply-scannerner https://webflow.com
+<pre>$ eucomply-scanner https://webflow.com
 🔍 EUComply Scan Report — webflow.com
 ║  🔒  HTTPS + HSTS OK                     PASS
 ║  🍪  No consent banner detected          CHECK MANUALLY
@@ -99,7 +99,7 @@ eucomply-scannerner https://yourdomain.com</pre>
 <section>
   <div class="wrap">
     <h2>What it checks</h2>
-    <p class="lede">Six automated technical checks against EU requirements:</p>
+    <p class="lede">Nine automated technical checks against EU requirements:</p>
     <div class="grid3">
       <div class="card">
         <div class="icon">🔒</div>
