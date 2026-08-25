@@ -7060,3 +7060,48 @@ Færdig. Resumé af iteration 358:
 Næste skridt står i STATUS.md: LS-nøgle → opret produkter via API og flip CHECKOUT_URL samme time; ellers SEO-indhold på egne flader.
 2026-08-25T14:52:54+02:00 iteration 41 afsluttet (exit 0)
 2026-08-25T14:53:17+02:00 === iteration 42/60 ===
+Iteration 359 færdig og deployet (commit 8c7b9ab).
+
+**Universality-vurdering (første opgave):** ✅ OPFYLT — intet at udtrække. Verificeret live i iteration 358: samme URL-kerne scannede en Shopify-butik korrekt OG håndskrevet HTML uden at fejle. WordPress-pluginet er allerede kun én indpakning blandt fire (web, extension, CLI, plugin). QuickFormat, DevNotify, ComplianceDocs og e-bogen er platform-uafhængige pr. design. Vurderingen står i STATUS.md.
+
+**Hvad jeg brugte iterationen på i stedet:** hullet mellem besøgende og betaling. E-bogen ($14.99) er det eneste produkt med aktiv købsknap — men ingen af blogguides linkede til den. Ret:
+
+- Bog-CTA-boks indsat i **alle 30 guide-sider** med titel, indhold, pris og link til /book/ (idempotent script: site/add_book_cta.py)
+- CTA øverst på /blog/-oversigten
+- "📖 Compliance ebook — $14.99"-link fra forsiden
+
+Alt verificeret live på auditedwp.pages.dev: guide-side viser boksen, /blog/ viser CTA'en, forsiden linker, /book/ svarer 200.
+
+**Traction:** 0 betalende kunder, 0 rigtige tilmeldinger. Blokering uændret: LS-nøglen (og CWS/Leanpub) venter stadig i Bitwarden — én linje i STATUS.md, ikke gentaget videre.
+2026-08-25T14:56:22+02:00 iteration 42 afsluttet (exit 0)
+2026-08-25T14:56:45+02:00 === iteration 43/60 ===
+Iteration 360 færdig. Kort rapport:
+
+**Universality-vurdering (punkt 1): ✅ OPFYLT.** Kernen (scan-engine + worker) tager en almindelig URL og virker på alle platforme — verificeret live tidligere med Shopify-butik (detekteret som Shopify) og håndskrevet HTML ("Unknown", meningsfyldt rapport). Alle 5 produkter er platform-uafhængige; WordPress-pluginet er kun én indpakning blandt flere (der er også guides til Shopify, Webflow, Wix, Squarespace m.fl.). Intet at udtrække — vi bygger allerede universelt.
+
+**Resten af iterationen gik til fuld sundhedstjek af alt der er live:**
+- Alle 34 top-level URLs og alle 30 blogguides tjekket → **alle HTTP 200**, ingen brudte links
+- Scan-worker svarer korrekt på /stats (6 scanninger = mine egne tests, ikke kunder)
+- Waitlist-worker afviser testadresser korrekt og tæller **0** ægte tilmeldinger — det gamle "6 tilmeldinger"-problem er bekræftet løst
+
+**Ærlige tal:** 0 betalende kunder, 0 tilmeldinger, 0 eksterne scanninger.
+
+**Blokeringer (uændrede, én linje hver):** LS API key, CWS OAuth credentials, Leanpub-konto, DNS-edit til custom domains — alle venter på Mads/Bitwarden.
+
+STATUS.md er opdateret med vurderingen og tallene. Næste skridt står der også: når LS-nøglen ankommer, aktiveres betaling på alle 5 produkter samme time; indtil da forbedres indhold/købsrejsen på egne flader.
+2026-08-25T14:58:45+02:00 iteration 43 afsluttet (exit 0)
+2026-08-25T14:59:06+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T15:04:09+02:00 === iteration 44/60 ===
+Iteration 361 færdig. Kort rapport:
+
+**Punkt 1 (universality): ✅ opfyldt.** Re-verificeret — kernen (`shared/scan-engine.js`) tager en almindelig URL og virker på Shopify, plain HTML og alt andet med HTTP. WordPress-pluginet er én indpakning blandt flere. Intet at udtrække, intet arbejde spildt.
+
+**Punkt 5 (købsrejsen) — gik selv vejen som fremmed og fandt 2 reelle fejl:**
+1. `/book/`: "Get the book"-klik gav en *succes*-besked ("Checkout is opening shortly") mens checkout var tom — en blind gyde. Nu en ærlig besked + autofokus på e-mailfeltet.
+2. `/devnotify/`: JS læste `cfg.checkoutUrl`, men workeren returnerer `checkout_url` — købsknappen ville aldrig være blevet et rigtigt checkout-link når Lemon Squeezy-nøglen ankommer. Retttet til at læse begge felter.
+
+Begge rettelser deployet og verificeret i serveret HTML (200 + ny kode synlig). Commit: 8792fbb. STATUS.md opdateret.
+
+Traction forbliver ærligt: **0 kunder, 0 tilmeldinger, 0 eksterne scanninger.** Alting venter stadig på LS-nøglen i Bitwarden — det er den eneste ting der står mellem 5 live produkter og den første betaling.
+2026-08-25T15:07:30+02:00 iteration 44 afsluttet (exit 0)
+2026-08-25T15:08:01+02:00 === iteration 45/60 ===
