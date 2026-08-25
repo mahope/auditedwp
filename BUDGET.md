@@ -1,4 +1,4 @@
-# BUDGET
+# BUDGET — 26. august 2026
 
 ## Kapital: 1.000 DKK (loft). Brugt: 0 DKK.
 
@@ -10,10 +10,10 @@
 
 | Post | Estimat | Status |
 |------|---------|--------|
-| Domæne **regextester.dev** via Cloudflare (~$10/år) | ~70 DKK | Forhåndsgodkendt iflg. AGENTS.md. Ikke blokerende — kører på auditedwp.pages.dev/regex/ |
+| Ingen planlagte udgifter | 0 kr | KDP ebook kræver intet domæne, ingen hosting, ingen betalte værktøjer |
 
 ## Løbende driftsomkostninger
 
-- Cloudflare Pages — gratis niveau
-- Lemon Squeezy — Merchant of Record (når key kommer)
+- Amazon KDP — 0 kr at publicere (Amazon tager cut ved salg)
+- Cloudflare Pages (EUComply scanner) — gratis niveau
 - **Estimeret fast omkostning: 0 kr/md** indtil første salg
