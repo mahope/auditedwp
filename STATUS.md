@@ -1,56 +1,51 @@
-# STATUS — 25. august 2026 — Iteration 279
+# STATUS — 26. august 2026 — Iteration 281
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere · Checkout-flip-pipeline verificeret end-to-end**
+**0 betalende kunder · $0 revenue · 0 rigtige brugere · Alt teknisk er verificeret live. Den eneste vej til første betaling går gennem Mads: LS-nøgle (Bitwarden), npm-login, CNAME.**
 
-## Universalitets-vurdering (punkt 1) — genbekræftet
+## Universalitets-vurdering (punkt 1) — GENNEMGÅET IGEN, BESTÅET
 
-Scanner-kernen (`shared/scan-engine.js`) tager en almindelig URL og er
-CMS-uafhængig. Indpakninger: web-UI, API-worker, CLI, WordPress-plugin,
-Chrome-extension. BESTÅET — ingen handling.
+Verificeret i dag ved at læse koden og kalde det kørende system:
 
-## Denne iteration: betalingspipeline afprøvet med rigtige kald
+| Produkt | Kerne | Bevis |
+|---------|-------|-------|
+| EUComply | `shared/scan-engine.js` + `eucomply-scanner/engine/` (Node, MIT) | Worker svarede lige nu på `GET /scan?url=https://example.com` med fuld rapport på en fremmed URL. Ingen WordPress-antagelser i engine-koden. |
+| QuickFormat | `quickconvert/src/engine.js` (JSON/YAML/CSV/XML) | Ren datatransformation, nul platform-afhængighed. |
+| DevNotify | macOS menu bar + GitHub API | Ikke web-CMS-bundet. |
 
-Før LS-nøglen lander har jeg verificeret at **hele flip-mekanismen virker**,
-så `ls-setup-all.sh` bare kan køres når nøglen kommer:
+Indpakninger er som tænkt adskilt fra kernerne: web-UI (Pages), offentlig
+API-worker, CLI (`bin`-felt i package.json), WP-plugin og Chrome-ext er alle
+kald ind i kernen — ikke omvendt. **Ingen udtrækning nødvendig. Ingen kode
+ændret i denne iteration, fordi der ikke var noget at rette.**
 
-1. **CF API-token KAN skrive worker-secrets** — ikke via `/secrets`
-   endpointet ("Method not allowed for this authentication scheme"), men via
-   `PATCH .../settings` med multipart bindings. Det er testet med en
-   placeholder-checkout på alle tre workers: sæt → /config viser URL →
-   revert til tom. Virker.
-2. **To reelle fejl fundet og rettet:**
-   - `devnotify-metrics` læste `env.CHECKOUT_URL`, men bindingen hed
-     `CHECKOUT_URL_PROBE` → DevNotify-checkout kunne ALDRIG være flippet.
-   - `waitlist-eucomply` (QuickFormat) havde slet ingen CHECKOUT_URL-binding.
-   Begge fik korrekt binding. Resterende probe-secrets slettet.
-3. **`ls-setup-all.sh` omskrevet** til den virkende PATCH-metode (den gamle
-   brugte det blokerede /secrets-endpoint og ville fejlet ved første kørsel).
-4. Alle tre workers deployet med `.trim()` af CHECKOUT_URL (beskytter mod
-   whitespace i secret). Verificeret live: alle /config svarer korrekt tom.
+## Live-verifikation (26/8)
 
-Konklusion: den dag LS-nøglen ligger i Bitwarden, er én kommando
-(`LEMONSQUEEZY_API_KEY=... ./scripts/ls-setup-all.sh`) nok til at alle fire
-produkter kan tage imod betaling.
+- Alle 8 hovedsider 200: /, /pro/, /scan/, /devnotify/, /quickconvert/, /store/, /pricing/, sitemap.
+- Scanner-worker: `/config` → `{"checkoutUrl":"","launchPricing":true}`; scan på fremmed URL virker.
+- Checkout-flip: pro-siden fetcher /config runtime — når CHECKOUT_URL-sættet sættes, flipper Buy-knappen uden redeploy.
+- npm: `eucomply-scanner` findes ikke i registry; `npm whoami` → ENEEDAUTH (ingen login på denne maskine).
+- Bitwarden CLI: status `unauthenticated` — LS-nøglen kan ikke hentes herfra.
 
-## Domæne-status (nye fund)
+## Konklusion: der er intet mere at bygge før første betaling
 
-- Tokenet har **Registrar + Pages + Workers + KV**, men **ikke DNS-write**
-  (verificeret med konkrete 10000-fejl fra DNS endpoints).
-- Custom domains `eucomplypro.com` og `www.eucomplypro.com` er tilføjet til
-  Pages-projektet af mig (www via API; apex var allerede registreret).
-  Status: *pending* — venter udelukkende på CNAME-recorden:
-  `@ og www -> auditedwp.pages.dev (proxied)`.
+BUILD.md's liste er gennemført. Flere iterationer på produktet nu = at pudse
+noget ingen besøger. Distribution kræver Mads' tre handlinger (nedenfor) —
+alt andet ville være unddragelse.
 
-## Blokeret (én linje hver)
+## Blokeret (én linje hver — uændret, gentages IKKE i kommende iterationer)
 
-- LS API key i Bitwarden → kræver Mads' unlock (desktop-appen kan ikke låses op programmatisk).
-- npm-login til publish af eucomply-scanner v1.0.0.
-- CNAME @/www på eucomplypro.com → token mangler DNS-write; Mads skal oprette den (2 min i dashboardet).
+1. LS API key i Bitwarden → `LEMONSQUEEZY_API_KEY=... ./scripts/ls-setup-all.sh` → checkout live samme minut.
+2. CNAME @/www → eucomplypro.com (token mangler DNS-write).
+3. npm-login (granular token) → publish af eucomply-scanner v1.0.0.
 
-## Næste skridt
+## Næste skridt (efter blokeringerne)
 
-1. CNAME fra Mads → domænet går live automatisk (Pages-domænerne er allerede tilknyttet).
-2. LS-nøglen → kør `ls-setup-all.sh` → checkout live samme minut.
-3. Efter lancering: mål gratis-scan → pro-konversion via worker-/stats.
+- Efter checkout live: mål gratis-scan → pro-konversion via worker-/stats (kilde-ren tæller).
+- Er alle 3 stadig blokerede i næste iteration: forberedt lancering (Product Hunt-tekst, Show HN-post, README-pro-sektion) klar til Mads' ja — ikke sendt.
+
+## Ærlig vurdering
+
+Produktet er færdigt nok. 281 iterationer har givet 0 rigtige brugere, og
+grænsen er ikke længere kode — den er adgang til konti jeg ikke må (og ikke
+kan) åbne. Hver time mere på produktet nu er en time taget fra lancering.
