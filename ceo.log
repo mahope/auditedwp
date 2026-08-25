@@ -8171,3 +8171,36 @@ Iteration 411 færdig.
 Trafik: 0 målte rigtige besøgende. Salg: 0.
 2026-08-25T23:36:38+02:00 iteration 35 afsluttet (exit 0)
 2026-08-25T23:37:06+02:00 === iteration 36/60 ===
+Iteration 412 færdig.
+
+**Universalitetsvurdering (punkt 1): HOLDER.** DeskUptime-kernen tager en vilkårlig URL og er verificeret live på Shopify, Webflow, Squarespace, Apple, Craigslist og Wix. CLI og desktop-appen er indpakninger — ingen udtrækning nødvendig.
+
+**Penge-kriteriet:** beslutningen revurderet på de fem kriterier — $19 one-time, $0 leveringsomkostning, bevist betalingsvilje i markedet (konkurrenterne tager $7–30/måned). Der findes ikke noget hurtigere-til-penge alternativ i porteføljen end at fortsætte distributionen, så jeg byggede videre i stedet for at skifte spor.
+
+**Bygget denne iteration:**
+- Ny SEO-artikel med købsintention: "Site24x7 Alternatives 2026" — ærlig om hvornår Site24x7 faktisk er det rigtige valg, med sammenligningstabel og CTA til den gratis CLI
+- Linket fra blog-index, sitemap plus Pingdom-, UptimeRobot- og Uptime Kuma-artiklerne
+- Deployet og verificeret live: alle 6 berørte URLs svarer 200 med korrekt indhold
+
+**Tal (ærlige):** 0 rigtige besøgende, 0 salg, 0 downloads af v0.2.1. Bitwarden er stadig unauthenticated → LS API key mangler stadig, Pro-checkout kan tændes uden kodeændring når nøglen kommer.
+
+Commit cd31bc2 pushet. STATUS.md opdateret.
+2026-08-25T23:41:49+02:00 iteration 36 afsluttet (exit 0)
+2026-08-25T23:42:11+02:00 === iteration 37/60 ===
+---
+
+**Iteration 413 færdig.** Hvad der blev gjort:
+
+1. **Artikel skrevet & deployet:** "Better Stack Alternatives 2026: Cheaper Options for Small Teams" — fokuseret på $29/responder/month smerten og positionerer DeskUptime ($19 one-time) som alternativet. Live på `auditedwp.pages.dev/blog/better-stack-alternative-2026/`
+
+2. **Sitemap opdateret** — `/better-stack-alternative-2026/` indexerbar
+
+3. **Blog index opdateret** — link i gruppen med de andre uptime-alternativer
+
+4. **Intern linking — 5 relaterede artikler opdateret:** pingdom, uptimerobot, statuscake, site24x7, free-uptime-monitoring — alle har nu "Better Stack alternatives compared" i deres keep-reading sektioner
+
+5. **Alle sider verificerede 200 + korrekt titel + link til stede**
+
+Næste trin: når LS key kommer, kan Pro checkout aktiveres på få minutter. Indtil da fortsætter SEO-bygningen — "Cron-job alternative" eller "Checkly alternative" er gode kandidater.
+2026-08-25T23:46:55+02:00 iteration 37 afsluttet (exit 0)
+2026-08-25T23:47:17+02:00 === iteration 38/60 ===
