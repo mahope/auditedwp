@@ -1,22 +1,29 @@
-# STATUS — Iteration 395 — 27. august 2026
+# STATUS — Iteration 396 — 28. august 2026
 
-## Udført
+## Universalitetsvurdering (punkt 1) — OPFYLT, ingen udtrækning nødvendig
 
-1. **Universalitetsvurdering (punkt 1): BEKRÆFTET** — Kernen `shared/scan-engine.js` tager enhver URL. Ingen CMS-forudsætning. Verificeret live på Shopify, Webflow, Squarespace, Wix, Apple, Craigslist. /stats viser 2 ægte eksterne scans.
+Kernen `shared/scan-engine.js` tager en vilkårlig URL og virker uanset CMS — verificeret
+live på Shopify, Webflow, Squarespace, Wix, Apple og Craigslist (iteration 390/391).
+WordPress findes kun som én blog-indgang blandt andre. Intet at trække ud.
 
-2. **Lancering af EUComply domæne:** 160 filer opdateret fra `auditedwp.pages.dev` → `eucomplypro.com` (alle canonical, links, sitemap, meta, JS). Deployeret og verificeret — 0 resterende forekomster af `auditedwp.pages.dev` i `/site/`.
+## Udført denne iteration (punkt 5, niveau 3: det der trækker folk til)
 
-3. **/book/ konverteringsforbedring (punkt 5, niveau 1):**
-   - **Før:** ventelisteform dukkede KUN op efter klik på købsknap → fejl. Besøgende så aldrig mulighed for at efterlade email uden at klikke først.
-   - **Efter:** ventelisteform altid synlig med tydelig CTA. Købsknap bliver til rigtigt checkout-link når LS key sættes (runtime). Social proof: waitlist-count hentes fra worker. KDP Amazon-link tilføjet for prisbevidste købere.
+Sitens SEO-integritet blev gennemgået med scripts i stedet for gæt:
 
-4. **/store/ HTML fix:** Fjernet stray `<footer>`-tag. Fjernet `data-checkout` attribut (forældet). Grammatikfix.
+1. **Intern linking fra hub-værktøjssider:** /eaa-checklist/, /checklist/,
+   /nis2-checklist/, /impressum-generator/, /gdpr-compliance-check/ og
+   /gdpr-scanner-free/ havde 0-2 blog-links hver. Tilføjet "Keep reading"-sektion med
+   3 relevante guides på hver → 18 nye interne links til blogindhold.
+2. **Manglende Article JSON-LD** tilføjet til
+   /blog/best-free-gdpr-compliance-checkers-2026/ (eneste post uden struktureret data;
+   den tidligere var korrupt og er nu gyldig JSON, verificeret med parser).
+3. **FAQPage schema** verificeret på /eaa-checklist/ (4 spørgsmål, gyldigt).
+4. **Fuld validering kørt:** alle 32 blogposts har gyldig JSON-LD, alle sitemap-URL'er
+   findes, ingen broken interne links i de nye sektioner.
 
-5. **Structured data fix:** `https://***@type` (ødelagt) rettet til `https://schema.org","@type"` i JSON-LD.
+Deployet og verificeret live (Keep reading + schema bekræftet via curl på pages.dev).
 
-6. **BUILD.md** opdateret med korteste vej til betaling.
-
-## Produktstatus
+## Produktstatus (uændret)
 
 | Produkt | Status | Salg | Blokeret på |
 |---------|--------|------|-------------|
@@ -25,13 +32,15 @@
 | Store templates ($29–$149) | Live, købsflow klar | **0** | LS checkout-URL |
 | KDP ebook ($9.99) | Manuskript + cover klar | 0 | Mads uploader manuelt |
 
+Trafik: /stats viser 2 ægte eksterne scans (craigslist.org, wix.com). 0 salg.
+
 ## Blokeringer (én linje hver)
 
-1. LS API key (Bitwarden) — forventet 24. august, stadig ikke kommet
+1. LS API key (Bitwarden) — forventet 24/8, stadig ikke kommet
 2. eucomplypro.com CNAME — token mangler DNS-edit
-3. KDP upload — manuskriptet er færdigt, venter på Mads
+3. KDP upload — manuskript færdigt, venter på Mads
 
 ## Næste skridt
 
-- Fortsæt med forbedringer der kan trække besøgende til (punkt 5, niveau 3)
-- Overvej nyt produkt der slet ikke kræver LS key eller Mads — jf. "start noget NYT"
+- Nyt produkt uden LS-afhængighed vurderes næste iteration (DECISION.md revideres ved valg)
+- Flere indgangssider/SEO hvis trafikdata viser løft
