@@ -6021,3 +6021,54 @@ Tallene står uændrede og ærlige: $0 revenue, 0 rigtige tilmeldinger, 2 monito
   • `worker-watch/index.js` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/worker-watch/worker-watch/index.js`
 2026-08-25T07:09:33+02:00 iteration 42 afsluttet (exit 0)
 2026-08-25T07:09:55+02:00 === iteration 43/60 ===
+Iteration 303 gennemført. Kort rapport:
+
+**Universalitets-vurderingen (punkt 1) — BESTÅET, igen og verificeret med kørsel**
+
+- Kernen `shared/scan-engine.js` er ren HTTP/HTML-analyse: den tager en vilkårlig URL, detekterer platformen (WordPress, Shopify, Webflow osv.) og scorer uden at forudsætte noget CMS. Jeg kørte den faktisk mod example.com ("Unknown", korrekt) og shopify.com ("Shopify", korrekt detekteret).
+- WordPress er kun én af flere detektionssignaturer — ikke en forudsætning. Intet at trække ud; intet bygget om.
+- Indpakninger omkring kernen: web-scanner, CLI, Chrome-extension, watch-worker og et valgfrit WordPress-plugin som én af flere indgange.
+
+**Status i øvrigt:** 5 produkter færdige og live på https://auditedwp.pages.dev, revenue $0. Den eneste blokering mellem besøgende og betaling sidder hos Mads: LS API key eller ~20 min manuel Lemon Squeezy-setup (vejledning klar i LS-MANUAL.md), CNAME for eucomplypro.com, CWS OAuth og affiliate-IDs.
+
+Ifølge BUILD.md's egne regler ("ingen kodeændringer der ikke handler om at få penge ind") har jeg bevidst IKKE bygget nyt denne iteration — vurderingen var opgaven, og den krævede ingen ændringer.
+
+Filer opdateret:
+- /Users/madsholstjensen/hermes-ceo/STATUS.md (vurdering + iter 303)
+- Committed og pushet: 33b01dd
+
+Næste skridt: Så snart checkout-URL'er eller affiliate-IDs lander fra Mads, sætter jeg dem ind, deployer og tester et køb — første dollar samme time.
+2026-08-25T07:10:47+02:00 iteration 43 afsluttet (exit 0)
+2026-08-25T07:11:10+02:00 === iteration 44/60 ===
+Iteration 304 færdig. Kort rapport:
+
+**Universalitets-vurderingen (punkt 1): BESTÅET igen.** Scan-kernen er platformsuafhængig — live-test i dag: shopify.com scannes og detekteres korrekt som `"platform": "Shopify"`. WordPress-pluginet er kun én af flere indpakninger (web, CLI, extension, watch-worker). Intet at trække ud.
+
+**Men re-auditen fandt et reelt problem — og jeg rettede det:**
+- 122 HTML-filer + robots.txt pegede alle interne links på `eucomplypro.com`, som endnu ikke kan resolves i DNS (verificeret). Hvert internt link var altså en død 404 for enhver besøgende indtil CNAME'en kommer.
+- Fix: alle 140 unikke domæne-links konverteret til relative stier → sitet virker 100 % på `.pages.dev` nu og fortsætter uændret når domænet kommer foran. Canonical/og:url/hreflang holdt som absolutte URL'er (SEO-krav), konsistent på pages.dev.
+- Verificeret efter deploy: alle 136 sitemap-URL'er svarer 200, nul tilbageværende eucomplypro.com-referencer, spotchecks grønne.
+
+Commit `5a3d166`, deploy live, STATUS.md opdateret med vurdering og tal ($0, 0 tilmeldinger — ærlige).
+
+Næste skridt: stadig blokeret på LS-nøglen/CNAME (én linje i STATUS). Næste iteration fortsætter med at forbedre det der står mellem besøgende og betaling — checkout-flip er klar til at ske samme minut nøglen lander.
+2026-08-25T07:17:52+02:00 iteration 44 afsluttet (exit 0)
+2026-08-25T07:18:12+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T07:23:17+02:00 === iteration 45/60 ===
+Færdig for denne iteration. Resumé:
+
+**Universalitets-check (punkt 1): BESTÅET.**
+- Scan-kernen (`shared/scan-engine.js`) tager en almindelig URL og virker uanset CMS — verificeret live mod shopify.com i iteration 304.
+- Alt omkring kernen er allerede indpakninger (web-scanner, CLI, Chrome-extension, WordPress-plugin som valgfri indgang, watch-worker). Intet behøver trækkes ud.
+
+**Hvad jeg byggede i stedet — det der står mellem besøgende og betaling:**
+Gennemgang af købsrejsen på /pro/ fandt et reelt problem: hero-knappen lovede "Buy Pro — $79/yr" men førte til en waitlist. Det er vildledende, ødelægger tilliden og strider imod reglen om aldrig at måle falsk succes.
+
+Rettet:
+1. Knappen siger nu ærligt "Get launch access — $79/yr locked" med en kort note om at kortbetaling åbner snart via Lemon Squeezy.
+2. Runtime-flippen udvidet: sættes CHECKOUT_URL på workeren, skifter knappen automatisk til "Buy Pro", noten og waitlisten forsvinder — stadig uden deploy.
+3. Deployet og verificeret live: https://auditedwp.pages.dev/pro/ returnerer 200 med ny CTA-tekst.
+
+STATUS.md er opdateret (/Users/madsholstjensen/hermes-ceo/STATUS.md). Blokeringen står stadig som én linje: checkout venter på LS API key / CHECKOUT_URL / 20 min manuel setup hos Mads — alt andet kører.
+2026-08-25T07:26:13+02:00 iteration 45 afsluttet (exit 0)
+2026-08-25T07:26:36+02:00 === iteration 46/60 ===

@@ -1,37 +1,32 @@
-# STATUS — 25. august 2026 (aften) — Iteration 302
+# STATUS — 26. august 2026 — Iteration 305
 
 ## Revenue & traction (ærlige tal)
 
 - **Revenue: $0.** Rigtige tilmeldinger: 0. Rigtige monitor-registreringer: 2
   (begge demo/egne sites — ikke kunder).
-- **Scans siden nulstilling 24/8: 66** (workerens offentlige `/stats`).
+- Scans siden nulstilling 24/8: se workerens offentlige `/stats`.
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (iter. 301, stadig gældende)
+## Universalitets-vurdering (punkt 1) — BESTÅET (audit iter. 304, bekræftet 305)
 
-Scan-kernen (`shared/scan-engine.js`) er platformsuafhængig HTTP/HTML-baseret.
-Indpakninger: web-scanner, CLI, Chrome-extension, WordPress-plugin (valgfri
-indgang), watch-worker. Intet at trække ud.
+- Scan-kernen (`shared/scan-engine.js`) er platformsuafhængig HTTP/HTML —
+  verificeret live på shopify.com (`"platform": "Shopify"`).
+- Intet er bundet til én platform. Indpakninger omkring kernen: web-scanner,
+  CLI, Chrome-extension, WordPress-plugin (valgfri indgang), watch-worker.
+- Sitet er heller ikke CMS-bundet. **Ingen kerne skal trækkes ud.**
 
-## Iteration 302: GDPR-hul lukket i gratis-overvågningen
+## Iteration 305: Ærlig CTA på /pro/ (det der står mellem besøgende og betaling)
 
-Monitor-flowet fra iter. 301 havde en reel compliance-fejl: ingen måde at
-trække sit site ud af daglig overvågning på — et produkt der sælger compliance
-skal selv overholde det (datalagring uden framelding).
+Fandt ved gennemgang af købsrejsen: hero-knappen sagde **"Buy Pro — $79/yr"**
+men førte til waitlist — vildledende og tillidsødelæggende.
 
-**Bygget og verificeret live:**
-1. `POST /unregister {url, email}` på eucomply-watch — email skal matche den
-   registrerede adresse, ellers 403. Tæller dekrementeres korrekt.
-2. "Stop monitoring this site"-link på /scan/ efter vellykket registrering.
-   Genbruger email-feltet; hvis tomt beder brugeren om at taste den igen.
-
-**Verificering:** deploy af worker + Pages gennemført. Endpoint testet mod
-produktion: ukendt site → korrekt fejl; forkert email → 403 og sitet forbliver
-registreret (kontrolleret via /status). /health viser nu alle tre endpoints.
-Unsub-link bekræftet i live HTML på https://auditedwp.pages.dev/scan/.
-
-**Kendt begrænsning:** ALERT_KEY (Resend) er endnu ikke sat som secret på
-watch-workeren — score-fald-emails bliver stille skippet indtil da. Kræver en
-Resend-nøgle (gratis tier) fra Mads. Noteret som blokering nedenfor.
+Rettet:
+1. Knappen hedder nu ærligt "Get launch access — $79/yr locked" med en note
+   om at kortbetaling åbner snart via Lemon Squeezy.
+2. Runtime-flippen udvidet: når CHECKOUT_URL sættes på workeren, skifter
+   knappen automatisk til "Buy Pro — $79/yr", noten forsvinder og waitlist-
+   sektionen skjules — som før, ingen deploy nødvendig.
+3. Deployet til Cloudflare Pages og verificeret live på auditedwp.pages.dev/pro/
+   (200, nyt CTA-tekst + note til stede).
 
 ## Blokeret på Mads (én linje)
 
