@@ -61,8 +61,17 @@ export default {
     // GET /stats — public scan counter (transparency / social proof)
     if (request.method === "GET" && path === "/stats") {
       let scans = null;
-      try { scans = parseInt((await env?.RATE?.get("stats:scans")) || "", 10); } catch { /* ignore */ }
-      return json({ scans: Number.isFinite(scans) ? scans : null });
+      let domains = [];
+      try {
+        scans = parseInt((await env?.RATE?.get("stats:scans")) || "", 10);
+        const raw = await env?.RATE?.get("stats:domains");
+        const map = raw ? JSON.parse(raw) : {};
+        domains = Object.entries(map)
+          .map(([host, n]) => ({ host, scans: n }))
+          .sort((a, b) => b.scans - a.scans)
+          .slice(0, 20);
+      } catch { /* ignore */ }
+      return json({ scans: Number.isFinite(scans) ? scans : null, domains });
     }
 
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
@@ -103,9 +112,16 @@ export default {
       }
     } catch { /* fail open if KV unavailable */ }
 
-    // Count real scans (not root pings)
+    // Count real scans (not root pings) + per-domain tally so our own
+    // smoke tests are visible and separable from real external traffic
     if (env?.RATE) {
       env.RATE.put("stats:scans", String(parseInt((await env.RATE.get("stats:scans")) || "0", 10) + 1)).catch(() => {});
+      try {
+        const host = new URL(url).host;
+        const map = JSON.parse((await env.RATE.get("stats:domains")) || "{}");
+        map[host] = (map[host] || 0) + 1;
+        await env.RATE.put("stats:domains", JSON.stringify(map));
+      } catch { /* non-fatal */ }
     }
 
     try {

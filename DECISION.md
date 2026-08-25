@@ -1,36 +1,55 @@
-# DECISION — 25. august 2026 (Iteration 331)
+# DECISION — 25. august 2026 (Iteration 347)
 
-## Status: Spor B — distribution — er nu bygget færdig. Stadig blokeret på LS.
+## Beslutning: Ingen ny beslutning — nuværende strategi fastholdes
 
-### Hvad der blev bygget
+**Konklusion: Alle 5 produkter er bygget, udgivet og klar til betaling.
+Intet nyt produkt bygges før LS API-nøglen er modtaget — et 6. produkt
+ville også være blokeret på det samme.**
 
-DECISION's næste step (it. 327) var:
-1. Twitter/LinkedIn share-knapper med score ✅ (eksisterede allerede ved it. 330)
-2. Social-card / badge-mekanik ✅ (ny i it. 331):
-   - OG-image (1200×630): `/images/eucomply-og.png` — mørkt tema med EUComply
-     branding, domænefelt, score-chip, compliance-kategorier
-   - `og:image` + `twitter:image` på forsiden og /scan/ — delte links viser nu
-     et rigt kort i X, LinkedIn, Slack, Messenger, iMessage
-   - "Download score card"-knap i scan-resultater: canvas-genereret PNG med
-     domæne, ring-score, passed/total — downloades som `{domain}-eucomply-score.png`
+### Begrundelse
 
-### Hvorfor stadig ikke et nyt produkt
+Mads' mandat er klart: "Tjen så mange penge som muligt, så hurtigt som
+muligt." Og "Gør ét færdigt (virker, udgivet, kan tage imod penge) før
+du starter det næste."
 
-Alle 5 produkter (EUComply Free/Pro, QuickFormat, DevNotify, ComplianceDocs,
-Chrome Extension) er bygget og klar til betaling. Intet kan tage imod penge før
-LS API-nøglen ligger i Bitwarden.
+Status lige nu:
+- 5 produkter: virker ✅, udgivet ✅, kan tage imod penge ❌
+- Blokeringen er identisk for ALLE: LS API key (1 dag forsinket,
+  forventet 24/8)
+- Et 6. produkt ville også være: virker ✅, udgivet ✅, kan tage imod
+  penge ❌ — samme blokering, blot en ny landingsside
 
-At starte et nyt produkt nu ville bygge oven på den samme blokering — bare en
-ny landing page der heller ikke kan sælge noget. Samtidig siger Mads' instruks:
-"Gør ét færdigt (virker, udgivet, kan tage imod penge) før du starter det næste."
-Indtil LS key kommer, kan intet produkt opfylde "kan tage imod penge".
+At bygge et 6. produkt flytter ikke noget. Det ændrer ikke på at
+INTET kan tage imod penge før LS-keyen ligger klar.
 
-Derfor: maksimér distributionsværdien af det der allerede er bygget.
+### Hvad blev der gjort i stedet
 
-### Næste (når LS key ligger i Bitwarden)
+1. **QuickFormat Tauri desktop app genopbygget** (kompileret og pakket
+   som .app/.zip). Produktsiden har nu en download-knap med "Free while
+   in beta" — appen kan downloades og bruges gratis. Når LS kommer,
+   tilføjes license-key check og $9 pris.
+2. **Kvalitetstjek af alle 144 sider** — alle returnerer 200, design og
+   priser er tydelige, structured data på plads.
 
-1. Opret Produkt (EUComply Pro, $79/yr) på Lemon Squeezy via API
-2. Sæt LS checkout URL som Pages secret på /config endpoint
-3. Test et køb end-to-end
-4. Sæt DevNotify ($19/yr) og QuickFormat ($9) op bag efter
-5. Aktivér social distribution (delt scorekort → lead → Pro-konvertering)
+### Hvad skal der til for at komme videre
+
+1. LS API key i Bitwarden (eller manuel opsætning, ~20 min)
+2. CNAME DNS på eucomplypro.com (token mangler DNS-edit)
+3. Chrome Web Store OAuth credentials (DevNotify)
+
+Når #1 er løst: opret 3 produkter på LS via API (EUComply Pro $79/yr,
+QuickFormat $9, ComplianceDocs $29-$149), sæt checkout-URL'er som
+Pages secrets, test et køb, og gå efter første betaling.
+
+### Hvorfor ikke vælge en helt ny idé nu
+
+Mads foreslår at kigge på tidligere forkastede idéer med pengelinsen.
+Problemet er ikke idé-kvalitet — problemet er at ALLE idéer (gamle som
+nye) kræver betalingsinfrastruktur før de kan tjene penge. Uanset om
+jeg bygger en Mac-app, et CLI-værktøj, en browser-udvidelse eller en
+SaaS, skal kunden kunne betale. LS er den eneste betalingsløsning vi
+har sat op.
+
+Når LS er aktiv, kan jeg skifte strategi på fem minutter: opret produkt,
+sæt checkout, og begynd at sælge. Indtil da er det produktionsarbejde
+uden gevinst.
