@@ -8574,3 +8574,61 @@ Salg: **0**. Første betaling kræver LS key.
 STATUS.md er opdateret og committet. Næste skridt står i filen: LS-checkout når vaulten låses op, ellers fortsætter jeg med flere long-tail SEO-sider i næste iteration.
 2026-08-26T01:15:42+02:00 iteration 56 afsluttet (exit 0)
 2026-08-26T01:16:04+02:00 === iteration 57/60 ===
+Iteration 432 færdig. Resumé:
+
+**Universalitet (punkt 1):** Allerede opfyldt — kernen er platform-uafhængig, bekræftet i iteration 431 med 0 WordPress-hits. Skrevet i STATUS.md, ingen ændring nødvendig.
+
+**Det nye denne iteration:**
+1. **Quickcheck-workeren kan nu faktisk læse certifikat-udløb.** Tidligere returnerede den kun HTTP-status og headers. Jeg tilføjede opslag via Cert Spotter's Certificate Transparency API (gratis, ingen nøgle — crt.sh blev forsøgt først men returnerer 502). Live-verificeret: example.com → 99 dage tilbage, udløber 2026-12-02.
+2. **Ny side /deskuptime/ssl-expiry-monitor/** — ikke bare tekst: en interaktiv SSL-tjekker der virker, openssl-kommando, sammenligningstabel der leder mod $19-købet, FAQ + JSON-LD.
+3. Deployet, verificeret (200 + nyt indhold), sitemap opdateret, IndexNow pinget (200), committet og pushed.
+
+**Ærlige tal:** 0 salg, 0 waitlist.
+
+**Blokeret stadig på:** LS-nøglen i Bitwarden (låst), deskuptime.com-køb (forhåndsgodkendt — sig bare til), npm-token.
+
+Næste skridt: flere long-tail sider med samme mønster (gratis værktøj der virker → pro-opgradering), og checkout på 10 min når LS-nøglen kommer.
+2026-08-26T01:21:44+02:00 iteration 57 afsluttet (exit 0)
+2026-08-26T01:22:06+02:00 === iteration 58/60 ===
+Iteration 433 færdig. Kort:
+
+**Universalitets-vurdering (punkt 1): OPFYLT.** Verificeret med grep — kernen i `deskuptime/` har 0 WordPress-referencer. Desktop-app, CLI, GitHub Action og web-checkerne er alle indpakninger over samme URL-ind-kernel. Intet at trække ud.
+
+**Fundet og rettet en reel fejl i købsrejsen:** Alle fire /vs/-sider (UptimeRobot, Pingdom, StatusCake, Uptime Kuma) linkede kun til den gratis live-check — prisen $19 var usynlig på siderne. Nu har hver side en grøn "Get Pro — $19 once"-knap. Deployet og verificeret live på alle fire URLs.
+
+**Blokering (uændret, 1 linje):** LS API key sidder fast i Bitwarden — `bw unlock` kræver master-adgangskode, som kun Mads har.
+
+STATUS.md er opdateret. Næste skridt står der; alt er klar til checkout på ~10 min når nøglen kommer.
+2026-08-26T01:24:43+02:00 iteration 58 afsluttet (exit 0)
+2026-08-26T01:25:06+02:00 === iteration 59/60 ===
+Iteration 434 færdig. Resumé:
+
+**1. Universalitets-vurdering: OPFYLT — verificeret i kode, ikke bare påstand.**
+- Nul WordPress/CMS-referencer i kernen (`deskuptime/src` + `desktop`)
+- `checkUrl()` testet live mod example.com, wordpress.org og squarespace.com — identisk resultatformat uanset platform
+- Desktop-app, CLI, GitHub Action og web-check er alle indpakninger over den samme kerne. Intet at trække ud.
+
+**2. Bygget i denne iteration (punkt 3 — det der trækker folk til):**
+De to blogindlæg med de mest købsklare søgeord havde kun tekst-links. Begge har nu en interaktiv gratis live-check widget (URL ind → status, responstid, SSL-udløbsdato), drevet af den eksisterende worker. Widgetten er genbrugelig i `site/shared/live-check-widget.html`. Deployet og bekræftet live på begge sider; worker-logikken verificeret med rigtige kald.
+
+**Ærlige tal:** 0 salg, 0 waitlist.
+
+**Blokering (uændret):** LS API key og npm-token sidder bag en låst Bitwarden.
+
+Næste skridt: LS key → checkout åben på ~10 min (BUILD.md trin 2-8); derefter udrulles widgetten på flere indlæg. STATUS.md er opdateret og committet (`04d67fe`).
+2026-08-26T01:30:46+02:00 iteration 59 afsluttet (exit 0)
+2026-08-26T01:31:08+02:00 === iteration 60/60 ===
+**Iteration 435 færdig.**
+
+Universalitets-kravet er allerede opfyldt (verificeret i 434, 0 CMS-antagelser i koden). Kernen tager enhver URL — indpakninger er desktop, CLI, web, GitHub Action.
+
+**Hvad der blev bygget:**
+- Live-check widget (gratis URL-check → CTA til DeskUptime) udrullet på **8 flere blogindlæg** — i alt 10 sider med interaktivt værktøj
+- Deployet og verificeret live: hver side serverer widgetten korrekt
+
+**Hvorfor det giver mening:** Hver af disse sider rangerer på købs-klare søgetermer ("pingdom alternative", "uptimerobot alternative", "free uptime monitoring tools"). I stedet for at sende besøgende til en tekst, giver widgetten dem en gratis værdi (tjek deres side på 2 sekunder) og en tydelig CTA til $19-produktet bagefter. Det er punkt 1 i prioriteringsrækkefølgen: det der står mellem en besøgende og en betaling.
+
+**Blokering stadig:** LS key i Bitwarden (kræver master password), domænekøb afventer. Når LS key kommer, 10 min til checkout-link.
+2026-08-26T01:33:25+02:00 iteration 60 afsluttet (exit 0)
+2026-08-26T01:33:45+02:00 ceo-loop3 afsluttet
+2026-08-26T01:38:00+02:00 === iteration 1/60 ===

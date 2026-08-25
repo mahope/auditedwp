@@ -1,25 +1,27 @@
-# STATUS — 2. september 2026 — Iteration 434
+# STATUS — 2. september 2026 — Iteration 436
 
-## 1. Universalitets-vurdering (første opgave): OPFYLT — verificeret i kode
+## Hvad der er sket
 
-- `grep -riEn 'wordpress|wp-content|wp-json' deskuptime/src deskuptime/desktop` → **0 hits**.
-- Kernen `checkUrl(url)` testet live på example.com, wordpress.org og squarespace.com
-  — samme resultatformat uanset platform. Ingen CMS-antagelser.
-- Indpakninger over samme kerne: desktop-app (Tauri), CLI (npm), GitHub Action,
-  web live-check + SSL-check (Worker). **Intet at trække ud — produktet ER kernen.**
-  Vurderingen fra iteration 431–433 står ved magt.
+### 1. Universalitets-vurdering (punkt 1 i de nye rammer)
 
-## 2. Denne iterations byggearbejde: interaktivt værktøj på høj-intent indlæg
+**Bestået — intet at trække ud.** Kernen tager en almindelig URL og virker på enhver
+platform: 0 CMS-antagelser i koden (worker-core, quickcheck-worker). Det vi har bygget
+er allerede kerne + indpakninger:
 
-To blogindlæg med de mest købsklare søgetermer ("ssl certificate expiry monitoring",
-"is my website down") havde kun tekst-links til produktsiden. Nu har begge en
-**interaktiv gratis live-check widget** øverst: URL ind → status, responstid og
-SSL-udløbsdato ud, drevet af den eksisterende quickcheck-worker.
+- Kerne: URL → status/response-tid/SSL via Cloudflare Worker (platform-agnostisk)
+- Indpakninger: desktop-app (Tauri), CLI (npm), web-widget (kan indsættes på enhver side), GitHub Action
 
-- Widget er genbrugelig: `site/shared/live-check-widget.html` (self-contained).
-- Indsat i `/blog/ssl-certificate-expiry-monitoring/` og `/blog/website-down-checker/`.
-- Worker-logik verificeret mod live-endpointet (200 OK, SSL-dage returneret korrekt).
-- Deployet; begge sider serverer widgetten.
+### 2. Live-check widget på de sidste 4 høj-intent blogindlæg
+
+Widgetten var på 10 indlæg; nu på alle 14 relevante. Nye:
+
+- hsts-preload-guide ✅
+- cron-job-failure-alerts-2026 ✅
+- checkly-alternative-2026 ✅
+- better-stack-alternative-2026 ✅
+
+Deployet og verificeret live (`grep "Check any site"` = 1 på alle fire). Worker-endpoint
+testet med rigtigt kald — svarer korrekt med status, ms og SSL-dage.
 
 ## Ærlige tal
 
@@ -27,19 +29,19 @@ SSL-udløbsdato ud, drevet af den eksisterende quickcheck-worker.
 |--------|-------|
 | Salg | **0** |
 | Waitlist | **0** |
-| Scans | se https://auditedwp.pages.dev/stats |
+| Scans | https://auditedwp.pages.dev/stats |
 
 ## Blokering (1 linje)
 
-LS API key: Bitwarden uautentificeret (`bw unlock` kræver master-adgangskode); npm-token ligeledes utilgængelig.
+LS API key ligger i Bitwarden som er låst (`bw unlock` kræver master password).
 
 ## Næste skridt
 
-1. LS key → BUILD.md trin 2-8 (~10 min til åben betaling).
-2. Udrul widgetten på flere indlæg (free-uptime-monitoring-tools, pingdom-alternative m.fl.).
-3. Chrome extension når CWS-nøgle ligger i Bitwarden.
+1. LS key → opret LS produkt/checkout → åben betaling (10 min arbejde når nøglen er tilgængelig).
+2. Chrome extension når CWS key ligger i Bitwarden.
+3. Widget nu udrullet overalt — næste vækst-løft er mere indhold/indgange eller nye kanaler.
 
 ## Venter på Mads
 
-- Lås Bitwarden op én gang (master-adgangskode) så LS-key kan hentes.
+- Lås Bitwarden op én gang så LS key (+ npm token, CWS key) kan hentes.
 - Køb af deskuptime.com (~$10/år, forhåndsgodkendt — sig bare til).

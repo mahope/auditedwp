@@ -80,7 +80,54 @@
   Yet most freelancers and small agencies either pay for monitoring they barely use,
   or rely on a customer to tell them their site is down.</p>
 
-  <p>This guide compares every meaningful free option in 2026, what you actually get,
+  
+<!-- DeskUptime live check widget — self-contained, drop into any page.
+     Usage: paste this file's contents where the widget should appear.
+     Requires no external CSS/JS besides what's inline below. -->
+<div id="du-check" style="max-width:640px;margin:28px auto;background:#f9fafb;border:1px solid #e4e7ec;border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="font-size:17px;font-weight:700;color:#101828;margin-bottom:4px">Check any site right now — free</div>
+  <div style="font-size:13.5px;color:#475467;margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
+  <form id="du-form" style="display:flex;gap:8px;flex-wrap:wrap">
+    <input id="du-url" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Website URL to check" required
+           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;outline:none">
+    <button type="submit"
+            style="padding:11px 20px;background:#2868d0;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
+  </form>
+  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:#fff;border:1px solid #e4e7ec;border-radius:8px;padding:14px" aria-live="polite"></div>
+  <div style="margin-top:12px;font-size:13px;color:#475467">Want an alert <em>before</em> it breaks?
+    <a href="/deskuptime/" style="color:#2868d0;font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
+</div>
+<script>
+(function(){
+  var f=document.getElementById('du-form');
+  if(!f) return;
+  f.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var raw=document.getElementById('du-url').value.trim();
+    var res=document.getElementById('du-result');
+    if(!raw) return;
+    var url=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
+    res.style.display='block';
+    res.innerHTML='⏳ Checking '+url+' …';
+    try{
+      var r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent(url));
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var d=await r.json();
+      if(d.error){res.innerHTML='❌ Error: '+d.error;return;}
+      var up=d.status>=200&&d.status<400;
+      var days=d.sslDaysRemaining;
+      res.innerHTML=
+        (up?'✅':'❌')+' <strong>'+d.status+' '+d.statusText+'</strong> · '+d.responseMs+'ms<br>'+
+        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+days+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
+        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+d.finalUrl):'')+
+        (up&&days!=null&&days<15?'<br><span style="color:#b03030;font-weight:600">Your certificate expires within two weeks — renew it now.</span>':'');
+    }catch(err){
+      res.innerHTML='❌ Network error: '+err.message;
+    }
+  });
+})();
+</script>
+<p>This guide compares every meaningful free option in 2026, what you actually get,
   and where each one stops being enough.</p>
 
   <h2>The comparison table</h2>
