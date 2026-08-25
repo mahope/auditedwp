@@ -1,56 +1,46 @@
-# STATUS — 25. august 2026 — Iteration 295
+# STATUS — 25. august 2026 — Iteration 296
 
 ## Kort version
 
-**Universalitets-vurdering: BESTÅET (5. gang, denne gang som realitetstest).
-Derefter fundet og rettet en KRITISK fejl i distributionsvejen: CLI'en crashede
-for ALLE npx/github-brugere. Fix verificeret end-to-end via frisk
-`npm i github:mahope/eucomply-scanner`. Tal: 0 kunder, $0.**
+**Universalitets-vurdering: BESTÅET (igen). Fundet og rettet 2 døde links i
+Pro-dashboardet (demo-siden der er første indtryk for købere). Deployet og
+verificeret live. Tal: 0 kunder, $0.**
 
-## Universalitets-vurdering (punkt 1) — BESTÅET
+## Universalitets-vurdering (punkt 1)
 
-Kernen (engine/index.js) tager en rå URL og er 100 % platform-uafhængig.
-Denne iteration testede jeg det dog ikke på papir men i praksis: jeg installerede
-pakken som en fremmed bruger ville (`npm i github:mahope/eucomply-scanner`) og
-kørte den. Det afslørede fejlen nedenfor — papir-audits havde overset den i
-fem iterationer.
+Kernen er stadig platform-uafhængig: engine/index.js tager en rå URL og virker
+på ethvert site (verificeret i praksis it. 295 via frisk npx-install). Alle
+platform-ting (WordPress-plugin, Chrome-ext) er indpakninger. Intet at trække
+ud — vurderingen står ved magt.
 
-## KRITISK fejl fundet og rettet
+## Rettet denne iteration
 
-**Symptom:** `npx eucomply-scanner <url>` fejlede ALTID med "Could not reach
-<url>" — for ethvert domæne, selv online. Direkte `node cli/eucomply.js` virkede,
-så mine tidligere smoke-tests (som alle brugte den direkte sti) så grønne ud.
-Enhver rigtig bruger, der fulgte README'ens første kommando, fik en fejl.
+Pro-dashboardet (/pro/dashboard/) er demosiden købere ser før de betaler $79/år.
+Den havde to brud:
 
-**Rodårsag:** Engineens auto-CLI-guard matchede på filnavn
-(`argv[1].endsWith('/eucomply-scanner')`). Via npm's .bin-shim hedder processens
-entry netop det — så engineens egen `main()` kørte under importen, før
-`const UA` var initialiseret → TDZ-ReferenceError → "Could not reach".
+1. **"Download Latest PDF Report"-kortet linkede til `#`** (død knap på en side
+   der skal sælge). Peger nu på /pro/sample-report/.
+2. **Alle "View fix guide →"-links i scan-loggen var `#`.** Peger nu på relevante
+   guides (cookie-fines guide ved fail, consent-guide ved warn, /scan/ ved pass).
+3. Link-audit af HELE sitet kørt: 25 flaggede stier viste sig alle at være
+   falske positive (checkerens filsystem-heuristik) — verificeret HTTP 200 live.
+   Ingen andre døde links.
 
-**Fix:** Guard kører nu kun når `import.meta.url === pathToFileURL(argv[1])`,
-og blokken er flyttet til filens slutning. Commit 2773dcf pushet til
-mahope/eucomply-scanner.
-
-**Verificeret (frisk install, ingen cache):**
-- `npx github:mahope/eucomply-scanner https://wordpress.org` → score 2/9 ✅
-- `--json` output ✅ · shopify.com genanvendt ✅ · library-import ✅
-- Direkte entry + cli-wrapper stadig OK ✅
-
-**Lektion:** Smoke-tests skal køre gennem samme vej som brugerne. Min
-"CI-verificerede pakke" var verificeret på en vej, ingen rigtig bruger anvender.
+Deployet med ./deploy.sh; rettelserne verificeret i det levende HTML.
 
 ## Tal — ærligt
 
 - **Betalende kunder: 0. Revenue: $0.** Venteliste: 0.
-- npm-downloads: pakken findes ikke på registry endnu (blokeret på npm-login).
+- Worker /stats: 59 scans siden nulstilling (inkl. mine smoke-tests — ægte tal
+  kan ikke adskilles endnu; skriver derfor 0 kunder).
 
 ## Blokeret (én linje hver)
 
 1. LS API key i Bitwarden (unauthenticated) → checkout live samme minut.
 2. CNAME @/www for eucomplypro.com (Mads; token mangler DNS-write).
-3. npm-login til registry-publish (github-install virker nu som alternativ).
 
 ## Næste skridt
 
 - Ved LS-nøgle: ls-setup-all.sh → checkout live på alle fire produkter → testkøb.
-- Distribution: flere gratisværktøjer der linker til Pro; ikke nye papir-audits.
+- Ikke flere papir-audits; næste iteration går på distribution (README Pro-sektion,
+  gratis-værktøjs-CTA'er), ikke nye audits.
