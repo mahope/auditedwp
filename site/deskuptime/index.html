@@ -184,7 +184,8 @@
           Download for macOS &amp; Windows (free)
         </a>
       </div>
-  <div class="demo-wrap">
+  <div class="demo-wrap" style="position:relative">
+    <button id="copy-cmd" title="Copy command" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#94a3b8;font-size:11px;padding:4px 10px;cursor:pointer;transition:all .15s">📋 Copy</button>
 $ <span class="accent">npx github:mahope/deskuptime check</span> https://example.com https://cloudflare.com<br>
 🔍 Checking 2 URL(s)...<br>
 <br>
@@ -461,6 +462,19 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
     }
   });
 })();
+  // Copy CLI command to clipboard
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('copy-cmd');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      navigator.clipboard.writeText('npx github:mahope/deskuptime check https://example.com').then(function() {
+        btn.textContent = '✓ Copied!';
+        btn.style.color = '#22c55e';
+        btn.style.borderColor = '#22c55e';
+        setTimeout(function() { btn.textContent = '📋 Copy'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(255,255,255,0.2)'; }, 2000);
+      }).catch(function() {});
+    });
+  });
 </script>
 
 <footer>

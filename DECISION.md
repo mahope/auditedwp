@@ -12,7 +12,7 @@
 | **Pris** | **$19 one-time** via LS license key (3 aktiveringer) |
 | **Platform** | Salg via LS checkout. Distribution: GitHub Releases + npm (CLI) |
 | **Indtjeningsmodel** | LS licensnøgle — $19 × ~92% (MoR) = ~$17,50/køb |
-| **Status** | Desktop app BYGGET. Produktside LIVE med live-check widget. CLI virker. Venter på LS key for betaling. |
+| **Status** | Desktop app BYGGET. Produktside LIVE med live-check widget. CLI virker. Domæne klar til køb (deskuptime.com). Venter på LS key for betaling. |
 
 ## Vurdering på de fem pengekriterier
 
