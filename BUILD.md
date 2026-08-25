@@ -10,7 +10,9 @@ Korteste vej til første betaling, i rækkefølge:
    /quickconvert/ + store-sider samme time.
 2. **npm publish af eucomply-scanner** — pakken er færdig og CI-verificeret
    (v1.0.0, 12 kB tarball). Blokeret på npm-login (Mads: `npm adduser` eller
-   granular token). npx-distribution er den billigste kanal til udviklere.
+   granular token). **Alternativ virker NU (25/8):** `npx github:mahope/eucomply-scanner`
+   er verificeret end-to-end efter TDZ-fixen (commit 2773dcf) — udviklere kan
+   bruge CLI'en i dag uden registry.
 3. **GitHub-repo som kanal** — repoet er nu optimeret (topics, badges,
    homepage → /scan/, CI grøn, ægte sample-output). Dernæst: README-sektion
    "Pro" med link til betalt tier, så CLI-brugere konverterer.
