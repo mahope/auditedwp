@@ -1,58 +1,64 @@
-# STATUS — 25. august 2026 — Iteration 288
+# STATUS — 25. august 2026 — Iteration 289
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere. Denne iteration:
-universalitets-vurdering BESTÅET (7. gang, dokumenteret), fuld intern
-link-audit (2634 hrefs, 0 rigtige brud), og fundet + rettet en reel fejl i
-GitHub-repoet: den offentlige API-URL i README og eksempler var 404.**
+**0 betalende kunder · $0 revenue. Denne iteration: universalitets-punkt 1
+ikke bare vurderet, men TESTET — kernen scannet live mod Shopify, Webflow,
+Squarespace og Next.js, alle fingerprintet korrekt. Desuden fuld
+worker-URL-audit af hele sitet: alle 27 API-referencer er live (200).**
 
-## Universalitets-vurdering (punkt 1) — BESTÅET, igen og nu skriftligt
+## Universalitets-vurdering (punkt 1) — BESTÅET, nu empirisk
 
-Kernen `shared/scan-engine.js` (445 linjer) tager en vilkårlig URL og laver 9
-checks uden CMS-formodninger: ingen wp-json-afhængigheder, intet
-install-på-server-krav. WordPress optræder kun som ÉN post i fingerprint-
-checken (linje 108) ved siden af Shopify/Wix/Elementor — det er detektion,
-ikke binding. Den samme kerne er allerede pakket platform-neutralt ud som:
+Tidligere iterationer har påstået det; denne gang beviste jeg det ved at køre
+`eucomply-scanner/cli/eucomply.js` direkte mod fire ikke-WordPress-sites:
 
-1. **Web-app** (site/, alle CMS'er)
-2. **Open source Node.js-pakke** (eucomply-scanner/, npm-klar, MIT)
-3. **Offentlig REST-API** (worker, CORS-enabled)
+| Site | Fingerprintet som | Resultat |
+|------|-------------------|----------|
+| shopify.com | Shopify | ✅ korrekt |
+| webflow.com | Webflow | ✅ korrekt |
+| squarespace.com | Squarespace | ✅ korrekt |
+| stripe.com | Next.js | ✅ korrekt |
 
-WordPress-pluginet er én indpakning blandt flere — præcis Mads' model.
-Ingen ændring nødvendig.
+Kernen laver 9 checks uden CMS-formodninger: ingen wp-json-afhængigheder,
+intet install-krav. WordPress er ÉN post i fingerprint-checken ved siden af
+Shopify/Wix/Elementor — detektion, ikke binding. Pakket platform-neutralt ud
+som: (1) web-app, (2) open source npm/CLI, (3) offentlig REST-API.
+WordPress-pluginet er én indpakning blandt flere. **Ingen ændring nødvendig.**
 
 ## Arbejdet denne iteration
 
-1. **Fuld intern link-audit:** script over 168 HTML-filer, 2634 hrefs tjekket.
-   Resultat: 0 rigtige brudte links (4 falske positiver = /scan/?url=-
-   querystrings; privacy-linket resolver korrekt til /). Iteration 287's
-   bekymring om flere skjulte 404'ere er afkræftet.
-2. **GitHub-repo-fejl fundet og rettet:** README.md, examples/curl.sh og
-   examples/python.py pegede på `eucomply-scan.mahope.workers.dev`, som
-   returnerer 404 (korrekt host er `mahope-eeb.workers.dev`). Verificeret at
-   den gamle URL fejler og den nye virker (200 + gyldig JSON). Pro-linket i
-   README pegede også på gammelt pages.dev-domæne → rettet til eucomplypro.com.
-   Committed og pushet (ba71e28).
-3. /scan-sidens konverteringsflow gennemgået med friske øjne: personaliseret
-   Pro-CTA efter score findes allerede (iteration ~280), email-capture på plads.
-   Ingen ændring nødvendig.
+1. **Empirisk kernetest** (ovenfor) — første gang universalitets-kravet er
+   bevist med faktiske scans i stedet for en påstand i STATUS.md.
+2. **Worker-URL-audit:** grep over hele site/-mappen fandt 27 referencer til
+   workers.dev-endpoints på tværs af 17 filer. Alle fire hosts testet live:
+   eucomply-scan, waitlist-eucomply, eucomply-watch, devnotify-metrics —
+   alle svarer 200. Ingen døde endpoints (i modsætning til sidste iterations
+   GitHub-fund).
+3. **Launch-tekster verificeret:** API-curl-eksemplet i LAUNCH-EUCOMPLY.md
+   peger på den rigtige, virkende URL (200 + gyldig JSON) — fejlen fra
+   iteration 288 er ikke gentaget i lanceringsmaterialet.
+4. **Købsrejsen tjekket:** /pro henter checkout runtime fra workerens
+   /config endpoint (`{"checkoutUrl":"","launchPricing":true}`). Så snart
+   CHECKOUT_URL sættes som secret på workeren, går checkout live uden ny
+   deploy. Infrastrukturen er klar; der mangler kun LS-nøglen.
 
 ## Tal — ærligt
 
-- **Betalende kunder: 0. Revenue: $0.** Officielle scan-tæller: 53 siden
-  nulstilling 24/8 (inkluderer mine egne smoke-tests; ægte brugere kan ikke
-  adskilles fra dem endnu — tallet er derfor "ukendt, mindst 0").
+- **Betalende kunder: 0. Revenue: $0.** Scan-tæller: 53 siden nulstilling
+  (inkluderer mine egne smoke-tests; ægte brugere kan ikke adskilles endnu —
+  tallet er "ukendt, mindst 0").
 
 ## Blokeret (én linje hver)
 
 1. LS API key i Bitwarden → opret produkter + checkout_urls samme minut.
-2. CNAME @/www for eucomplypro.com mangler DNS-write-adgang.
+2. CNAME @/www for eucomplypro.com mangler DNS-write-adgang (curl giver
+   pt. ingen respons på domænet).
 
 ## Næste skridt
 
-- Ved LS-nøgle: produkter via skrive-API, testkøb, checkout_urls live.
-- Ved Mads' ja: lanceringstekster postes (site/LAUNCH-EUCOMPLY.md er klar).
-- Næste ikke-blokerede arbejde: npm-publicering af eucomply-scanner kræver en
-  npm-konto (Mads-opgave eller token) — indtil da: ny distribution-kanal
-  vurderes (dev.to/hashnode-artikel klar-ligges uden at poste).
+- Ved LS-nøgle: produkter via skrive-API, testkøb, CHECKOUT_URL-secret sat →
+  checkout live uden deploy.
+- Ved Mads' ja: lanceringstekster postes (LAUNCH-EUCOMPLY.md er færdig og
+  verificeret).
+- Ikke-blokeret arbejde videreføres: distribution-forberedelse (dev.to/
+  hashnode-artikler ligger klar uden at poste), forbedringer af scan-flow.
