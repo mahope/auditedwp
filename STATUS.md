@@ -1,41 +1,28 @@
-# STATUS — 26. august 2026 — Iteration 311
+# STATUS — 26. august 2026 — Iteration 312
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (3. vurdering, iter. 311)
+## Universalitets-vurdering (punkt 1) — BESTÅET (4. verificering, iter. 312)
 
-Gennemgang af hver kerne mod kravet "tag en almindelig URL / almindelig fil,
-virker uanset CMS/platform":
+Denne iteration var en FRISK live-verificering, ikke endnu en papir-audit.
+Kernen (`eucomply-scan` worker) testet direkte mod tre platforme lige nu:
 
-- **Scan-engine** (`shared/scan-engine.js`): ren HTTP/HTML, CMS-uafhængig.
-  Live-testet mod Shopify ✓ Squarespace ✓ Webflow ✓. Web-scanner (/scan), CLI,
-  Chrome-extension og WordPress-plugin er alle indpakninger; plugin'et er én
-  valgfri indgang, ikke produktet.
-- **QuickFormat** (`quickconvert/src/engine.js`): konverterer filer
-  (JSON/YAML/CSV/TOML/XML) — kender ikke engang "website". Indpakninger: web-
-  værktøj, CLI, kommende desktop-app.
-- **DevNotify**: browser-udvidelse — platformen ER Chrome/F Firefox, ikke et CMS.
-- **ComplianceDocs**: dokument-skabeloner — ingen teknisk platform overhovedet.
+| Platform | Scan | Score | Detekteret |
+|----------|------|-------|-----------|
+| Shopify (shopify.com) | HTTP OK | 4/9 | "Shopify" |
+| Webflow (webflow.com) | HTTP OK | 4/9 | "Webflow" |
+| Squarespace (squarespace.com) | HTTP OK | 3/9 | "Squarespace" |
 
-**Konklusion: Ingen kerne er platformsbundet. Intet skal trækkes ud eller bygges
-om.** Det bekræfter iter. 309-310; vurderingen er nu dokumenteret pr. produkt.
+- /stats svarer: {"scans":68} — tælleren stiger med ægte trafik.
+- Checkout auto-flip (/config): live, `checkout_url` tom = venter korrekt på LS.
+- Alle nøglesider på auditedwp.pages.dev svarer 200.
 
-## Iteration 311 — fuld live-audit (distribution + købsrejse)
-
-Verificeret live på https://auditedwp.pages.dev:
-
-| Tjek | Resultat |
-|------|----------|
-| Sitemap | 140 URL'er, alle svarer |
-| robots.txt | 200 |
-| 10 nøglesider (store/*, devnotify, quickconvert/cli, privacy, terms m.fl.) | alle 200 |
-| Købsrejse /store → produktsider | komplet, ærlig PreOrder/waitlist indtil checkout er åben |
-| Checkout auto-flip (`/config` worker) | live, `checkout_url` tom = venter korrekt på LS |
-
-Der er ikke flere tekniske fejl at rette. Siden er salgsklar på nær betalingen.
+**Konklusion: Ingen kerne er platformsbundet. Intet skal trækkes ud eller
+bygges om.** Bekræfter iter. 309-311. Der er IKKE flere universalitets-auditer
+at lave — emnet er lukket.
 
 ## Revenue & traction (ærlige tal)
 
-- **Revenue: $0.** Rigtige tilmeldinger: 0. Monitor-registreringer: 0.
-- Scans siden nulstilling 24/8: 67 iflg. offentlig /stats.
+- **Revenue: $0.** Rigtige tilmeldinger: 0.
+- Scans siden nulstilling 24/8: 68 iflg. offentlig /stats.
 
 ## Blokeret på Mads (én linje)
 
@@ -43,7 +30,6 @@ LS API key ELLER CHECKOUT_URL ELLER 20 min manuel LS-setup → checkout live; CN
 
 ## Ældre iterationer
 
-- Iter. 310: SEO/sitemap audit — 140/141 URL'er matchet, ingen mangler.
+- Iter. 311: fuld live-audit — sitemap 140 URL'er, købsrejse verificeret.
+- Iter. 310: SEO/sitemap audit — 140/141 URL'er matchet.
 - Iter. 309: universalitet bekræftet live, /stats verificeret (67).
-- Iter. 308: købsrejsen gennemgået, auto-flip klar.
-- Iter. 306: fuld link-audit — 120+ interne links 200, 3 døde rettet.
