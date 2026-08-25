@@ -44,6 +44,10 @@
   .btn.code{font-family:monospace;font-size:14px;background:var(--code);color:#e2e8f0}
   .btn.code:hover{background:#334155}
   .hero .note{font-size:13px;color:var(--muted);margin-top:12px}
+  .download-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .dl-btn{display:inline-flex;align-items:center;gap:6px;background:#1e293b;color:#e2e8f0;text-decoration:none;font-weight:500;padding:10px 20px;border-radius:6px;font-size:13px;transition:background .15s}
+  .dl-btn:hover{background:#334155}
+  .dl-btn svg{width:18px;height:18px;fill:currentColor}
 
   section{padding:56px 0;border-bottom:1px solid var(--line)}
   section:last-of-type{border-bottom:0}
@@ -132,6 +136,13 @@
 <div class="wrap">
   <h2>Try it right now</h2>
   <p class="lede">No install. No account. Just run this in your terminal:</p>
+  <div class="download-row" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+        <a href="https://github.com/mahope/deskuptime/releases" class="dl-btn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Download for macOS (free)
+        </a>
+        <span class="note" style="margin:0;line-height:38px">Windows version coming soon</span>
+      </div>
   <div class="demo-wrap">
 $ <span class="accent">npx github:mahope/deskuptime check</span> https://example.com https://cloudflare.com<br>
 🔍 Checking 2 URL(s)...<br>
@@ -361,7 +372,9 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
 <footer>
 <div class="wrap">
   Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a> · 
-  <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>
+  <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> ·
+  <a href="/blog/uptime-kuma-alternative-desktop/">vs Uptime Kuma</a> ·
+  <a href="/blog/pingdom-alternative-2026/">vs Pingdom</a>
 </div>
 </footer>
 

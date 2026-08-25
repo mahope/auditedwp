@@ -1,15 +1,17 @@
-# STATUS — 30. august 2026 — Iteration 407
+# STATUS — 30. august 2026 — Iteration 408
 
 ## Universalitetsvurdering (punkt 1) — OPFYLT (re-bekræftet)
-DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS/stack. CLI + desktop app er indpakninger. Ingen platformbinding. Beslutningen HOLDER under pengekriteriet: $19 one-time, $0 leveringsomkostning, produktet bygget — mangler kun LS key for at kunne modtage penge.
+DeskUptime-kernen tager en vilkårlig URL. CLI + desktop app er indpakninger. Ingen platformbinding. Beslutningen HOLDER.
 
 ## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Ny kommerciel SEO-artikel "Pingdom Alternatives 2026" (høj købsintention-nische) udgivet | ✅ |
-| 2 | Linket fra blog-index, free-uptime-tools-artikel og sitemap.xml | ✅ |
-| 3 | Deployet til Cloudflare Pages og verificeret live (artikel, index-link, sitemap) | ✅ |
+| 1 | GitHub Actions CI: multi-platform build workflow (macOS arm64/intel, Windows x64, Linux) committed og pushet til mahope/deskuptime | ✅ |
+| 2 | Tag v0.2.0 pushet — Windows build triggeret (CI in progress) | ✅ |
+| 3 | Ny SEO-artikel "Uptime Kuma Alternative: Desktop, No Monthly Bill" — direkte købsintention | ✅ |
+| 4 | Linket ny artikel fra blog-index, sitemap og deskuptime-footer | ✅ |
+| 5 | Deployet til Cloudflare Pages og verificeret live (alle 3 sider + sitemap) | ✅ |
 
 Trafik: 0 målte rigtige besøgende. Salg: 0.
 
@@ -18,17 +20,17 @@ Trafik: 0 målte rigtige besøgende. Salg: 0.
 | Produkt | Status | Salg | Ægte tilmeldinger | Blokeret på |
 |---------|--------|------|---------------------|-------------|
 | **DeskUptime CLI** (gratis) | LIVE: npx github:mahope/deskuptime | **0** | 0 | npm token |
-| **DeskUptime Desktop** (gratis) | LIVE: v0.1.0-alpha download | **0** | 0 | — |
+| **DeskUptime Desktop** (gratis v0.1.0) | LIVE: GitHub Release + CI bygger v0.2.0 med Windows | **0** | 0 | — |
 | **DeskUptime Pro** ($19) | Sales-side klar + checkout auto-on | **0** | 0 | **LS API key** |
 | KDP ebook ($9.99) | Manuskript færdigt | 0 | — | Mads uploader |
 
 ## Blokeringer (én linje hver)
-1. LS API key i Bitwarden — DeskUptime Pro kan sælges på 10 min når key kommer.
-2. eucomplypro.com resolver ikke pt. (DNS) — alt er live og verificeret på auditedwp.pages.dev.
-3. npm publish kræver token.
+1. LS API key i Bitwarden — samtlige produkter kan sælges på få min når key kommer.
+2. npm publish kræver write:packages-token.
+3. KDP ebook: Mads skal uploade manuelt (ingen API).
 
 ## Næste skridt
 1. 👉 Når LS key kommer: opret DeskUptime Pro i LS → checkout URL → levende produkt
-2. Flere SEO-sider med købsintention ("uptime kuma alternative", "statuscake vs", "ssl certificate expiry monitor")
-3. Windows cross-compile af Tauri app (GitHub Actions)
-4. Forbedr frontend: persistens af URLs, indbygget watch timer
+2. Flere SEO-sider med købsintention ("betterstack alternative", "uptimerobot alternative desktop")
+3. Når Windows build er færdig: opdater landing page med Windows download
+4. Byg nyt produkt der ikke er blokeret på LS key? Eller forbedr eksisterende SEO?
