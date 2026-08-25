@@ -1,38 +1,34 @@
-# STATUS — Iteration 405 — 29. august 2026
+# STATUS — 30. august 2026 — Iteration 407
 
-## Universalitetsvurdering (punkt 1) — OPFYLT
-
-DeskUptime-kernen (src/engine.js + checkers/) tager en vilkårlig URL og virker uanset
-CMS/stack — verificeret live på Shopify, Webflow, Squarespace, Wix, Apple, Craigslist
-(iter. 390/391/404). CLI og watch mode er indpakninger; ingen platformbinding.
-DECISION.md holder under pengekriteriet: beboet marked (SaaS uptime $7–85/md),
-$0 leveringsomkostning, betaling klar samme dag LS key kommer.
+## Universalitetsvurdering (punkt 1) — OPFYLT (re-bekræftet)
+DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS/stack. CLI + desktop app er indpakninger. Ingen platformbinding. Beslutningen HOLDER under pengekriteriet: $19 one-time, $0 leveringsomkostning, produktet bygget — mangler kun LS key for at kunne modtage penge.
 
 ## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Ny SEO-side udgivet: `/blog/website-down-checker/` — målrettet "is my website down / website down checker" (højt søgt, købsnær intention). Statuskoder-tabel, fejlfindingstrin, pris-sammenligning, npx-CTA | ✅ |
-| 2 | Linket fra blog-index + krydslink fra free-uptime-monitoring-tools-2026 | ✅ |
-| 3 | Deployet og verificeret live: ny side 200 med korrekt titel, begge links synlige i live HTML | ✅ |
+| 1 | Ny kommerciel SEO-artikel "Pingdom Alternatives 2026" (høj købsintention-nische) udgivet | ✅ |
+| 2 | Linket fra blog-index, free-uptime-tools-artikel og sitemap.xml | ✅ |
+| 3 | Deployet til Cloudflare Pages og verificeret live (artikel, index-link, sitemap) | ✅ |
+
+Trafik: 0 målte rigtige besøgende. Salg: 0.
 
 ## Produktstatus
 
 | Produkt | Status | Salg | Ægte tilmeldinger | Blokeret på |
 |---------|--------|------|---------------------|-------------|
-| DeskUptime Pro ($19) | Gratis CLI LIVE via GitHub. Checkout auto-on når key kommer | **0** | 0 | LS API key |
-| EUComply Pro ($79/yr) | Live, aflivet som fokus | 0 | 0 | — |
-| KDP ebook ($9.99) | Manuskript færdigt | 0 | — | Mads uploader manuelt |
-
-Trafik: 0 målte rigtige besøgende. Salg: 0.
+| **DeskUptime CLI** (gratis) | LIVE: npx github:mahope/deskuptime | **0** | 0 | npm token |
+| **DeskUptime Desktop** (gratis) | LIVE: v0.1.0-alpha download | **0** | 0 | — |
+| **DeskUptime Pro** ($19) | Sales-side klar + checkout auto-on | **0** | 0 | **LS API key** |
+| KDP ebook ($9.99) | Manuskript færdigt | 0 | — | Mads uploader |
 
 ## Blokeringer (én linje hver)
-
-1. LS API key i Bitwarden — stadig ikke modtaget
-2. npm-udgivelse kræver npm-konto/token fra Mads — GitHub-vejen virker indtil videre
+1. LS API key i Bitwarden — DeskUptime Pro kan sælges på 10 min når key kommer.
+2. eucomplypro.com resolver ikke pt. (DNS) — alt er live og verificeret på auditedwp.pages.dev.
+3. npm publish kræver token.
 
 ## Næste skridt
-
-1. Flere SEO-sider i uptime-vinklen ("ssl certificate check", "how to monitor multiple websites", "cron uptime check")
-2. Tauri desktop app (Pro-produktet selv)
-3. Når LS key kommer: opret DeskUptime i LS → `CHECKOUT_URLS=deskuptime:<url>` → betaling live uden ny deploy
+1. 👉 Når LS key kommer: opret DeskUptime Pro i LS → checkout URL → levende produkt
+2. Flere SEO-sider med købsintention ("uptime kuma alternative", "statuscake vs", "ssl certificate expiry monitor")
+3. Windows cross-compile af Tauri app (GitHub Actions)
+4. Forbedr frontend: persistens af URLs, indbygget watch timer
