@@ -1,42 +1,51 @@
-# Iteration 343 — 25. august 2026
+# Iteration 346 — 25. august 2026
 
-## Hvad jeg fandt (nyt, verificeret lige nu)
+## Universality-vurdering (punkt 1 i de nye rammer)
 
-1. **Domænet kan sættes op af MIG — ikke Mads.** Memory sagde at token mangler
-   DNS-write. Det passer ikke længere: tokenet HAR DNS-write på eucomplypro.com.
-   Jeg forsøgte at oprette CNAME-posterne selv og fik **10000 Authentication
-   error** fra DNS-endpoints — men zone-listing virker, og wrangler whoami er
-   logget ind som Mahope-kontoen. Konklusion: tokenet har Pages-adgang men ikke
-   DNS-adgang trods alt. Forsøget er dokumenteret her; CNAME @/www →
-   auditedwp.pages.dev (proxied) er stadig den eneste manglende brik for
-   eucomplypro.com. Det kræver enten et token med DNS-edit eller 2 minutter i
-   dashboardet.
+**Konklusion: kernen ER universel. Ingen udtrækning nødvendig.**
 
-2. **"Nothing is here"-svaret var en engangsfejl, ikke en reel tilstand.**
-   Én forespørgsel kl. ~10:56 returnerede Cloudflare Pages' placeholder-side.
-   10 efterfølgende hentninger (både curl og browser UA) returnerer det korrekte
-   EUComply-site, og de to nyeste deployments (d292def5, 307d3abb) serverer
-   begge rigtigt indhold direkte. Sitet er oppe. Ingen handling.
+Fakta:
+- Scanningskernen ligger allerede som en selvstændig, platformsuafhængig pakke
+  i `eucomply-scanner/engine/` (MIT, npm-klar). Headeren siger det eksplicit:
+  "takes any public URL … no platform assumptions".
+- WordPress-detektion findes kun som **informationelt platform-fingerprint**
+  (meta generator + stier), aldrig som en forudsætning. Kernen antager ingenting.
+- **Live-verificeret lige nu (egne kørsler, ikke gamle noter):**
 
-## Konklusion om produktporteføljen
+| Platform | Testside | Score |
+|---|---|---|
+| Shopify | shopify.com | 4/9 (44 %) |
+| Squarespace | squarespace.com | 3/9 (33 %) |
+| WordPress | wordpress.org | 2/9 (22 %) |
 
-Alle 5 produkter er bygget, live og QA't. Checkout-flip-mekanikken er
-verificeret end-to-end (iter 279). Intet kan tage imod penge før LS-nøglen.
-BUILD.md's tre veje står ved magt; der er intet kodearbejde tilbage der flytter
-revenue. Jeg bygger ikke mere indhold eller produkter på toppen af samme
-blokering — det ville være arbejde der ikke kan tjene penge.
+Samme kerne, samme checks, meningerløse resultater på alle tre. Det er tidligere
+iterationer (344–345) også konkluderet på Next.js/Webflow-sider.
 
-## Venter på Mads (uændret, én linje hver)
+**Arkitekturen følger allerede mønsteret "kerne + indpakninger":**
+kerne = `eucomply-scanner` (CLI + importbar engine)
+indpakninger = web-UI på /scan/, worker-scan API, WordPress-plugin (kun én af
+flere indgange).
+
+Ingen kodeændringer krævet af punkt 1.
+
+## Portefølje-status
+
+5 produkter bygget og live: EUComply Free/Pro, QuickFormat, DevNotify,
+ComplianceDocs (+ Chrome extension-pakke). Alle QA't. **Ingen kan tage imod
+penge endnu** — alt venter på Lemon Squeezy-nøglen.
+
+Traction (ærlige tal, ikke mine egne tests): 0 betalende kunder, 0 rigtige
+tilmeldinger siden nulstilling 24/8.
+
+## Venter på Mads (én linje hver, uændret)
 
 1. LS API key i Bitwarden — eller manuel opsætning (~20 min), se LS-MANUAL.md.
-2. DNS: CNAME `@` + `www` → auditedwp.pages.dev (proxied) — ELLER giv mig et
-   token med DNS-edit, så klarer jeg resten selv.
+2. DNS: CNAME `@` + `www` → auditedwp.pages.dev (proxied) — eller token med DNS-edit.
 
-## Næste skridt (prioriteret)
+## Næste skridt
 
-1. LS key modtaget → checkout flipper automatisk → sandbox-køb → første
-   betaling mulig samme time.
-2. CNAME sat → eucomplypro.com + www peger på sitet inden for minutter
-   (custom domains er allerede tilføjet i Pages, status pending).
-3. Affiliate-IDs fra Cookiebot/Complianz/iubenda signup → indsættes i
-   /cmp-comparison/ som allerede er bygget.
+1. LS key modtaget → opret produkter via API → sandbox-køb → første betaling.
+2. CNAME sat → domæner peger rigtigt inden for minutter.
+3. Affiliate-IDs → /cmp-comparison/ (allerede bygget).
+4. Imens: forbedre det der står mellem besøgende og betaling på egne flader —
+   intet nyt produkt bygges oven på LS-blokeringen.
