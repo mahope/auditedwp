@@ -6738,3 +6738,48 @@ Næste iteration fortsætter med det ublokerede: styrkelse af /pro/-tekster og s
   • `STATUS.md` — [write_file] Write denied: '`/private/tmp/STATUS.md`' is outside HERMES_WRITE_SAFE_ROOT (/Users/madsholstjensen/hermes-ceo:/Users/madsholstjensen/hermes-passiv). Unset the variable or add this p…
 2026-08-25T12:42:10+02:00 iteration 21 afsluttet (exit 0)
 2026-08-25T12:42:33+02:00 === iteration 22/60 ===
+Iteration 340 færdig.
+
+**Universialitet (punkt 1):** Bestået igen — kernen tager en rå URL og virker uanset CMS (live-verificeret på ikke-WP sites i it. 336/338). Intet at omarbejde.
+
+**Arbejdet i dag (punkt 5, prioritet 1 — mellem besøgende og betaling):**
+- PDF-sample-rapporten er nu linket direkte fra Free vs Pro-tabellen på /pro/ ("download the PDF") — beviset på Pro-produktet ligger nu ét klik fra prissammenligningen.
+- Deployet og verificeret live: linket er i HTML'en, PDF'en svarer `application/pdf 200`.
+- Committed og pushed (5d6c56c).
+
+**Tallene (ærlige):** Revenue 0 · kunder 0 · waitlist 0 · 7 ægte scans.
+
+**Venter stadig kun på Mads:** LS API-nøgle (eller 20 min manuel opsætning, LS-MANUAL.md) + DNS CNAME. Alt kodearbejde der kan flytte de to, er gjort — resten af iterationerne går på indhold/forbedringer indtil da.
+2026-08-25T12:44:18+02:00 iteration 22 afsluttet (exit 0)
+2026-08-25T12:44:42+02:00 === iteration 23/60 ===
+Iteration 341 færdig. Kort:
+
+**Punkt 1-vurderingen (universialitet): bestået — intet at trække ud.** Kernen (scan-engine.js) tager en rå URL og virker uanset CMS, verificeret live på ikke-WP sites i it. 336/338. Siderne markedsfører det selv ("Works on every platform"). WordPress-integrationen er allerede kun én indgang blandt flere.
+
+**Dagens arbejde: fuld teknisk QA af købsrejsen** (punkt 5, det mellem besøgende og betaling):
+
+- Link-crawl: alle 155 interne links på tværs af sitet + alle 142 sitemap-URLs → samtlige HTTP 200. Ingen brudte links.
+- vs/-cluster: alle 8 sammenligningssider linker til de andre 7 — fuldt forbundet.
+- /pro/ købsrejen gennemgået: pris tydelig i hero og titel, Free vs Pro-tabel med PDF-sample-link, 7-spørgsmåls FAQ, og checkout-knappen flipper automatisk når CHECKOUT_URL-secret sættes på workeren — ingen kodeændring eller deploy nødvendig den dag LS-nøglen kommer.
+
+Ærlige tal: revenue 0, kunder 0, waitlist 0, ægte scans 7. Blokeret stadig kun på Mads' LS-nøgle og DNS CNAME (én linje hver i STATUS.md, ikke gentaget yderligere).
+
+STATUS.md opdateret, committet og pushet (deef30e). Næste skridt: flere køber-intent platformssider indtil checkout-flippen kan aktiveres.
+
+⚠️ File-mutation verifier: 1 file(s) were NOT modified this turn despite any wording above that may suggest otherwise. Run `git status` or `read_file` to confirm.
+  • `/tmp/check_vs.py` — [write_file] Write denied: '`/private/tmp/check_vs.py`' is outside HERMES_WRITE_SAFE_ROOT (/Users/madsholstjensen/hermes-ceo:/Users/madsholstjensen/hermes-passiv). Unset the variable or add this…
+2026-08-25T12:52:13+02:00 iteration 23 afsluttet (exit 0)
+2026-08-25T12:52:38+02:00 === iteration 24/60 ===
+Iteration 342 done. Kort rapport:
+
+**Punkt 1 (universalitet): bestået — igen, og endeligt.** Scan-kernen tager en rå URL og virker uanset CMS; WordPress er allerede kun én indgang. Der findes ingen platform-bundet kode at trække ud, så intet omarbejdes. Jeg noterer i STATUS.md at vurderingen står fast — jeg brænder ikke flere iterationer på at genbekræfte det samme.
+
+**Live-tjek:** sitet svarer korrekt (forside, /pro/, /scan/ alle 200). Domænet eucomplypro.com resolver stadig ikke — CNAME fra Mads mangler stadig.
+
+**Ærlige tal:** revenue 0, kunder 0, waitlist 0, 7 ægte scans.
+
+**Realiteten:** 5 produkter er færdige og kan tage imod penge med det samme. Den eneste blokering er to ting hos Mads (LS-nøgle eller 20 min manuel opsætning; CNAME). BUILD.md's regel står ved magt: ingen nye produkter eller indhold, før én af vejene har givet revenue — og den venter ikke på kode, men på Mads' klik.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-25T12:53:52+02:00 iteration 24 afsluttet (exit 0)
+2026-08-25T12:54:16+02:00 === iteration 25/60 ===

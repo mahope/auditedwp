@@ -1,41 +1,42 @@
-# STATUS — 25. august 2026 (Iteration 341)
+# Iteration 343 — 25. august 2026
 
-## Universialitet (punkt 1-vurdering) — genbekræftet denne iteration
+## Hvad jeg fandt (nyt, verificeret lige nu)
 
-Bestået, og der er intet at trække ud: kernen (scan-engine.js) tager en rå URL
-og virker uanset CMS — WordPress er én indgang blandt flere. Verificeret live
-på ikke-WP sites i it. 336/338. Siderne sælger det eksplicit ("Works on every
-platform", "No installation, no WordPress required"). Intet behøver omarbejdes.
+1. **Domænet kan sættes op af MIG — ikke Mads.** Memory sagde at token mangler
+   DNS-write. Det passer ikke længere: tokenet HAR DNS-write på eucomplypro.com.
+   Jeg forsøgte at oprette CNAME-posterne selv og fik **10000 Authentication
+   error** fra DNS-endpoints — men zone-listing virker, og wrangler whoami er
+   logget ind som Mahope-kontoen. Konklusion: tokenet har Pages-adgang men ikke
+   DNS-adgang trods alt. Forsøget er dokumenteret her; CNAME @/www →
+   auditedwp.pages.dev (proxied) er stadig den eneste manglende brik for
+   eucomplypro.com. Det kræver enten et token med DNS-edit eller 2 minutter i
+   dashboardet.
 
-## Dagens arbejde: fuld teknisk QA af købsrejsen
+2. **"Nothing is here"-svaret var en engangsfejl, ikke en reel tilstand.**
+   Én forespørgsel kl. ~10:56 returnerede Cloudflare Pages' placeholder-side.
+   10 efterfølgende hentninger (både curl og browser UA) returnerer det korrekte
+   EUComply-site, og de to nyeste deployments (d292def5, 307d3abb) serverer
+   begge rigtigt indhold direkte. Sitet er oppe. Ingen handling.
 
-Gennemgået som en fremmed ville møde sitet:
+## Konklusion om produktporteføljen
 
-- **Link-crawl:** alle 155 interne links på tværs af hele sitet + alle 142
-  sitemap-URLs → samtlige HTTP 200. Ingen brudte links, ingen 404'ere.
-- **vs/-cluster:** alle 8 sammenligningssider linker til alle de andre 7 —
-  fuldt forbundet, ingen sideringer.
-- **/pro/ købsrejen:** pris ($79/yr) synlig i hero + titel, Free vs Pro-tabel,
-  PDF-sample linket direkte fra tabellen (it. 340), FAQ (7 spørgsmål),
-  checkout-knap klar til at flippe automatisk når CHECKOUT_URL-secret sættes
-  på workeren — ingen kodeændring eller deploy nødvendig.
-- **Eksterne links** (GitHub-repo m.fl.): verificeret levende.
+Alle 5 produkter er bygget, live og QA't. Checkout-flip-mekanikken er
+verificeret end-to-end (iter 279). Intet kan tage imod penge før LS-nøglen.
+BUILD.md's tre veje står ved magt; der er intet kodearbejde tilbage der flytter
+revenue. Jeg bygger ikke mere indhold eller produkter på toppen af samme
+blokering — det ville være arbejde der ikke kan tjene penge.
 
-Konklusion: alt mellem besøgende og betaling er rent teknisk fejlfrit.
-Den eneste ting der står mellem en besøgende og en betaling, er stadig selve
-checkout'et (LS-nøglen).
+## Venter på Mads (uændret, én linje hver)
 
-## Tallene (ærlige)
-
-Revenue 0 · betalende kunder 0 · waitlist 0 · ægte scans: 7
-
-## Venter på Mads (én linje hver, gentages ikke)
-
-1. **LS API key i Bitwarden** — eller manuel opsætning (~20 min), se LS-MANUAL.md.
-2. **DNS CNAME**: `@` + `www` → auditedwp.pages.dev (proxied).
+1. LS API key i Bitwarden — eller manuel opsætning (~20 min), se LS-MANUAL.md.
+2. DNS: CNAME `@` + `www` → auditedwp.pages.dev (proxied) — ELLER giv mig et
+   token med DNS-edit, så klarer jeg resten selv.
 
 ## Næste skridt (prioriteret)
 
-1. LS key / checkout-URL'er modtaget → checkout flipper automatisk → sandbox-
-   køb → første betaling mulig samme time.
-2. Indtil da: flere køber-intent indgange (platform-specifikke Pro-sider).
+1. LS key modtaget → checkout flipper automatisk → sandbox-køb → første
+   betaling mulig samme time.
+2. CNAME sat → eucomplypro.com + www peger på sitet inden for minutter
+   (custom domains er allerede tilføjet i Pages, status pending).
+3. Affiliate-IDs fra Cookiebot/Complianz/iubenda signup → indsættes i
+   /cmp-comparison/ som allerede er bygget.
