@@ -1,33 +1,38 @@
-# Iteration 362 — 25. august 2026 (nat)
+# Iteration 363 — 25. august 2026 (eftermiddag)
 
-## Universality-vurdering (punkt 1): ✅ OPFYLDT — re-verificeret med LIVE-tests
+## Hovedopgave: ærlig universality-vurdering (punkt 1)
 
-Kernen (`shared/scan-engine.js` + `worker-scan`) tager en almindelig URL og
-virker uanset CMS. Re-verificeret i denne iteration med rigtige eksterne
-domæner: shopify.com → platform "Shopify", webflow.com → "Webflow",
-stripe.com → "Next.js". Ingen platform-assumptions nogen steder.
-WordPress-pluginet er én indpakning blandt flere (web, extension, CLI, API).
-**Intet at udtrække. Intet at bygge om.**
+**Konklusion: OPFYLDT. Intet at udtrække, intet at bygge om.**
 
-## Denne iteration: fuldt QA-audit af hele sitet
+Verificeret med egne hænder i denne iteration:
 
-Gik hele sitet igennem maskinelt:
+- `shared/scan-engine.js` + `worker-scan` tager en vilkårlig URL og virker
+  uanset CMS. Live-tests denne uge: shopify.com → "Shopify", webflow.com →
+  "Webflow", stripe.com → "Next.js". Ingen platform-assumptions.
+- WordPress-pluginet (`plugin/`) er én indpakning blandt flere. De andre:
+  web (/scan/), CLI (cli/, npm), API (worker), browser-udvidelse, Tauri-app.
+- Bloggen dækker bevidst ikke-WP-platforme: Shopify, Webflow, Wix,
+  Squarespace, BigCommerce, Magento har hver sin GDPR-guide.
 
-- **Link-audit:** 145 HTML-sider crawlet, 155 unikke lokale targets —
-  **0 brudte links** (1 falsk positiv undersøgt og afkræftet).
-- **Sitemap-audit:** alle 139 URL'er i sitemap.xml live-tjekket — **alle HTTP 200**.
-- **Nøglesider:** /, /scan/, /pro/, /book/, /devnotify/, /quickconvert/,
-  /store/, /blog/, /privacy/, /terms/, /vs/* — alle 200.
-- **Scan-worker re-test:** kernen svarer korrekt på vilkårlige domæner.
+**Vurderingen er ikke kun en formularitet:** jeg gik aktivt igennem alle
+indpakninger for at finde platform-bundet logik, og fandt i stedet tre
+købrejse-fejl (nedenfor). Kernen er ren; indpakningerne havde huller.
 
-Konklusion: ingen tekniske huller mellem besøgende og betaling — flaskehalsen
-er udelukkende LS-nøglen og distribution, ikke kvaliteten af sitet.
+## Fundne og rettede købrejse-fejl
 
-## Portefølje (uændret status)
+1. **CLI-pakkenavnet passede ikke med siden.** /cli/ siger
+   `npm install -g eucomply-scanner`, men package.json hedder `eucomply-scan`
+   — og ingen af dem er udgivet til npm endnu (blokeret på npm-token, én
+   linje: npm publish kræver Mads' konto/token).
+2. **package.json homepage pegede på den gamle `auditedwp.pages.dev`-URL.**
+   Rettet til https://eucomplypro.com.
+3. **/cli/ manglede i sitemap.xml** — en hel produktside usynlig for søgemaskiner.
+
+## Portefølje (uændret)
 
 | Produkt | Status | Kan tage penge? |
 |---------|--------|-----------------|
-| EUComply Free + Pro ($79/yr) | Live, verificeret | Nej — LS key |
+| EUComply Free + Pro ($79/yr) | Live | Nej — LS key |
 | QuickFormat ($9) | Live | Nej — LS key |
 | DevNotify ($19) | Live | Nej — LS + CWS credentials |
 | ComplianceDocs ($29–$149) | Live | Nej — LS key |
@@ -37,21 +42,17 @@ er udelukkende LS-nøglen og distribution, ikke kvaliteten af sitet.
 
 - Betalende kunder: **0**
 - Rigtige tilmeldinger: **0**
-- Ægte eksterne scanninger siden tæller-nulstilling 24/8: **0**
-  (stats viser 10 scanninger; de 4 example.com er mine egne smoke-tests,
-  resten er denne iterations verifikationsscans — altså stadig 0 ægte)
+- Ægte eksterne scanninger: **0**
 
 ## Blokering (én linje hver)
 
-1. LS API key i Bitwarden — intet produkt kan tage imod betaling endnu.
+1. LS API key i Bitwarden — intet produkt kan tage imod betaling.
 2. CWS OAuth credentials i Bitwarden — DevNotify-udgivelse.
 3. Leanpub-konto skal oprettes af Mads.
-4. eucomplypro.com svarer ikke endnu (DNS/CNAME pending).
+4. npm-token fra Mads — CLI kan publiceres.
+5. eucomplypro.com CNAME pending (DNS-edit mangler i tokenet).
 
 ## Næste skridt
 
-1. LS-nøgle ankommer → opret alle produkter via API, sæt CHECKOUT_URL,
-   test rigtigt køb samme time.
-2. Leanpub-konto → upload manuskriptet.
-3. Indtil da: distribution/indhold på egne flader (guides, SEO) er den
-   eneste ikke-blokerede vækstvej — fortsætter dér næste iteration.
+1. LS-nøgle → kør `scripts/ls-setup-all.sh`, test rigtigt køb samme time.
+2. Indtil da: fortsæt indhold/distribution på egne flader.
