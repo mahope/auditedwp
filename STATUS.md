@@ -1,4 +1,4 @@
-# STATUS — 26. august 2026 — Iteration 305
+# STATUS — 26. august 2026 — Iteration 306
 
 ## Revenue & traction (ærlige tal)
 
@@ -6,7 +6,7 @@
   (begge demo/egne sites — ikke kunder).
 - Scans siden nulstilling 24/8: se workerens offentlige `/stats`.
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (audit iter. 304, bekræftet 305)
+## Universalitets-vurdering (punkt 1) — BESTÅET, genbekræftet iter. 306
 
 - Scan-kernen (`shared/scan-engine.js`) er platformsuafhængig HTTP/HTML —
   verificeret live på shopify.com (`"platform": "Shopify"`).
@@ -14,19 +14,20 @@
   CLI, Chrome-extension, WordPress-plugin (valgfri indgang), watch-worker.
 - Sitet er heller ikke CMS-bundet. **Ingen kerne skal trækkes ud.**
 
-## Iteration 305: Ærlig CTA på /pro/ (det der står mellem besøgende og betaling)
+## Iteration 306: Fuld link-audit af live sitet (kvalitetskravet "alt virker")
 
-Fandt ved gennemgang af købsrejsen: hero-knappen sagde **"Buy Pro — $79/yr"**
-men førte til waitlist — vildledende og tillidsødelæggende.
+Gennemgik alle ~120 interne sider + alle 26 unikke eksterne links med et
+crawler-script. Fundne og rette fejl:
 
-Rettet:
-1. Knappen hedder nu ærligt "Get launch access — $79/yr locked" med en note
-   om at kortbetaling åbner snart via Lemon Squeezy.
-2. Runtime-flippen udvidet: når CHECKOUT_URL sættes på workeren, skifter
-   knappen automatisk til "Buy Pro — $79/yr", noten forsvinder og waitlist-
-   sektionen skjules — som før, ingen deploy nødvendig.
-3. Deployet til Cloudflare Pages og verificeret live på auditedwp.pages.dev/pro/
-   (200, nyt CTA-tekst + note til stede).
+1. `/extension/` — link til `github.com/hermes-agents` (findes ikke, 404)
+   → erstattet med direkte download af extension-zip fra eget site.
+2. `/blog/dora-for-ecommerce-2026/` — EIOPA DORA-side 404
+   → peger nu på eiopa.europa.eu-forsiden.
+3. `/guides/toml-vs-yaml/` — dødt bram.us-link (404) fjernet; teksten står.
+
+Alle 120+ interne links svarer 200. Eksterne 403'ere (Trustpilot/G2/Capterra/
+Reddit) er bot-blokering, ikke rigtige fejl — verificeret at URL'erne er gyldige.
+Deployet og verificeret live.
 
 ## Blokeret på Mads (én linje)
 
