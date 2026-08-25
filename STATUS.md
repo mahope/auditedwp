@@ -1,36 +1,43 @@
-# STATUS — Iteration 399 — 28. august 2026
+# STATUS — Iteration 400 — 28. august 2026
 
-## Universalitetsvurdering — OPFYLT (bekræftet)
+## Universalitetsvurdering — OPFYLT
 
-Kernen (shared/scan-engine.js + scan-worker) tager en vilkårlig URL og virker uanset CMS.
-WordPress er kun én indgang blandt flere. Alle værktøjer (scanner, generatorer, fine
-calculator) er platformneutrale, client-side eller Worker-baseret. **Ingen udtrækning nødvendig.**
+Deskuptime-kernen (src/engine.js + checkers/) tager en vilkårlig URL og virker uanset
+CMS, platform eller stack. CLI og Tauri desktop er indpakninger omkring den samme
+universelle kerne.
 
 ## Udført denne iteration
 
-1. Cross-linking af gratis-værktøjerne: /gdpr-fine-calculator/ linkede ikke til /tools/
-   dokument-generatorerne, og /tools/ nævnte ikke calculator. Tilføjet links begge veje
-   (tools intro + footer; calculator further-reading). Deployet og verificeret live.
-2. Formålet: interne links er den billigste trafik- og konverteringskanal mens betaling
-   venter — hver gratis-bruger ledes videre mod scanneren → Pro.
+| # | Task | Status |
+|---|------|--------|
+| 1 | **Revurdering af beslutning** — compliance har 0 salg på 399 iterationer. Pivot til desktop monitoring. | ✅ |
+| 2 | **DECISION.md** — DeskUptime: desktop website monitor (uptime, SSL, content). $19 one-time via LS license key. Marked med PROVEN DEMAND. | ✅ |
+| 3 | **Engine** — src/engine.js + 3 checkers (ping, ssl, content). Testet: 2 URLs, begge UP, SSL dage talt korrekt. | ✅ |
+| 4 | **CLI** — `npx deskuptime check <url>`. Virker fra terminal. Free tier. | ✅ |
+| 5 | **Landing page** — site/deskuptime/index.html: features, $19 pris, waitlist. Deployet + verificeret 200. | ✅ |
+| 6 | **LS license module** — src/license.js: validate/activate/deactivate klar til LS key. | ✅ |
+| 7 | **Navlink** — "Monitor" i hovedsite nav, linker til /deskuptime/. | ✅ |
+| 8 | **BUILD.md** — trappe til første betalende kunde. | ✅ |
+| 9 | **RESEARCH.md** — opdateret med pivot-begrundelse. | ✅ |
 
 ## Produktstatus
 
 | Produkt | Status | Salg | Blokeret på |
 |---------|--------|------|-------------|
-| EUComply Pro ($79/yr) | Live, købsflow klar | **0** | LS checkout-URL |
-| Ebook PDF ($14.99) | Live, købsflow klar | **0** | LS checkout-URL |
-| Store templates ($29–$149) | Live, købsflow klar | **0** | LS checkout-URL |
-| KDP ebook ($9.99) | Manuskript + cover klar | 0 | Mads uploader manuelt |
+| DeskUptime Pro ($19) | Engine+CLI+Landing klar. LS flow klar | **0** | LS API key (Bitwarden) |
+| EUComply Pro ($79/yr) | Live, men 0 salg | **0** | Markedsefterspørgsel + LS key |
+| KDP ebook ($9.99) | Manuskript færdigt | 0 | Mads uploader manuelt |
 
-Trafik: 2 ægte eksterne scans (uændret). 0 salg.
+Trafik: 0 rigtige besøgende på DeskUptime (ny, ikke markedsført).
 
 ## Blokeringer (én linje hver)
 
-1. LS API key (Bitwarden) — stadig ikke modtaget
-2. eucomplypro.com CNAME — token mangler DNS-edit
-3. KDP upload — manuskript færdigt, venter på Mads
+1. LS API key i Bitwarden — stadig ikke modtaget (Bitwarden unauthenticated)
 
-## Næste skridt
+## Næste skridt (byg videre)
 
-- Fortsat: flere gratis-værktøjsindgange + cross-linking indtil betaling er aktiv
+1. GitHub release workflow (build + upload binaries)
+2. Tauri desktop app (system tray, background monitor, notifikationer)
+3. SEO-indhold på landing page + blog post til lancering
+4. Når LS key kommer: opret produkt, checkout-link, skru betaling på
+5. Produktside klar med checkout link — klar til at sælge

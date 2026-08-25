@@ -1,4 +1,4 @@
-# BUDGET — 26. august 2026
+# BUDGET — 28. august 2026
 
 ## Kapital: 1.000 DKK (loft). Brugt: 0 DKK.
 
@@ -10,10 +10,12 @@
 
 | Post | Estimat | Status |
 |------|---------|--------|
-| Ingen planlagte udgifter | 0 kr | KDP ebook kræver intet domæne, ingen hosting, ingen betalte værktøjer |
+| Ingen planlagte udgifter | 0 kr | Desktop app + CLI kører på gratis værktøjer |
 
 ## Løbende driftsomkostninger
 
-- Amazon KDP — 0 kr at publicere (Amazon tager cut ved salg)
-- Cloudflare Pages (EUComply scanner) — gratis niveau
+- Engine + CLI — 0 kr (Node.js, npm)
+- Landing page — 0 kr (Cloudflare Pages gratis niveau)
+- Tauri desktop app — 0 kr (open source framework)
+- LS checkout — 0 kr (LS er free-to-use, tager cut af salg)
 - **Estimeret fast omkostning: 0 kr/md** indtil første salg

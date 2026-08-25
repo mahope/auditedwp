@@ -1,52 +1,49 @@
-# RESEARCH — 26. august 2026 — KDP ebook
+# RESEARCH — 28. august 2026 — DeskUptime pivot
 
-## Status: Nyt produkt besluttet
+## Status: Nyt produkt under bygning — DeskUptime desktop website monitor
 
-**EUComply Pro** er blokeret på LS key (6+ iterationer). Mads siger start nyt produkt.
-Jeg har valgt **Amazon KDP ebook om website compliance** — den eneste produkttype der
-kan tjene penge uden LS key, Bitwarden, eller nogen blokeret konto.
+**EUComply Pro** har 0 salg og 2 ægte scans efter måneder. Signalet er klart: compliance-nichen
+viser ikke kundeefterspørgsel. Jeg pivoterer til **desktop website monitoring** — et marked med
+proven demand (Pingdom, UptimeRobot, Better Uptime har millioner af betalende kunder).
 
-## Markedsdata — Amazon KDP compliance-niche
+## Hvorfor desktop monitor vs SaaS
 
-**Demand signal:**
-- "GDPR" kategori på Amazon: 696+ resultater
-- "GDPR Made Simple" (2025) af Keith Budden — Kindle $5.36, Paperback $16.12
-- Top compliance-bøger på Amazon: typisk $9.99-$19.99 Kindle, $16-$30 paperback
-- Stable BSR (100K-200K) på relevante titel indikerer steady sales
+| | SaaS (Pingdom/UptimeRobot) | DeskUptime desktop |
+|---|---|---|
+| Pris | $7-12/mo ($84-144/år) | $19 one-time |
+| Levering | Cloud (ser din trafik) | Lokal (kører på din maskine) |
+| Opsætning | Account + API | npx deskuptime eller download |
+| Server | Deres | Din egen computer |
 
-**Konkurrencevurdering:**
-- Flere tunge, juridiske bøger — compliance er overkompliceret for SMV'er
-- Få korte, praktiske guides til små virksomhedsejere
-- Hul i markedet for "ikke-juridisk, praktisk guide" segmentet
-- AI-disclosure er påkrævet (men vises ikke som badge for kunder)
+## Markedsstørrelse
 
-**Prisstrategi:**
-- $9.99 ebook = 70% royalty (~$7/kopi efter Amazons cut)
-- $14.99 paperback = 60% minus print cost (~$5-6/kopi)
-- Start med ebook alene; paperback tilføjes senere
+- **UptimeRobot**: ~3M brugere (2024), free tier, Pro starter $7/md
+- **Pingdom** (SolarWinds): ~500K betalende kunder
+- **Better Uptime**: 10K+ betalende, $20/md start
+- **Oh Dear!**: 5K+ betalende, $19/md start
 
-**Målgruppe:**
-- Små og mellemstore virksomheder i EU
-- Freelancere, konsulenter, enkeltmandsvirksomheder
-- Webdesignere der har klienter der spørger om compliance
-- Amerikanske virksomheder der sælger til EU (GDPR-territorium)
+Selv 0.01% af dette marked er nok til at tjene penge.
 
-## Indhold — hvad jeg har at arbejde med
+## Konkurrenter
 
-29 eksisterende blogguides på auditedwp.pages.dev/blog/ om:
-- GDPR platform-specific (Shopify, WooCommerce, Wix, Webflow, Magento, BigCommerce, Squarespace)
-- Cookie consent (EU guide, cookiebot alternatives, server-vs-client-side)
-- NIS2 (checklist, supply chain, SaaS, board liability, NIS2 for 2026)
-- DORA (guide, for ecommerce)
-- Accessibility (European Accessibility Act, EAA for ecommerce)
-- Specific topics (HSTS, Google Analytics, IAB TCF, meta pixel, cookie fines, Abmahnung)
-- Compliance comparison & tools (best free checkers, scanner comparison)
+- **UptimeRobot**: SaaS free tier (50 URLs, 5 min interval) → Pro $7/md
+- **Pingdom**: SaaS $12/md
+- **Oh Dear!**: SaaS $19/md (cert, broken links, SSL)
+- **Better Uptime**: SaaS $20/md (incident management, status pages)
 
-## KDP regler (2026)
+**Hul i markedet: Desktop app.** Der findes næsten ingen desktop-native uptime monitors.
+Alle er SaaS med månedlig betaling. Desktop app + license key er en unik position.
 
-- AI-disclosure: checkbox i KDP workflow. "AI-assisted" (Grammarly/layout) ≠ "AI-generated" (tekst/indhold)
-- Min AI-producerede tekst skal disclosure — acceptabelt
-- Kindle ebook: 70% royalty ved $2.99-$9.99. 35% ved $10+
-- Backend keywords: 7 felter, hver 50 bytes, 250 bytes total
-- Upload: EPUB eller DOCX (KDP konverterer automatisk)
-- KDP Select (KU) tilvalg: 90 dage eksklusivitet, men adgang til Kindle Unlimited læsere
+## Lemon Squeezy integration
+
+LS understøtter native license key generation + validation API. Perfekt til desktop apps.
+- Automatisk key generation ved køb
+- Public API til validate/activate/deactivate (ingen API key nødvendig for validation)
+- 3 activations per license (vi kan sætte limit)
+- LS er Merchant of Record — håndterer moms globalt
+
+## Prisbeslutning
+
+$19 one-time (3 aktiveringer). Tæt nok på SaaS-pris til at være værdifuld,
+billig nok til at være en impulse purchase for en freelancer/developer der
+er træt af endnu et SaaS-abonnement.

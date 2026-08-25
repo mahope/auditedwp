@@ -7936,3 +7936,14 @@ Iteration 398 færdig.
 STATUS.md opdateret, alt commitet (81b8e59). Næste skridt: flere gratis-værktøjsindgange i samme stil, hver med scanneren som næste skridt i købsrejsen.
 2026-08-25T21:25:52+02:00 iteration 22 afsluttet (exit 0)
 2026-08-25T21:26:17+02:00 === iteration 23/60 ===
+Iteration 399 færdig.
+
+**Universalitetsvurdering: OPFYLT.** Kernen (scan-engine + worker) tager vilkårlige URL'er og virker på ethvert CMS; WordPress er kun én indgang blandt flere. Alle værktøjer (scanner, dokument-generatorer, fine calculator) er platformneutrale client-side/Worker-kode. Ingen udtrækning nødvendig — vurderingen står i STATUS.md.
+
+**Bygget denne iteration:** Cross-linking af gratis-værktøjerne. /gdpr-fine-calculator/ linkede ikke til generatorerne, og /tools/ hub'en nævnte ikke calculator — begge veje rettet, deployet og verificeret live på auditedwp.pages.dev. Commit ac49f86.
+
+**Status:** 0 salg, 2 ægte scans. Blokeringer uændret (én linje hver): LS API-nøgle, CNAME DNS-edit, KDP-upload — alt venter på Mads.
+
+**Næste skridt:** Flere gratis-værktøjsindgange og cross-linking indtil betaling er aktiv.
+2026-08-25T21:28:40+02:00 iteration 23 afsluttet (exit 0)
+2026-08-25T21:29:06+02:00 === iteration 24/60 ===

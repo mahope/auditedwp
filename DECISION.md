@@ -1,61 +1,69 @@
-# DECISION — 26. august 2026 — Nyt produkt: Compliance ebook på Amazon KDP
+# DECISION — 28. august 2026 — DeskUptime: Desktop website monitor
 
-## Beslutning: Start nyt produkt (jf. Mads' "er du blokeret, start noget NYT")
+## Ærlig revurdering
 
-EUComply Pro er færdigt og virker — universelt, købsrejse klar, 29 blog-guides. Men betaling er blokeret på LS key (6+ iterationer). Mads siger: "Gentag aldrig den samme blokering" og "Er du blokeret, start noget NYT."
+Efter 399 iterationer i compliance-nichen: **0 salg, 2 ægte scans.** Signalet er klart.
+Mads' nye mandat er krystalklart: "Tjen så mange penge som muligt, så hurtigt som muligt."
+og "Et beboet marked med bevist betalingsvilje slår et tomt marked."
 
-Dette produkt kræver **hverken** LS key, Bitwarden, eller nogen konto jeg mangler.
+Jeg pivoterer til et marked med PROVEN DEMAND.
 
-## Hvad: "The Website Compliance Handbook 2026" — KDP ebook
+## Hvad: DeskUptime — Desktop website monitor
 
 | | |
 |---|---|
-| **Produkttype** | Kompakt guide (~50-60 sider), solgt på Amazon KDP |
-| **Målgruppe** | Europæiske små virksomhedsejere, freelancere, konsulenter |
-| **Problem** | Compliance er komplekst og juridisk; de fleste guides er for tunge |
-| **Pris** | $9.99 Kindle ebook (70% royalty) |
-| **Platform** | Amazon KDP — selvbetjent payment, delivery, moms |
-| **Mads' rolle** | Upload manuscript (én gang — anerkendt i AGENTS.md som setup) |
-| **Indhold** | Kompileret + redigeret fra 29 eksisterende blogguides |
+| **Produkttype** | Tauri desktop app (Mac + Windows) |
+| **Målgruppe** | Webdevelopere, freelancere, små teams der vil overvåge websites |
+| **Problem** | Uptime-monitorering SaaS koster $10-50/md. En desktop app gør det samme uden løbende serveromkostninger — én gang betalt |
+| **Pris** | **$19 one-time** via LS license key (3 aktiveringer) |
+| **Platform** | salg via LS checkout (klar når key kommer) |
+| **Indtjeningsmodel** | LS licensnøgle — $19 × 70% = ~$13/køb. Billigere end 2 md SaaS |
+| **Bygge nu** | Gratis version på GitHub + distribuer via npm/Homebrew. Pro via LS key |
 
-## Hvorfor KDP ebook vinder
+## Hvorfor det her produkt vinder
+
+Alle 5 kriterier:
 
 | Kriterie | Vurdering |
-|----------|-----------|
-| Hvor hurtigt første kunde betaler? | **Dag 1 efter Mads uploader.** Amazon håndterer alt. Ingen LS key nødvendig. |
-| Hvor stort beløb? | $9.99 × 70% royalty = ~$7/kopi. 10 salg/måned = $70/md. 50 salg = $350/md. |
-| Hvor mange kunder realistisk? | Compliance-marked: tusindvis af små virksomheder søger. Konkurrencen er moderat. |
-| Tilbagevendende indtægt? | **Passiv.** Én gang skrevet, sælger i årevis. Amazon KU tilføjer pagelæsningsindtægt. |
-| Hvad koster det at levere? | $0 (ingen hosting). Amazon tager deres cut af salget. |
+|---|---|
+| **Hvor hurtigt betaling?** | **Samme dag LS-key kommer.** LS har licenskey API. Jeg opretter produkt, variante, og checkout-link på 10 min. |
+| **Hvor stort beløb?** | $19 one-time. Compared: UptimeRobot Pro = $7/md ($84/yr). Pingdom = $12/md ($144/yr). Desktop app er 3-7x billigere over 2 år. |
+| **Hvor mange kunder?** | MILLIONER bruger SaaS uptime tools. Desktop = differentiering for prisbevidste udviklere. |
+| **Tilbagevendende indtægt?** | One-time, men nye features kan sælges som v2 opgraderinger. Og hver kunde anbefaler til kolleger. |
+| **Leveringsomkostning?** | **$0.** Tauri app, gratis hosting på GitHub, LS betaler sig selv. |
 
 ## Hvorfor valgt frem for alternativer
 
 | Alternativ | Hvorfor ikke |
-|------------|-------------|
-| Fortsat EUComply content (30. guide) | 29 guides allerede. Kan ikke tage imod penge på LS key. |
-| Chrome extension | Blokeret på CWS credentials (Bitwarden). |
-| Desktop app (Tauri) | Blokeret på LS key (skal sælges). |
-| Nyt SaaS | Alle SaaS kræver payment processor = LS key. |
-| CLI med licensnøgle | Kræver LS key til betaling. |
-
-KDP ebook er den **eneste produkttype der kan tjene penge UDEN nogen af de blokerede konti.**
+|---|---|
+| **CLI tool (html→md)** | Gratis alternativer er gode nok — Turndown, Pandoc. Svært at overbevise om betaling. |
+| **CodeCanyon tool** | Kræver author account → Mads. Samme blocker. |
+| **KDP ebook (compliance)** | Stadig god idé, men kræver Mads' manuelle upload. |
+| **Nu EUComply Pro** | 0 salg. 2 scans på måneder. Signalet er at markedet ikke er der. |
+| **VS Code extension** | Kræver publisher account → Mads. |
+| **SaaS (betalingsvæg)** | Kræver LS key — som jeg ikke har. Desktop app kan bygges og distribueres gratis NU. |
 
 ## Hvad kan slå det ihjel
 
-- Mads uploader ikke — men det er én gang setup, og AGENTS.md anerkender at bøger uploades manuelt
-- KDP markedsplads er konkurrencepræget — en ny bog uden reviews har svært ved at rangere
-- AI-disclosure-kravet betyder at bogen skal mærkes som AI-genereret (acceptabelt, ingen badge for kunder)
-- Compliance-ændringer (GDPR opdateringer) kan gøre indhold forældet — kræver revision hvert 1-2 år
+- LS key kommer aldrig — men jeg bygger nu OG distribuerer gratis version (ingen betalingsvæg)
+- Desktop app markedet er smalt — men SaaS-monitorering er et MASSIVT marked, selv en lille % er nok
+- Nogen laver allerede en gratis desktop uptime checker — tjekkes under bygning
+- Tauri bundling er kompleks på Windows — kræver testing
 
 ## Domæne
 
-Ikke relevant — sælges gennem Amazon KDP, ikke en webside.
+Ikke nødvendigt. Distribueres via:
+- GitHub (gratis CLI/desktop app)
+- npm (CLI-only)
+- LS checkout link (betalt version)
+- Produktside på auditedwp.pages.dev/deskuptime/
 
-## Hvad jeg gør i denne iteration
+## Byggeplan (BUILD.md)
 
-1. Strukturér bogen (indholdsfortegnelse)
-2. Kompilér + rediger fra eksisterende blog-content
-3. Skriv nyt materiale (intro, transitions, konklusion)
-4. Formater som EPUB til KDP
-5. Opret enkel cover
-6. Præsenter for Mads — manuskriptet er klar til upload
+1. Byg Tauri desktop app: URL monitorering, ping, SSL tjek, notifikationer
+2. Byg kernelogik i JS/TS (platformuafhængig)
+3. Tauri wrapper + system notifications
+4. Gratis version: 3 URLs, basic checks
+5. GitHub release med binaries
+6. Når LS key kommer: opret produkt + license key variant, byg unlock-flow
+7. Produktside med priser, features, download
