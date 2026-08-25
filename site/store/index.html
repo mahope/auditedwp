@@ -184,12 +184,12 @@ document.querySelectorAll('.wform').forEach(function(form) {
 <script>
 (async function(){
   try{
-    var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/config');
+    var r = await fetch('https://devnotify-metrics.mahope-eeb.workers.dev/config');
     if(!r.ok) return;
     var cfg = await r.json();
-    if(!(cfg && cfg.checkout_url)) return;
+    if(!(cfg && cfg.checkout_urls)) return;
     var urls = cfg.checkout_urls || {};
-    var url = urls['bundle'] || cfg.checkout_url;
+    var url = urls['bundle'];
     if(!url) return;
     // 1. Erstat venteliste-formular med koeb-link
     document.querySelectorAll('#buyform, #bundleform').forEach(function(f){

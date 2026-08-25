@@ -7123,3 +7123,53 @@ Kernen (`shared/scan-engine.js` + scan-worker) tog i denne iterations test vilk�
 STATUS.md opdateret, committet og pushet (dadc31a). Næste iteration fortsætter på den ene ikke-blokerede vækstvej: indhold/distribution på egne flader.
 2026-08-25T15:11:10+02:00 iteration 45 afsluttet (exit 0)
 2026-08-25T15:11:36+02:00 === iteration 46/60 ===
+Iteration 363 færdig.
+
+**Universality-vurderingen: OPFYLDT.** Kernen (`shared/scan-engine.js` + `worker-scan`) tager en vilkårlig URL og virker uanset CMS — verificeret live på Shopify, Webflow og Next.js. WordPress er kun én af seks indpakninger (web, CLI, API, udvidelse, Tauri). Intet at udtrække.
+
+Men gennemgangen af indpakningerne fandt to reelle købrejse-fejl, som nu er rettet:
+
+1. **CLI-pakkenavn mismatch:** /cli/-siden instruerer `npm install -g eucomply-scanner`, men package.json hed `eucomply-scan`. Rettet til `eucomply-scanner`, så siden og pakken stemmer når npm-publicering bliver mulig (blokeret på Mads' npm-token).
+2. **Gammel homepage-URL** i cli/package.json pegede på auditedwp.pages.dev — rettet til eucomplypro.com.
+3. /cli/-mangel i sitemap viste sig at være falsk positiv — den står der i forvejen.
+
+Verificeret: CLI kører (example.com → score 22%), JSON validerer, deployet til Cloudflare Pages (/cli/ svarer 200). STATUS.md opdateret med vurderingen, ærlige tal (0/0/0) og fem én-linjes blokeringer. Committet og pushet (19d5f3d).
+
+Næste skridt står i STATUS.md: LS-nøgle → `scripts/ls-setup-all.sh`; indtil da fortsætter distribution/indhold på egne flader.
+2026-08-25T15:15:44+02:00 iteration 46 afsluttet (exit 0)
+2026-08-25T15:16:07+02:00 === iteration 47/60 ===
+Iteration 364 er klar.
+
+## Resumé
+
+**Universality-vurdering** blev gennemført i iteration 363 — intet at udtrække eller bygge om. Kernen er ren, plugin'et er én indpakning blandt flere.
+
+**Denne iteration** fokuserede på at forbedre det der står mellem besøgende og betaling: bogens landingsside fik en **FAQ-sektion med 6 spørgsmål** og **FAQPage JSON-LD structured data**. Det giver Google mulighed for at vise rich snippets i søgeresultater og svarer en potentiel købers tvivl før de forlader siden. Alt er live på `https://auditedwp.pages.dev/book/`.
+
+**Blokeringer uændrede:** 5 produkter, 0 penge. Alt venter på LS-nøglen i Bitwarden. Domænet `eucomplypro.com` resolver heller ikke (DNS-edit-mangel i tokenet).
+
+**Ærlige tal:** 0 betalende, 0 tilmeldinger, 0 scanninger.
+
+Hvis LS-nøglen kommer i morgen, kører jeg `ls-setup-all.sh` inden for minutter og tester et rigtigt køb. Indtil da: mere indhold på egne flader.
+2026-08-25T15:26:35+02:00 iteration 47 afsluttet (exit 0)
+2026-08-25T15:26:55+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T15:32:00+02:00 === iteration 48/60 ===
+Iteration 365 færdig og pushed.
+
+**Svar på første opgave: universality-vurderingen — OPFYLDT, nu med beviser.**
+
+Jeg testede den live scan-motor mod fire ikke-WordPress-sider (rigtige HTTP-kald til workeren):
+
+- shopify.com → detekteret Shopify
+- webflow.com → Webflow (44% score)
+- stripe.com → Next.js (67%)
+- squarespace.com → Squarespace (33%)
+
+Kernen (`shared/scan-engine.js`) er allerede platforms-agnostisk: WordPress er kun én af 20+ platform-signaturer, alle juridiske checks læser HTML uanset CMS, og arkitekturen er kerne + indpakninger (web /scan/, CLI, API, extension) præcis som mandatet kræver. WordPress-mønstrene er snævert anchored så de ikke false-positiver.
+
+**Konsekvens: ingen refaktorering nødvendig. Intet arbejde kasseres.** Vurderingen med testresultaterne står i STATUS.md (commit 365, pushed).
+
+Står stadig som flaskehals for alt indtægt: LS API key i Bitwarden — i det øjeblik den lander, aktiverer `scripts/ls-setup-all.sh` checkout for alle 5 produkter samme time.
+2026-08-25T15:33:48+02:00 iteration 48 afsluttet (exit 0)
+2026-08-25T15:34:10+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T15:39:19+02:00 === iteration 49/60 ===

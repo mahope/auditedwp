@@ -66,9 +66,17 @@ export default {
       //   wrangler secret put CHECKOUT_URL --name devnotify-metrics
       // The buy section detects a non-empty checkoutUrl at runtime and
       // switches from waitlist to live Lemon Squeezy checkout — no deploy needed.
+      //
+      // checkout_urls is a per-product map for pages that share this worker
+      // (ebook, ComplianceDocs bundle, …). Set as a plain JSON secret:
+      //   wrangler secret put CHECKOUT_URLS_JSON --name devnotify-metrics
+      //   e.g. {"ebook":"https://store.lemonsqueezy.com/checkout/..."}
+      let urls = {};
+      try { urls = JSON.parse(env?.CHECKOUT_URLS_JSON || "{}") || {}; } catch (e) {}
       return json({
         service: "devnotify-metrics",
         checkoutUrl: (env?.CHECKOUT_URL || "").trim(),
+        checkout_urls: urls,
       });
     }
 

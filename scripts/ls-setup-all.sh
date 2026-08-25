@@ -148,9 +148,34 @@ set_worker_secret "waitlist-eucomply" "$URL" "CHECKOUT_URL"
 echo "worker config: $(verify_config https://waitlist-eucomply.mahope-eeb.workers.dev/config)"
 echo "(note: QuickFormat page reads checkout_url from this config)"
 
+# ── Ebook + ComplianceDocs bundle share devnotify-metrics via CHECKOUT_URLS_JSON.
+#    These products must NEVER fall back to another product's checkout URL, so
+#    they read a per-product map (checkout_urls) instead of the shared scalar.
 echo ""
-echo "DONE. All three products should now take payments."
+echo "== Ebook (\$14.99 one-time) + ComplianceDocs bundle (\$149) -> devnotify-metrics =="
+create_product "EU Website Compliance Guide 2026" "eu-compliance-ebook" \
+  '"The Practical Guide to EU Website Compliance — GDPR, NIS2, DORA and EAA explained in plain language for people who run websites. PDF, instant download."' \
+  1499 "PDF download"
+EBOOK_VID=$(variant_id_for "EU Website Compliance Guide 2026")
+EBOOK_URL=$(checkout_url_for "$EBOOK_VID" 1499)
+echo "checkout: $EBOOK_URL"
+
+create_product "ComplianceDocs Bundle" "compliancedocs-bundle" \
+  '"All ComplianceDocs templates in one bundle: DPA, NIS2 vendor clauses, EAA statement, records of processing. Editable, instant download."' \
+  14900 "Bundle"
+BUNDLE_VID=$(variant_id_for "ComplianceDocs Bundle")
+BUNDLE_URL=$(checkout_url_for "$BUNDLE_VID" 14900)
+echo "checkout: $BUNDLE_URL"
+
+MAP_JSON=$(python3 -c 'import json,sys;print(json.dumps({"ebook":sys.argv[1],"bundle":sys.argv[2]}))' "$EBOOK_URL" "$BUNDLE_URL")
+set_worker_secret "devnotify-metrics" "$MAP_JSON" "CHECKOUT_URLS_JSON"
+echo "worker config: $(verify_config https://devnotify-metrics.mahope-eeb.workers.dev/config)"
+
+echo ""
+echo "DONE. All five products should now take payments."
 echo "Verify pages:"
 echo "  curl -s https://auditedwp.pages.dev/pro/"
 echo "  curl -s https://auditedwp.pages.dev/devnotify/"
 echo "  curl -s https://auditedwp.pages.dev/quickconvert/"
+echo "  curl -s https://devnotify-metrics.mahope-eeb.workers.dev/config   (ebook + bundle map)"
+echo "  curl -s https://waitlist-eucomply.mahope-eeb.workers.dev/config"
