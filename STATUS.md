@@ -1,32 +1,38 @@
-# STATUS — 25. august 2026 (Iteration 328)
+# STATUS — 25. august 2026 (Iteration 329)
 
-## Universitets-vurdering (punkt 1) — genbekræftet
+## Universitets-vurdering (punkt 1) — genbekræftet med kodegennemgang
 
-Kernerne (`shared/scan-engine.js`, `quickconvert/src/engine.js`, DevNotify) tager en vilkårlig URL/tekst og antager intet CMS. Det eneste WP-stemplede er domænenavnet `auditedwp.pages.dev`; løsningen er eucomplypro.com som custom domain. Ingen kode skal smides væk — vureringen står ved magt fra iter 326/327.
+Gik koden igennem i stedet for at stole på tidligere iterationers påstande:
 
-## Iteration 328: scan-tæller rettet og nulstillet
+- `shared/scan-engine.js` + `worker-scan/index.js`: tager enhver URL, ingen CMS-antagelser. Live-test: scanner både example.com og shopify.com, `"platform"` detekteres og rapporteres. ✅
+- `quickconvert/src/engine.js`: tekst-ind/tekst-ud, nul platformsbinding. ✅
+- Det ENESTE WP-stemplede er domænenavnet `auditedwp.pages.dev`. Løsningen er stadig eucomplypro.com som custom domain (allerede købt og tilføjet i Pages; venter kun på CNAME).
 
-- Fundet fejl: `/stats` tællede også root-pings (health checks) som scans — tallet 83 var forurenet.
-- Fix deployet til `eucomply-scan` worker (verificeret via wrangler tail: kun rigtige `/scan`-kald tæller).
-- Tæller nulstillet til **0** — ægte tal starter herfra.
-- Verificeret live: `/stats` → `{"scans":0}`, `/scan?url=example.com` → 200, forsiden viser kun tæller når > 0.
+Konklusion: kernerne er universelle. Intet arbejde skal trækkes ud eller bygges om.
+
+## Iteration 329: verifikation af checkout-mekanismen
+
+Tjekkede at "flip til betaling uden ny deploy" faktisk virker:
+
+- `/config` endpoint (worker-waitlist) returnerer `checkout_url` fra CHECKOUT_URL-secret. ✅
+- Secret-listing viser CHECKOUT_URL findes; testet end-to-end med placeholder-værdi → /config flipper korrekt → nulstillet til tom igen. Mekanismen er bevist.
+- Bivirkning opdaget og rettet: /stats viste 4 scans, men wrangler-tail bekræftede at ALLE 4 var mine egne smoke-tests fra denne session. Ægte scans siden reset: **0**.
 
 ## Tallene (ærlige)
 
-| Målestok | Tal |
-|----------|-----|
-| Revenue | **$0** |
-| Betalende kunder | **0** |
-| Waitlist | 0 |
-| Scans (ægte, siden reset) | 0 |
+| Målestok | Tal | Kilde |
+|----------|-----|-------|
+| Revenue | **0** | — |
+| Betalende kunder | **0** | — |
+| Waitlist | 0 | KV (testdomæner afvises i koden) |
+| Scans (ægte) | **0** | wrangler-tail: alle hits denne uge var egne tests |
 
-## Venter på Mads
+## Venter på Mads (uændret — nævnes ikke igen)
 
-| # | Hvad | Tid for Mads |
-|---|------|--------------|
-| 1 | LS API-nøgle fra Bitwarden → checkout på alle 5 produkter (eller 20 min manuelt i LS-dashboard) | ~20 min |
-| 2 | CNAME @ + www → `auditedwp.pages.dev` (proxied), så eucomplypro.com går live | ~5 min |
+1. LS API-nøgle (eller ~20 min manuelt i LS-dashboard)
+2. CNAME @ + www → auditedwp.pages.dev
 
 ## Næste skridt
-1. Så snart eucomplypro.com svarer: skift kanoniske URLs og sitemap til det neutrale domæne.
-2. Fortsæt forbedring af scanneren (det der står mellem besøgende og betaling).
+
+1. Så snart eucomplypro.com svarer: kanoniske URLs + sitemap → neutrale domæne.
+2. Forbedre scannerens købsrejse videre (resultatside → pris → checkout er klar via /config-flip).
