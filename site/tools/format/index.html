@@ -390,7 +390,8 @@ formatBtn.addEventListener('click', () => {
     if (fmt && ['json'].includes(fmt)) {
       try {
         const parsed = JSON.parse(input.value)
-        output.value = JSON.stringify(parsed, null, 2)        status.textContent = 'Pretty-printed JSON'
+        output.value = JSON.stringify(parsed, null, 2)
+        status.textContent = 'Pretty-printed JSON'
         status.className = 'status success'
       } catch(e) { status.textContent = 'Error: ' + e.message; status.className = 'status error' }
     } else { status.textContent = 'Pretty-print supports JSON only'; status.className = 'status error' }

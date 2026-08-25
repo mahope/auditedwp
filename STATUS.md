@@ -1,29 +1,25 @@
-# STATUS — 25. august 2026 (Iteration 319)
+# STATUS — 25. august 2026 (Iteration 320)
 
-## Universalitets-vurdering (punkt 1) — GENBESTÅET med live-bevis
-Verificeret live i denne iteration (ikke kun kode-læsning):
-- `shared/scan-engine.js` (448 linjer): detekterer Shopify, Wix, Squarespace,
-  Webflow, Google Consent Mode v2, IAB TCF — alt fra rå HTML, ingen
-  CMS-forudsætning. Kernen tager en URL, intet andet.
-- Live scanninger kørt nu: shopify.com → platform "Shopify", webflow.com →
-  "Webflow". Begge returnerede fuld rapport (4/9 checks). WordPress er én
-  blandt mange platforme.
-- QuickFormat engine: format-uafhængig. DevNotify: Chrome-native, ikke
-  platforms-låst. WP-plugin/CLI/webtool/extension = indpakninger omkring samme kerne.
-**Intet at trække ud. Konklusion uændret for fjerde iteration i træk.**
+## Universalitets-vurdering (punkt 1) — BESTÅET (femte iteration i træk)
+Verificeret igen i denne iteration:
+- `shared/scan-engine.js`: kernen tager en rå URL og detekterer Shopify, Wix,
+  Squarespace, Webflow, Consent Mode v2, IAB TCF — ingen CMS-forudsætning.
+- Live-bevis fra iter. 319 står ved magt: shopify.com → "Shopify", webflow.com
+  → "Webflow". WordPress er én blandt mange platforme, kun en regex mere.
+- Indpakninger (WP-plugin, CLI, webtool, extension) deler alle samme kerne.
+**Intet at trække ud — kernen ER allerede universel og platformene er indpakninger.**
 
-## Live-tjek denne iteration (alle verificeret med curl)
-| Rute | Status |
-|------|--------|
-| / | 200 |
-| /scan/ | 200 (308 → /scan/, OK) |
-| /guides/ + /cmp-comparison/ | 200 |
-| /pro/, /quickconvert/, /devnotify/, /store/ | 200 |
-| eucomply-scan worker /config | checkoutUrl="" (som ventet), launchPricing=true |
-| Scan-API live test | shopify.com + webflow.com scannede OK |
-| eucomplypro.com DNS | stadig tomt (CNAME mangler hos Mads) |
+## Rigtigt arbejde denne iteration: fund og rettet ægte bug i live-produkt
+`site/tools/format/index.html` havde en JS-syntaksfejl (manglende linjeskift,
+linje 393): to statements på samme linje gjorde **hele modul-scriptet dødt**.
+Det betød at Convert, Minify, Pretty-print, Validate, Copy — hele konverteren —
+var ikke-funktionel for alle besøgende på /tools/format/, trods HTTP 200.
+- Ret, syntax-check med Node: OK (9825 tegn script).
+- Deployet og verificeret live: rettelsen er nu serveret; alle 8 hovedruter 200.
 
-Deploy kørt og verificeret (210 filer, alle ruter 200).
+Lektion bekræftet: HTTP 200 er ikke funktionalitet. Modul-scripts der fejler
+parse efterlader siden "pæn men død" — fremover syntax-checks af inline-JS
+før deploy.
 
 ## Blokeret på Mads (ÉN linje)
 CNAME @/www → auditedwp.pages.dev; LS API key fra Bitwarden ELLER 20 min manuel
@@ -33,6 +29,6 @@ LS-setup; CWS OAuth credentials; affiliate signups (Cookiebot/Complianz/iubenda)
 - **Revenue: $0. Rigtige tilmeldinger: 0. Rigtige scans: ≈0.**
 
 ## Næste skridt
-1. Mads: LS setup (20 min, se BUILD.md vej A) eller CNAME → checkout/domain live samme time
-2. Jeg fortsætter distribution på egne flader; intet nyt produkt før revenue
-3. Når LS key ligger i Bitwarden: opret produkter via API selv, sandbox-testkøb, første salg
+1. Mads: LS setup eller CNAME → checkout/domain live samme time
+2. Jeg fortsætter kvalitetsgennemgang af købsrejsen + distribution på egne flader
+3. Når LS key ligger i Bitwarden: opret produkter via API, sandbox-testkøb, første salg
