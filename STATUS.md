@@ -1,50 +1,38 @@
-# STATUS — 27. august 2026 — Iteration 422
+# STATUS — 26. august 2026 — Iteration 423
 
-## Universalitetsvurdering (punkt 1) — GENVERIFICERET
+## Universalitetsvurdering (punkt 1) — stadig gyldig
 
-DeskUptime-kernen (`deskuptime/src/engine.js`) tager en vilkårlig URL og tjekker over ren HTTP/SSL. Ingen CMS-forudsætning. Der findes ingen platformsbundne indpakninger at trække ud — kernen ER produktet. **Punkt 1 er opfyldt; ingen ombygning.**
+DeskUptime-kernen (`deskuptime/src/engine.js`) tager en vilkårlig URL og virker over ren HTTP/SSL — ingen CMS-forudsætning. Kernen ER produktet; ingen platformsbundet indpakning at trække ud. **Punkt 1 opfyldt.**
 
-Live-verificering denne iteration:
-- CLI kørte rigtig check mod example.com: 200 OK, 65ms, SSL 63d ✅
-- 9/9 enhedstests pass ✅
-- Live-check widget + /config endpoint svarer (checkout tom = venter på LS) ✅
+## Denne iteration: gratis analytics sat op (sidste iterations næste skridt #3)
 
-## Fundet og rettet i denne iteration
+Vi har fløjet blindt — 48 blogsider og 0 idé om om nogen læser dem. Løst:
 
-Fund ved gennemgang af "det der står mellem besøgende og betaling":
+1. Cloudflare Web Analytics (RUM, gratis, cookie-fri) oprettet via API for auditedwp.pages.dev.
+2. Beacon-snippet injiceret i alle 171 HTML-sider i site/.
+3. Deployet til Cloudflare Pages og live-verificeret: beacon serveres på `/`, `/deskuptime/` og blogundersider (HTTP 200 + snippet fundet).
 
-| # | Problem | Rettet |
-|---|---------|--------|
-| 1 | `/deskuptime/` og `/cli/` manglede i sitemap.xml (produktet var usynligt for søgemaskiner!) | ✅ Tilføjet (priority 1.0) |
-| 2 | To blogartikler manglede i sitemap (free-uptime-monitoring-tools-2026, website-down-checker) | ✅ Tilføjet |
-| 3 | Sitemap havde 161 → nu 165 URLs, valideret som gyldig XML | ✅ |
+Fra nu af kan vi se: sidevisninger, besøgende, top-sider, referrers. Det er præcis det tal vi mangler for at vide om SEO/bloggen virker, før vi bruger flere iterationer på indhold.
 
-Deployet til Cloudflare Pages og verificeret live: sitemap.xml serverer 165 locs inkl. /deskuptime/.
+## Ærlige tal
 
-## Ærlig status
-
-- Salg: **0**. Tilmeldinger: **0**. Besøgende: ukendt (ingen analytics).
-- Landingssiden er komplet og sælger klar: pris, FAQ, JSON-LD, live-demo, waitlist-form der auto-skifter til Buy Now når checkout-URL dukker op i worker-/config.
+- Salg: **0**. Tilmeldinger: **0**. Analytics-data: starter fra i dag (ingen historik).
 
 ## Produktstatus
 
 | Produkt | Status | Klar til betaling? |
 |---------|--------|--------------------|
-| DeskUptime Pro ($19) | Side + CLI + desktop v0.2.1 (mac+win releases live) | Ja — mangler LS key |
+| DeskUptime Pro ($19) | Side + CLI + desktop v0.2.1 live | Ja — mangler LS key |
 | DeskUptime CLI | Gratis, `npx github:mahope/deskuptime` | — |
-| Blog (48 sider) | Alle i sitemap nu | Trafikindgang — 0 besøgende |
+| Blog (48 sider) | Alle i sitemap; nu med analytics | Trafikindgang |
 
-## Blokeringer (kun nye/ændrede)
+## Blokeringer
 
-1. LS key i Bitwarden — `bw status` stadig unauthenticated. Alt andet klar.
-2. deskuptime.com — verificeret ledigt, foreslået køb (~$10/år), afventer.
+1. LS key i Bitwarden — `bw status` unauthenticated. Alt andet klar til betaling.
+2. deskuptime.com — ledigt, foreslået køb (~$10/år), afventer Mads.
 
 ## Næste skridt
 
-1. LS key → 10 min til åbnet betaling (lemon.js opretter produkt+checkout, siden skifter selv).
+1. LS key → 10 min til åbnet betaling.
 2. Domæne foran landingssiden.
-3. Næste iteration: analytics (gratis, fx Cloudflare Web Analytics) så vi kan se om bloggen overhovedet trækker trafik — uden det flyver vi blindt.
-
-## Beslutning holder
-
-DeskUptime vurderes fortsat bedst på de fem pengekriterier (10 min til betaling, $19/kunde, stort marked, $0 leveringsomkostning). Ingen ændring.
+3. Læs første analytics-tal i næste iteration → mål hvor trafikken kommer fra, og forbedr det der konverterer bedst.
