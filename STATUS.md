@@ -1,19 +1,15 @@
-# STATUS — 27. august 2026 (Iteration 327)
+# STATUS — 25. august 2026 (Iteration 328)
 
-## Opgave: Score-sharing på scanneren (fra DECISION.md-strategien)
+## Universitets-vurdering (punkt 1) — genbekræftet
 
-**Færdig og deployet.** Efter et scan kan brugeren nu dele sit resultat:
+Kernerne (`shared/scan-engine.js`, `quickconvert/src/engine.js`, DevNotify) tager en vilkårlig URL/tekst og antager intet CMS. Det eneste WP-stemplede er domænenavnet `auditedwp.pages.dev`; løsningen er eucomplypro.com som custom domain. Ingen kode skal smides væk — vureringen står ved magt fra iter 326/327.
 
-- "🐦 Share on X" — åbner tweet med "My website scored XX/100 on EU compliance. How does yours compare?" + link tilbage til `/scan/?url=...` (hvert klik på linket kører et nyt scan).
-- "💼 LinkedIn" — deler rapport-URL.
-- "🔗 Copy link" forkortet; print-knap uændret.
-- Uden score (delt før scanning) falder teksten tilbage til "Free EU compliance scan for any website."
+## Iteration 328: scan-tæller rettet og nulstillet
 
-Verificeret live: share-knapperne er i det deployede HTML på auditedwp.pages.dev/scan/. Forside + /pro/, /guides/, /quickconvert/, /devnotify/, /sitemap.xml svarer alle 200.
-
-## Universitets-vurdering (punkt 1) — fra iter 326, stadig gældende
-
-Kernerne (`shared/scan-engine.js`, `quickconvert/src/engine.js`, DevNotify) tager en vilkårlig URL/tekst og antager intet CMS — bekræftet live på Shopify/Wix/Squarespace i iter 324. Det eneste WP-stemplede er domænenavnet `auditedwp.pages.dev`; løsningen er eucomplypro.com som custom domain (købt, venter kun på CNAME). Ingen kode skal smides væk.
+- Fundet fejl: `/stats` tællede også root-pings (health checks) som scans — tallet 83 var forurenet.
+- Fix deployet til `eucomply-scan` worker (verificeret via wrangler tail: kun rigtige `/scan`-kald tæller).
+- Tæller nulstillet til **0** — ægte tal starter herfra.
+- Verificeret live: `/stats` → `{"scans":0}`, `/scan?url=example.com` → 200, forsiden viser kun tæller når > 0.
 
 ## Tallene (ærlige)
 
@@ -22,7 +18,7 @@ Kernerne (`shared/scan-engine.js`, `quickconvert/src/engine.js`, DevNotify) tage
 | Revenue | **$0** |
 | Betalende kunder | **0** |
 | Waitlist | 0 |
-| Overvågningssites | 1 (rigtig bruger) |
+| Scans (ægte, siden reset) | 0 |
 
 ## Venter på Mads
 
@@ -32,5 +28,5 @@ Kernerne (`shared/scan-engine.js`, `quickconvert/src/engine.js`, DevNotify) tage
 | 2 | CNAME @ + www → `auditedwp.pages.dev` (proxied), så eucomplypro.com går live | ~5 min |
 
 ## Næste skridt
-1. Så snart eucomplypro.com svarer: skift kanoniske URLs og sitemap til det neutrale domæne — det fjerner WordPress-stemplet fra brandet.
+1. Så snart eucomplypro.com svarer: skift kanoniske URLs og sitemap til det neutrale domæne.
 2. Fortsæt forbedring af scanneren (det der står mellem besøgende og betaling).
