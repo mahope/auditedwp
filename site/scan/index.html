@@ -132,7 +132,9 @@
       <h3 id="procta-title">Need documented proof — not just flags?</h3>
       <p id="procta-body">The Pro tier turns findings into auditor-ready PDF reports, DPA documents, NIS2 vendor clauses, and accessibility statements you can forward to clients, auditors and insurers.</p>
       <a class="btn" href="/pro/">See Pro — $79/year</a>
-      <button type="button" class="btn ghost" id="share-btn" style="margin-left:8px">🔗 Copy link to this report</button>
+      <button type="button" class="btn ghost" id="share-btn" style="margin-left:8px">🔗 Copy link</button>
+      <button type="button" class="btn ghost" id="share-x-btn" style="margin-left:8px">🐦 Share on X</button>
+      <button type="button" class="btn ghost" id="share-li-btn" style="margin-left:8px">💼 LinkedIn</button>
       <button type="button" class="btn ghost" id="print-btn" style="margin-left:8px">🖨️ Save as PDF</button>
       <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
       <p style="font-size:12.5px;margin:6px 0 0"><a class="btn green" href="/assets/eucomply-1.2.0.zip" style="padding:8px 14px;font-size:13px">↓ WordPress plugin (free)</a></p>
@@ -311,16 +313,31 @@
 
   // Share + print buttons
   var shareBtn = document.getElementById('share-btn');
+  var shareXBtn = document.getElementById('share-x-btn');
+  var shareLiBtn = document.getElementById('share-li-btn');
   var printBtn = document.getElementById('print-btn');
   if (shareBtn) shareBtn.addEventListener('click', function() {
     var link = location.origin + '/scan/?url=' + encodeURIComponent(input.value.trim());
-    function done() { shareBtn.textContent = '✓ Link copied'; setTimeout(function(){ shareBtn.textContent = '🔗 Copy link to this report'; }, 2500); }
+    function done() { shareBtn.textContent = '✓ Link copied'; setTimeout(function(){ shareBtn.textContent = '🔗 Copy link'; }, 2500); }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(link).then(done, done);
     } else {
       var ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta);
       ta.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(ta); done();
     }
+  });
+  // Social share — uses the latest score from render
+  if (shareXBtn) shareXBtn.addEventListener('click', function() {
+    var url = location.origin + '/scan/?url=' + encodeURIComponent(input.value.trim());
+    var text = lastScore !== null
+      ? 'My website scored ' + lastScore + '/100 on EU compliance. How does yours compare?'
+      : 'Free EU compliance scan for any website. Check yours:';
+    var tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
+    window.open(tweetUrl, '_blank', 'noopener,width=600,height=500');
+  });
+  if (shareLiBtn) shareLiBtn.addEventListener('click', function() {
+    var url = location.origin + '/scan/?url=' + encodeURIComponent(input.value.trim());
+    window.open('https://linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank', 'noopener,width=600,height=500');
   });
   if (printBtn) printBtn.addEventListener('click', function() {
     var note = document.getElementById('print-note');

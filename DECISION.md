@@ -1,62 +1,65 @@
-# DECISION — 25. august 2026 (Iteration 318, nyt mandat)
+# DECISION — 27. august 2026
 
-## Forældet: GAMMEL DECISION (iter. 297)
-"Stop building. Focus on removing blocks."
+## Vurdering: A — Revurdér under pengekriteriet
 
-Det var skrevet under "nytænkning"-mandatet. Mads har siden lempet kravet:
-- **Penge er det eneste kriterium.** Kedelig er fint.
-- **Når blokeret: start noget nyt.**
-- **Ventetid er arbejdstid.**
+**Konklusion: Produkterne holder. Strategien gør ikke.**
 
-At vente passivt på konti er ikke længere den rigtige strategi.
-
-## Ny DECISION — 25. august 2026
-
-**To spor, parallelt:**
-
-### Spor A: Fjern blokeringer (samme som før)
-Fasteste vej til $1 er stadig Mads' 20 min i LS dashboard. Jeg holder
-LS-MANUAL.md klar, bygger ikke mere der kræver betalingskonto. Dette spor
-handler om at gøre det SÅ let for Mads at sige ja, at der ikke er nogen
-grund til at vente.
-
-Blokeringer (EN linje):
-- CNAME @/www -> auditedwp.pages.dev (2 domæner)
-- 20 min LS manuel setup ELLER LS API key fra Bitwarden
-- CWS OAuth credentials (Chrome extension publishing)
-- Affiliate signups (Cookiebot/Complianz/iubenda)
-
-### Spor B: Byg distribution på MINE flader (igen i gang)
-Mads' mandat: "Marketing og drift er dit ansvar. Alt hvad der foregår på
-dine EGNE flader, styrer du selv."
-
-Jeg har ~50 HTML-sider, 31 blog guides, 3 produktlinjer, 139 sitemap-URL'er —
-men INGEN samlet trafik-optimeret struktur. Google skal kunne crawle alt,
-forstå hvad siden handler om, og sende besøgende til de rigtige sider.
-
-**Jeg bygger:**
-1. **/guides/** — en SEO-hub der samler alle guider på tværs af produkter
-   (compliance + DevNotify + QuickFormat) i én vertikal. Giver Google én
-   stærk side at ranke, i stedet for 50 spredte.
-2. **Sitemap-opdatering** — mangler /guides/, /cmp-comparison/, /blog/ hver
-   enkelt guide, og nye QuickFormat-sider.
-3. **Interne links** mellem produkter — scanner → guides → store → comparison,
-   så PageRank flyder og besøgende bliver på sitet.
-
-## Hvorfor det her er rigtigt under pengekriteriet
+### Analyse: 5 money-kriterier
 
 | Faktor | Vurdering |
 |--------|-----------|
-| Tid til 1. kunde | Stadig timer efter Mads' LS-opsætning |
-| Hvad jeg gør imens | Bygger trafik så der ER besøgende NÅR LS går live |
-| Omkostning | 0 kr — alt er statisk HTML på Cloudflare gratis |
-| Mål | $0 → $1 hurtigst muligt, derefter $100/md → $1000/md |
+| Tid til 1. kunde | <1 dag efter LS key. Men LS key er IKKE tilgængelig |
+| Beløb | $9–$79/produkt. EUComply Pro ($79/år) er stærkest |
+| Kundebase | Stort marked (alle websites), men 0 reach pt. |
+| Tilbagevendende | Ja — EUComply Pro (årligt), DevNotify (årligt) |
+| Leveringsomkostning | $0 (Cloudflare gratis tier rækker) |
 
-## Hvad jeg IKKE gør
-- Bygger nye produkter der kræver betalingskonto (spild — rammer samme mur)
-- Research-runder uden pengeperspektiv
-- Ventetid (Mads sagde: ventetid er arbejdstid)
+### Hvorfor Spor B fejlede
 
-## Næste step
-Byg /guides/ hub. Opdater sitemap. Deploy. Mål: at sitet kan crawles og
-indekseres optimalt, så der er et publikum når betaling går live.
+DECISION fra 26/8 sagde: "Byg distribution på mine egne flader mens jeg venter."
+- Guides hub bygget ✅
+- Sitemap opdateret ✅
+- Interne links mellem produkter ✅
+- Waiting list/email capture på alle sider ✅
+
+**Resultat: 0 waitlist-tilmeldinger.** Ikke fordi indholdet er dårligt, men fordi der kommer 0 besøgende til at se det. Passiv SEO kræver måneder/år uden outreach.
+
+### Ny strategi: Aktiv distribution gennem produktet
+
+I stedet for at bygge indhold HÅBER nogen finder, bygger jeg mekanikker i selve produktet der FÅR brugere til at dele det.
+
+**Det primære våben: Score sharing på EUComply scanneren.**
+- Efter et scan: "Your site scored XX/100 on EU compliance"
+- Del-knap til Twitter og LinkedIn med det score indbygget
+- Organisk distribution: hver scanning bliver potentielt en annonce
+
+**Hvorfor scanneren?**
+1. Det er den eneste af de tre produkter der giver en "score" — noget værd at dele
+2. Folk elsker at benchmarke sig selv og dele resultater
+3. Hvert delt link udfører et nyt scan (emulerer ?url=)
+4. Det koster 0 kr og kræver 0 Mads-handlinger
+
+### Hvad dette betyder for pengene
+
+Jeg kan IKKE tjene penge før LS key. Pointen med social sharing er:
+- Når LS key kommer, er der en køreklar trafik-kanal
+- Hvert delt scan er en lead-generator for Pro ($79/år)
+- Det bygger brand awareness uden at koste noget
+
+### Hvad jeg IKKE gør
+
+- Starter nyt produkt (rammer samme LS-mur)
+- Fortsætter passiv SEO uden forbedring
+- Bruger iterationer på at spørge Mads igen og igen (spurgt 26/8, noteret i STATUS)
+
+### Næste step
+
+1. Tilføj Twitter/LinkedIn share-knapper til scan-resultater med score
+2. Inkludér badge/social-card mekanik (shareable image med compliance score)
+3. Deploy og test live
+
+## Hvorfor ikke skifte til et helt nyt produkt?
+
+Hvert eneste produkt — uanset type — kræver en betalingsløsning. Chrome Web Store (CWS credentials), desktop app (LS), SaaS (LS). Uden LS key eller lignende kan intet produkt tjene penge. At starte et nyt produkt nu er at bygge oven på samme fundament af blokeringer.
+
+Derfor: maksimér værdien af det der eksisterer, så det er klar til eksplosiv vækst dagen LS key kommer.

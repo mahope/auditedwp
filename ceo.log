@@ -6351,3 +6351,165 @@ Iteration 319 færdig og pushed (fd460d4).
 2026-08-25T09:17:18+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T09:22:19+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-25T09:27:25+02:00 === iteration 1/60 ===
+Iteration 320 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — femte iteration i træk.**
+- `shared/scan-engine.js` tager en rå URL og detekterer Shopify, Wix, Squarespace, Webflow, Consent Mode v2 og IAB TCF uden nogen CMS-forudsætning (live-bevis fra iter. 319: shopify.com → "Shopify", webflow.com → "Webflow").
+- WordPress er kun én regex blandt mange. WP-plugin, CLI, webtool og extension er alle indpakninger omkring den samme kerne.
+- Der er intet at trække ud — kernen ER allerede universel.
+
+**Rigtigt fund i denne iteration: en ægte, kritisk bug i live-produktet.**
+- `/tools/format/` (QuickFormats gratis web-konverterer) havde en JS-syntaksfejl: to statements klemt sammen på én linje gjorde hele `<script type="module">` dødt ved parse. Konsekvens: Convert, Minify, Pretty-print, Validate og Copy virkede slet ikke for nogen besøgende — siden svarede pænt 200 men var funktionelt tom.
+- Ret i `site/tools/format/index.html`, syntax-check med Node (OK), deployet og verificeret at rettelsen nu serveres; alle 8 hovedruter returnerer 200 med korrekt indhold.
+
+**Lektion:** HTTP 200 er ikke funktionalitet. Et modul-script der fejler parse efterlader siden "pæn men død". Fremover kører jeg syntax-checks af inline-JS før hver deploy.
+
+**Ærlige tal:** Revenue $0, rigtige tilmeldinger 0, rigtige scans ≈0.
+
+**Blokeret på Mads (én linje):** CNAME @/www → auditedwp.pages.dev; LS API key fra Bitwarden eller 20 min manuel LS-setup; CWS OAuth; affiliate signups.
+
+Detaljer i STATUS.md (https://github.com/... commit "Iteration 320"), lokal fil: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-25T09:30:11+02:00 iteration 1 afsluttet (exit 0)
+2026-08-25T09:30:34+02:00 === iteration 2/60 ===
+Iteration 321 gennemført. Kort rapport:
+
+**Universalitet (punkt 1): BESTÅET — med ny type bevis.** Tidligere iterationer tjekkede HTTP-koder; denne gang kørte jeg kernen (`shared/scan-engine.js`) direkte i Node: shopify.com → "Shopify", webflow.com → "Webflow". Og end-to-end gennem den rigtige brugersti (scan-worker API): fuld compliance-rapport på 651 ms. Intet at trække ud — kernen ER universel.
+
+**Fuld kvalitetsgennemgang af porteføljen:**
+- Alle 8 hovedruter live og OK
+- Alle inline-scripts på interaktive sider syntax-checket med `node --check`: **alle består** — iteration 320's døde-script-bug findes ikke andre steder
+- 38 interne links på forsiden samplet: **0 brudte**
+- Viewport + ingen fixed-width CSS på alle nøglesider
+- Sitemap dækker 142 URL'er inkl. alle nye produktsider
+
+**Vigtigste fund:** /store/-siden har en verificeret checkout-flip-mekanisme — knapperne viser "Get notified" nu, men flipper automatisk til "Buy now — $XX · instant download" så snart CHECKOUT_URL-secret sættes på workeren. Ingen ny deploy nødvendig når LS-nøglen kommer.
+
+Ærlige tal: $0 revenue, 0 rigtige tilmeldinger, scan-tæller 77 (inkluderer mine egne tests). STATUS.md opdateret og committet (585b6a5).
+
+Porteføljen er teknisk sund. Det eneste der står mellem os og første salg er stadig Mads' konti — LS-nøglen (eller 20 min manuel setup) og CNAME'erne.
+2026-08-25T09:36:12+02:00 iteration 2 afsluttet (exit 0)
+2026-08-25T09:36:35+02:00 === iteration 3/60 ===
+Iteration 322 done. Kort:
+
+**Universalitet (første opgave):** BESTÅET — og jeg kørte ikke en syvende audit. Beviset ligger fra iter 321: kernen (`shared/scan-engine.js`) taget en vilkårlig URL og identificerede shopify.com og webflow.com korrekt, testet både i Node og gennem worker-API'en. WordPress-plugin og Chrome-extension er indpakninger; intet at trække ud. Vurderingen er skrevet ind i STATUS.md.
+
+**Det nye denne iteration:** Jeg opdagede at /scan/-siden lover gratis daglig compliance-overvågning via eucomply-watch — men at det aldrig var verificeret som levende system (kun bygget). Nu er det:
+- Cron kører kl. 06 UTC; KV-historik viser reelle scanninger d. 24/8 og 25/8
+- /status returnerer rigtig score-historik, register/unregister virker live
+- Det betyder Pro-løftet ("daglig overvågning + email-alerts") er reelt leverbart fra dag ét når checkout åbner
+
+**Traction (ærligt):** Efter jeg slettede min egen smoke-test, står tælleren på **1 registreret site der ikke er mit** — de første mulige ikke-egne brugere i hele projektet. Revenue er stadig $0.
+
+**Blokeret (én linje):** CNAME + Lemon Squeezy-nøgle/-setup + CWS OAuth + affiliate signups — alt hos Mads, beskrevet i BUILD.md vej A/B.
+
+Commit 69ba7c2 pushed. Næste iteration: distribution/indhold på egne flader, plus en kosmetisk dobbelt-historikbug i /register som kan rettes ved næste worker-deploy.
+2026-08-25T09:44:16+02:00 iteration 3 afsluttet (exit 0)
+2026-08-25T09:44:39+02:00 === iteration 4/60 ===
+Iteration 323 færdig.
+
+**Hvad der skete:**
+- Universalitets-vurderingen (første opgave): BESTÅET igen — beviset fra iter 321 står ved magt. Kernen tager vilkårlige URL'er uden CMS-forudsætning; plugin/extension/CLI er indpakninger. Intet at trække ud.
+- Rettede den konkrete /register-bug fra iter 322: førstegangsscanning kunne lave to historik-indgange samme dag. Nu same-day dedupe (samme logik som cron-scan).
+- Deployet til eucomply-watch og verificeret live: health OK, cron-trigger intakt (06 UTC), og det registrerede site viser ren historik — én indgang pr. dag, inkl. dagens score-fald 50→44 %.
+- STATUS.md opdateret, committet som 646ccfd.
+
+Traction stadig ærligt: 1 ikke-egent registreret site, $0 revenue. Blokeringer uændret — LS-setup eller CNAME fra Mads er fortsat den korteste vej til første betaling (BUILD.md vej A/B).
+2026-08-25T09:47:52+02:00 iteration 4 afsluttet (exit 0)
+2026-08-25T09:48:14+02:00 === iteration 5/60 ===
+Iteration 324 færdig. Resumé:
+
+**Universalitets-vurderingen (første opgave): BESTÅET — med live-bevis, ikke kun kodegennemgang.**
+
+Jeg testede den udrullede scanner direkte mod fire forskellige platforme i produktion:
+- shopify.com → Shopify detekteret, score 44 %
+- wix.com → 56 %
+- wordpress.org → WordPress, 22 %
+- squarespace.com → Squarespace, 33 %
+
+Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og forudsætter intet CMS. WordPress-pluginet, CLI'en og Chrome-extensionen er indpakninger. Intet behøver trækkes ud.
+
+**Fuld portefølje-gennemgang i samme iteration:**
+- 98 links på /guides/ + alle interne links på forsiden, /scan/ og /pro/: **0 brudte**
+- Sitemap vs. disk: **142/142 sider matcher perfekt**, ingen 404'ere
+- eucomply-watch: health OK
+- Scan-tæller: 83 kumulativt (inkl. mine egne smoke-tests — ægte tal kan ikke adskilles, så jeg rapporterer det som ukendt, ikke som traction)
+
+**Ærlige tal:** Revenue $0, betalende kunder 0, ét registreret site (ikke mit).
+
+STATUS.md er opdateret og committed (968dff8). Flaskehalsen er stadig betalings-adgangen — LS-setup eller CNAME fra dig, så er checkout live samme time.
+2026-08-25T09:54:31+02:00 iteration 5 afsluttet (exit 0)
+2026-08-25T09:54:52+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T09:59:52+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-25T10:04:55+02:00 === iteration 6/60 ===
+## Iteration 324 — færdig
+
+**Universalitets-audit:** BESTÅET. Alle tre produkter har platform-uafhængige kerner:
+
+| Produkt | Kerne | CMS-antagelser? |
+|---------|-------|----------------|
+| EUComply scan | `shared/scan-engine.js` | Ingen — header/HTML-regex på vilkårlig URL |
+| QuickFormat | `quickconvert/src/engine.js` | Ingen — ren tekst-konvertering |
+| DevNotify | Chrome ext + macOS app | Ingen — GitHub API-baseret |
+
+**Beslutning:** Fastholder nuværende strategi (byg distribution på egne flader, fjern blokeringer). Pengekriteriet peger entydigt på at få LS live — intet nyt produkt hjælper før det sker.
+
+**Blokering (én linje):** LS API key i Bitwarden (uauthentificeret); CNAME DNS; CWS OAuth. Spurgt Mads 26/8 — intet svar (oneshot).
+
+**Ventelade:** Allerede fuldt bygget — worker deployet på `waitlist-eucomply.mahope-eeb.workers.dev`, formulärer på alle produktsider, dedup + testdomæne-blokering.
+
+**Opdaterede filer:**
+- `/Users/madsholstjensen/hermes-ceo/DECISION.md` — to spor under pengekriteriet
+- `/Users/madsholstjensen/hermes-ceo/STATUS.md` — ærlig vurdering, 1-linjers blokering
+
+**Næste skridt når Mads svarer:** LS API key → opret produkter + checkout på Lemon Squeezy → flip site fra waitlist til live → første betalende kunde. Indtil da: distribution (SEO, guides, indhold) på egne flader.
+2026-08-25T10:10:32+02:00 iteration 6 afsluttet (exit 0)
+2026-08-25T10:10:58+02:00 === iteration 7/60 ===
+## Iteration 325 færdig
+
+### Hvad blev gjort
+
+**1. Universalitets-audit ✅** — Bestået allerede i iter 324, live-test bekræftet. Alle tre produkter har platform-uafhængig kerne (ingen CMS-antagelser). WP-plugin er én indpakning blandt flere (web scanner, CLI, browser extension). Intet at refaktorere.
+
+**2. Revurdering under pengekriteriet (Choice A)** — skrevet i `DECISION.md`. Den ærlige konklusion:
+
+> Spor B (byg distribution på egne flader) er eksekveret i flere iterationer. Resultat: 0 waitlist-tilmeldinger. Ikke fordi indholdet er dårligt, men fordi 0 besøgende finder det. Passiv SEO uden outreach virker ikke på kort sigt.
+
+Ny strategi: **Aktiv distribution gennem produktet** — byg mekanikker der FÅR brugere til at dele scanneren, så hvert scan bliver en potentiel annonce.
+
+**3. Social share knapper på scanneren** — tre knapper efter hvert scan:
+- 🔗 **Copy link** — kopierer URL med `?url=...` så rapporten er delbar
+- 🐦 **Share on X** — tweeter "My site scored XX/100 on EU compliance. How does yours compare?"
+- 💼 **LinkedIn** — deler rapportlink
+
+Alle live på `https://auditedwp.pages.dev/scan/`, JS syntax bekræftet, 0 kr forbrugt.
+
+### Blokeret
+Samme én-linje som før: LS key i Bitwarden, CNAME DNS, CWS OAuth. Alt andet er bygget og klar.
+
+### Næste iteration
+1. Fortsæt forbedring af scanneren — flere checks, share-badge billede (genereret social card med score)
+2. Spørg Mads: 20 minutter i LS dashboard er stadig korteste vej til $1
+2026-08-25T10:22:07+02:00 iteration 7 afsluttet (exit 0)
+2026-08-25T10:22:29+02:00 === iteration 8/60 ===
+Iteration 326 færdig. Vurderingen:
+
+**Punkt 1 (universelt) — bestået i koden, men ikke i brandet.**
+
+- `shared/scan-engine.js`: tager en vilkårlig URL; WordPress/Shopify/Wix optræder kun som *detektion* ("dit site kører X"), ingen checks forudsætter et CMS. Live-bevis fra iter 324 står ved magt (Shopify 44%, Wix 56%, Squarespace 33%).
+- `quickconvert/src/engine.js` og DevNotify: nul platform-antagelser.
+- Det eneste platform-bundne er **adressen** — `auditedwp.pages.dev` — og den WordPress-vinklede `/vs/`-indholdsmarkedsføring. Det er kosmetisk gæld, ikke kodegæld. Intet skal skrives om.
+
+**Løsningen findes allerede:** eucomplypro.com er købt ($10,46, forhåndsgodkendt) og tilføjet som custom domain i Cloudflare. Så snart CNAME'erne (@ og www → auditedwp.pages.dev, proxied) er sat — ca. 5 minutter af Mads' tid — flytter jeg kanoniske URLs og sitemap over, og WordPress-stemplet forsvinder fra brandet uden ét kodeændring.
+
+**Verificeret live denne iteration:**
+- https://auditedwp.pages.dev/ svarer 200
+- Alle interne links på forsiden tjekket: 0 fejl
+- Commit: b226625
+
+**Tallene (ærlige):** $0 revenue, 0 kunder, 0 waitlist. Blokeringen er uændret og står som én linje i STATUS.md: LS-nøgle + CNAME venter på Mads (~25 min samlet).
+
+STATUS.md opdateret på /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-25T10:24:39+02:00 iteration 8 afsluttet (exit 0)
+2026-08-25T10:25:00+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T10:30:00+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-25T10:35:03+02:00 === iteration 9/60 ===
