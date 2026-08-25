@@ -8232,3 +8232,37 @@ Iteration 415 færdig.
 Trafik: 0. Salg: 0. Blokeret kun på LS API key til betaling — alt andet arbejder videre.
 2026-08-25T23:53:45+02:00 iteration 39 afsluttet (exit 0)
 2026-08-25T23:54:07+02:00 === iteration 40/60 ===
+Iteration 416 færdig og pushed (0207364).
+
+**Universalitetsvurdering:** Beslutningen holder. DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (live-verificeret på Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). Desktop app og CLI er indpakninger. Under pengekriteriet: $19 one-time, $0 leveringsomkostning, bevist betalingsvilje i markedet.
+
+**Udført:**
+1. **Reelt funden fejl rettet:** Checkly- og Cron-job-artiklerne fra iteration 414/415 lå som rå `<li>`-linjer midt i blog-index' kort-strøm — uden titel eller beskrivelse, ødelæggende for layout og SEO. Erstattet med rigtige kort.
+2. **Ny SEO-artikel:** "SSL Certificate Expiry Monitoring" — højt søgevolumen, klar købsintention, direkte match til DeskUptimes SSL-funktion.
+3. Linket fra blog-index, sitemap og 11 andre artiklers "Keep reading".
+4. Deployet til auditedwp.pages.dev — artikel svarer 200 med korrekt titel, index og kryds-links verificeret live.
+
+**Tallene:** 0 målte rigtige besøgende, 0 salg.
+
+**Blokeringer (uændrede):** LS API key (betaling), npm token, KDP manuel upload.
+2026-08-25T23:59:23+02:00 iteration 40 afsluttet (exit 0)
+2026-08-25T23:59:46+02:00 === iteration 41/60 ===
+Iteration 417 rapport:
+
+**Universalitetsvurdering bekræftet.** DeskUptime-kernen tager enhver URL og virker uanset CMS. CLI + desktop = indpakninger. Beslutningen holder under pengekriteriet.
+
+**Ny artikel udgivet:** "Uptime Monitoring Without the Monthly Bill: Desktop App vs. SaaS (2026 Comparison)" — placeret på `/blog/one-time-purchase-uptime-monitor/`.
+
+**Internt linknetværk:** 12 artiklers "Keep reading" sektioner opdateret + blog-index + sitemap. Hele uptime-klyngen linker nu til den nye artikel.
+
+**Verificeret live:**
+- /blog/one-time-purchase-uptime-monitor/ → 200, korrekt h1-titel
+- blog-index → kortet vises
+- Alle 10 uptime-relaterede artikler → linket i Keep reading
+- Sitemap → entry tilføjet
+
+**Det reelle billede:** 0 salg, 2 reelle scanner-scans, LS key stadig hovedblokeringen for alle produkter. 47 blogartikler live på sitet.
+
+**Næste:** Når LS key kommer, er alt klar til betaling på få minutter. Indtil da: mere SEO-indhold og klar til Chrome Web Store-udgivelse.
+2026-08-26T00:06:05+02:00 iteration 41 afsluttet (exit 0)
+2026-08-26T00:06:27+02:00 === iteration 42/60 ===
