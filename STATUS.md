@@ -1,80 +1,84 @@
-# Iteration 366 — 25. august 2026 (eftermiddag)
+# Iteration 369 — 25. august 2026
 
-## Universality (punkt 1): OPFYLDT — beviset står i iteration 365
+## Punkt 1: Universality — vurdering med BEVIS
 
-`shared/scan-engine.js` er platform-agnostisk kerne; web/CLI/API/extension er
-indpakninger. Live-tests mod Shopify/Webflow/Next.js/Squarespace bestod i
-iteration 365. Ingen refaktorering nødvendig. Denne iteration gik derfor til
-punkt 5: det der står mellem besøgende og betaling.
+Kodegennemgang af `worker-core.js` bekræfter: kernen tager en vilkårlig URL og
+kører header/HTML-tjek. "WordPress" optræder kun som ÉN fingerprint-signatur
+blandt 8+ platforme — aldrig som antagelse.
 
-## Fundet og rettet: kritisk checkout-cross-wire bug
+**Live-verifikation (25/8, eucomply-scan worker):**
 
-**Fejlen:** `/book/`'s "Get the book — $14.99"-knap læste `checkout_url` fra
-ventelisteworkeren — men den secret bliver QuickFormats **$9**-checkout når
-LS-nøglen kommer. Køberen var blevet opkrævet $9 og modtaget aldrig bogen.
-`/store/` havde samme mønster med fallback til den forkerte checkout.
+| Test-URL | Platform | Resultat |
+|----------|----------|----------|
+| shopify.com | Shopify | ✅ Scannet, korrekt fingerprint |
+| webflow.com | Webflow | ✅ Scannet, korrekt fingerprint |
+| apple.com | Unknown | ✅ Scannet uden CMS-antagelse |
 
-**Rettelsen:**
-- `worker-metrics/index.js`: `/config` udsender nu et per-produkt-map
-  `checkout_urls` (fra ny secret `CHECKOUT_URLS_JSON`) — ingen fælles fallback.
-- `site/book/index.html` + `site/store/index.html`: læser kun deres egen nøgle
-  (`ebook` / `bundle`). Er den tom → venteliste, aldrig en andens checkout.
-- `scripts/ls-setup-all.sh`: opretter nu også ebook ($14.99) og ComplianceDocs
-  Bundle ($149) som LS-produkter og sætter mappen — ét kørsel når nøglen kommer,
-  alle 5 produkter live samtidig.
-- Deployet og verificeret live på pages.dev (begge sider serverer den nye kode,
-  alle links 200).
+**Konklusion:** Ingen refaktorering nødvendig. WordPress-pluginet er én
+indpakning blandt flere (web /scan/, CLI, API). Kravet er OPFYLDT og bevist.
 
-Begge workers redeployet via wrangler; `/config`-endpoints verificeret:
-`{"checkoutUrl":"","checkout_urls":{}}` (tomt = korrekt venteliste-tilstand).
+---
 
-## Købsrejsen gennemgået side for side
+## Valg i denne iteration: A) Revurdering
 
-- 102 interne links på tværs af 10 hovedsider: **0 brudte**
-- Alle 143 URLs i sitemap.xml: **200 OK**
-- robots.txt, hreflang (/de/), canonical: OK
-- Scan-API end-to-end (vercel.com → Next.js, 56 %, 0,8 s): OK
-- Watch-worker /status: OK
-- Waitlist-worker afviser testdomæner (verificeret i kilde + smoke @test.invalid)
+**Ærlig vurdering:** Min nuværende beslutning ("distribution nu, betaling når LS kommer") er en taktisk holding-pattern, IKKE en indtjeningsstrategi. Den tjener ikke penge. Under Mads' regel "blokeret = start noget nyt" må jeg acceptere realiteten.
 
-## Domæne-status (uændret blokering)
+### Den hårde sandhed
 
-eucomplypro.com og quickformat.mahope.dk hænger i Pages som "pending — CNAME
-not set". Tokenet mangler stadig DNS-edit (verificeret igen i dag: zone-læsning
-OK, dns_records create = 10000 Authentication error). **Kræver Mads:** tilføj
-CNAME-posterne i dashboard, eller giv tokenet DNS-edit-rettighed.
+| Forsøg | Resultat | Blokering |
+|--------|----------|-----------|
+| LS opsætning (5 produkter) | 0 kr | LS API key i Bitwarden (1+ dag) |
+| Leanpub ebook | 0 kr | Mads skal oprette konto |
+| DevNotify Chrome extension | 0 kr | CWS OAuth i Bitwarden |
+| Domæne (eucomplypro.com) | 0 besøgende | CNAME DNS-edit mangler |
+| npm publish | 0 downloads | npm-konto + email-verifikation |
+| **TOTAL indtægt** | **0 kr** | **Mads er den eneste flaskehals** |
 
-## Portefølje
+**"Blokeret = start noget nyt"-testen:** Jeg har gentaget den samme blokering ("LS key mangler") i 3+ iterationer. Det er præcis det, Mads siger man ikke skal. Jeg stopper med at gentage det.
 
-| Produkt | Status | Kan tage penge? |
-|---------|--------|-----------------|
-| EUComply Free + Pro ($79/yr) | Live | Nej — LS key |
-| QuickFormat ($9) | Live | Nej — LS key |
-| DevNotify ($19) | Live | Nej — LS + CWS credentials |
-| ComplianceDocs ($29–$149) | Live | Nej — LS key |
-| Ebook ($14.99) | Live, PDF klar | Nej — Leanpub-konto / LS key |
+### Hvad jeg gør i stedet
 
-Når LS-nøglen kommer: kør `LEMONSQUEEZY_API_KEY=... CLOUDFLARE_API_TOKEN=...
-CLOUDFLARE_ACCOUNT_ID=... ./scripts/ls-setup-all.sh` → alle fem produkter kan
-tage imod betaling uden yderligere kodearbejde.
+Jeg accepterer at **indtægt kræver Mads** og fokuserer på det eneste jeg kan gøre: **bygge distribution, så vi har kunder sekundet LS-nøglen ankommer.**
+
+**Prioriteret plan:**
+
+| # | Handling | Effekt | Tidsforbrug | Afhængighed |
+|---|----------|--------|-------------|-------------|
+| 1 | **npm publish quick-format CLI** | Installerbare downloads, brand | 10 min | npm-konto (Mads) |
+| 2 | **npm publish eucomply-scanner CLI** | Devs kører scan fra terminal | 10 min | npm-konto (Mads) |
+| 3 | **Forbedr web tools SEO** | Mere organisk trafik | Resten | — |
+| 4 | **ls-setup-all.sh** | Ét klik → 5 produkter tager penge | ✅ KLAR | LS key |
+| 5 | **Homebrew tap** | `brew install quick-format` | 15 min | GitHub + npm |
+
+**Når LS key ankommer:** kør `./scripts/ls-setup-all.sh` → 5 produkter tager betaling samme dag.
+
+---
+
+## Blokeringer (ÉN linje hver, ikke gentaget)
+
+1. LS API key i Bitwarden — 5 produkter kan ikke tage penge
+2. npm-konto (email-verifikation) — CLI'erne kan ikke publiceres
+3. CWS OAuth i Bitwarden — DevNotify kan ikke udgives
+4. DNS-edit mangler i token — eucomplypro.com CNAME kan ikke aktiveres
+5. Leanpub-konto — ebook kan ikke publiceres
+
+---
 
 ## Traction (ærlige tal)
 
-- Betalende kunder: **0**
-- Rigtige tilmeldinger: **1 på ventelisten** (kilde: KV-by_time-tæller;
-  testdomæner afvises af workeren). Ikke min egen trafik.
-- Ægte eksterne scanninger: tælleren inkluderer mine verifikations-scans fra
-  denne og tidligere iterationer (18 total) — ægte eksterne: **0**.
+| Måling | Værdi | Kilde |
+|--------|-------|-------|
+| Betalende kunder | **0** | — |
+| Rigtige tilmeldinger | **1** (venteliste) | KV-by_time (testdomæner afvist) |
+| Ægte scanninger | **0** | scan-tæller (egne tests ekskl.) |
+| npm downloads | **0** | Ikke publiceret endnu |
+| Web tools besøgende | ??? | Kan ikke måles uden analytics |
 
-## Blokering (én linje hver)
-
-1. LS API key i Bitwarden — intet produkt kan tage imod betaling.
-2. CWS OAuth credentials i Bitwarden — DevNotify-udgivelse.
-3. DNS-edit mangler i Cloudflare-tokenet — domæner kan ikke aktiveres af mig.
-4. Leanpub-konto skal oprettes af Mads.
+---
 
 ## Næste skridt
 
-1. LS-nøgle → kør ls-setup-all.sh → test rigtigt køb samme time.
-2. Mads: 2 CNAME-poster i dashboard (eller nyt token med DNS-edit).
-3. Indtil da: fortsæt forbedring af indhold + konvertering.
+1. Universality: ✅ AFSLUTTET med live-bevis (iteration 369)
+2. Forbedr web tools (SEO, landingssider) mens vi venter på nøgler
+3. Når LS key ankommer: kør ls-setup-all.sh → 5 produkter tager penge
+4. Når npm-konto findes: publish quick-format + eucomply-scanner
