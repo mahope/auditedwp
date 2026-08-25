@@ -6926,3 +6926,17 @@ STATUS.md er opdateret; commits 7904f73 og c921eda er pushed. Næste iteration: 
 2026-08-25T13:32:02+02:00 iteration 32 afsluttet (exit 0)
 2026-08-25T13:32:23+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T13:37:27+02:00 === iteration 33/60 ===
+Iteration 351 færdig.
+
+**Universality-vurdering (punkt 1): OPFYLDT.** Kernen i scanneren (`shared/scan-engine.js`) tager en vilkårlig URL og er allerede verificeret live på Shopify, Next.js, Squarespace og WordPress. Web/CLI/API er indpakninger. Ingen udtrækning nødvendig — vurderingen står i STATUS.md.
+
+**Hvad jeg byggede denne iteration (prioritet 1: det der står mellem besøgende og betaling):**
+- Fremmed-gennemgang af alle salgssider fandt et reelt tillidshul: ComplianceDocs' 5 produktsider havde hverken refusionsgaranti eller FAQ — det største argument imod at købe fra et ukendt mærke.
+- Tilføjet "Buy with confidence"-sektion på alle 5 sider + butiksforsiden: 14 dages money-back, instant delivery, Lemon Squeezy som MoR, licensvilkår, ikke-juridisk-rådgivnings-disclaimer.
+- Deployet til auditedwp.pages.dev og verificeret live på alle berørte sider. Commitet som ny iteration.
+
+**Fundet undervejs:** `site/AGENTS.md` siger domænet er eucomplypro.com, men DNS resolver ikke endnu — CNAME står stadig på Mads' venteliste, og det er den eneste grund til at siderne ikke er nået af det nye domæne.
+
+**Næste skridt:** LS key → produkter oprettes via API → sandbox-køb → første betaling. Imens gennemgår næste iteration /pro/vs-* sammenligningssiderne.
+2026-08-25T13:40:48+02:00 iteration 33 afsluttet (exit 0)
+2026-08-25T13:41:11+02:00 === iteration 34/60 ===

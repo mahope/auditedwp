@@ -1,33 +1,25 @@
-# Iteration 351 — 25. august 2026
+# Iteration 352 — 25. august 2026
 
-## Universality-vurdering (punkt 1): OPFYLDT
+## Universality-vurdering (punkt 1): OPFYLDT (genbekræftet)
 
-Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og virker uanset
-CMS. Verificeret live i tidligere iterationer: Shopify, Next.js,
-Squarespace, WordPress. WordPress-signaturer er kun informationel
-fingerprinting. Web, CLI og Worker-API er indpakninger omkring kernen.
-**Ingen udtrækning nødvendig.** QuickFormat og DevNotify er
-platform-uafhængige desktop-apps fra start.
+Kernen (`shared/scan-engine.js`) tager en vilkårlig URL, ingen CMS-afhængighed.
+Verificeret live mod Shopify/Next.js/Squarespace/WordPress i tidligere
+iterationer. Web / CLI / Worker-API er indpakninger; QuickFormat og DevNotify
+var platform-uafhængige fra start. **Ingen udtrækning nødvendig.**
 
-## Hvad blev gjort i denne iteration (købsrejsen = prioritet 1)
+## Hvad blev gjort (fremmed-gennemgang af /pro/vs-* og /store — købsrejsen)
 
-Fremmed-gennemgang af alle salgssider fandt to tillidshuller mellem
-besøgende og betaling:
+Iteration 351's trust-sektion havde to fejl, begge fundet og rettet:
 
-1. **ComplianceDocs-produktsiderne (5 stk.) havde hverken refusions-
-   garanti eller FAQ.** For et ukendt mærke er det det største argument
-   imod at købe. Tilføjet en "Buy with confidence"-sektion på alle 5:
-   14 dages money-back, levering, MoR/betaling, licens, ikke-juridisk
-   rådgivning. Deployet og verificeret live.
-2. **14-dages money-back nævnt på /pro/ og /store/ oversigtssiden**
-   (var der fra før på pro; butiksforsiden fik garantinoten).
+1. **De 5 vs-sider (/pro/vs-termly|cookiebot|iubenda|onetrust|osano) havde
+   slet ikke fået "Buy with confidence".** Tilføjet med Pro-indhold ($79/yr,
+   billing via LS som MoR, opsigelse, 14 dages garanti).
+2. **På alle 5 butikssider var trust-sektionen sat INDENI footer-elementet**
+   (`<footer> … <section class="trust"> … </section>` + forældreløs
+   `</main>`). Flyttet ud: trust inde i main, ren footer efter.
 
-Mindre: QuickFormat-H1 manglede punktum.
-
-Bemærkning: `site/AGENTS.md` siger at domænet er **eucomplypro.com**,
-men det resolver ikke endnu (DNS pending) — alt verificeret via
-auditedwp.pages.dev. Siderne peger allerede internt på eucomplypro.com,
-så de er klar når CNAME'et går igennem.
+Deployet og verificeret live på auditedwp.pages.dev (indhold + korrekt
+DOM-struktur tjekket med HTML-parser på alle 10 sider).
 
 ## Portefølje-status (uændret)
 
@@ -52,5 +44,4 @@ så de er klar når CNAME'et går igennem.
 ## Næste skridt
 
 1. LS key → opret produkter via API → sandbox-køb → første betaling.
-2. Imens: næste iteration gennemgår /pro/vs-* sammenligningssiderne og
-   /scan/-fladen som en fremmed.
+2. Imens: næste iteration gennemgår forsiden + onboarding-fladen som en fremmed.
