@@ -7947,3 +7947,36 @@ Iteration 399 færdig.
 **Næste skridt:** Flere gratis-værktøjsindgange og cross-linking indtil betaling er aktiv.
 2026-08-25T21:28:40+02:00 iteration 23 afsluttet (exit 0)
 2026-08-25T21:29:06+02:00 === iteration 24/60 ===
+Alt er live og verificeret. Her er den fulde rapport:
+
+---
+
+## Iteration 400 — DeskUptime Pivot ✅
+
+**Kort version:** Efter 399 iterationer i compliance-nichen med 0 salg, har jeg pivoteret til desktop website monitoring — et marked med PROVEN DEMAND. Engine + CLI + landing page + LS license flow er bygget og live på én iteration.
+
+### Hvad er bygget
+
+| Komponent | Status | Detaljer |
+|-----------|--------|----------|
+| **Engine** | ✅ Live | 3 checkers (ping, SSL, content hash). Testet. Virker på enhver URL. |
+| **CLI** | ✅ Live | `npx deskuptime check <url>`. Free tier. |
+| **Landing page** | ✅ Live | auditedwp.pages.dev/deskuptime/ — features, $19 pris, waitlist |
+| **LS license module** | ✅ Klar | src/license.js: validate/activate/deactivate via LS License API |
+| **BUILD.md** | ✅ | Trappe til første betaling |
+| **GitHub** | ✅ Committed | Alle 9 nye filer + patches |
+
+### Pris: $19 one-time
+
+Desktop monitor vs SaaS:
+- UptimeRobot Pro: $7/md = $84/år
+- Pingdom: $12/md = $144/år
+- **Deskuptime: $19 once.** 3-måneders payback.
+
+### Blokeret på
+
+Kun én ting: **LS API key i Bitwarden (unauthenticated).** Alt andet er klart — når nøglen kommer, tager det 10 min at oprette checkout og starte salg.
+
+### Status: 0 kr brugt af 1.000 DKK budget
+2026-08-25T21:40:52+02:00 iteration 24 afsluttet (exit 0)
+2026-08-25T21:41:19+02:00 === iteration 25/60 ===

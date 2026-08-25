@@ -11,6 +11,7 @@
  */
 
 import { checkUrls, summarize } from './engine.js';
+import { startWatch } from './watch.js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -30,7 +31,7 @@ function showHelp() {
 
 USAGE:
   deskuptime check <urls...>    Check one or more URLs
-  deskuptime watch <url> [--interval 60]  *(Pro)*
+  deskuptime watch <url> [--interval 300]  Monitor in background (free: up to 3 URLs)
   deskuptime --version          Show version
   deskuptime --help             This help
 
@@ -46,10 +47,9 @@ FEATURES:
   $(pkg.bin?.deskuptime ? '• Installed as: deskuptime' : '• Run via: npx deskuptime')
 
 PRO FEATURES (license key):
-  • Desktop app with system notifications
-  • Background monitoring (watch)
-  • Email push alerts on status changes
-  • Unlimited URL monitoring
+  • Desktop app with system tray + native notifications
+  • More than 3 monitored URLs
+  • Email/push alerts on status changes
 `.trim());
 }
 
@@ -117,17 +117,21 @@ if (command === 'check') {
   process.exit(0);
 }
 
-// ── Watch (Pro stub) ──
+// ── Watch (background monitoring) ──
 if (command === 'watch') {
-  console.log(`
-⏳ "watch" is a Pro feature.
+  const raw = args.slice(1);
+  const intervalArg = raw.indexOf('--interval');
+  const interval = intervalArg !== -1 ? parseInt(raw[intervalArg + 1], 10) : 300;
+  const urls = raw.filter((a, i) => !a.startsWith('--') && !(intervalArg !== -1 && i === intervalArg + 1));
 
-Get the desktop app for background monitoring + system notifications:
-  → https://auditedwp.pages.dev/deskuptime/
+  if (urls.length === 0 && !existsSync(join(process.env.HOME || '', '.deskuptime', 'state.json'))) {
+    console.error('❌ Error: at least one URL required');
+    console.error('Usage: deskuptime watch <url> [--interval 300]');
+    console.error('       deskuptime watch            (resume previously monitored URLs)');
+    process.exit(1);
+  }
 
-To purchase a license key (coming soon via Lemon Squeezy).
-`);
-  process.exit(0);
+  await startWatch(urls, { interval });
 }
 
 // ── Unknown command ──

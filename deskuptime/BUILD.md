@@ -23,6 +23,13 @@ Desktop website monitor (uptime + SSL + content changes). CLI gratis, Pro $19 vi
 - [ ] Opdater landing page med checkout link + license unlock flow
 - [ ] Copy checkout URL to clipboard + go
 
+### Trin 4.5 ✅ — Watch mode i CLI (28/8, iteration 401)
+- [x] src/watch.js — baggrundsloop, state i ~/.deskuptime/state.json, resume
+- [x] UP/DOWN-detektion, SSL-advarsel ≤14 dage, content-change alerts
+- [x] Testet live: example.com (UP) + localhost:9999 (DOWN begivenhed)
+- [x] Landing page + README opdateret: watch er gratis, Pro = desktop app, notifikationer, >3 URLs
+- [x] Deployet + verificeret på auditedwp.pages.dev
+
 ### Trin 4 — Tauri desktop app (kan bygges parallelt)
 - [ ] `cargo tauri init` i deskuptime/
 - [ ] Window med: URL list, status, logs

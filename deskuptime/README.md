@@ -26,21 +26,27 @@ npx deskuptime check https://yoursite.com
 # Check multiple URLs
 npx deskuptime check https://site1.com https://site2.com
 
+# Monitor URLs in the background — alerts on UP/DOWN/SSL/content changes (free, up to 3 URLs)
+npx deskuptime watch https://yoursite.com --interval 300
+
 # Show help
 npx deskuptime --help
 ```
 
+Watch mode stores state in `~/.deskuptime/state.json` and resumes where it left off.
+It prints a line on every status change: site down 🚨, back up ✅, SSL expiring within
+14 days ⚠️, or content changed 🔄.
+
 ## Pro features (license key — $19 one-time)
 
-- **Desktop app** with system tray notifications
-- **Background monitoring** — watch URLs on an interval
+- **Desktop app** with system tray + native notifications
+- **More than 3 monitored URLs**
 - **Email/Slack/webhook alerts** on status changes
-- **Unlimited URL monitoring**
 
 ## Pro license
 
 A one-time $19 purchase via [Lemon Squeezy](https://lemonsqueezy.com). License key unlocks
-the desktop app + background monitoring. 3 activations per license.
+the desktop app, native notifications and unlimited URLs. 3 activations per license.
 
 Coming soon — sign up for updates at [the landing page](https://auditedwp.pages.dev/deskuptime/).
 

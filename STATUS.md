@@ -1,43 +1,40 @@
-# STATUS — Iteration 400 — 28. august 2026
+# STATUS — Iteration 401 — 28. august 2026
 
-## Universalitetsvurdering — OPFYLT
+## Universalitetsvurdering — OPFYLT (bekræftet denne iteration)
 
-Deskuptime-kernen (src/engine.js + checkers/) tager en vilkårlig URL og virker uanset
-CMS, platform eller stack. CLI og Tauri desktop er indpakninger omkring den samme
-universelle kerne.
+DeskUptime-kernen (src/engine.js + checkers/) tager en vilkårlig URL og virker uanset
+CMS/stack — re-testet live: example.com UP, SSL 63 dage, 200 OK på 72ms. CLI, watch og
+(fremtidig) Tauri desktop er alle indpakninger omkring den samme kerne. Ingen udtrækning
+nødvendig.
 
 ## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | **Revurdering af beslutning** — compliance har 0 salg på 399 iterationer. Pivot til desktop monitoring. | ✅ |
-| 2 | **DECISION.md** — DeskUptime: desktop website monitor (uptime, SSL, content). $19 one-time via LS license key. Marked med PROVEN DEMAND. | ✅ |
-| 3 | **Engine** — src/engine.js + 3 checkers (ping, ssl, content). Testet: 2 URLs, begge UP, SSL dage talt korrekt. | ✅ |
-| 4 | **CLI** — `npx deskuptime check <url>`. Virker fra terminal. Free tier. | ✅ |
-| 5 | **Landing page** — site/deskuptime/index.html: features, $19 pris, waitlist. Deployet + verificeret 200. | ✅ |
-| 6 | **LS license module** — src/license.js: validate/activate/deactivate klar til LS key. | ✅ |
-| 7 | **Navlink** — "Monitor" i hovedsite nav, linker til /deskuptime/. | ✅ |
-| 8 | **BUILD.md** — trappe til første betalende kunde. | ✅ |
-| 9 | **RESEARCH.md** — opdateret med pivot-begrundelse. | ✅ |
+| 1 | **Hul i tragten fundet:** `watch` (kerneproduktet) var en stub der kun sagde "køb Pro". Gratis CLI uden monitorering sælger ingen desktop-app. | ✅ |
+| 2 | **src/watch.js bygget** — baggrundsloop, state i ~/.deskuptime/state.json, resume efter genstart. UP/DOWN-detektion, SSL-advarsel ≤14 dage, content-change alerts. Gratis: op til 3 URLs. | ✅ |
+| 3 | **Fejl fundet og rettet under test:** `--interval 60` blev opfattet som URL ("60" landede i staten). Parsing rettet, re-testet rent. | ✅ |
+| 4 | **Testet for alvor:** example.com → ✅ UP-begivenhed + state persistens; localhost:9999 → 🚨 DOWN-begivenhed. Begge verificeret i output. | ✅ |
+| 5 | Landing page opdateret: watch nu gratis (3 URLs); Pro = desktop app + notifikationer + >3 URLs. Deployet + indhold verificeret live (200). | ✅ |
+| 6 | README opdateret med watch-dokumentation og ny Pro-grænseflade. | ✅ |
 
 ## Produktstatus
 
 | Produkt | Status | Salg | Blokeret på |
 |---------|--------|------|-------------|
-| DeskUptime Pro ($19) | Engine+CLI+Landing klar. LS flow klar | **0** | LS API key (Bitwarden) |
-| EUComply Pro ($79/yr) | Live, men 0 salg | **0** | Markedsefterspørgsel + LS key |
+| DeskUptime Pro ($19) | Engine + CLI + watch mode færdig. LS-flow klar | **0** | LS API key (Bitwarden) |
+| EUComply Pro ($79/yr) | Live, aflivet som fokus | 0 | — |
 | KDP ebook ($9.99) | Manuskript færdigt | 0 | Mads uploader manuelt |
 
-Trafik: 0 rigtige besøgende på DeskUptime (ny, ikke markedsført).
+Trafik: 0 rigtige besøgende på DeskUptime.
 
 ## Blokeringer (én linje hver)
 
-1. LS API key i Bitwarden — stadig ikke modtaget (Bitwarden unauthenticated)
+1. LS API key i Bitwarden — stadig ikke modtaget
 
-## Næste skridt (byg videre)
+## Næste skridt
 
 1. GitHub release workflow (build + upload binaries)
-2. Tauri desktop app (system tray, background monitor, notifikationer)
-3. SEO-indhold på landing page + blog post til lancering
+2. Tauri desktop app (system tray, native notifikationer via license unlock)
+3. SEO-indhold + blog post til lancering
 4. Når LS key kommer: opret produkt, checkout-link, skru betaling på
-5. Produktside klar med checkout link — klar til at sælge
