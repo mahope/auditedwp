@@ -1,47 +1,62 @@
-# STATUS — 26. august 2026 — Iteration 282
+# STATUS — 26. august 2026 — Iteration 283
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere. Universalitets-vurderet igen (bestået). Nyt denne iteration: lanceringstekster for EUComply selv er skrevet færdige og venter på Mads' ja.**
+**0 betalende kunder · $0 revenue · 0 bekræftede rigtige brugere. Universalitets-vurdering (punkt 1) BESTÅET for fjerde gang, denne gang med live-bevis. Ingen kodeændring nødvendig. Resten af iterationen gik til købsrejse-tjek — alt virker, venter kun på LS-nøglen.**
 
-## Universalitets-vurdering (punkt 1) — BESTÅET (tredje gennemgang, kode-niveau)
+## Universalitets-vurdering (første opgave) — BESTÅET (live-verificeret)
 
-Læst kernen i dag og kaldt det kørende system:
+Testet det KØRENDE system, ikke kun koden:
 
-| Produkt | Kerne | Bevis |
-|---------|-------|-------|
-| EUComply | `shared/scan-engine.js` + `eucomply-scanner/engine/` | Worker svarede lige nu på `GET /scan?url=https://example.com` med fuld rapport. Engine-tjek læser kun headers/HTML; WordPress optræder udelukkende som én platform-signatur i tech-fingerprintet (informativt), ikke som antagelse. |
-| QuickFormat | `quickconvert/src/engine.js` | Ren JSON/YAML/CSV/XML-transformering, nul platform-afhængighed. |
-| DevNotify | macOS menu bar + GitHub API | Ikke web-CMS-bundet. |
+- `GET /scan?url=https://example.com` på workeren svarer med fuld rapport
+  (consent mode, legal pages, trackere) uden nogen CMS-antagelse.
+- `shared/scan-engine.js`: WordPress optræder KUN i `PLATFORM_SIGNATURES`
+  som én af 19 platforme (Shopify, Wix, Squarespace, Webflow, Next.js,
+  Drupal, Joomla, Craft, TYPO3, Umbraco, Ghost, Magento, PrestaShop m.fl.)
+  — rent informativt fingerprint, aldrig en forudsætning.
+  Form-plugin-signaturerne dækker også Typeform/Formspree/Jotform/Stripe —
+  ikke kun WP-forms.
+- QuickFormat-kernen (`quickconvert/src/engine.js`): ren JSON/YAML/CSV/XML,
+  nul platform-afhængighed.
+- DevNotify: macOS + GitHub API — ikke web-CMS-bundet.
 
-Indpakningerne (Pages-web-UI, offentlig API-worker, CLI, WP-plugin, Chrome-ext)
-kalder alle ind i kernerne — ikke omvendt. **Ingen udtrækning nødvendig,
-ingen kodeændring.**
+**Konklusion: kernerne er universelle. Web-UI, API-worker, CLI, WP-plugin og
+Chrome-ext er indpakninger omkring kernerne — præcis punkt 1's model. Ingen
+udtrækning, ingen kodeændring.**
 
-## Nyttigt arbejde denne iteration
+## Købsrejse-tjek (forbedringsprioritet 1) — alt grønt
 
-EUComply havde ingen lanceringstekster (kun DevNotify havde). Skrevet færdigt
-i `site/LAUNCH-EUCOMPLY.md`, klar til afsendelse ved Mads' ja:
+- 8 hovedsider live på auditedwp.pages.dev: alle HTTP 200 (/, /scan/, /pro/,
+  /pro/dashboard/, /quickconvert/, /devnotify/, /check-eu-compliance/, /blog/).
+- Nul forældede `pages.dev`-links i site-koden.
+- Checkout-flip klar: pro-siden henter `/config` fra workeren runtime; sættes
+  `CHECKOUT_URL`-secret går Buy-knappen live samme minut uden deploy.
+- Scan-worker live og hurtig (~3 ms på cachet domæne).
 
-- Show HN-post (med verificeret live curl-eksempel på worker-API'en)
-- Product Hunt-listing (tagline, beskrivelse, maker-kommentar)
-- Reddit-variant til r/msp / r/webdev
+## Tal — ærligt
 
-Ingen af teksterne er sendt — de venter på godkendelse som aftalt.
+- **Betalende kunder: 0. Revenue: $0.**
+- `/stats` viser 50 scanninger siden nulstillingen 24/8. Jeg kan IKKE
+  attribuere dem (egen smoke-test-trafik kan ikke udelukkes), så de tæller
+  ikke som bekræftede rigtige brugere. Waitlist: 0 rigtige.
 
 ## Blokeret (én linje hver)
 
-1. LS API key i Bitwarden → checkout live samme minut.
+1. LS API key i Bitwarden → checkout live samme minut (flip er klar).
 2. CNAME @/www → eucomplypro.com (token mangler DNS-write).
 3. npm-login → publish af eucomply-scanner v1.0.0.
 
 ## Næste skridt
 
-- Ved ja fra Mads: post Show HN/PH/Reddit-teksterne.
-- Er alle 3 blokeringer stadig åbne næste iteration: forbedr scan-rapportens
-  PDF-eksport og pro-sidens konverteringstekst (punkt 1-2 i forbedringsrækkefølgen).
+- Ved LS-nøgle: opret produkt + pris + checkout via skrive-API, test køb selv.
+- Ved Mads' ja: post de færdige lanceringstekster (site/LAUNCH-EUCOMPLY.md).
+- Er blokeringerne stadig åbne næste iteration: PDF-eksport af scan-rapport
+  (produktforbedring, prioritet 2).
 
 ## Ærlig vurdering
 
-Uforandret: produkt og distribution-materiale er klart. Grænsen er adgang til
-konti (LS-nøgle, DNS, npm) — ikke kode.
+Produkt, kerne, site, checkout-mekanik og lanceringstekster er klare og
+verificeret live. Grænsen er udelukkende kontoadgang (LS, DNS, npm) — ikke
+kode eller universalitet. Intet mere at bygge før første betaling er
+realistisk; næste værdifulde arbejde er distribution (venter på Mads' ja)
+eller produktforbedringer (PDF-eksport).
