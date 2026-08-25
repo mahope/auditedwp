@@ -6513,3 +6513,88 @@ STATUS.md opdateret på /Users/madsholstjensen/hermes-ceo/STATUS.md.
 2026-08-25T10:25:00+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T10:30:00+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-25T10:35:03+02:00 === iteration 9/60 ===
+Iteration 327 færdig.
+
+**Universitets-vurderingen (punkt 1):** Allerede lavet i iter 326 og stadig gyldig — kernerne (scan-engine, QuickFormat engine, DevNotify) antager intet CMS og virker på vilkårlige URL'er/tekst. Det eneste WP-bundne er domænenavnet `auditedwp.pages.dev`, som eucomplypro.com løser når CNAME'en er sat. Intet kodearbejde skal smides væk. Vurderingen står i STATUS.md.
+
+**Bygget denne iteration** (næste punkt fra DECISION.md-strategien — score-sharing, det der står mellem besøgende og betaling):
+- "Share on X"-knap på scan-resultater: tweet med brugerens egen score ("My website scored 72/100 on EU compliance. How does yours compare?") + link til `/scan/?url=...` så hvert klik kører et nyt scan.
+- LinkedIn-delknap med rapport-URL.
+- Deployet til Cloudflare Pages og verificeret live (knapperne i det serverede HTML; forside + nøglesider alle HTTP 200).
+
+Committer som a666421. Ingen penge brugt. Revenue: $0.
+
+Venter fortsat kun på de to Mads-handlinger (LS API-nøgle, CNAME) — begge noteret én gang i STATUS.md.
+2026-08-25T10:37:15+02:00 iteration 9 afsluttet (exit 0)
+2026-08-25T10:37:42+02:00 === iteration 10/60 ===
+Iteration 328 færdig.
+
+**Universitets-vurderingen (punkt 1):** står ved magt — kernerne er CMS-agnostiske, bekræftet live på Shopify/Wix/Squarespace i iter 324. Kun domænenavnet `auditedwp.pages.dev` stempler brandet; eucomplypro.com (købt, venter på CNAME) er løsningen. Intet arbejde skal smides væk.
+
+**Fundet og rettet i denne iteration:**
+- Bug: scan-tælleren i `/stats` tællede også root-pings/health-checks som scans — de 83 "scans" var forurenet.
+- Fix deployet til `eucomply-scan` workeren og verificeret via `wrangler tail`: kun rigtige `/scan`-kald tæller nu.
+- Tæller nulstillet til 0. Ægte tal: **Revenue $0, kunder 0, scans 0**.
+
+STATUS.md opdateret og committet (f40e66c). Stadig blokeret på de samme to Mads-punkter: LS API-nøgle (~20 min) og CNAME (~5 min).
+2026-08-25T10:43:41+02:00 iteration 10 afsluttet (exit 0)
+2026-08-25T10:44:03+02:00 === iteration 11/60 ===
+Iteration 329 færdig. Kort rapport:
+
+**Universitets-vurdering (punkt 1)** — gennemgik koden selv i stedet for at stole på gamle påstande:
+- Scan-kernen (`shared/scan-engine.js` + worker) tager en vilkårlig URL. Live-test: scanner både example.com og shopify.com og detekterer platform generisk.
+- QuickFormat-motoren er ren tekst-ind/tekst-ud.
+- Det eneste WordPress-stemplede er domænenavnet — løsningen er stadig eucomplypro.com som custom domain (allerede købt, venter på Mads' CNAME).
+- **Konklusion: intet skal bygges om. Kernerne er universelle.**
+
+**Checkout-mekanismen verificeret end-to-end:**
+- `/config`-endpointet flipper korrekt, når CHECKOUT_URL-secret sættes — testet med en placeholder-værdi og nulstillet igen. Når LS-nøglen kommer, kan checkout aktiveres uden ny deploy.
+
+**Ærlige tal:** /stats viste 4 scans, men wrangler-tail beviste at alle 4 var mine egne smoke-tests fra denne session. Ægte scans: **0**. Revenue: **0**.
+
+STATUS.md opdateret og committet (08be728). Blokeringer står som de to kendte Mads-punkter (LS-nøgle, CNAME) — ikke gentaget ud over det.
+2026-08-25T10:50:51+02:00 iteration 11 afsluttet (exit 0)
+2026-08-25T10:51:12+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T10:56:21+02:00 === iteration 12/60 ===
+Iteration 330 færdig. Kort:
+
+**Universitets-vurdering (opgaven):** Allerede gjort tre gange med kodegennemgang (it. 324/326/329) — kernerne er universelle, kun det gamle domænenavn var WP-stemplet. Jeg gentog den ikke, men handlede på konsekvensen i stedet.
+
+**Det reelle fund:** 244 absolutte URLs (canonicals, OG-urls, hreflang, interne links + sitemap) pegede stadig på `auditedwp.pages.dev` i 138 filer. Det ville splitte SEO og delte links over to domæner, så snart eucomplypro.com flippes.
+
+**Fixet:** Alle 138 filer omskrevet til `https://eucomplypro.com`, deployet og verificeret live — 0 referencer tilbage, 10 undersider alle HTTP 200. Commit f1e1161.
+
+**Resultat:** Så snart CNAME @ + www oprettes (Mads' eneste handling), virker hele sitet korrekt på domænet uden kodeændringer — og checkout-flip via /config er allerede bevist fra it. 329.
+
+STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-25T11:04:37+02:00 iteration 12 afsluttet (exit 0)
+2026-08-25T11:04:58+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T11:10:00+02:00 === iteration 13/60 ===
+Iteration 331 er gennemført. Her er hvad der skete:
+
+---
+
+## Statusrapport — 25. august, it. 331
+
+### 1️⃣ Universalitetsvurdering (punkt 1)
+Vurderet og **bestået**. Scan-engine i `shared/scan-engine.js` tager enhver URL uden CMS-antagelser — bekræftet live på Shopify, Wix, WordPress, Next.js og statisk HTML. Det eneste WordPress-stemplede var det gamle domænenavn — skiftet til eucomplypro.com. Intet arbejde skal trækkes ud. Noteret i STATUS.md.
+
+### 2️⃣ Bygget: distributionsmekanik færdiggjort
+DECISION's manglende trin er nu bygget:
+
+- **OG-image** (1200×630) — mørkt tema, EUComply branding, score-chip, compliance-kategorier. Ligger på `/images/eucomply-og.png`
+- **og:image + twitter:image** på både **forsiden** og **/scan/** — delte links viser nu et rigt kort i X, LinkedIn, Slack, Messenger
+- **"Download score card"-knap** på scan-resultater — canvas-genererer en PNG med **dit domæne, din score (cirkel-diagram), passed/total** — downloades som `{domain}-eucomply-score.png`
+- **Deployet og verificeret** — alle endpoints HTTP 200
+
+### 3️⃣ Hvorfor ikke et nyt produkt
+Alle 5 produkter er bygget og klar til betaling. Intet kan tage imod penge før LS API-nøglen ligger i Bitwarden. At starte et nyt produkt nu ville bygge oven på samme blokering. Mads' regel: "Gør ét færdigt (kan tage imod penge) før du starter det næste" — så indtil LS key kommer, maksimerer jeg distributionsværdien af det der findes.
+
+### Venter på Mads
+1. **LS API-nøgle** (eller ~20 min manuelt i LS-dashboard)
+2. **CNAME @ + www → auditedwp.pages.dev**
+
+Så snart nøglen ligger der, kan jeg oprette produkt + checkout på Lemon Squeezy via API og aktivere køb — uden at Mads rører en finger.
+2026-08-25T11:15:23+02:00 iteration 13 afsluttet (exit 0)
+2026-08-25T11:15:43+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T11:20:46+02:00 === iteration 14/60 ===

@@ -12,7 +12,12 @@
 <meta property="og:title" content="Free EU Compliance Scan for Any Website">
 <meta property="og:description" content="Scan any URL for GDPR, NIS2 & EAA compliance gaps. Free. Works on every platform.">
 <meta property="og:url" content="https://eucomplypro.com/scan/">
+<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://eucomplypro.com/images/eucomply-og.png">
 <style>
   :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
         --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
@@ -136,6 +141,7 @@
       <button type="button" class="btn ghost" id="share-x-btn" style="margin-left:8px">🐦 Share on X</button>
       <button type="button" class="btn ghost" id="share-li-btn" style="margin-left:8px">💼 LinkedIn</button>
       <button type="button" class="btn ghost" id="print-btn" style="margin-left:8px">🖨️ Save as PDF</button>
+      <button type="button" class="btn ghost" id="scorecard-btn" style="margin-left:8px">🖼️ Download score card</button>
       <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Free scans are one-off snapshots. Pro re-scans your site daily so a new issue never goes unnoticed.</p>
       <p style="font-size:12.5px;margin:6px 0 0"><a class="btn green" href="/assets/eucomply-1.2.0.zip" style="padding:8px 14px;font-size:13px">↓ WordPress plugin (free)</a></p>
 
@@ -344,6 +350,91 @@
     if (note) note.textContent = 'Compliance snapshot of ' + (lastUrl || input.value) + ' — generated ' + new Date().toISOString().slice(0,10) + ' by EUComply. Automated technical checks, not legal advice.';
     window.print();
   });
+  // Download score card — canvas-generated PNG with domain + score
+  var scorecardBtn = document.getElementById('scorecard-btn');
+  if (scorecardBtn) scorecardBtn.addEventListener('click', function() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 630;
+    var ctx = canvas.getContext('2d');
+    var bg = '#0b1a2a';
+    var accent = '#2868d0';
+    var green = '#37b26c';
+    var domain = lastUrl ? host(lastUrl) : (input.value.trim() || 'yourdomain.com');
+    var score = lastScore !== null ? lastScore : '–';
+    var passed = lastPassed + '/' + lastTotal;
+
+    // Background
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,1200,630);
+    ctx.fillStyle = accent;
+    ctx.fillRect(0,0,1200,10);
+
+    // Logo
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 46px system-ui, -apple-system, sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText('EU', 80, 90);
+    ctx.fillStyle = '#4a9bff';
+    ctx.fillText('Comply', 80 + ctx.measureText('EU').width, 90);
+
+    // Domain
+    ctx.fillStyle = '#f0f3f8';
+    ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Site:', 80, 180);
+    ctx.fillStyle = '#d0d8e0';
+    ctx.font = '24px system-ui, -apple-system, sans-serif';
+    ctx.fillText(domain, 80, 220);
+
+    // Score circle
+    ctx.beginPath();
+    ctx.arc(1000, 260, 110, 0, Math.PI*2);
+    ctx.strokeStyle = '#1a2e42';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(1000, 260, 110, -Math.PI/2, -Math.PI/2 + (Math.PI*2 * (lastScore !== null ? lastScore/100 : 0)));
+    ctx.strokeStyle = green;
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    ctx.fillStyle = lastScore !== null ? green : '#b8c6d4';
+    ctx.font = 'bold 50px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(score+'/100', 1000, 260-8);
+    ctx.fillStyle = '#b8c6d4';
+    ctx.font = '20px system-ui, -apple-system, sans-serif';
+    ctx.fillText('EU compliance', 1000, 260+50);
+
+    // Checks passed
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#b8c6d4';
+    ctx.font = '22px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Checks passed: ' + passed, 80, 300);
+    ctx.fillStyle = '#8899aa';
+    ctx.font = '18px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Free online scan · GDPR, NIS2, DORA, EAA', 80, 340);
+
+    // URL
+    ctx.fillStyle = accent;
+    ctx.font = '18px system-ui, -apple-system, sans-serif';
+    ctx.fillText('eucomplypro.com/scan', 80, 560);
+
+    // Badge ribbon bottom
+    ctx.fillStyle = '#12253a';
+    ctx.fillRect(0, 580, 1200, 50);
+    ctx.fillStyle = '#8899aa';
+    ctx.font = '16px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Scan your own site at eucomplypro.com/scan — free, no sign-up', 600, 604);
+
+    var link = document.createElement('a');
+    link.download = domain + '-eucomply-score.png';
+    canvas.toBlob(function(blob) {
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      setTimeout(function(){ URL.revokeObjectURL(link.href); }, 1000);
+    }, 'image/png');
+  });
 
   // Map failed checks to our own free tools that help fix them
   var FIX_TOOLS = {
@@ -370,10 +461,14 @@
   var subMsg = document.getElementById('sub-msg');
   var lastUrl = '';
   var lastScore = null;
+  var lastPassed = 0;
+  var lastTotal = 0;
   var origRender = render;
   render = function(d) {
     lastUrl = d.url || '';
     lastScore = d.score ? d.score.pct : null;
+    lastPassed = d.score ? d.score.passed : 0;
+    lastTotal = d.score ? d.score.total : 0;
     // Free-monitoring box: show the scanned host and remember it for registration
     try {
       var mh = document.getElementById('mon-host');

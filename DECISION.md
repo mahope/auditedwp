@@ -1,65 +1,36 @@
-# DECISION — 27. august 2026
+# DECISION — 25. august 2026 (Iteration 331)
 
-## Vurdering: A — Revurdér under pengekriteriet
+## Status: Spor B — distribution — er nu bygget færdig. Stadig blokeret på LS.
 
-**Konklusion: Produkterne holder. Strategien gør ikke.**
+### Hvad der blev bygget
 
-### Analyse: 5 money-kriterier
+DECISION's næste step (it. 327) var:
+1. Twitter/LinkedIn share-knapper med score ✅ (eksisterede allerede ved it. 330)
+2. Social-card / badge-mekanik ✅ (ny i it. 331):
+   - OG-image (1200×630): `/images/eucomply-og.png` — mørkt tema med EUComply
+     branding, domænefelt, score-chip, compliance-kategorier
+   - `og:image` + `twitter:image` på forsiden og /scan/ — delte links viser nu
+     et rigt kort i X, LinkedIn, Slack, Messenger, iMessage
+   - "Download score card"-knap i scan-resultater: canvas-genereret PNG med
+     domæne, ring-score, passed/total — downloades som `{domain}-eucomply-score.png`
 
-| Faktor | Vurdering |
-|--------|-----------|
-| Tid til 1. kunde | <1 dag efter LS key. Men LS key er IKKE tilgængelig |
-| Beløb | $9–$79/produkt. EUComply Pro ($79/år) er stærkest |
-| Kundebase | Stort marked (alle websites), men 0 reach pt. |
-| Tilbagevendende | Ja — EUComply Pro (årligt), DevNotify (årligt) |
-| Leveringsomkostning | $0 (Cloudflare gratis tier rækker) |
+### Hvorfor stadig ikke et nyt produkt
 
-### Hvorfor Spor B fejlede
+Alle 5 produkter (EUComply Free/Pro, QuickFormat, DevNotify, ComplianceDocs,
+Chrome Extension) er bygget og klar til betaling. Intet kan tage imod penge før
+LS API-nøglen ligger i Bitwarden.
 
-DECISION fra 26/8 sagde: "Byg distribution på mine egne flader mens jeg venter."
-- Guides hub bygget ✅
-- Sitemap opdateret ✅
-- Interne links mellem produkter ✅
-- Waiting list/email capture på alle sider ✅
+At starte et nyt produkt nu ville bygge oven på den samme blokering — bare en
+ny landing page der heller ikke kan sælge noget. Samtidig siger Mads' instruks:
+"Gør ét færdigt (virker, udgivet, kan tage imod penge) før du starter det næste."
+Indtil LS key kommer, kan intet produkt opfylde "kan tage imod penge".
 
-**Resultat: 0 waitlist-tilmeldinger.** Ikke fordi indholdet er dårligt, men fordi der kommer 0 besøgende til at se det. Passiv SEO kræver måneder/år uden outreach.
+Derfor: maksimér distributionsværdien af det der allerede er bygget.
 
-### Ny strategi: Aktiv distribution gennem produktet
+### Næste (når LS key ligger i Bitwarden)
 
-I stedet for at bygge indhold HÅBER nogen finder, bygger jeg mekanikker i selve produktet der FÅR brugere til at dele det.
-
-**Det primære våben: Score sharing på EUComply scanneren.**
-- Efter et scan: "Your site scored XX/100 on EU compliance"
-- Del-knap til Twitter og LinkedIn med det score indbygget
-- Organisk distribution: hver scanning bliver potentielt en annonce
-
-**Hvorfor scanneren?**
-1. Det er den eneste af de tre produkter der giver en "score" — noget værd at dele
-2. Folk elsker at benchmarke sig selv og dele resultater
-3. Hvert delt link udfører et nyt scan (emulerer ?url=)
-4. Det koster 0 kr og kræver 0 Mads-handlinger
-
-### Hvad dette betyder for pengene
-
-Jeg kan IKKE tjene penge før LS key. Pointen med social sharing er:
-- Når LS key kommer, er der en køreklar trafik-kanal
-- Hvert delt scan er en lead-generator for Pro ($79/år)
-- Det bygger brand awareness uden at koste noget
-
-### Hvad jeg IKKE gør
-
-- Starter nyt produkt (rammer samme LS-mur)
-- Fortsætter passiv SEO uden forbedring
-- Bruger iterationer på at spørge Mads igen og igen (spurgt 26/8, noteret i STATUS)
-
-### Næste step
-
-1. Tilføj Twitter/LinkedIn share-knapper til scan-resultater med score
-2. Inkludér badge/social-card mekanik (shareable image med compliance score)
-3. Deploy og test live
-
-## Hvorfor ikke skifte til et helt nyt produkt?
-
-Hvert eneste produkt — uanset type — kræver en betalingsløsning. Chrome Web Store (CWS credentials), desktop app (LS), SaaS (LS). Uden LS key eller lignende kan intet produkt tjene penge. At starte et nyt produkt nu er at bygge oven på samme fundament af blokeringer.
-
-Derfor: maksimér værdien af det der eksisterer, så det er klar til eksplosiv vækst dagen LS key kommer.
+1. Opret Produkt (EUComply Pro, $79/yr) på Lemon Squeezy via API
+2. Sæt LS checkout URL som Pages secret på /config endpoint
+3. Test et køb end-to-end
+4. Sæt DevNotify ($19/yr) og QuickFormat ($9) op bag efter
+5. Aktivér social distribution (delt scorekort → lead → Pro-konvertering)
