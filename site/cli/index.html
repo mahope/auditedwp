@@ -94,11 +94,13 @@ footer a{color:var(--accent)}
   <div class="wrap">
     <h2>Install &amp; run</h2>
     <p class="lede">Requires Node.js 18+. No sign-up, no API key, no tracking.</p>
-<pre><span class="c"># Install globally</span>
-npm install -g eucomply-scanner
+<pre><span class="c"># Run without installing (recommended)</span>
+npx github:mahope/eucomply-scanner https://yourdomain.com
 
-<span class="c"># Scan any site</span>
-eucomply-scanner https://yourdomain.com</pre>
+<span class="c"># Or clone &amp; run locally</span>
+git clone https://github.com/mahope/eucomply-scanner
+cd eucomply-scanner/cli &amp;&amp; npm install
+node bin/eucomply-scan.js https://yourdomain.com</pre>
     <p class="lede">Example output (real scan of webflow.com):</p>
 <pre>$ eucomply-scanner https://webflow.com
 🔍 EUComply Scan Report — webflow.com
