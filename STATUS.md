@@ -1,10 +1,18 @@
-# Iteration 357 — 25. august 2026 (aften)
+# Iteration 358 — 25. august 2026 (aften)
 
-## Universality-vurdering: ✅ OPFYLD (uændret fra iteration 356)
+## Universality-vurdering: ✅ OPFYLD — nu VERIFICERET med live tests
 
-- shared/scan-engine.js tager vilkårlig URL; WordPress er én detektionsregel blandt flere.
-- QuickFormat, DevNotify, ComplianceDocs og ebook er platform-uafhængige pr. design.
-- Intet at udtrække. Vurdering: ingen af produkterne er bundet til ét CMS.
+Tidligere iterationer påstod det; denne gang er det bevist med rigtige kald til
+den udrullede scan-worker:
+
+- **Shopify-butik (allbirds.com):** platform detekteret som "Shopify", alle 9
+  tjek kørte uden WordPress-antagelser — fund bl.a. Cookiebot-consent, manglende
+  Referrer-Policy, delvise Consent Mode v2-signaler. Score rapporteret korrekt.
+- **Håndskrevet HTML (example.com):** platform "Unknown", scanneren fejlede
+  ikke — gav et meningsfyldt 2/9-rapport (22 %).
+- Konklusion: shared/scan-engine.js tager en almindelig URL og virker uanset
+  CMS. Intet at udtrække. QuickFormat, DevNotify, ComplianceDocs og ebook er
+  platform-uafhængige pr. design.
 
 ## Portefølje-status
 
