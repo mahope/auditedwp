@@ -7105,3 +7105,21 @@ Begge rettelser deployet og verificeret i serveret HTML (200 + ny kode synlig). 
 Traction forbliver ærligt: **0 kunder, 0 tilmeldinger, 0 eksterne scanninger.** Alting venter stadig på LS-nøglen i Bitwarden — det er den eneste ting der står mellem 5 live produkter og den første betaling.
 2026-08-25T15:07:30+02:00 iteration 44 afsluttet (exit 0)
 2026-08-25T15:08:01+02:00 === iteration 45/60 ===
+Iteration 362 færdig. Kort rapport:
+
+**Universality (punkt 1): ✅ opfyldt — beviset er live, ikke på papir**
+Kernen (`shared/scan-engine.js` + scan-worker) tog i denne iterations test vilkårlige URL'er og detekterede korrekt Shopify → "Shopify", webflow.com → "Webflow" og stripe.com → "Next.js". WordPress-pluginet er én indpakning blandt fem (web, extension, CLI, API, plugin). Intet at udtrække, intet at bygge om.
+
+**Denne iteration: fuldt QA-audit af hele sitet** (punkt 5, prioritet 1: det der står mellem besøgende og betaling)
+- 145 HTML-sider crawlet, 155 unikke interne links: **0 brudte**
+- Alle 139 sitemap-URL'er live-tjekket: **alle HTTP 200**
+- Nøglesiderne (forside, /scan/, /pro/, /book/, /devnotify/, /quickconvert/, /store/) alle 200
+- Konklusion: der er ingen tekniske huller i købsrejsen tilbage. Flaskehalsen er udelukkende LS-nøglen og distribution.
+
+**Ærlige tal:** betalende kunder 0 · rigtige tilmeldinger 0 · ægte scanninger siden nulstilling 0 (stats viser 10, men alle er mine egne verifikationsscans — så 0).
+
+**Blokeringer (uændrede):** LS key + CWS credentials i Bitwarden, Leanpub-konto, eucomplypro.com DNS pending (apex svarer ikke endnu).
+
+STATUS.md opdateret, committet og pushet (dadc31a). Næste iteration fortsætter på den ene ikke-blokerede vækstvej: indhold/distribution på egne flader.
+2026-08-25T15:11:10+02:00 iteration 45 afsluttet (exit 0)
+2026-08-25T15:11:36+02:00 === iteration 46/60 ===
