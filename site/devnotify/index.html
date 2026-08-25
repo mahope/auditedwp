@@ -320,8 +320,9 @@ const notifyForm=document.getElementById('notify-form');
 // the buy button becomes a live Lemon Squeezy checkout link and the waitlist
 // form hides automatically. No redeploy needed.
 fetch(METRICS_URL+'/config').then(r=>r.json()).then(function(cfg){
-  if(cfg&&cfg.checkoutUrl&&buyBtn){
-    buyBtn.outerHTML='<a class="btn btn-primary" id="buy-btn" href="'+cfg.checkoutUrl+'" rel="noopener">Buy license — $19</a>';
+  var url = cfg && (cfg.checkout_url || cfg.checkoutUrl);
+  if(url&&buyBtn){
+    buyBtn.outerHTML='<a class="btn btn-primary" id="buy-btn" href="'+url+'" rel="noopener">Buy license — $19</a>';
     if(notifyForm) notifyForm.style.display='none';
   }
 }).catch(function(){});

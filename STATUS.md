@@ -1,63 +1,53 @@
-# Iteration 358 — 25. august 2026 (aften)
+# Iteration 361 — 25. august 2026 (sen nat)
 
-## Universality-vurdering: ✅ OPFYLD — nu VERIFICERET med live tests
+## Universality-vurdering (punkt 1): ✅ OPFYLDT (re-verificeret iter 360, uændret)
 
-Tidligere iterationer påstod det; denne gang er det bevist med rigtige kald til
-den udrullede scan-worker:
+Kernen (`shared/scan-engine.js` + `worker-scan`) tager en almindelig URL og
+virker uanset CMS — verificeret live på Shopify + plain HTML. Alle 5 produkter
+er platform-uafhængige. WordPress-pluginet er én indpakning blandt flere.
+**Intet at udtrække.**
 
-- **Shopify-butik (allbirds.com):** platform detekteret som "Shopify", alle 9
-  tjek kørte uden WordPress-antagelser — fund bl.a. Cookiebot-consent, manglende
-  Referrer-Policy, delvise Consent Mode v2-signaler. Score rapporteret korrekt.
-- **Håndskrevet HTML (example.com):** platform "Unknown", scanneren fejlede
-  ikke — gav et meningsfyldt 2/9-rapport (22 %).
-- Konklusion: shared/scan-engine.js tager en almindelig URL og virker uanset
-  CMS. Intet at udtrække. QuickFormat, DevNotify, ComplianceDocs og ebook er
-  platform-uafhængige pr. design.
+## Denne iteration: købsrejsen gennemgået som fremmed — 2 fejl fundet og rettet
 
-## Portefølje-status
+Gik selv hele vejen fra forside → scan → Pro/bog/DevNotify → "køb":
+
+1. **/book/**: Klik på "Get the book" gav beskeden *"Checkout is opening
+   shortly"* med SUCCESS-styling mens checkout var tom — en blind gyde.
+   Nu en ærlig besked + autofokus på e-mail-feltet til ventelisten.
+2. **/devnotify/**: JS læste `cfg.checkoutUrl`, men workeren returnerer
+   `checkout_url` — knappen ville ALDRIG være blevet et rigtigt købslink når
+   LS-nøglen ankommer. Læser nu begge felter.
+
+Deployet og verificeret live (begge rettelser synlige i serveret HTML, /book/
+og /devnotify/ svarer 200).
+
+## Portefølje (uændret status)
 
 | Produkt | Status | Kan tage penge? |
-|---------|--------|----------------|
-| EUComply Free + Pro ($79/yr) | Live, verificeret | **Nej — mangler LS key** |
-| QuickFormat ($9) | Live | **Nej — mangler LS key** |
-| DevNotify ($19) | Pakket + side live | **Nej — LS + CWS credentials** |
-| ComplianceDocs ($29–$149) | Store live | **Nej — mangler LS key** |
-| EU Compliance ebook ($14.99) | **NYT: PDF bygget + landingsside LIVE** | **Nej — Leanpub-konto / LS key** |
-
-## Nyt i denne iteration: e-bogen er nu et reelt produkt (Spor B)
-
-1. **PDF bygget og verificeret:** `build_ebook_pdf.py` konverterer de 9 kapitler
-   i book/manuscript/ til en branded 24-siders A4-PDF med forside, sidefod og
-   sidetal → site/book/eu-website-compliance-guide-2026.pdf (indhold tjekket).
-2. **Landingsside /book/ er LIVE** på pages.dev: hvads det er, hvem det er til,
-   indholdsfortegnelse, målgrupper, pris $14.99, købsknap.
-3. **Købsknap-flip er klar:** knappen kalder waitlist-workeren /config og
-   redirecter til CHECKOUT_URL når den sættes (samme mekanisme som de andre
-   produkter). Indtil da viser knappen en "notify me"-fallback der gemmer
-   interesseret-email med source=ebook-book.
-4. Sitemap opdateret (143 URLs), deployet, /book/ og PDF verificeret HTTP 200.
+|---------|--------|-----------------|
+| EUComply Free + Pro ($79/yr) | Live, verificeret | Nej — LS key |
+| QuickFormat ($9) | Live | Nej — LS key |
+| DevNotify ($19) | Live + checkout-bug rettet | Nej — LS + CWS credentials |
+| ComplianceDocs ($29–$149) | Store live | Nej — LS key |
+| Ebook ($14.99) | Landingsside LIVE | Nej — Leanpub-konto / LS key |
 
 ## Traction (ærlige tal)
 
 - Betalende kunder: **0**
 - Rigtige tilmeldinger: **0**
-- Ægte eksterne scanninger siden nulstilling: **0** (/stats' tal er mine egne tests)
-
-## Site-sundhed
-
-- 143 URLs i sitemap, alle verificeret tidligere; /book/ tilføjet og testet.
-- eucomplypro.com stadig pending på CNAME (kendt blokering).
+- Ægte eksterne scanninger: **0**
 
 ## Blokering (én linje hver)
 
-1. LS API key i Bitwarden — alle 5 produkter + ebook kan ikke tage imod betaling.
+1. LS API key i Bitwarden — intet produkt kan tage imod betaling endnu.
 2. CWS OAuth credentials i Bitwarden — DevNotify-udgivelse.
-3. Leanpub-konto skal oprettes af Mads (ebook kan så sælges dér uden LS).
-4. DNS-edit mangler på CF-tokenet → custom domains kræver Mads.
+3. Leanpub-konto skal oprettes af Mads.
+4. Custom domains pending på CNAME (DNS-edit mangler på tokenet).
 
 ## Næste skridt
 
-1. Når LS-nøglen ankommer: opret alle produkter via API, sæt CHECKOUT_URL,
-   test et rigtigt køb — samme time.
-2. Når Leanpub-konto findes: upload Manuscript.txt (allerede korrekt format).
-3. SEO-indhold på egne flader (blog) mens vi venter.
+1. LS-nøgle ankommer → opret alle produkter via API, sæt CHECKOUT_URL,
+   test rigtigt køb samme time (nu også verificeret at flippen virker).
+2. Leanpub-konto → upload manuskriptet.
+3. Indtil da: fortsæt med at forbedre trafikmotorerne (blog/guides) og
+   købsrejsen på egne flader.
