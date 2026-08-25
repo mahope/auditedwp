@@ -1,60 +1,47 @@
-# STATUS — 29. august 2026 — Iteration 429
+# STATUS — 1. september 2026 (aften) — Iteration 431
 
-## Denne iteration: Punkt 1 (universalitet) re-vurderet — OPFYLT. Ingen kodeændringer nødvendige.
+## Denne iteration: universalitet bekræftet + test-data ryddet ud af tæller + ny GitHub Actions-side live
 
-Verificeret LIVE lige nu (ikke kopieret fra forrige iteration):
+### 1. Universalitets-vurdering (punkt 1): OPFYLT — ingen ændring nødvendig
 
-| Tjek | Metode | Resultat |
-|------|--------|----------|
-| Kerne platform-uafhængig | grep efter `wordpress\|wp-json\|wp-content` i `deskuptime/src/` | **0 hits** |
-| Kerne virker på ikke-WordPress-sider | `checkUrl()` på example.com, shopify.com, squarespace.com | ✅ reachable=true alle tre |
-| Enhedstests | `node deskuptime/test/test.js` | ✅ fail 0 |
-| Live-check worker | `GET /check?url=...` | ✅ HTTP 200, korrekt JSON (status 200, responseMs 6) |
-| Landingsside live | https://auditedwp.pages.dev/deskuptime/ | ✅ 200; pris ($19), målgruppe og købsflow er på plads |
+- `grep -riE 'wordpress|wp-|wp_'` i deskuptime-kernen (`src/`, CLI, desktop): **0 hits**
+- Kerne-test: `node test/test.js` → fail 0
+- Live-tjek: quickcheck-worker svarede korrekt på example.com (HTTP, status, SSL, ms — intet CMS-specifikt)
+- Desktop-app, CLI, GitHub Action og live-check-widget er alle indpakninger over den samme platform-uafhængige kerne.
+- **Konklusion:** Intet at trække ud. DeskUptime opfylder universitetskravet fra grunden af.
 
-**Konklusion:** Kernen (`deskuptime/src/engine.js`) tager en vilkårlig URL over
-HTTP og ved intet om CMS. Desktop-app, CLI og GitHub Action er allerede separate
-indpakninger oven på den samme kerne. Der er intet at trække ud — vurderingen
-fra iteration 428 står: **punkt 1 er opfyldt, og produktet er klar til betaling,
-blokeret kun på Lemon Squeezy API-key.**
+### 2. Ærlige tal — rettet
 
-## Landingsside-tjek (punkt B)
-
-Siden sælger allerede: hvad det er, hvem det er til, hvad det koster ($19
-one-time), og hvordan man køber. Købsknappen kobles automatisk på, når
-Config Worker'en får en `checkout_urls.deskuptime` URL — verificeret at
-endpointet svarer (returnerer i øjeblikket tomt objekt, dvs. ventetilstand).
-Blog-funnellen peger ind: 5 uptime-relaterede artikler linker direkte til
-produktet (4–7 links hver), alle live med HTTP 200.
-
-## Ærlige tal
+Waitlist-workerens `/stats` viste stadig `count:6`. Jeg listede KV remote: det var **13 gamle egne test/probe-indgange** (`@rejection-test.invalid`, smoke-tests). Alle er nu **slettet**, og `/stats` returnerer:
 
 | Metrik | Værdi | Kilde |
 |--------|-------|-------|
-| Salg | **0** | Ingen LS checkout åben endnu |
-| Waitlist | **0** | De tidligere rapporterede 6 var egne smoke-tests — tæller ikke |
-| Scans (offentlig tæller) | **2** | /stats endpoint lige nu: craigslist.org + wix.com (ikke mine egne tests) |
+| Salg | **0** | Ingen LS checkout åben |
+| Waitlist | **0** | KV listet og renset remote — verificeret tomt |
+| Scans | se /stats | scan-worker |
 
-## Produktstatus
+### 3. Bygget og deployet: GitHub Actions monitoring-side
 
-| Produkt | Status | Klar til betaling? |
-|---------|--------|--------------------|
-| DeskUptime Pro ($19 one-time) | App + landingsside + CLI + GitHub Action live, tests grønne | **Ja — mangler LS key** |
+Ny landingsside: **/deskuptime/github-actions/** — målretter søgningen "uptime monitoring github actions" / "free cron website check".
 
-## Blokeringer (1 linje hver)
+- Komplet YAML-setup, input/output-tabel, FAQ + JSON-LD (SoftwareApplication + FAQPage)
+- **Ærlig begrænsnings-sektion**: cron-minimum ~5 min, ingen multi-region, GitHub load-delays — med direkte sammenligning mod SaaS og desktop-appen
+- Linket fra produkt-sidens footer + alle 4 vs-sider + sitemap.xml
+- IndexNow pinget (HTTP 200), deploy verificeret: alle URLs 200, nyt indhold live
 
-1. LS API key i Bitwarden → 10 min til åben checkout når den kommer.
-2. deskuptime.com forhåndsgodkendt, verificeret ledigt (~$10/år) → klar til køb.
-3. npm publish-token mangler (CLI distribueres via npx github: indtil videre).
+### Blokeringer (1 linje hver)
 
-## Næste skridt (prioriteret)
+1. LS API key: **Bitwarden-app kører, men låst** (0 vinduer, bw CLI uautentificeret) — kan ikke låse op uden master-adgangskode. Skærmtilladelse mangler også til GUI-styring.
+2. Domæne deskuptime.com (~$10/år) forhåndsgodkendt → sig bare til.
+3. npm publish-token mangler (CLI via npx github: indtil videre).
 
-1. LS key → BUILD.md trin 1-8: produkt oprettes via LS API, checkout_url skrives til Config Worker, PreOrder→InStock i JSON-LD, deploy.
-2. Domæne deskuptime.com købes → CNAME → auditedwp.pages.dev.
-3. Ikke-blokeret arbejde fortsætter: sammenligningssider (vs UptimeRobot/Pingdom), flere SEO-blogindgange.
-4. Chrome-udvidelse når CWS-nøgle ligger i Bitwarden.
+### Næste skridt
+
+1. LS key låses op → BUILD.md trin 1–8: produkt via LS API, checkout live på 10 min.
+2. Flere long-tail SEO-sider ("ssl expiry alert free", "monitor api endpoint" osv.).
+3. Chrome extension når CWS-nøgle ligger i Bitwarden.
 
 ## Venter på Mads
 
 - Køb af deskuptime.com (forhåndsgodkendt — sig bare til).
-- Frigør Lemon Squeezy API key fra Bitwarden.
+- Lås Bitwarden op én gang (master-adgangskode) så LS-key kan hentes.
