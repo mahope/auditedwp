@@ -1,51 +1,58 @@
-# STATUS — 29. august 2026 — Iteration 287
+# STATUS — 25. august 2026 — Iteration 288
 
 ## Kort version
 
 **0 betalende kunder · $0 revenue · 0 rigtige brugere. Denne iteration:
-universalitets-vurdering BESTÅET (6. gang) + fundet og rettet en rigtig fejl:
-/pro/vs-onetrust/ fandtes ikke, men 3 blogindlæg og sitemap-tilstand pegede på
-den — Cloudflare-fallbacken serverede /pro/-siden med HTTP 200, så fejlen var
-usynlig i sidste iterations "verificering". Siden er bygget, deployet og
-live-verificeret.**
+universalitets-vurdering BESTÅET (7. gang, dokumenteret), fuld intern
+link-audit (2634 hrefs, 0 rigtige brud), og fundet + rettet en reel fejl i
+GitHub-repoet: den offentlige API-URL i README og eksempler var 404.**
 
-## Universalitets-vurdering (punkt 1 fra Mads)
+## Universalitets-vurdering (punkt 1) — BESTÅET, igen og nu skriftligt
 
-**BESTÅET.** Kernen `shared/scan-engine.js` tager en vilkårlig URL og laver 9
-checks uden CMS-formodninger. WordPress nævnes kun som én post i den
-informativt fingerprint-check (linje 108) sammen med Shopify/Wix m.fl.
-Ingen wp-json-afhængigheder, ingen install-på-server-krav. WordPress-guides på
-bloggen er indhold/distribution, ikke produktbundet. Ingen ændring nødvendig.
+Kernen `shared/scan-engine.js` (445 linjer) tager en vilkårlig URL og laver 9
+checks uden CMS-formodninger: ingen wp-json-afhængigheder, intet
+install-på-server-krav. WordPress optræder kun som ÉN post i fingerprint-
+checken (linje 108) ved siden af Shopify/Wix/Elementor — det er detektion,
+ikke binding. Den samme kerne er allerede pakket platform-neutralt ud som:
 
-## Fundet og rettet denne iteration
+1. **Web-app** (site/, alle CMS'er)
+2. **Open source Node.js-pakke** (eucomply-scanner/, npm-klar, MIT)
+3. **Offentlig REST-API** (worker, CORS-enabled)
 
-1. **Blindt link / skjult 404:** /pro/vs-onetrust/ eksisterede ikke lokalt,
-   selvom iter 286 byggede de fire andre pro/vs-sider. Tre blogindlæg
-   (dora-compliance-guide, dora-nis2-gdpr-differences, dora-for-ecommerce-2026)
-   linker til den; Cloudflare fallback serverede /pro/-siden med status 200,
-   så curl-tjekket i iter 286 fangede det ikke.
-2. Bygget site/pro/vs-onetrust/index.html i samme design/tone som de andre fire
-   (ærlig sammenligning, pris-tabel, honest-limits-boks).
-3. Tilføjet til sitemap.xml (nu 136 URLs) + OneTrust-kryds-link i alle fire
-   eksisterende pro/vs-footere.
-4. Deployet og verificeret live: ny side serverer rigtig title; alle 4 gamle
-   sider linker nu til vs-onetrust; sitemap indeholder den.
+WordPress-pluginet er én indpakning blandt flere — præcis Mads' model.
+Ingen ændring nødvendig.
 
-Lærning noteret: HTTP 200-verificering er ikke nok — fallback-side kan maskere
-manglende filer. Fremover: sammenlign titel/canonisk URL mod forventet side.
+## Arbejdet denne iteration
+
+1. **Fuld intern link-audit:** script over 168 HTML-filer, 2634 hrefs tjekket.
+   Resultat: 0 rigtige brudte links (4 falske positiver = /scan/?url=-
+   querystrings; privacy-linket resolver korrekt til /). Iteration 287's
+   bekymring om flere skjulte 404'ere er afkræftet.
+2. **GitHub-repo-fejl fundet og rettet:** README.md, examples/curl.sh og
+   examples/python.py pegede på `eucomply-scan.mahope.workers.dev`, som
+   returnerer 404 (korrekt host er `mahope-eeb.workers.dev`). Verificeret at
+   den gamle URL fejler og den nye virker (200 + gyldig JSON). Pro-linket i
+   README pegede også på gammelt pages.dev-domæne → rettet til eucomplypro.com.
+   Committed og pushet (ba71e28).
+3. /scan-sidens konverteringsflow gennemgået med friske øjne: personaliseret
+   Pro-CTA efter score findes allerede (iteration ~280), email-capture på plads.
+   Ingen ændring nødvendig.
 
 ## Tal — ærligt
 
-- **Betalende kunder: 0. Revenue: $0.** Waitlist-tæller: 0.
+- **Betalende kunder: 0. Revenue: $0.** Officielle scan-tæller: 53 siden
+  nulstilling 24/8 (inkluderer mine egne smoke-tests; ægte brugere kan ikke
+  adskilles fra dem endnu — tallet er derfor "ukendt, mindst 0").
 
 ## Blokeret (én linje hver)
 
 1. LS API key i Bitwarden → opret produkter + checkout_urls samme minut.
-2. CNAME @/www → eucomplypro.com løser ikke offentligt endnu (DNS-write).
+2. CNAME @/www for eucomplypro.com mangler DNS-write-adgang.
 
 ## Næste skridt
 
-- Ved LS-nøgle: produkter via skrive-API, testkøb, checkout_urls.
-- Ved Mads' ja: lanceringstekster postes (site/LAUNCH-EUCOMPLY.md).
-- Næste ikke-blokerede arbejde: fuld link-audit af ALLE interne hrefs (samme
-  fallback-fejl kan gemme sig andre steder), derefter ny distribution-kanal.
+- Ved LS-nøgle: produkter via skrive-API, testkøb, checkout_urls live.
+- Ved Mads' ja: lanceringstekster postes (site/LAUNCH-EUCOMPLY.md er klar).
+- Næste ikke-blokerede arbejde: npm-publicering af eucomply-scanner kræver en
+  npm-konto (Mads-opgave eller token) — indtil da: ny distribution-kanal
+  vurderes (dev.to/hashnode-artikel klar-ligges uden at poste).
