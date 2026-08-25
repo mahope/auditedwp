@@ -118,7 +118,7 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 = 1.1.0 (2026-08-23) =
 
-* **New**: Gumroad license API integration with daily verification and refund detection.
+* **New**: Lemon Squeezy license API integration with daily verification and refund detection.
 * **New**: Auto-update checker via update.json manifest (works before wp.org listing).
 * **New**: Pro document generation — DPA, NIS2/DORA clause set, EAA statement, quarterly report.
 * **New**: Agency name setting for white-label report branding.
@@ -131,7 +131,7 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.
 * Weekly automated re-scan via WP-Cron.
 * AJAX-powered scan from admin dashboard (no page reload).
-* Pro license system with product ID placeholder for future Gumroad integration.
+* Pro license system with product ID placeholder for future Lemon Squeezy integration.
 
 == Upgrade Notice ==
 
@@ -139,4 +139,4 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 Upgrade for the automatic cleanup (uninstall.php), activation guard (no silent failures on old PHP/WP), and a polished readme.txt for wp.org listing. Update from Plugins → Installed Plugins or download the latest zip.
 
 = 1.1.0 =
-Upgrade to 1.1.0 for Gumroad license API integration with refund detection, auto-update checker from the official manifest, and full Pro document generation (DPA, NIS2, EAA, quarterly reports). The plugin checks for updates automatically — update from Plugins → Installed Plugins or download the latest zip.
+Upgrade to 1.1.0 for Lemon Squeezy license API integration with refund detection, auto-update checker from the official manifest, and full Pro document generation (DPA, NIS2, EAA, quarterly reports). The plugin checks for updates automatically — update from Plugins → Installed Plugins or download the latest zip.

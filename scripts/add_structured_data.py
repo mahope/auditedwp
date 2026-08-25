@@ -1,94 +1,78 @@
 #!/usr/bin/env python3
-"""Inject JSON-LD structured data into pages that lack it.
+"""Add JSON-LD structured data to pages missing it. Idempotent."""
+import os, re, html
 
-- store/*/index.html -> Product + Offer (price scraped from page)
-- blog/*, vs/*, pro/vs-* , devnotify/guides|vs -> Article
-Idempotent: skips files that already contain ld+json.
-"""
-import os, re, json, html
+ROOT = "site"
 
-ROOT = os.path.join(os.path.dirname(__file__), '..', 'site')
-BASE = 'https://auditedwp.pages.dev'
+def meta_of(fp):
+    src = open(fp, encoding="utf-8").read()
+    def m(p):
+        r = re.search(p, src)
+        return html.unescape(r.group(1)).strip() if r else ""
+    title = m(r"<title>(.*?)</title>")
+    if not title:
+        t = re.search(r'property="og:title" content="(.*?)"', src)
+        title = html.unescape(t.group(1)) if t else ""
+    desc = m(r'<meta name="description" content="(.*?)"')
+    if not desc:
+        d = re.search(r'property="og:description" content="(.*?)"', src)
+        desc = html.unescape(d.group(1)) if d else ""
+    return src, title.replace(" | EUComply", "").strip(), desc.strip()
 
-def meta(t, prop):
-    m = re.search(r'<meta[^>]+(?:property|name)=["\']%s["\'][^>]+content=["\']([^"\']*)' % re.escape(prop), t)
-    if not m:
-        m = re.search(r'<meta[^>]+content=["\']([^"\']*)["\'][^>]+(?:property|name)=["\']%s["\']' % re.escape(prop), t)
-    return html.unescape(m.group(1)) if m else ''
+def esc(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-def title_of(t):
-    m = re.search(r'<title>([^<]*)</title>', t)
-    return html.unescape(m.group(1)).strip() if m else ''
+# path suffix -> (schema type, extra fields builder)
+def app_fields(path):
+    return {
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    }
 
-def desc_of(t):
-    return meta(t, 'og:description') or meta(t, 'description')
+ARTICLE = re.compile(r"(^site/(blog|guides|devnotify)/|^site/pro/vs-|cmp-comparison)")
+APP = re.compile(r"^site/$|^site/(scan|cli|plugin|extension|badge|quickconvert|check-eu-compliance|tools|tools/format)(/|$)")
 
-def price_of(t):
-    m = re.search(r'\$([0-9]+)', t)
-    return m.group(1) if m else None
+import json as _j
 
-def breadcrumb(url):
-    parts = url.strip('/').split('/') if url.strip('/') else []
-    items, path = [], ''
-    for i, p in enumerate(parts):
-        path += '/' + p
-        items.append({'@type': 'ListItem', 'position': i + 1,
-                      'name': p.replace('-', ' ').title(), 'item': BASE + path + '/'})
-    return items
+def json_dumps(o):
+    return _j.dumps(o, indent=2, ensure_ascii=False)
 
-org = {'@type': 'Organization', 'name': 'ComplianceDocs'}
+added = []
 
-def article_ld(url, t):
-    d = {'@context': 'https://schema.org', '@type': 'Article',
-         'headline': title_of(t)[:110], 'description': desc_of(t)[:300],
-         'mainEntityOfPage': BASE + url, 'author': org, 'publisher': org}
-    m = re.search(r'date[Pp]ublished["\']?[:=]\s*["\'](\d{4}-\d{2}-\d{2})', t)
-    if m:
-        d['datePublished'] = d['dateModified'] = m.group(1)
-    return d
-
-def product_ld(url, t):
-    name = title_of(t).split('—')[0].strip()
-    price = price_of(t)
-    d = {'@context': 'https://schema.org', '@type': 'Product',
-         'name': name, 'description': desc_of(t)[:300],
-         'brand': {'@type': 'Brand', 'name': 'ComplianceDocs'}}
-    if price:
-        d['offers'] = {'@type': 'Offer', 'price': price, 'priceCurrency': 'USD',
-                       'availability': 'https://schema.org/PreOrder',
-                       'url': BASE + url.rstrip('/') + '/'}
-    return d
-
-SKIP = ('privacy/', 'terms/', 'thank-you', 'dashboard', '/sample/', 'tools/',
-        'pro/sample-report', 'badge/', 'template/', 'update.json')
-
-for dp, _, fs in os.walk(ROOT):
-    for f in fs:
-        if f != 'index.html':
+for dirpath, dirs, files in os.walk(ROOT):
+    for f in files:
+        if not f.endswith(".html"):
             continue
-        p = os.path.join(dp, f)
-        rel = os.path.relpath(p, ROOT)
-        url = '/' + rel.replace(os.sep, '/')
-        t = open(p, encoding='utf-8', errors='ignore').read()
-        if 'ld+json' in t:
+        fp = os.path.join(dirpath, f)
+        rel = fp[:-len(".html")] if fp.endswith("/index.html") else fp[:-5]
+        src, title, desc = meta_of(fp)
+        if not title or "ld+json" in src:
             continue
-        blocks = []
-        if rel.startswith('store/') and price_of(t):
-            blocks.append(product_ld(url, t))
-            bc = breadcrumb('/store')
-            if bc:
-                blocks.append({'@context': 'https://schema.org',
-                               '@type': 'BreadcrumbList', 'itemListElement': bc})
-        elif any(rel.startswith(s.strip('/')) or s in rel for s in
-                 ('blog/', 'vs/', 'devnotify/guides/', 'devnotify/vs/', 'devnotify/slack')) \
-                and not any(s in rel for s in SKIP):
-            blocks.append(article_ld(url, t))
-        if not blocks:
-            continue
-        snippet = '\n'.join(
-            '<script type="application/ld+json">%s</script>' % json.dumps(b, ensure_ascii=False)
-            for b in blocks)
-        idx = t.find('</head>')
-        assert idx > 0, rel
-        open(p, 'w', encoding='utf-8').write(t[:idx] + snippet + '\n' + t[idx:])
-        print('patched', rel)
+        url = "https://eucomplypro.com/" + (rel[len("site"):] and rel[len("site")+1:] + "/" or "")
+        url = url.rstrip("/") or "https://eucomplypro.com/"
+        if APP.search(rel):
+            obj = {"@context": "https://schema.org", "@type": "WebApplication",
+                   "name": title, "description": desc, "url": url}
+            obj.update(app_fields(rel))
+        elif ARTICLE.search(rel):
+            obj = {"@context": "https://schema.org", "@type": "Article",
+                   "headline": title, "description": desc,
+                   "url": url, "author": {"@type": "Organization", "name": "EUComply"},
+                   "publisher": {"@type": "Organization", "name": "EUComply"}}
+        else:
+            continue  # utility pages: skip
+        snippet = '<script type="application/ld+json">\n' + \
+            json_dumps(obj) + '\n</script>\n'
+        # insert before </head>
+        new = src.replace("</head>", snippet + "</head>", 1)
+        open(fp, "w", encoding="utf-8").write(new)
+        added.append(rel)
+
+import json as _j
+def json_dumps(o):
+    return _j.dumps(o, indent=2, ensure_ascii=False)
+
+print(f"Added ld+json to {len(added)} pages")
+for a in sorted(added):
+    print(" ", a)
