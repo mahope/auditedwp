@@ -5578,3 +5578,41 @@ STATUS.md er opdateret og committet (f061bd9). Næste iteration, hvis blokeringe
 2026-08-25T02:05:53+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-25T02:10:54+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
 2026-08-25T02:17:05+02:00 === iteration 19/60 ===
+Iteration 282 færdig og committed (dc17894).
+
+**Universalitets-vurdering: BESTÅET — ingen udtrækning nødvendig.**
+
+- EUComply-kernen (`shared/scan-engine.js`, `eucomply-scanner/engine/`) læser kun headers/HTML. WordPress optræder kun som én informativ signatur i tech-fingerprintet, ikke som antagelse. Verificeret live: workeren svarede lige nu med fuld rapport på en fremmed URL.
+- QuickFormat og DevNotify er platform-uafhængige i sig selv.
+- Alle indpakninger (web-UI, API-worker, CLI, WP-plugin, Chrome-ext) kalder ind i kernen — ikke omvendt.
+
+**Det reelle hul jeg fandt og lukkede:** DevNotify havde lanceringstekster klar, men EUComply — hovedproduktet — havde ingen. Nyt i `site/LAUNCH-EUCOMPLY.md`:
+
+1. Show HN-post med verificeret live curl-eksempel på scanning-API'en
+2. Product Hunt-listing (tagline, beskrivelse, maker-kommentar)
+3. Reddit-variant til r/msp / r/webdev
+
+Alle tre er skrevet færdige og venter på Mads' ja — ikke sendt, som reglerne kræver.
+
+STATUS.md er opdateret. Blokeringerne står uændret som én linje hver (LS-nøgle, CNAME, npm-login); næste iteration forbedrer jeg PDF-eksport og pro-sidens konverteringstekst, hvis de stadig er åbne.
+2026-08-25T02:19:28+02:00 iteration 19 afsluttet (exit 0)
+2026-08-25T02:19:48+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T02:24:49+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-25T02:30:12+02:00 === iteration 20/60 ===
+Iteration 283 færdig. Kort rapport:
+
+**Universalitets-vurdering (punkt 1): BESTÅET — med live-bevis denne gang.**
+- Scan-workeren svarede lige nu på `GET /scan?url=...` med fuld rapport uden CMS-antagelse.
+- WordPress optræder i kernen (`shared/scan-engine.js:108`) kun som én af 19 platform-signaturer (Shopify, Wix, Webflow, Drupal, TYPO3, Umbraco, Magento osv.) — rent informativt, aldrig en forudsætning. Form-tjek dækker også Typeform/Jotform/Stripe.
+- QuickFormat-kernen og DevNotify er platform-uafhængige.
+- Konklusion: ingen udtrækning nødvendig — web-UI, API-worker, CLI, WP-plugin og Chrome-ext ER allerede indpakninger omkring universelle kerner.
+
+**Købsrejse-tjek (forbedringsprioritet 1):** 8 hovedsider alle HTTP 200 live, nul forældede pages.dev-links, checkout-flip via workerens `/config` klar så Buy-knappen går live samme minut når LS-nøglen sættes ind.
+
+**Ærlige tal:** 0 betalende kunder, $0 revenue. `/stats` viser 50 scanninger siden nulstilling — jeg kan ikke attribuere dem (egen testtrafik kan ikke udelukkes), så de tæller ikke som rigtige brugere.
+
+**Blokeret (uændret):** LS API key i Bitwarden, CNAME for eucomplypro.com, npm-login.
+
+STATUS.md er opdateret og committet (c9c2d29). Næste iteration: PDF-eksport af scan-rapport hvis blokeringerne stadig står.
+2026-08-25T02:32:49+02:00 iteration 20 afsluttet (exit 0)
+2026-08-25T02:33:11+02:00 === iteration 21/60 ===
