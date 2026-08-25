@@ -1,44 +1,56 @@
-# STATUS — 1. september 2026 (aften) — Iteration 431
+# STATUS — 1. september 2026 (nat) — Iteration 432
 
-## Denne iteration: universalitet bekræftet + test-data ryddet ud af tæller + ny GitHub Actions-side live
+## Denne iteration: ny gratis SSL-tjekker (rigtig funktionalitet, ikke bare tekst) + SSL-SEO-side
 
-### 1. Universalitets-vurdering (punkt 1): OPFYLT — ingen ændring nødvendig
+### 1. Universalitets-vurdering (punkt 1): OPFYLT — bekræftet igen i iteration 431
 
-- `grep -riE 'wordpress|wp-|wp_'` i deskuptime-kernen (`src/`, CLI, desktop): **0 hits**
-- Kerne-test: `node test/test.js` → fail 0
-- Live-tjek: quickcheck-worker svarede korrekt på example.com (HTTP, status, SSL, ms — intet CMS-specifikt)
-- Desktop-app, CLI, GitHub Action og live-check-widget er alle indpakninger over den samme platform-uafhængige kerne.
-- **Konklusion:** Intet at trække ud. DeskUptime opfylder universitetskravet fra grunden af.
+Kernen er platform-uafhængig: `grep -riE 'wordpress|wp-'` i src/CLI/desktop = 0 hits. Desktop-app, CLI, GitHub Action og web-check er alle indpakninger over samme kerne. Intet at trække ud.
 
-### 2. Ærlige tal — rettet
+### 2. Bygget: SSL certificate expiry monitor-side med FUNGERENDE gratis tjekker
 
-Waitlist-workerens `/stats` viste stadig `count:6`. Jeg listede KV remote: det var **13 gamle egne test/probe-indgange** (`@rejection-test.invalid`, smoke-tests). Alle er nu **slettet**, og `/stats` returnerer:
+**Ny side: /deskuptime/ssl-expiry-monitor/** — målretter søgninger som "ssl certificate expiry monitor", "check ssl expiration date".
 
-| Metrik | Værdi | Kilde |
-|--------|-------|-------|
-| Salg | **0** | Ingen LS checkout åben |
-| Waitlist | **0** | KV listet og renset remote — verificeret tomt |
-| Scans | se /stats | scan-worker |
+Det vigtige: tjekkeren på siden **virker faktisk**. Quickcheck-workeren er udvidet med
+certifikat-udløbsopslag via Cert Spotter's Certificate Transparency API (gratis, ingen
+nøgle) — returnerer nu `sslDaysRemaining` + `sslExpiresAt`.
 
-### 3. Bygget og deployet: GitHub Actions monitoring-side
+Live-verificeret:
+- Worker deployet: https://deskuptime-quickcheck.mahope-eeb.workers.dev
+- `?url=https://example.com` → `"sslDaysRemaining": 99, "sslExpiresAt": "2026-12-02"` ✓
+- crt.sh forsøgt først men returnerede 502 — Cert Spotter valgt som backend i stedet
 
-Ny landingsside: **/deskuptime/github-actions/** — målretter søgningen "uptime monitoring github actions" / "free cron website check".
+Siden indeholder: interaktiv tjekker (CORS OK), openssl-kommando til terminal-folk,
+"why certs still expire"-sektion, sammenligningstabel manual/cron/DeskUptime mod
+$19-købet, FAQ + JSON-LD (SoftwareApplication + FAQPage).
 
-- Komplet YAML-setup, input/output-tabel, FAQ + JSON-LD (SoftwareApplication + FAQPage)
-- **Ærlig begrænsnings-sektion**: cron-minimum ~5 min, ingen multi-region, GitHub load-delays — med direkte sammenligning mod SaaS og desktop-appen
-- Linket fra produkt-sidens footer + alle 4 vs-sider + sitemap.xml
-- IndexNow pinget (HTTP 200), deploy verificeret: alle URLs 200, nyt indhold live
+### 3. Deployet og verificeret
+
+| URL | Status | Indhold |
+|-----|--------|---------|
+| /deskuptime/ssl-expiry-monitor/ | 200 | nyt indhold live |
+| /deskuptime/ | 200 | footer-link til SSL-siden |
+| sitemap.xml | 200 | ny URL tilføjet |
+
+IndexNow pinget → HTTP 200. Worker-deploy uafhængig af Pages (ingen kodeændringer på sitet nødvendige for tjekkeren).
+
+### Ærlige tal
+
+| Metrik | Værdi |
+|--------|-------|
+| Salg | **0** |
+| Waitlist | **0** |
+| Scans | se /stats |
 
 ### Blokeringer (1 linje hver)
 
-1. LS API key: **Bitwarden-app kører, men låst** (0 vinduer, bw CLI uautentificeret) — kan ikke låse op uden master-adgangskode. Skærmtilladelse mangler også til GUI-styring.
+1. LS API key: Bitwarden låst (bw CLI uautentificeret) — kan ikke låse op uden master-adgangskode.
 2. Domæne deskuptime.com (~$10/år) forhåndsgodkendt → sig bare til.
-3. npm publish-token mangler (CLI via npx github: indtil videre).
+3. npm publish-token mangler.
 
 ### Næste skridt
 
 1. LS key låses op → BUILD.md trin 1–8: produkt via LS API, checkout live på 10 min.
-2. Flere long-tail SEO-sider ("ssl expiry alert free", "monitor api endpoint" osv.).
+2. Flere long-tail SEO-sider med rigtige gratis-værktøjer (samme mønster: værktøj der virker → pro-opgradering).
 3. Chrome extension når CWS-nøgle ligger i Bitwarden.
 
 ## Venter på Mads
