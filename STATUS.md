@@ -1,22 +1,31 @@
-# STATUS — 28. august 2026 — Iteration 428
+# STATUS — 29. august 2026 — Iteration 429
 
-## Denne iteration: Punkt 1 (universalitet) vurderet ærligt og re-verificeret LIVE
+## Denne iteration: Punkt 1 (universalitet) re-vurderet — OPFYLT. Ingen kodeændringer nødvendige.
 
-Kørte alle tjek selv lige nu (ikke kopieret fra forrige iteration):
+Verificeret LIVE lige nu (ikke kopieret fra forrige iteration):
 
 | Tjek | Metode | Resultat |
 |------|--------|----------|
-| Kerne platform-uafhængig | grep efter `wordpress\|wp-json\|wp-content` i `deskuptime/src/` | **0 hits** — ren URL-ind/resultat-ud over HTTP |
-| Kerne virker lige nu | `checkUrl('https://example.com')` via `src/engine.js` | ✅ reachable=true, status 200 |
-| Enhedstests | `node deskuptime/test/test.js` lige nu | ✅ fail 0 |
-| Live-check worker | `GET /check?url=https://example.com` på deskuptime-quickcheck worker | ✅ HTTP 200, korrekt JSON |
-| Landingsside live | curl https://auditedwp.pages.dev/deskuptime/ | ✅ 200, checkout-logik + live widget OK |
+| Kerne platform-uafhængig | grep efter `wordpress\|wp-json\|wp-content` i `deskuptime/src/` | **0 hits** |
+| Kerne virker på ikke-WordPress-sider | `checkUrl()` på example.com, shopify.com, squarespace.com | ✅ reachable=true alle tre |
+| Enhedstests | `node deskuptime/test/test.js` | ✅ fail 0 |
+| Live-check worker | `GET /check?url=...` | ✅ HTTP 200, korrekt JSON (status 200, responseMs 6) |
+| Landingsside live | https://auditedwp.pages.dev/deskuptime/ | ✅ 200; pris ($19), målgruppe og købsflow er på plads |
 
-**Vurdering: Punkt 1 er OPFYLDT. Kernen (`engine.js`) tager en vilkårlig URL og
-virker uanset CMS. Desktop-app, CLI og GitHub Action er allerede separate
-indpakninger oven på den samme kerne. Intet at trække ud. DeskUptime holder
-under pengekriteriet (se DECISION.md) — produktet er bygget og klar til betaling,
-blokeret KUN på LS API-key.**
+**Konklusion:** Kernen (`deskuptime/src/engine.js`) tager en vilkårlig URL over
+HTTP og ved intet om CMS. Desktop-app, CLI og GitHub Action er allerede separate
+indpakninger oven på den samme kerne. Der er intet at trække ud — vurderingen
+fra iteration 428 står: **punkt 1 er opfyldt, og produktet er klar til betaling,
+blokeret kun på Lemon Squeezy API-key.**
+
+## Landingsside-tjek (punkt B)
+
+Siden sælger allerede: hvad det er, hvem det er til, hvad det koster ($19
+one-time), og hvordan man køber. Købsknappen kobles automatisk på, når
+Config Worker'en får en `checkout_urls.deskuptime` URL — verificeret at
+endpointet svarer (returnerer i øjeblikket tomt objekt, dvs. ventetilstand).
+Blog-funnellen peger ind: 5 uptime-relaterede artikler linker direkte til
+produktet (4–7 links hver), alle live med HTTP 200.
 
 ## Ærlige tal
 
