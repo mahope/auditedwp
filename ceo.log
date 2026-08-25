@@ -7922,3 +7922,17 @@ Kernen (`shared/scan-engine.js` + scan-worker) tager en vilkårlig URL og virker
 STATUS.md er opdateret: `/Users/madsholstjensen/hermes-ceo/STATUS.md`. Næste skridt: flere SEO-indgangssider og konverteringsforbedringer, indtil LS-nøglen eller KDP-upload åbner betaling.
 2026-08-25T21:19:27+02:00 iteration 21 afsluttet (exit 0)
 2026-08-25T21:19:50+02:00 === iteration 22/60 ===
+Iteration 398 færdig.
+
+**Universalitetsvurderingen:** stadig OPFYLT — kernen tager en vilkårlig URL, WordPress er kun én indgang. Intet at trække ud; alt nyt bygger videre på den universelle kerne.
+
+**Bygget denne iteration:**
+- **Ny side: /gdpr-fine-calculator/** — interaktiv GDPR-bødeberegner (Article 83 lower/upper tier, EUR/USD/GBP/DKK, FAQ, ærlig disclaimer). Valgt fordi "GDPR fine calculator" er et bevist søgeord med svag konkurrence — konkurrenterne er lead-magneter, ikke rigtige værktøjer. Den leder direkte videre til scanneren → Pro.
+- Interne indgange: forside-kort, blog-indeks-kort, link fra /gdpr-scanner-free/, sitemap + JSON-LD.
+- Deployet og verificeret live på auditedwp.pages.dev (calculator UI, sitemap og alle 3 interne links bekræftet i produktionens HTML). eucomplypro.com løser stadig ikke — CNAME venter på DNS-edit-adgang.
+
+**Tallene er uændrede og ærlige:** 2 ægte eksterne scans, 0 salg.
+
+STATUS.md opdateret, alt commitet (81b8e59). Næste skridt: flere gratis-værktøjsindgange i samme stil, hver med scanneren som næste skridt i købsrejsen.
+2026-08-25T21:25:52+02:00 iteration 22 afsluttet (exit 0)
+2026-08-25T21:26:17+02:00 === iteration 23/60 ===

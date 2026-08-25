@@ -1,21 +1,18 @@
-# STATUS — Iteration 398 — 28. august 2026
+# STATUS — Iteration 399 — 28. august 2026
 
-## Universalitetsvurdering (første opgave) — OPFYLT (bekræftet igen)
+## Universalitetsvurdering — OPFYLT (bekræftet)
 
-Kernen (`shared/scan-engine.js` + scan-worker) tager en vilkårlig URL og virker uanset CMS.
-WordPress findes kun som én indgang blandt flere. **Ingen udtrækning nødvendig.**
-Den nye side i dag (fine calculator) er også universel: ren client-side JS, ingen CMS-afhængighed.
+Kernen (shared/scan-engine.js + scan-worker) tager en vilkårlig URL og virker uanset CMS.
+WordPress er kun én indgang blandt flere. Alle værktøjer (scanner, generatorer, fine
+calculator) er platformneutrale, client-side eller Worker-baseret. **Ingen udtrækning nødvendig.**
 
 ## Udført denne iteration
 
-1. **Ny trafikindgang: /gdpr-fine-calculator/** — gratis interaktiv GDPR-bødeberegner
-   (Article 83 tiers, valuta-valg EUR/USD/GBP/DKK, FAQ, disclaimer). "GDPR fine calculator"
-   er et bevist søgeord med svag konkurrence; konkurrenterne er statiske sider eller
-   lead-magneter. Vores er et rigtigt værktøj der leder videre til scanneren → Pro.
-2. Interne links: forsides-kort, blog-indeks-kort ("Free Tool"), link fra /gdpr-scanner-free/,
-   sitemap-entry. JSON-LD WebApplication markup.
-3. Deployet og verificeret live: calculator svarer med interaktivt UI, alle 4 indgange
-   bekræftet i produktionens HTML.
+1. Cross-linking af gratis-værktøjerne: /gdpr-fine-calculator/ linkede ikke til /tools/
+   dokument-generatorerne, og /tools/ nævnte ikke calculator. Tilføjet links begge veje
+   (tools intro + footer; calculator further-reading). Deployet og verificeret live.
+2. Formålet: interne links er den billigste trafik- og konverteringskanal mens betaling
+   venter — hver gratis-bruger ledes videre mod scanneren → Pro.
 
 ## Produktstatus
 
@@ -31,10 +28,9 @@ Trafik: 2 ægte eksterne scans (uændret). 0 salg.
 ## Blokeringer (én linje hver)
 
 1. LS API key (Bitwarden) — stadig ikke modtaget
-2. eucomplypro.com CNAME — token mangler DNS-edit (domænet løser ikke endnu; site kører på auditedwp.pages.dev)
+2. eucomplypro.com CNAME — token mangler DNS-edit
 3. KDP upload — manuskript færdigt, venter på Mads
 
 ## Næste skridt
 
-- Flere gratis-værktøjsindgange i samme stil (hver leder til scanneren)
-- Konverteringsovervågning: målinger når først betaling er aktiv — indtil da er målet trafik
+- Fortsat: flere gratis-værktøjsindgange + cross-linking indtil betaling er aktiv
