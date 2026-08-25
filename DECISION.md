@@ -14,7 +14,12 @@
 | **Indtjeningsmodel** | LS licensnøgle — $19 × ~70% = ~$13/køb. Desktop = differentiering fra SaaS |
 | **Status** | Desktop app BYGGET. Produktside LIVE. Release v0.1.0-alpha på GitHub. Venter på LS key for betaling. |
 
-## Hvorfor valgt frem for alternativer
+## Hvorfor valgt frem for alternativer (revurderet 1. sept 2026)
+
+Under de nye kriterier (23. august) er DeskUptime valgt fordi: det er bygget,
+koster $0 at levere, og venter kun på LS key for at tjene penge. $19 one-time
+på et stort marked (freelancere, developere). Chrome extension, VS Code ext,
+og SaaS kræver alle Mads' konti og er længere fra betaling.
 
 | Alternativ | Hvorfor ikke |
 |---|---|

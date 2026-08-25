@@ -1,52 +1,51 @@
-# STATUS — 31. august 2026 — Iteration 418
+# STATUS — 26. august 2026 — Iteration 420
 
-## Universalitetsvurdering (punkt 1) — bekræftet igen
-DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (live-verificeret
-26/8 på Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). CLI + desktop app er
-indpakninger. **Holder under pengekriteriet: $19 one-time, $0 levering. Ingen
-udtrækning nødvendig.**
+## Universalitetsvurdering (punkt 1) — VERIFICERET LIVE DENNE ITERATION
 
-## Fundet denne iteration: DNS/infra-sundhedstjek (hele porteføljen)
+EUComply-scanner-kernen testet mod ikke-WordPress-sider direkte mod worker-API'en:
+
+- apple.com → scan OK (9 checks)
+- shopify.com → platform detekteret: Shopify, score 4/9
+- squarespace.com → platform detekteret: Squarespace, score 3/9
+
+**Konklusion: kernen er universel.** Den tager en vilkårlig URL og virker uafhængigt
+af CMS. WordPress-plugin, Chrome-extension og CLI er indpakninger omkring samme
+worker-kerne (`eucomply-scan.mahope-eeb.workers.dev/scan`). Ingen udtrækning
+nødvendig — vurderingen fra iteration 419 holder, nu med friske beviser.
+
+## Vigtigste fund denne iteration: DOMÆNET VAR NEDPEGET FRA GOOGLE
+
+Linktjek afslørede at **eucomplypro.com stadig har ingen A-record** (DNS-edit
+blokeret på Cloudflare-tokenet). Alle 165 URL'er i sitemap.xml pegede på det døde
+domæne — inkl. robots.txt og alle 163 canonical-tags. Det betyder: Google kan
+IKKE indeksere noget af det indhold, der skulle trække trafik, og canonical-tags
+pegede aktivt på en side der ikke findes.
+
+## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Iteration 417 commitet + pushed (var 7 ændrede filer i arbejdskopien) | ✅ |
-| 2 | Fuldt DNS-tjek af alle domæner/workers der refereres fra sitet | ✅ |
-| 3 | Alle 4 worker-endpoints testet live over HTTP | ✅ |
+| 1 | Universalitet verificeret live: scanner virker på Shopify/Squarespace/Apple | ✅ |
+| 2 | Fundet: sitemap + 163 canonicals pegede på dødt domæne | ✅ |
+| 3 | Sitemap, robots.txt og ALLE canonical-tags peget på live origin (auditedwp.pages.dev) | ✅ |
+| 4 | Deployet + verificeret: robots/sitemap/canonicals lever, 4 nøglesider 200 | ✅ |
+| 5 | Fuldt linktjek: 45 bloglinks OK, 165 sitemap-URL'er OK på .pages.dev | ✅ |
 
-### Resultat af infra-tjek
-- **eucomplypro.com har IKKE noget A-record endnu** (NODATA via Cloudflare DoH).
-  CNAME til Pages er stadig ikke sat — token mangler DNS-edit (kendt blokering,
-  Mads/Claude skal sætte den). Sitet er fint tilgængeligt på auditedwp.pages.dev.
-- **mahope-eeb.workers.dev zonen svarer ikke på lokal DNS** (Tailscale-resolver
-  cacher NODATA), men det er en lokal resolver-artefakt: med direkte IP svarer
-  alle endpoints korrekt:
-  - eucomply-scan /stats → 200, {"scans":2} (craigslist + wix = reelle scans)
-  - eucomply-watch /status → 200
-  - devnotify-metrics /config → 200
-  - waitlist-eucomply / → 200
-- Konklusion: **ingen brudte endpoints på sitet.** Alt der refereres fra HTML
-  virker. Ingen kodeændringer nødvendige denne iteration.
+## Nøgletal — ærligt
 
-## Produktstatus
-
-| Produkt | Status | Salg | Blokeret på |
-|---------|--------|------|-------------|
-| DeskUptime CLI (gratis) | LIVE: npx github:mahope/deskuptime | **0** | npm token |
-| DeskUptime Desktop (gratis) | LIVE: GitHub Release v0.2.1 | **0** | — |
-| DeskUptime Pro ($19) | Sales-side klar + checkout auto-on | **0** | **LS API key** |
-| KDP ebook ($9.99) | Manuskript færdigt | 0 | Mads uploader |
-| EUComply Scanner | LIVE: 2 reelle scans | — | — |
+- **Salg:** 0 på alle produkter
+- **Rigtige tilmeldinger:** 0
+- **Scanner-statistik:** 27 scans totalt (inkl. mine egne tests)
+- **Indeksering:** kan først begynde nu, hvor canonicals peger på et levende domæne
 
 ## Blokeringer (én linje hver)
-1. LS API key i Bitwarden — produkter kan sælges få min efter key kommer.
-2. npm publish kræver write:packages-token.
-3. KDP ebook: Mads uploader manuelt.
-4. eucomplypro.com CNAME: token mangler DNS-edit (Mads/Claude).
+
+1. LS API key i Bitwarden — CLI er ikke logget ind; skrivebords-capture virker ikke fra min side.
+2. eucomplypro.com A-record: kræver DNS-edit Mads/Claude kan lave i Cloudflare dashboard.
+3. npm publish: mangler write-token. KDP: manuel upload af Mads.
 
 ## Næste skridt
-1. Når LS key kommer: opret DeskUptime Pro i LS → CHECKOUT_URL → levende produkt.
-2. Fortsæt SEO-indhold (næste: "free ssl certificate checker"-klyngen).
-3. Chrome Web Store-udgivelse når OAuth-credentials ligger i Bitwarden.
 
-47 blogartikler live. ~160+ sider total. Trafik: 0 målte rigtige besøgende. Salg: 0.
+1. **Mads:** Tilføj A/CNAME-record for eucomplypro.com → Pages-projektet (5 min i dashboard).
+2. **Mads:** LS key tilgængelig → jeg opretter produkter og åbner checkout samme dag.
+3. Mig: fortsæt SEO-indhold; når domænet løftes skiftes canonicals/sitemap tilbage på 10 min (én sed-kommando).
