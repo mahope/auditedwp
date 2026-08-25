@@ -1,55 +1,47 @@
-# DECISION — 25. august 2026 (Iteration 347)
+# DECISION — 25. august 2026 (Iteration 355)
 
-## Beslutning: Ingen ny beslutning — nuværende strategi fastholdes
+## Beslutning: Parallelstrategi — LS manuel + Leanpub ebook
 
-**Konklusion: Alle 5 produkter er bygget, udgivet og klar til betaling.
-Intet nyt produkt bygges før LS API-nøglen er modtaget — et 6. produkt
-ville også være blokeret på det samme.**
+**To spor køres samtidigt. Ingenting venter på noget andet.**
 
-### Begrundelse
+### Spor A: LS manuel opsætning (20 min for Mads)
+LS-MANUAL.md er skrevet, klar, og afventer Mads' handling. Når den er udført, kan
+alle 5 produkter tage imod betaling. Dette er den korteste vej til første salg.
 
-Mads' mandat er klart: "Tjen så mange penge som muligt, så hurtigt som
-muligt." Og "Gør ét færdigt (virker, udgivet, kan tage imod penge) før
-du starter det næste."
+### Spor B: Leanpub ebook — "The Practical Guide to EU Compliance 2026"
+Et digitalt produkt der kan sælges UDEN LS, fordi Leanpub er en markedsplads med
+indbygget betaling (MoR, 80% royalty, ingen opsætningsomkostninger).
 
-Status lige nu:
-- 5 produkter: virker ✅, udgivet ✅, kan tage imod penge ❌
-- Blokeringen er identisk for ALLE: LS API key (1 dag forsinket,
-  forventet 24/8)
-- Et 6. produkt ville også være: virker ✅, udgivet ✅, kan tage imod
-  penge ❌ — samme blokering, blot en ny landingsside
+| Faktor | Vurdering |
+|--------|-----------|
+| Hvor hurtigt første betaling? | 1-2 dage (skriv + publicér) |
+| Beløb pr. salg | $9.99-$19.99 (80% royalty = $8-$16) |
+| Markedsstørrelse | Stort — GDPR/NIS2/DORA/EAA rammer alle EU-virksomheder |
+| Gentagende indtægt? | Nej (engangssalg), men kan opdateres årligt |
+| Hvad koster det at levere? | 0 kr (egen tid, gratis hosting på Leanpub) |
 
-At bygge et 6. produkt flytter ikke noget. Det ændrer ikke på at
-INTET kan tage imod penge før LS-keyen ligger klar.
+**Hvorfor en ebook?**
+- Vi har allerede compliance-ekspertisen fra at bygge EUComply scanner
+- 0 kr opstart, 0 kr løbende omkostninger
+- Kan krydssælge til EUComply Pro og ComplianceDocs når LS er aktiv
+- Ingen afhængighed af Mads' konti eller API-nøgler
+- Leanpub håndterer moms, betaling, og levering
 
-### Hvad blev der gjort i stedet
+**Hvorfor ikke en anden markedsplads?**
+- ThemeForest/CodeCanyon: 50% commission (ny juli 2026), skal bygge plugin
+- AppSumo: Lifetime deal model, kræver forhandling, Net 60 payout
+- Chrome Web Store: Kræver CWS OAuth — også i Bitwarden
 
-1. **QuickFormat Tauri desktop app genopbygget** (kompileret og pakket
-   som .app/.zip). Produktsiden har nu en download-knap med "Free while
-   in beta" — appen kan downloades og bruges gratis. Når LS kommer,
-   tilføjes license-key check og $9 pris.
-2. **Kvalitetstjek af alle 144 sider** — alle returnerer 200, design og
-   priser er tydelige, structured data på plads.
+### Hvad der kan slå idéen ihjel
+- Mads laver LS manuel opsætning i dag → Spor B bliver overflødigt (men
+  ebooks kan stadig krydssælge)
+- Efterspørgslen på compliance-bøger er mættet
+- 60-dages refund policy på Leanpub betyder forsinket cash flow
 
-### Hvad skal der til for at komme videre
+### Beslutning: Byg kapitel 1-3 i denne iteration + publicér på Leanpub
+Hvis Mads når LS opsætning, skifter vi fokus til at aktivere de 5 eksisterende
+produkter. Hvis ikke, har vi en indtægtskilde klar.
 
-1. LS API key i Bitwarden (eller manuel opsætning, ~20 min)
-2. CNAME DNS på eucomplypro.com (token mangler DNS-edit)
-3. Chrome Web Store OAuth credentials (DevNotify)
-
-Når #1 er løst: opret 3 produkter på LS via API (EUComply Pro $79/yr,
-QuickFormat $9, ComplianceDocs $29-$149), sæt checkout-URL'er som
-Pages secrets, test et køb, og gå efter første betaling.
-
-### Hvorfor ikke vælge en helt ny idé nu
-
-Mads foreslår at kigge på tidligere forkastede idéer med pengelinsen.
-Problemet er ikke idé-kvalitet — problemet er at ALLE idéer (gamle som
-nye) kræver betalingsinfrastruktur før de kan tjene penge. Uanset om
-jeg bygger en Mac-app, et CLI-værktøj, en browser-udvidelse eller en
-SaaS, skal kunden kunne betale. LS er den eneste betalingsløsning vi
-har sat op.
-
-Når LS er aktiv, kan jeg skifte strategi på fem minutter: opret produkt,
-sæt checkout, og begynd at sælge. Indtil da er det produktionsarbejde
-uden gevinst.
+## Domæne
+Ingen domæne nødvendig — Leanpub håndterer alt på `leanpub.com/<book-slug>`.
+Hvis bogen sælger, kan vi senere overveje et dedikeret landingsside-domæne.

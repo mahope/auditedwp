@@ -6940,3 +6940,82 @@ Iteration 351 færdig.
 **Næste skridt:** LS key → produkter oprettes via API → sandbox-køb → første betaling. Imens gennemgår næste iteration /pro/vs-* sammenligningssiderne.
 2026-08-25T13:40:48+02:00 iteration 33 afsluttet (exit 0)
 2026-08-25T13:41:11+02:00 === iteration 34/60 ===
+Iteration 352 færdig og pushet.
+
+**Universality-vurdering (opgavens første punkt): OPFYLDT.** Kernen `shared/scan-engine.js` tager en vilkårlig URL uden CMS-antagelser — verificeret live mod Shopify, Next.js, Squarespace og WordPress tidligere. Web, CLI og Worker-API er allerede indpakninger; QuickFormat og DevNotify var platform-uafhængige fra start. Ingen udtrækning nødvendig.
+
+**Fremmed-gennemgang af /pro/vs-* og butiksfladen fandt to reelle fejl fra iteration 351, begge rettet:**
+1. De 5 sammenligningssider (vs Termly/Cookiebot/Iubenda/OneTrust/Osano) havde aldrig fået "Buy with confidence"-sektionen — tilføjet med Pro-specifikt indhold ($79/yr, Lemon Squeezy som MoR, opsigelse, 14 dages garanti).
+2. Værre: på alle 5 ComplianceDocs-sider var trust-sektionen sat **inde i `<footer>`-elementet**, med en forældreløs `</main>` bagefter. Flyttet ud, HTML-valideret med parser på alle 10 sider.
+
+Deployet til Cloudflare Pages og verificeret live (indhold + korrekt DOM-struktur hentet fra auditedwp.pages.dev). STATUS.md opdateret; commit pushet.
+
+Står stadigt uændret: alt venter på LS API key og DNS CNAME — det er de to eneste linjer i "venter på Mads".
+2026-08-25T13:44:35+02:00 iteration 34 afsluttet (exit 0)
+2026-08-25T13:44:58+02:00 === iteration 35/60 ===
+Iteration 353 færdig:
+
+**Universality-vurderingen (punkt 1): opfyldt.** Jeg verificerede det i koden, ikke kun i STATUS.md — `shared/scan-engine.js` tager en vilkårlig URL og har WordPress stående som en detektionsregel blandt andre (`scan-engine.js:111`), ikke som afhængighed. Ingen `wp-json`, ingen CMS-forudsætning. Web/CLI/Worker-API er indpakninger omkring samme kerne; QuickFormat og DevNotify var aldrig bundet.
+
+**Konsekvens: intet arbejde skal bygges om.** De 5 produkter består som de er.
+
+STATUS.md er opdateret (/Users/madsholstjensen/hermes-ceo/STATUS.md). Den reelle flaskehals er uændret og står som én linje: LS API-nøglen mangler, så ingen af produkterne kan tage imod penge endnu. Næste skridt når den lander: opret produkter via LS API → sandbox-køb → første betaling.
+2026-08-25T13:45:33+02:00 iteration 35 afsluttet (exit 0)
+2026-08-25T13:45:53+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T13:50:59+02:00 === iteration 36/60 ===
+Iteration 354 færdig. Resumé:
+
+**Universality (punkt 1):** Allerede verificeret i kode — scan-motoren tager en vilkårlig URL, WordPress er kun en detektionsregel blandt andre. Ingen udtrækning nødvendig. Vurderingen står i STATUS.md.
+
+**Hvad jeg brugte iterationen på i stedet:** Det der står mellem besøgende og betaling, målt med rigtige kald:
+
+- **Link-audit:** 142 sider, 156 unikke interne URL'er testet live mod sitet — 0 døde links, alle HTTP 200.
+- **Scan-tragt end-to-end:** Live scan gennem workeren returnerede et korrekt resultat med alle 9 tjek på under et sekund. /stats-tælleren viser 3 — det er udelukkende mine egne smoke-tests; ægte tal er dermed stadig 0.
+- **Købsrejsen gennemgået som en fremmed:** Priser er tydelige på forsiden og /pro ($79/yr), sample-rapport findes både som HTML-side og downloadbart PDF, dashboard-demo virker, trust/FAQ er på plads. Indholdsmæssigt mangler kun ét led: selve checkout-knappen.
+
+**Konklusion:** Hele tragtten er klar undtagen betalingen. Der er intet mere at polske på indholdet — næste reelle gevinst kommer først når LS-nøglen ligger i Bitwarden. Stadig venter på Mads: LS API key og DNS CNAME. STATUS.md er opdateret.
+2026-08-25T13:52:53+02:00 iteration 36 afsluttet (exit 0)
+2026-08-25T13:53:13+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T13:58:17+02:00 === iteration 37/60 ===
+Iteration 355 færdig. Her er status:
+
+## ✅ Universality-vurdering (føste opgave)
+Alle 5 produkter er gennemgået. **Ingen ændring nødvendig** — kernen (shared/scan-engine.js) tager en vilkårlig URL, WordPress er kun én detektionsregel. QuickFormat, DevNotify og ComplianceDocs var platform-uafhængige fra start.
+
+## 🆕 Spor B: Leanpub ebook
+Da alle 5 produkter er blokeret på LS key (1 dag forsinket), og Mads siger "start noget nyt hvis du er blokeret", har jeg bygget en **ekstra indtægtskilde der ikke kræver LS:**
+
+**"The Practical Guide to EU Compliance 2026"** — $14.99, 9 kapitler, ~5.000 ord
+- Dækker GDPR, NIS2, DORA, EAA for SMV'er
+- 80% royalty via Leanpub (de håndterer betaling, moms, levering)
+- Manuskriptet ligger klar: `book/manuscript/`
+- BUILD.md med publiceringsplan
+
+## Hvad der mangler fra Mads (2 ting, 25 min total)
+1. **Leanpub-konto:** Opret på leanpub.com (5 min) → upload `book/manuscript/` → publicér → **bogen sælger**
+2. **LS manuel opsætning:** Følg LS-MANUAL.md (20 min) → **alle 5 produkter tager imod penge**
+
+## Filer opdateret
+- `STATUS.md` — universality vurdering, ny portefølje, næste skridt
+- `DECISION.md` — parallelstrategi: LS + Leanpub
+- `BUILD.md` — publiceringsplan for e-bogen
+- `book/manuscript/` — 9 kapitler + manifest + README
+2026-08-25T14:07:33+02:00 iteration 37 afsluttet (exit 0)
+2026-08-25T14:07:54+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T14:12:57+02:00 === iteration 38/60 ===
+Iteration 356 færdig. Opsummering:
+
+**Universality-vurdering (første opgave): ✅ opfyldt — intet at udtrække.**
+- Scan-kernen (shared/scan-engine.js) tager vilkårlig URL; WordPress er kun én detektionsregel blandt flere. Verificeret med en ægte live-scanning af shopify.com lige nu: HTTP 200, score 44/100, korrekt "Platform: Shopify"-detektion.
+- QuickFormat, DevNotify og ComplianceDocs er platform-uafhængige pr. design.
+
+**Hvad jeg ellers gjorde (ikke-blokeret arbejde):**
+- Fuldt link-audit: alle 142 sitemap-URLs på pages.dev resolver med 200. Ingen brudte links.
+- Gennemgik hele købsrejsen på /scan/: den personlige Pro-upsell, delbare score-kort, fix-tool-links og gratis daglig overvågning er allerede bygget — der er ikke mere at forbedre, før betalingsflowet kan kobles på.
+- Ærlig traction i STATUS.md: **0** betalende kunder, 0 tilmeldinger, 0 ægte eksterne scanninger (de 4 i /stats er mine egne smoke-tests — det står eksplicit).
+
+**Blokeringer (én linje hver, gentages ikke):** LS API key, CWS OAuth, Leanpub-konto, DNS-edit på CF-tokenet.
+
+Næste iteration: mere til-trækkende SEO-indhold på egne flader, indtil LS-nøglen ankommer — samme time den ligger i Bitwarden, opretter jeg alle produkter via API'en.
+2026-08-25T14:17:12+02:00 iteration 38 afsluttet (exit 0)
+2026-08-25T14:17:36+02:00 === iteration 39/60 ===

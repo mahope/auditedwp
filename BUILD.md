@@ -1,63 +1,50 @@
-# BUILD — Korteste vej til første betalende kunde (25. august 2026)
+# BUILD.md — Leanpub Ebook: "The Practical Guide to EU Compliance 2026"
 
-## Realiteten
+## Hvad
+En praktisk, jargongfri guide til GDPR, NIS2, DORA og EAA for små og mellemstore
+virksomheder. ~5.000 ord, 9 kapitler + forside.
 
-5 produkter bygget, testet, live. 0 betalende kunder. Blokeringen er IKKE kode —
-det er konti og opsætning der sidder hos Mads.
+## Pris
+$14.99 — 80% royalty = $11.99 pr. salg via Leanpub.
 
-**Tre parallelle veje, alle kræver lidt af Mads:**
+## Målgruppe
+- SMV-ejere i EU med en hjemmeside
+- Freelancere og soloselvstændige
+- Ikke-EU-virksomheder der sælger til EU-kunder
+- Marketingfolk der driver deres firmas hjemmeside
 
-| Vej | Mads' tid | Indtjening | Status |
-|-----|-----------|------------|--------|
-| A: LS manuel fallback | ~20 min i LS dashboard | $29-$149/tx | ⏳ Klar — venter på Mads |
-| B: Affiliate links | ~15 min signup (3 programmer) | 30% recurring på CMP-salg | 🏗️ Side bygget, links mangler IDs |
-| C: Polar.sh ny konto | ~10 min signup | $29-$149/tx (4% fee) | 🆕 Alternativ hvis LS ikke virker |
+## Korteste vej til første betaling
 
-## Vej A: LS manuel fallback (anbefalet — hurtigst)
+### Trin 1: Opret Leanpub-konto (kræver Mads)
+Leanpub.com → Sign up → Opret konto med Mads' email
+Dette er en ekstern konto i Mads' navn — jeg må ikke oprette den selv.
 
-Mads har ALLEREDE en Lemon Squeezy-konto (`mads@mahope.dk`). Bitwarden blokeringen
-stopper kun den automatiserede API-script. Plan B: log ind manuelt i dashboardet.
+Når kontoen er oprettet:
+- Opret nyt book "The Practical Guide to EU Compliance 2026"
+- Upload manuscript (book/manuscript/ mappen)
+- Sæt pris: $14.99
+- Publicér
 
-**Mads skal gøre (20 min):**
-1. Gå til https://app.lemonsqueezy.com — log ind
-2. Products → New product (6 gange, se LS-MANUAL.md for exact indstillinger)
-3. Upload PDF fra `gumroad/products/`, indsæt titel/beskrivelse/pris
-4. Publicér → kopier checkout-URL → send til agenten
+### Trin 2: Hvis Mads ikke kan oprette kontoen
+Alternativ: brug Amazon KDP (Mads uploader manuelt) eller Apple Books
+(kan ikke automatiseres, men konto eksisterer måske).
 
-**Agenten gør:**
-- Sætter checkout-URL'er ind i site/store/index.html
-- Fjerner waitlist-bannere
-- Deployer
-- Kører sandbox-testkøb (kort 4242 4242 4242 4242)
+### Trin 3: Krydssalg
+Når LS er aktiv: tilføj link til bogen på eucomplypro.com og i scan-resultater.
+Når bogen sælger: tilføj link til EUComply Pro og ComplianceDocs i bogen.
 
-**First $1:** Samme time som Mads sender URLs.
+## Manuscript
+Mappe: `book/manuscript/`
+Format: Markdown (Leanpub-native)
+Filer: 01-Intro.md til 09-Conclusion.md + Manuscript.txt + README.md
 
-## Vej B: Affiliate-links (kører i parallel)
+## Hvad der mangler før publicering
+1. Mads opretter Leanpub-konto og book
+2. Upload af filer til Leanpub (drag-and-drop eller GitHub sync)
+3. Gennemlæsning og evt. korrektur
+4. Publicér
 
-Cookiebot: 30% recurring commission i 12 måneder. Complianz: 30% one-time.
-iubenda: op til 40%. Ingen Bitwarden, ingen LS key. Kun Mads' signup.
-
-**Mads skal gøre (15 min):**
-1. Tilmeld Cookiebot affiliate: cookiebot.com/us/affiliates/ (PayPal til udbetaling)
-2. Tilmeld Complianz affiliate: complianz.io/affiliates/
-3. Tilmeld iubenda affiliate: iubenda.com/partners/affiliates
-
-**Agenten gør (allerede klar):**
-- CMP comparison page (/cmp-comparison/) — bygget, deployes når IDs er klar
-- Affiliate-disclosure på privacy policy — klar til deploy
-- Scanner-resultater anbefaler specifik CMP via affiliate-link — backend klar
-
-**First $1:** Indenfor dage efter Mads' signup (første gang nogen scanner, klikker, og køber en CMP).
-
-## Det jeg IKKE gør mere
-
-- Nye produkter indtil vej A eller B har givet revenue
-- Flere universality-audits (produkterne er allerede universelle)
-- Flere guides, blog posts, eller indhold der kræver trafik
-- Nogen som helst kodeændring der ikke handler om at få penge ind
-
-## Måling
-
-- Betalinger: LS dashboard (Vej A) — tjek dagligt
-- Affiliate-kommissioner: Cookiebot/Complianz/iubenda dashboards (Vej B)
-- Status: $0 indtil en af vejene aktiveres
+## Alternativ: hvad hvis vi ikke kan bruge Leanpub?
+- Amazon KDP: Mads uploader manuelt (ingen API). Jeg kan levere .docx.
+- Gumroad: Droppet af Mads.
+- LS: Ventes — men LS er bedst til digitale produkter (templates, ikke bøger).

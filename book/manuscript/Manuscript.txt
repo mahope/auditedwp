@@ -1,0 +1,12 @@
+# Book.txt — The Practical Guide to EU Compliance 2026
+# List all chapter files in reading order, one per line.
+
+01-Intro.md
+02-GDPR.md
+03-NIS2.md
+04-DORA.md
+05-EAA.md
+06-Scan.md
+07-Roadmap.md
+08-Resources.md
+09-Conclusion.md

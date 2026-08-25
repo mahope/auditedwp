@@ -138,4 +138,5 @@
   <url><loc>https://eucomplypro.com/pro/vs-onetrust/</loc></url>
   <url><loc>https://eucomplypro.com/pro/vs-osano/</loc></url>
   <url><loc>https://eucomplypro.com/pro/vs-termly/</loc></url>
+  <url><loc>https://eucomplypro.com/book/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
