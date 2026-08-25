@@ -6220,3 +6220,58 @@ Næste skridt står i STATUS.md: LS-nøglen fra Mads er stadig den enste ting me
 2026-08-25T08:17:11+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T08:22:12+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-25T08:27:14+02:00 === iteration 55/60 ===
+Færdig med iteration 314. Resumé:
+
+**Vurdering af punkt 1 (universalitet): BESTÅET igen.** Scannerkernen tager en vilkårlig URL og virker på alle platforme — plugin/CLI/extension er indpakninger. Intet at trække ud.
+
+**Men frisk gennemgang fandt noget vigtigere:** alle 322 kanoniske/hreflang/og:url/sitemap-URL'er pegede stadig på `auditedwp.pages.dev` i stedet for det købte domæne `eucomplypro.com`. Det betød at Google ville indeksere pages.dev-adressen, og domænet ville aldrig opbygge autoritet.
+
+**Retttet og deployet:**
+- 135 HTML-filer + sitemap.xml + robots.txt + badge-script migreret til eucomplypro.com (badge-script bruger nu `location.origin`, virker fra begge adresser)
+- Verificeret live: canonical, hreflang, og:url og sitemap peger nu på eucomplypro.com på forsiden, undersider og sitemap
+- Commit: b672916
+
+**Vigtigt for Mads:** Siderne peger nu på et domæne der endnu ikke svarer, fordi CNAME @/www → auditedwp.pages.dev (proxied) mangler i Cloudflare DNS. Det er nu den vigtigste blokering — 5 minutter i dashboardet, så går hele sitet live på det rigtige domæne.
+
+STATUS.md er opdateret med vurdering, ærlige tal ($0 revenue) og næste skridt.
+2026-08-25T08:30:40+02:00 iteration 55 afsluttet (exit 0)
+2026-08-25T08:31:02+02:00 === iteration 56/60 ===
+Iteration 315 færdig. Resumé:
+
+**Kritisk fejl fundet og rettet:**
+- eucomplypro.com svarer intet — CNAME-recordene er aldrig blevet oprettet (bekræftet via Cloudflare API: begge domæner "pending — CNAME record not set").
+- Iteration 314's flytning af alle 322 SEO-URL'er til domænet pegede derfor Google på døde adresser. Jeg har flippet alle URL'er tilbage til `auditedwp.pages.dev` og deployet + verificeret live.
+
+**Ny blokering fjernet for Mads:**
+- `quickformat.mahope.dk` er tilføjet som custom domain på Pages-projektet. QuickFormat behøver ikke længere vente på Lemon Squeezy-nøglen for at få en ordentlig adresse — den venter kun på én DNS-record.
+
+**Universalitets-vurdering:** bestået igen — kernen er platformsuafhængig, indpakningerne er separate. Intet at trække ud.
+
+**Til Mads (samlet på ét sted i STATUS.md):**
+1. eucomplypro.com-zonen: CNAME `@` og `www` → `auditedwp.pages.dev` (proxied) — 5 min. Derefter kan jeg genaktivere URL-migreringen med én kommando.
+2. mahope.dk-zonen: CNAME `quickformat` → `auditedwp.pages.dev` (proxied).
+3. LS-nøglen eller 20 min manuel opsætning → checkout live samme time.
+
+Revenue er stadig $0 — ærligt rapporteret. Filen: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-25T08:35:06+02:00 iteration 56 afsluttet (exit 0)
+2026-08-25T08:35:28+02:00 === iteration 57/60 ===
+Iteration 316 færdig og pushet (3ffbc4b).
+
+**Universalitets-vurderingen (første opgave) — BESTÅET, denne gang med live-bevis:**
+Jeg ramte scanner-kernen direkte med ikke-WordPress-sider lige nu:
+- shopify.com → detekteret Shopify, fuld rapport ✅
+- webflow.com → detekteret Webflow ✅
+- example.com → "Unknown" (håndskrevet HTML), fuld rapport ✅
+
+Kernen tager en almindelig URL og er platformsuafhængig. Plugin/CLI/extension/webtool er allerede indpakninger — intet at trække ud.
+
+**Øvrig verifikation af det der er live:**
+- Alle 11 hovedruter returnerer 200 på auditedwp.pages.dev
+- Scan-tæller: 73 siden nulstilling — men jeg kan ikke skælde egne smoke-tests fra, så det reelle tal er tæt på 0. Det står ærligt i STATUS.md.
+- QuickFormat-zippen er en ægte .app (3.2 MB)
+- Alle tre /config-endpoints har tom checkoutUrl; købsknapper degraderer pænt til waitlist — ingen brudte flows
+
+**Konklusion:** DECISION.md holder under pengespørgsmålet — der skal ingen mere kode til, kun Mads' konti (LS-nøgle/manuel setup, to CNAME-records, affiliate signups). At bygge noget nyt ville ramme samme mur, så intet nyt blev bygget. STATUS.md er opdateret med vurderingen, ærlige tal og den én-linjes blokeringsliste.
+2026-08-25T08:43:11+02:00 iteration 57 afsluttet (exit 0)
+2026-08-25T08:43:32+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T08:48:34+02:00 === iteration 58/60 ===

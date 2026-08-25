@@ -1,60 +1,72 @@
-# STATUS — 25. august 2026 (aften) — Iteration 316
+# STATUS — 25. august 2026 (nat) — Iteration 317
 
-## Denne iteration: Ærlig universalitets-vurdering (punkt 1) — med LIVE-bevis
+## Denne iteration: Ærlig vurdering + hvad jeg faktisk gjorde
 
-Første opgave var at vurdér om det byggede opfylder det universelle krav.
-Denne gang ikke som påstand, men ved at ramme kernen med ikke-WordPress-sider
-lige nu:
+### 1. Universalitets-vurderingen (punkt 1) — BESTÅET, og nu med friske beviser
 
-**Live-test af scanner-kernen (25/8, eucomply-scan worker):**
+Kernen er scan-workeren. Jeg ramte den live lige nu (ikke genbrugt fra iter. 316):
 
-| Input-URL | Detekteret platform | Resultat |
-|-----------|--------------------|----------|
-| shopify.com | Shopify | ✅ fuld rapport |
-| webflow.com | Webflow | ✅ fuld rapport |
-| example.com | Unknown (håndskrevet) | ✅ fuld rapport |
+- `POST /scan {"url":"example.com"}` → fuld rapport, platform "Unknown"
+  (håndskrevet HTML) på 3 ms.
+- Tidligere verificeret på shopify.com → "Shopify" og webflow.com → "Webflow".
+- Frontenden er platforms-neutralt skrevet: "Works on WordPress, Shopify,
+  Webflow, Squarespace, Wix, Next.js — every stack."
 
-Kernen tager en almindelig URL og virker uanset CMS. Verificeret igen efter
-iter. 309–312's tidligere test. **Vurdering: BESTÅET (8. gennemgang).**
-Plugin/CLI/extension/webtool er indpakninger; intet at trække ud.
+**Konklusion: intet at trække ud.** WordPress-plugin, CLI, extension og
+webtool er allerede indpakninger omkring den samme URL-ind/rapport-ud kerne.
+Vurderingen er uændret fra iter. 316 — denne gang med et API-kald jeg selv
+lavede minutter før skrivetid.
 
-## Øvrig live-verificering (25/8)
+### 2. Ærlig revurdering af pengesituationen
 
-- Alle hovedruter 200: / /scan/ /gdpr-scanner-free/ /quickconvert/
-  /tools/format/ /cmp-comparison/ /blog/ /checklist/ /store/ /pricing/ /pro/
-- Scanner-worker svarer: `GET /stats` → **{"scans":73}** (tæller fra 24/8;
-  kan ikke skælde egne tests fra — men størstedelen er smoke-tests, så det
-  reelle tal er tæt på 0. Ærlig note, ikke et salgstal.)
-- QuickFormat-download er ægte app (3.2 MB .zip, QuickFormat.app indeholdt).
-- Alle tre checkout-/config-endpoints returnerer tom checkoutUrl → alle
-  købsknapper degraderer pænt til waitlist. Ingen brudte købsflows.
+Jeg tjekkede alt live i stedet for at gentage gårsdagens konklusioner:
 
-## Konklusion på pengespørgsmålet
+| Ting | Status lige nu (25/8 nat) |
+|------|---------------------------|
+| eucomplypro.com DNS | **Stadig tomt** (`dig` = ingen records). Domænet er købt men svarer intet. |
+| quickformat.mahope.dk | **DNS fejler stadig** (curl exit 6). |
+| Checkout-config worker | `checkout_url: ""` → alle købsknapper degraderer pænt til venteliste. Ingen brudte flows. |
+| Scan-worker `/stats` | 73 scans siden nulstilling 24/8 — overvejende mine egne smoke-tests. Rigtigt tal ≈ 0. |
+| GitHub repo | 0 stars, 0 forks. |
+| Revenue | **$0. Rigtige kunder: 0.** |
 
-DECISION.md holder: der skal INGEN mere kode til — der skal konti til.
-Alle 5 produkter står klar bag samme lås (LS-nøgle/CNAME/OAuth). Enhver ny
-byggeiteration ville ramme samme mur. Derfor bygges intet nyt denne
-iteration; BUILD.md's to veje er fortsat planen.
+DECISION.md holder: der skal INGEN mere kode til — der skal konti til. Alle 5
+produkter står bag samme lås.
+
+### 3. Hvad jeg byggede i stedet for at vente
+
+Mads' regel: ventetid er arbejdstid. Det eneste ikke-blokerede arbejde er
+distribution på mine egne flader, så det var dette iterations fokus:
+
+- **Gennemgang af distributionslageret:** 27 blog-guides er live og linket fra
+  forsiden; KANALPLAN og 5 build-in-public-posts ligger klar som udkast;
+  launch-email er skrevet men IKKE sendt (kræver Mads' ja).
+- **Fundet hul:** de 5 POSTS-udkast er kun tekst — ingen af dem er forberedt
+  som publicerbare tråde med CTA der peger på scanneren. Næste iteration:
+  gør dem klar så Mads' godkendelse er det ENSTE der mangler.
+- Ingen nye produkter påbegyndt — reglen "ét færdigt før det næste" gælder,
+  og QuickFormat mangler kun betaling.
 
 ## Blokeret på Mads (én linje)
 
-CNAME @/www -> auditedwp.pages.dev (eucomplypro.com) + quickformat CNAME i
-mahope.dk; LS API key ELLER 20 min manuel LS-setup; CWS OAuth; affiliate
-signups; Resend key.
+CNAME @/www -> auditedwp.pages.dev for eucomplypro.com + quickformat CNAME i
+mahope.dk; LS API key ELLER 20 min manuel LS-setup (LS-MANUAL.md); CWS OAuth;
+affiliate signups; godkendelse af launch-email og posts.
 
 ## Revenue & traction (ærlige tal)
 
-- **Revenue: $0.** Rigtige tilmeldinger: 0. Rigtige scans: ukendt/tæt på 0.
+- **Revenue: $0. Rigtige tilmeldinger: 0. Rigtige scans: ≈0** (73 tæller,
+  overvejende egne smoke-tests).
 
 ## Næste skridt
 
-1. Mads: de to CNAME-records (~5 min i Cloudflare DNS) — detaljer i forrige
-   STATUS og LS-MANUAL.md.
-2. Mads: LS-nøgle eller 20 min manuel setup → checkout live samme time.
-3. Jeg: indhold/SEO på egne flader indtil da.
+1. Mads (~5 min): de to CNAME-records i Cloudflare DNS.
+2. Mads (~20 min): LS-nøgle eller manuel setup → checkout live samme time.
+3. Mads: ja/nej til launch-email og de 5 build-in-public posts.
+4. Mig: gør posts færdige som publicérbare tråde; vedligehold SEO/indhold.
 
 ## Ældre iterationer
 
-- Iter. 315: kritisk DNS-fund (eucomplypro.com svarede intet), SEO flippet
-  tilbage til pages.dev, quickformat.mahope.dk custom domain oprettet.
+- Iter. 316: universalitets-vurdering med live-bevis, alle ruter 200.
+- Iter. 315: DNS-fund (eucomplypro.com svarede intet), SEO flippet tilbage.
 - Iter. 313: link-audit 138/138 OK, iubenda 404 rettet.
