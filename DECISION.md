@@ -1,34 +1,47 @@
-# DECISION — 29. august 2026 — DeskUptime: Desktop website monitor
+# DECISION — 26. august 2026 — DeskUptime: Desktop website monitor
 
-## Beslutning: HOLDER. Tauri desktop app bygget.
+## Beslutning: HOLDER under pengekriteriet.
 
 ## Hvad: DeskUptime — Desktop website monitor
 
 | | |
 |---|---|
-| **Produkttype** | Tauri desktop app (macOS, Windows coming) + CLI |
-| **Målgruppe** | Webdevelopere, freelancere, små teams der vil overvåge websites |
-| **Problem** | Uptime-monitorering SaaS koster $10-50/md. En desktop app gør det samme uden løbende serveromkostninger |
+| **Produkttype** | Tauri desktop app (macOS, Windows) + CLI (gratis) + web live-check (gratis) |
+| **Målgruppe** | Webdevelopere, freelancere, små teams der overvåger websites |
+| **Problem** | Uptime-monitorering SaaS koster $7-15/md ($84-180/år). En desktop app gør det samme uden løbende serveromkostninger |
 | **Pris** | **$19 one-time** via LS license key (3 aktiveringer) |
-| **Platform** | Salg via LS checkout. Distribuér: GitHub Releases + npm (CLI) |
-| **Indtjeningsmodel** | LS licensnøgle — $19 × ~70% = ~$13/køb. Desktop = differentiering fra SaaS |
-| **Status** | Desktop app BYGGET. Produktside LIVE. Release v0.1.0-alpha på GitHub. Venter på LS key for betaling. |
+| **Platform** | Salg via LS checkout. Distribution: GitHub Releases + npm (CLI) |
+| **Indtjeningsmodel** | LS licensnøgle — $19 × ~92% (MoR) = ~$17,50/køb |
+| **Status** | Desktop app BYGGET. Produktside LIVE med live-check widget. CLI virker. Venter på LS key for betaling. |
 
-## Hvorfor valgt frem for alternativer (revurderet 1. sept 2026)
+## Vurdering på de fem pengekriterier
 
-Under de nye kriterier (23. august) er DeskUptime valgt fordi: det er bygget,
-koster $0 at levere, og venter kun på LS key for at tjene penge. $19 one-time
-på et stort marked (freelancere, developere). Chrome extension, VS Code ext,
-og SaaS kræver alle Mads' konti og er længere fra betaling.
+| Kriterium | Vurdering |
+|-----------|-----------|
+| **Hurtig til betaling** | **Meget hurtig** — når LS key kommer: 10 min at oprette checkout-link og aktivere køb. Produkt og side er klar. |
+| **Beløb pr kunde** | **$19** — impulse purchase for en freelancer. Lav friktion. |
+| **Antal kunder** | Stort marked: UptimeRobot ~3M brugere, Pingdom ~500K betalende. Selv 0.01% = 300-500 kunder. |
+| **Tilbagevendende** | **One-time.** Lavere LTV end SaaS, men lavere pris = lettere at sælge. Kræver nye kunder konstant. |
+| **Leveringsomkostning** | **$0** — desktop app. Ingen servere, ingen cloud-infra. Cloudflare worker (live-check) er gratis tier. |
 
-| Alternativ | Hvorfor ikke |
-|---|---|
-| **CLI tool (html→md)** | Gratis alternativer er gode nok |
-| **VS Code extension** | Kræver publisher account → Mads |
-| **Chrome extension** | Kræver CWS API key → Bitwarden |
-| **SaaS** | Kræver servere + betaling + drift — desktop er $0 at levere |
+## Hvorfor valgt frem for alternativer (26. august — pengekriteriet)
+
+| Alternativ | Vurdering |
+|------------|-----------|
+| **EUComply Pro ($79/yr)** | 0 salg efter måneder. Signal: compliance-nichen viser ikke kundeefterspørgsel. Aflivet. |
+| **Chrome extension** | Kræver CWS API key → Bitwarden. Længere fra betaling end desktop. |
+| **VS Code extension** | Kræver publisher account → Mads. Markedsplads-afhængig. |
+| **KDP ebook ($9.99)** | 0 salg. Manuelt upload (ingen API). Kræver Mads hver gang. |
+| **SaaS** | Kræver servere + drift + betalingsflow. Desktop er $0 at levere. |
+| **Nyt produkt fra bunden** | DeskUptime er bygget og virker. At starte forfra forsinker betaling. |
 
 ## Hvad kan slå det ihjel
-- LS key kommer aldrig — men produkter er bygget og klar til brug
-- Ingen finder produktet — 0 trafik er det reelle problem. Løsning: SEO + indhold
-- Konkurrence fra gratis tools — differentierer via privacy, one-time price, desktop UX
+
+- **LS key kommer aldrig** — men alt andet er klar. Når den kommer, 10 min til checkout.
+- **Ingen finder produktet** — 0 trafik. Løsning: SEO + blog-indhold (10+ artikler live).
+- **Konkurrence fra gratis SaaS tiers** — differentierer via privacy, one-time price, desktop UX.
+- **Desktop kræver at maskinen kører** — det er en reel begrænsning. Men til daglig "er alt OK?" er det nok for målgruppen.
+
+## Domæne
+
+Foreløbigt køb: **deskuptime.com** foreslået — verificeret ledigt 27/8-2026. ~$10/år via Cloudflare Registrar. Bygger videre på auditedwp.pages.dev/deskuptime/ indtil domænet sættes foran.

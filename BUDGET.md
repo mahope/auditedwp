@@ -10,7 +10,8 @@
 
 | Post | Estimat | Status |
 |------|---------|--------|
-| Ingen planlagte udgifter | 0 kr | Desktop app + CLI kører på gratis værktøjer |
+| deskuptime.com domæne (Cloudflare Registrar, 1 år) | ~10 USD (~70 DKK) | 📝 Foreslået — verificeret ledigt 27/8. Køb forhåndsgodkendt. |
+| Ingen yderligere planlagte udgifter | 0 kr | Desktop app + CLI kører på gratis værktøjer |
 
 ## Løbende driftsomkostninger
 

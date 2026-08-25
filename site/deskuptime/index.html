@@ -99,12 +99,37 @@
     td,th{padding:8px 10px;font-size:13px}
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime Pro",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Windows",
+      "description": "Desktop website monitor: uptime, SSL certificate expiry and content-change checks. One-time purchase, runs on your machine.",
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD", "availability": "https://schema.org/PreOrder" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"Does DeskUptime work with any website?","acceptedAnswer":{"@type":"Answer","text":"Yes. It takes any URL and checks it over plain HTTP — WordPress, Shopify, Wix, Squarespace, Webflow, static sites, hand-coded HTML. No plugin or integration is installed on the monitored site."}},
+        {"@type":"Question","name":"Do I need my computer running all the time?","acceptedAnswer":{"@type":"Answer","text":"For continuous background monitoring, yes — that is the trade-off for a one-time price instead of a monthly SaaS bill. Quick checks can be run at any time without watch mode."}},
+        {"@type":"Question","name":"What happens after I buy?","acceptedAnswer":{"@type":"Answer","text":"You receive a license key instantly by email from Lemon Squeezy. Enter it once in the desktop app and Pro features unlock. 3 activations per license."}},
+        {"@type":"Question","name":"Is there a subscription?","acceptedAnswer":{"@type":"Answer","text":"No. $19 one-time covers all v1.x updates. Major version upgrades come at a discount for existing customers, never as an automatic charge."}},
+        {"@type":"Question","name":"Can I get a refund?","acceptedAnswer":{"@type":"Answer","text":"Yes — 14 days, no questions asked, handled through Lemon Squeezy's checkout."}}
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
 <header>
 <div class="wrap">
-  <a href="/" class="logo"><span>EU</span>Comply</a>
+  <a href="/deskuptime/" class="logo">Desk<span>Uptime</span></a>
   <nav>
     <a href="/scan/">Scan</a>
     <a href="/deskuptime/" style="color:var(--accent);font-weight:600">Deskuptime</a>
@@ -135,8 +160,25 @@
 <section>
 <div class="wrap">
   <h2>Try it right now</h2>
-  <p class="lede">No install. No account. Just run this in your terminal:</p>
-  <div class="download-row" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+  <p class="lede">No install. No account. Just paste your URL and click Check:</p>
+
+  <div class="live-check" style="max-width:580px;margin:0 auto 24px;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px">
+    <form id="live-check-form" style="display:flex;gap:8px;align-items:stretch">
+      <input type="url" id="live-url" value="https://example.com"
+             style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:monospace;outline:none"
+             placeholder="https://your-site.com" required>
+      <button type="submit" id="live-go"
+              style="background:var(--accent);color:#fff;border:0;border-radius:6px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Check ⟶</button>
+    </form>
+    <div id="live-result" style="display:none;margin-top:14px;font-family:monospace;font-size:13px;line-height:1.7">
+      <div id="live-loader" style="color:var(--muted);text-align:center">🔍 Checking...</div>
+      <div id="live-data"></div>
+    </div>
+  </div>
+
+  <p style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:18px">Or run it from your terminal:</p>
+
+  <div class="download-row">
         <a href="https://github.com/mahope/deskuptime/releases" class="dl-btn" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           Download for macOS &amp; Windows (free)
@@ -274,6 +316,20 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
 </div>
 </section>
 
+<section id="faq">
+<div class="wrap">
+  <h2>Frequently asked questions</h2>
+  <p class="lede">Short answers to the questions people actually ask.</p>
+  <div style="max-width:680px;margin:0 auto">
+    <div class="card" style="margin-bottom:14px"><h3>Does DeskUptime work with any website?</h3><p>Yes. It takes any URL and checks it over plain HTTP — WordPress, Shopify, Wix, Squarespace, Webflow, static sites, hand-coded HTML. No plugin or integration is ever installed on the site you monitor.</p></div>
+    <div class="card" style="margin-bottom:14px"><h3>Do I need my computer running all the time?</h3><p>For continuous background monitoring in watch mode, yes — that's the trade-off for a $19 one-time price instead of a monthly SaaS bill. For quick "is it up right now?" checks, no: run a check from the CLI or this page any time.</p></div>
+    <div class="card" style="margin-bottom:14px"><h3>What happens after I buy?</h3><p>You receive a license key instantly by email from Lemon Squeezy (our payment provider). Enter it once in the desktop app and Pro features unlock. 3 activations per license, no DRM phone-home.</p></div>
+    <div class="card" style="margin-bottom:14px"><h3>Is there a subscription?</h3><p>No. $19 one-time covers all v1.x updates. If we ever ship a major new version, existing customers get a discount — never an automatic charge.</p></div>
+    <div class="card"><h3>Can I get a refund?</h3><p>Yes — 14 days, no questions asked, handled through Lemon Squeezy's checkout. Email us and it's processed.</p></div>
+  </div>
+</div>
+</section>
+
 <section id="pro" class="cta-section">
 <div class="wrap">
   <h2>Get DeskUptime Pro</h2>
@@ -329,7 +385,46 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
     }
   }).catch(function(){});
 
-  // Waitlist count (real signups only — test domains are rejected server-side)
+  // Live quick check widget
+  document.getElementById('live-check-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var url = document.getElementById('live-url').value.trim();
+    var resultDiv = document.getElementById('live-result');
+    var loader = document.getElementById('live-loader');
+    var dataDiv = document.getElementById('live-data');
+
+    if (!url) return;
+    resultDiv.style.display = 'block';
+    loader.style.display = 'block';
+    dataDiv.innerHTML = '';
+
+    var api = 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/check?url=' + encodeURIComponent(url);
+    try {
+      var r = await fetch(api);
+      var d = await r.json();
+      loader.style.display = 'none';
+
+      if (d.error) {
+        dataDiv.innerHTML = '❌ <span class="warn">Error:</span> ' + d.error;
+        return;
+      }
+
+      var statusIcon = d.status >= 200 && d.status < 400 ? '✅' : '❌';
+      var sslIcon = d.https ? '🔒' : '⚠️';
+      var msColor = d.responseMs < 300 ? '#1a7a44' : d.responseMs < 1000 ? '#b85a0a' : '#b03030';
+
+      dataDiv.innerHTML =
+        '<span class="accent">' + d.url + '</span><br>' +
+        '  ' + statusIcon + ' Status:   <span class="ok">' + d.status + ' ' + d.statusText + '</span><br>' +
+        '  Response: <span style="color:' + msColor + '">' + d.responseMs + 'ms</span><br>' +
+        '  ' + sslIcon + ' HTTPS:    ' + (d.https ? 'Active ✅' : 'Not detected ⚠️') + '<br>' +
+        (d.redirected ? '  ↳ Final URL: ' + d.finalUrl + '<br>' : '') +
+        '  — Server:    ' + (d.headers.server || 'unknown');
+    } catch (err) {
+      loader.style.display = 'none';
+      dataDiv.innerHTML = '❌ <span class="warn">Network error:</span> ' + err.message;
+    }
+  });
   fetch(WAITLIST).then(function(r){ return r.json(); }).then(function(d){
     var el = document.getElementById('pro-status');
     if (el && d && d.count > 0) {

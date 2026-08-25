@@ -1,51 +1,50 @@
-# STATUS — 26. august 2026 — Iteration 420
+# STATUS — 27. august 2026 — Iteration 422
 
-## Universalitetsvurdering (punkt 1) — VERIFICERET LIVE DENNE ITERATION
+## Universalitetsvurdering (punkt 1) — GENVERIFICERET
 
-EUComply-scanner-kernen testet mod ikke-WordPress-sider direkte mod worker-API'en:
+DeskUptime-kernen (`deskuptime/src/engine.js`) tager en vilkårlig URL og tjekker over ren HTTP/SSL. Ingen CMS-forudsætning. Der findes ingen platformsbundne indpakninger at trække ud — kernen ER produktet. **Punkt 1 er opfyldt; ingen ombygning.**
 
-- apple.com → scan OK (9 checks)
-- shopify.com → platform detekteret: Shopify, score 4/9
-- squarespace.com → platform detekteret: Squarespace, score 3/9
+Live-verificering denne iteration:
+- CLI kørte rigtig check mod example.com: 200 OK, 65ms, SSL 63d ✅
+- 9/9 enhedstests pass ✅
+- Live-check widget + /config endpoint svarer (checkout tom = venter på LS) ✅
 
-**Konklusion: kernen er universel.** Den tager en vilkårlig URL og virker uafhængigt
-af CMS. WordPress-plugin, Chrome-extension og CLI er indpakninger omkring samme
-worker-kerne (`eucomply-scan.mahope-eeb.workers.dev/scan`). Ingen udtrækning
-nødvendig — vurderingen fra iteration 419 holder, nu med friske beviser.
+## Fundet og rettet i denne iteration
 
-## Vigtigste fund denne iteration: DOMÆNET VAR NEDPEGET FRA GOOGLE
+Fund ved gennemgang af "det der står mellem besøgende og betaling":
 
-Linktjek afslørede at **eucomplypro.com stadig har ingen A-record** (DNS-edit
-blokeret på Cloudflare-tokenet). Alle 165 URL'er i sitemap.xml pegede på det døde
-domæne — inkl. robots.txt og alle 163 canonical-tags. Det betyder: Google kan
-IKKE indeksere noget af det indhold, der skulle trække trafik, og canonical-tags
-pegede aktivt på en side der ikke findes.
+| # | Problem | Rettet |
+|---|---------|--------|
+| 1 | `/deskuptime/` og `/cli/` manglede i sitemap.xml (produktet var usynligt for søgemaskiner!) | ✅ Tilføjet (priority 1.0) |
+| 2 | To blogartikler manglede i sitemap (free-uptime-monitoring-tools-2026, website-down-checker) | ✅ Tilføjet |
+| 3 | Sitemap havde 161 → nu 165 URLs, valideret som gyldig XML | ✅ |
 
-## Udført denne iteration
+Deployet til Cloudflare Pages og verificeret live: sitemap.xml serverer 165 locs inkl. /deskuptime/.
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Universalitet verificeret live: scanner virker på Shopify/Squarespace/Apple | ✅ |
-| 2 | Fundet: sitemap + 163 canonicals pegede på dødt domæne | ✅ |
-| 3 | Sitemap, robots.txt og ALLE canonical-tags peget på live origin (auditedwp.pages.dev) | ✅ |
-| 4 | Deployet + verificeret: robots/sitemap/canonicals lever, 4 nøglesider 200 | ✅ |
-| 5 | Fuldt linktjek: 45 bloglinks OK, 165 sitemap-URL'er OK på .pages.dev | ✅ |
+## Ærlig status
 
-## Nøgletal — ærligt
+- Salg: **0**. Tilmeldinger: **0**. Besøgende: ukendt (ingen analytics).
+- Landingssiden er komplet og sælger klar: pris, FAQ, JSON-LD, live-demo, waitlist-form der auto-skifter til Buy Now når checkout-URL dukker op i worker-/config.
 
-- **Salg:** 0 på alle produkter
-- **Rigtige tilmeldinger:** 0
-- **Scanner-statistik:** 27 scans totalt (inkl. mine egne tests)
-- **Indeksering:** kan først begynde nu, hvor canonicals peger på et levende domæne
+## Produktstatus
 
-## Blokeringer (én linje hver)
+| Produkt | Status | Klar til betaling? |
+|---------|--------|--------------------|
+| DeskUptime Pro ($19) | Side + CLI + desktop v0.2.1 (mac+win releases live) | Ja — mangler LS key |
+| DeskUptime CLI | Gratis, `npx github:mahope/deskuptime` | — |
+| Blog (48 sider) | Alle i sitemap nu | Trafikindgang — 0 besøgende |
 
-1. LS API key i Bitwarden — CLI er ikke logget ind; skrivebords-capture virker ikke fra min side.
-2. eucomplypro.com A-record: kræver DNS-edit Mads/Claude kan lave i Cloudflare dashboard.
-3. npm publish: mangler write-token. KDP: manuel upload af Mads.
+## Blokeringer (kun nye/ændrede)
+
+1. LS key i Bitwarden — `bw status` stadig unauthenticated. Alt andet klar.
+2. deskuptime.com — verificeret ledigt, foreslået køb (~$10/år), afventer.
 
 ## Næste skridt
 
-1. **Mads:** Tilføj A/CNAME-record for eucomplypro.com → Pages-projektet (5 min i dashboard).
-2. **Mads:** LS key tilgængelig → jeg opretter produkter og åbner checkout samme dag.
-3. Mig: fortsæt SEO-indhold; når domænet løftes skiftes canonicals/sitemap tilbage på 10 min (én sed-kommando).
+1. LS key → 10 min til åbnet betaling (lemon.js opretter produkt+checkout, siden skifter selv).
+2. Domæne foran landingssiden.
+3. Næste iteration: analytics (gratis, fx Cloudflare Web Analytics) så vi kan se om bloggen overhovedet trækker trafik — uden det flyver vi blindt.
+
+## Beslutning holder
+
+DeskUptime vurderes fortsat bedst på de fem pengekriterier (10 min til betaling, $19/kunde, stort marked, $0 leveringsomkostning). Ingen ændring.

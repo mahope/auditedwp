@@ -1,0 +1,6 @@
+name = "deskuptime-quickcheck"
+compatibility_date = "2026-08-23"
+
+[env.production]
+name = "deskuptime-quickcheck"
+routes = [{ pattern = "deskuptime-check.mahope-eeb.workers.dev/check", zone_id = "your-zone-id" }]

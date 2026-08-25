@@ -8307,3 +8307,80 @@ Største realitet: alt produktarbejde er nu blokeret på tre ting fra Mads' side
 3. Vent på LS key — når den kommer, er DeskUptime Pro salgsklart på under 5 min
 2026-08-26T00:16:20+02:00 iteration 43 afsluttet (exit 0)
 2026-08-26T00:16:42+02:00 === iteration 44/60 ===
+Iteration 420 færdig og pushet (49f4893).
+
+**1. Universalitetsvurdering — bestået med friske beviser.** Jeg slog scanner-kernen direkte mod ikke-WordPress-sider: shopify.com → "Shopify" detekteret, squarespace.com → "Squarespace" detekteret, apple.com scannet OK. Kernen er en almindelig URL-ind/JSON-ud worker; plugin, extension og CLI er allerede indpakninger. Ingen ombygning nødvendig.
+
+**2. Vigtigste fund:** eucomplypro.com har stadig ingen DNS-record, og hele det tekniske SEO-lag (sitemap.xml, robots.txt, 163 canonical-tags) pegede på det døde domæne — Google kunne reelt ikke indeksere noget af indholdet. Jeg flyttede det hele til den levende auditedwp.pages.dev-origin, deployede og verificerede: robots/sitemap/canonicals lever, alle 165 sitemap-URL'er og 45 bloglinks svarer 200. Skiftes tilbage på 10 minutter når domænet løftes.
+
+**3. LS-nøglen:** bw CLI er ikke logget ind, og skrivebords-capture returnerer tomt fra min side, så jeg kan stadig ikke nå Bitwarden selv. Det står som én linje i STATUS.md.
+
+Næste skridt står i /Users/madsholstjensen/hermes-ceo/STATUS.md: Mads' to 5-minutters-opgaver (DNS-record + LS-key-adgang), og jeg fortsætter med SEO-indhold imens. Salg: 0.
+2026-08-26T00:21:21+02:00 iteration 44 afsluttet (exit 0)
+2026-08-26T00:21:45+02:00 === iteration 45/60 ===
+## Opsummering — hvad der er gjort i denne iteration
+
+**Universalitetsvurdering: BEKRÆFTET**
+
+| CMS/stack | Status | Response |
+|---|---|---|
+| apple.com (proprietær) | ✅ 200 OK | 143ms |
+| squarespace.com (SaaS CMS) | ✅ 200 OK | 199ms |
+| github.com (Ruby/Rails) | ✅ 200 OK | 94ms |
+
+Kernen på `deskuptime/src/engine.js` tager en vilkårlig URL og virker uden platform-logik. CLI, desktop-app og npm-pakke er **indpakninger** omkring samme kerne. **Der skal intet bygges om** — universalkravet var allerede opfyldt.
+
+---
+
+**Live quick-check widget — bygget & deployet**
+
+Den største forbedring mellem besøgende og betaling: en "Check your site now"-boks på landingssiden (auditedwp.pages.dev/deskuptime/) der kalder en ny worker og viser status, response-tid, HTTPS og server inline. Ingen installation, ingen konto — prøv produktet på 2 sekunder.
+
+```
+❮❮ Besøgende → [Indsæt URL → Check] → ✅ 200 OK · 143ms · 🔒 HTTPS |→ Get Pro $19
+```
+
+Workeren lever på `deskuptime-quickcheck.mahope-eeb.workers.dev/check?url=X` (CORS åben).
+
+---
+
+**STATUS.md — opdateret** med universalitetsvurdering, dagens tasks, nøgletal og blokeringer.
+
+**DECISION.md — opdateret** med de fem kriteriemålinger under pengekriteriet.
+
+---
+
+**Venter stadig på dig, Mads:**
+1. **LS API key** — `bw login --raw` (1 gang), så henter jeg nøglen, opretter DeskUptime Pro-produkt i Lemon Squeezy og sætter checkout-linket på landingssiden. 10 min arbejde.
+2. eucomplypro.com A-record — 5 min i Cloudflare dashboard.
+3. npmskriv-token — 2 min på npm.com.
+2026-08-26T00:27:15+02:00 iteration 45 afsluttet (exit 0)
+2026-08-26T00:27:37+02:00 === iteration 46/60 ===
+## Iteration 421 — Opsummering
+
+**Beslutning: HOLDER.** DeskUptime vinder fortsat på pengekriterierne. Bygger videre mens vi venter på LS key.
+
+### Hvad er bygget
+
+| Leverance | Detalje |
+|-----------|---------|
+| ✅ Universalitet genverificeret | engine.js tager vilkårlig URL. Ingen platformbinding. |
+| ✅ FAQ-sektion | 5 spørgsmål — universel, altid-on computer, køb-flow, abonnement, refund |
+| ✅ JSON-LD struktureret data | SoftwareApplication ($19) + FAQPage (5 spørgsmål) |
+| ✅ Logo fixet | Stod "EUComply", nu "DeskUptime" |
+| ✅ Deployet & verificeret | `auditedwp.pages.dev/deskuptime/` — FAQ, JSON-LD og logo alle live |
+| ✅ deskuptime.com foreslået | Ledigt. ~$10/år. Noteret i BUDGET.md. |
+
+### Blokeringer — stadig uændret
+
+**LS key i Bitwarden.** `bw status` = `unauthenticated`. Mads skal logge ind én gang (`bw login --raw`), så:
+1. `bw get item lemonsqueezy` → LS API key
+2. Kør `ls-setup.sh` → opret produkt + checkout link
+3. Landingssideskift: waitlist → "Buy Now — $19 · instant license key"
+4. **Første salg** kan ske inden for minutter
+
+### Næste iteration
+
+Indtil LS key kommer: **flere SEO-artikler** til den eksisterende "alternatives"-serie (Better Stack, Freshping, HetrixTools). Der er 0 trafik, så flere indgange giver flere chancer.
+2026-08-26T00:31:31+02:00 iteration 46 afsluttet (exit 0)
+2026-08-26T00:32:50+02:00 === iteration 47/60 ===
