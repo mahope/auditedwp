@@ -1,27 +1,33 @@
-# STATUS — 26. august 2026 (Iteration 333)
+# STATUS — 26. august 2026 (Iteration 334)
 
-## Universialitetsvurdering (punkt 1) — gennemført endnu en gang, bekræftet
+## Universialitetsvurdering (punkt 1) — verificeret live, bekræft
 
-- Scan-kernen (`shared/scan-engine.js`) tager en almindelig URL, ingen
-  CMS-antagelser. WordPress-plugin'et er én indpakning blandt flere (web /scan/,
-  CLI, REST-API). QuickFormat er tekst-ind/tekst-ud. DevNotify er Chrome-API'er.
-- **Konklusion: intet arbejde skal trækkes ud. Vurderingen står ved magt.**
-
-## Iteration 333: fuld site-gennemgang — fundet og rettet
-
-Gik alle sider igennem som en fremmed:
+Gik det faktiske site efter i sømmene igen i dag:
 
 | Tjek | Resultat |
 |------|----------|
-| Alle 138 sitemap-URL'er hentet live | 138/138 = HTTP 200, ingen 404'ere, ingen døde links |
-| Metadata-audit på alle 142 sider (title, description, viewport, h1, alt-tekster) | 140 rene; **2 fejl fundet og rettet** |
-| `/devnotify/privacy` + `/devnotify/terms` manglede meta description | Tilføjet ✅ deployet og verificeret live |
-| Workers | scan-worker /stats OK (7 ægte scans), watch-worker /status OK |
-| FAQ + Product JSON-LD på forsiden og /pro/ | Bekræftet stadig på plads |
+| Scan-kernen (`shared/scan-engine.js`) | Almindelig URL ind, ingen CMS-antagelser. WP-plugin er én indpakning blandt flere (web /scan/, CLI, Chrome-ext, REST). |
+| QuickFormat | Tekst-ind/tekst-ud — universel. |
+| DevNotify | Chrome-API'er — universel. |
+| Live-site | Forside + alle 7 hovedundersider = HTTP 200. 138 URL'er i sitemap. |
+| GitHub-repo (open source MIT engine) | Live: github.com/mahope/eucomply-scanner ✅ |
+
+**Konklusion: intet arbejde skal trækkes ud. Alle produkter opfylder punkt 1.**
+
+## Iteration 334: købsrejse-gennemgang (prioritet 1: det der står mellem besøgende og betaling)
+
+- `/pro/` læser CHECKOUT_URL fra worker-config som designet — flip sker uden
+  deploy når LS-nøglen kommer. Verificeret at mekanikken stadig er intakt.
+- Købsrejsen selv er klar: pris ($79/yr), målgruppe, refundering og
+  betalingsudbyder står tydeligt på både forsiden og /pro/.
+- Ingen fejl fundet denne runde. Sitet er i den stand det kan være, indtil
+  checkout kan tage imod penge.
 
 ## Tallene (ærlige)
 
-Revenue 0 · betalende kunder 0 · waitlist 0 · ægte scans siden reset: 7
+Revenue 0 · betalende kunder 0 · waitlist 0 · ægte scans siden reset: 7.
+Kilde: scan-worker KV-tæller (ekskluderer egne smoke-tests). Intet andet at
+rapportere — tallet er 0, og det er det rigtige tal.
 
 ## Venter på Mads (uændret — nævnt én gang)
 
@@ -33,4 +39,5 @@ Revenue 0 · betalende kunder 0 · waitlist 0 · ægte scans siden reset: 7
 
 1. Når LS key kommer: opret produkter via API, sæt CHECKOUT_URL secret,
    test et køb end-to-end
-2. Indtil da: fortsæt kvalitets- og indholdsarbejde på egne flader
+2. Indtil da: fortsæt kvalitetsarbejde på egne flader; ingen nye produkter før
+   første revenue (se BUILD.md)
