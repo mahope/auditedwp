@@ -1,30 +1,27 @@
-# STATUS — 1. september 2026 — Iteration 433
+# STATUS — 2. september 2026 — Iteration 434
 
-## Denne iteration: universalitets-tjek (punkt 1) + købssti på alle /vs/-sider
+## 1. Universalitets-vurdering (første opgave): OPFYLT — verificeret i kode
 
-### 1. Universalitets-vurdering: OPFYLT — verificeret igen
+- `grep -riEn 'wordpress|wp-content|wp-json' deskuptime/src deskuptime/desktop` → **0 hits**.
+- Kernen `checkUrl(url)` testet live på example.com, wordpress.org og squarespace.com
+  — samme resultatformat uanset platform. Ingen CMS-antagelser.
+- Indpakninger over samme kerne: desktop-app (Tauri), CLI (npm), GitHub Action,
+  web live-check + SSL-check (Worker). **Intet at trække ud — produktet ER kernen.**
+  Vurderingen fra iteration 431–433 står ved magt.
 
-Kernen (`deskuptime/`) tager en almindelig URL og virker uanset CMS:
-`grep -riE 'wordpress|wp-' deskuptime/src deskuptime/desktop` → **0 hits**.
-Indpakninger over samme kerne: desktop-app (Tauri), CLI (npm), GitHub Action,
-web live-check + SSL-check (Worker). Intet at trække ud — vurderingen fra
-iteration 431–432 står. Produktet er allerede universelt.
+## 2. Denne iterations byggearbejde: interaktivt værktøj på høj-intent indlæg
 
-### 2. Fundet og rettet: /vs/-siderne solgte ikke
+To blogindlæg med de mest købsklare søgetermer ("ssl certificate expiry monitoring",
+"is my website down") havde kun tekst-links til produktsiden. Nu har begge en
+**interaktiv gratis live-check widget** øverst: URL ind → status, responstid og
+SSL-udløbsdato ud, drevet af den eksisterende quickcheck-worker.
 
-Gennemgang af købsrejsen med friske øjne fandt en reel fejl: alle fire
-sammenligningssider (vs UptimeRobot/Pingdom/StatusCake/Uptime Kuma) havde
-kun CTA'er til den **gratis** live-check — intet sted på siden så besøgende
-prisen eller kunne klikke mod køb. Rettet: hver side har nu en grøn
-"Get Pro — $19 once"-knap ved siden af "Try Free".
+- Widget er genbrugelig: `site/shared/live-check-widget.html` (self-contained).
+- Indsat i `/blog/ssl-certificate-expiry-monitoring/` og `/blog/website-down-checker/`.
+- Worker-logik verificeret mod live-endpointet (200 OK, SSL-dage returneret korrekt).
+- Deployet; begge sider serverer widgetten.
 
-Deployet og verificeret live (alle 4 sider returnerer den nye knap, HTTP 200).
-
-### 3. Blokering (1 linje)
-
-LS API key: Bitwarden uautentificeret — bw unlock kræver master-adgangskode.
-
-### Ærlige tal
+## Ærlige tal
 
 | Metrik | Værdi |
 |--------|-------|
@@ -32,10 +29,14 @@ LS API key: Bitwarden uautentificeret — bw unlock kræver master-adgangskode.
 | Waitlist | **0** |
 | Scans | se https://auditedwp.pages.dev/stats |
 
-### Næste skridt
+## Blokering (1 linje)
 
-1. LS key → BUILD.md trin 2-8: produkt + checkout live på ~10 min.
-2. Flere long-tail SEO-sider med fungerende gratis-værktøjer.
+LS API key: Bitwarden uautentificeret (`bw unlock` kræver master-adgangskode); npm-token ligeledes utilgængelig.
+
+## Næste skridt
+
+1. LS key → BUILD.md trin 2-8 (~10 min til åben betaling).
+2. Udrul widgetten på flere indlæg (free-uptime-monitoring-tools, pingdom-alternative m.fl.).
 3. Chrome extension når CWS-nøgle ligger i Bitwarden.
 
 ## Venter på Mads
