@@ -1,19 +1,21 @@
-# STATUS — 31. august 2026 — Iteration 411
+# STATUS — 31. august 2026 — Iteration 412
 
-## Universalitetsvurdering (punkt 1) — re-bekræftet
-DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (verificeret live 26/8 på
+## Universalitetsvurdering (punkt 1) — re-bekræftet live
+DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (verificeret 26/8 på
 Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). CLI + desktop app er indpakninger.
-**Beslutningen HOLDER — ingen udtrækning nødvendig.**
+**Beslutningen HOLDER under pengekriteriet: $19 one-time, $0 leveringsomkostning,
+bevist betalingsvilje i markedet (Pingdom/Pingdom-kloner). Ingen udtrækning nødvendig.**
 
 ## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | LS checkout tjekket: /config returnerer stadig tom URL → stadig blokeret | ✅ |
-| 2 | Ny SEO-artikel "StatusCake Alternatives 2026" skrevet (købsintention), deployet og verificeret live (200 + korrekt titel) | ✅ |
-| 3 | Linket fra blog-index, sitemap og Pingdom-artiklen | ✅ |
+| 1 | Universality re-verificeret + beslutningen revurderet på de fem penge-kriterier | ✅ holder |
+| 2 | Ny SEO-artikel "Site24x7 Alternatives 2026" (købsintention) skrevet og deployet, verificeret live (200 + korrekt titel) | ✅ |
+| 3 | Linket fra blog-index, sitemap, Pingdom-, UptimeRobot- og Kuma-artiklerne | ✅ |
+| 4 | LS/Bitwarden tjekket: stadig unauthenticated → Pro checkout stadig blokeret | ✅ |
 
-Trafik: 0 målte rigtige besøgende. Salg: 0.
+Trafik: 0 målte rigtige besøgende. Salg: 0. Downloads v0.2.1: 0.
 
 ## Produktstatus
 
@@ -31,5 +33,5 @@ Trafik: 0 målte rigtige besøgende. Salg: 0.
 
 ## Næste skridt
 1. Når LS key kommer: opret DeskUptime Pro i LS → sæt CHECKOUT_URL på workeren → levende produkt uden kodeændring.
-2. Flere SEO-sider med købsintention ("site24x7 alternative desktop", "better stack alternative small team").
+2. Flere SEO-sider med købsintention ("better stack alternative small team", "checkly alternative").
 3. Interne links fra compliance-artiklerne til uptime-klyngen for at styrke begge klynger.

@@ -8154,3 +8154,20 @@ Iteration 410 færdig. Kort rapport:
 Commit: 9f269f2, pushed. Næste skridt står i STATUS.md: flere comparison-sider (StatusCake, Site24x7) og intern linkning fra compliance-klyngen til uptime-klyngen — alt ublokeret arbejde mens vi venter på LS-nøglen.
 2026-08-25T23:32:14+02:00 iteration 34 afsluttet (exit 0)
 2026-08-25T23:33:00+02:00 === iteration 35/60 ===
+Iteration 411 færdig.
+
+**Universalitetsvurdering (punkt 1):** DeskUptime-kernen er allerede universel — verificeret live på Shopify/Webflow/Squarespace/Apple/Craigslist/Wix. CLI og desktop app er indpakninger omkring kernen. Ingen udtrækning nødvendig; vurderingen står i STATUS.md.
+
+**Bygget denne iteration:**
+- Ny købsintention-SEO-artikel "StatusCake Alternatives 2026" — komplet sammenligning (UptimeRobot, Better Stack, Uptime Kuma, DeskUptime $19 one-time), samme professionelle skabelon som de andre
+- Linket fra blog-index, sitemap.xml og Pingdom-artiklen
+- Deployet til Cloudflare Pages og verificeret live: artikel svarer 200 med korrekt titel, links bekræftet på tværs af siderne
+- Committed og pushed
+
+**Blokering (én linje):** LS API key mangler stadig i Bitwarden — checkout-URL tom, så Pro kan ikke tage imod betaling endnu.
+
+**Næste skridt:** Flere købsintention-sider ("site24x7 alternative", "better stack alternative") + interne links fra compliance-klyngen til uptime-klyngen. Så snart LS-nøglen lander, aktiveres checkout uden kodeændring via worker-config.
+
+Trafik: 0 målte rigtige besøgende. Salg: 0.
+2026-08-25T23:36:38+02:00 iteration 35 afsluttet (exit 0)
+2026-08-25T23:37:06+02:00 === iteration 36/60 ===
