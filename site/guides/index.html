@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Guides — EU Compliance, Format Conversion & GitHub Notifications</title>
+<meta name="description" content="Complete library of free guides: EU compliance (GDPR, NIS2, DORA, EAA), format conversion (JSON, YAML, CSV, TOML, XML), and GitHub notification troubleshooting. Every guide is free and works on any platform.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/guides/">
+<meta property="og:title" content="All Free Guides — Compliance, Conversion & GitHub">
+<meta property="og:description" content="Free guides for EU compliance, JSON/YAML/CSV conversion, and GitHub notification setup. Every guide works on any platform — no signup required.">
+<meta property="og:url" content="https://eucomplypro.com/guides/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  .hero{text-align:center;padding:48px 0 24px}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:34px;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
+  .sub{color:var(--muted);font-size:16px;max-width:640px;margin:0 auto 24px}
+  section{padding:32px 0;border-top:1px solid var(--line)}
+  h2{font-size:24px;margin-bottom:4px}
+  .cat-desc{color:var(--muted);font-size:14px;margin-bottom:20px}
+  .grid{display:grid;gap:8px}
+  .link-row{border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;align-items:center;text-decoration:none;color:var(--ink);transition:border-color .15s;gap:10px;font-size:14px}
+  .link-row:hover{border-color:var(--accent)}
+  .link-row .tag{font-size:11px;font-weight:600;background:var(--soft);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+  .link-row .tag.blue{background:#e0e8f7;color:var(--accent);border-color:#c0cfe8}
+  .link-row .tag.green{background:#e0f4e5;color:var(--ok);border-color:#c0e8cc}
+  .link-row .tag.orange{background:#fdf0e0;color:#b85a0a;border-color:#f0dcc0}
+  .link-row span.label{flex:1;color:var(--muted);font-size:13px;text-align:right}
+  .cta-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;margin:32px 0}
+  .cta-box h3{font-size:20px;margin-bottom:8px}
+  .cta-box p{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
+  .btn.ghost:hover{border-color:var(--accent)}
+  .back-link{display:inline-block;color:var(--muted);font-size:14px;text-decoration:none;margin-bottom:12px}
+  .back-link:hover{color:var(--accent)}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;margin-top:32px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:24px}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"All Free Guides","description":"Complete library of free guides for EU compliance, format conversion, and GitHub notifications. Every guide works on any platform.","url":"https://eucomplypro.com/guides/","mainEntity":{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"url":"https://eucomplypro.com/blog/eu-compliance-checklist-2026/"},{"@type":"ListItem","position":2,"url":"https://eucomplypro.com/blog/eu-cookie-consent-guide-2026/"},{"@type":"ListItem","position":3,"url":"https://eucomplypro.com/guides/yaml-to-json/"},{"@type":"ListItem","position":4,"url":"https://eucomplypro.com/devnotify/guides/github-notifications-not-showing/"},{"@type":"ListItem","position":5,"url":"https://eucomplypro.com/blog/dora-nis2-gdpr-differences/"}]}}</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">EU<span>Comply</span></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/guides/">Guides</a>
+      <a href="/scan/">Scanner</a>
+      <a href="/tools/">Generators</a>
+      <a href="/store/">Templates</a>
+      <a href="/quickconvert/">QuickFormat</a>
+      <a class="cta" href="/scan/">Scan your site →</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="badge">📚 80+ free guides</div>
+  <h1>All Free Guides</h1>
+  <p class="sub">Practical walkthroughs for EU compliance, data format conversion, and GitHub notification setup. Every guide is platform-independent — works on WordPress, Shopify, Webflow, and any other stack.</p>
+</div>
+
+<!-- === CATEGORY: EU COMPLIANCE === -->
+<section>
+<div class="wrap">
+<h2>🔒 EU Website Compliance</h2>
+<p class="cat-desc">GDPR, NIS2, DORA, EAA — what your site needs, how to check it, and how to fix it. All free.</p>
+<div class="grid">
+
+<a class="link-row" href="/blog/eu-compliance-checklist-2026/"><span class="tag blue">Checklist</span> EU Compliance Checklist 2026: GDPR, NIS2, DORA & EAA<span class="label">30+ checks</span></a>
+<a class="link-row" href="/blog/eu-cookie-consent-guide-2026/"><span class="tag">Guide</span> EU Cookie Consent Requirements 2026<span class="label">Complete guide</span></a>
+<a class="link-row" href="/blog/gdpr-cookie-banner-fines/"><span class="tag orange">Fines</span> GDPR Cookie Banner Fines: Real Penalties 2026<span class="label">Tracker</span></a>
+<a class="link-row" href="/blog/gdpr-cookie-fines-tracker/"><span class="tag orange">Tracker</span> GDPR Cookie Fines Tracker: Every Major Penalty<span class="label">Updated 2026</span></a>
+<a class="link-row" href="/blog/european-accessibility-act-guide/"><span class="tag blue">EAA</span> European Accessibility Act Guide for Website Owners<span class="label">2026</span></a>
+<a class="link-row" href="/blog/eaa-compliance-ecommerce/"><span class="tag blue">EAA</span> EAA Compliance for E-Commerce Checklist<span class="label">Online stores</span></a>
+<a class="link-row" href="/blog/nis2-compliance-checklist-saas/"><span class="tag">NIS2</span> NIS2 Compliance Checklist for SaaS Companies<span class="label">Checklist</span></a>
+<a class="link-row" href="/blog/nis2-board-liability/"><span class="tag orange">NIS2</span> NIS2 Board & Director Liability Guide<span class="label">Executives</span></a>
+<a class="link-row" href="/blog/nis2-vendor-supply-chain-compliance/"><span class="tag">NIS2</span> NIS2 Vendor & Supply Chain Compliance<span class="label">Supply chain</span></a>
+<a class="link-row" href="/blog/dora-compliance-guide/"><span class="tag">DORA</span> DORA Compliance for Financial Websites<span class="label">2026 guide</span></a>
+<a class="link-row" href="/blog/dora-for-ecommerce-2026/"><span class="tag">DORA</span> DORA for E-Commerce: Does It Apply?<span class="label">Online stores</span></a>
+<a class="link-row" href="/blog/dora-nis2-gdpr-differences/"><span class="tag">Compare</span> DORA vs NIS2 vs GDPR Comparison<span class="label">Quick ref</span></a>
+<a class="link-row" href="/blog/iab-tcf-compliance-guide/"><span class="tag">TCF</span> IAB Transparency & Consent Framework Guide<span class="label">Consent mode</span></a>
+<a class="link-row" href="/blog/server-side-vs-client-side-cookie-consent/"><span class="tag">Architecture</span> Server-Side vs Client-Side Cookie Consent<span class="label">Stack decision</span></a>
+<a class="link-row" href="/blog/google-analytics-gdpr-consent/"><span class="tag">Analytics</span> Google Analytics & GDPR: Is Your Tracking Legal?<span class="label">2026</span></a>
+<a class="link-row" href="/blog/meta-pixel-gdpr-consent/"><span class="tag orange">Tracking</span> Meta Pixel & GDPR: When Facebook Pixel Is Illegal<span class="label">EU ruling</span></a>
+<a class="link-row" href="/blog/abmahnung-risk-ecommerce/"><span class="tag orange">Legal risk</span> Abmahnung Risk for E-Commerce: German Warning Letters<span class="label">€500-2,000</span></a>
+<a class="link-row" href="/blog/german-impressum-foreign-sellers/"><span class="tag">Impressum</span> Do Foreign Sellers Need a German Impressum?<span class="label">Yes (§5 DDG)</span></a>
+<a class="link-row" href="/blog/do-you-need-a-refund-policy/"><span class="tag">Legal</span> Do You Need a Refund Policy? EU & UK Rules<span class="label">Consumer law</span></a>
+<a class="link-row" href="/blog/hsts-preload-guide/"><span class="tag green">Security</span> HSTS Preload Guide: Enable HTTP Strict Transport Security<span class="label">2026</span></a>
+
+</div>
+
+<h3 style="margin:20px 0 10px;font-size:16px">Platform-specific guides</h3>
+<div class="grid">
+<a class="link-row" href="/blog/shopify-gdpr-compliance-guide/"><span class="tag">Shopify</span> Shopify GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/woocommerce-gdpr-compliance-guide/"><span class="tag">WooCommerce</span> WooCommerce GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/webflow-gdpr-compliance-guide/"><span class="tag">Webflow</span> Webflow GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/squarespace-gdpr-compliance-guide/"><span class="tag">Squarespace</span> Squarespace GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/wix-gdpr-compliance-guide/"><span class="tag">Wix</span> Wix GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/bigcommerce-gdpr-compliance-guide/"><span class="tag">BigCommerce</span> BigCommerce GDPR Compliance Guide 2026</a>
+<a class="link-row" href="/blog/magento-gdpr-compliance-guide/"><span class="tag">Magento</span> Magento & Adobe Commerce GDPR Guide 2026</a>
+<a class="link-row" href="/blog/gdpr-compliance-for-agencies/"><span class="tag">Agencies</span> GDPR Compliance for Digital Agencies</a>
+<a class="link-row" href="/blog/cookiebot-alternative-2026/"><span class="tag orange">Alternative</span> Cookiebot Alternative 2026: Pricing & Options</a>
+<a class="link-row" href="/blog/website-compliance-scanner-comparison/"><span class="tag">Compare</span> Website Compliance Scanners Compared (2026)</a>
+</div>
+
+</div>
+</section>
+
+<!-- === CATEGORY: CMP COMPARISON === -->
+<section>
+<div class="wrap">
+<h2>🔍 Cookie Consent Platform Comparisons</h2>
+<p class="cat-desc">Honest, independent comparisons of cookie consent management platforms. Each page tests setup, scanning accuracy, and pricing.</p>
+<div class="grid">
+<a class="link-row" href="/cmp-comparison/"><span class="tag green">Hub</span> Best Cookie Consent Platform 2026 — Full Comparison<span class="label">All 4 compared</span></a>
+<a class="link-row" href="/vs/cookiebot/"><span class="tag">Cookiebot</span> Cookiebot vs EUComply: Compliance Scan Comparison</a>
+<a class="link-row" href="/vs/complianz/"><span class="tag">Complianz</span> Complianz vs EUComply: WordPress vs Universal Scanner</a>
+<a class="link-row" href="/vs/iubenda/"><span class="tag">iubenda</span> iubenda vs EUComply: Privacy Policy + Scan</a>
+<a class="link-row" href="/vs/usercentrics/"><span class="tag">Usercentrics</span> Usercentrics vs EUComply: Enterprise CMP vs Scanner</a>
+<a class="link-row" href="/vs/onetrust/"><span class="tag">OneTrust</span> OneTrust vs EUComply: Enterprise Compliance Suite</a>
+<a class="link-row" href="/vs/osano/"><span class="tag">Osano</span> Osano vs EUComply: Privacy Compliance Comparison</a>
+<a class="link-row" href="/vs/termly/"><span class="tag">Termly</span> Termly vs EUComply: Compliance Tool Comparison</a>
+<a class="link-row" href="/vs/enzuzo/"><span class="tag">Enzuzo</span> Enzuzo vs EUComply: Privacy Platform Comparison</a>
+</div>
+</div>
+</section>
+
+<!-- === CATEGORY: QUICKFORMAT === -->
+<section>
+<div class="wrap">
+<h2>🔧 Format Conversion (JSON / YAML / CSV / TOML / XML)</h2>
+<p class="cat-desc">Free guides and tools for converting between data formats — no data leaves your browser (or machine). CLI, web, and desktop options.</p>
+<div class="grid">
+<a class="link-row" href="/quickconvert/"><span class="tag green">Product</span> QuickFormat — Mac Menu Bar Format Converter<span class="label">$9 one-time</span></a>
+<a class="link-row" href="/tools/format/"><span class="tag">Free tool</span> Online Format Converter (JSON, YAML, CSV, TOML, XML)<span class="label">Free, no upload</span></a>
+<a class="link-row" href="/guides/yaml-to-json/"><span class="tag">Guide</span> How to Convert YAML to JSON (3 Ways)</a>
+<a class="link-row" href="/guides/json-to-yaml/"><span class="tag">Guide</span> How to Convert JSON to YAML (3 Ways)</a>
+<a class="link-row" href="/guides/json-to-csv/"><span class="tag">Guide</span> How to Convert JSON to CSV (3 Ways)</a>
+<a class="link-row" href="/guides/csv-to-json/"><span class="tag">Guide</span> How to Convert CSV to JSON (3 Ways)</a>
+<a class="link-row" href="/guides/json-vs-yaml/"><span class="tag">Compare</span> JSON vs YAML: When to Use Which</a>
+<a class="link-row" href="/guides/toml-vs-yaml/"><span class="tag">Compare</span> TOML vs YAML: Configuration Format Showdown</a>
+</div>
+</div>
+</section>
+
+<!-- === CATEGORY: DEVNOTIFY === -->
+<section>
+<div class="wrap">
+<h2>🔔 GitHub Notification Guides</h2>
+<p class="cat-desc">Fix missing notifications, route alerts to Slack/Discord/Teams, tame notification noise on any device. For macOS, Windows, Linux, iPhone, and Android.</p>
+<div class="grid">
+
+<a class="link-row" href="/devnotify/"><span class="tag green">Product</span> DevNotify — GitHub Notifications on Mac<span class="label">Free</span></a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-showing/"><span class="tag orange">Fix</span> Why GitHub Notifications Are Not Showing (Complete Fix)</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-showing-menu-bar/"><span class="tag orange">Fix</span> GitHub Notifications Not Showing in Menu Bar</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-working-mac/"><span class="tag orange">Fix</span> GitHub Notifications Not Working on Mac</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-working-iphone/"><span class="tag orange">Fix</span> GitHub Notifications Not Working on iPhone</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-showing-windows/"><span class="tag orange">Fix</span> GitHub Notifications Not Showing on Windows</a>
+<a class="link-row" href="/devnotify/guides/github-email-notifications-not-working/"><span class="tag orange">Fix</span> GitHub Email Notifications Not Working</a>
+<a class="link-row" href="/devnotify/guides/github-notification-badge-not-showing/"><span class="tag orange">Fix</span> GitHub Notification Badge Not Showing</a>
+<a class="link-row" href="/devnotify/guides/github-phantom-notifications/"><span class="tag orange">Fix</span> GitHub Phantom Notifications: Unread That Won't Go Away</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-coming-back-unread/"><span class="tag orange">Fix</span> GitHub Notifications Keep Coming Back Unread</a>
+
+</div>
+
+<details style="margin:12px 0">
+<summary style="cursor:pointer;font-weight:600;font-size:14px;color:var(--accent)">More GitHub notification guides ↓</summary>
+<div class="grid" style="margin-top:8px">
+
+<a class="link-row" href="/devnotify/guides/github-notifications-discord/"><span class="tag">Discord</span> GitHub Notifications to Discord</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-microsoft-teams/"><span class="tag">Teams</span> GitHub Notifications to Microsoft Teams</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-slack-too-noisy/"><span class="tag">Slack</span> GitHub Slack Notifications Too Noisy?</a>
+<a class="link-row" href="/devnotify/guides/slack-github-notifications/"><span class="tag">Slack</span> Setup Slack GitHub Notifications</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-telegram/"><span class="tag">Telegram</span> GitHub Notifications to Telegram Bot</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-multiple-computers-sync/"><span class="tag">Sync</span> Sync GitHub Notifications Across Multiple Computers</a>
+<a class="link-row" href="/devnotify/guides/filter-github-emails-gmail/"><span class="tag">Filters</span> Filter GitHub Emails in Gmail</a>
+<a class="link-row" href="/devnotify/guides/github-emails-after-unsubscribing/"><span class="tag">Email</span> Still Getting GitHub Emails After Unsubscribing?</a>
+<a class="link-row" href="/devnotify/guides/turn-off-github-email-notifications/"><span class="tag">Email</span> Turn Off GitHub Email Notifications</a>
+<a class="link-row" href="/devnotify/guides/turn-off-github-email-notifications-mac/"><span class="tag">Email</span> Turn Off GitHub Email Notifications on Mac</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-vs-email-digests/"><span class="tag">Compare</span> GitHub Notifications vs Email Digests</a>
+<a class="link-row" href="/devnotify/guides/github-notification-settings/"><span class="tag">Settings</span> GitHub Notification Settings Explained</a>
+<a class="link-row" href="/devnotify/guides/github-watch-vs-star/"><span class="tag">Explain</span> GitHub Watch vs Star: What's the Difference?</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-org-repos/"><span class="tag">Orgs</span> GitHub Notifications from Organization Repositories</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-on-windows/"><span class="tag">Windows</span> GitHub Notifications on Windows</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-on-linux/"><span class="tag">Linux</span> GitHub Notifications on Linux</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-on-android/"><span class="tag">Android</span> GitHub Notifications on Android</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-apple-watch/"><span class="tag">Watch</span> GitHub Notifications on Apple Watch</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-sound-alert/"><span class="tag">Sound</span> Make GitHub Notifications Sound an Alert</a>
+<a class="link-row" href="/devnotify/guides/gitlab-notifications-on-mac/"><span class="tag">GitLab</span> GitLab Notifications on Mac</a>
+<a class="link-row" href="/devnotify/guides/miss-pr-review-notifications/"><span class="tag orange">Fix</span> Missing PR Review Notifications on GitHub</a>
+<a class="link-row" href="/devnotify/guides/too-many-github-notifications/"><span class="tag">Noise</span> Too Many GitHub Notifications? How to Tame Them</a>
+<a class="link-row" href="/devnotify/guides/gitify-alternative/"><span class="tag">Alternative</span> Gitify Alternative: Free GitHub Notifications on Mac</a>
+<a class="link-row" href="/devnotify/guides/octobox-alternative/"><span class="tag">Alternative</span> Octobox Alternative: Free macOS Notification Tool</a>
+<a class="link-row" href="/devnotify/guides/see-github-notifications-on-mac/"><span class="tag">Mac</span> See GitHub Notifications on Mac</a>
+<a class="link-row" href="/devnotify/guides/github-notifications-not-working-mac/"><span class="tag orange">Fix</span> GitHub Notifications Not Working on Mac</a>
+<a class="link-row" href="/devnotify/github-notifications-not-working-mac/"><span class="tag orange">Fix</span> GitHub Desktop Notifications Not Working Mac</a>
+<a class="link-row" href="/devnotify/github-notification-sounds-macos/"><span class="tag">Sound</span> GitHub Notification Sounds macOS</a>
+<a class="link-row" href="/devnotify/github-token-scopes-guide/"><span class="tag">Security</span> GitHub Token Scopes Guide</a>
+<a class="link-row" href="/devnotify/multiple-github-accounts-mac/"><span class="tag">Accounts</span> Multiple GitHub Accounts on Mac</a>
+</div>
+</details>
+
+<h3 style="margin:16px 0 10px;font-size:16px">DevNotify vs alternatives</h3>
+<div class="grid">
+<a class="link-row" href="/devnotify/vs/gitify/"><span class="tag">Compare</span> DevNotify vs Gitify</a>
+<a class="link-row" href="/devnotify/vs/octobox/"><span class="tag">Compare</span> DevNotify vs Octobox</a>
+<a class="link-row" href="/devnotify/vs/chrome-extension/"><span class="tag">Compare</span> DevNotify vs Chrome Extension</a>
+<a class="link-row" href="/devnotify/vs/github-desktop/"><span class="tag">Compare</span> DevNotify vs GitHub Desktop</a>
+<a class="link-row" href="/devnotify/vs/github-mobile-push/"><span class="tag">Compare</span> DevNotify vs GitHub Mobile Push</a>
+</div>
+
+</div>
+</section>
+
+<!-- === CTA === -->
+<div class="wrap">
+<div class="cta-box">
+  <h3>Start with a free compliance scan</h3>
+  <p>Enter any URL — get a free GDPR, NIS2, DORA, and EAA compliance report in seconds. No signup, no installation, works on every platform.</p>
+  <a class="btn" href="/scan/">Scan your site free →</a>
+  <a class="btn ghost" href="/store/">Browse compliance templates →</a>
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>📚 EUComply — free guides & tools for EU website compliance.<br>⚖️ Not legal advice. · <a href="/" style="color:var(--accent)">Home</a> · <a href="/scan/" style="color:var(--accent)">Scanner</a> · <a href="/store/" style="color:var(--accent)">Templates</a> · <a href="/privacy/" style="color:var(--accent)">Privacy</a> · <a href="/terms/" style="color:var(--accent)">Terms</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
