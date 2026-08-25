@@ -6275,3 +6275,63 @@ Kernen tager en almindelig URL og er platformsuafhængig. Plugin/CLI/extension/w
 2026-08-25T08:43:11+02:00 iteration 57 afsluttet (exit 0)
 2026-08-25T08:43:32+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-25T08:48:34+02:00 === iteration 58/60 ===
+Iteration 317 er færdig og committed (75634b4). Kort rapport:
+
+**Universalitets-vurderingen: BESTÅET — igen, med friske beviser.**
+Jeg ramte scan-workeren live lige nu: `POST /scan {"url":"example.com"}` gav en fuld rapport for en håndskrevet HTML-side på 3 ms. Sammen med de tidligere Shopify/Webflow-tests betyder det: kernen tager en almindelig URL og virker uanset CMS. WordPress-plugin, CLI, extension og webtool ER allerede indpakninger. Intet at trække ud.
+
+**Ærlig revurdering — jeg tjekkede alt live i stedet for at citere gårsdag:**
+- eucomplypro.com DNS: stadig tomt (dig = ingenting)
+- quickformat.mahope.dk: DNS fejler stadig
+- Checkout-worker: `checkout_url` tom → alle købsknapper degraderer pænt til venteliste
+- Scans: 73 talt, overvejende mine egne smoke-tests → rigtigt tal ≈ 0
+- Revenue: $0, rigtige kunder: 0
+
+**Konklusion:** DECISION.md holder — der skal ingen mere kode til, der skal konti til. Alle 5 produkter står bag samme lås.
+
+**Hvad jeg gjorde i stedet for at vente** (ventetid = arbejdstid): gennemgik distributionslageret — 27 live guides, KANALPLAN, 5 build-in-public-udkast og launch-email klar men ikke sendt. Fundet det næste ikke-blokerede hul: POSTS-udkastene er kun rå tekst; næste iteration gør dem til publicérbare tråde med CTA, så Mads' godkendelse er det eneste der mangler.
+
+Detaljer i /Users/madsholstjensen/hermes-ceo/STATUS.md. Blokeringer står som én linje dér: CNAMEs, LS-nøgle/manuel setup, CWS OAuth, godkendelse af posts/email.
+2026-08-25T08:53:05+02:00 iteration 58 afsluttet (exit 0)
+2026-08-25T08:53:27+02:00 === iteration 59/60 ===
+Alt er deployet og verificeret. Her er mit summary:
+
+---
+
+## Iteration 318 — færdig
+
+### Universalitets-vurdering: BESTÅET ✅
+Scan-engine tager enhver URL. QuickFormat-engine er format-uafhængig. DevNotify er Chrome-native men ikke platforms-låst. Alle indpakninger (plugin, CLI, extension, webtool) fodrer samme kerne. **Intet at trække ud.**
+
+### DECISION.md — OMSKREVET
+Gammel beslutning (iter. 297: "stop building") var under gammelt mandat. Ny beslutning under "penge"-mandatet:
+
+| Spor | Fokus | Status |
+|------|-------|--------|
+| **A: Fjern blokeringer** | Få Mads' 20 min i LS = $29-$149 pr salg | Samme blokering, LS-MANUAL.md klar |
+| **B: Byg distribution** | SEO på mine egne flader | **IGANG** — /guides/ hub bygget |
+
+### Hvad jeg konkret byggede
+| Ting | Status | URL |
+|------|--------|-----|
+| /guides/ hub | ✅ LIVE | https://auditedwp.pages.dev/guides/ |
+| Sitemap fix | ✅ Deployet | /guides/ + /cmp-comparison/ tilføjet |
+| Navigation fix | ✅ Deployet | "Guides" linker nu til /guides/ på forsiden + scan + pro |
+| Schema.org ItemList | ✅ Indbygget | Struktureret data for Google |
+
+### Guides hub — 92 link-rows på tværs af 4 kategorier:
+- **🔒 EU Compliance** — GDPR, NIS2, DORA, EAA (31 guides)
+- **🔍 CMP Comparison** — Cookiebot vs Complianz vs iubenda vs alle (9 sider)
+- **🔧 Format Conversion** — JSON/YAML/CSV/TOML/XML (6 guides + web tool)
+- **🔔 GitHub Notifications** — Fixes, routing, noise control (39 guides + product)
+
+### Blokeret på Mads (én linje — som før)
+CNAME @/www (2 domæner); LS 20 min setup ELLER API key; CWS OAuth; affiliate signups.
+
+### Revenue & traction: **$0 / 0 rigtige kunder / ≈0 rigtige scans**
+
+### Næste skridt
+1. Byg flere SEO-sider på mine egne flader (flere /vs/ comparison pages, deep-dive guides)
+2. Vent på Mads: LS setup → checkout live → $29-$149 pr salg
+2026-08-25T09:06:42+02:00 iteration 59 afsluttet (exit 0)
+2026-08-25T09:07:09+02:00 === iteration 60/60 ===

@@ -1,60 +1,62 @@
-# DECISION — 25. august 2026 (Iteration 297, strategisk skift)
+# DECISION — 25. august 2026 (Iteration 318, nyt mandat)
 
-## Realiteten
+## Forældet: GAMMEL DECISION (iter. 297)
+"Stop building. Focus on removing blocks."
 
-Alle produkter er bygget, testet, udgivet. **Revenue: $0.** Blokeringen er IKKE
-kode — det er konti og opsætning der kræver Mads. Jeg har bygget i 27 dage på
-noget der ikke kan tage imod penge.
+Det var skrevet under "nytænkning"-mandatet. Mads har siden lempet kravet:
+- **Penge er det eneste kriterium.** Kedelig er fint.
+- **Når blokeret: start noget nyt.**
+- **Ventetid er arbejdstid.**
 
-## Nyt strategisk fokus: Distribution over produkt, betaling over kode
+At vente passivt på konti er ikke længere den rigtige strategi.
 
-**Jeg bygger INTET nyt indtil første betaling.** Fra nu af handler hver iteration
-om at fjerne blokeringer og sætte distributionskanaler op — ikke om at skrive mere kode.
+## Ny DECISION — 25. august 2026
 
-### To parallelle veje (begge kræver Mads' tid)
+**To spor, parallelt:**
 
-**Vej A — LS manuel fallback (anbefalet, kortest til $1)**
-- Mads har allerede LS-konto (`mads@mahope.dk`)
-- 20 min i dashboard → 6 produkter oprettet → checkout-URL'er
-- Jeg sætter dem ind på site, deployer, sandbox-tester
-- Første betaling: **samme time**
-- Dokumentation: `LS-MANUAL.md` (klar)
+### Spor A: Fjern blokeringer (samme som før)
+Fasteste vej til $1 er stadig Mads' 20 min i LS dashboard. Jeg holder
+LS-MANUAL.md klar, bygger ikke mere der kræver betalingskonto. Dette spor
+handler om at gøre det SÅ let for Mads at sige ja, at der ikke er nogen
+grund til at vente.
 
-**Vej B — Affiliate-links på scanner (kører i parallel)**
-- Cookiebot (30% recurring, 12 mdr), Complianz (30%), iubenda (40%)
-- Mads: 15 min signup hos 3 programmer → PayPal til udbetaling
-- Jeg: sætter links ind på scanner-resultater + CMP comparison page
-- Første kommission: indenfor dage efter signup
+Blokeringer (EN linje):
+- CNAME @/www -> auditedwp.pages.dev (2 domæner)
+- 20 min LS manuel setup ELLER LS API key fra Bitwarden
+- CWS OAuth credentials (Chrome extension publishing)
+- Affiliate signups (Cookiebot/Complianz/iubenda)
 
-### Hvorfor ikke bygge noget nyt
+### Spor B: Byg distribution på MINE flader (igen i gang)
+Mads' mandat: "Marketing og drift er dit ansvar. Alt hvad der foregår på
+dine EGNE flader, styrer du selv."
 
-| Forsøgt | Resultat |
-|---------|---------|
-| 5 produkter bygget | $0 — alle kræver betalingsopsætning |
-| 50+ sider compliance-indhold | 0 organisk trafik |
-| GitHub open source | 3 stargazers, 0 konverteringer |
-| WordPress-plugin | $0 |
-| Chrome-extension | Bygget, pakket, kan ikke udgives (CWS OAuth i Bitwarden) |
-| Tauri desktop app | Bygget, klar, venter på LS key |
+Jeg har ~50 HTML-sider, 31 blog guides, 3 produktlinjer, 139 sitemap-URL'er —
+men INGEN samlet trafik-optimeret struktur. Google skal kunne crawle alt,
+forstå hvad siden handler om, og sende besøgende til de rigtige sider.
 
-**Enhver ny idé rammer samme mur:** betaling kræver en konto hos en payment
-provider, og den konto ejer Mads.
+**Jeg bygger:**
+1. **/guides/** — en SEO-hub der samler alle guider på tværs af produkter
+   (compliance + DevNotify + QuickFormat) i én vertikal. Giver Google én
+   stærk side at ranke, i stedet for 50 spredte.
+2. **Sitemap-opdatering** — mangler /guides/, /cmp-comparison/, /blog/ hver
+   enkelt guide, og nye QuickFormat-sider.
+3. **Interne links** mellem produkter — scanner → guides → store → comparison,
+   så PageRank flyder og besøgende bliver på sitet.
 
-## De 5 pengefaktorer (revurderet for nuværende position)
+## Hvorfor det her er rigtigt under pengekriteriet
 
 | Faktor | Vurdering |
 |--------|-----------|
-| Tid til 1. kunde | **Timer** efter Mads' 20 min i LS dashboard |
-| Beløb pr. kunde | $29-$149 (templates) / $79/år (Pro) |
-| Markedsstørrelse | 5M+ EU-virksomheder |
-| Betalingsvilje | HØJ — lovkrav |
-| Driftsomkostning | 0 kr/md |
+| Tid til 1. kunde | Stadig timer efter Mads' LS-opsætning |
+| Hvad jeg gør imens | Bygger trafik så der ER besøgende NÅR LS går live |
+| Omkostning | 0 kr — alt er statisk HTML på Cloudflare gratis |
+| Mål | $0 → $1 hurtigst muligt, derefter $100/md → $1000/md |
 
-## Hvad der skal til (til Mads)
+## Hvad jeg IKKE gør
+- Bygger nye produkter der kræver betalingskonto (spild — rammer samme mur)
+- Research-runder uden pengeperspektiv
+- Ventetid (Mads sagde: ventetid er arbejdstid)
 
-**Vælg én af disse og sig til:**
-1. "Jeg logger ind på LS og laver produkterne" — 20 min, så er vi i gang
-2. "Jeg tilmelder mig Cookiebot/Complianz/iubenda affiliate" — 15 min
-3. "Jeg unlocker Bitwarden så du kan bruge LS API'en" — 5 min
-
-Indtil da: $0.
+## Næste step
+Byg /guides/ hub. Opdater sitemap. Deploy. Mål: at sitet kan crawles og
+indekseres optimalt, så der er et publikum når betaling går live.
