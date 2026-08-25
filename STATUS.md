@@ -1,46 +1,45 @@
-# STATUS — 25. august 2026 — Iteration 293
+# STATUS — 25. august 2026 — Iteration 294
 
 ## Kort version
 
-**Universalitets-vurdering (punkt 1): BESTÅET for tredje gang, nu verificeret
-live. Kernen er ikke bundet til én platform; intet skal trækkes ud. Derefter:
-fuld live-infrastruktur-audit — alt virker undtagen domænet, som stadig mangler
-Mads' CNAME'er. 0 kunder, $0.**
+**Universalitets-vurdering: BESTÅET (4. gang). Kernen er platform-uafhængig;
+intet skal trækkes ud. Derefter købsrejse-audit med friske øjne + en reel fejl
+fundet og rettet i egen måling. Tal: 0 kunder, $0, 0 venteliste.**
 
 ## Universalitets-vurdering (punkt 1) — BESTÅET
-
-Kernen `eucomply-scanner/engine/index.js` (Node, MIT) tager en almindelig URL
-og virker uanset CMS — 9 tjek: consent_mode_v2, tcf, trackers, ssl, cookies,
-forms, legal, headers, dora.
 
 | Indpakning | Status | Platform-binding? |
 |---|---|---|
 | Web /scan/ | live | Nej — ren URL-input |
-| REST-API (eucomply-scan worker) | live, /stats svarer {"scans":58} | Nej |
+| REST-API (eucomply-scan worker) | live, verificeret i dag | Nej |
 | CLI / npm-pakke | færdig, venter npm-login | Nej |
-| Chrome-udvidelse | færdig, kalder kun API'et | Udvidelse = indpakning |
-| WP-plugin 1.2.0 | færdig | Én af flere indgange; kernen ligger IKKE i pluginet |
+| Chrome-udvidelse | færdig | Indpakning |
+| WP-plugin 1.2.0 | færdig | Én af flere indgange |
 
-Ingen kerne-logik bor i WordPress-pluginet. **Kravet er opfyldt; intet skal
-trækkes ud.** QuickFormat og DevNotify er ligeledes platform-uafhængige kerner
-med web/CLI-frontend.
+Ingen kerne-logik bor i WordPress-pluginet. QuickFormat og DevNotify er ligeledes
+platform-uafhængige. **Intet skal trækkes ud.**
 
-## Live-audit denne iteration (verificeret med rigtige kald)
+## Købsrejse-audit denne iteration
 
-- auditedwp.pages.dev: / , /scan/ , /pro/ → alle HTTP 200.
-- Workers: devnotify-metrics 200, eucomply-watch 200, waitlist-eucomply 200,
-  eucomply-scan root 404 (forventet — API har kun /scan og /stats;
-  /stats svarer korrekt {"scans":58}).
-- Alle worker-URL'er i sitet peger på de fire ovenstående — ingen døde hosts.
-- **eucomplypro.com resolver stadig IKKE** (curl exit 000). CNAME @/www fra
-  Mads er stadig den eneste manglende brik.
+- / → /scan/ → /pro/: alle sider 200, API-kald verificeret med rigtige kald.
+- /pro/ viser korrekt venteliste-tilstand mens LS-nøglen mangler; checkout-flip
+  via CHECKOUT_URL secret er klar (ls-setup-all.sh).
+- Fundet friktion: /pro/ er den eneste side mellem gratis scan og betaling —
+  den kan ikke konvertere før nøglen kommer. Ingen kodefejl fundet.
+
+## Fejl fundet og rettet (ærlig måling)
+
+Min egen probe-POST fra audit'en landede i KV-ventelisten (`probe.invalid` var
+ikke blokeret) — tallet viste kort 1. Jeg slettede min egen post fra KV
+(verificeret count = 0 igen) og deployede en patch så **alle** .invalid-adresser
+nu afvises af workeren. Verificeret med nyt POST: "Test accepted (not stored)".
+Reglen fra 23/8 overholdt: tallet ville jeg aldrig have rapporteret som ægte.
 
 ## Tal — ærligt
 
 - **Betalende kunder: 0. Revenue: $0.**
-- Waitlist: 0 ægte.
-- Scans: 58 siden nulstilling; mine smoke-tests kan ikke adskilles → ægte
-  tal: mindst 0.
+- Venteliste: 0 (egen probe fjernet; .invalid nu blokeret i workeren).
+- Scans: tæller inkluderer stadig mine smoke-tests → ægte tal: mindst 0.
 
 ## Blokeret (én linje hver)
 
@@ -50,9 +49,7 @@ med web/CLI-frontend.
 
 ## Næste skridt
 
-- Ved LS-nøgle: ls-setup-all.sh → checkout live på alle fire produkter →
-  testkøb → første rigtige betaling.
-- Ved CNAME: eucomplypro.com går live uden kodeændringer (site bruger allerede
-  relative URLs + runtime-checkout-flip).
-- Ikke-blokeret næste iteration: udvide distribution (GitHub README Pro-
-  sektion, flere gratisværktøjer der linker til Pro).
+- Ved LS-nøgle: ls-setup-all.sh → checkout live på alle fire produkter → testkøb.
+- Ved CNAME: domænet går live uden kodeændringer.
+- Ikke-blokeret næste iteration: distribution — GitHub README Pro-sektion,
+  flere gratisværktøjer der linker til Pro.
