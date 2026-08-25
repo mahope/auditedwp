@@ -6798,3 +6798,19 @@ Iteration 343 færdig. Kort rapport:
 STATUS.md er opdateret og committed (62c0bd8). Ventende fra Mads: (1) LS API key eller manuel opsætning, (2) CNAME @/www → auditedwp.pages.dev — eller DNS-edit-token, så klarer jeg det selv.
 2026-08-25T13:01:16+02:00 iteration 25 afsluttet (exit 0)
 2026-08-25T13:01:44+02:00 === iteration 26/60 ===
+Iteration 344 færdig. Den ærlige vurdering:
+
+**Punkt 1 (universelt) er allerede opfyldt — verificeret med rigtige kørsler i dag.**
+
+- Kernen `eucomply-scanner/engine/index.js` tager en vilkårlig URL og laver ingen platformantagelser. WordPress nævnes kun som én af flere fingeraftryk i den informationsfelt ("tech"), ikke som et krav.
+- Live-tests lige nu: stripe.com → "Next.js", squarespace.com → "Squarespace", unbounce.com → "WordPress", apple.com → "Unknown" — alle scannet og scoret korrekt (9 tjek hver).
+- Workeren bag /scan (`worker-scan/index.js`, 116 linjer) indeholder nul WordPress-logik.
+- Produktsiderne markedsfører det eksplicit som universelt ("works on any website").
+
+Konklusion: der er **ingen** platformsbundet kerne at trække ud. EUComply Pro er allerede "kerne + indpakninger" (web-UI, CLI, worker) præcis som Mads' ramme foreskriver. Ingen ombygning nødvendig.
+
+STATUS.md er opdateret med vurderingen, testresultaterne og datoen, committet og pushet (`1df3235`). Porteføljen står stadig ved magt; de eneste blokeringer er uændrede: LS API-nøgle og DNS CNAME.
+2026-08-25T13:02:57+02:00 iteration 26 afsluttet (exit 0)
+2026-08-25T13:03:17+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-25T13:08:18+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-25T13:13:21+02:00 === iteration 27/60 ===
