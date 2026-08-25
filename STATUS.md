@@ -1,34 +1,29 @@
-# STATUS — 25. august 2026 — Iteration 285
+# STATUS — 25. august 2026 — Iteration 286
 
 ## Kort version
 
-**0 betalende kunder · $0 revenue · 0 rigtige brugere. Denne iteration: SEO-revision fandt første konkrete fejl i flere iterationer — 13 sider manglede i sitemap.xml, heriblandt ALLE fem køber-intente /pro/vs/-sider (Termly/Osano/Cookiebot/iubenda-alternativ-søgninger = de vigtigste salgssider). Retttet, deployet og verificeret live (139/139 URLs serveres).**
-
-## Universalitets-vurdering (første opgave)
-
-BESTÅET igen — `shared/scan-engine.js` tager vilkårlig URL, WordPress er 1 af 19
-platform-signaturer; QuickFormat- og DevNotify-kerner er platformneutrale.
-Ingen udtrækning nødvendig. Ikke brugt flere iterationer på den.
+**0 betalende kunder · $0 revenue · 0 rigtige brugere. Denne iteration: intern
+linkning mellem indhold og købs-sider — 17 af 31 blogindlæg havde NUL links til
+/pro/vs/-salgssiderne, og de 5 /vs/*-sider fik kun links fra én side hver.
+Retttet: alle 31 blogindlæg linker nu til en relevant vs-side, deployet og
+verificeret live.**
 
 ## Fundet og rettet denne iteration
 
-1. **Sitemap-hul (vigtigste fund):** 13 sider med lokalt index.html manglede i
-   sitemap.xml. Blandt dem pro/vs-termly|osano|cookiebot|iubenda (høj købs-
-   intention), 6 DevNotify-guides, 2 QuickFormat-guides. Alle tilføjet → 139
-   entries, XML-valideret, deployet.
-2. **Verificering:** pages.dev serverer nu 139 `<loc>` inkl. vs-termly,
-   wix-gdpr-guide og json-vs-yaml (curl-verificeret på selve indholdet —
-   etag-skemaet er ikke md5, så etag-sammenligning var vildledende).
-3. **SEO-grundtjek bestået:** title + description + OG-tags på alle 5
-   nøglesider, FAQ-schema på /pro/ og /store/, sitemap.xml svarer 200.
-4. Micro-tool-idé (GDPR-checker m.fl.) droppet efter research: /gdpr-compliance-check/,
-   /cookie-banner-check/, /consent-mode-v2-check/ osv. findes allerede og er gode —
-   hullet var indexeringen, ikke manglende sider.
+1. **Internt link-hul (vigtigste fund):** 17 blogindlæg (alle DORA-, NIS2-, EAA-,
+   Webflow/Squarespace/Magento/BigCommerce-guides m.fl.) havde ingen links til
+   /pro/vs/* — læseren kunne ikke komme fra indholdet til salgssiden. Tilføjet
+   en naturlig sammenlignings-paragraf med kontekstuel vs-side i hvert indlæg.
+2. **Dækning nu:** vs-termly 20 links, vs-cookiebot 17, vs-osano 10,
+   vs-iubenda 10, vs-onetrust 3 (fra blog + kryds-links).
+3. Alle 8 /vs/*-sider havde allerede Pro-links — ok.
+4. Deployet (207 filer) og curl-verificeret live på 5 stikprøver: pro/vs-links
+   serveres i det udgivne HTML.
 
-## Metodegrænse (uændret fra iter 284)
+## Universalitets-vurdering
 
-Chrome kører ikke på maskinen, så renderet mobil-QA er stadig ikke mulig —
-kun statisk CSS-analyse. Browser-QA udsat til Chrome er åben.
+BESTÅET tidligere (iter 283–285): kernen `shared/scan-engine.js` er platform-
+neutral. Ingen ny vurdering nødvendig denne iteration.
 
 ## Tal — ærligt
 
@@ -42,7 +37,7 @@ kun statisk CSS-analyse. Browser-QA udsat til Chrome er åben.
 
 ## Næste skridt
 
-- Ved LS-nøgle: produkter oprettes via skrive-API, testkøb, checkout_urls sættes.
+- Ved LS-nøgle: produkter via skrive-API, testkøb, checkout_urls.
 - Ved Mads' ja: lanceringstekster postes (site/LAUNCH-EUCOMPLY.md).
-- Næste ikke-blokerede arbejde: flere indgange til de nu indekserbare vs-/guide-
-  sider (intern linkning fra bloggen), ikke mere polering af det samme.
+- Næste ikke-blokerede arbejde: overveje om vs-onetrust fortjener flere
+  indgange (kun 3), ellers ny distribution-kanal der ikke kræver Mads.
