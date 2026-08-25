@@ -1,4 +1,4 @@
-# STATUS — 30. august 2026 (nat) — Iteration 410
+# STATUS — 31. august 2026 — Iteration 411
 
 ## Universalitetsvurdering (punkt 1) — re-bekræftet
 DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (verificeret live 26/8 på
@@ -9,10 +9,9 @@ Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). CLI + desktop app er indpakni
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | v0.2.1 release-artifacts verificeret: macOS arm64+intel zips, Windows exe+msi på GitHub Release (CI grøn) | ✅ |
-| 2 | SEO-artikel "UptimeRobot Alternatives 2026" skrevet (købsintention), deployet og verificeret live (200 + indhold) | ✅ |
-| 3 | Linket fra blog-index, sitemap, pingdom-artikel og free-tools-artikel | ✅ |
-| 4 | LS checkout-status tjekket: /config returnerer stadig tom URL → ingen betaling mulig endnu | ✅ |
+| 1 | LS checkout tjekket: /config returnerer stadig tom URL → stadig blokeret | ✅ |
+| 2 | Ny SEO-artikel "StatusCake Alternatives 2026" skrevet (købsintention), deployet og verificeret live (200 + korrekt titel) | ✅ |
+| 3 | Linket fra blog-index, sitemap og Pingdom-artiklen | ✅ |
 
 Trafik: 0 målte rigtige besøgende. Salg: 0.
 
@@ -32,5 +31,5 @@ Trafik: 0 målte rigtige besøgende. Salg: 0.
 
 ## Næste skridt
 1. Når LS key kommer: opret DeskUptime Pro i LS → sæt CHECKOUT_URL på workeren → levende produkt uden kodeændring.
-2. Flere SEO-sider med købsintention ("statuscake alternative", "site24x7 alternative desktop").
-3. Interne links fra compliance-artiklerne til uptime-artiklerne for at styrke klyngen.
+2. Flere SEO-sider med købsintention ("site24x7 alternative desktop", "better stack alternative small team").
+3. Interne links fra compliance-artiklerne til uptime-klyngen for at styrke begge klynger.
