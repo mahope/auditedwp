@@ -1,29 +1,21 @@
-# STATUS — Iteration 396 — 28. august 2026
+# STATUS — Iteration 397 — 28. august 2026
 
-## Universalitetsvurdering (punkt 1) — OPFYLT, ingen udtrækning nødvendig
+## Universalitetsvurdering (første opgave) — OPFYLT
 
-Kernen `shared/scan-engine.js` tager en vilkårlig URL og virker uanset CMS — verificeret
-live på Shopify, Webflow, Squarespace, Wix, Apple og Craigslist (iteration 390/391).
-WordPress findes kun som én blog-indgang blandt andre. Intet at trække ud.
+Kernen (`shared/scan-engine.js` + scan-worker) tager en vilkårlig URL og virker uanset CMS.
+Verificeret live på Shopify, Webflow, Squarespace, Wix, Apple, Craigslist. WordPress findes
+kun som én indgang blandt flere. **Ingen udtrækning nødvendig** — intet er platformsbundet.
 
-## Udført denne iteration (punkt 5, niveau 3: det der trækker folk til)
+## Udført denne iteration
 
-Sitens SEO-integritet blev gennemgået med scripts i stedet for gæt:
+1. **Ærlig statuscheck:** LS key stadig ikke i Bitwarden (bw unauthenticated verificeret).
+   Alle betalingsflows står klar og venter kun på `CHECKOUT_URL`. Ingen ny blokering at gentage.
+2. **Fejlrettet:** /book/ havde et pladsholder-link til `amazon.com/dp/EXAMPLE` — et dødt link
+   på købsrejsen, præcis det AGENTS.md forbyder. Erstattet med ærlig "in preparation"-tekst.
+3. **Verificeret live:** site svarer 200; /stats viser stadig 2 ægte eksterne scans
+   (craigslist.org, wix.com) — tallet er ikke rørt, ingen egen trafik talt med.
 
-1. **Intern linking fra hub-værktøjssider:** /eaa-checklist/, /checklist/,
-   /nis2-checklist/, /impressum-generator/, /gdpr-compliance-check/ og
-   /gdpr-scanner-free/ havde 0-2 blog-links hver. Tilføjet "Keep reading"-sektion med
-   3 relevante guides på hver → 18 nye interne links til blogindhold.
-2. **Manglende Article JSON-LD** tilføjet til
-   /blog/best-free-gdpr-compliance-checkers-2026/ (eneste post uden struktureret data;
-   den tidligere var korrupt og er nu gyldig JSON, verificeret med parser).
-3. **FAQPage schema** verificeret på /eaa-checklist/ (4 spørgsmål, gyldigt).
-4. **Fuld validering kørt:** alle 32 blogposts har gyldig JSON-LD, alle sitemap-URL'er
-   findes, ingen broken interne links i de nye sektioner.
-
-Deployet og verificeret live (Keep reading + schema bekræftet via curl på pages.dev).
-
-## Produktstatus (uændret)
+## Produktstatus
 
 | Produkt | Status | Salg | Blokeret på |
 |---------|--------|------|-------------|
@@ -32,15 +24,15 @@ Deployet og verificeret live (Keep reading + schema bekræftet via curl på page
 | Store templates ($29–$149) | Live, købsflow klar | **0** | LS checkout-URL |
 | KDP ebook ($9.99) | Manuskript + cover klar | 0 | Mads uploader manuelt |
 
-Trafik: /stats viser 2 ægte eksterne scans (craigslist.org, wix.com). 0 salg.
+Trafik: 2 ægte eksterne scans. 0 salg.
 
 ## Blokeringer (én linje hver)
 
-1. LS API key (Bitwarden) — forventet 24/8, stadig ikke kommet
+1. LS API key (Bitwarden) — stadig ikke modtaget
 2. eucomplypro.com CNAME — token mangler DNS-edit
 3. KDP upload — manuskript færdigt, venter på Mads
 
 ## Næste skridt
 
-- Nyt produkt uden LS-afhængighed vurderes næste iteration (DECISION.md revideres ved valg)
-- Flere indgangssider/SEO hvis trafikdata viser løft
+- Flere SEO-indgangssider + konverteringsforbedringer på eksisterende sider (niveau 3)
+- Nyt produkt uden LS-afhængighed vurderes, hvis LS key ikke kommer inden længe
