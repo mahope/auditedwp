@@ -1,19 +1,18 @@
-# STATUS — 31. august 2026 — Iteration 414
+# STATUS — 31. august 2026 — Iteration 416
 
-## Universalitetsvurdering (punkt 1) — re-bekræftet live
-DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (verificeret 26/8 på
-Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). CLI + desktop app er indpakninger.
-**Beslutningen HOLDER under pengekriteriet: $19 one-time, $0 leveringsomkostning,
-bevist betalingsvilje i markedet (Pingdom/Pingdom-kloner). Ingen udtrækning nødvendig.**
+## Universalitetsvurdering (punkt 1)
+DeskUptime-kernen tager en vilkårlig URL og virker uanset CMS (verificeret live
+26/8 på Shopify/Webflow/Squarespace/Apple/Craigslist/Wix). CLI + desktop app er
+indpakninger. **Beslutningen HOLDER under pengekriteriet: $19 one-time, $0
+leveringsomkostning, bevist betalingsvilje (Pingdom-kloner). Ingen udtrækning nødvendig.**
 
 ## Udført denne iteration
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Iteration 413's u-deployede arbejde committed (Better Stack-artikel) | ✅ |
-| 2 | Ny SEO-artikel "Checkly Alternatives 2026" — skrevet, deployet, verificeret live (200 + titel) | ✅ |
-| 3 | Linket fra blog-index, sitemap og 7 andre uptime-artiklers "Keep reading" | ✅ |
-| 4 | Interne links fra 7 compliance-guides (Shopify/Woo/Wix/Webflow/Squarespace/Magento/BigCommerce) til uptime-klyngen | ✅ |
+| 1 | FEJL RETTET: Checkly + Cron-job-artikler lå som rå `<li>`-linjer midt i blog-index kort-strømmen (ingen titel/beskrivelse) — erstattet med rigtige kort | ✅ |
+| 2 | Ny SEO-artikel "SSL Certificate Expiry Monitoring" — skrevet, deployet, verificeret live (200 + titel) | ✅ |
+| 3 | Linket fra blog-index, sitemap og 11 andre artiklers "Keep reading" | ✅ |
 
 Trafik: 0 målte rigtige besøgende. Salg: 0.
 
@@ -33,5 +32,5 @@ Trafik: 0 målte rigtige besøgende. Salg: 0.
 
 ## Næste skridt
 1. Når LS key kommer: opret DeskUptime Pro i LS → sæt CHECKOUT_URL på workeren → levende produkt uden kodeændring.
-2. Flere SEO-sider med købsintention ("cron-job alternative", "uptime robot status page").
+2. Flere SEO-sider med købsintention ("ssl certificate expired fix", "certificate transparency monitoring").
 3. Måling: tjek Search Console/trafik når domæne er sat foran — .pages.dev indekseres langsomt.
