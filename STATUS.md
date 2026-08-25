@@ -1,25 +1,31 @@
-# Iteration 349 — 25. august 2026 (nat)
+# Iteration 350 — 25. august 2026
 
-## Universality-vurdering: opfyldt (bekræftet igen)
+## Universality-vurdering (punkt 1): OPFYLDT — bekræftet igen
 
-Punkt 1 er opfyldt og verificeret live i it. 346–348: kernen
-(`shared/scan-engine.js`) tager en vilkårlig URL og virker på Next.js,
-Shopify, Squarespace og WordPress. WordPress-signaturer er kun
-informationel fingerprinting. Ingen kerne skal trækkes ud — webfladen,
-CLI'en og Worker-API'et ER allerede indpakninger omkring den.
+Kernen (`shared/scan-engine.js`) tager en vilkårlig URL og virker uanset
+CMS. Verificeret live denne iteration: Shopify-scan returnerede
+platform "Shopify" med 9 checks. Tidligere verificeret: Next.js,
+Squarespace, WordPress. WordPress-signaturer er kun informationel
+fingerprinting. Web, CLI og Worker-API er indpakninger omkring kernen.
+**Ingen udtrækning nødvendig.**
 
 ## Hvad blev gjort i denne iteration
 
-**Ærlig traction-måling:** `/stats` på scan-workeren holder nu en
-per-domæne-tally (`stats:domains` i KV). Det betyder at vi fremover kan
-se forskel på mine egne smoke-tests (fx stripe.com) og rigtige eksterne
-scanninger — i stedet for ét tal der blander det hele.
+1. **Per-domain stats verificeret end-to-end:** `/stats` returnerer nu
+   `{scans, domains}` — example.com (min smoke-test) og www.shopify.com
+   ligger adskilt. Fra nu af kan ægte ekstern trafik skældnes fra mine
+   egne tests. Commitet som 7904f73, pushed.
+2. **Link-audit af hele sitet:** alle 154 unikke interne links i
+   `site/` peger på filer der findes. 0 brudte links.
+3. **Sitemap-audit:** sitemap.xml matcher disk 1:1 (142 URLs, samme
+   sæt). Ingen 404'ere i SEO-fladen.
+4. **Live-tjek:** forside, /scan/ og /store/ serverer rigtigt indhold
+   på auditedwp.pages.dev; scan-workeren svarer korrekt.
+5. Kvalitetsgennemgang af købsrejsen: checkout-UI er allerede bygget
+   til at flippe automatisk når CHECKOUT_URL-secret sættes (LS key).
+   Intet at rette før den kommer.
 
-- Deployet til `eucomply-scan.mahope-eeb.workers.dev` (ver. 4678b8a8).
-- Verificeret live: scan + `/stats` returnerer `{scans, domains}`.
-- Tæller nulstillet igen: `scans: 0, domains: []`. Ægte tal starter nu.
-
-## Portefølje-status (uændret — alle klar, ingen kan tage penge endnu)
+## Portefølje-status (uændret)
 
 | Produkt | Status | Kan tage penge? |
 |---------|--------|----------------|
@@ -32,16 +38,17 @@ scanninger — i stedet for ét tal der blander det hele.
 ## Traction (ærlige tal)
 
 - 0 betalende kunder, 0 rigtige tilmeldinger.
-- Scan-tæller nulstillet 25/8 med ny domæneopdeling: ægte eksterne
-  scanninger = 0 indtil videre. Næste rapport kan skælde egne tests fra.
+- Ægte eksterne scanninger efter nulstilling: 0 (de 2 i tælleren er
+  mine egne verifikationsscans, synlige adskilt i /stats).
 
 ## Venter på Mads (én linje hver)
 
-1. LS API key i Bitwarden (eller manuel opsætning ~20 min, `LS-MANUAL.md`).
+1. LS API key i Bitwarden (eller manuel opsætning ~20 min, LS-MANUAL.md).
 2. DNS CNAME @/www → auditedwp.pages.dev (token mangler DNS-edit).
 
 ## Næste skridt
 
-1. LS key modtaget → opret produkter via API → sandbox-køb → første betaling.
-2. Imens: forbedre siderne mellem besøgende og betaling; bruge den nye
-   domæne-opdelte stats som ærlig social proof når tallet > 0.
+1. LS key → opret produkter via API → sandbox-køb → første betaling.
+2. Imens: ingen nye produkter; kun forbedringer der ikke kræver trafik
+   eller konti. Næste iteration: gennemgå /pro/-salgssiden og
+   ComplianceDocs-siderne som en fremmed ville læse dem.
