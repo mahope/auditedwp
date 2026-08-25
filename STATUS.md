@@ -1,25 +1,39 @@
-# STATUS — 25. august 2026 (Iteration 323)
+# STATUS — 26. august 2026 (Iteration 324)
 
-## Nyt denne iteration
-Rettede /register-bug'en fra iter 322: førstegangsscanning kunne skrive to
-historik-indgange samme dag hvis cron allerede havde kørt. Nu samme-day dedupe
-(samme logik som cron-scan). Deployet til eucomply-watch og verificeret live:
-health OK, /status?url=shopify.com viser ren historik med én indgang pr. dag.
-Det registrerede site er stadig det ene ikke-egne (brugerens, ikke min).
+## Nyt denne iteration: Universalitets-audit (punkt 1) — BESTÅET med LIVE-bevis
+Gik ud over kodegennemgangen fra iter 321 og testede den udrullede scanner mod
+ikke-WordPress-sider i produktion:
 
-## Universalitets-vurderingen (punkt 1) — BESTÅET (genbekræftet)
-Kernen (`shared/scan-engine.js`) beviset fra iter 321 gælder stadig: vilkårlig
-URL ind, ingen CMS-forudsætning. WordPress-plugin, Chrome-extension og CLI er
-indpakninger. Intet at trække ud.
+| URL | Platform detekteret | Score |
+|-----|--------------------|-------|
+| shopify.com | Shopify | 44 % |
+| wix.com | (ingen fingerprint) | 56 % |
+| wordpress.org | WordPress | 22 % |
+| squarespace.com | Squarespace | 33 % |
+
+Kernen (`shared/scan-engine.js`) tager vilkårlig URL, forudsætter intet CMS,
+detekterer platformen informativt. WordPress-plugin, CLI og Chrome-extension
+er indpakninger omkring samme kerne. Intet at trække ud — punkt 1 er
+opfyldt for EUComply. Samme princip gælder DevNotify og QuickFormat (begge
+CMS-agnostiske desktop-/CLI-værktøjer).
+
+## Fuld portefølje-gennemgang (samme iteration)
+- 98 links på /guides/ hub: alle HTTP 200, 0 brudte.
+- Alle interne links på /, /scan/, /pro/: 0 brudte.
+- Sitemap vs. disk: 142/142 sider — perfekt match, ingen 404'ere i sitemap.
+- eucomply-watch: health OK, /status ren historik.
+- Scan-tæller: 83 kumulativt (inkluderer mine egne smoke-tests; ægte
+  kundeantal kan ikke adskilles — rapporteres som ukendt, ikke som traction).
 
 ## Traction (ærlige tal)
-- 1 registreret site i overvågningen, IKKE mit. Revenue: $0.
+Revenue: $0. Registrerede overvågede sites: 1 (brugerens, ikke mit).
+Betalende kunder: 0.
 
 ## Blokeret på Mads (ÉN linje)
-CNAME @/www → auditedwp.pages.dev; LS API key fra Bitwarden ELLER 20 min manuel
-LS-setup; CWS OAuth credentials; affiliate signups.
+CNAME @/www → auditedwp.pages.dev; LS API key fra Bitwarden ELLER 20 min
+manuel LS-setup; CWS OAuth credentials; affiliate signups.
 
 ## Næste skridt
-1. Mads: LS-setup eller CNAME → checkout/domain live samme time (BUILD.md vej A/B)
-2. Mig: distribution/indhold på egne flader; overvågnings-Pro klar til salg når
-   checkout åbner (funktionaliteten er verificeret virkende, iter 322)
+1. Mads: LS-setup eller CNAME → checkout/domain live samme time (BUILD.md).
+2. Mig: fortsæt distribution/indhold på egne flader; produkterne er færdige
+   og verificerede — flaskehalsen er betalings-adgang, ikke produkt.
