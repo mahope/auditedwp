@@ -115,7 +115,7 @@ ul{padding-left:1.2rem}li{margin:.25rem 0}
 <h2>The Complete Bundle</h2>
 <p>All five documents, plus updates for 12 months.</p>
 <p class="price">$149 <span style="font-size:.85rem;color:#5a6b63">(vs $245 separately)</span></p>
-<form class="wform" id="bundleform" style="max-width:350px;margin:0.8rem auto 0"><input type="email" placeholder="your@email.com" required aria-label="Email"><button class="wbtn" data-interest="bundle" style="padding:8px 14px;background:var(--acc);color:#fff;border:none;border-radius:4px;font-family:Georgia,serif;font-size:.9rem;cursor:pointer">Buy the bundle — $149</button></form>
+<form class="wform" id="bundleform" style="max-width:350px;margin:0.8rem auto 0"><input type="email" placeholder="you@yourcompany.com" required aria-label="Email"><button class="wbtn" data-interest="bundle" style="padding:8px 14px;background:var(--acc);color:#fff;border:none;border-radius:4px;font-family:Georgia,serif;font-size:.9rem;cursor:pointer">Reserve the bundle at $149 — get notified</button></form>
 <div class="wmsg" id="bundlemsg"></div>
 </div>
 </section>
@@ -187,7 +187,9 @@ document.querySelectorAll('.wform').forEach(function(form) {
     if(!r.ok) return;
     var cfg = await r.json();
     if(!(cfg && cfg.checkout_url)) return;
-    var url = cfg.checkout_url;
+    var urls = cfg.checkout_urls || {};
+    var url = urls['bundle'] || cfg.checkout_url;
+    if(!url) return;
     // 1. Erstat venteliste-formular med koeb-link
     document.querySelectorAll('#buyform, #bundleform').forEach(function(f){
       var price = f.textContent.match(/\$(\d+)/);

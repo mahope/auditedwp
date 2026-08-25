@@ -54,7 +54,7 @@ footer a{color:var(--acc)}
 
 <div class="buybar">
 <div><span class="price">$69</span> <span style="font-size:.85rem;color:#5a6b63">one-time · Markdown + PDF</span></div>
-<form class="wform" id="buyform" style="display:flex;gap:8px;flex-wrap:wrap"><input type="email" placeholder="your@email.com" required aria-label="Email" style="padding:8px 10px;border:1px solid var(--line);border-radius:4px;font-family:Georgia,serif"><button class="btn" type="submit">Notify me at launch</button></form>
+<form class="wform" id="buyform" style="display:flex;gap:8px;flex-wrap:wrap"><input type="email" placeholder="you@yourcompany.com" required aria-label="Email" style="padding:8px 10px;border:1px solid var(--line);border-radius:4px;font-family:Georgia,serif"><button class="btn" type="submit">Notify me at launch</button></form>
 <div class="wmsg" id="wmsg"></div>
 </div>
 
@@ -121,13 +121,18 @@ document.getElementById('buyform').addEventListener('submit', async function(e){
 
 <!-- DYNAMIC-CHECKOUT -->
 <script>
+var PRODUCT_ID = 'reportkit';
+</script>
+<script>
 (async function(){
   try{
     var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/config');
     if(!r.ok) return;
     var cfg = await r.json();
     if(!(cfg && cfg.checkout_url)) return;
-    var url = cfg.checkout_url;
+    var urls = cfg.checkout_urls || {};
+    var url = urls[PRODUCT_ID] || cfg.checkout_url;
+    if(!url) return;
     // 1. Erstat venteliste-formular med koeb-link
     document.querySelectorAll('#buyform, #bundleform').forEach(function(f){
       var price = f.textContent.match(/\$(\d+)/);
