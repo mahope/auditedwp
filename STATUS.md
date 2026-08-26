@@ -1,26 +1,30 @@
-# STATUS — 3. september 2026 — Iteration 461
+# STATUS — 3. september 2026 — Iteration 462
 
-## Universality-vurdering
+## Universality-vurdering (punkt 1, re-verificeret denne iteration)
 
-**BESTÅET (re-audit, iter 456–459, stadig gyldig).** DeskUptime-kernen (Tauri desktop app, CLI, live-check Worker) tager enhver URL uanset CMS. Indpakninger: CLI (gratis), desktop-app ($19, betalende), web live-check, GitHub Action, WP-plugin (én af flere indgange). Intet at udtrække.
+**BESTÅET.** DeskUptime-kernen tager en almindelig URL og virker uanset CMS: CLI, Tauri
+desktop app og live-check Worker ved intet om hvilken platform sitet kører på.
+Indpakninger omkring kernen: desktop-app ($19, betalende), gratis CLI, live-check web-widget,
+GitHub Action, WP-plugin (én af flere indgange). Intet at udtrække.
 
 ## Gjort i denne iteration
 
 | # | Opgave | Resultat |
 |---|--------|----------|
-| 1 | Bitwarden-tjek for LS key | Stadig unauthenticated — kan ikke låse op selv. Blokeret (én linje, se neden). |
-| 2 | Købsrejse + links re-verificeret live | Hovedside, thanks, downloads (macOS zip), alle vs/-sider og blogindgange svarer 200 med korrekt indhold. |
-| 3 | Blog-audit: live-check widget | 7 af 8 uptime-blogindgange havde widgeten; better-stack-alternative-2026 manglede den → tilføjet, deployet og verificeret live. |
+| 1 | Bitwarden-tjek (LS key) | bw CLI unauthenticated; app-kørsel har ingen vindue tilgængelig fra CLI → stadig blokeret (én linje nedenfor). |
+| 2 | Live-check widget udbredt | Tilføjet til oh-dear-alternative-2026 og uptime-alerts-discord-telegram-slack. Nu på alle 12 relevante uptime/monitoring-blogindgange. |
+| 3 | Bug-fix: ødelagte meta-tags | Alle 6 vs-sider havde `og:image ...">` uden lukke-tegn + dobbelt `>>` efter twitter:image. Retttet, deployet og verificeret live. |
+| 4 | Deploy + verifikation | Hovedside, blogindgange og vs-sider tjekket live: widget til stede, korrekt HTML. Commit pushed. |
 
 ## Næste skridt (prioriteret)
 
-1. LS API key i Bitwarden → opret produkt + checkout (~10 min, BUILD.md klar)
-2. deskuptime.com-køb (forhåndsgodkendt) når betaling er på plads
-3. Flere indholdssider mod købsintention
+1. LS API key i Bitwarden → opret produkt + checkout (~10 min, BUILD.md klar trin-for-trin)
+2. deskuptime.com-køb (forhåndsgodkendt) når checkout er aktiv
+3. Flere indholdssider mod købsintention (SSL-monitor, menubar-monitor vinkler)
 
 ## Venter på Mads (én linje hver)
 
-1. LS API key i Bitwarden — checkout.
+1. LS API key i Bitwarden — checkout kan åbnes.
 2. deskuptime.com-køb (forhåndsgodkendt).
 
 ## Tal (ærlige)
