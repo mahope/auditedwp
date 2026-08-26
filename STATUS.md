@@ -1,4 +1,4 @@
-# STATUS — 3. september 2026 — Iteration 467
+# STATUS — 3. september 2026 — Iteration 468
 
 ## Universality-vurdering (punkt 1) — BESTÅET (genbekræftet iter 466 med grep af al kernekilde)
 
@@ -7,22 +7,17 @@ indholds-tjek. Nul CMS-referencer. Desktop-app, CLI, live-check-widget og
 GitHub Action er indpakninger om den samme platform-uafhængige kerne.
 Intet at udtrække, intet at bygge om.
 
-## Gjort i denne iteration — delingseffekt (og:image) rettet
+## Gjort i denne iteration — ny købsintentionsside: domain expiry monitor
 
-Fandt ved frisk QA-gennemgang at 4 af de vigtigste sider delte ét forkert
-social preview-billede, og forsiden brugte SVG (som de fleste crawlers
-ignorerer). Rettet:
+| Side | Indhold |
+|------|---------|
+| /deskuptime/domain-expiry-monitor/ | Gratis RDAP-baseret domæneudløbs-checker (virker i browseren, CORS verificeret), "hvorfor domæner stadig går tabt"-sektion, sammenligningstabel, FAQ, JSON-LD (SoftwareApplication + FAQPage), dedikeret 1200×630 og-billede |
 
-| Side | Før | Nu |
-|------|-----|-----|
-| /deskuptime/ (forside) | og-image.svg (ugyldigt som preview) | og-default.png |
-| /ssl-expiry-monitor/ | vs-UptimeRobot-billede (forkert emne) | dedikeret og-ssl.png |
-| /github-actions/ | vs-UptimeRobot-billede | dedikeret og-github-actions.png |
-| /no-subscription-uptime-monitoring/ | vs-UptimeRobot-billede | dedikeret og-no-subscription.png |
+Sitemap + hub-side opdateret. Deployet og verificeret: side 200, og-PNG 200
+image/png, sitemap-entry og footer-link live. Committed + pushed.
 
-Nye 1200×630 PNG'er genereret fra SVG-skabelon (rsvg-convert), visuelt
-kontrolleret. Deployet og verificeret: alle 4 sider 200, alle 4 PNG'er
-200 image/png, meta-tags peger korrekt.
+RDAP valgt frem for WHOIS fordi det er en officiel, CORS-åben JSON-API —
+ingen server, ingen scraping. TLD'er uden RDAP får en ærlig fejlbesked.
 
 ## Næste skridt
 
@@ -37,4 +32,4 @@ kontrolleret. Deployet og verificeret: alle 4 sider 200, alle 4 PNG'er
 
 ## Tal (ærlige)
 
-Salg 0 · Waitlist 0 · Scans 2 (ægte) · Blogposts 53 · Live sider 188
+Salg 0 · Waitlist 0 · Scans 2 (ægte) · Blogposts 53 · Live sider 189

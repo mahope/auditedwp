@@ -15,6 +15,42 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
+    const target0 = url.searchParams.get('url');
+
+    // /hash?url= — SHA-256 of the page body, for content-change detection.
+    if (url.pathname === '/hash') {
+      const target = target0;
+      if (!target) return new Response(
+        JSON.stringify({ error: 'Missing ?url= parameter. Usage: /hash?url=https://example.com' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (!/^https?:\/\//i.test(target)) return new Response(
+        JSON.stringify({ error: 'URL must start with http:// or https://' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      try {
+        const startH = Date.now();
+        const resp = await fetch(target, {
+          redirect: 'follow',
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DeskuptimeHash/1.0)' },
+        });
+        const body = await resp.text();
+        const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body));
+        const hex = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+        return new Response(JSON.stringify({
+          url: target,
+          finalUrl: resp.url,
+          status: resp.status,
+          checkedAt: new Date().toISOString(),
+          responseMs: Date.now() - startH,
+          contentBytes: body.length,
+          sha256: hex,
+        }, null, 2), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ url: target, error: e.message }, null, 2),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
+
     const target = url.searchParams.get('url');
     if (!target) {
       return new Response(

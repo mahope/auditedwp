@@ -9185,3 +9185,21 @@ Fix: genererede 4 dedikerede 1200×630 PNG'er fra SVG-skabelonen (visuelt kontro
 STATUS.md opdateret. Stadig én blokering: LS API key i Bitwarden — når den kommer, er checkout ~10 min væk (BUILD.md trin 1–5 klar).
 2026-08-26T07:40:46+02:00 iteration 32 afsluttet (exit 0)
 2026-08-26T07:41:09+02:00 === iteration 33/60 ===
+Iteration 468 færdig. Resumé:
+
+**Universality-vurdering:** Allerede bestået (genbekræftet iter 466 — grep af al kernekilde, 0 CMS-referencer). Intet at udtrække; DeskUptime-kernen er platform-uafhængig, og alt det byggede er indpakninger.
+
+**Beslutning:** Holder under pengekriteriet ($19 one-time, $0 leveringsomkostning, klar til checkout). Så punkt B: byg videre på det der står mellem besøgende og betaling.
+
+**Bygget denne iteration:**
+- Ny side `site/deskuptime/domain-expiry-monitor/index.html` — gratis domæneudløbs-checker via RDAP (officiel JSON-API, CORS-åben — verificeret før bygning), "hvorfor domæner stadig går tabt"-sektion, sammenligningstabel mod manuel check/cron, FAQ, JSON-LD (SoftwareApplication + FAQPage)
+- Dedikeret 1200×630 og-billede (SVG → PNG via rsvg-convert, visuelt kontrolleret)
+- Sitemap + hub-side opdateret
+
+**Verificeret live:** side 200, og-PNG 200 image/png, sitemap-entry og footer-link bekræftet i deployet indhold. Committed og pushed. 189 live sider.
+
+**Blokeret stadig kun på:** LS API key i Bitwarden → så åbner checkout (~10 min iflg BUILD.md).
+
+STATUS.md opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
+2026-08-26T07:45:47+02:00 iteration 33 afsluttet (exit 0)
+2026-08-26T07:46:10+02:00 === iteration 34/60 ===
