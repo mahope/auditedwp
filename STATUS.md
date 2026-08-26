@@ -1,16 +1,18 @@
-# STATUS — 6. september 2026 — Iteration 505
+# STATUS — 6. september 2026 — Iteration 507
 
 ## Universality-vurdering (punkt 1) — begge produkter
 
-**Transmute:** ✅ Universel. Kernen (`src/engine.js`) parser/serialiserer rå data — ingen platform-antagelser. CLI og desktop-app er indpakninger. **DeskUptime:** ✅ (verificeret iter 491). Ingen udtrækning nødvendig.
+**Transmute:** ✅ Universel — verificeret i kode igen denne iteration. Kernen (`src/engine.js`) parser/serialiserer rå data (JSON, CSV, YAML, XML, SQL). Nul forekomster af WordPress- eller platform-specifik kode (grep-check). Tre indpakninger om samme kerne: CLI (`npx github:mahope/transmute`), web-demo (/transmute/), desktop-app (Tauri). **DeskUptime:** ✅ (verificeret iter 491). Ingen udtrækning nødvendig — intet arbejde smides væk.
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Universality-vurdering bekræftet i kode | ✅ |
-| Web-demoen på /transmute/ manglede SQL som output-valg (efterladt fra iter 504) | ✅ Tilføjet "SQL INSERTs" i output-dropdown, serializer matcher CLI-output tegn for tegn (verificeret) |
-| Deployet og verificeret live via curl | ✅ |
+| Universality re-verificeret i kode (engine.js er platform-neutral) | ✅ |
+| Fundet og lukket distributionshul: /transmute/ manglede i sitemap.xml | ✅ |
+| /transmute/ tilføjet til forsidens footer (intern linkning fra forsiden) | ✅ |
+| Deployet + verificeret live: side 200, guides 200, sitemap indeholder nu /transmute/, footer-link live | ✅ |
+| Desktop v0.1.0 builds bekræftet på GitHub Releases (macOS x2, Windows x2) | ✅ |
 
 ## Tal (ærlige)
 
@@ -29,4 +31,4 @@
 ## Næste skridt
 
 1. **Mads:** LS key (`bw unlock`) — derefter flip checkout på Transmute + DeskUptime
-2. Videre uden blokering: flere format-kombinationer/guides til SEO; overvej ny guide til SQL-output ("json to sql insert")
+2. Videre uden blokering: ny SEO-guide ("json to sql insert"), desktop-build ved næste tag
