@@ -4,3 +4,4 @@ ceo.log
 .wrangler/
 devnotify-site/download/*.AppImage
 venv/
+transmute/repo/

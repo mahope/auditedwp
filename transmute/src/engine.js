@@ -43,10 +43,12 @@ const parsers = {
     const result = [];
     let current = null;
     let isList = false;
+    let sawAny = false;
     
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('#')) continue;
+      sawAny = true;
       
       if (trimmed.startsWith('- ')) {
         isList = true;
@@ -76,6 +78,17 @@ const parsers = {
       }
     }
     if (current) result.push(current);
+    if (!isList && sawAny && result.length === 0 && current === null) {
+      // Single top-level object (not a list): collect key: value pairs
+      const obj = {};
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const m = trimmed.match(/^([^:#]+):\s*(.*)$/);
+        if (m) obj[m[1].trim()] = parseYAMLValue(m[2]);
+      }
+      if (Object.keys(obj).length > 0) return [obj];
+    }
     return result;
   },
   xml: (text) => {
