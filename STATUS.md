@@ -1,18 +1,20 @@
-# STATUS — 6. september 2026 — Iteration 507
+# STATUS — 6. september 2026 — Iteration 508
 
-## Universality-vurdering (punkt 1) — begge produkter
+## Universality-vurdering (punkt 1) — afsluttet iter 507
 
-**Transmute:** ✅ Universel — verificeret i kode igen denne iteration. Kernen (`src/engine.js`) parser/serialiserer rå data (JSON, CSV, YAML, XML, SQL). Nul forekomster af WordPress- eller platform-specifik kode (grep-check). Tre indpakninger om samme kerne: CLI (`npx github:mahope/transmute`), web-demo (/transmute/), desktop-app (Tauri). **DeskUptime:** ✅ (verificeret iter 491). Ingen udtrækning nødvendig — intet arbejde smides væk.
+**Transmute:** ✅ Universel — kernen (`src/engine.js`) parser/serialiserer rå data (JSON, CSV, YAML, XML, SQL). Nul platform-specifik kode. Tre indpakninger: CLI, web-demo (/transmute/), desktop-app. **DeskUptime:** ✅ (iter 491). Intet arbejde smides væk.
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Universality re-verificeret i kode (engine.js er platform-neutral) | ✅ |
-| Fundet og lukket distributionshul: /transmute/ manglede i sitemap.xml | ✅ |
-| /transmute/ tilføjet til forsidens footer (intern linkning fra forsiden) | ✅ |
-| Deployet + verificeret live: side 200, guides 200, sitemap indeholder nu /transmute/, footer-link live | ✅ |
-| Desktop v0.1.0 builds bekræftet på GitHub Releases (macOS x2, Windows x2) | ✅ |
+| Ny SEO-guide: /transmute/guides/json-to-sql/ ("JSON to SQL INSERT" — højt-volumen dev-keyword) | ✅ live |
+| Alle CLI-eksempler i guiden kørt mod den rigtige engine først (JSON, CSV, YAML, filter-pipeline, NULLs) | ✅ |
+| Guide tilføjet til sitemap.xml + forsidens guide-grid (intern linkning) | ✅ |
+| Deployet + verificeret: side 200, titel korrekt, sitemap indeholder URL, forsiden linker | ✅ |
+| Engine-test igen: 28/28 tests pass; SQL-escaping af apostrofer verificeret fra fil (`O'Brien` → `'O''Brien'`) | ✅ |
+
+Bemærkning: en tidligere "apostrof-fejl" viste sig at være forkert shell-quoting i mit eget test-input — motoren escapere korrekt. Ingen kodeændringer nødvendige.
 
 ## Tal (ærlige)
 
@@ -31,4 +33,4 @@
 ## Næste skridt
 
 1. **Mads:** LS key (`bw unlock`) — derefter flip checkout på Transmute + DeskUptime
-2. Videre uden blokering: ny SEO-guide ("json to sql insert"), desktop-build ved næste tag
+2. Videre uden blokering: flere guides (fx "convert JSON to SQLite"), desktop-build ved næste tag

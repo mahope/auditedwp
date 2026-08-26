@@ -9830,3 +9830,41 @@ Iteration 504 færdig. Opsummering:
 **Næste skridt:** web-demoen på /transmute/ skal få SQL som output-valg; derefter flere guides. Mads: LS key i Bitwarden flipper betaling på begge produkter på ~10 min.
 2026-08-26T14:39:03+02:00 iteration 9 afsluttet (exit 0)
 2026-08-26T14:39:25+02:00 === iteration 10/60 ===
+Iteration 505 færdig.
+
+**Universality-vurdering (punkt 1):** Begge produkter består. Transmutes kerne (`src/engine.js`) er ren data-transformation uden platform-antagelser — CLI og desktop-app er indpakninger. DeskUptime verificeret universel i iter 491. Ingen udtrækning nødvendig.
+
+**Bygget denne iteration:** Efterladelsen fra iter 504 — web-demoen på /transmute/ manglede SQL som output-valg. Tilføjet "SQL INSERTs" i output-dropdown med en serializer der matcher CLI-output tegn for tegn (verificeret: quote-escaping, NULL for tomme celler, tal forbliver tal). Deployet og verificeret live via curl; guiden /transmute/guides/csv-to-sql/ svarer 200.
+
+**Tal (ærlige):** 0 salg, 0 downloads, 0 waitlist, 1 scanning.
+
+**Blokeret:** LS API key i Bitwarden → checkout på begge produkter.
+
+Commit: 8238139, pushet. STATUS.md opdateret.
+2026-08-26T14:44:24+02:00 iteration 10 afsluttet (exit 0)
+2026-08-26T14:44:47+02:00 === iteration 11/60 ===
+Iteration 506 færdig.
+
+**Universality-vurdering (punkt 1):** Begge produkter består.
+- **Transmute:** kernen (`engine.js`) er ren data-transformation — JSON/CSV/YAML/XML/SQL ind og ud, nul platform-antagelser. Tre indpakninger deler samme kerne: CLI, web-demo, desktop-app. Ingen WordPress-kode nogen steder.
+- **DeskUptime:** verificeret universel i iter 491 (tager vilkårlig URL). Ingen udtrækning nødvendig.
+
+**Hvad jeg rettede:** Vurderingen afslørede et reelt hul — SQL-output fra iter 505 var kun i web-demoen og repo-CLI'en, ikke i den lokale CLI-kopi og heller ikke i desktop-frontend. Jeg har:
+1. Synkroniseret `engine.js` og `cli.js` (SQL serializer + `--output sql --table`) til den lokale kopi
+2. Tilføjet "SQL INSERTs" som output-format i desktop-frontendens dropdown, med identisk serializer
+3. Verificeret: 28/28 tests grønne, CLI-output matcher web-demo tegn for tegn, pushet til GitHub (89ebd01)
+
+STATUS.md er opdateret. Tal forbliver ærlige: 0 salg, 0 downloads, 0 tilmeldinger, 1 scanning. Blokeret stadig kun på LS-nøglen i Bitwarden (bw status: unauthenticated) — checkout på begge produkter er klar til at flippe, så snart den kommer.
+2026-08-26T14:51:00+02:00 iteration 11 afsluttet (exit 0)
+2026-08-26T14:51:24+02:00 === iteration 12/60 ===
+Iteration 507 færdig.
+
+**Universality-vurdering (punkt 1):** Begge produkter består. Transmutes kerne (`src/engine.js`) er ren data-transformering — grep-check bekræftede nul platform-afhængigheder. CLI, web-demo og desktop-app er tre indpakninger om samme kerne. DeskUptime var allerede verificeret i iter 491. Intet arbejde behøver at blive trukket ud eller bygget om.
+
+**Hvad jeg fandt og rettede:** Ved at gennemgå distributionskæden opdagede jeg et reelt hul — /transmute/ manglede i sitemap.xml (kun de 11 guides var listet), og der var ingen internt link fra forsiden. Begge rettet, deployet og verificeret live: side svarer 200, sitemap indeholder nu /transmute/, footer-linket virker. Desktop-builds (macOS + Windows) er bekræftet på GitHub Releases v0.1.0.
+
+**Tallene er stadig 0** — salg, downloads, tilmeldinger. Den eneste blokering er LS API-nøglen i Bitwarden; når den kommer, flippes checkout på begge produkter på ~10 min.
+
+STATUS.md er opdateret, commit 09d1c54 pushed.
+2026-08-26T14:55:49+02:00 iteration 12 afsluttet (exit 0)
+2026-08-26T14:56:13+02:00 === iteration 13/60 ===
