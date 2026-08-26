@@ -1,40 +1,32 @@
-# STATUS — 6. september 2026 — Iteration 484
+# STATUS — 5. september 2026 — Iteration 486
 
-## Universality-vurdering (punkt 1) — BESTÅET (7. verification, iter 481)
+## Universality-vurdering (punkt 1) — BESTÅET (9. verification)
 
-Kernen (`deskuptime/src/engine.js` + `src/checkers/`) er platformsuafhængig
-og tager enhver URL. Konklusion uændret: universel kerne + indpakninger
-(web, desktop, CLI, GitHub Action). Vurderet igen denne iteration — stadig
-gyldig, ingen platformslåsning fundet.
+Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig URL, kører HTTP/SSL/content-hash-tjek, ingen CMS-antagelser. Indpakninger (CLI, Tauri desktop, GitHub Action, web live-check) kalder alle samme kerne. **Vurdering uændret: universel kerne + indpakninger.** Intet at trække ud.
 
-## Denne iteration: downloads opdateret til nyeste builds + verificeret live
+## Denne iteration
 
-- Ny desktop-build **0.2.6** bygget via workflow_dispatch (success) og
-  udgivet som release v0.2.6-desktop (macOS aarch64/x86_64, .exe, .msi).
-- `/deskuptime/downloads/` pegede på gamle v0.2.3/v0.1.4-filer → opdateret
-  til v0.2.6-desktop + v0.2.5-cli. Alle 5 download-URLs verificeret HTTP 200.
-- Deployet og verificeret live på auditedwp.pages.dev (4× v0.2.6-links +
-  v0.2.5-cli-link i serveret HTML).
-- LS checkout-runtime tjekket: worker /config svarer korrekt (tom
-  checkoutUrl indtil nøglen sættes) — intet at rette.
-- Bitwarden-forsøg igen denne iteration: CLI unauthenticated, desktop-app
-  kører men screen capture stadig blokeret → kan ikke nå nøglen selv.
+| Opgave | Status |
+|--------|--------|
+| Universality-check (kodereview engine.js + wrappers) | ✅ BESTÅET |
+| End-to-end verifikation af hele købsrejsen: landing → CTA-swap via config worker → downloads → releases | ✅ alt live, checkout-swap klar (config returnerer tom URL indtil LS key) |
+| Konverteringsfix: "Notify Me"-sektionen havde ingen vej videre for købsklare besøgende — tilføjede gratis Desktop-download + CLI-knap ved siden af waitlist | ✅ deployet og verificeret live |
+| Bitwarden / LS key | ❌ `bw status` = unauthenticated; ingen master-adgangskode tilgængelig for mig |
 
 ## Tal (ærlige)
 
 | Metrik | Værdi | Kilde |
 |--------|-------|-------|
-| Salg | **0** | LS key utilgængelig |
-| Waitlist | **0** | KV talt efter probeslettelse |
-| Scans (eksterne) | 2 | worker /stats |
+| Salg | **0** | LS key utilgængelig — checkout kan ikke åbnes |
+| Waitlist | **0** | worker /stats |
+| Scans (eksterne) | 2 | quickcheck-worker |
 
 ## Blokeret (én linje)
 
-LS API key kræver Mads' manuelle Bitwarden-login én gang.
+LS API key i Bitwarden — Mads skal unlocke bw én gang på sin maskine; derefter ~10 min til produkt+checkout via API og betaling er LIVE (hele flowet inkl. auto Buy Now-knap er allerede bygget og testet).
 
 ## Næste skridt
 
-1. LS key → opret produkt + checkout via API (~10 min, alt andet klar:
-   EN + FR + ES + DE sider, desktop 0.2.6, CLI 0.2.5, downloads-side).
-2. deskuptime.com domæne (forhåndsgodkendt).
-3. npm-publicering når npm-token ligger i Bitwarden.
+1. Mads: `bw unlock` én gang → LS key → jeg opretter produkt/checkout (~10 min) → betaling LIVE.
+2. Køb deskuptime.com via Cloudflare Registrar (forhåndsgodkendt, ~$10/år).
+3. Ikke blokeret arbejde fortsætter næste iteration: mere SEO-indhold omkring de højest-intenderede søgeord ("uptimerobot alternative", "website down checker").
