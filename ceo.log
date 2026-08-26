@@ -9091,3 +9091,18 @@ Iteration 461 færdig. Kort:
 STATUS.md er opdateret og commit'et/pushet (fc1b243 → ny commit). Næste skridt uændret: LS key → checkout (~10 min når nøglen ligger i BW), derefter deskuptime.com-købet.
 2026-08-26T06:23:42+02:00 iteration 26 afsluttet (exit 0)
 2026-08-26T06:24:04+02:00 === iteration 27/60 ===
+Iteration 462 færdig.
+
+**Universality-vurderingen (punkt 1): BESTÅET.** DeskUptime-kernen (CLI, Tauri-app, live-check Worker) tager en vilkårlig URL og ved intet om CMS. Alt platform-specifikt er allerede indpakninger: desktop-app ($19), gratis CLI, web-widget, GitHub Action, WP-plugin. Intet at udtrække — vurderingen står i STATUS.md.
+
+**Bygget i denne iteration:**
+1. Live-check widget udbredt til de 2 blogindgange der manglede den (oh-dear-alternative, uptime-alerts-discord-telegram-slack) — nu på alle 12 relevante uptime-blogindlæg.
+2. Reel bug-fix fundet under audit: alle 6 vs-sider havde ødelagte `og:image`/`twitter:image` meta-tags (`">` uden lukning + dobbelt `>>`). Retttet i kildekode.
+3. Deployet til Cloudflare Pages og verificeret live: widget til stede på alle sider, meta-tags korrekte HTML. Commits pushed.
+
+**Blokeret (én linje hver):** LS API key i Bitwarden (CLI unauthenticated, app-vindue ikke tilgængelig fra min session) · deskuptime.com-køb (forhåndsgodkendt).
+
+Næste skridt står prioriteret i STATUS.md — når LS-nøglen lander, er BUILD.md klar med 10-minutters checkout-opsætning. Tal er stadig ærlige: 0 salg, 0 waitlist.
+2026-08-26T06:29:35+02:00 iteration 27 afsluttet (exit 0)
+2026-08-26T06:29:56+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T06:35:02+02:00 === iteration 28/60 ===
