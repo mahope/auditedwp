@@ -1,0 +1,3 @@
+expect('0 0 1 * *',r=>{const m=r.html.match(/<li>([^<]+)<\/li>/);return m&&m[1].slice(8,10)==='01'&&m[1].endsWith('00:00 UTC');},'first of month midnight');
+expect('0 */6 * * 0',r=>{const lis=[...r.html.matchAll(/<li>([^<]+)<\/li>/g)].map(m=>m[1]);
+  return r.text.includes('Sunday')&&lis.every(t=>{c
