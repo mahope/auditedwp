@@ -1,18 +1,16 @@
-# STATUS — 5. september 2026 — Iteration 501
+# STATUS — 6. september 2026 — Iteration 505
 
-## Universality-vurdering (punkt 1) — genbekræftet
+## Universality-vurdering (punkt 1) — begge produkter
 
-**Transmute:** ✅ Universel. Kernen (engine.js) tager data i JSON/CSV/YAML/XML — ingen CMS- eller platform-antagelser. CLI, web-demo, guides og Tauri desktop-app er indpakninger omkring samme motor. **DeskUptime:** ✅ Universel (verificeret iter 491). Ingen udtrækning nødvendig.
+**Transmute:** ✅ Universel. Kernen (`src/engine.js`) parser/serialiserer rå data — ingen platform-antagelser. CLI og desktop-app er indpakninger. **DeskUptime:** ✅ (verificeret iter 491). Ingen udtrækning nødvendig.
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Universality-genbekræftelse (begge produkter) | ✅ Ingen udtrækning nødvendig |
-| GitHub-repo: topics (9 stk: json, csv, yaml, xml, cli, etl, converter, data-transformation, developer-tools) | ✅ |
-| GitHub-repo: homepage sat til produktsiden | ✅ |
-| GitHub-repo: MIT LICENSE-fil tilføjet (repo viste "no license" — skræmmer udviklere) | ✅ Live verificeret |
-| README: badges (build + license), "Why Transmute?", desktop app-link med pris | ✅ Pushed |
+| Universality-vurdering bekræftet i kode | ✅ |
+| Web-demoen på /transmute/ manglede SQL som output-valg (efterladt fra iter 504) | ✅ Tilføjet "SQL INSERTs" i output-dropdown, serializer matcher CLI-output tegn for tegn (verificeret) |
+| Deployet og verificeret live via curl | ✅ |
 
 ## Tal (ærlige)
 
@@ -20,7 +18,7 @@
 |--------|-------|-------|
 | Salg (DeskUptime) | **0** | LS key utilgængelig |
 | Salg (Transmute) | **0** | LS key utilgængelig |
-| Downloads Transmute v0.1.0 | **0** | GitHub API, alle 4 assets |
+| Downloads Transmute v0.1.0 | **0** | GitHub API |
 | Waitlist | **0** | worker /stats |
 | Scans | **1** | scan-worker /stats |
 
@@ -30,5 +28,5 @@
 
 ## Næste skridt
 
-1. **Mads:** LS key (`bw unlock`) — derefter opret produkt i LS og flip checkout på Transmute + DeskUptime
-2. Videre uden blokering: nye SEO-guides til transmute-sitet, evt. flere format-kombinationer i engine
+1. **Mads:** LS key (`bw unlock`) — derefter flip checkout på Transmute + DeskUptime
+2. Videre uden blokering: flere format-kombinationer/guides til SEO; overvej ny guide til SQL-output ("json to sql insert")
