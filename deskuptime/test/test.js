@@ -93,3 +93,19 @@ test('cli: activate without key exits non-zero with usage', async () => {
     (err) => err.code !== 0
   );
 });
+
+// ── headers command ──
+test('cli: headers http://example.com follows redirect and outputs JSON', { timeout: 30000 }, async () => {
+  const { stdout } = await run('node', [CLI, 'headers', 'http://example.com', '--json']);
+  const r = JSON.parse(stdout);
+  assert.equal(typeof r.redirected, 'boolean');
+  assert.equal(r.statusCode, 200);
+  assert.ok('strict-transport-security' in r.security);
+});
+
+test('cli: headers without URL exits non-zero', async () => {
+  await assert.rejects(
+    () => run('node', [CLI, 'headers']),
+    (err) => err.code !== 0
+  );
+});

@@ -1,34 +1,32 @@
-# STATUS — 3. september 2026 — Iteration 471
+# STATUS — 4. september 2026 — Iteration 474
 
-## Universality-vurdering (punkt 1) — BESTÅET (3. gennemgang)
+## Universality-vurdering af DeskUptime-kernen (punkt 1) — BESTÅET, og styrket
 
-Verificeret på tværs af alle DeskUptime-flader: kernen (engine.js + checkers/)
-tager en vilkårlig URL — nul CMS-antagelser. Alle sider (response-time-monitor,
-change-monitor, ssl-expiry-monitor, domain-expiry-monitor, vs/*-sammenligninger)
-er skrevet platform-neutralt ("WordPress, Shopify, Webflow, Next.js, a static
-host, or hand-written HTML"). Desktop-app, CLI, GitHub Action og quickcheck-
-worker er indpakninger. Intet at udtrække.
-
-## Gjort i denne iteration — fuld QA af seneste side
-
-| Del | Resultat |
-|-----|----------|
-| /deskuptime/response-time-monitor/ live | 200, korrekt titel |
-| og-response-time.png visuelt inspekteret | Rent layout: titel, subtekst, pris-badge, grafik, checkmarks — intet overlap eller afskåret tekst |
-| OG-billede serveret | 200 image/png |
-| FAQ, JSON-LD (SoftwareApplication + FAQPage), checker-widget | Verificeret i kilde |
-
-## Næste skridt
-
-1. LS API key → opret "DeskUptime Pro" i Lemon Squeezy, aktivér Buy Now-knap
-   (BUILD.md trin 1–5 klar, ~10 min). Siderne fanger trafikken indtil da.
-2. deskuptime.com købes når checkout er aktiv (forhåndsgodkendt)
-3. Næste købsintentionsside: cron monitoring / status page alternativ
-
-## Venter på Mads (én linje hver)
-
-1. LS API key i Bitwarden → checkout kan åbnes.
+- Kernen (`deskuptime/src/engine.js` + checkers) tager en almindelig URL og
+  virker uanset CMS. Ingen WordPress-afhængighed i kernen (verificeret:
+  grep på src/ giver nul hits på wp/wordpress).
+- Indpakninger omkring samme kerne: CLI, Tauri desktop-app, web live-check,
+  GitHub Action. Kernen er altså allerede platformsuafhængig — intet at trække ud.
+- **Ny kerne-funktion i denne iteration:** `headers`-checker
+  (`src/checkers/headers.js`) — redirect-kæde, HTTPS-enforcement,
+  security headers (HSTS/CSP/XFO/XCTO/Referrer-Policy), X-Powered-By-lækage.
+  Ny CLI-kommando: `deskuptime headers <url> [--json]`.
+- Tests: **13/13 pass** (`node --test test/test.js`). Version bumped til 0.1.5.
 
 ## Tal (ærlige)
 
-Salg 0 · Waitlist 0 · Scans 2 (ægte) · Blogposts 53 · Live sider 191
+| Metrik | Værdi | Kilde |
+|--------|-------|-------|
+| Salg | **0** | LS key utilgængelig (bw unauthenticated) |
+| Waitlist | **0** | — |
+| Scans (offentlig) | 2 | /stats endpoint |
+
+## Næste skridt (prioriteret)
+
+1. LS API key → opret produkt + checkout via API (~10 min, BUILD.md trin 1–5 klar).
+2. deskuptime.com domæne (forhåndsgodkendt).
+3. Publicér npm 0.1.5 når npm-token ligger i Bitwarden.
+
+## Venter på Mads (én linje)
+
+LS API key i Bitwarden → checkout åbnes; domænekøb er forhåndsgodkendt.
