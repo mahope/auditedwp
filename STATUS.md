@@ -1,41 +1,34 @@
-# STATUS — 2. september 2026 — Iteration 443
+# STATUS — 3. september 2026 — Iteration 444
 
 ## Færdigt i denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Universality (punkt 1) | ✅ Vurderet i iter 442 og bekræftet igen: kernen tager enhver URL, 0 WordPress-referencer. Intet at trække ud. |
-| Købsrejsen gennemgået | ✅ Alle 8 centrale DeskUptime-sider HTTP 200, sitemap har 173 URL'er, robots.txt OK, downloads-side + GitHub Releases OK |
-| LAUNCH.md skrevet | ✅ Komplet launch-kit: AlternativeTo-, Product Hunt-, Uneed/Fazier-, Reddit- og Show HN-tekster — alt færdigt, venter kun på Mads' ja |
+| Universality-audit (punkt 1) | ✅ Gjort igen, denne gang med kode-gennemgang: `worker-core.js` tager enhver URL; WordPress nævnes kun som én platform blandt mange i CMS-detektering og FAQ. DeskUptime (CLI + desktop + live-check worker) har 0 WordPress-afhængigheder. Intet at trække ud. |
+| Fuldt købsrejsedownload-check | ✅ Alle 4 desktop-builds på v0.2.2 + CLI-tarball v0.1.4 + install.sh verificeret HTTP 200 |
+| Domænekøb forsøgt selv | ❌ Cloudflare-tokenet mangler stadig Registrar-permission (`Insufficient registrar permissions: #domain:list`). Køb kan IKKE automatiseres af mig. |
 
 ## Ærlige tal
 
 | Metrik | Værdi | Kilde |
 |--------|-------|-------|
 | Salg | **0** | — |
-| Waitlist | **0** | KV (egne tests fjernet iter 431) |
-| Scans (reelle) | 2 | offentlig /stats-tæller |
-| GitHub views (14 dage) | **0** | gh api traffic/views |
-| GitHub stjerner / referrers | **0** / ingen | gh api |
-| Google-indeksering af sitet | **~ingen** | site:auditedwp.pages.dev viser kun GitHub-repoet, ikke siderne |
+| Scans (reelle) | **2** | eucomply-scan worker /stats (craigslist.org, wix.com — ikke min trafik) |
+| Waitlist | **0** | KV |
+| GitHub stars / views 14d | **0 / 0** | gh api traffic |
 
-## Nøgleindsigt denne iteration
-Produktet er færdigt nok. Flaskehalsen er distribution: nul trafik fra alle kilder,
-og sitet ser ikke engang indekseret ud endnu (pages.dev er ungt uden backlinks).
-Derfor er iterationens output LAUNCH.md — de kataloger og opslag der kan flytte trafik,
-skrevet færdige så Mads' arbejde er ét "ja". Konkurrenten uptimepage.dev beviser kanalen:
-de står i AlternativeTo-agtige kataloger (Uneed, Fazier m.fl.) med samme niche.
+## Konklusion på punkt 1
+Bestået. Kernen er universal (worker-core.js + deskuptime-kernen). WordPress-pluginet er allerede kun én indpakning. Ingen ombygning nødvendig.
 
 ## Blokering (1 linje)
-LS API key ligger i Bitwarden som er låst.
+LS API key i Bitwarden (låst); Cloudflare-token mangler #domain:list → domæne skal købes manuelt af Mads.
 
 ## Næste skridt
-1. LS key → checkout live (10 min når Bitwarden låses op).
-2. Domæne deskuptime.com (~$10/år, forhåndsgodkendt) — styrker også indeksering.
-3. Mads siger ja til LAUNCH.md → kataloger + Reddit + Show HN.
-4. Overveje egen domæne-hosted blog/indhold frem for pages.dev-subdomæne (indeksering).
+1. Mads køber deskuptime.com (~$10/år) eller udvider token-permissions.
+2. LS key → checkout live.
+3. Mads' ja til LAUNCH.md.
 
 ## Venter på Mads
-- Lås Bitwarden én gang (LS key).
-- Køb deskuptime.com — sig til.
-- Læs LAUNCH.md og sig ja/farvel til kataloger og opslag.
+- Lås Bitwarden (LS key).
+- Køb deskuptime.com via dash (jeg kan ikke — token mangler permission).
+- Ja/farvel til LAUNCH.md-opslag.
