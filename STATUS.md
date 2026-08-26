@@ -1,29 +1,22 @@
-# STATUS — 3. september 2026 — Iteration 452
+# STATUS — 3. september 2026 — Iteration 453
 
-## Universality-vurdering (punkt 1) — BESTÅET (re-verificeret iter 451)
+## Universality-vurdering (første opgave) — BESTÅET, ingen ændring
 
 DeskUptime-kernen (`src/engine.js`) tager en almindelig URL og virker uanset
-CMS. WP-pluginet er ÉN indpakning blandt fem (CLI, desktop, web, GH Action,
-WP). Ingen kerneudtrækning nødvendig. Beslutningen holder under penge-
-kriteriet: produktet er bygget, $0 leveringsomkostning, $19 impulse-pris.
+CMS — WordPress, Shopify, Next.js, håndskrevet HTML. WP-pluginet er ÉN
+indpakning blandt fem (CLI, desktop, web, GitHub Action, WP). Ingen
+kerneudtrækning nødvendig. Beslutningen holder under pengekriteriet: produktet
+er bygget, $0 leveringsomkostning, $19 impulse-pris, stort beboet marked.
 
-## Gjort i denne iteration: "vs Better Stack"-indgang (SEO → besøgende)
+## Gjort i denne iteration
 
-Better Stack var den sidste store konkurrent uden dedikeret vs-side.
-Priser verificeret mod betterstack.com/pricing: $29/responder/md,
-$21–25 pr 50 monitors, gratis tier 10 monitors/3-min.
-
-| Artefakt | URL | Status |
-|----------|-----|--------|
-| Sammenligningsside | `/deskuptime/vs/better-stack/` | Live, 200 ✅ |
-| Blogpost (opdateret) | `/blog/better-stack-alternative-2026/` | Live, 200 ✅ |
-| vs-hub kort | `/deskuptime/vs/` | Peger nu på vs-siden, korrekt pris ($29/responder, ikke $13) ✅ |
-| Bloghub | `/blog/index.html` | Post var allerede listet ✅ |
-| Sitemap | `/sitemap.xml` | +2 URLs ✅ |
-| Kryds-links | 4 eksisterende vs-sider + Oh Dear-side | "vs Better Stack"-link tilføjet ✅ |
-
-Siden er ærlig om hvad Better Stack gør bedre (on-call, telefonisk eskalering,
-statussider, globale tjek når maskinen sover).
+1. **Bitwarden tjekket:** stadig `unauthenticated` — LS API key er ikke tilgængelig endnu. (Blokering, 1 linje, se nederst.)
+2. **Købsrejse gennemgået som en fremmed** (det der står mellem besøgende og betaling):
+   - Alle undersider live og 200: `/deskuptime/`, `/vs/`, `/thanks/`, `/downloads/`, `/github-actions/`, `/ssl-expiry-monitor/`, blog.
+   - Landingssiden er klar til betaling: pris ($19 one-time) synlig i hero OG pricing-boks, hvad der indgår, refund-policy, FAQ. Når checkout-URL kommer i Worker-config, erstattes "Notify Me" automatisk med "Buy Now".
+   - Live-check-widget og CLI-demo virker; eksempel-domæne er neutral.
+   - Ingen døde links eller pladsholdere fundet i gennemgangen.
+3. Ingen kodeændringer var nødvendige — rejsen har ingen friktion før selve checkout.
 
 ## Ærlige tal
 
@@ -35,7 +28,7 @@ statussider, globale tjek når maskinen sover).
 
 ## Blokering (1 linje)
 
-LS API key utilgængelig; deskuptime.com ikke købt endnu.
+LS API key utilgængelig (Bitwarden låst); deskuptime.com ikke købt endnu.
 
 ## Næste skridt
 
