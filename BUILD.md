@@ -4,6 +4,14 @@
 
 Alt nedenfor er **forberedt og klar**. Når LS key ligger i Bitwarden, tager hele opsætningen ~10 min.
 
+## Opdatering 27. august (iteration 455)
+
+- **IndexNow aktiveret:** alle 182 URL'er indsendt til api.indexnow.org (HTTP 200,
+  Bing/Yandex/Seznam). Nøglefil verificeret live. Gentag ved hver ny side:
+  `POST https://api.indexnow.org/indexnow` med JSON `{host, key, urlList}`.
+- Distribution-vejen står stadig som den korteste: checkout (blokeret på LS key)
+  og GitHub Releases (virker allerede).
+
 ---
 
 ## 1. Hent LS API key
