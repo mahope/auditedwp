@@ -1,52 +1,59 @@
-# STATUS — 26. august 2026 — Iteration 450
+# STATUS — 2. september 2026 — Iteration 451
 
-## Universality-vurdering (punkt 1 — denne iterations opgave)
+## Universality-vurdering (punkt 1) — BESTÅET, intet at trække ud
 
-**BESTÅET (re-verificeret i live-miljø).** DeskUptime-kernen tager en almindelig
-URL og virker uanset CMS. WordPress-plugin er én indpakning blandt fem.
+DeskUptime-kernen (`src/engine.js`) tager en almindelig URL og virker uanset
+CMS. Re-verificeret i live denne iteration:
 
-| Lag | Verificering i dag |
-|-----|--------------------|
-| Core engine (`src/engine.js`) | URL-ind, resultat-ud. Ingen CMS-forudsætning |
-| CLI | Kørte `deskuptime check https://example.com` → 200 OK, 64ms, SSL 63d ✅ |
-| Desktop (Tauri) | Builds live på GitHub Releases v0.2.3 (macOS arm/x64 + Windows msi/exe) |
-| Web live-check (worker) | 200, svarer < 1s |
-| WordPress plugin | Wrapper — kalder samme engine. Én indgang af flere |
+- CLI: `deskuptime check https://example.com` → 200 OK, SSL-dage ✅ (tests 11/11)
+- Web live-check worker: 200 på <1s ✅
+- WordPress-plugin er ÉN indpakning blandt fem (CLI, desktop, web, GH Action, WP)
 
-Konklusion: intet at trække ud. Produktet blev bygget universelt fra start.
+Produktet blev bygget universelt fra starten. Konklusion: ingen kerneudtrækning nødvendig.
+
+## Gjort i denne iteration: ny "vs Oh Dear"-indgang (SEO → besøgende)
+
+Oh Dear! var den eneste større konkurrent uden indhold. Bygget og deployet:
+
+| Artefakt | URL | Status |
+|----------|-----|--------|
+| Sammenligningsside | `/deskuptime/vs/oh-dear/` | Live, 200 |
+| Blogpost | `/blog/oh-dear-alternative-2026/` | Live, 200 |
+| vs-hub kort | `/deskuptime/vs/` | Kort tilføjet ✅ |
+| Bloghub | `/blog/` | Post tilføjet ✅ |
+| Sitemap | `/sitemap.xml` | 2 nye URLs ✅ |
+| Kryds-links | Alle 4 eksisterende vs-sider | "vs Oh Dear"-knap ✅ |
+
+Prisfakta verificeret mod ohdear.app/pricing: €15/md for 2 sites (Solo),
+€49/md for 10 (Freelance). Siden er ærlig om hvad Oh Dear gør bedre
+(globale tjek, broken-link crawl, statussider).
 
 ## Ærlige tal
 
 | Metrik | Værdi |
 |--------|-------|
-| Salg | **0** (ingen checkout åbnet endnu) |
-| Scans (reelle) | 2 (worker /stats) |
+| Salg | **0** (checkout ikke åbnet endnu) |
+| Scans (reelle, worker /stats) | 2 |
 | Waitlist | **0** |
 
-## End-to-end købsrejse verificeret i dag
+## Fuld verifikation i dag
 
-Gik hele vejen som en køber ville:
-
-- Landingsside `/deskuptime/` → 200, pris $19 tydelig, FAQ komplet
-- Downloads-side → alle 4 release-links (macOS zip ×2, exe, msi) → HTTP 200
-- CLI-installér via curl → script OK, version 0.1.4 matcher v0.1.4-cli tarball
-- `npm test` → **11/11 pass**
-- Thanks-side (`/deskuptime/thanks/`) → komplet med aktiveringstrin
-- Checkout-mekanisme: config-worker returnerer tom `checkout_urls` korrekt →
-  siden viser "Notify Me". Sættes URL'en, swapper JS automatisk til
-  "Buy Now — $19" uden ny deploy. Verificeret i koden (linje ~372-389).
-
-Alt undtagen selve betalingen er klar og fungerende.
+- Alle interne links på forsiden matcher lokal build (diff = tom)
+- Downloads-side ↔ GitHub Releases v0.2.3: alle 4 assets matcher
+- Checkout-swap-mekanisme intakt: config-worker returnerer tom `checkout_urls`
+  → siden viser "Notify Me"; sættes URL swapper JS automatisk til "Buy Now"
+- Sitemap: alle sider på disk er i sitemap (undtagen /thanks/, med vilje)
+- Blog-krydslinks: ingen døde links (krydstjek begge retninger)
 
 ## Blokering (1 linje)
 
-LS API key ligger i Bitwarden, men vault er `unauthenticated`; domæne deskuptime.com ikke købt endnu.
+LS API key utilgængelig (Bitwarden `unauthenticated`); deskuptime.com ikke købt endnu.
 
 ## Næste skridt
 
 1. LS key tilgængelig → BUILD.md trin 1-5 (~10 min) → Buy Now live.
 2. Domæne deskuptime.com købes + CNAME.
-3. Efter betaling virker: ProductHunt/AlternativeTo-listering klarlægges (tekster skrives færdige, afsendes kun efter Mads' ja).
+3. Flere SEO-indgange efter behov; launch-kit (LAUNCH.md) står klar til Mads' ja.
 
 ## Venter på Mads
 

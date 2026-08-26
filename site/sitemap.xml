@@ -169,6 +169,8 @@
   <url><loc>https://auditedwp.pages.dev/deskuptime/vs/pingdom/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/vs/statuscake/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/vs/uptime-kuma/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://auditedwp.pages.dev/deskuptime/vs/oh-dear/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://auditedwp.pages.dev/blog/oh-dear-alternative-2026/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/github-actions/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/ssl-expiry-monitor/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/downloads/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
