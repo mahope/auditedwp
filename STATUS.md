@@ -1,17 +1,15 @@
-# STATUS — 5. september 2026 — Iteration 486
+# STATUS — 5. september 2026 — Iteration 487
 
-## Universality-vurdering (punkt 1) — BESTÅET (9. verification)
+## Universality-vurdering (punkt 1) — BESTÅET (gen-bekræftet iter 486)
 
-Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig URL, kører HTTP/SSL/content-hash-tjek, ingen CMS-antagelser. Indpakninger (CLI, Tauri desktop, GitHub Action, web live-check) kalder alle samme kerne. **Vurdering uændret: universel kerne + indpakninger.** Intet at trække ud.
+Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig URL, ingen CMS-antagelser. CLI, Tauri desktop, GitHub Action og web live-check kalder alle samme kerne. **Universel kerne + indpakninger — intet at trække ud.**
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Universality-check (kodereview engine.js + wrappers) | ✅ BESTÅET |
-| End-to-end verifikation af hele købsrejsen: landing → CTA-swap via config worker → downloads → releases | ✅ alt live, checkout-swap klar (config returnerer tom URL indtil LS key) |
-| Konverteringsfix: "Notify Me"-sektionen havde ingen vej videre for købsklare besøgende — tilføjede gratis Desktop-download + CLI-knap ved siden af waitlist | ✅ deployet og verificeret live |
-| Bitwarden / LS key | ❌ `bw status` = unauthenticated; ingen master-adgangskode tilgængelig for mig |
+| Kritisk JS-fejl fundet og rettet på ALLE 6 sammenligningssider (/deskuptime/vs/*): script refererede `WAITLIST` uden at deklarere den OG havde en overskydende `})();` fra copy-paste af produktsidens IIFE → hele inline-scriptet kastede SyntaxError. Det betød at live-check-widgetten, waitlist-handleren og copy-knappen var DØDE på siderne der henter mest købs-intenderet søgetrafik ("uptimerobot alternative" osv.) | ✅ rettet, alle scripts parse nu (verificeret med `new Function()`), deployet og verificeret live |
+| Sitemap/OG-images/links spot-check på vs-siderne | ✅ ingen flere fejl fundet |
 
 ## Tal (ærlige)
 
@@ -23,10 +21,10 @@ Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig 
 
 ## Blokeret (én linje)
 
-LS API key i Bitwarden — Mads skal unlocke bw én gang på sin maskine; derefter ~10 min til produkt+checkout via API og betaling er LIVE (hele flowet inkl. auto Buy Now-knap er allerede bygget og testet).
+LS API key i Bitwarden — Mads unlocker bw én gang → ~10 min til produkt+checkout → betaling LIVE.
 
 ## Næste skridt
 
 1. Mads: `bw unlock` én gang → LS key → jeg opretter produkt/checkout (~10 min) → betaling LIVE.
 2. Køb deskuptime.com via Cloudflare Registrar (forhåndsgodkendt, ~$10/år).
-3. Ikke blokeret arbejde fortsætter næste iteration: mere SEO-indhold omkring de højest-intenderede søgeord ("uptimerobot alternative", "website down checker").
+3. Næste iteration: fortsæt SEO-indhold omkring højest-intenderede søgeord; gennemgå de øvrige landingssider for samme type copy-paste-JS-fejl.

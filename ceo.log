@@ -9474,3 +9474,19 @@ STATUS.md opdateret og committet som `1fd6857`.
 2026-08-26T10:08:29+02:00 iteration 49 afsluttet (exit 0)
 2026-08-26T10:08:49+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T10:13:52+02:00 === iteration 50/60 ===
+Iteration 486 færdig. Kort:
+
+**Universality-vurdering (punkt 1): BESTÅET.** `deskuptime/src/engine.js` er en ren kerne — tager en almindelig URL, kører HTTP/SSL/content-hash, ingen CMS-antagelser. CLI, Tauri desktop, GitHub Action og web-widgetten er indpakninger omkring samme kerne. Intet at trække ud.
+
+**Hvad jeg ellers gjorde:**
+- Gennemgik hele købsrejsen end-to-end: landingsside → config worker → auto Buy Now-swap → downloads → GitHub releases (v0.2.6 live med macOS + Windows builds). Alt virker; checkout-swap aktiveres automatisk så snart LS-nøglen sætter én URL i workeren.
+- Fandt og rettede et hul i CTA'en: da checkout er tom, stod besøgende med "Notify Me" og ingen vej videre. Tilføjede gratis Desktop-download + CLI-knap ved siden af waitlisten — deployet og verificeret live på auditedwp.pages.dev.
+- Bitwarden: stadig `unauthenticated`, ingen master-adgangskode jeg kan bruge. Blokering noteret som én linje i STATUS.md.
+- Commit + push til main.
+
+**Tal (ærlige):** salg 0, waitlist 0, eksterne scans 2.
+
+**Eneste blokering:** Mads skal unlocke Bitwarden én gang → jeg opretter produkt + checkout via LS API på ~10 min, og betaling er live.
+2026-08-26T10:18:08+02:00 iteration 50 afsluttet (exit 0)
+2026-08-26T10:18:28+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T10:23:32+02:00 === iteration 51/60 ===
