@@ -8919,3 +8919,34 @@ STATUS.md opdateret og committet (c5e99aa). Næste skridt står der: når LS-nø
 2026-08-26T04:10:58+02:00 iteration 16 afsluttet (exit 0)
 2026-08-26T04:11:19+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T04:16:21+02:00 === iteration 17/60 ===
+Iteration 452 færdig.
+
+**Universality (punkt 1): BESTÅET** — allerede vurderet i iter 451 og re-bekræftet. Kernen (`src/engine.js`) tager en vilkårlig URL og virker uanset CMS; WP-pluginet er én af fem indpakninger (CLI, desktop, web, GH Action, WP). Ingen kerneudtrækning nødvendig.
+
+**Beslutningen holder under pengekriteriet** — produktet er bygget, leveringsomkostning $0, $19 impulse-køb. Det eneste mellem besøgende og betaling er LS-keyen, så denne iteration gik på punkt 5: det der trækker folk til.
+
+**Bygget og deployet live:**
+- `/deskuptime/vs/better-stack/` — ny sammenligningsside med priser verificeret mod betterstack.com/pricing ($29/responder/md, $21–25 pr 50 monitors). Ærlig om hvad Better Stack gør bedre (on-call, statussider, globale tjek).
+- `/blog/better-stack-alternative-2026/` — opdateret blogpost med korrekte tal (stod $13/md før).
+- vs-hub kort rettet til at pege på vs-siden, sitemap +2 URLs, kryds-links fra 5 eksisterende sider.
+
+Alle 4 URLs verificeret live (200 + indholdstjek), committet som `e98b54b` og pushet.
+
+Tallene er uændrede og ærlige: **0 salg, 0 waitlist, 2 reelle scans.** Blokering stadig: LS API key i Bitwarden + domænekøb — begge venter på dig.
+2026-08-26T04:32:17+02:00 iteration 17 afsluttet (exit 0)
+2026-08-26T04:32:39+02:00 === iteration 18/60 ===
+Iter 453 færdig og committed.
+
+**Universality-vurdering (punkt 1): BESTÅET — ingen ændring nødvendig.**
+Kernen (`src/engine.js`) tager en almindelig URL og virker uanset CMS. WP-pluginet er allerede kun én af fem indpakninger (CLI, desktop, web, GitHub Action, WP). Der var intet at trække ud.
+
+**Beslutningen holder under pengekriteriet:** produkt bygget, $0 leveringsomkostning, $19 one-time impulse-pris i et beboet marked. Ingen grund til at revurdere.
+
+**Ellers gjort denne iteration:**
+- Tjekket Bitwarden: stadig `unauthenticated` — LS-nøglen er der ikke endnu.
+- Gennemgået hele købsrejsen som en fremmed: alle undersider live (200), pris tydelig i hero og pricing-boks, FAQ/refund på plads, Buy Now-automatik klar til checkout-URL. Ingen døde links eller friktion fundet — ingen kodeændringer var nødvendige.
+- STATUS.md opdateret med vurderingen, ærlige tal (0 salg, 0 waitlist, 2 reelle scans) og blokering som én linje. Commit `3db2b39` pushed.
+
+**Venter på Mads (uændret):** LS API key via Bitwarden; køb af deskuptime.com (~$10/år, forhåndsgodkendt).
+2026-08-26T04:35:21+02:00 iteration 18 afsluttet (exit 0)
+2026-08-26T04:35:43+02:00 === iteration 19/60 ===

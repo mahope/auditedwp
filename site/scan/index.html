@@ -301,6 +301,21 @@
         if (tool) {
           html += '<p style="margin-top:8px"><a href="' + tool[1] + '" style="color:var(--accent);font-weight:600;font-size:13px">' + escapeHtml(tool[0]) + ' →</a></p>';
         }
+        // Affiliate recommendations (commercial tools — only shown when URLs are set)
+        if (pair && pair[0] && AFFILIATE_RECS[pair[0]]) {
+          var recs = AFFILIATE_RECS[pair[0]];
+          if (recs && recs.some(function(r) { return r[1]; })) {
+            html += '<div class="aff-rec" style="margin-top:12px;padding:10px 14px;background:#f0f6ff;border-radius:6px;font-size:13px">';
+            html += '<strong style="display:block;margin-bottom:4px">🛒 Recommended commercial tools:</strong>';
+            recs.forEach(function(r) {
+              if (r[1]) {
+                html += '<span style="display:inline-block;margin-right:12px"><a href="' + r[1] + '" style="color:var(--accent);font-weight:600" target="_blank" rel="sponsored noopener">' + r[0] + '</a></span>';
+              }
+            });
+            html += '<span style="color:#666;font-size:11px;display:block;margin-top:4px">We earn a commission if you purchase through these links.</span>';
+            html += '</div>';
+          }
+        }
       }
       div.innerHTML = html;
       cardsEl.appendChild(div);
@@ -454,6 +469,16 @@
     headers:      ['Security headers checklist', '/checklist/']
   };
 
+  // Affiliate recommendations — maps failed check types to commercial tools
+  // Only shown when the tool URL is non-empty (update the '' placeholder when ready)
+  var AFFILIATE_RECS = {
+    cookies:          ['Cookiebot (30% recurring)', '', 'Cookie consent management'],
+    cookies2:         ['Complianz (30% first purchase)', '', 'WordPress cookie plugin'],
+    cookies3:         ['iubenda (up to 40%)', '', 'All-in-one privacy compliance'],
+    legal:            ['Termly', '', 'Policy generator + consent'],
+    consent_mode_v2:  ['Cookiebot Consent Mode', '', 'Google Consent Mode v2']
+  };
+
   function host(u) { try { return new URL(u).hostname; } catch { return u; } }
   var icon = function(k) {
     return ({ssl:'🔒',cookies:'🍪',forms:'📋',legal:'📄',headers:'🛡️',resilience:'🏦',consent_mode_v2:'🔔'})[k] || '•';
@@ -599,5 +624,8 @@
   }
 })();
 </script>
+<div style="text-align:center;padding:16px;font-size:12px;color:#888;border-top:1px solid #e0e0e0;margin-top:24px;background:#fafafa">
+Some links on this site are affiliate links. We may earn a commission at no extra cost to you.
+</div>
 </body>
 </html>
