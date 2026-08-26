@@ -32,6 +32,12 @@ npx deskuptime check https://yoursite.com --json | jq '.[0].sslDaysRemaining'
 # Monitor URLs in the background — alerts on UP/DOWN/SSL/content changes (free, up to 3 URLs)
 npx deskuptime watch https://yoursite.com --interval 300
 
+# Run a single monitoring pass (great for cron) and exit
+npx deskuptime watch https://yoursite.com --once
+
+# Show current status of monitored URLs without checking
+npx deskuptime watch --status
+
 # Show help
 npx deskuptime --help
 ```
@@ -119,6 +125,28 @@ Inputs:
 Outputs: `json` (full results array) and `down-count`.
 
 Exit codes: `0` all up · `2` one or more down · `3` SSL expiring/invalid.
+
+## Install
+
+**Homebrew (macOS/Linux):**
+
+```bash
+brew install mahope/tap/deskuptime
+```
+
+**curl (macOS/Linux, no package manager needed):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mahope/deskuptime/main/tools/install.sh | bash
+```
+
+Installs the `deskuptime` CLI to `~/.local/bin`.
+
+**npm (when published):**
+
+```bash
+npx deskuptime check <url>
+```
 
 ## Development
 
