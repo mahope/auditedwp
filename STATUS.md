@@ -1,40 +1,47 @@
-# STATUS — 5. september 2026 — Iteration 491
+# STATUS — 5. september 2026 — Iteration 492
 
-## Universality-vurdering (punkt 1) — BESTÅET (5. verification)
+## Universality-vurdering
 
-Den nye security-headers-checker bruger samme platform-uafhængige kerne som de
-øvrige værktøjer: `worker-headers` tager en rå URL og laver nul CMS-antagelser.
-Kernen (`deskuptime/src/engine.js`, quickcheck, redirect-trace, headers) er
-platformsneutral; alle sider er indpakninger. **Intet at ombygge.**
+**DeskUptime:** ✅ Allerede opfyldt. Engine tager enhver URL, laver nul CMS-antagelser.
+Kernen (engine.js, quickcheck, redirect-trace, headers) er platformsneutral.
 
-## Denne iteration
+**Transmute (nyt):** ✅ Transformerer data (JSON/CSV/YAML/XML) — format-neutral, universel kerne.
 
-|| Opgave | Status |
+## Denne iteration (revurdering + nyt produkt)
+
+| Opgave | Status |
 |--------|--------|
-| Ny worker: `worker-headers` — henter en URL og rapporterer 8 sikkerhedsheder + score/grade A–F | ✅ deployet + live-testet (github.com → grade B, neverssl.com → grade F, manglende param → 400) |
-| Ny gratis side: /deskuptime/security-headers-checker/ — live check med grade, per-header-tabel (present/missing + værdi), "hvad beskytter det"-sektion, FAQ | ✅ bygget, deployet, verificeret live (HTTP 200, worker-kald i side) |
-| Sitemap (+1 side, 192 total) + cross-links fra hovedside og bulk-checker | ✅ verificeret live |
-| Inline-JS: node --check OK | ✅ |
-
-Hvorfor security headers: stærk søgeintent ("security headers checker",
-"securityheaders"), naturlig Pro-opgradering ($19 overvågning), genbruger
-engine-mønsteret, ny søgetrafik-indgang ved siden af SSL/redirect/bulk.
+| A — Revurdér under pengekriteriet | ✅ Færdig. DeskUptime beholdes (0 kr at drive) |
+| Research: desktop utility market 2026 | ✅ 10+ kilder. Pay-once trend bekræftet |
+| DECISION.md — Transmute valgt | ✅ Skrevet |
+| Transmute engine (JSON/CSV/YAML/XML pipeline) | ✅ Bygget, 24/24 tests bestået |
+| Transmute CLI (npx transmute) | ✅ Bygget, pipe + stdin + interactive preview |
+| Transmute landingsside (live demo i browser) | ✅ Deployed, HTTP 200 verificeret |
+| BUILD.md — build plan | ✅ Opdateret |
+| RESEARCH.md — kilder | ✅ Opdateret |
 
 ## Tal (ærlige)
 
-|| Metrik | Værdi | Kilde |
+| Metrik | Værdi | Kilde |
 |--------|-------|-------|
-|| Salg | **0** | LS key utilgængelig |
-|| Waitlist | **0** | worker /stats |
-|| Scans (eksterne) | 2 | quickcheck-worker |
+| Salg (DeskUptime) | **0** | LS key utilgængelig |
+| Salg (Transmute) | **0** | LS key utilgængelig |
+| Waitlist | **0** | worker /stats |
+| Scans (eksterne) | 2 | quickcheck-worker |
 
 ## Blokeret (én linje)
 
-LS API key i Bitwarden — Mads unlocker bw én gang → ~10 min til produkt+checkout → betaling LIVE.
+LS API key i Bitwarden — Mads låser bw op én gang → 10 min til checkout på BEGGE produkter.
 
-## Næste skridt
+## Status på produkter
 
-1. Mads: `bw unlock` én gang → LS key → checkout flip (~10 min) → betaling LIVE.
-2. Køb deskuptime.com via Cloudflare Registrar (forhåndsgodkendt, ~$10/år).
-3. Næste iteration: endnu en gratisværktøjsside (fx mixed-content eller
-   robots.txt/sitemap-validator) efter samme verificerede skabelon.
+| Produkt | Status | Næste skridt når LS key kommer |
+|---------|--------|-------------------------------|
+| **DeskUptime** | Bygget, live. Engine + CLI + desktop + 7 gratisværktøjer + landingsside + blog. | Opret LS checkout-link. Flip betaling. |
+| **Transmute** | Engine + CLI bygget. Landingsside live. Desktop app (Tauri) mangler. | Byg Tauri desktop app. Opret LS checkout. Udgiv npm package. |
+
+## Næste skridt (næste iteration)
+
+1. Tauri desktop app til Transmute (GUI pipeline builder)
+2. Sitemap + cross-links til transmute-siden
+3. Mads: `bw unlock` én gang → LS key → checkout på begge produkter

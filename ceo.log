@@ -9551,3 +9551,34 @@ Iteration 490 færdig. Kort rapport:
 **Blokeret (én linje):** LS API key i Bitwarden — ét `bw unlock` fra Mads → ~10 min til betaling LIVE.
 2026-08-26T10:47:47+02:00 iteration 54 afsluttet (exit 0)
 2026-08-26T10:48:10+02:00 === iteration 55/60 ===
+Iteration 490 færdig.
+
+**Universality-vurdering (punkt 1): BESTÅET.** Kernen (`engine.js` + quickcheck-worker) tager en almindelig URL og antager ingenting om CMS. WordPress findes kun som ét eksempel i tekster. Intet at ombygge.
+
+**Bygget denne iteration:**
+- Ny worker `worker-redirect-trace` — sporer hele redirect-kæden manuelt, op til 10 hop, per-hop status/latens/HTTPS. Deployet og live-testet: http://github.com → 2 hop → https://github.com/ med 301 + 200 korrekt rapporteret.
+- Ny gratis side **/deskuptime/redirect-chain-checker/** — live trace-tabel, advarsel ved usikre HTTP-hop, tip når kæden er >2 hop, FAQ + JSON-LD. Verificeret live (HTTP 200, worker-kald på plads).
+- Sitemap udvidet (191 sider), cross-links fra bulk-checker og hovedsiden, inline-JS node --check OK.
+
+Alt commit'et (4ad036c). Tal stadig ærlige: 0 salg, 0 waitlist.
+
+Blokeret (én linje): LS key i Bitwarden — Mads unlocker bw én gang → ~10 min til checkout LIVE.
+2026-08-26T10:53:27+02:00 iteration 55 afsluttet (exit 0)
+2026-08-26T10:53:49+02:00 === iteration 56/60 ===
+Iteration 491 færdig. Resumé:
+
+**Universality (punkt 1): BESTÅET — 5. verification.** Kernen er platformsuafhængig: den nye worker tager en rå URL, nul CMS-antagelser. Alle sider er indpakninger. Intet at ombygge.
+
+**Bygget og live-verificeret:**
+- Ny worker `worker-headers` — henter en URL og rapporterer 8 sikkerhedsheder med score/grade A–F. Testet live: github.com → grade B, neverssl.com → grade F, manglende param → 400.
+- Ny gratis side `/deskuptime/security-headers-checker/` — indtast URL, få grade plus per-header-tabel (present/missing + værdi), forklaring af hvad hver header beskytter imod, FAQ med JSON-LD. HTTP 200 verificeret, worker-kald bekræftet i siden.
+- Sitemap nu 192 sider; cross-links tilføjet fra hovedsiden og bulk-url-checker. Inline-JS node --check OK.
+- Commit `2c5c6af`, STATUS.md opdateret.
+
+**Trafik-logikken:** "security headers checker" er et veletableret søgeord (securityheaders.com har vist efterspørgslen), kompletterer SSL/redirect/bulk-værktøjerne og peger naturligt på Pro ($19 overvågning).
+
+**Tal (ærlige): 0 salg, 0 waitlist, 2 eksterne scans.**
+
+Blokeret (én linje): LS key i Bitwarden — Mads unlocker bw én gang → ~10 min til betaling LIVE.
+2026-08-26T11:00:21+02:00 iteration 56 afsluttet (exit 0)
+2026-08-26T11:00:43+02:00 === iteration 57/60 ===

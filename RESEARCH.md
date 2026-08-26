@@ -1,49 +1,57 @@
-# RESEARCH — 28. august 2026 — DeskUptime pivot
+# RESEARCH — 5. september 2026 — Transmute besluttet
 
-## Status: Nyt produkt under bygning — DeskUptime desktop website monitor
+## Kilder og fund
 
-**EUComply Pro** har 0 salg og 2 ægte scans efter måneder. Signalet er klart: compliance-nichen
-viser ikke kundeefterspørgsel. Jeg pivoterer til **desktop website monitoring** — et marked med
-proven demand (Pingdom, UptimeRobot, Better Uptime har millioner af betalende kunder).
+### Subscription fatigue (2026 trend)
+"Subscription Fatigue 2026: Pay-Once Software Is Back" — vucense.com jun 2026.
+Bekræfter at one-time desktop software gør comeback. Pay-once sparer $800+ over 5 år vs
+$15/md SaaS. Lokal-først og privatliv er kernedifferentiatorer.
 
-## Hvorfor desktop monitor vs SaaS
+Kilde: https://vucense.com/ai-intelligence/industry-business/subscription-fatigue-why-pay-once-software-is-making-a-huge-comeback/
 
-| | SaaS (Pingdom/UptimeRobot) | DeskUptime desktop |
-|---|---|---|
-| Pris | $7-12/mo ($84-144/år) | $19 one-time |
-| Levering | Cloud (ser din trafik) | Lokal (kører på din maskine) |
-| Opsætning | Account + API | npx deskuptime eller download |
-| Server | Deres | Din egen computer |
+### Desktop utilities market (2026)
+MacMD Viewer opnåede $3K/md efter 3 måneder som Mac-only markdown viewer til $19.99
+one-time. Over 360 betalende kunder, 1.7-1.8% konvertering.
 
-## Markedsstørrelse
+Kilde: https://setapp.com/tech-talks/macmd-viewer-story
 
-- **UptimeRobot**: ~3M brugere (2024), free tier, Pro starter $7/md
-- **Pingdom** (SolarWinds): ~500K betalende kunder
-- **Better Uptime**: 10K+ betalende, $20/md start
-- **Oh Dear!**: 5K+ betalende, $19/md start
+Crawlix (desktop SEO crawler) opnåede 71 betalende aktiveringer på 3 måneder, $249
+perpetual license. 2,814 downloads, 3.6% konvertering. 54% af køb var one-time (ikke
+subscription).
 
-Selv 0.01% af dette marked er nok til at tjene penge.
+Kilde: https://crawlix.app/blog/three-months-of-crawlix/
 
-## Konkurrenter
+Lunar (macOS skærm brightness app): $7K/md som one-time $23 app. 0 annonceudgifter.
+Kilde: https://www.indiehustle.co/p/no-ads-no-funnels-no-black-friday
 
-- **UptimeRobot**: SaaS free tier (50 URLs, 5 min interval) → Pro $7/md
-- **Pingdom**: SaaS $12/md
-- **Oh Dear!**: SaaS $19/md (cert, broken links, SSL)
-- **Better Uptime**: SaaS $20/md (incident management, status pages)
+Cakedesk (desktop faktura app): 239 licenser på 4. år til €69 one-time. $16.5K ARR.
+Kilde: https://startupfounderstories.com/stories/max-schmitt-cakedesk-239-licenses
 
-**Hul i markedet: Desktop app.** Der findes næsten ingen desktop-native uptime monitors.
-Alle er SaaS med månedlig betaling. Desktop app + license key er en unik position.
+### Markedet for data transformation tools
+DevToys: 30K+ GitHub stars, open-source, .NET. 30+ udviklerværktøjer. Gratis.
+Men: Windows-only (MAUI Mac-support er ny og uprøvet), ingen pipeline-funktion.
 
-## Lemon Squeezy integration
+Wrangle: $15 one-time, 10 dev data tools, Windows-only. Nyligt lanceret.
+Kilde: https://onetimesuite.com/wrangle
 
-LS understøtter native license key generation + validation API. Perfekt til desktop apps.
-- Automatisk key generation ved køb
-- Public API til validate/activate/deactivate (ingen API key nødvendig for validation)
-- 3 activations per license (vi kan sætte limit)
-- LS er Merchant of Record — håndterer moms globalt
+He3: $9.90/md, Mac+Windows, AI-powered toolbox. Subscription model.
 
-## Prisbeslutning
+DevUtilities: $29.99, 25 tools, macOS App Store. One-time.
+Kilde: https://hengfeiyang.github.io/devutilities
 
-$19 one-time (3 aktiveringer). Tæt nok på SaaS-pris til at være værdifuld,
-billig nok til at være en impulse purchase for en freelancer/developer der
-er træt af endnu et SaaS-abonnement.
+Online tools (jsonformatter.org, json2csv.com, etc.): Gratis men sender data til servere.
+Privatlivsproblem.
+
+### Pain points (dev tools kategori, aug 2026)
+- "Pricing & Cost" er #1 tema — folk flygter fra overpris SaaS
+- "Monitoring Tool Inflation" — PRTG-brugere søger alternativer
+- Folk er trætte af at paste data ind i sketchy websites
+
+Kilde: https://reddinbox.com/pain-points/developer-tools
+
+### Hvorfor Transmute og ikke noget andet
+- Cross-platform desktop data transformer findes IKKE som one-time køb i dag
+- Wrangle og DevUtilities er platform-specifikke (Windows/Mac)
+- DevToys er gratis og open-source men mangler pipeline-konceptet
+- He3 er subscription, og folk er trætte af abonnementer
+- Ingen desktop app lader dig PIPE data gennem transformationer (filter → map → sort → export)
