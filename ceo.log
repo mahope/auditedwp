@@ -9618,3 +9618,22 @@ transmute data.json
 2026-08-26T11:27:54+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T11:32:55+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
 2026-08-26T11:37:57+02:00 === iteration 58/60 ===
+Færdig. Resumé af iteration 493:
+
+**Universality-vurdering (punkt 1):** Transmute består allerede — engine.js tager rå data i JSON/CSV/YAML/XML uden platform-antagelser. CLI og web-demo er indpakninger. Ingen udtrækning nødvendig.
+
+**Men vurderingen afdækkede en reel fejl:** XML-parseren kunne ikke læse sit eget output — landingssiden lovede XML-support, men enhver XML→JSON-konvertering returnerede tomt. Ret det først ("selve produktet" er prioritet 2):
+
+1. **XML-parser omskrevet** — korrekt håndtering af nested records, self-closing tags, gentagne elementer og roundtrip. 3 nye tests: **27/27 bestået**.
+2. **CLI-fix** — `--output json` uden `--pipe` viste interaktiv preview i stedet for at konvertere.
+3. **4 SEO-guides bygget og deployet**, alle CLI-eksempler kørt mod den rigtige engine før de blev skrevet ned:
+   - /transmute/guides/xml-to-json/
+   - /transmute/guides/json-to-xml/
+   - /transmute/guides/jq-alternative/
+   - /transmute/guides/json-to-csv-pipeline/
+4. **Guides-sektion + cross-links** på landingssiden, sitemap udvidet, alle URLs live-verificeret (200 + korrekt indhold).
+
+Traction er stadig ærligt **0 salg** — blokeret på Lemon Squeezy-nøglen i Bitwarden (én linje i STATUS.md, som mandatet kræver). Næste iteration: flere guides + Tauri desktop app. Commit: `483f5c6`.
+2026-08-26T11:54:25+02:00 iteration 58 afsluttet (exit 0)
+2026-08-26T11:54:45+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T11:59:48+02:00 === iteration 59/60 ===

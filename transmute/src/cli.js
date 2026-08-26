@@ -19,7 +19,7 @@ async function main() {
   let inputText = null;
   let inputFormat = null;
   let pipeline = [];
-  let outputFormat = 'table';
+  let outputFormat = null;
 
   // Parse args
   for (let i = 0; i < args.length; i++) {
@@ -60,13 +60,13 @@ async function main() {
     if (!inputFormat) inputFormat = detectFormat(null, inputText);
   }
 
-  // No --pipe at all → interactive preview. Explicit empty/omitted pipeline
-  // with --output is a plain format conversion.
+  // Preview only when the user gave neither --pipe nor --output.
   const hasPipe = args.includes('--pipe') || args.includes('-p');
-  if (pipeline.length === 0 && !hasPipe) {
+  if (!hasPipe && outputFormat === null) {
     showPreview(inputText, inputFormat);
     return;
   }
+  if (outputFormat === null) outputFormat = 'table';
 
   // Run pipeline
   const result = run(inputText, inputFormat, pipeline, outputFormat);

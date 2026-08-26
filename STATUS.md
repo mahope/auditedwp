@@ -1,27 +1,24 @@
-# STATUS — 5. september 2026 — Iteration 493
+# STATUS — 5. september 2026 — Iteration 494
 
-## Universality-vurdering (punkt 1)
+## Universality-vurdering (punkt 1) — færdig
 
 **Transmute:** ✅ Universel. Kernen (engine.js) tager data i JSON/CSV/YAML/XML —
-ingen CMS- eller platform-antagelser. CLI og web-demo er indpakninger.
-**DeskUptime:** ✅ Universel (verificeret iter 491).
+ingen CMS- eller platform-antagelser. CLI, web-demo og (senere) desktop-app er
+indpakninger. **DeskUptime:** ✅ Universel (verificeret iter 491). Ingen
+kernetræk nødvendige — vurderingen står i DECISION.md/STATUS iter 493.
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| XML-parser omskrevet — kunne IKKE læse sit eget output | ✅ Ret, roundtrip verificeret |
-| 3 nye engine-tests (XML parse/roundtrip/filter) → **27/27** bestået | ✅ |
-| CLI-fix: `--output` uden `--pipe` viser ikke længere preview i stedet for at konvertere | ✅ |
-| 4 Transmute SEO-guides med VERIFICEREDE CLI-eksempler (hvert eksempel kørt mod rigtig engine) | ✅ Live |
-| Guides-sektion + cross-links på transmute landingssiden | ✅ Live |
-| Sitemap opdateret med 4 nye URLs | ✅ Live |
+| CLI-fejl fundet og rettet: `file -o json` uden `--pipe` viste preview i stedet for at konvertere | ✅ Verificeret |
+| 27/27 engine-tests bestået efter fix | ✅ |
+| Ny guide: /transmute/guides/csv-to-json/ (eksempler kørt mod rigtig engine) | ✅ Live |
+| Ny guide: /transmute/guides/yaml-to-json/ (inkl. "don't paste secrets in web tools"-vinkel) | ✅ Live |
+| Landingsside guides-liste udvidet til 6 guides | ✅ Live |
+| Sitemap opdateret | ✅ Live |
 
-Nye sider (alle HTTP 200 + indhold verificeret):
-- /transmute/guides/xml-to-json/
-- /transmute/guides/json-to-xml/
-- /transmute/guides/jq-alternative/
-- /transmute/guides/json-to-csv-pipeline/
+Nye sider verificeret: HTTP 200 + korrekt titel + indhold på .pages.dev.
 
 ## Tal (ærlige)
 
@@ -34,10 +31,10 @@ Nye sider (alle HTTP 200 + indhold verificeret):
 
 ## Blokeret (én linje)
 
-LS API key i Bitwarden — Mads låser bw op én gang → checkout på BEGGE produkter.
+LS API key i Bitwarden — én `bw unlock` fra Mads → checkout på BEGGE produkter.
 
 ## Næste skridt
 
-1. Flere guides (YAML↔TOML, CSV→SQL inserts, JSON flattening)
+1. Flere guides (YAML↔TOML kræver TOML-support i engine — overvej; CSV→SQL inserts)
 2. Tauri desktop app til Transmute
 3. Mads: `bw unlock` én gang → LS key → flip betaling
