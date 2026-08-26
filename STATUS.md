@@ -1,19 +1,18 @@
-# STATUS — 5. september 2026 — Iteration 499
+# STATUS — 5. september 2026 — Iteration 501
 
 ## Universality-vurdering (punkt 1) — genbekræftet
 
 **Transmute:** ✅ Universel. Kernen (engine.js) tager data i JSON/CSV/YAML/XML — ingen CMS- eller platform-antagelser. CLI, web-demo, guides og Tauri desktop-app er indpakninger omkring samme motor. **DeskUptime:** ✅ Universel (verificeret iter 491). Ingen udtrækning nødvendig.
 
-## Denne iteration — Transmute v0.1.0 er bygget og UDGIVET
+## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Push `v0.1.0` tag → GitHub Actions build | ✅ Alle 3 platforme byggede success |
-| Release v0.1.0 med artefakter | ✅ Live: 2× macOS .zip (aarch64 + x86_64), Windows .exe + .msi |
-| Verificér downloads (HTTP 200 på alle 4) | ✅ https://github.com/mahope/transmute/releases/tag/v0.1.0 |
-| Site /transmute/ download-links → fast release-tag | ✅ Deployet og verificeret live |
-
-**Transmute desktop kan nu downloades og køres — uden LS key.** Free tier (3 transformationer) virker; licensgate aktiveres når LS key kommer.
+| Universality-genbekræftelse (begge produkter) | ✅ Ingen udtrækning nødvendig |
+| GitHub-repo: topics (9 stk: json, csv, yaml, xml, cli, etl, converter, data-transformation, developer-tools) | ✅ |
+| GitHub-repo: homepage sat til produktsiden | ✅ |
+| GitHub-repo: MIT LICENSE-fil tilføjet (repo viste "no license" — skræmmer udviklere) | ✅ Live verificeret |
+| README: badges (build + license), "Why Transmute?", desktop app-link med pris | ✅ Pushed |
 
 ## Tal (ærlige)
 
@@ -21,17 +20,15 @@
 |--------|-------|-------|
 | Salg (DeskUptime) | **0** | LS key utilgængelig |
 | Salg (Transmute) | **0** | LS key utilgængelig |
-| Downloads af Transmute v0.1.0 | **ukendt / ny** | GitHub release live i dag |
+| Downloads Transmute v0.1.0 | **0** | GitHub API, alle 4 assets |
 | Waitlist | **0** | worker /stats |
-| Scans (eksterne) | 2 | quickcheck-worker |
+| Scans | **1** | scan-worker /stats |
 
-## Blokeret (én linje hver)
+## Blokeret (én linje)
 
 - LS API key i Bitwarden → checkout på begge produkter.
-- Cloudflare-tokenet mangler reelt registrar-rettighed (`Insufficient registrar permissions: #domain:list`) trods tidligere verificering → deskuptime.com og transmute-domæne kan ikke købes af mig.
 
 ## Næste skridt
 
-1. **Mads:** LS key (`bw unlock`) + Cloudflare-token med Registrar-adgang
-2. Efter LS key: opret produkt i LS, flip checkout, push v0.1.1 med licensflow aktiveret
-3. Marketing: guides kører; flere indgange efter betaling virker
+1. **Mads:** LS key (`bw unlock`) — derefter opret produkt i LS og flip checkout på Transmute + DeskUptime
+2. Videre uden blokering: nye SEO-guides til transmute-sitet, evt. flere format-kombinationer i engine

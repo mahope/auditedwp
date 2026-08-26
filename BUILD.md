@@ -2,86 +2,38 @@
 
 ## Korteste vej til første betalende kunde
 
-Først: **LS key skal komme** før betaling kan aktiveres. Indtil da bygger jeg produktet
-færdigt, så det kun mangler licensflippen.
+**LS key skal komme** før betaling kan aktiveres. Indtil da: alt andet er bygget.
 
-## Iteration 1: Kernemotor + CLI (uge 1)
+## Status: ✅ Engine, CLI, site, Tauri desktop app — ALT bygget
 
-### 1.1 Datamotor
-En Node.js-pakke (`transmute-engine`) der understøtter:
+### ✅ Kernen (engine.js)
+- Input: JSON, CSV, YAML, XML, plain text (auto-detect)
+- Output: JSON, CSV, YAML, XML, table
+- 12 transformationer: filter, map, pick, omit, sort, unique, group, count, head, tail, rename, flatten
+- 28/28 tests passerer
+- Public på GitHub: github.com/mahope/transmute
 
-**Input formater:**
-- JSON (pretty, minified, lines-array)
-- CSV (med header-detection, delimiter detection)
-- YAML
-- XML
-- Plain text
+### ✅ CLI
+- `npx github:mahope/transmute` — verificeret fra ren mappe
+- Interactive preview, piped input, fil-til-fil, fil-til-stdout
 
-**Output formater:**
-- JSON
-- CSV
-- YAML
-- XML
-- Plain text
-- Table (CLI pretty-print)
+### ✅ Site (auditedwp.pages.dev/transmute/)
+- Produktside med demo, features, guides, CLI eksempler, prissætning
+- 8 guides (JSON→CSV, XML→JSON, YAML→JSON, etc.) — alle eksempler verificeret mod engine
+- Web-demo kører samme engine i browseren
 
-**Transformationer (pipe-chain):**
-- `filter` — behold/afvis rækker (JS expression, fx `.age > 18`)
-- `map` — transformér hver række (JS expression, fx `{...item, fullName: item.first + ' ' + item.last}`)
-- `pick` — vælg kun specificerede felter
-- `omit` — fjern specificerede felter
-- `sort` — sorter efter felt (asc/desc)
-- `unique` — fjern dubletter efter felt
-- `group` — gruppér efter felt
-- `count` — tæl rækker/grupper
-- `head` / `tail` — første/sidste N rækker
+### ✅ Tauri Desktop app (NY — denne iteration)
+- **Frontend:** Egen copy af engine.js i browseren (samme transformationslogik)
+- **Backend:** Rust shell med LS license key gating, free-tier (3 runs/launch)
+- **Platform:** macOS, Windows, Linux (kompileret via GitHub Actions)
+- **Build workflow:** `.github/workflows/build.yml` — trigger på `v*` tags eller `workflow_dispatch`
 
-**Pipeline definition:** JSON array af transformationer:
-```json
-[
-  { "op": "filter", "expr": "item.status === 'active'" },
-  { "op": "pick", "fields": ["name", "email", "status"] },
-  { "op": "sort", "by": "name", "dir": "asc" },
-  { "op": "head", "n": 10 }
-]
-```
-
-### 1.2 CLI
-`npx transmute` eller global npm-package:
-```bash
-# Fil til fil
-transmute input.json --pipe '[{"op":"filter","expr":"item.age > 18"}]' --output filtered.csv
-
-# Pipe
-cat data.json | transmute --pipe '[{"op":"head","n":5}]' --format yaml
-
-# Interactive preview
-transmute input.csv
-# → Viser de første 20 rækker som tabel + prompt til transformation
-```
-
-### Teknologi
-- Node.js (engine, CLI)
-- npm-package (gratis at publicere)
-- Ingen eksterne afhængigheder (kun Node.js stdlib + JSON/CSV/YAML parsers)
-
-## Iteration 2: Desktop app (Tauri)
-
-- GUI med pipeline-bygger (drag-and-drop transformations)
-- Live preview (data ændrer sig mens du bygger)
-- Historik (tidligere transformationer)
-- Import/export af pipelines
-- Licenskey-validering (klar til LS integration)
-
-## Iteration 3: Landingsside + betaling
-
-- Produktside på auditedwp.pages.dev/transmute/
-- LS checkout-link (når key er tilgængelig)
-- GitHub Releases til downloads
-- npm-package til CLI
+### ⏳ Mangler før betaling
+1. **LS API key** (Bitwarden, ventes 24/8) — opret produkt i LS, checkout-link
+2. **Push release tag** (v0.1.0) til GitHub → trigger build → .dmg/.msi/.exe klar
+3. **Køb domæne** (transmute.app eller transmute.dev) — forhåndsgodkendt
 
 ## Prissætning
-
-- **CLI**: Gratis (npm package, open-source core)
-- **Desktop app**: $19 one-time (3 aktiveringer)
-- **Pro features**: Desktop-only (pipeline-bygger, batch, historik)
+- **CLI**: Gratis (open-source, npm/github)
+- **Desktop app**: $19 one-time (3 aktiveringer, LS license key)
+- **Free tier**: 3 transformationer per launch (uden licens)
