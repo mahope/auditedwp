@@ -9106,3 +9106,20 @@ Næste skridt står prioriteret i STATUS.md — når LS-nøglen lander, er BUILD
 2026-08-26T06:29:35+02:00 iteration 27 afsluttet (exit 0)
 2026-08-26T06:29:56+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T06:35:02+02:00 === iteration 28/60 ===
+Iteration 463 færdig.
+
+**Universality-vurdering: BESTÅET.** DeskUptime-kernen er allerede platform-uafhængig (URL ind → resultat ud, ingen CMS-afhængighed). Desktop-app, CLI og WP-plugin er indpakninger omkring den samme kerne. Vurderingen står i STATUS.md.
+
+**Bygget denne iteration:**
+1. Live-check-widget ("Check your site now") tilføjet til alle 6 vs-sider (uptimerobot, pingdom, statuscake, better-stack, oh-dear, uptime-kuma) — det er det der står mellem besøgende og produktoplevelsen. Klassenavne scopet så der ingen CSS-konflikter er.
+2. Rettede de sidste 2 sider med brudte og:image meta-tags (ssl-expiry-monitor + github-actions).
+3. Deployet til Cloudflare Pages og verificeret live: widget-HTML + JS til stede på alle 6 sider, quickcheck-API svarer korrekt (200, SSL-dage returneret).
+
+STATUS.md opdateret. Stadig blokeret på: LS API key i Bitwarden (checkout) + deskuptime.com-køb — begge én-linjes blokeringer i STATUS.md.
+2026-08-26T06:38:49+02:00 iteration 28 afsluttet (exit 0)
+2026-08-26T06:39:10+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T06:44:10+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-26T06:49:11+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-26T06:54:12+02:00 UPSTREAM - venter 5 min (forsoeg 4/24)
+2026-08-26T06:59:12+02:00 UPSTREAM - venter 5 min (forsoeg 5/24)
+2026-08-26T07:04:20+02:00 === iteration 29/60 ===
