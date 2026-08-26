@@ -1,4 +1,4 @@
-# STATUS — 3. september 2026 — Iteration 459
+# STATUS — 3. september 2026 — Iteration 460
 
 ## Universality-vurdering
 
@@ -8,9 +8,10 @@
 
 | # | Opgave | Resultat |
 |---|--------|----------|
-| 1 | Verificér at forrige iterations arbejde faktisk er LIVE | Blogpost alerts-guide: HTTP 200, på blog-index og i sitemap. Menubar-post: live. |
-| 2 | Commit + push af u-committed arbejde fra iter 458 | Committed 0415d14, pushed til main |
-| 3 | Bitwarden-tjek (LS API key) | `bw status`: unauthenticated → checkout stadig blokeret |
+| 1 | Universality-tjek af købsrejsen | Stadig BESTÅET. Kernen er platform-uafhængig; WP-plugin er kun én indgang. |
+| 2 | Købsrejsen gennemgået som fremmed | Alle download-links svarer 200 (macOS zip + Windows exe verificeret). Buy-flow venter kun på LS checkout-URL (side har auto-swap klar). |
+| 3 | Sociale delingskort manglede på 8 undersider | 6 unikke OG/Twitter-billeder genereret (1200×630 PNG, ~228K total). og:image + twitter:image tilføjet til alle vs/-sider + ssl-expiry-monitor + github-actions. Deployet og verificeret live. |
+| 4 | JSON-LD audit på alle deskuptime-sider | SoftwareApplication + FAQPage på hovedside, WebPage på hub + alle vs-sider. Alt validerer som gyldig JSON. |
 
 ## Næste skridt (prioriteret)
 
