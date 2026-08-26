@@ -9490,3 +9490,32 @@ Iteration 486 færdig. Kort:
 2026-08-26T10:18:08+02:00 iteration 50 afsluttet (exit 0)
 2026-08-26T10:18:28+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T10:23:32+02:00 === iteration 51/60 ===
+Iteration 487 done. Kort:
+
+**Universality-vurdering (punkt 1): BESTÅET.** Kernen (`deskuptime/src/engine.js`) tager en almindelig URL og antager intet om CMS. CLI, desktop-app, GitHub Action og live-check-widgetten er alle indpakninger omkring samme kerne. Intet at trække ud — vurderingen står fra iter 486.
+
+**Fundet og rettet en kritisk fejl i denne iteration:** Alle 6 sammenligningssider (/deskuptime/vs/uptimerobot, pingdom, statuscake, uptime-kuma, oh-dear, better-stack) havde ødelagt inline-JavaScript — en udeklareret `WAITLIST`-variabel plus en overskydende `})();` fra copy-paste af produktsidens IIFE gav en SyntaxError, der dræbte hele scriptet. Det betød at **live-check-widgetten var død præcis på de sider, der henter mest købs-intenderet trafik** ("uptimerobot alternative" osv.). Retttet i alle 6 filer, verificeret at alle scripts nu parser (`new Function()`-test), deployet og bekræftet live på pages.dev.
+
+**Tal (ærlige):** Salg 0 · Waitlist 0 · Eksterne scans 2.
+
+**Blokeret (én linje):** LS API key i Bitwarden — Mads unlocker én gang → ~10 min til checkout → betaling LIVE.
+
+STATUS.md er opdateret, commit pushet som iter 487. Næste iteration: gennemgå resten af landingssiderne for samme type copy-paste-fejl + mere SEO-indhold.
+2026-08-26T10:28:19+02:00 iteration 51 afsluttet (exit 0)
+2026-08-26T10:28:39+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T10:33:44+02:00 === iteration 52/60 ===
+Iteration 488 færdig, committet som `3c809e5`.
+
+**Universality-vurdering (opgave 1): BESTÅET.** Kernen i DeskUptime (`deskuptime/src/engine.js`) tager en almindelig URL og antager intet om CMS. CLI, desktop-app, GitHub Action og web live-check er alle indpakninger omkring den samme kerne. Intet at trække ud — det er allerede bygget rigtigt.
+
+**Hvad jeg ellers gjorde (punkt 5 — det der står mellem besøgende og betaling):**
+- Byggede `scripts/check_inline_js.py`: parser ALLE inline `<script>`-blokke på hele sitet med `node --check` — samme fejlklasse som iter 487's døde JS på vs-siderne.
+- Resultat: 261 blokke på 196 sider tjekket. **0 rigtige fejl.** De første 181 hits var JSON-LD-blokke (`application/ld+json`), som browseren ikke eksekverer — filtreret fra i scriptet.
+- Verificerede alle interne hrefs/srcs på DeskUptime- og DevNotify-siderne mod filsystemet: 0 døde links.
+- Tjekkede Bitwarden: stadig `unauthenticated`. Ingen kode ændret → ingen redeploy.
+
+**Tal:** Salg 0, waitlist 0, eksterne scans 2. Ærlige tal, ingen egne tests talt med.
+
+**Blokeret (én linje):** LS API key i Bitwarden — én `bw unlock` fra Mads → ~10 min til checkout er live.
+2026-08-26T10:36:33+02:00 iteration 52 afsluttet (exit 0)
+2026-08-26T10:36:55+02:00 === iteration 53/60 ===
