@@ -1,24 +1,34 @@
-# STATUS — 2. september 2026 — Iteration 439
+# STATUS — 2. september 2026 — Iteration 440
 
-## Hvad der er sket
+## 1. Universality-vurdering (iterationsopgaven): KERNEN ER ALLEREDE UNIVERSEL ✅
 
-### 1. Desktop-build: GRØN på alle tre platforme ✅
-Forrige build fejlede på Windows i "Derive version"-steppet: PowerShell
-ødelagde `\"`-escapes i `node -p 'require(\"./package.json\")'`. Rettet med
-`shell: bash` + ren quoting (commit d3baa31 på main), nyt build kørt
-(run 32914498402): **completed/success** — artefakter for macOS arm64,
-macOS x64 og Windows (installer/msi) er bygget og uploadet. Første gang
-alle tre platforme bygger i samme run.
+Gennemgang af DeskUptime mod punkt 1:
 
-### 2. Købsrejsen gennemgået som en fremmed
-- Downloads-siden linkede kun til "Latest releases" — rettet til direkte
-  link til v0.2.1 (macOS arm64/intel + Windows installer), som har alle
-  assets. Verificeret live.
-- Sidste npm-rester på downloads-siden fjernet ("via npm" → "via curl").
-- Deployet og verificeret indhold på live-siden.
-- Buy Now-flowet er klar: `/deskuptime/` henter checkout-URL runtime fra
-  workerens `/config` — så snart `checkout_urls.deskuptime` sættes, vises
-  købsknappen uden ny deploy.
+- **Kernen** (`deskuptime/src/engine.js` + `checkers/`) tager en almindelig
+  URL og kører HTTP-checks. Nul CMS-antagelser — kommentaren i filen siger
+  det selv: "Universal kernel: can run standalone (Node.js), as CLI, or
+  integrated into a Tauri desktop app."
+- Verificeret i praksis: CLI-testene rammer vilkårlige domæner
+  (`example.com`, osv.), og web-widgeten på `/deskuptime/` tager enhver URL.
+- **Indpakninger omkring kernen** (som mandatet foreskriver):
+  1. CLI (gratis, curl-install) — platform-uafhængig
+  2. Tauri desktop-app (macOS/Windows) — ÉN indpakning blandt flere
+  3. Web live-check widget + GitHub Actions-guide — flere indgange
+- Ingen WordPress-plugin, ingen platform-binding nogen steder.
+  Landingssiden og JSON-LD FAQ'en siger eksplicit "works with any website".
+
+**Konklusion: Intet at trække ud. Strukturen er allerede kerne + indpakninger.
+Der bygges videre på den samme kerne.**
+
+## 2. Købsrejsen: downloads-siden fik direkte download-links ✅
+
+Forrige iteration efterlod kun et link til releases-taget (to klik til fil).
+Nu peger downloads-siden direkte på alle fire v0.2.1-assets:
+
+- macOS Apple Silicon (.zip), macOS Intel (.zip)
+- Windows installer (.exe) + MSI
+
+Alle fire URLs verificeret med `curl -sIL` → HTTP 200 før deploy.
 
 ## Ærlige tal
 
@@ -26,17 +36,18 @@ alle tre platforme bygger i samme run.
 |--------|-------|
 | Salg | **0** |
 | Waitlist | **0** |
-| Scans | https://auditedwp.pages.dev/stats |
+| Scans (reelle, testdomæner ekskl.) | **2** (craigslist.org, wix.com — ikke min trafik) |
 
 ## Blokering (1 linje)
-LS API key ligger i Bitwarden som er låst (`bw status`: unauthenticated).
+LS API key ligger i Bitwarden som er låst.
 
 ## Næste skridt
-1. Tag v0.2.2 (eller flyt artefakter til et release) så downloads-siden
-   peger på færdige desktop-installers — bygget er grønt, mangler kun release.
-2. LS key → `wrangler secret put CHECKOUT_URL` / config → Buy-knap går live.
-3. Evt. npm-publicering senere hvis Mads opretter npm-token (ikke blokerende).
+1. LS key → `wrangler secret put CHECKOUT_URLS_JSON` med
+   `{"deskuptime":"<checkout-url>"}` → Buy-knappen går live uden ny deploy.
+2. Domæne deskuptime.com (~$10/år, forhåndsgodkendt).
+3. Forbedring af produktet: release v0.2.2 så Windows-filnavne matcher
+   versionsnummeret (i dag hedder .exe/.msi "0.1.0").
 
 ## Venter på Mads
 - Lås Bitwarden op én gang så LS key kan hentes.
-- Køb af deskuptime.com (~$10/år, forhåndsgodkendt — sig bare til).
+- Køb af deskuptime.com — sig bare til.
