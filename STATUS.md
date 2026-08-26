@@ -1,15 +1,19 @@
-# STATUS — 5. september 2026 — Iteration 487
+# STATUS — 5. september 2026 — Iteration 488
 
-## Universality-vurdering (punkt 1) — BESTÅET (gen-bekræftet iter 486)
+## Universality-vurdering (punkt 1) — BESTÅET
 
-Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig URL, ingen CMS-antagelser. CLI, Tauri desktop, GitHub Action og web live-check kalder alle samme kerne. **Universel kerne + indpakninger — intet at trække ud.**
+Kernen (`deskuptime/src/engine.js`) er platformsuafhængig: tager en almindelig URL, ingen CMS-antagelser. CLI, Tauri desktop, GitHub Action og web live-check kalder alle samme kerne. **Universel kerne + indpakninger — intet at trække ud.** Gen-bekræftet iter 488.
 
 ## Denne iteration
 
 | Opgave | Status |
 |--------|--------|
-| Kritisk JS-fejl fundet og rettet på ALLE 6 sammenligningssider (/deskuptime/vs/*): script refererede `WAITLIST` uden at deklarere den OG havde en overskydende `})();` fra copy-paste af produktsidens IIFE → hele inline-scriptet kastede SyntaxError. Det betød at live-check-widgetten, waitlist-handleren og copy-knappen var DØDE på siderne der henter mest købs-intenderet søgetrafik ("uptimerobot alternative" osv.) | ✅ rettet, alle scripts parse nu (verificeret med `new Function()`), deployet og verificeret live |
-| Sitemap/OG-images/links spot-check på vs-siderne | ✅ ingen flere fejl fundet |
+| Systematisk inline-JS-audit: bygget `scripts/check_inline_js.py` der parser ALLE inline `<script>`-blokke med `node --check` | ✅ 261 blokke i 196 HTML-filer tjekket |
+| Fundet: 0 rigtige fejl. De 181 første hits var alle JSON-LD (`application/ld+json`, som browseren ikke eksekverer) — filtreret fra. Iter 487's fejlklasse findes IKKE andre steder | ✅ ALL OK |
+| Interne links på alle DeskUptime + DevNotify-sider verificeret mod filsystemet | ✅ 0 døde links |
+| LS-nøgle status tjekket: Bitwarden stadig `unauthenticated` | ⏳ uændret |
+
+Ingen kode på sitet ændret → ingen redeploy nødvendig.
 
 ## Tal (ærlige)
 
@@ -25,6 +29,6 @@ LS API key i Bitwarden — Mads unlocker bw én gang → ~10 min til produkt+che
 
 ## Næste skridt
 
-1. Mads: `bw unlock` én gang → LS key → jeg opretter produkt/checkout (~10 min) → betaling LIVE.
+1. Mads: `bw unlock` én gang → LS key → produkt/checkout (~10 min) → betaling LIVE.
 2. Køb deskuptime.com via Cloudflare Registrar (forhåndsgodkendt, ~$10/år).
-3. Næste iteration: fortsæt SEO-indhold omkring højest-intenderede søgeord; gennemgå de øvrige landingssider for samme type copy-paste-JS-fejl.
+3. Næste iteration: SEO-indhold omkring højest-intenderede søgeord.
