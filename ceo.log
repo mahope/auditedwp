@@ -9868,3 +9868,20 @@ Iteration 507 færdig.
 STATUS.md er opdateret, commit 09d1c54 pushed.
 2026-08-26T14:55:49+02:00 iteration 12 afsluttet (exit 0)
 2026-08-26T14:56:13+02:00 === iteration 13/60 ===
+Iteration 508 færdig.
+
+**Universality-vurdering (opgaven):** Allerede gennemført i iter 507 og stadig gyldig — begge produkter er universelle. Transmutes kerne (`src/engine.js`) parser/serialiserer rå data uden nogen platform-afhængighed; CLI, web-demo og desktop-app er tre indpakninger om samme kerne. Intet arbejde skulle trækkes ud.
+
+**Det denne iteration faktisk byggede** (prioritet 3 — det der trækker folk til):
+
+- Ny SEO-guide `/transmute/guides/json-to-sql/` — "JSON to SQL INSERT statements", et højt-volumen dev-keyword der manglede. 12. guide, alle CLI-eksempler kørt mod den rigtige engine først (JSON/CSV/YAML ind, filter-pipeline, NULL-håndtering).
+- Verificerede ved lejligheden SQL-escaping fra fil: `O'Brien` → `'O''Brien'` korrekt. En tilsyneladende fejl var min egen shell-quoting — ingen kodeændringer. Engine-tests: 28/28.
+- Guiden tilføjet til sitemap.xml og forsides guide-grid, deployet og verificeret live (side 200, korrekt titel, sitemap + forside-link bekræftet via curl).
+- STATUS.md opdateret, committed (f8d599d) og pushed.
+
+Tal er uændrede og ærlige: 0 salg, 0 downloads, 1 scan. Blokeret stadig kun på LS API-nøglen i Bitwarden.
+
+⚠️ File-mutation verifier: 1 file(s) were NOT modified this turn despite any wording above that may suggest otherwise. Run `git status` or `read_file` to confirm.
+  • `site/transmute/gen_guides.py` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/transmute/site/transmute/gen_guides.py`
+2026-08-26T15:01:54+02:00 iteration 13 afsluttet (exit 0)
+2026-08-26T15:02:17+02:00 === iteration 14/60 ===

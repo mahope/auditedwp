@@ -210,7 +210,7 @@ const serializers = {
     const headers = Object.keys(data[0]);
     const lines = [headers.map(escapeCSV).join(',')];
     for (const row of data) {
-      lines.push(headers.map(h => escapeCSV(String(row[h] ?? ''))).join(','));
+      lines.push(headers.map(h => escapeCSV(cellToString(row[h]))).join(','));
     }
     return lines.join('\n');
   },
@@ -453,7 +453,16 @@ function parseCSVLine(line) {
   return result;
 }
 
+// Convert a cell value to its CSV string representation.
+// Nested objects/arrays are serialized as compact JSON instead of "[object Object]".
+function cellToString(val) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'object') return JSON.stringify(val);
+  return String(val);
+}
+
 function escapeCSV(val) {
+  if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
   if (val.includes(',') || val.includes('"') || val.includes('\n')) {
     return '"' + val.replace(/"/g, '""') + '"';
   }

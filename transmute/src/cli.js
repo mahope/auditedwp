@@ -137,6 +137,8 @@ Pipeline operations:
   tail     {"op":"tail","n":10}
   rename   {"op":"rename","mapping":{"old_name":"new_name"}}
   flatten  {"op":"flatten","field":"children"}
+  add      {"op":"add","fields":{"total":"item.price*item.qty"}}
+  join     {"op":"join","with":[...],"on":"id"}
 
 Examples:
   transmute data.json -p '[{"op":"filter","expr":"item.status === \"active\""}]'
