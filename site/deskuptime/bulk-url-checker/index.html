@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulk URL Checker — Check Up to 10 URLs Free, All at Once</title>
+<meta name="description" content="Check up to 10 URLs at once: HTTP status, response time, redirects and SSL certificate expiry. Free, no signup, works with any website or CMS — WordPress, Shopify, static sites, APIs.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/deskuptime/bulk-url-checker/">
+<meta property="og:title" content="Bulk URL Checker — Check Up to 10 URLs Free">
+<meta property="og:description" content="Paste up to 10 URLs and get HTTP status, response time, redirect and SSL expiry for each. Free, no account needed.">
+<meta property="og:url" content="https://auditedwp.pages.dev/deskuptime/bulk-url-checker/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://auditedwp.pages.dev/deskuptime/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bulk URL Checker — Check Up to 10 URLs Free">
+<meta name="twitter:description" content="HTTP status, response time, redirects and SSL expiry for up to 10 URLs at once.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav .cta{color:var(--accent);font-weight:700}
+  .hero{background:var(--soft);padding:56px 0;text-align:center}
+  .badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+  h1 span{color:var(--accent)}
+  .sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  section{padding:48px 0}
+  h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{color:var(--muted);margin-bottom:22px}
+  .checkbox{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:22px}
+  textarea{width:100%;min-height:140px;font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+  textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
+  #count{font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
+  .p-ok{background:#e3f3ea;color:var(--ok)}
+  .p-red{background:#fbe5e5;color:#b03030}
+  .p-warn{background:#fdf0e0;color:var(--warn)}
+  .p-gray{background:#eceff3;color:var(--muted)}
+  #result[aria-busy]{opacity:.7}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+  summary{font-weight:700;cursor:pointer}
+  details p{margin-top:8px;color:var(--muted);font-size:15px}
+  pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
+  code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime Bulk URL Checker",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web browser",
+      "description": "Free bulk URL checker: check up to 10 URLs at once for HTTP status, response time, redirects and SSL certificate expiry.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many URLs can I check at once?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Up to 10 URLs per run on this free web tool, one check per line. For continuous monitoring of many URLs, the DeskUptime desktop app checks your whole list on a schedule from your own machine." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the bulk checker report for each URL?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Final HTTP status code after redirects, total response time in milliseconds, whether the request was redirected, the final destination URL, and SSL certificate expiry days for HTTPS URLs." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the bulk URL checker work with any website or only certain platforms?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Any public URL. Checks happen over plain HTTP(S) at the URL level, so WordPress, Shopify, Webflow, Squarespace, static hosts, API endpoints and hand-rolled servers all behave identically." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this bulk URL checker really free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, no limits beyond 10 URLs per run. DeskUptime Pro ($19 one-time) adds scheduled monitoring and desktop alerts for the same URLs." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup · up to 10 URLs</span>
+    <h1>Bulk URL checker — see every site's status <span>in one pass</span></h1>
+    <p class="sub">Paste up to 10 URLs. Get HTTP status, response time, redirects and SSL certificate expiry for each — instantly, free, no account. Then let DeskUptime keep watching them daily.</p>
+    <a class="btn" href="#checker">Run a check now</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Check up to 10 URLs at once</h2>
+    <p class="lede">One URL per line. Everything is checked live — nothing is stored.</p>
+    <div class="checkbox">
+      <label for="urls">URLs (one per line)</label>
+      <textarea id="urls" placeholder="https://example.com
+https://www.wikipedia.org
+https://httpbin.org/status/404"></textarea>
+      <div class="row">
+        <button id="go" class="btn" onclick="doBulk()">Check all URLs</button>
+        <span id="count">0 URLs</span>
+      </div>
+      <div id="result" role="status" aria-live="polite"></div>
+    </div>
+    <p class="note">Prefer the terminal? The same checks from the open-source CLI:</p>
+<pre>npx github:mahope/deskuptime check https://example.com https://www.wikipedia.org</pre>
+  </div>
+</section>
+
+<section style="background:var(--soft)">
+  <div class="wrap">
+    <h2>A snapshot isn't monitoring</h2>
+    <p class="lede">This tells you how your sites look <strong>right now</strong>. It can't tell you when one goes down next week.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>You have to remember to run it</h3>
+        <p>The failure you don't check for is the one that ships. A monitor runs whether or not you think about it.</p>
+      </div>
+      <div class="card">
+        <h3>No alerts between checks</h3>
+        <p>A bulk check is silent. DeskUptime notifies you the moment a status, latency or certificate crosses its threshold.</p>
+      </div>
+      <div class="card">
+        <h3>SaaS charges monthly for this</h3>
+        <p>Monitoring services charge $7–$15/month forever. DeskUptime is $19 once and runs on your machine.</p>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>This free checker</th><th>SaaS monitors</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Bulk status + SSL view</td><td>✓ free</td><td>Paid tiers</td><td>✓ included</td></tr>
+        <tr><td>Runs on a schedule</td><td>✗ manual</td><td>✓</td><td>✓ your interval</td></tr>
+        <tr><td>Desktop alerts</td><td>✗</td><td>Email/push</td><td>✓ native notifications</td></tr>
+        <tr><td>URLs leave your machine</td><td>Checked server-side once</td><td>Always</td><td>No — checks run locally</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
+      </tbody>
+    </table>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>How many URLs can I check at once?</summary>
+      <p>Up to 10 per run here — paste them one per line. Need more or want it automated? The CLI (<code class="inline">npx github:mahope/deskuptime check url1 url2 …</code>) takes any number, and the desktop app monitors your full list on a schedule.</p>
+    </details>
+    <details>
+      <summary>What exactly gets checked?</summary>
+      <p>For each URL: final HTTP status after following redirects, total response time in ms, whether a redirect happened and where it landed, plus SSL certificate expiry date for HTTPS URLs. Nothing is logged or stored.</p>
+    </details>
+    <details>
+      <summary>Does it work with any website or stack?</summary>
+      <p>Yes. These are plain HTTP requests — no agent, plugin or platform integration. WordPress, Shopify, Webflow, static sites and API endpoints all work identically.</p>
+    </details>
+    <details>
+      <summary>Why does an HTTPS URL sometimes miss its SSL expiry?</summary>
+      <p>Certificate dates are read from public certificate-transparency logs. Brand-new certificates or rate-limited lookups can occasionally return nothing — re-run the check and it will usually appear.</p>
+    </details>
+    <details>
+      <summary>Can I check internal or staging URLs?</summary>
+      <p>The web tool only reaches public URLs. The DeskUptime app and CLI check anything your own machine can reach — localhost, intranet hosts, staging domains behind a VPN.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      Also try: <a href="/deskuptime/security-headers-checker/">Security headers checker</a> ·
+      <a href="/deskuptime/redirect-chain-checker/">Redirect checker</a> ·
+ <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry checker</a> ·
+ <a href="/deskuptime/response-time-monitor/">Response time checker</a> ·
+ <a href="/deskuptime/cron-monitoring/">Cron job monitor</a> ·
+      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const ta=document.getElementById('urls'),cnt=document.getElementById('count');
+  function urls(){
+    return ta.value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,10);
+  }
+  function norm(u){
+    let v=u.startsWith('http')?u:'https://'+u,p=new URL(v);
+    if(!/^https?:$/.test(p.protocol))throw new Error('bad protocol');
+    return v;
+  }
+  ta.addEventListener('input',()=>{cnt.textContent=urls().length+' URLs';});
+  window.doBulk=async function(){
+    const box=document.getElementById('result');
+    let list;
+    try{list=urls().map(norm);}catch(e){box.textContent='One of those is not a valid http(s) URL.';return;}
+    if(!list.length){box.textContent='Enter at least one URL.';return;}
+    box.setAttribute('aria-busy','true');
+    box.innerHTML='<p>Checking '+list.length+' URL'+(list.length===1?'':'s')+'…</p>';
+    const base='https://deskuptime-quickcheck.mahope-eeb.workers.dev/';
+    const results=await Promise.all(list.map(async u=>{
+      try{
+        const r=await fetch(base+'?url='+encodeURIComponent(u));
+        return {u,d:await r.json()};
+      }catch(e){return {u,d:{error:e.message}};}
+    }));
+    box.removeAttribute('aria-busy');
+    let html='<table><thead><tr><th>URL</th><th>Status</th><th>Time</th><th>Redirect</th><th>SSL expires</th></tr></thead><tbody>';
+    for(const {u,d} of results){
+      const st=d.status||0;
+      const pill=st>=200&&st<400?'<span class="pill p-ok">'+(st||'ERR')+'</span>'
+        :st>=400?'<span class="pill p-red">'+st+'</span>'
+        :'<span class="pill p-red">unreachable</span>';
+      const ssl=(typeof d.sslDaysRemaining==='number')
+        ?(d.sslDaysRemaining<0?'<span class="pill p-red">expired</span>'
+          :d.sslDaysRemaining+' days'+(d.sslDaysRemaining<21?' ⚠':''))
+        :(d.sslError?'<span class="pill p-gray">n/a</span>':'—');
+      html+='<tr><td>'+esc(u)+'</td><td>'+pill+'</td>'
+        +'<td>'+(typeof d.responseMs==='number'?d.responseMs+' ms':'—')+'</td>'
+        +'<td>'+(d.redirected?esc(d.finalUrl||'yes'):'no')+'</td>'
+        +'<td>'+ssl+'</td></tr>';
+    }
+    html+='</tbody></table><p class="note">Want these checked every hour with alerts when something breaks? <a href="/deskuptime/#pro">DeskUptime does that — $19 once.</a></p>';
+    box.innerHTML=html;
+  };
+  function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+})();
+document.getElementById('urls').addEventListener('keydown',function(e){
+  if((e.metaKey||e.ctrlKey)&&e.key==='Enter')doBulk();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Headers Checker — Free HTTP Security Header Test</title>
+<meta name="description" content="Check any website's security headers instantly: CSP, HSTS, X-Frame-Options, Referrer-Policy and more. Free, no signup, works with any website or CMS — WordPress, Shopify, static sites, APIs.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<link rel="canonical" href="https://auditedwp.pages.dev/deskuptime/security-headers-checker/">
+<meta property="og:title" content="Security Headers Checker — Free HTTP Security Header Test">
+<meta property="og:description" content="Enter a URL and get an instant grade on its security headers: CSP, HSTS, X-Frame-Options, Referrer-Policy and more. Free, no account needed.">
+<meta property="og:url" content="https://auditedwp.pages.dev/deskuptime/security-headers-checker/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://auditedwp.pages.dev/deskuptime/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Security Headers Checker — Free HTTP Security Header Test">
+<meta name="twitter:description" content="Instant security-header grade for any URL: CSP, HSTS, X-Frame-Options and more.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav .cta{color:var(--accent);font-weight:700}
+  .hero{background:var(--soft);padding:56px 0;text-align:center}
+  .badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+  h1 span{color:var(--accent)}
+  .sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  section{padding:48px 0}
+  h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{color:var(--muted);margin-bottom:22px}
+  .checkbox{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:22px}
+  input[type=url]{width:100%;font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:8px}
+  input[type=url]:focus{outline:2px solid var(--accent);offset:-1px}
+  .row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
+  .p-ok{background:#e3f3ea;color:var(--ok)}
+  .p-red{background:#fbe5e5;color:#b03030}
+  .p-warn{background:#fdf0e0;color:var(--warn)}
+  .grade{display:inline-block;font-size:34px;font-weight:800;width:64px;height:64px;line-height:64px;border-radius:12px;text-align:center;color:#fff;margin-bottom:8px}
+  .g-A{background:#1a7a44}.g-B{background:#4c9a2a}.g-C{background:#b8860b}.g-D{background:#c26a1c}.g-F{background:#b03030}
+  #result[aria-busy]{opacity:.7}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  .hdrval{max-width:420px;overflow-wrap:anywhere;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+  summary{font-weight:700;cursor:pointer}
+  details p{margin-top:8px;color:var(--muted);font-size:15px}
+  pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
+  code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime Security Headers Checker",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web browser",
+      "description": "Free security headers checker: test any website's HTTP security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy) and get an instant grade.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What are HTTP security headers?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Security headers are response headers a server sends to instruct browsers on protections like Content-Security-Policy (blocks injected scripts), Strict-Transport-Security (forces HTTPS), X-Frame-Options (prevents clickjacking), X-Content-Type-Options, Referrer-Policy and Permissions-Policy." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is the security headers grade calculated?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Each of the seven important headers found counts one point: HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy and Cross-Origin-Opener-Policy. Six or more is an A, four to five a B, down to F when none are present." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the checker work with any website or only certain platforms?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Any public URL. The check is a plain HTTPS request at the URL level, so WordPress, Shopify, Webflow, Squarespace, static hosts, API endpoints and hand-rolled servers all behave identically." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this security headers check really free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, nothing stored. DeskUptime Pro ($19 one-time) adds scheduled monitoring so you know when your site's status, latency or certificate changes." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup · instant result</span>
+    <h1>Security headers checker — <span>grade any site in seconds</span></h1>
+    <p class="sub">Enter a URL. Get an A–F grade plus every security header present or missing — CSP, HSTS, clickjacking protection and more. Free, no account.</p>
+    <a class="btn" href="#checker">Check a site now</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Check security headers</h2>
+    <p class="lede">One URL per check. Everything runs live — nothing is stored.</p>
+    <div class="checkbox">
+      <label for="url">Website URL</label>
+      <input type="url" id="url" placeholder="https://example.com" aria-describedby="hint">
+      <span id="hint" class="note">Tip: try github.com, then your own site.</span>
+      <div class="row">
+        <button id="go" class="btn">Check headers</button>
+      </div>
+      <div id="result" role="status" aria-live="polite"></div>
+    </div>
+    <p class="note">Prefer the terminal? Check from the open-source CLI:</p>
+<pre>curl -sI https://yoursite.com | grep -iE 'content-security|strict-transport|x-frame|x-content-type'</pre>
+  </div>
+</section>
+
+<section style="background:var(--soft)">
+  <div class="wrap">
+    <h2>What the headers actually protect against</h2>
+    <p class="lede">A passing SSL padlock says nothing about how the page behaves once loaded. These headers do.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Content-Security-Policy</h3>
+        <p>Blocks injected scripts — the payload half of most XSS attacks. The single highest-value header.</p>
+      </div>
+      <div class="card">
+        <h3>Strict-Transport-Security</h3>
+        <p>Forces browsers onto HTTPS for future visits, defeating downgrade and cookie-theft attempts.</p>
+      </div>
+      <div class="card">
+        <h3>X-Frame-Options / frame-ancestors</h3>
+        <p>Stops other sites embedding your pages in invisible frames to trick users into clicking (clickjacking).</p>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>This free checker</th><th>Paid scanners</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Header report + grade</td><td>✓ free</td><td>Part of paid audits</td><td>✓ checks each run</td></tr>
+        <tr><td>Runs on a schedule</td><td>✗ manual</td><td>✓ expensive</td><td>✓ your interval</td></tr>
+        <tr><td>Status + SSL + latency too</td><td>Separate tools</td><td>✓</td><td>✓ together</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$100s/yr</td><td>$19 once</td></tr>
+      </tbody>
+    </table>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>What are HTTP security headers?</summary>
+      <p>They're instructions your server sends with every response that tell browsers what to refuse: which scripts may run (<code class="inline">Content-Security-Policy</code>), whether HTTP is allowed at all (<code class="inline">Strict-Transport-Security</code>), whether your pages can be framed (<code class="inline">X-Frame-Options</code>), what referrer data leaks (<code class="inline">Referrer-Policy</code>) and which browser features the page may use (<code class="inline">Permissions-Policy</code>). Missing them doesn't break the site — it just leaves known attack doors open.</p>
+    </details>
+    <details>
+      <summary>How is the grade calculated?</summary>
+      <p>Six headers count toward the score: HSTS, CSP, X-Content-Type-Options, X-Frame-Options (or CSP <code class="inline">frame-ancestors</code>), Referrer-Policy and Permissions-Policy. Cross-Origin-Opener-Policy earns a bonus presence point. Six-plus present grades A, four-to-five B, two-to-three C, one D, none F. It measures coverage, not configuration quality — a weak CSP still counts as present.</p>
+    </details>
+    <details>
+      <summary>I got an F. How do I fix it?</summary>
+      <p>The headers come from your server or host. Most CDNs let you set them without touching code: Cloudflare has Transform Rules and free managed transforms for several of these headers. Netlify and Vercel read them from a config file. On Apache/Nginx they go in server config. Add them one at a time and re-run this check.</p>
+    </details>
+    <details>
+      <summary>Does it work with any website or stack?</summary>
+      <p>Yes. This is a plain HTTPS request — no agent, plugin or platform integration. WordPress, Shopify, Webflow, static sites and API endpoints all work identically.</p>
+    </details>
+    <details>
+      <summary>Can I check internal or staging URLs?</summary>
+      <p>The web tool only reaches public URLs. The DeskUptime app and CLI check anything your own machine can reach — localhost, intranet hosts, staging domains behind a VPN.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      Also try: <a href="/deskuptime/bulk-url-checker/">Bulk URL checker</a> ·
+ <a href="/deskuptime/redirect-chain-checker/">Redirect checker</a> ·
+ <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry checker</a> ·
+ <a href="/deskuptime/response-time-monitor/">Response time checker</a> ·
+      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+const NAMES={
+ 'content-security-policy':'Blocks injected scripts (XSS)',
+ 'strict-transport-security':'Forces HTTPS on future visits',
+ 'x-content-type-options':'Stops MIME-sniffing attacks',
+ 'x-frame-options':'Prevents clickjacking frames',
+ 'referrer-policy':'Limits referrer data leakage',
+ 'permissions-policy':'Restricts camera/mic/geolocation',
+ 'cross-origin-opener-policy':'Isolates browsing context',
+ 'x-xss-protection':'Legacy XSS filter (retired)'
+};
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+window.checkHeaders=async function(){
+  const box=document.getElementById('result');
+  let v=document.getElementById('url').value.trim();
+  if(!v){box.textContent='Enter a URL first.';return;}
+  if(!/^https?:\/\//i.test(v))v='https://'+v;
+  try{new URL(v);}catch(e){box.textContent='That is not a valid http(s) URL.';return;}
+  box.setAttribute('aria-busy','true');
+  box.innerHTML='<p>Checking headers…</p>';
+  const base='https://deskuptime-headers.mahope-eeb.workers.dev/';
+  let d;
+  try{
+    const r=await fetch(base+'?url='+encodeURIComponent(v));
+    d=await r.json();
+  }catch(e){box.removeAttribute('aria-busy');box.textContent='Check failed: '+e.message;return;}
+  box.removeAttribute('aria-busy');
+  if(d.error){box.innerHTML='<p class="note">Could not reach that URL: '+esc(d.error)+'</p>';return;}
+  let html='<div style="margin-top:18px"><span class="grade g-'+esc(d.grade)+'">'+esc(d.grade)+'</span>'
+   +'<p>'+d.score+' of '+d.maxScore+' key headers present · final status '+esc(d.finalStatus)
+   +' · '+esc(d.responseMs)+' ms'+(d.https?' · HTTPS ✓':' · <strong>no HTTPS</strong>')+'</p>';
+  html+='<table><thead><tr><th>Header</th><th>Status</th><th>Protects against</th><th>Value</th></tr></thead><tbody>';
+  for(const [name,desc] of Object.entries(NAMES)){
+    const val=d.headers[name];
+    const bonus=name==='x-xss-protection';
+    const pill=bonus
+      ?(val?'<span class="pill p-gray">legacy</span>':'<span class="pill p-gray">n/a</span>')
+      :(val?'<span class="pill p-ok">present</span>':'<span class="pill p-red">missing</span>');
+    html+='<tr><td><code class="inline">'+name+'</code></td><td>'+pill+'</td><td>'+desc+'</td>'
+     +'<td class="hdrval">'+(val?esc(val):'—')+'</td></tr>';
+  }
+  html+='</tbody></table>';
+  if(d.score<4){
+    html+='<p class="note">Missing several? Most hosts and CDNs can add these without code changes — see the FAQ below.</p>';
+  }else{
+    html+='<p class="note"><a href="/deskuptime/#pro">DeskUptime re-checks status, SSL and latency on a schedule — $19 once.</a></p>';
+  }
+  html+='</div>';
+  box.innerHTML=html;
+};
+document.getElementById('go').addEventListener('click',checkHeaders);
+document.getElementById('url').addEventListener('keydown',function(e){
+  if(e.key==='Enter')checkHeaders();
+});
+</script>
+
+</body>
+</html>
