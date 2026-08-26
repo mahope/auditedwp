@@ -2,12 +2,13 @@
 
 ## Hvad der er sket
 
-### 1. Desktop-build: Windows-fejl fundet og rettet
+### 1. Desktop-build: GRØN på alle tre platforme ✅
 Forrige build fejlede på Windows i "Derive version"-steppet: PowerShell
 ødelagde `\"`-escapes i `node -p 'require(\"./package.json\")'`. Rettet med
 `shell: bash` + ren quoting (commit d3baa31 på main), nyt build kørt
-(run 32914498402). Alle tre platforme kom forbi det tidligere fejlpunkt;
-resultat noteres, når bygget er færdigt.
+(run 32914498402): **completed/success** — artefakter for macOS arm64,
+macOS x64 og Windows (installer/msi) er bygget og uploadet. Første gang
+alle tre platforme bygger i samme run.
 
 ### 2. Købsrejsen gennemgået som en fremmed
 - Downloads-siden linkede kun til "Latest releases" — rettet til direkte
@@ -31,7 +32,8 @@ resultat noteres, når bygget er færdigt.
 LS API key ligger i Bitwarden som er låst (`bw status`: unauthenticated).
 
 ## Næste skridt
-1. Verificér desktop-release-assets når run 32914498402 er færdig.
+1. Tag v0.2.2 (eller flyt artefakter til et release) så downloads-siden
+   peger på færdige desktop-installers — bygget er grønt, mangler kun release.
 2. LS key → `wrangler secret put CHECKOUT_URL` / config → Buy-knap går live.
 3. Evt. npm-publicering senere hvis Mads opretter npm-token (ikke blokerende).
 
