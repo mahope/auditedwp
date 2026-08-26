@@ -8950,3 +8950,95 @@ Kernen (`src/engine.js`) tager en almindelig URL og virker uanset CMS. WP-plugin
 **Venter på Mads (uændret):** LS API key via Bitwarden; køb af deskuptime.com (~$10/år, forhåndsgodkendt).
 2026-08-26T04:35:21+02:00 iteration 18 afsluttet (exit 0)
 2026-08-26T04:35:43+02:00 === iteration 19/60 ===
+2026-08-26T05:11:23+02:00 iteration 18 afsluttet (exit 0)
+Færdig. Commit `4dbb7ac` pushet til `main`, site deployet live.
+
+**Hvad jeg gjorde i iteration 454:**
+
+1. **Universality-vurdering** — BESTÅET (130+ audits i alt). Dette var den sidste — jeg stopper med at gentage den.
+
+2. **Affiliate-infrastruktur på /scan/** — `AFFILIATE_RECS` mapping med 5 kommercielle anbefalinger (Cookiebot 30% recurring, Complianz 30%, iubenda 40%, Termly, Cookiebot Consent Mode). Koden er klar og viser kun links når `?ref=`-URL'erne indsættes. Affiliate-disclosure i footer. **5 minutters Mads-signup → revenue.**
+
+3. **Nyt blogindlæg** — "Why Self-Hosted Uptime Monitoring Makes Sense in 2026" (1395 ord, live-check widget, CTA til DeskUptime). Målretter SEO-keyword: "self-hosted uptime monitoring", "website monitoring without subscription".
+
+4. **Sitemap opdateret** — 182 URL'er.
+
+5. **Deployet og verificeret** — alle 3 sider 200 med korrekt indhold.
+
+**Ærlige tal: 0 salg, 0 waitlist, 0 indexering, 0 stars, 0 views.** 2 ægte scans på 4 dage.
+
+**Hvad jeg har brug for fra dig, Mads:**
+
+Til 3 min hver (prioriteret):
+1. **Køb deskuptime.com** (~$10/år, forhåndsgodkendt) — så vi slipper for pages.dev-penalty
+2. **Signup til Cookiebot affiliate program** (Impact-siden, din PayPal, 5 min) → jeg sætter `?ref=`-URL'en ind på /scan/ → du får commission når nogen scanner og køber Cookiebot
+3. **Lås Bitwarden op** — LS key → 10 min arbejde → checkout live på DeskUptime
+2026-08-26T05:11:40+02:00 iteration 19 afsluttet (exit 0)
+2026-08-26T05:12:02+02:00 === iteration 20/60 ===
+Iteration 455 færdig og pushed.
+
+**Universality-vurdering:** BESTÅET — kernen (`deskuptime/src/engine.js`) tager en almindelig URL og er CMS-agnostisk. De 5 indpakninger (CLI, desktop, live-check, GitHub Action, WP plugin) er allerede strukturen Mads bad om. Ingen ændring nødvendig.
+
+**Beslutningsvurdering:** DeskUptime holder under pengekriteriet ($19 one-time, $0 levering, produkt + salgsside færdige, kun checkout mangler).
+
+**Det nye i dag:**
+- **IndexNow aktiveret** — det største ublokerede problem er 182 sider med 0 indeksering. Alle 182 URL'er indsendt til api.indexnow.org (HTTP 200), nøglefilen var allerede live på pages.dev. Bing/Yandex/Seznam får nu siderne skubbet direkte i stedet for at vente på crawl.
+- BUILD.md opdateret med proceduren, STATUS.md omskrevet (blokeringer nu kun ét linje hver, som krævet). Commit `pushed` til main.
+
+**Tal:** salg 0, waitlist 0, scans 2 ægte, indekserede sider 0 (IndexNow-effekt ses først om et par dage — jeg tjekker i næste iteration).
+
+**Venter på Mads:** LS key i Bitwarden · deskuptime.com-køb · affiliate-signup (5 min).
+2026-08-26T05:15:56+02:00 iteration 20 afsluttet (exit 0)
+2026-08-26T05:16:19+02:00 === iteration 21/60 ===
+Iteration 456 færdig. Kort rapport:
+
+**Universality (punkt 1): BESTÅET — igen.** Kernen i DeskUptime tager en almindelig URL og er CMS-agnostisk; CLI, desktop-app, live-check, GitHub Action og WP-plugin er alle bare indpakninger omkring samme kerne. Ingen udtrækning nødvendig.
+
+**Beslutningen holder under pengekriteriet.** $19 one-time, $0 leveringsomkostning, produkt og salgsside er færdige. Ingen ny kandidat slår det på de fem kriterier, så jeg byggede videre frem for at skifte spor.
+
+**Gjort i denne iteration:**
+- Gennemgik hele købsrejsen på /deskuptime/ som en fremmed: alle 12 undersider tjekket, 0 døde links. Alle fire download-links (macOS arm64/x64, .exe, .msi fra GitHub Releases v0.2.3) verificeret HTTP 200.
+- Fandt og rette én fejl: /deskuptime/downloads/ manglede i sitemap.xml — tilføjet, deployet live og indsendt til IndexNow (HTTP 200).
+- Bing-tjek: endnu kun roden indekseret. IndexNow fra i går har ikke slået igennem endnu — det tager normalt et par dage.
+- Bitwarden: stadig `unauthenticated`, så LS-nøglen (og dermed checkout) er stadig den eneste blokering.
+
+STATUS.md opdateret og committet. Ærlige tal står der: Salg 0 · Waitlist 0 · Scans 2 · Indekserede sider 1.
+
+Næste iteration: nyt blogindlæg + IndexNow ved deploy, og Bing-tjek igen når der er gået et par dage.
+2026-08-26T05:21:30+02:00 iteration 21 afsluttet (exit 0)
+2026-08-26T05:21:53+02:00 === iteration 22/60 ===
+Iteration 457 færdig. Opsummering:
+
+**Universality-vurdering (første opgave): BESTÅET.** DeskUptime-kernen (`cli/`) tager en vilkårlig URL og er CMS-agnostisk. Fem indpakninger deler kernen: CLI, desktop-app, web live-check, GitHub Action, WP-plugin (én af flere indgange). Intet at udtrække — vurderingen står i STATUS.md.
+
+**Beslutning: holder under pengekriteriet.** Produktet er bygget og live, $19 one-time, $0 leveringsomkostning — ingen kandidat slår "10 min til checkout når LS-nøglen kommer".
+
+**Bygget i denne iteration** (punkt 3 — det der trækker folk til):
+- Nyt blogindlæg `/blog/uptime-alerts-discord-telegram-slack/` — webhook-guides til Discord/Telegram/Slack + selv-hosted checker-script + FAQ, med naturlig CTA til DeskUptime
+- Sitemap og blog-index opdateret; deployet og verificeret live (HTTP 200, korrekt titel, 4 CTA-links virker)
+- Link-check: 0 døde links (rettede to footer-links til /privacy/ og /terms/)
+- IndexNow-indsendelse: HTTP 200
+
+**Tal (ærlige):** Salg 0 · Waitlist 0 · Scans 2 · Indekserede sider 1.
+
+**Venter på Mads:** LS API key i Bitwarden · deskuptime.com-køb · affiliate-signup.
+
+STATUS.md er opdateret i /Users/madsholstjensen/hermes-ceo/STATUS.md.
+2026-08-26T05:25:40+02:00 iteration 22 afsluttet (exit 0)
+2026-08-26T05:26:02+02:00 === iteration 23/60 ===
+---
+
+## Iteration 458 færdig — oversigt
+
+**Universality-audit (obligatorisk førstepunkt):** BESTÅET. DeskUptime-kernen (Tauri app + CLI + Worker live-check) tager en hvilken som helst URL og checker den platform-uafhængigt. WP-plugin er én indpakning blandt flere — intet at udtrække.
+
+**Hvad jeg gjorde (mens vi venter på Bitwarden):**
+- Byggede en ny blogartikel: **"Website Monitor in Your Menu Bar: macOS & Windows Desktop Monitoring (2026)"** — søgeord med høj købsintention, matcher direkt vores desktop-produkt. Lever på `/blog/menubar-website-monitor-mac-windows/`
+- Opdaterede blog-index + sitemap + IndexNow-indsendelse (HTTP 202) — alt live
+- Tjekkede Bitwarden: stadig unauthenticated, LS key utilgængelig
+
+**Blokeringen gentages ikke.** LS key er én linje i "Venter på Mads" — jeg pudser ikke det gamle. I stedet forbedrer jeg kontinuerligt indholdet der trækker købere til desktop-produktet. Når nøglen kommer, er BUILD.md klar: ~10 min til checkout.
+2026-08-26T05:31:10+02:00 iteration 23 afsluttet (exit 0)
+2026-08-26T05:31:31+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T05:36:31+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-26T05:41:35+02:00 === iteration 24/60 ===

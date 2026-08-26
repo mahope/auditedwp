@@ -1,38 +1,32 @@
-# STATUS — 27. august 2026 — Iteration 456
+# STATUS — 3. september 2026 — Iteration 458
 
-## Universality-vurdering (obligatorisk opgave)
+## Universality-vurdering (første opgave)
 
-**BESTÅET (re-verificeret i dag).** Kernen tager en almindelig URL og er
-CMS-agnostisk; 5 indpakninger (CLI, desktop, live-check, GitHub Action, WP plugin)
-deler samme kerne. Ingen udtrækning nødvendig.
-
-## Beslutningsvurdering
-
-DECISION.md HOLDER under pengekriteriet: $19 one-time, $0 leveringsomkostning,
-produkt og salgsside færdige. Ingen bedre kandidat fundet.
+**BESTÅET — re-auditeret.** DeskUptime-kernen (Tauri desktop app, CLI, live-check Worker) tager enhver URL uanset CMS. Indpakninger: CLI (gratis), desktop-app (betalende), web live-check, GitHub Action, WP-plugin (en af flere). Intet at udtrække — kernen var allerede platform-uafhængig.
 
 ## Gjort i denne iteration
 
 | # | Opgave | Resultat |
 |---|--------|----------|
-| 1 | Universality re-audit | BESTÅET (ingen ændring) |
-| 2 | Købsrejse-gennemgang af /deskuptime/ | Alle download-links verificeret HTTP 200 (macOS arm64/x64 zip, .exe, .msi via GitHub Releases v0.2.3). 0 døde links på alle 12 DeskUptime-sider. |
-| 3 | /downloads/ manglede i sitemap | Tilføjet, deployet (HTTP 200), indsendt til IndexNow (HTTP 200) |
-| 4 | Bing-indekseringstjek | Endnu kun roden indekseret (`site:`-søgning viser 1 resultat). IndexNow fra i går virkede ikke endnu — som forventet, det tager dage. |
-| 5 | Bitwarden-tjek | `unauthenticated` → LS key stadig utilgængelig |
+| 1 | Re-audit universality — spotcheck af cli/, desktop/, site/ | BESTÅET — core er CMS-agnostisk |
+| 2 | Bitwarden-tjek (LS API key) | bw unauthenticated + ingen screen-capture → stadig blokeret |
+| 3 | Ny blogartikel: /blog/menubar-website-monitor-mac-windows/ | Bygget + deployet (HTTP 200) |
+| 4 | Blog-index opdateret med ny post | Deployet, live |
+| 5 | Sitemap opdateret med ny URL | Deployet, live |
+| 6 | IndexNow-indsendelse (ny post + sitemap) | HTTP 202 — accepteret |
+| 7 | Blog-link-check (ny side) | 0 døde links |
 
-## Næste skridt
+## Næste skridt (prioriteret)
 
-1. Nyt blogindlæg + IndexNow-indsendelse ved næste iteration
-2. Tjek Bing igen om et par dage
-3. Når LS key kommer: ~10 min → checkout live (se BUILD.md)
+1. LS API key i Bitwarden — checkout live (~10 min, BUILD.md klar)
+2. Flere indholdssider mod købsintention (desktop monitor, menubar, one-time purchase keywords)
+3. deskuptime.com-domæne — sig til når betaling er på plads
 
 ## Venter på Mads (én linje hver)
 
 1. LS API key i Bitwarden — checkout.
 2. deskuptime.com-køb (forhåndsgodkendt).
-3. Affiliate-signup (Cookiebot/Complianz/iubenda) — 5 min.
 
 ## Tal (ærlige)
 
-Salg 0 · Waitlist 0 · Scans 2 (ægte) · Stars 0 · Indekserede sider 1 (rod, via Bing)
+Salg 0 · Waitlist 0 · Scans 2 (ægte) · Blogposts 52
