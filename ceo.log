@@ -9062,3 +9062,32 @@ STATUS.md er opdateret: /Users/madsholstjensen/hermes-ceo/STATUS.md
 2026-08-26T06:03:22+02:00 UPSTREAM - venter 5 min (forsoeg 5/24)
 2026-08-26T06:08:23+02:00 UPSTREAM - venter 5 min (forsoeg 6/24)
 2026-08-26T06:13:26+02:00 === iteration 25/60 ===
+Iteration 460 færdig. Kort rapport:
+
+**Universality-vurdering (punkt 1): BESTÅET igen.** DeskUptime-kernen er allerede platform-uafhængig — Tauri-appen, CLI'en og live-check-workeren tager enhver URL uanset CMS. WP-pluginet er kun én af flere indgange. Intet at udtrække.
+
+**Hvad jeg fandt og rettede i købsrejsen:**
+- Gennemgik hele rejsen som en fremmed: alle download-links svarer 200 (macOS zip + Windows exe verificeret direkte). Buy-flowet har auto-swap klar til LS-checkout-URL — intet andet mangler der.
+- Reel fejl fundet: **8 undersider manglede sociale delingsbilleder** (alle vs/-sider, ssl-expiry-monitor, github-actions). Genererede 6 unikke OG-billeder (1200×630 PNG, 228K total) og tilføjede og:image + twitter:image. Deployet og verificeret live.
+- JSON-LD-audit: SoftwareApplication + FAQPage på hovedsiden, WebPage på hub og vs-sider — alt validerer.
+
+**Status:** Salg 0, waitlist 0, scans 2 (ægte). Beslutningen holder under pengekriteriet; den eneste blokering er stadig LS API-nøglen i Bitwarden (bw unauthenticated) — skrevet som én linje, ikke gentaget ydermere.
+
+STATUS.md opdateret, alt committed og pushed (main).
+2026-08-26T06:20:05+02:00 iteration 25 afsluttet (exit 0)
+2026-08-26T06:20:28+02:00 === iteration 26/60 ===
+Iteration 461 færdig. Kort:
+
+**Universality-vurdering:** Stadig BESTÅET — DeskUptime-kernen (Tauri-app, CLI, live-check Worker) tager enhver URL uanset CMS; WP-plugin er kun én indgang blandt flere. Intet at udtrække, vurderingen står i STATUS.md.
+
+**Bitwarden:** `bw status` er stadig "unauthenticated", og jeg kan ikke låse vaulten op selv — så LS-nøglen er stadig blokeret. Skrevet som én linje i STATUS.md og ikke brugt mere tid på det.
+
+**Det ikke-blokerede arbejde i stedet:**
+- Re-verificerede hele købsrejsen live: hovedside, thanks-side, downloads (macOS zip), alle 6 vs/-sider og alle blogindgange svarer 200 med korrekt indhold.
+- Blog-audit fandt ét hul: better-stack-alternative-2026 manglede live-check-widgetten (7 af 8 uptime-artikler havde den). Tilføjede den, deployede og verificerede at widgetten nu ligger live på siden.
+
+**Tal (ærlige):** Salg 0 · Waitlist 0 · Scans 2 · Blogposts 53.
+
+STATUS.md er opdateret og commit'et/pushet (fc1b243 → ny commit). Næste skridt uændret: LS key → checkout (~10 min når nøglen ligger i BW), derefter deskuptime.com-købet.
+2026-08-26T06:23:42+02:00 iteration 26 afsluttet (exit 0)
+2026-08-26T06:24:04+02:00 === iteration 27/60 ===
