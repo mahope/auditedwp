@@ -1,33 +1,23 @@
-# STATUS — 2. september 2026 — Iteration 438
+# STATUS — 2. september 2026 — Iteration 439
 
 ## Hvad der er sket
 
-### 1. Universalitets-vurdering (punkt 1) — BESTÅET, koden læst igen
-`src/engine.js` tager en vilkårlig URL: nul CMS-antagelser. Kerne + indpakninger:
-- **Kerne:** engine.js (ping/SSL/content-hash, Node, nul deps)
-- **Indpakninger:** CLI, desktop-app (Tauri), web live-check widget, GitHub Action, Homebrew-formel
+### 1. Desktop-build: Windows-fejl fundet og rettet
+Forrige build fejlede på Windows i "Derive version"-steppet: PowerShell
+ødelagde `\"`-escapes i `node -p 'require(\"./package.json\")'`. Rettet med
+`shell: bash` + ren quoting (commit d3baa31 på main), nyt build kørt
+(run 32914498402). Alle tre platforme kom forbi det tidligere fejlpunkt;
+resultat noteres, når bygget er færdigt.
 
-Intet at trække ud.
-
-### 2. Pro-licensflow MERGET til main (var hængende i en lokal branch)
-Konflikten fra iteration 437 er løst (bevarede begge feature-sæt), rebaset på
-origin/main og pushet:
-- `deskuptime activate <key>` + `deskuptime status` + `watch --activate KEY`
-- Free: 3 URLs / min. 60s · Pro: ubegrænsede URLs / 30s / desktop-notifikationer
-- **11/11 tests grønne lokalt OG i CI på main** ✅
-
-### 3. Installationssti verificeret END-TO-END — npm er aldrig udgivet
-Fundet en reel fejl: downloads-siden har i uger henvist til
-`npm install -g deskuptime` og npmjs.com — **pakken findes ALDRIG på npm**
-(E404, bekræftet). Enhver der fulgte instruksen fik en fejl. Rettede til den
-installationsvej der FAKTISK virker, og testede begge selv:
-- `curl … tools/install.sh | bash` → installerer v0.1.4, CLI svarer ✅
-- `npx github:mahope/deskuptime check https://example.com` → 200 OK, SSL 63d ✅
-- Retttet på `/deskuptime/downloads/` og `/deskuptime/thanks/`, deployet,
-  verificeret live (200 + nyt indhold).
-
-### 4. Desktop build kørt igen (workflow_dispatch) efter CI-fixes
-Kører i baggrunden; resultat noteres i næste iteration.
+### 2. Købsrejsen gennemgået som en fremmed
+- Downloads-siden linkede kun til "Latest releases" — rettet til direkte
+  link til v0.2.1 (macOS arm64/intel + Windows installer), som har alle
+  assets. Verificeret live.
+- Sidste npm-rester på downloads-siden fjernet ("via npm" → "via curl").
+- Deployet og verificeret indhold på live-siden.
+- Buy Now-flowet er klar: `/deskuptime/` henter checkout-URL runtime fra
+  workerens `/config` — så snart `checkout_urls.deskuptime` sættes, vises
+  købsknappen uden ny deploy.
 
 ## Ærlige tal
 
@@ -41,10 +31,10 @@ Kører i baggrunden; resultat noteres i næste iteration.
 LS API key ligger i Bitwarden som er låst (`bw status`: unauthenticated).
 
 ## Næste skridt
-1. LS key → opret produkt/checkout (10 min) → Buy Now-knap vises automatisk via worker-config.
-2. Verificér desktop-release-assets når bygget er færdigt.
-3. Evt. npm-publicering senere hvis Mads opretter et npm-token (ikke blokerende — curl/npx virker).
+1. Verificér desktop-release-assets når run 32914498402 er færdig.
+2. LS key → `wrangler secret put CHECKOUT_URL` / config → Buy-knap går live.
+3. Evt. npm-publicering senere hvis Mads opretter npm-token (ikke blokerende).
 
 ## Venter på Mads
-- Lås Bitwarden op én gang så LS key (+ CWS key, evt. npm token) kan hentes.
+- Lås Bitwarden op én gang så LS key kan hentes.
 - Køb af deskuptime.com (~$10/år, forhåndsgodkendt — sig bare til).
