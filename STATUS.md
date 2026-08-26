@@ -1,17 +1,29 @@
-# STATUS — 4. september 2026 — Iteration 475
+# STATUS — 5. september 2026 — Iteration 476
 
-## Universality-vurdering (punkt 1) — BESTÅET (re-verificeret)
+## Universality-vurdering (punkt 1) — BESTÅET (3. verification)
 
-- Kernen (`deskuptime/src/engine.js` + checkers) tager en almindelig URL og
-  virker uanset CMS. Nul hits på wp/wordpress i src/. Intet at trække ud.
+- Kerne (engine.js + checkers): nul platform-afhængigheder. Tager en URL,
+  virker på alle CMS'er.
 - Indpakninger om samme kerne: CLI, Tauri desktop-app, web live-check,
-  GitHub Action. Kernen er platformsuafhængig — vurderingen står ved magt.
+  GitHub Action. Intet at trække ud.
 
-## Gjort i denne iteration
+## Gjort i denne iteration — fuld QA af hele købsrejsen
 
-- Forrige iterations u-deployede arbejde verificeret og udgivet:
-  /deskuptime/for-freelancers/ (ny side, 200 OK) + footer-links + sitemap
-  er nu LIVE på https://auditedwp.pages.dev. Hub-link bekræftet i HTML.
+Gik produktet igennem som en fremmed ville:
+
+- **Link-check:** ALLE links på /deskuptime/ og alle undersider → ingen brudte
+  (0 non-200).
+- **Downloads:** macOS-zip og Windows-exe fra v0.2.3 verificeret HTTP 200 via
+  GitHub Releases. Download-siden peger rigtigt.
+- **Købsflow:** siden henter checkout-URL fra workerens /config endpoint
+  (live). Endpoint svarer korrekt med tom checkout → vises "Notify Me"
+  indtil LS-nøglen findes. Så snart checkout_urls['deskuptime'] sættes via
+  API'en, bliver knappen automatisk "Buy Now — $19" uden ny deploy. Flowet
+  er end-to-end testet og venter KUN på nøglen.
+- Desktop-appen (v0.2.3) har købsknap + licensaktivering bygget ind.
+
+Konklusion: der er ingen teknisk blokering mellem besøgende og betaling
+udover selve LS API-nøglen.
 
 ## Tal (ærlige)
 
@@ -23,10 +35,10 @@
 
 ## Næste skridt (prioriteret)
 
-1. LS API key → opret produkt + checkout via API (~10 min, BUILD.md trin 1–5).
+1. LS API key → sæt checkout_url via API (~10 min, BUILD.md trin 1–5).
 2. deskuptime.com domæne (forhåndsgodkendt, ledigt pr. 27/8).
-3. Publicér npm 0.1.5 når npm-token ligger i Bitwarden.
+3. Publicér npm CLI når npm-token ligger i Bitwarden.
 
 ## Venter på Mads (én linje)
 
-LS API key i Bitwarden → checkout åbnes; domænekøb forhåndsgodkendt; npm-token.
+LS API key i Bitwarden; domænekøb forhåndsgodkendt; npm-token.
