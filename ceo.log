@@ -9519,3 +9519,35 @@ Iteration 488 færdig, committet som `3c809e5`.
 **Blokeret (én linje):** LS API key i Bitwarden — én `bw unlock` fra Mads → ~10 min til checkout er live.
 2026-08-26T10:36:33+02:00 iteration 52 afsluttet (exit 0)
 2026-08-26T10:36:55+02:00 === iteration 53/60 ===
+Iteration 489 færdig og pushet (c47d494).
+
+**Universality-vurdering: BESTÅET — intet at trække ud.**
+- Kernen (`deskuptime/src/engine.js` + `worker-quickcheck/index.js`) tager en almindelig URL uden CMS-antagelser
+- CLI, Tauri desktop, GitHub Action, web live-check og 5 gratis værktøjssider kalder alle samme kerne
+- WordPress nævnes kun som ét eksempel blandt Shopify/Webflow/static/API i teksterne
+
+**Bygget i denne iteration:** ny gratis side **/deskuptime/bulk-url-checker/** — indsæt op til 10 URL'er, få status, svartid, redirects og SSL-udløb pr. URL live via quickcheck-worker. Valgt fordi det rammer højt-intenteret søgetrafik og naturligt opgraderer til Pro ($19). Verificeret:
+- Live på https://auditedwp.pages.dev/deskuptime/bulk-url-checker/ (200, JS ok)
+- Pipeline-test med rigtige URL'er: 200/404/SSL-dage returneres korrekt fra workeren
+- Sitemap (+1), cross-links fra 5 værktøjssider + hovedside, 0 døde links, inline-JS-audit ALL OK
+
+**Tal:** salg 0, waitlist 0, eksterne scans 2.
+
+**Blokeret:** LS API key i Bitwarden (bw unauthenticated) — én `bw unlock` fra Mads → checkout flip på ~10 min.
+2026-08-26T10:43:38+02:00 iteration 53 afsluttet (exit 0)
+2026-08-26T10:44:00+02:00 === iteration 54/60 ===
+Iteration 490 færdig. Kort rapport:
+
+**Punkt 1 (universelt) — BESTÅET for 4. gang, intet at ombygge.** Kernen (`engine.js` + quickcheck-worker) tager en almindelig URL uden CMS-antagelser; CLI, desktop-app, GitHub Action og 7 gratis værktøjssider er alle indpakninger.
+
+**Denne iteration:**
+- Verificeret /deskuptime/cron-monitoring/ i dybden i stedet for at bygge endnu en side: cron-parseren kørt i Node med 13 testtilfælde — alle korrekte (*/15-intervaller, måneds-/dagsnavne, dom/dow OR-logik, skudår `0 0 29 2 *` → 2028-02-29, og 5 fejltilfælde med præcise fejlbeskeder).
+- Fundet et reelt gab: cron-siden manglede indgående links fra bulk-url-checker og change-monitor. Tilføjet begge steder.
+- Deployet og live-verificeret: cron-siden svarer 200 med interaktiv JS, nye cross-links synlige live.
+- STATUS.md opdateret (site/STATUS.md — bemærk: site/ er gitignored, så der er ingen commit af selve siderne).
+
+**Tal (ærlige):** salg 0, waitlist 0, eksterne scans 2.
+
+**Blokeret (én linje):** LS API key i Bitwarden — ét `bw unlock` fra Mads → ~10 min til betaling LIVE.
+2026-08-26T10:47:47+02:00 iteration 54 afsluttet (exit 0)
+2026-08-26T10:48:10+02:00 === iteration 55/60 ===
