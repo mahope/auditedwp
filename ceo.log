@@ -9123,3 +9123,65 @@ STATUS.md opdateret. Stadig blokeret på: LS API key i Bitwarden (checkout) + de
 2026-08-26T06:54:12+02:00 UPSTREAM - venter 5 min (forsoeg 4/24)
 2026-08-26T06:59:12+02:00 UPSTREAM - venter 5 min (forsoeg 5/24)
 2026-08-26T07:04:20+02:00 === iteration 29/60 ===
+Iteration 464 færdig og pushed (1e0f7a6).
+
+**Universality-vurderingen:** BESTÅET — igen. Kernen tager en almindelig URL og virker uanset CMS (CLI, desktop-app, live-check Worker ved intet om platformen). WP-pluginet er allerede kun én indpakning blandt flere. Intet at udtrække, vurderingen står i STATUS.md.
+
+**Hvad jeg ellers gjorde:**
+1. Fuld QA af hele købsrejsen som en fremmed: 12 sider, 91 interne links — alle live. Alle 5 GitHub-release-downloads svarer 200. Live-check API'et virker. Checkout-plumbing er verificeret ende-til-ende: siden henter config-workeren og skifter automatisk til "Buy Now"-knap, så snart en checkout-URL ligger i `checkout_urls`. Alt der kan gøres uden LS-nøglen er altså gjort.
+2. Byggede én ny købsintentionsside: `/deskuptime/no-subscription-uptime-monitoring/` ("uptime monitoring without a subscription") — pristabel mod UptimeRobot/Pingdom/StatusCake/Better Stack, en ærlig tabel med hvornår SaaS faktisk er det rigtige valg, FAQ + JSON-LD, responsiv. Deployet og verificeret på produktion, cross-linket fra forsiden + sitemap.
+3. STATUS.md opdateret kort.
+
+**Blokeret (én linje):** LS API key stadig utilgængelig (Bitwarden unauthenticated) — det er det eneste mellem besøgende og betaling; BUILD.md står klar til ~10 minutters arbejde når nøglen kommer.
+2026-08-26T07:09:50+02:00 iteration 29 afsluttet (exit 0)
+2026-08-26T07:10:11+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T07:15:13+02:00 === iteration 30/60 ===
+Iteration 465 færdig. Kort rapport:
+
+**Universality-vurdering (punkt 1): BESTÅET — nu bekræftet i koden, ikke kun på papiret.**
+Jeg gennemgik `deskuptime/src/engine.js` og checkers (ping, ssl, content): kernen tager en vilkårlig URL og laver HTTP/SSL/indholdstjek med nul referencer til WordPress eller noget CMS. Desktop-appen, CLI'en, live-check-widgetten og GitHub Action er alle indpakninger omkring den samme universelle kerne. Intet at udtrække, intet at bygge om.
+
+**Punkt A — beslutningen holder under pengekriteriet.**
+DeskUptime scorer højt på alle fem: første betaling kan ske ~10 min efter LS-nøglen kommer, $19 pr. kunde, stort marked, $0 leveringsomkostning. At starte noget nyt ville udskyde betaling uden at fjerne den eneste blokering.
+
+**Tjek i denne iteration:**
+- Bitwarden: stadig `unauthenticated` — LS-nøglen er ikke tilgængelig endnu
+- Produktion: /deskuptime/ svarer 200
+
+STATUS.md er opdateret (/Users/madsholstjensen/hermes-ceo/STATUS.md). Næste skridt uændret: LS key → checkout → deskuptime.com.
+2026-08-26T07:17:40+02:00 iteration 30 afsluttet (exit 0)
+2026-08-26T07:18:01+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T07:23:02+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-26T07:28:05+02:00 === iteration 31/60 ===
+Iteration 466 færdig. Kort resumé:
+
+**Punkt 1 (universalitet): BESTÅET — igen, nu med bevis i koden.**
+`grep -rin "wordpress|wp-content"` over hele `deskuptime/src/` giver nul hits. Kernen (engine.js + checkers + cli + license + watch) tager en vilkårlig URL og virker på ethvert CMS. Desktop-app, CLI, live-check-widget og GitHub Action er indpakninger — intet at trække ud, intet at bygge om.
+
+**Punkt A (beslutningen): DeskUptime holder under pengekriteriet.** Produktet er bygget, QA-testet og $0 at levere; eneste blokering er stadig LS API-nøglen.
+
+**Denne iterations arbejde — fuld site-QA i stedet for at pudse tekst:**
+- Crawlede ALLE 188 lokale sider: 0 broken links, 0 ikke-200
+- Alle 4 download-links (mac aarch64/x64, Win exe/msi): HTTP 200
+- /config- og /stats-endpoints OK (2 ægte scans, ingen testdata)
+- Sitemap (181 URL'er), JSON-LD FAQ, canonical tags verificeret
+
+Ingen fejl fundet → ingen re-deploy nødvendig. STATUS.md opdateret og pushed (iter 466).
+
+Venter fortsat kun på: LS API key i Bitwarden → ~10 min til åbnet checkout.
+2026-08-26T07:36:25+02:00 iteration 31 afsluttet (exit 0)
+2026-08-26T07:36:48+02:00 === iteration 32/60 ===
+Iteration 467 færdig.
+
+**Universality-vurderingen (punkt 1): BESTÅET.** Grep af al kernekilde i iter 466 viste nul CMS-referencer — kernen tager en vilkårlig URL og laver HTTP-, SSL- og indholdstjek. Desktop-app, CLI, widget og GitHub Action er allerede indpakninger. Intet at bygge om.
+
+**Det jeg fandt og rettede i denne iteration** (frisk øjnene-gennemgang af "det der står mellem besøgende og deling"):
+
+- 3 tool-sider (ssl-expiry-monitor, github-actions, no-subscription) delte vs-UptimeRobot's sociale preview-billede — forkert emne på netop de sider folk deler.
+- Forsiden brugte `og-image.svg` — de fleste crawlers (Facebook, Twitter, LinkedIn, iMessage) ignorerer SVG.
+
+Fix: genererede 4 dedikerede 1200×630 PNG'er fra SVG-skabelonen (visuelt kontrolleret — ren og læsbar), opdaterede meta-tags, deployede og verificerede live: alle 4 sider 200, alle 4 PNG'er 200 `image/png`, tags peger korrekt. Commit 4f5bffa.
+
+STATUS.md opdateret. Stadig én blokering: LS API key i Bitwarden — når den kommer, er checkout ~10 min væk (BUILD.md trin 1–5 klar).
+2026-08-26T07:40:46+02:00 iteration 32 afsluttet (exit 0)
+2026-08-26T07:41:09+02:00 === iteration 33/60 ===
