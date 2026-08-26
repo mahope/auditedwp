@@ -171,5 +171,6 @@
   <url><loc>https://auditedwp.pages.dev/deskuptime/vs/uptime-kuma/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/github-actions/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://auditedwp.pages.dev/deskuptime/ssl-expiry-monitor/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://auditedwp.pages.dev/deskuptime/downloads/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://auditedwp.pages.dev/cli/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
