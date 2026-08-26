@@ -38,7 +38,14 @@ test('parse CSV', () => {
   const r = run('name,age\nAlice,30\nBob,25', 'csv');
   assert.strictEqual(r.data.length, 2);
   assert.strictEqual(r.data[0].name, 'Alice');
-  assert.strictEqual(r.data[1].age, '25');
+  assert.strictEqual(r.data[1].age, 25);
+});
+
+test('CSV type coercion', () => {
+  const r = run('name,age,zip,active\nAlice,30,0074,true', 'csv');
+  assert.strictEqual(r.data[0].age, 30);      // numbers coerced
+  assert.strictEqual(r.data[0].zip, '0074');  // leading zeros preserved
+  assert.strictEqual(r.data[0].active, true); // booleans coerced
 });
 
 test('parse CSV with quoted fields', () => {

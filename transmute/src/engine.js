@@ -26,7 +26,7 @@ const parsers = {
       if (!line) continue;
       const values = parseCSVLine(line);
       const row = {};
-      headers.forEach((h, idx) => { row[h] = idx < values.length ? values[idx] : ''; });
+      headers.forEach((h, idx) => { row[h] = idx < values.length ? coerceCSVValue(values[idx]) : ''; });
       rows.push(row);
     }
     return rows;
@@ -339,6 +339,20 @@ const operations = {
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
+
+/**
+ * CSV has no types. Coerce values the way spreadsheets and most converters do:
+ * numbers become numbers, true/false become booleans, empty becomes ''.
+ * Leading-zero values (zip codes, IDs like "007") stay strings on purpose.
+ */
+function coerceCSVValue(val) {
+  if (val === '') return '';
+  if (/^0\d+$/.test(val)) return val;           // preserve leading zeros
+  if (/^-?\d+(\.\d+)?$/.test(val) && val.length < 16) return Number(val);
+  if (val === 'true') return true;
+  if (val === 'false') return false;
+  return val;
+}
 
 function parseCSVLine(line) {
   const result = [];

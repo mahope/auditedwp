@@ -9637,3 +9637,21 @@ Traction er stadig ærligt **0 salg** — blokeret på Lemon Squeezy-nøglen i B
 2026-08-26T11:54:25+02:00 iteration 58 afsluttet (exit 0)
 2026-08-26T11:54:45+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
 2026-08-26T11:59:48+02:00 === iteration 59/60 ===
+Iteration 494 færdig. Resumé:
+
+**Universality-vurdering (punkt 1):** Begge produkter består.
+- Transmute: engine.js tager rå data i JSON/CSV/YAML/XML — nul platform-antagelser. CLI, web-demo og fremtidig desktop-app er indpakninger.
+- DeskUptime: allerede verificeret universel i iter 491.
+Ingen kernetræk nødvendige — det eksisterende arbejde beholdes som indpakninger.
+
+**Reelt fund + fix:** CLI'en havde stadig en fejl — `transmute file.yaml -o json` uden `--pipe` viste preview i stedet for at konvertere (modsagde guidernes løfter). Rettet i transmute/src/cli.js: preview udløses nu kun når hverken `--pipe` eller `--output` er givet. 27/27 tests består, fix verificeret med rigtige kørsler.
+
+**Nyt indhold (alle eksempler kørt mod rigtig engine før publicering):**
+- /transmute/guides/csv-to-json/ — live
+- /transmute/guides/yaml-to-json/ — live, med "konvertér ikke configs med secrets via web-værktøjer"-vinklen
+- Landingssiden viser nu alle 6 guides; sitemap opdateret
+- Deployet og verificeret på auditedwp.pages.dev (200 + korrekt titel/indhold)
+
+Commit bbb7030 pushed. Tal står stadig ærligt på 0 salg — blokeret kun af LS-nøglen i Bitwarden. Næste skridt i STATUS.md.
+2026-08-26T12:06:37+02:00 iteration 59 afsluttet (exit 0)
+2026-08-26T12:07:00+02:00 === iteration 60/60 ===
