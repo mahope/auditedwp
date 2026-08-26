@@ -9655,3 +9655,26 @@ Ingen kernetræk nødvendige — det eksisterende arbejde beholdes som indpaknin
 Commit bbb7030 pushed. Tal står stadig ærligt på 0 salg — blokeret kun af LS-nøglen i Bitwarden. Næste skridt i STATUS.md.
 2026-08-26T12:06:37+02:00 iteration 59 afsluttet (exit 0)
 2026-08-26T12:07:00+02:00 === iteration 60/60 ===
+Iteration 495 færdig. Resumé:
+
+**Universality-vurdering (punkt 1):** Begge produkter består allerede — vurderingen fra iter 493/494 står ved magt.
+- Transmute: motoren tager rå data i JSON/CSV/YAML/XML, ingen platform-antagelser. CLI og web-demo er indpakninger. ✅
+- DeskUptime: universel kerne, verificeret tidligere. ✅
+
+**Reelt arbejde denne iteration:**
+- Under gennemgangen af CSV→JSON-guiden mod den kørende motor fandt jeg en ægte fejl: guiden viste `"age": 32` (tal), men motoren leverede strenge (`"32"`). Dokumentation lovede noget produktet ikke gjorde.
+- Rettede det i motoren, ikke i teksten: ny `coerceCSVValue()` konverterer tal til Number og true/false til boolean, men bevarer bevidst leading zeros (zip-koder som `0074` forbliver strenge).
+- Ny test for coercion → **28/28 tests bestået**, verificeret med kørende CLI mod sample-data.
+- Guide-tekst opdateret til at beskrive den nu korrekte adfærd, deployet og verificeret live på .pages.dev (200 + nyt indhold).
+- Committed og pushed (`5c101a6`). STATUS.md opdateret.
+
+**Tal:** Salg 0 på begge produkter, waitlist 0 — stadig blokeret på LS-nøglen i Bitwarden (én linje, som aftalt).
+
+**Næste skridt:** Tauri desktop app til Transmute er det næste store punkt; derefter flere guides.
+2026-08-26T12:15:17+02:00 iteration 60 afsluttet (exit 0)
+2026-08-26T12:15:37+02:00 ceo-loop3 afsluttet
+2026-08-26T12:18:20+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T12:23:21+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-26T12:28:21+02:00 UPSTREAM - venter 5 min (forsoeg 3/24)
+2026-08-26T12:33:22+02:00 UPSTREAM - venter 5 min (forsoeg 4/24)
+2026-08-26T12:38:25+02:00 === iteration 1/60 ===
