@@ -79,43 +79,87 @@ const parsers = {
     return result;
   },
   xml: (text) => {
-    // Minimal XML to array-of-objects conversion
-    const rows = [];
-    // Find root element
-    const rootMatch = text.match(/<(\w+)[^>]*>/);
-    if (!rootMatch) return rows;
+    // Minimal XML to array-of-objects conversion.
+    // Strategy: find the root element's matching close tag, parse its direct
+    // children; if each child has the same tag and contains sub-elements,
+    // flatten to one row per child (array-of-records shape).
+    const strip = (s) => s
+      .replace(/<\?[\s\S]*?\?>/g, '')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .trim();
+
+    text = strip(text);
+    const rootMatch = text.match(/^<(\w+)([^>]*)>/);
+    if (!rootMatch) return [];
     const rootTag = rootMatch[1];
-    
-    // Extract all child elements
-    const itemRegex = /<(\w+)[^>]*>([\s\S]*?)<\/\1>/g;
-    let match;
-    let items = [];
-    while ((match = itemRegex.exec(text)) !== null) {
-      if (match[1] === rootTag) continue; // skip root
-      items.push({ tag: match[1], content: match[2] });
-    }
-    
-    // If items have sub-items, make them rows
-    if (items.length > 0) {
-      // Group by tag — each tag is a row type
-      const row = {};
-      items.forEach(item => {
-        // Check for nested tags
-        const nested = [...item.content.matchAll(itemRegex)];
-        if (nested.length > 0) {
-          if (!row[item.tag]) row[item.tag] = [];
-          const subRow = {};
-          nested.forEach(([_, tag, content]) => {
-            subRow[tag] = content.trim();
-          });
-          row[item.tag].push(subRow);
-        } else {
-          row[item.tag] = item.content.trim();
+    const openLen = rootMatch[0].length;
+    const closeIdx = text.lastIndexOf('</' + rootTag + '>');
+    if (closeIdx === -1) return [];
+    const inner = text.slice(openLen, closeIdx);
+
+    // Parse one element starting at index i in `inner`.
+    // Returns [{ tag, value }, nextIndex] so parents can key children by tag name.
+    const parseElement = (inner, i) => {
+      const m = inner.slice(i).match(/^<(\w+)((?:[^>"']|"[^"]*"|'[^']*')*)>/);
+      if (!m) return null;
+      const tag = m[1];
+      const contentStart = i + m[0].length;
+      if (m[2].trim().endsWith('/')) return [{ tag, value: '' }, contentStart];
+      const closeTag = '</' + tag + '>';
+      const closeIdx = inner.indexOf(closeTag, contentStart);
+      if (closeIdx === -1) return null;
+      const content = inner.slice(contentStart, closeIdx).trim();
+      let value;
+      if (content.startsWith('<')) {
+        value = {};
+        let pos = 0;
+        while (pos < content.length) {
+          const rest = content.slice(pos);
+          if (!rest.trim()) break;
+          const offset = pos + (rest.length - rest.trimStart().length);
+          const child = parseElement(content, offset);
+          if (!child) break;
+          const [{ tag: childTag, value: childValue }, next] = child;
+          if (childTag in value) {
+            if (!Array.isArray(value[childTag])) value[childTag] = [value[childTag]];
+            value[childTag].push(childValue);
+          } else {
+            value[childTag] = childValue;
+          }
+          pos = next;
         }
-      });
-      rows.push(row);
+      } else {
+        value = content;
+      }
+      return [{ tag, value }, closeIdx + closeTag.length];
+    };
+
+    // Parse all top-level children of root
+    const rows = [];
+    let pos = 0;
+    while (pos < inner.length) {
+      const rest = inner.slice(pos);
+      if (!rest.trim()) break;
+      const offset = pos + (rest.length - rest.trimStart().length);
+      const parsed = parseElement(inner, offset);
+      if (!parsed) break;
+      const [{ tag, value }, next] = parsed;
+      rows.push({ [tag]: value });
+      pos = next;
     }
-    
+
+    // Flatten: <data><item>...</item><item>...</item></data> → records
+    if (
+      rows.length > 0 &&
+      rows.every((r) => Object.keys(r).length === 1) &&
+      new Set(rows.map((r) => Object.keys(r)[0])).size === 1 &&
+      rows.every((r) => typeof r[Object.keys(r)[0]] === 'object')
+    ) {
+      const key = Object.keys(rows[0])[0];
+      const flat = rows.map((r) => r[key]);
+      if (flat.every((v) => typeof v === 'object' && !Array.isArray(v))) return flat;
+    }
+
     return rows;
   }
 };

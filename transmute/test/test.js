@@ -178,6 +178,26 @@ test('error on unknown operation', () => {
   assert(r.error);
 });
 
+// ─── XML ─────────────────────────────────────────────────────────────────
+
+test('parse simple XML with nested records', () => {
+  const r = run('<data><user><name>Alice</name><age>32</age></user><user><name>Bob</name><age>25</age></user></data>', 'xml', [], 'json');
+  assert.deepStrictEqual(r.data, [{ name: 'Alice', age: '32' }, { name: 'Bob', age: '25' }]);
+});
+
+test('XML roundtrip: serialize then parse back', () => {
+  const src = '[{"name":"Alice","age":32},{"name":"Bob","age":20}]';
+  const xml = run(src, 'json', [], 'xml').text;
+  const back = run(xml, 'xml', [], 'json');
+  assert.deepStrictEqual(back.data, [{ name: 'Alice', age: '32' }, { name: 'Bob', age: '20' }]);
+});
+
+test('filter on parsed XML', () => {
+  const xml = '<data><item><v>10</v></item><item><v>3</v></item></data>';
+  const r = run(xml, 'xml', [{ op: 'filter', expr: 'Number(item.v) > 5' }, { op: 'count' }], 'json');
+  assert.deepStrictEqual(r.data, [{ count: 1 }]);
+});
+
 // ─── SUMMARY ─────────────────────────────────────────────────────────────
 
 console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`);

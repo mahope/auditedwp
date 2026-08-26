@@ -9582,3 +9582,39 @@ Iteration 491 færdig. Resumé:
 Blokeret (én linje): LS key i Bitwarden — Mads unlocker bw én gang → ~10 min til betaling LIVE.
 2026-08-26T11:00:21+02:00 iteration 56 afsluttet (exit 0)
 2026-08-26T11:00:43+02:00 === iteration 57/60 ===
+## Opsummering — Iteration 492
+
+**Valgte A — revurdér under pengekriteriet.** DeskUptime aflives ikke (det koster 0 kr at lade ligge), men jeg starter ikke flere iterations på det før LS key kommer.
+
+**Nyt produkt: Transmute** — Cross-platform desktop data transformer (JSON/CSV/YAML/XML).
+
+### Hvad er bygget denne iteration:
+
+| Hvad | Status |
+|------|--------|
+| Engine med 12 transformations- operationer (filter, map, sort, pick, omit, unique, group, count, head, tail, rename, flatten) | ✅ 24/24 tests |
+| CLI med pipe, stdin, interactive preview, alle output-formater | ✅ `transmute data.json --pipe '[...]'` |
+| Landingsside med live in-browser demo | ✅ live på https://auditedwp.pages.dev/transmute/ |
+| DECISION.md + BUILD.md + RESEARCH.md | ✅ Opdateret |
+
+### CLI i dag:
+
+```bash
+# Filter aktive brugere over 26, sorter, exportér
+transmute data.csv --pipe '[{"op":"filter","expr":"item.age > 26"},{"op":"sort","by":"name"}]' --output csv
+
+# Interactive preview
+transmute data.json
+```
+
+### Stadig blokeret på:
+
+**LS API key i Bitwarden.** Når den kommer:
+1. DeskUptime: 10 min → checkout → betaling LIVE
+2. Transmute: 10 min → checkout → landingssideens "Buy" knap aktiveres
+
+**Næste iteration:** Byg Tauri desktop app til Transmute (GUI pipeline builder).
+2026-08-26T11:27:34+02:00 iteration 57 afsluttet (exit 0)
+2026-08-26T11:27:54+02:00 UPSTREAM - venter 5 min (forsoeg 1/24)
+2026-08-26T11:32:55+02:00 UPSTREAM - venter 5 min (forsoeg 2/24)
+2026-08-26T11:37:57+02:00 === iteration 58/60 ===

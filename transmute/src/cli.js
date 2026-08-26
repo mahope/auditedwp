@@ -60,8 +60,10 @@ async function main() {
     if (!inputFormat) inputFormat = detectFormat(null, inputText);
   }
 
-  // If no pipeline specified, show interactive preview
-  if (pipeline.length === 0) {
+  // No --pipe at all → interactive preview. Explicit empty/omitted pipeline
+  // with --output is a plain format conversion.
+  const hasPipe = args.includes('--pipe') || args.includes('-p');
+  if (pipeline.length === 0 && !hasPipe) {
     showPreview(inputText, inputFormat);
     return;
   }
