@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /impressum-generator/
+Disallow: /privacy-policy-generator/
+Disallow: /terms-of-service-generator/
+Disallow: /refund-policy-generator/
+Disallow: /cookie-policy-generator/
+Disallow: /tools/
 
 Sitemap: https://eucomplypro.com/sitemap.xml

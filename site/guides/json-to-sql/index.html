@@ -5,21 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How to Convert JSON to SQL INSERT Statements (CLI, Python)</title>
 <meta name="description" content="Turn JSON arrays into ready-to-run SQL INSERT statements: qf CLI, jq and Python methods, plus how to avoid quoting and type bugs.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <meta property="og:title" content="How to Convert JSON to SQL INSERT Statements (CLI, Python)">
 <meta property="og:description" content="Turn JSON arrays into ready-to-run SQL INSERT statements: qf CLI, jq and Python methods, plus how to avoid quoting and type bugs.">
 <meta property="og:type" content="article">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
-*{margin:0;padding:0;box-sizing:border-box}
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a:hover{color:var(--accent)}
 h1{font-size:34px;line-height:1.2;margin:40px 0 8px;letter-spacing:-.02em}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}
 h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.01em;padding-top:8px}
@@ -27,7 +19,11 @@ h3{font-size:18px;margin:24px 0 8px}
 p{margin-bottom:16px}
 code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono','Fira Code','Consolas',monospace}
 pre{background:#1a1f2e;color:#e4e8f0;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.6;margin:16px 0;font-family:'SF Mono','Fira Code','Consolas',monospace}
-pre .kw{color:#7eb8f0}pre .str{color:#a8d88a}pre .cm{color:#6a7a8a}pre .nm{color:#e4e8f0}pre .prompt{color:#6a7a8a}
+pre .kw{color:#7eb8f0}
+pre .str{color:#a8d88a}
+pre .cm{color:#6a7a8a}
+pre .nm{color:#e4e8f0}
+pre .prompt{color:#6a7a8a}
 .table-wrap{overflow-x:auto;margin:16px 0}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
@@ -36,34 +32,36 @@ blockquote{border-left:3px solid var(--accent);padding:12px 16px;margin:16px 0;b
 blockquote p{margin:0;color:var(--muted);font-size:14px}
 ul,ol{margin:12px 0 16px;padding-left:24px}
 li{margin-bottom:6px}
-.cta-box{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:24px;text-align:center;margin:32px 0}
-.cta-box h3{font-size:18px;margin-bottom:6px}
-.cta-box p{font-size:14px;color:var(--muted);margin-bottom:16px}
 .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 22px;border-radius:6px;font-size:14px;transition:background .12s}
 .btn:hover{background:var(--accent-dark)}
 .btn.green{background:#1a7a44}
-footer{text-align:center;padding:32px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:48px}
-footer a{color:var(--accent);text-decoration:none}
-@media(max-width:600px){h1{font-size:26px}h2{font-size:20px}}
-</style>
+@media(max-width:600px){h1{font-size:26px}
+h2{font-size:20px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a href="/" class="logo">Quick<span>Format</span></a>
-    <nav>
-      <a href="/tools/format/">Free Converter</a>
-      <a href="/transmute/">Transmute Desktop</a>
-      <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 
 <h1>How to Convert JSON to SQL INSERT Statements</h1>
-<p class="meta">📅 August 24, 2026 · 5 min read · <a href="/tools/format/">Try the free converter →</a></p>
+<p class="meta">August 24, 2026 · 5 min read · <a href="/checklist/">Try the free converter →</a></p>
 
 
 <p>Migrating seed data, importing an API export into Postgres, loading fixtures — the job is always the same: take a JSON array of objects and turn it into <code>INSERT</code> statements your database will accept without a fight.</p>
@@ -110,7 +108,7 @@ db.commit()</pre>
 <ul>
 <li><strong>Scripts &amp; handoffs:</strong> <a href="/transmute/">Transmute CLI</a> — JSON in, escaped SQL out.</li>
 <li><strong>Direct import:</strong> Python with parameterized queries.</li>
-<li><strong>Quick checks:</strong> <a href="/tools/format/">free web converter</a> handles JSON ⇄ CSV ⇄ YAML locally in the browser.</li>
+<li><strong>Quick checks:</strong> <a href="/checklist/">free web converter</a> handles JSON ⇄ CSV ⇄ YAML locally in the browser.</li>
 </ul>
 
 
@@ -119,15 +117,47 @@ db.commit()</pre>
   <p>Transmute runs the conversion on your machine — paste it in, or script it from the command line. JSON, YAML, CSV, TOML and XML, fully offline.</p>
   <a href="/transmute/" class="btn green">Get Transmute Desktop — $19 one-time →</a>
   &nbsp;
-  <a href="/tools/format/" class="btn">Or use the free web converter</a>
+  <a href="/checklist/" class="btn">Or use the free web converter</a>
 </div>
 
 </div>
 
-<footer>
-  <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/transmute/">Transmute</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
-  <p style="margin-top:8px">© 2026 Mahope. All conversions run locally in your browser or on your machine.</p>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
 </footer>
-
 </body>
 </html>

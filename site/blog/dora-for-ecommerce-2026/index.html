@@ -5,82 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DORA for E-Commerce: Does the Digital Operational Resilience Act Apply to Online Stores? (2026 Guide)</title>
 <meta name="description" content="DORA (EU 2022/2554) is often seen as a financial-sector regulation — but it impacts e-commerce platforms, payment gateways, and marketplaces that handle financial data. Complete guide for online stores.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/blog/dora-for-ecommerce-2026/">
 <meta property="og:title" content="DORA for E-Commerce: Does It Apply to Online Stores? (2026 Guide)">
 <meta property="og:description" content="DORA entered full application in January 2025. Here is what e-commerce operators, payment processors and digital marketplaces actually need to do — and what you can skip.">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2026-08-24">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
-  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
-  header{border-bottom:1px solid var(--line);padding:14px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-  .blog-header{padding:40px 0 16px}
-  .blog-header .tag{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:12px}
-  .blog-header h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;margin-bottom:10px}
-  .blog-header .meta{color:var(--muted);font-size:14px}
-  .blog-header .meta a{color:var(--accent)}
-  h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.015em}
-  h3{font-size:18px;margin:24px 0 8px}
-  p{margin-bottom:16px;font-size:15px;color:#1a2a3a}
-  .tl-dr{background:var(--soft);border-left:4px solid var(--accent);padding:18px 20px;border-radius:8px;margin:20px 0}
-  .tl-dr strong{display:block;margin-bottom:6px}
-  .tl-dr p{margin:0;font-size:14px}
-  ul,ol{margin:0 0 16px 20px;font-size:15px;color:#1a2a3a}
-  li{margin-bottom:6px}
-  .card{border:1px solid var(--line);border-radius:10px;padding:20px;background:var(--soft);margin:20px 0}
-  .card h3{font-size:16px;margin-bottom:6px}
-  .card p{font-size:14px;color:var(--muted);margin:0}
-  .card .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin-top:10px}
-  .card .btn:hover{background:var(--accent-dark)}
-  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px}
-  .btn:hover{background:var(--accent-dark)}
-  table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
-  th,td{padding:10px 14px;border:1px solid var(--line);text-align:left;vertical-align:top}
-  th{background:var(--soft);font-weight:700}
-  .check{color:var(--ok);font-weight:700}
-  .cross{color:#ccc}
-  .cta-section{background:var(--accent);color:#fff;border-radius:12px;padding:32px;text-align:center;margin:32px 0}
-  .cta-section h2{color:#fff;font-size:24px;margin:0 0 8px}
-  .cta-section p{color:rgba(255,255,255,.85);font-size:15px;margin:0 0 16px}
-  .cta-section .btn{background:#fff;color:var(--accent)}
-  .cta-section .btn:hover{filter:brightness(.95)}
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;margin-top:32px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  footer a{color:var(--accent)}
-  @media(max-width:600px){.blog-header h1{font-size:26px}h2{font-size:20px}nav a:not(.cta){display:none}table{font-size:13px}}
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+.blog-header{padding:40px 0 16px}
+.blog-header .tag{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:12px}
+.blog-header h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;margin-bottom:10px}
+.blog-header .meta{color:var(--muted);font-size:14px}
+.blog-header .meta a{color:var(--accent)}
+h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.015em}
+h3{font-size:18px;margin:24px 0 8px}
+p{margin-bottom:16px;font-size:15px;color:#1a2a3a}
+.tl-dr{background:var(--soft);border-left:4px solid var(--accent);padding:18px 20px;border-radius:8px;margin:20px 0}
+.tl-dr strong{display:block;margin-bottom:6px}
+.tl-dr p{margin:0;font-size:14px}
+ul,ol{margin:0 0 16px 20px;font-size:15px;color:#1a2a3a}
+li{margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:20px;background:var(--soft);margin:20px 0}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted);margin:0}
+.card .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin-top:10px}
+.card .btn:hover{background:var(--accent-dark)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px}
+.btn:hover{background:var(--accent-dark)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+th,td{padding:10px 14px;border:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:700}
+.check{color:var(--ok);font-weight:700}
+.cross{color:#ccc}
+@media(max-width:600px){.blog-header h1{font-size:26px}
+h2{font-size:20px}
+table{font-size:13px}}
 .keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .keep-reading a{color:#7dd3fc;text-decoration:none}
-.keep-reading a:hover{text-decoration:underline}
-</style>
+.keep-reading a:hover{text-decoration:underline}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "DORA for E-Commerce: Does the Digital Operational Resilience Act Apply to Online Stores? (2026 Guide)", "description": "DORA entered full application in January 2025. Here is what e-commerce operators, payment processors and digital marketplaces actually need to do — and what you can skip.", "mainEntityOfPage": "/blog/dora-for-ecommerce-2026/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/pro/">Pro</a>
-      <a href="/blog/">Blog</a>
-      <a class="cta" href="/pro/">Pro $79/yr</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/" aria-current="page">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap blog-header">
-  <div class="tag">📘 DORA · E-Commerce · Compliance</div>
+  <div class="tag"> DORA · E-Commerce · Compliance</div>
   <h1>DORA for E-Commerce: Does the Digital Operational Resilience Act Apply to Online Stores?</h1>
   <p class="meta">Published August 24, 2026 · Updated August 24, 2026 · <a href="/scan/">Free compliance scan →</a></p>
 </div>
@@ -88,7 +79,7 @@
 <div class="wrap">
 
 <div class="tl-dr">
-  <strong>⚡ TL;DR</strong>
+  <strong>TL;DR</strong>
   <p>DORA (Digital Operational Resilience Act, EU 2022/2554) entered full application on <strong>January 17, 2025</strong>. If you run an e-commerce store that processes payments, handles financial data, or supplies ICT services to financial entities, DORA likely affects you. This guide explains exactly what you need to do — and what you can safely ignore.</p>
 </div>
 
@@ -166,22 +157,22 @@
 <p>For most e-commerce operators who are not directly in DORA scope, the practical impact is:</p>
 
 <div class="card">
-  <h3>✅ 1. Know your payment processor's DORA status</h3>
+  <h3>1. Know your payment processor's DORA status</h3>
   <p>Stripe, Adyen, Mollie, and similar PSPs are all regulated under DORA. Ask your provider for their DORA compliance statement. If they suffer an ICT incident, your store's ability to process payments could be affected.</p>
 </div>
 
 <div class="card">
-  <h3>✅ 2. Document your ICT supply chain</h3>
+  <h3>2. Document your ICT supply chain</h3>
   <p>Identify who provides your hosting, CDN, payment processing, analytics, and email. You should have basic documentation of which third parties handle your data — this is also a GDPR requirement (Art. 28).</p>
 </div>
 
 <div class="card">
-  <h3>✅ 3. Run automated security checks</h3>
+  <h3>3. Run automated security checks</h3>
   <p>DORA's emphasis on "continuous resilience testing" applies upstream to e-commerce platforms as well. Run weekly or daily automated compliance scans covering HTTPS, security headers, and cookie consent. A <a href="/scan/">free compliance scan</a> takes 10 seconds.</p>
 </div>
 
 <div class="card">
-  <h3>✅ 4. Keep an incident log</h3>
+  <h3>4. Keep an incident log</h3>
   <p>Even if DORA does not require reporting for your store, keep a log of security incidents (downtime, data breaches, payment disruptions). When a client or regulator asks, you have a record — not a blank stare.</p>
 </div>
 
@@ -210,13 +201,13 @@
 </ol>
 
 <div class="cta-section">
-  <h2>🔍 Not sure where you stand?</h2>
+  <h2>Not sure where you stand?</h2>
   <p>Run a free compliance scan on your website — checks HTTPS, cookie consent, privacy policy, security headers, and more. Takes 10 seconds. No sign-up needed.</p>
   <a class="btn" href="/scan/">Run your free scan →</a>
 </div>
 
 <div class="cta-section" style="background:var(--soft);color:var(--ink);border:1px solid var(--line)">
-  <h2 style="color:var(--ink)">📊 Need daily monitoring?</h2>
+  <h2 style="color:var(--ink)">Need daily monitoring?</h2>
   <p style="color:var(--muted)">Pro automatically re-scans your site every day, generates auditor-ready PDF reports, and emails you if your compliance score drops. $79/year — less than one hour of a consultant's time.</p>
   <a class="btn" href="/pro/" style="color:#fff">See Pro →</a>
 </div>
@@ -229,25 +220,55 @@
   <li><a href="/pro/">EUComply Pro — automated compliance monitoring</a></li>
 </ul>
 
-<p style="font-size:13px;color:var(--muted);margin-top:32px;padding-top:16px;border-top:1px solid var(--line)">⚖️ <strong>Disclaimer:</strong> This guide is for informational purposes and does not constitute legal advice. DORA compliance requirements vary by entity type, jurisdiction, and specific circumstances. Consult a qualified legal professional for your specific situation.</p>
+<p style="font-size:13px;color:var(--muted);margin-top:32px;padding-top:16px;border-top:1px solid var(--line)"><strong>Disclaimer:</strong> This guide is for informational purposes and does not constitute legal advice. DORA compliance requirements vary by entity type, jurisdiction, and specific circumstances. Consult a qualified legal professional for your specific situation.</p>
 
 </div>
 
 <p>How does EUComply compare with the established tools? See <a href="/pro/vs-onetrust/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
 
 <aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
-  <strong style="font-size:16px">📖 The Practical Guide to EU Compliance 2026</strong>
+  <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
   <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
   <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
 
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/nis2-compliance-checklist-saas/">NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply</a></li><li><a href="/blog/nis2-board-liability/">NIS2 Board & Director Liability: What Executives Must Know — EUComply</a></li><li><a href="/blog/nis2-vendor-supply-chain-compliance/">NIS2 Vendor & Supply Chain Compliance Guide 2026 — EUComply</a></li></ul></nav>
-<footer>
-  <div class="wrap">
-    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
-    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/pro/">Pro</a> · <a href="/blog/">Blog</a> · <a href="/privacy/">Privacy</a></div>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

@@ -12,8 +12,7 @@
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://eucomplypro.com/transmute/">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-:root {
+<style>:root{
   --bg: #0f0f13;
   --surface: #18181d;
   --border: #2a2a32;
@@ -26,80 +25,88 @@
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
-.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-
+body{font-family: var(--font);background: var(--bg);color: var(--text);line-height: 1.6}
+.container{ max-width: 960px; margin: 0 auto; padding: 0 24px; }
 /* Hero */
-.hero { padding: 100px 0 60px; text-align: center; }
-.hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
-.hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { font-size: 1.2rem; color: var(--dim); max-width: 600px; margin: 0 auto 32px; }
-.hero .badge { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 0.85rem; color: var(--dim); margin-bottom: 20px; }
-
+.hero{ padding: 100px 0 60px; text-align: center; }
+.hero h1{ font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+.hero h1 span{ background: linear-gradient(135deg, var(--accent), var(--accent-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p{ font-size: 1.2rem; color: var(--dim); max-width: 600px; margin: 0 auto 32px; }
+.hero .badge{ display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 0.85rem; color: var(--dim); margin-bottom: 20px; }
 /* CTA */
-.cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
-.btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { border-color: var(--accent); }
-.btn:disabled, .btn.coming-soon { opacity: 0.5; cursor: not-allowed; }
-.meta { font-size: 0.85rem; color: var(--dim); text-align: center; margin-top: 8px; }
-.meta strong { color: var(--text); }
-
+.cta{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+.btn{ display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+.btn-primary{ background: var(--accent); color: white; }
+.btn-primary:hover{ background: var(--accent-hover); transform: translateY(-1px); }
+.btn-secondary{ background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover{ border-color: var(--accent); }
+.btn:disabled, .btn.coming-soon{ opacity: 0.5; cursor: not-allowed; }
+.meta{ font-size: 0.85rem; color: var(--dim); text-align: center; margin-top: 8px; }
+.meta strong{ color: var(--text); }
 /* Async Demo */
-.demo { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 60px; }
-.demo h2 { font-size: 1.3rem; margin-bottom: 16px; }
-.demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-@media (max-width: 640px) { .demo-grid { grid-template-columns: 1fr; } }
-.demo-box { display: flex; flex-direction: column; gap: 8px; }
-.demo-box label { font-size: 0.85rem; color: var(--dim); font-weight: 600; }
-.demo-box textarea, .demo-box select { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-family: var(--mono); font-size: 0.85rem; resize: vertical; }
-.demo-box textarea { min-height: 160px; }
-.demo-box select { cursor: pointer; }
-.pipe-preview { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 0.8rem; color: var(--accent); overflow-x: auto; white-space: pre; margin-bottom: 12px; min-height: 40px; }
-
+.demo{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 60px; }
+.demo h2{ font-size: 1.3rem; margin-bottom: 16px; }
+.demo-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 640px){.demo-grid{ grid-template-columns: 1fr; }}
+.demo-box{ display: flex; flex-direction: column; gap: 8px; }
+.demo-box label{ font-size: 0.85rem; color: var(--dim); font-weight: 600; }
+.demo-box textarea, .demo-box select{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-family: var(--mono); font-size: 0.85rem; resize: vertical; }
+.demo-box textarea{ min-height: 160px; }
+.demo-box select{ cursor: pointer; }
+.pipe-preview{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 0.8rem; color: var(--accent); overflow-x: auto; white-space: pre; margin-bottom: 12px; min-height: 40px; }
 /* Features */
-.features { padding: 0 0 60px; }
-.features h2 { text-align: center; font-size: 1.8rem; margin-bottom: 40px; }
-.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
-.feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-.feature-card .icon { width: 40px; height: 40px; border-radius: 8px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
-.feature-card h3 { font-size: 1rem; margin-bottom: 8px; }
-.feature-card p { font-size: 0.9rem; color: var(--dim); }
-
+.features{ padding: 0 0 60px; }
+.features h2{ text-align: center; font-size: 1.8rem; margin-bottom: 40px; }
+.feature-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+.feature-card{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+.feature-card .icon{ width: 40px; height: 40px; border-radius: 8px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
+.feature-card h3{ font-size: 1rem; margin-bottom: 8px; }
+.feature-card p{ font-size: 0.9rem; color: var(--dim); }
 /* CLI examples */
-.cli-section { padding: 0 0 60px; }
-.cli-section h2 { text-align: center; font-size: 1.8rem; margin-bottom: 40px; }
-.cli-grid { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 700px; margin: 0 auto; }
-.cli-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
-.cli-block code { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); display: block; }
-.cli-block .comment { color: var(--dim); font-size: 0.8rem; margin-bottom: 4px; }
-
+.cli-section{ padding: 0 0 60px; }
+.cli-section h2{ text-align: center; font-size: 1.8rem; margin-bottom: 40px; }
+.cli-grid{ display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 700px; margin: 0 auto; }
+.cli-block{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.cli-block code{ font-family: var(--mono); font-size: 0.85rem; color: var(--accent); display: block; }
+.cli-block .comment{ color: var(--dim); font-size: 0.8rem; margin-bottom: 4px; }
 /* Pricing */
-.pricing { padding: 0 0 60px; text-align: center; }
-.pricing h2 { font-size: 1.8rem; margin-bottom: 32px; }
-.pricing-card { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px 48px; text-align: center; }
-.pricing-card .price { font-size: 3rem; font-weight: 800; color: var(--accent); }
-.pricing-card .price span { font-size: 1rem; color: var(--dim); font-weight: 400; }
-.pricing-card ul { list-style: none; margin: 20px 0; text-align: left; }
-.pricing-card ul li { padding: 6px 0; font-size: 0.9rem; color: var(--dim); }
-.pricing-card ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
-
+.pricing{ padding: 0 0 60px; text-align: center; }
+.pricing h2{ font-size: 1.8rem; margin-bottom: 32px; }
+.pricing-card{ display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px 48px; text-align: center; }
+.pricing-card .price{ font-size: 3rem; font-weight: 800; color: var(--accent); }
+.pricing-card .price span{ font-size: 1rem; color: var(--dim); font-weight: 400; }
+.pricing-card ul{ list-style: none; margin: 20px 0; text-align: left; }
+.pricing-card ul li{ padding: 6px 0; font-size: 0.9rem; color: var(--dim); }
+.pricing-card ul li::before{ content: '✓ '; color: var(--green); font-weight: 700; }
 /* FAQ */
-.faq { padding: 0 0 80px; }
-.faq h2 { text-align: center; font-size: 1.8rem; margin-bottom: 32px; }
-.faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
-.faq-item summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
-.faq-item p { margin-top: 8px; font-size: 0.9rem; color: var(--dim); }
-
+.faq{ padding: 0 0 80px; }
+.faq h2{ text-align: center; font-size: 1.8rem; margin-bottom: 32px; }
+.faq-item{ background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
+.faq-item summary{ cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.faq-item p{ margin-top: 8px; font-size: 0.9rem; color: var(--dim); }
 /* Footer */
-.footer { text-align: center; padding: 40px 0; border-top: 1px solid var(--border); color: var(--dim); font-size: 0.85rem; }
-.footer a { color: var(--text); }
-</style>
+.footer{ text-align: center; padding: 40px 0; border-top: 1px solid var(--border); color: var(--dim); font-size: 0.85rem; }
+.footer a{ color: var(--text); }</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+    
+  </div>
+</header>
+<div class="pg-legacy">
+
+
+
 
 <section class="hero">
   <div class="container">
@@ -108,7 +115,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     <p>JSON → CSV → YAML → XML. Filter, sort, map, and convert — all on your machine. No uploads. No subscriptions.</p>
     <div class="cta">
       <span class="btn btn-primary coming-soon">Buy — $19 (coming soon)</span>
-      <a href="https://github.com/mahope/transmute/releases" class="btn btn-secondary">Download →</a>
+      <a href="https://transmute.run/" class="btn btn-secondary">Download →</a>
       <a href="#try-it" class="btn btn-secondary">Try it online →</a>
     </div>
     <div class="meta">
@@ -174,32 +181,32 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     <h2>What you can do</h2>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="icon">🔄</div>
+        <div class="icon"></div>
         <h3>Convert between formats</h3>
         <p>JSON ↔ CSV ↔ YAML ↔ XML. One command, one click. Preserves structure automatically.</p>
       </div>
       <div class="feature-card">
-        <div class="icon">🔍</div>
+        <div class="icon"></div>
         <h3>Filter & query</h3>
         <p>Keep only the rows you need. `.age > 18`, `.status === "active"` — plain JavaScript expressions.</p>
       </div>
       <div class="feature-card">
-        <div class="icon">📐</div>
+        <div class="icon"></div>
         <h3>Sort & group</h3>
         <p>Sort by any field. Group by category. Count, deduplicate, pick and omit columns.</p>
       </div>
       <div class="feature-card">
-        <div class="icon">🔒</div>
+        <div class="icon"></div>
         <h3>100% local</h3>
         <p>Your data never leaves your machine. No uploads, no servers, no privacy concerns.</p>
       </div>
       <div class="feature-card">
-        <div class="icon">⚡</div>
+        <div class="icon"></div>
         <h3>Pipe & automate</h3>
         <p>Chain operations: filter → sort → pick → export. Use in scripts, cron jobs, and CI/CD.</p>
       </div>
       <div class="feature-card">
-        <div class="icon">💻</div>
+        <div class="icon"></div>
         <h3>Cross-platform</h3>
         <p>CLI works everywhere Node runs. Desktop app for macOS, Windows, and Linux.</p>
       </div>
@@ -235,7 +242,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
         <li>CLI — <strong>always free</strong></li>
       </ul>
       <span class="btn btn-primary coming-soon" style="margin-top:12px;">Buy — Coming soon</span>
-      <a href="https://github.com/mahope/transmute/releases" class="btn btn-secondary" style="margin-top:12px;">Download from GitHub →</a>
+      <a href="https://transmute.run/" class="btn btn-secondary" style="margin-top:12px;">Download from GitHub →</a>
       <p style="color:var(--dim);font-size:0.8rem;margin-top:8px;">CLI is free forever. No subscription.</p>
     </div>
   </div>
@@ -266,12 +273,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     </details>
   </div>
 </section>
-
-<footer class="footer">
-  <div class="container">
-    <p>Transmute · <a href="https://github.com/mahope/transmute">GitHub</a> · <a href="https://github.com/mahope/transmute/releases">Releases</a> · <a href="https://www.npmjs.com/package/@mahope/transmute">npm</a> · <a href="/">EUComply</a></p>
-  </div>
-</footer>
 
 <script>
 // Transmute in-browser engine — lightweight port for the demo
@@ -526,5 +527,42 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
 })();
 </script>
 
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

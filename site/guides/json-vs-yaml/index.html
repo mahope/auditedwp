@@ -5,21 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JSON vs YAML: Which Format Should You Use? (2026 Guide)</title>
 <meta name="description" content="Compare JSON and YAML for APIs, config files, Kubernetes, and CI/CD. Learn when to use each format with examples, pros and cons, and conversion tools.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <meta property="og:title" content="JSON vs YAML: Which Format Should You Use? (2026 Guide)">
 <meta property="og:description" content="Compare JSON and YAML side by side. Pros, cons, syntax examples, and when to pick each format.">
 <meta property="og:type" content="article">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
-*{margin:0;padding:0;box-sizing:border-box}
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a:hover{color:var(--accent)}
 h1{font-size:34px;line-height:1.2;margin:40px 0 8px;letter-spacing:-.02em}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap}
 h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.01em;padding-top:8px}
@@ -27,7 +19,10 @@ h3{font-size:18px;margin:24px 0 8px}
 p{margin-bottom:16px;color:var(--ink)}
 code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono','Fira Code','Consolas',monospace}
 pre{background:#1a1f2e;color:#e4e8f0;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.6;margin:16px 0;font-family:'SF Mono','Fira Code','Consolas',monospace}
-pre .kw{color:#7eb8f0}pre .str{color:#a8d88a}pre .cm{color:#6a7a8a}pre .nm{color:#e4e8f0}
+pre .kw{color:#7eb8f0}
+pre .str{color:#a8d88a}
+pre .cm{color:#6a7a8a}
+pre .nm{color:#e4e8f0}
 .table-wrap{overflow-x:auto;margin:16px 0}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
@@ -39,15 +34,10 @@ blockquote p{margin:0;color:var(--muted);font-size:14px}
 .tip{display:inline-block;background:#e8f0fe;color:var(--accent);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;margin-right:6px}
 ul,ol{margin:12px 0 16px;padding-left:24px}
 li{margin-bottom:6px}
-.cta-box{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:24px;text-align:center;margin:32px 0}
-.cta-box h3{font-size:18px;margin-bottom:6px}
-.cta-box p{font-size:14px;color:var(--muted);margin-bottom:16px}
 .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 22px;border-radius:6px;font-size:14px;transition:background .12s}
 .btn:hover{background:var(--accent-dark)}
-footer{text-align:center;padding:32px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:48px}
-footer a{color:var(--accent);text-decoration:none}
-@media(max-width:600px){h1{font-size:26px}h2{font-size:20px}}
-</style>
+@media(max-width:600px){h1{font-size:26px}
+h2{font-size:20px}}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -65,23 +55,31 @@ footer a{color:var(--accent);text-decoration:none}
   }
 }
 </script>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a href="/transmute/" class="logo">Trans<span>mute</span></a>
-    <nav>
-      <a href="/transmute/">Transmute</a>
-      <a href="/guides/">All guides</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 
 <h1>JSON vs YAML: Which Format Should You Use?</h1>
-<p class="meta">📅 August 24, 2026 · 7 min read · <a href="/transmute/">Try Transmute →</a></p>
+<p class="meta">August 24, 2026 · 7 min read · <a href="/transmute/">Try Transmute →</a></p>
 
 <p>Every developer eventually faces the choice: <strong>JSON or YAML?</strong></p>
 
@@ -96,14 +94,14 @@ footer a{color:var(--accent);text-decoration:none}
 <tr><th>Feature</th><th>JSON</th><th>YAML</th></tr>
 <tr><td>Primary use</td><td>APIs, data interchange</td><td>Config files, DevOps</td></tr>
 <tr><td>Syntax style</td><td>Braces &amp; brackets</td><td>Indentation-based</td></tr>
-<tr><td>Comments</td><td class="cross">❌ Not supported</td><td class="check">✅ <code>#</code> comments</td></tr>
+<tr><td>Comments</td><td class="cross">Not supported</td><td class="check"><code>#</code> comments</td></tr>
 <tr><td>Human readability</td><td>Moderate</td><td>High</td></tr>
 <tr><td>File size</td><td>Larger (verbose syntax)</td><td>Smaller (concise)</td></tr>
 <tr><td>Quotes required</td><td>Always for strings</td><td>Only for special cases</td></tr>
-<tr><td>Parser availability</td><td class="check">✅ Every language</td><td class="check">✅ Most languages</td></tr>
-<tr><td>Norway problem</td><td class="check">✅ No ambiguity</td><td class="cross">❌ "yes" = true in YAML 1.1</td></tr>
-<tr><td>Anchors &amp; aliases</td><td class="cross">❌ No</td><td class="check">✅ <code>&amp;anchor</code> / <code>*alias</code></td></tr>
-<tr><td>Multi-document streams</td><td class="cross">❌ One document</td><td class="check">✅ <code>---</code> separator</td></tr>
+<tr><td>Parser availability</td><td class="check">Every language</td><td class="check">Most languages</td></tr>
+<tr><td>Norway problem</td><td class="check">No ambiguity</td><td class="cross">"yes" = true in YAML 1.1</td></tr>
+<tr><td>Anchors &amp; aliases</td><td class="cross">No</td><td class="check"><code>&amp;anchor</code> / <code>*alias</code></td></tr>
+<tr><td>Multi-document streams</td><td class="cross">One document</td><td class="check"><code>---</code> separator</td></tr>
 <tr><td>Spec version</td><td>RFC 8259 (stable 2017)</td><td>1.2 (2009), 1.1 (2005)</td></tr>
 </table>
 </div>
@@ -179,7 +177,7 @@ footer a{color:var(--accent);text-decoration:none}
 <p>Quick tip: paste your config into the <a href="/transmute/#try-it">Transmute demo</a>, verify the output, and use the CLI for daily work.</p>
 
 <div class="cta-box">
-  <h3>🔄 Convert between JSON, YAML, CSV and XML</h3>
+  <h3>Convert between JSON, YAML, CSV and XML</h3>
   <p>Transmute is a free, open-source CLI. Filter, sort, map and convert — nothing leaves your machine.</p>
   <a href="/transmute/" class="btn">Get Transmute →</a>
 </div>
@@ -197,11 +195,42 @@ footer a{color:var(--accent);text-decoration:none}
 </div>
 
 <p>More guides: <a href="/guides/toml-vs-yaml/">TOML vs YAML</a> · <a href="/guides/">All free guides</a> · <a href="/transmute/">Transmute CLI</a></p>
-<footer>
-  <div class="wrap">
-    <p><a href="/">EUComply Scanner</a> · <a href="/transmute/">Transmute</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

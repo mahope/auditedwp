@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bulk URL Checker — Check Up to 10 URLs Free, All at Once</title>
 <meta name="description" content="Check up to 10 URLs at once: HTTP status, response time, redirects and SSL certificate expiry. Free, no signup, works with any website or CMS — WordPress, Shopify, static sites, APIs.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/deskuptime/bulk-url-checker/">
 <meta property="og:title" content="Bulk URL Checker — Check Up to 10 URLs Free">
 <meta property="og:description" content="Paste up to 10 URLs and get HTTP status, response time, redirect and SSL expiry for each. Free, no account needed.">
@@ -15,61 +15,50 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bulk URL Checker — Check Up to 10 URLs Free">
 <meta name="twitter:description" content="HTTP status, response time, redirects and SSL expiry for up to 10 URLs at once.">
-<style>
-  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
         --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
         --code:#1e293b;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
-  header{border-bottom:1px solid var(--line);padding:14px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-  nav .cta{color:var(--accent);font-weight:700}
-  .hero{background:var(--soft);padding:56px 0;text-align:center}
-  .badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
-  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
-  h1 span{color:var(--accent)}
-  .sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
-  .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
-  section{padding:48px 0}
-  h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
-  .lede{color:var(--muted);margin-bottom:22px}
-  .checkbox{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:22px}
-  textarea{width:100%;min-height:140px;font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:8px;resize:vertical}
-  textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
-  .row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
-  label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
-  #count{font-size:13px;color:var(--muted)}
-  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
-  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-  tr:last-child td{border-bottom:0}
-  .pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
-  .p-ok{background:#e3f3ea;color:var(--ok)}
-  .p-red{background:#fbe5e5;color:#b03030}
-  .p-warn{background:#fdf0e0;color:var(--warn)}
-  .p-gray{background:#eceff3;color:var(--muted)}
-  #result[aria-busy]{opacity:.7}
-  .note{font-size:13px;color:var(--muted);margin-top:14px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
-  .card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
-  .card h3{font-size:16px;margin-bottom:6px}
-  .card p{font-size:14px;color:var(--muted)}
-  details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
-  summary{font-weight:700;cursor:pointer}
-  details p{margin-top:8px;color:var(--muted);font-size:15px}
-  pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
-  code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  footer a{color:var(--accent)}
-  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
-</style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.hero{background:var(--soft);padding:56px 0;text-align:center}
+.badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+h1 span{color:var(--accent)}
+.sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+section{padding:48px 0}
+h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
+.lede{color:var(--muted);margin-bottom:22px}
+.checkbox{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:22px}
+textarea{width:100%;min-height:140px;font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
+#count{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
+.p-ok{background:#e3f3ea;color:var(--ok)}
+.p-red{background:#fbe5e5;color:#b03030}
+.p-warn{background:#fdf0e0;color:var(--warn)}
+.p-gray{background:#eceff3;color:var(--muted)}
+#result[aria-busy]{opacity:.7}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted)}
+details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer}
+details p{margin-top:8px;color:var(--muted);font-size:15px}
+pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
+code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
+@media(max-width:700px){h1{font-size:28px}
+.grid3{grid-template-columns:1fr}}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -110,19 +99,26 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
-    <nav>
-      <a href="/deskuptime/github-actions/">GitHub Actions</a>
-      <a href="/deskuptime/vs/">Comparisons</a>
-      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="hero">
   <div class="wrap">
@@ -182,7 +178,7 @@ https://httpbin.org/status/404"></textarea>
         <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
       </tbody>
     </table>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 
@@ -211,21 +207,6 @@ https://httpbin.org/status/404"></textarea>
     </details>
   </div>
 </section>
-
-<footer>
-  <div class="wrap">
-    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
-    <span>
-      Also try: <a href="/deskuptime/security-headers-checker/">Security headers checker</a> ·
-      <a href="/deskuptime/redirect-chain-checker/">Redirect checker</a> ·
- <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry checker</a> ·
- <a href="/deskuptime/response-time-monitor/">Response time checker</a> ·
- <a href="/deskuptime/cron-monitoring/">Cron job monitor</a> ·
-      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
-      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
-    </span>
-  </div>
-</footer>
 
 <script>
 (function(){
@@ -269,7 +250,7 @@ https://httpbin.org/status/404"></textarea>
         +'<td>'+(d.redirected?esc(d.finalUrl||'yes'):'no')+'</td>'
         +'<td>'+ssl+'</td></tr>';
     }
-    html+='</tbody></table><p class="note">Want these checked every hour with alerts when something breaks? <a href="/deskuptime/#pro">DeskUptime does that — $19 once.</a></p>';
+    html+='</tbody></table><p class="note">Want these checked every hour with alerts when something breaks? <a href="https://deskuptime.com/">DeskUptime does that — $19 once.</a></p>';
     box.innerHTML=html;
   };
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
@@ -279,5 +260,42 @@ document.getElementById('urls').addEventListener('keydown',function(e){
 });
 </script>
 
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

@@ -6,23 +6,18 @@
 <title>Is My Cookie Banner Compliant? Free Check in 10 Seconds — EUComply</title>
 <meta name="description" content="Paste your URL and get a free, instant cookie banner compliance check: pre-consent tracking, Consent Mode v2, reject button parity, HTTPS and privacy-policy linking. Works on any platform — WordPress, Shopify, Webflow, Wix, Squarespace or hand-coded HTML.">
 <link rel="canonical" href="https://eucomplypro.com/cookie-banner-check/">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/cookie-banner-check/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/cookie-banner-check/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/cookie-banner-check/">
 <meta property="og:title" content="Is My Cookie Banner Compliant? Free Check in 10 Seconds">
 <meta property="og:description" content="Free instant cookie consent check for any website. Based on the same patterns behind the Google €325M and SHEIN €150M fines. No sign-up.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://eucomplypro.com/cookie-banner-check/">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
       --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
-*{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:920px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
 .hero{text-align:center;padding:52px 0 32px}
 h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;max-width:720px;margin:0 auto 14px}
 h1 em{font-style:normal;color:var(--accent)}
@@ -41,13 +36,19 @@ h1 em{font-style:normal;color:var(--accent)}
 .results{display:none;margin-top:36px;text-align:left}
 .scorecard{border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;background:var(--soft)}
 .scorebig{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
-.scorebig.good{color:var(--ok)}.scorebig.mid{color:var(--warn)}.scorebig.bad{color:var(--fail)}
+.scorebig.good{color:var(--ok)}
+.scorebig.mid{color:var(--warn)}
+.scorebig.bad{color:var(--fail)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
 .card{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:14px 16px;font-size:14px}
-.card.pass{border-left-color:var(--ok)}.card.fail{border-left-color:var(--fail)}.card.warn{border-left-color:var(--warn)}
+.card.pass{border-left-color:var(--ok)}
+.card.fail{border-left-color:var(--fail)}
+.card.warn{border-left-color:var(--warn)}
 .card b{display:block;margin-bottom:4px}
 .pill{float:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
-.card.pass .pill{background:#e6f4ea;color:var(--ok)}.card.fail .pill{background:#fdeaea;color:var(--fail)}.card.warn .pill{background:#fff3e2;color:var(--warn)}
+.card.pass .pill{background:#e6f4ea;color:var(--ok)}
+.card.fail .pill{background:#fdeaea;color:var(--fail)}
+.card.warn .pill{background:#fff3e2;color:var(--warn)}
 .card p{color:var(--muted);font-size:13px;margin-top:4px}
 .pro-cta{margin-top:22px;text-align:center}
 .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
@@ -63,27 +64,28 @@ table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 td:first-child{font-weight:600}
-footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-footer a{color:var(--accent)}
-@media(max-width:600px){h1{font-size:25px}h2{font-size:21px}}
-</style>
-<link rel="alternate" hreflang="en" href="https://eucomplypro.com/cookie-banner-check/">
-<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/cookie-banner-check/">
-<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/cookie-banner-check/">
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+@media(max-width:600px){h1{font-size:25px}
+h2{font-size:21px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/blog/">Guides</a>
-      <a class="cta" href="/pro/">Pro $79/year</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li><a href="/de/cookie-banner-check/" hreflang="de" lang="de">DE</a></li></ul>
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="hero wrap">
   <h1>Is your cookie banner <em>actually compliant?</em> Check it free — right here.</h1>
@@ -143,13 +145,6 @@ footer a{color:var(--accent)}
     <p>Want the full enforcement history? See the <a href="/blog/gdpr-cookie-fines-tracker/">GDPR cookie fines tracker</a>, or the complete <a href="/blog/eu-cookie-consent-guide-2026/">EU cookie consent guide for 2026</a>.</p>
   </div>
 </section>
-
-<footer>
-  <div class="wrap">
-    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
-    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/gdpr-compliance-check/">GDPR compliance check</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a></div>
-  </div>
-</footer>
 
 <script type="application/ld+json">
 {
@@ -237,5 +232,42 @@ footer a{color:var(--accent)}
   }
 })();
 </script>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

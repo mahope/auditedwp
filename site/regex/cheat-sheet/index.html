@@ -17,19 +17,12 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Regex Cheat Sheet — Complete Reference","description":"Complete regex cheat sheet with practical examples for all metacharacters, anchors, quantifiers, groups, lookarounds, and common patterns.","url":"https://eucomplypro.com/regex/cheat-sheet/"}
 </script>
-<style>
-:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+<style>:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
 .wrap{max-width:960px;margin:0 auto;padding:0 16px}
 /* Header */
 header{border-bottom:1px solid var(--line);padding:12px 0;background:var(--surface)}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:700;font-size:17px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:6px}
-.logo-code{font-family:var(--mono);color:var(--accent);font-weight:400}
-nav{display:flex;gap:16px;align-items:center}
-nav a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .15s}
-nav a:hover{color:var(--ink)}
 /* Hero */
 .hero{text-align:center;padding:40px 0 24px}
 h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
@@ -71,7 +64,6 @@ pre{background:var(--code-bg);padding:12px 16px;border-radius:var(--radius);over
 .bottom-cta .cta-btn:hover{background:var(--accent-hover)}
 /* Footer */
 footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:var(--muted);font-size:12px;margin-top:48px}
-footer a{color:var(--accent);text-decoration:none}
 /* Responsive */
 @media(max-width:480px){h1{font-size:24px}.hero{padding:24px 0 16px}.card-grid{grid-template-columns:1fr}}
 /* TOC */
@@ -81,22 +73,27 @@ footer a{color:var(--accent);text-decoration:none}
 .toc ol ol{padding-left:20px;margin:4px 0}
 .toc li{margin:4px 0}
 .toc a{color:var(--accent);text-decoration:none}
-.toc a:hover{text-decoration:underline}
-</style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+.toc a:hover{text-decoration:underline}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a href="/regex/" class="logo"><span class="logo-code">.*</span> Regex&shy;Tester</a>
-    <nav>
-      <a href="/regex/">Tester</a>
-      <a href="/regex/cheat-sheet/" style="color:var(--ink);font-weight:500">Cheat Sheet</a>
-      <a href="/regex/examples/">Examples</a>
-      <a href="/regex/tutorial/">Tutorial</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 
@@ -465,12 +462,42 @@ footer a{color:var(--accent);text-decoration:none}
 
 </div>
 
-<footer>
-  <div class="wrap">
-    <p><span class="logo-code">.*</span> Regex Tester — Free online developer tool. 100% client-side, no tracking, no data leaving your browser.</p>
-    <p style="margin-top:4px"><a href="/regex/">Regex Tester</a> · <a href="/regex/cheat-sheet/">Cheat Sheet</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

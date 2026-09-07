@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Uptime Monitoring in GitHub Actions — Free CI Cron Website Checks</title>
 <meta name="description" content="Run uptime, SSL and content-change checks as a scheduled GitHub Actions job. Free, no account, no API key. Fails the build when your site is down. Works with any website or stack.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/deskuptime/github-actions/">
 <meta property="og:title" content="Uptime Monitoring in GitHub Actions">
 <meta property="og:description" content="Free scheduled website checks with GitHub Actions cron. Uptime, SSL expiry and content changes. No account needed.">
@@ -16,51 +16,39 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Uptime Monitoring in GitHub Actions">
 <meta name="twitter:description" content="Free scheduled website checks with GitHub Actions cron. Uptime, SSL expiry and content changes.">
-<style>
-  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
         --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
         --code:#1e293b;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
-  header{border-bottom:1px solid var(--line);padding:14px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-  nav a.cta:hover{background:var(--accent-dark)}
-  .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
-  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
-  h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:720px;margin:0 auto 14px}
-  h1 span{color:var(--accent)}
-  .sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 auto 26px}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
-  .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
-  section{padding:52px 0;border-bottom:1px solid var(--line)}
-  h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
-  .lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
-  pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
-  code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
-  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
-  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
-  th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
-  .card h3{font-size:16px;margin-bottom:6px}
-  .card p{font-size:14px;color:var(--muted)}
-  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
-  details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
-  summary{font-weight:600;cursor:pointer;font-size:15px}
-  details p{color:var(--muted);font-size:14px;margin-top:8px}
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  footer a{color:var(--accent)}
-  @media(max-width:700px){h1{font-size:28px}.grid2,.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
-</style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
+.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:720px;margin:0 auto 14px}
+h1 span{color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 auto 26px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+.lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
+pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
+code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
+summary{font-weight:600;cursor:pointer;font-size:15px}
+details p{color:var(--muted);font-size:14px;margin-top:8px}
+@media(max-width:700px){h1{font-size:28px}
+.grid2,.grid3{grid-template-columns:1fr}}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -101,19 +89,26 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
-    <nav>
-      <a href="/deskuptime/">Product</a>
-      <a href="/deskuptime/vs/">Compare</a>
-      <a class="cta" href="/deskuptime/#try">Try it free →</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="hero">
   <div class="badge">GitHub Actions · Free · No account, no API key</div>
@@ -130,12 +125,12 @@
     <h2>Why monitor from a GitHub Action?</h2>
     <p class="lede">You already pay for CI minutes. A scheduled workflow is a free uptime monitor for anything with a URL.</p>
     <div class="grid3">
-      <div class="card"><h3>🆓 $0/month</h3><p>No SaaS subscription, no seat limits, no per-check pricing. Public repos are unlimited; private repos fit comfortably in the free minutes tier.</p></div>
-      <div class="card"><h3>🔔 Alerts you already have</h3><p>A failed run triggers GitHub's built-in notifications — email, Slack, mobile push. Nothing extra to configure.</p></div>
-      <div class="card"><h3>🌐 Any URL</h3><p>Websites, APIs, health endpoints, status JSON. Plain HTTP checks mean no agent installs and no platform lock-in.</p></div>
-      <div class="card"><h3>🔒 SSL expiry included</h3><p>Fail the job when a certificate expires within N days — catch the classic expired-cert outage before your users do.</p></div>
-      <div class="card"><h3>📄 Status in the job summary</h3><p>Every run writes a Markdown table of results: status codes, response times, SSL days remaining, content hash.</p></div>
-      <div class="card"><h3>🧩 Same engine as the CLI</h3><p>Powered by the open-source DeskUptime engine — the same checks as the desktop app, running headless.</p></div>
+      <div class="card"><h3>$0/month</h3><p>No SaaS subscription, no seat limits, no per-check pricing. Public repos are unlimited; private repos fit comfortably in the free minutes tier.</p></div>
+      <div class="card"><h3>Alerts you already have</h3><p>A failed run triggers GitHub's built-in notifications — email, Slack, mobile push. Nothing extra to configure.</p></div>
+      <div class="card"><h3>Any URL</h3><p>Websites, APIs, health endpoints, status JSON. Plain HTTP checks mean no agent installs and no platform lock-in.</p></div>
+      <div class="card"><h3>SSL expiry included</h3><p>Fail the job when a certificate expires within N days — catch the classic expired-cert outage before your users do.</p></div>
+      <div class="card"><h3>Status in the job summary</h3><p>Every run writes a Markdown table of results: status codes, response times, SSL days remaining, content hash.</p></div>
+      <div class="card"><h3>Same engine as the CLI</h3><p>Powered by the open-source DeskUptime engine — the same checks as the desktop app, running headless.</p></div>
     </div>
   </div>
 </section>
@@ -184,7 +179,7 @@ jobs:
     <table>
       <tr><th></th><th>GitHub Action (free)</th><th>Dedicated SaaS ($7–15/mo)</th><th>DeskUptime desktop ($19 once)</th></tr>
       <tr><td>Check interval</td><td>~5 min granularity (cron minimum)</td><td>10–60 seconds</td><td>Continuous (while machine runs)</td></tr>
-      <tr><td>Multi-region probes</td><td>— (single region)</td><td>✅</td><td>— (your location)</td></tr>
+      <tr><td>Multi-region probes</td><td>— (single region)</td><td></td><td>— (your location)</td></tr>
       <tr><td>Cost</td><td>$0</td><td>$84–180/year</td><td>$19 one-time</td></tr>
       <tr><td>Setup</td><td>One YAML file</td><td>Account + dashboard</td><td>Install + license key</td></tr>
       <tr><td>Best for</td><td>Personal projects, APIs, repos</td><td>Teams with SLAs</td><td>Freelancers watching client sites</td></tr>
@@ -215,17 +210,42 @@ jobs:
   </div>
 </section>
 
-<footer>
-  <div class="wrap">
-    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
-    <span>
-      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
-      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a> ·
-      <a href="/deskuptime/vs/statuscake/">vs StatusCake</a> ·
-      <a href="/deskuptime/vs/uptime-kuma/">vs Uptime Kuma</a>
-    </span>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

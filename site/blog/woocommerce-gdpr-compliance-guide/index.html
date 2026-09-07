@@ -6,56 +6,72 @@
 <title>WooCommerce GDPR Compliance Guide 2026: What Store Owners Actually Need</title>
 <meta name="description" content="Complete GDPR compliance guide for WooCommerce store owners in 2026: cookie consent setup, privacy policy requirements, data processing agreements, and how to check your store — without hiring a lawyer.">
 <link rel="canonical" href="https://eucomplypro.com/blog/woocommerce-gdpr-compliance-guide/">
-<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/blog/woocommerce-gdpr-compliance-guide/">
 <meta property="og:title" content="WooCommerce GDPR Compliance Guide 2026: What Store Owners Actually Need">
 <meta property="og:description" content="Practical GDPR compliance for WooCommerce stores: consent setup, privacy policies, DPAs, and a free compliance scanner that works on any WooCommerce site.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://eucomplypro.com/blog/woocommerce-gdpr-compliance-guide/">
-<style>
-  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;--ok:#027a48;--warn:#b54708;--bg:#fff;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;max-width:780px;margin:0 auto;padding:32px 24px;background:var(--bg)}
-  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
-  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
-  .meta a{color:var(--accent)}
-  h2{font-size:22px;margin:40px 0 12px;letter-spacing:-.015em;padding-top:16px;border-top:1px solid var(--line)}
-  h3{font-size:17px;margin:24px 0 8px}
-  p{margin-bottom:14px}
-  li{margin-bottom:6px}
-  ul,ol{padding-left:22px;margin-bottom:16px}
-  .toc{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
-  .toc h2{font-size:16px;margin:0 0 10px;padding:0;border:none}
-  .toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0;font-size:14px}
-  .toc a:hover{text-decoration:underline}
-  code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:.9em}
-  .box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:18px 22px;margin:24px 0}
-  .box a{color:var(--accent)}
-  .btn{display:inline-block;background:var(--accent);color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;margin:6px 0}
-  .btn:hover{filter:brightness(.9)}
-  .check{color:var(--ok);font-weight:700}
-  .cross{color:#ccc}
-  .further-reading{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
-  .further-reading h2{border:none;padding:0;margin:0 0 10px;font-size:16px}
-  .further-reading ul{padding-left:20px;margin:0}
-  .further-reading li{margin-bottom:4px}
-  .tblwrap{overflow-x:auto;margin:16px 0}
-  table{border-collapse:collapse;width:100%;font-size:14px}
-  table th,table td{border:1px solid var(--line);padding:10px 12px;text-align:left}
-  table th{background:#f9fafb;font-weight:700;font-size:13px}
-  @media(max-width:600px){h1{font-size:26px}body{padding:20px 16px}table th,table td{padding:7px 8px;font-size:12.5px}}
+<style>:root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;--ok:#027a48;--warn:#b54708;--bg:#fff;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;background:var(--bg)}
+h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
+.meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+.meta a{color:var(--accent)}
+h2{font-size:22px;margin:40px 0 12px;letter-spacing:-.015em;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:24px 0 8px}
+p{margin-bottom:14px}
+li{margin-bottom:6px}
+ul,ol{padding-left:22px;margin-bottom:16px}
+.toc{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
+.toc h2{font-size:16px;margin:0 0 10px;padding:0;border:none}
+.toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0;font-size:14px}
+.toc a:hover{text-decoration:underline}
+code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:.9em}
+.box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:18px 22px;margin:24px 0}
+.box a{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;margin:6px 0}
+.btn:hover{filter:brightness(.9)}
+.check{color:var(--ok);font-weight:700}
+.cross{color:#ccc}
+.further-reading{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
+.further-reading h2{border:none;padding:0;margin:0 0 10px;font-size:16px}
+.further-reading ul{padding-left:20px;margin:0}
+.further-reading li{margin-bottom:4px}
+.tblwrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+table th,table td{border:1px solid var(--line);padding:10px 12px;text-align:left}
+table th{background:#f9fafb;font-weight:700;font-size:13px}
+@media(max-width:600px){h1{font-size:26px}
+table th,table td{padding:7px 8px;font-size:12.5px}
+.pg-legacy{padding:20px 16px}}
 .keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .keep-reading a{color:#7dd3fc;text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}
-</style>
+.pg-legacy{max-width:780px;margin:0 auto;padding:32px 24px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "WooCommerce GDPR Compliance Guide 2026: What Store Owners Actually Need", "description": "Practical GDPR compliance for WooCommerce stores: consent setup, privacy policies, DPAs, and a free compliance scanner that works on any WooCommerce site.", "mainEntityOfPage": "/blog/woocommerce-gdpr-compliance-guide/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/" aria-current="page">Blog</a>
+    </nav>
+    
+  </div>
+</header>
+<div class="pg-legacy">
+
+
+
 
 <h1>WooCommerce GDPR Compliance Guide 2026: What Store Owners Actually Need</h1>
-<p class="meta">
-  <time datetime="2026-08-30">August 30, 2026</time> · Filed under: <a href="/blog/">Guides</a> ·
+<p class="meta"><time datetime="2026-08-30">August 30, 2026</time> · Filed under: <a href="/blog/">Guides</a> ·
   <a href="/scan/">Free compliance scanner →</a>
 </p>
 
@@ -162,7 +178,7 @@
 
 <p>Whichever you choose, install it site-wide (not just the shop pages), then verify with a fresh incognito window plus DevTools → Application → Cookies: no non-essential cookies should appear before you click accept. Our <a href="/cookie-banner-check/">free cookie banner checker</a> does this automatically.</p>
 
-<div class="box"><strong>⚠️ Plugins bypass banners too.</strong> A marketing plugin that fires its own pixel on page load ignores whatever banner you show unless the CMP explicitly gates its script. After installing any new plugin, re-check what loads pre-consent — this is where compliant setups silently break.</div>
+<div class="box"><strong>Plugins bypass banners too.</strong> A marketing plugin that fires its own pixel on page load ignores whatever banner you show unless the CMP explicitly gates its script. After installing any new plugin, re-check what loads pre-consent — this is where compliant setups silently break.</div>
 </section>
 
 <section id="privacy-policy">
@@ -183,7 +199,7 @@
 
 <p>Also link the policy visibly — from your footer <em>and</em> next to checkout and account pages. A policy nobody can find doesn't satisfy Art. 13.</p>
 
-<p>Need a proper starting point? Our <a href="/privacy-policy-generator/">free privacy policy generator</a> produces an Article-13-ready document in two minutes, tailored to how your store collects data.</p>
+<p>Need a proper starting point? Our <a href="/checklist/">compliance checklist</a> produces an Article-13-ready document in two minutes, tailored to how your store collects data.</p>
 </section>
 
 <section id="dpa">
@@ -225,7 +241,7 @@
   <li><strong>Default privacy policy never edited.</strong> It doesn't mention your actual plugins, so it fails Art. 13 transparency. An inaccurate policy is itself a finding.</li>
   <li><strong>Marketing popups with pre-ticked boxes</strong> — invalid under EU law (CJEU Planet49 ruling). Use unticked checkboxes and say what subscribers will get.</li>
   <li><strong>No plan for data requests.</strong> When someone emails "delete my data," you need a repeatable answer within one month — across orders, email lists and analytics, not just the WP user record.</li>
-  <li><strong>Missing legal pages for specific markets.</strong> Selling to German customers requires an Impressum (<a href="/impressum-generator/">generate one free</a>). Selling goods into the EU requires clear refund/withdrawal information (<a href="/refund-policy-generator/">generator here</a>).</li>
+  <li><strong>Missing legal pages for specific markets.</strong> Selling to German customers requires an Impressum (<a href="/checklist/">compliance checklist</a>). Selling goods into the EU requires clear refund/withdrawal information (<a href="/checklist/">compliance checklist</a>).</li>
   <li><strong>Unencrypted or co-located backups.</strong> Customer data in a backup file sitting on the same server, world-readable, is an Art. 32 failure waiting for a breach notification.</li>
 </ol>
 </section>
@@ -243,7 +259,7 @@
 </section>
 
 <div class="box">
-  <strong>📋 Quick checklist for today:</strong>
+  <strong>Quick checklist for today:</strong>
   <ol style="margin-top:8px">
     <li>Scan your store with the <a href="/scan/">free checker</a></li>
     <li>Install a CMP that blocks scripts until opt-in — not an inform-only banner</li>
@@ -274,13 +290,8 @@
   </ul>
 </div>
 
-<footer style="border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:var(--muted);font-size:13px">
-  <p>EUComply — EU compliance scanning for every website. ⚖️ Automated technical checks and general information only. Not legal advice.</p>
-</footer>
-
-
 <aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
-  <strong style="font-size:16px">📖 The Practical Guide to EU Compliance 2026</strong>
+  <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
   <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
   <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
@@ -288,5 +299,42 @@
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/shopify-gdpr-compliance-guide/">Shopify GDPR Compliance Guide 2026: What Store Owners Actually Need</a></li><li><a href="/blog/webflow-gdpr-compliance-guide/">Webflow GDPR Compliance Guide 2026: What Site Owners Actually Need</a></li><li><a href="/blog/squarespace-gdpr-compliance-guide/">Squarespace GDPR Compliance Guide 2026: What Site Owners Actually Need</a></li><li><a href="/blog/wix-gdpr-compliance-guide/">Wix GDPR Compliance Guide 2026: What Site Owners Actually Need</a></li><li><a href="/blog/bigcommerce-gdpr-compliance-guide/">BigCommerce GDPR Compliance Guide 2026: What Store Owners Actually Need</a></li><li><a href="/blog/magento-gdpr-compliance-guide/">Magento &amp; Adobe Commerce GDPR Compliance Guide 2026</a></li></ul></nav>
 
 <p><strong>Related:</strong> Compliance is only half the story — <a href="/blog/website-down-checker/">knowing when your site goes down</a> is the other. See our <a href="/blog/free-uptime-monitoring-tools-2026/">free uptime monitoring tools comparison</a>.</p>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

@@ -5,23 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Dashboard — EUComply Compliance Monitoring</title>
 <meta name="description" content="EUComply Pro dashboard: live compliance score, 30-day history, PDF audit reports, badge embed, and alert settings.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/pro/dashboard/">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
       --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
-*{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5}
 .wrap{max-width:1024px;margin:0 auto;padding:0 20px}
-
 /* Header */
 header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-
 /* Dashboard header */
 .dash-hdr{background:var(--bg);border-bottom:1px solid var(--line);padding:20px 0;margin-bottom:20px}
 .dash-hdr .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
@@ -29,7 +20,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .dash-title p{font-size:13px;color:var(--muted)}
 .dash-site{display:flex;align-items:center;gap:8px;font-size:14px;background:var(--soft);border-radius:8px;padding:8px 14px;border:1px solid var(--line)}
 .dash-site code{font-size:13px;color:var(--accent);font-weight:600}
-
 /* Score row */
 .score-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap}
 .score-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:20px 24px;flex:1;min-width:180px;text-align:center}
@@ -39,7 +29,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .score-card .value.mid{color:var(--warn)}
 .score-card .value.bad{color:var(--fail)}
 .score-card .sub{font-size:13px;color:var(--muted);margin-top:2px}
-
 /* History chart area */
 .chart-area{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
 .chart-area h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
@@ -51,7 +40,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .chart-bar .bar.mid{background:var(--warn)}
 .chart-bar .bar.bad{background:var(--fail)}
 .chart-bar .bar-label{font-size:10px;color:var(--muted);white-space:nowrap;transform:rotate(-45deg);transform-origin:left;margin-top:4px}
-
 /* Scan log */
 .scan-log{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
 .scan-log h2{font-size:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
@@ -67,7 +55,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .scan-item .actions{margin-left:auto;font-size:13px}
 .scan-item .actions a{color:var(--accent);text-decoration:none}
 .scan-item .actions a:hover{text-decoration:underline}
-
 /* Quick actions grid */
 .quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:20px}
 .quick-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:20px;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;gap:8px}
@@ -76,7 +63,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .quick-card h3{font-size:15px;margin:0}
 .quick-card p{font-size:13px;color:var(--muted);margin:0;flex:1}
 .quick-card .badge{font-size:11px;color:#fff;background:var(--accent);padding:2px 10px;border-radius:999px;font-weight:600;width:fit-content}
-
 /* Setup wizard */
 .setup-area{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
 .setup-area h2{font-size:16px;margin-bottom:12px}
@@ -85,7 +71,6 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .setup-step .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;margin-bottom:8px}
 .setup-step h4{font-size:14px;margin-bottom:4px}
 .setup-step p{font-size:12.5px;color:var(--muted)}
-
 /* Alert settings */
 .alert-area{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
 .alert-area h2{font-size:16px;margin-bottom:12px}
@@ -95,37 +80,33 @@ nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px
 .alert-row .toggle .dot{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .2s}
 .alert-row .toggle.on .dot{left:20px}
 .alert-row .email{color:var(--muted);font-size:13px}
-
-footer{border-top:1px solid var(--line);padding:24px 0;margin-top:20px;color:var(--muted);font-size:13px;background:var(--bg)}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-footer a{color:var(--accent)}
-
 /* Glowing pulse for live indicator */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;margin-right:6px;vertical-align:middle}
-
-@media(max-width:700px){
-  .score-row{flex-direction:column}
-  .score-card{min-width:auto}
-  .scan-item .date{min-width:100px}
-  .chart-bar .bar-label{font-size:8px}
-  nav a:not(.cta){display:none}
-}
-</style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+@media(max-width:700px){.score-row{flex-direction:column}
+.score-card{min-width:auto}
+.scan-item .date{min-width:100px}
+.chart-bar .bar-label{font-size:8px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/pro/">Pro</a>
-      <a href="/blog/">Guides</a>
-      <a class="cta" href="/pro/">Upgrade →</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="dash-hdr">
   <div class="wrap">
@@ -134,7 +115,7 @@ footer a{color:var(--accent)}
       <p>This is a live demo of the Pro dashboard, running on a real site. Your dashboard looks like this — with your own domain, history and alerts.</p>
     </div>
     <div class="dash-site">
-      <span>🌐</span> <code id="demo-url">your-site.com</code>
+      <span></span> <code id="demo-url">your-site.com</code>
       <span style="font-size:12px;color:var(--muted)">·</span>
       <span style="font-size:12px;color:var(--muted)" id="last-update">Checking…</span>
     </div>
@@ -169,10 +150,9 @@ footer a{color:var(--accent)}
 
 <!-- History chart -->
 <div class="chart-area">
-  <h2>📈 30-Day Compliance History <small>Score trend over the last 30 days</small></h2>
+  <h2>30-Day Compliance History <small>Score trend over the last 30 days</small></h2>
   <div class="chart-bars" id="chart-bars"></div>
-  <p style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">
-    Each bar is one day's scan. 
+  <p style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">Each bar is one day's scan. 
     <span style="color:var(--ok)">● Pass</span> · 
     <span style="color:var(--warn)">● Warning</span> · 
     <span style="color:var(--fail)">● Fail</span>
@@ -181,36 +161,31 @@ footer a{color:var(--accent)}
 
 <!-- Scan log -->
 <div class="scan-log">
-  <h2>📋 Recent Scans <small>Last 10 automated checks — illustrative example</small></h2>
+  <h2>Recent Scans <small>Last 10 automated checks — illustrative example</small></h2>
   <div id="scan-items"></div>
-  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center">
-    <a href="/pro/sample-report/" style="color:var(--accent)">See a full sample report →</a>
+  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center"><a href="/pro/sample-report/" style="color:var(--accent)">See a full sample report →</a>
   </p>
 </div>
 
 <!-- Quick actions -->
-<h2 style="font-size:16px;margin-bottom:12px;margin-top:4px">⚡ Quick Actions</h2>
+<h2 style="font-size:16px;margin-bottom:12px;margin-top:4px">Quick Actions</h2>
 <div class="quick-grid">
-  <a class="quick-card" href="/pro/sample-report/">
-    <div class="icon">📄</div>
+  <a class="quick-card" href="/pro/sample-report/"><div class="icon"></div>
     <h3>Download Latest PDF Report</h3>
     <p>Auditor-ready compliance report with timestamp, findings and fix recommendations.</p>
     <span class="badge">Included with Pro</span>
   </a>
-  <a class="quick-card" href="/badge/">
-    <div class="icon">🛡️</div>
+  <a class="quick-card" href="/badge/"><div class="icon"></div>
     <h3>Get Your Compliance Badge</h3>
     <p>Embed a live badge on your site footer showing your latest score. Click-through verifiable.</p>
     <span class="badge">2 lines of HTML</span>
   </a>
-  <a class="quick-card" href="/store/">
-    <div class="icon">📋</div>
+  <a class="quick-card" href="/store/"><div class="icon"></div>
     <h3>Download Templates Bundle</h3>
     <p>DPA (Art. 28 GDPR), NIS2 vendor clauses, EAA accessibility statement — included with Pro.</p>
     <span class="badge">$216+ value</span>
   </a>
-  <a class="quick-card" href="/pro/">
-    <div class="icon">🔔</div>
+  <a class="quick-card" href="/pro/"><div class="icon"></div>
     <h3>Configure Email Alerts</h3>
     <p>Get notified when your score drops, a certificate expires, or a new compliance gap is detected.</p>
     <span class="badge">Included with Pro</span>
@@ -219,7 +194,7 @@ footer a{color:var(--accent)}
 
 <!-- Alert settings -->
 <div class="alert-area">
-  <h2>🔔 Email Alert Settings</h2>
+  <h2>Email Alert Settings</h2>
   <div class="alert-row">
     <span class="toggle on"><span class="dot"></span></span>
     <span>Score drops below 70%</span>
@@ -245,7 +220,7 @@ footer a{color:var(--accent)}
 
 <!-- Setup wizard -->
 <div class="setup-area">
-  <h2>🚀 How Pro Monitoring Works</h2>
+  <h2>How Pro Monitoring Works</h2>
   <div class="setup-steps">
     <div class="setup-step">
       <div class="num">1</div>
@@ -266,13 +241,6 @@ footer a{color:var(--accent)}
 </div>
 
 </div><!-- /.wrap -->
-
-<footer>
-  <div class="wrap">
-    <div>EUComply — EU compliance monitoring for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
-    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/pro/">Pro</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
-  </div>
-</footer>
 
 <script>
 (function() {
@@ -403,5 +371,42 @@ footer a{color:var(--accent)}
     });
 })();
 </script>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

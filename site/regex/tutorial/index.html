@@ -17,19 +17,12 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"Regex Tutorial for Beginners — Learn Regular Expressions Step by Step","description":"A complete regex tutorial for beginners. Learn regular expressions from scratch with practical examples, interactive exercises, and a free online tester.","url":"https://eucomplypro.com/regex/tutorial/","author":{"@type":"Person","name":"Regex Tester Team"},"datePublished":"2026-08-27","dateModified":"2026-08-27"}
 </script>
-<style>
-:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px rgba(0,0,0,.08)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+<style>:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px rgba(0,0,0,.08)}
+*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
 .wrap{max-width:960px;margin:0 auto;padding:0 16px}
 /* Header */
 header{border-bottom:1px solid var(--line);padding:12px 0;background:var(--surface)}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:700;font-size:17px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:6px}
-.logo-code{font-family:var(--mono);color:var(--accent);font-weight:400}
-nav{display:flex;gap:16px;align-items:center}
-nav a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .15s}
-nav a:hover{color:var(--ink)}
 /* Hero */
 .hero{text-align:center;padding:40px 0 24px}
 h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
@@ -73,27 +66,31 @@ li{margin-bottom:6px}
 .toc a:hover{text-decoration:underline}
 /* Footer */
 footer{text-align:center;padding:24px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:24px}
-footer a{color:var(--muted);text-decoration:underline}
 /* Match highlight example */
 .match-demo{color:#d92d2d;font-weight:600}
 .match-highlight{background:#ffd43b55;padding:1px 4px;border-radius:2px}
 /* Responsive */
-@media(max-width:640px){article{padding:20px 16px;margin:0 -16px 32px;border-radius:0;border-left:none;border-right:none}h1{font-size:24px}h2{font-size:20px}}
-</style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+@media(max-width:640px){article{padding:20px 16px;margin:0 -16px 32px;border-radius:0;border-left:none;border-right:none}h1{font-size:24px}h2{font-size:20px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-<div class="wrap">
-<a href="https://eucomplypro.com/regex/" class="logo"><span class="logo-code">.*</span> Regex Tester</a>
-<nav>
-<a href="https://eucomplypro.com/regex/">Tester</a>
-<a href="https://eucomplypro.com/regex/examples/">Examples</a>
-<a href="https://eucomplypro.com/regex/cheat-sheet/">Cheat Sheet</a>
-<a href="https://eucomplypro.com/regex/tutorial/">Tutorial</a>
-</nav>
-</div>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+    
+  </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 <div class="hero">
@@ -263,15 +260,15 @@ Match 4: &lt;/div&gt;</pre>
 <pre># Without anchors — matches anywhere
 Pattern: \d{5}
 Text:    "zip 90210 code"
-Match:   90210 ✅ — but also finds 5 digits inside longer numbers
+Match:   90210  — but also finds 5 digits inside longer numbers
 
 # With anchors — matches only whole string
 Pattern: ^\d{5}$
 Text:    "90210"
-Match:   90210 ✅
+Match:   90210 
 
 Text:    "90210-1234"
-Match:   No match ❌ (because the string has more than 5 chars)</pre>
+Match:   No match  (because the string has more than 5 chars)</pre>
 
 <div class="tip">
 <strong>Rule of thumb:</strong> Always use <code>^...$</code> when validating a complete field like an email, phone number, or ZIP code. Skip anchors when you're searching for a pattern inside a larger text.
@@ -367,7 +364,7 @@ Group 1: Smith, Jones  (only the name is captured, not the title)</pre>
 <pre># Find repeated words
 Pattern: (\w+) \1
 Text:    "the the"
-Match:   the the ✅
+Match:   the the 
 
 # Match opening and closing HTML tags
 Pattern: <(\w+)>.*?</\1>
@@ -489,12 +486,42 @@ Matches: 30 (only the number without $)</pre>
 </article>
 </div>
 
-<footer>
-<div class="wrap">
-<p><a href="https://eucomplypro.com/regex/">Regex Tester</a> — Free online regex tester with live highlighting. 100% client-side, no data leaves your browser.</p>
-<p><a href="https://eucomplypro.com/regex/cheat-sheet/">Cheat Sheet</a> | <a href="https://eucomplypro.com/regex/tutorial/">Tutorial</a> | <a href="https://eucomplypro.com/">Home</a></p>
-</div>
-</footer>
 
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

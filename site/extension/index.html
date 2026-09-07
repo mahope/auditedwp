@@ -5,25 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chrome Extension — EUComply Website Compliance Checker</title>
 <meta name="description" content="Free Chrome extension for instant EU compliance scanning. Click the toolbar icon to check any website for HTTPS, cookie consent, privacy links, forms and security headers.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/extension/">
-  <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/extension/">
   
 <meta property="og:title" content="EUComply Chrome Extension — Free Compliance Checker">
 <meta property="og:description" content="One-click EU compliance scan for any website. HTTPS, cookies, privacy, forms & security headers — right in your browser toolbar.">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
       --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
-*{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
 .hero{text-align:center;padding:48px 0 24px}
 h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
 h1 em{font-style:normal;color:var(--accent)}
@@ -32,7 +23,8 @@ h1 em{font-style:normal;color:var(--accent)}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
 .btn.ghost:hover{border-color:var(--accent)}
-.btn.green{background:var(--ok)}.btn.green:hover{background:#146336}
+.btn.green{background:var(--ok)}
+.btn.green:hover{background:#146336}
 .note{font-size:13px;color:var(--muted);margin-top:12px}
 section{padding:44px 0;border-top:1px solid var(--line)}
 h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
@@ -53,11 +45,8 @@ h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
 .install-steps li{padding:4px 0;font-size:14px;font-weight:500}
 .install-steps code{background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:2px 8px;font-size:13px}
 .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
-footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-footer a{color:var(--accent)}
-@media(max-width:700px){h1{font-size:26px}.grid3,.grid2{grid-template-columns:1fr}nav a:not(.cta){display:none}}
-</style>
+@media(max-width:700px){h1{font-size:26px}
+.grid3,.grid2{grid-template-columns:1fr}}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -74,31 +63,34 @@ footer a{color:var(--accent)}
   }
 }
 </script>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/store/">Templates</a>
-      <a href="/tools/">Generator</a>
-      <a href="/extension/">Extension</a>
-      <a href="/cli/">CLI</a>
-      <a href="/blog/">Guides</a>
-      <a class="cta" href="/pro/">Pro $79/yr</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap hero">
-  <div class="badge">🟢 New — Chrome Extension</div>
+  <div class="badge"> New — Chrome Extension</div>
   <h1>Check compliance from your <em>browser toolbar</em>.</h1>
   <p class="sub">Install EUComply as a Chrome extension. Click the icon to scan any URL for HTTPS, cookie consent, privacy links, forms and security headers — no typing required.</p>
 
   <div class="downloadbox">
-    <h3>📦 Chrome Extension — Early Access</h3>
+    <h3>Chrome Extension — Early Access</h3>
     <p>The extension is built and ready. Install it manually in under a minute — no store required:</p>
     <div class="install-steps" style="max-width:400px;margin:0 auto">
       <p style="font-weight:700;margin-bottom:8px;text-align:center">Install now (unpacked)</p>
@@ -120,32 +112,32 @@ footer a{color:var(--accent)}
     <p class="lede">The extension uses the same public API as the web scanner — your URL is checked against five compliance criteria:</p>
     <div class="grid3">
       <div class="card">
-        <div class="icon">🔒</div>
+        <div class="icon"></div>
         <h3>HTTPS + HSTS</h3>
         <p>TLS encryption and Strict-Transport-Security header. Required by GDPR Art. 32.</p>
       </div>
       <div class="card">
-        <div class="icon">🍪</div>
+        <div class="icon"></div>
         <h3>Cookie consent</h3>
         <p>Detects 15+ consent platforms (Cookiebot, OneTrust, CookieYes…). ePrivacy Directive requires prior consent.</p>
       </div>
       <div class="card">
-        <div class="icon">📋</div>
+        <div class="icon"></div>
         <h3>Forms & privacy link</h3>
         <p>Forms without a visible privacy-policy link are a top GDPR enforcement target (Art. 13).</p>
       </div>
       <div class="card">
-        <div class="icon">📄</div>
+        <div class="icon"></div>
         <h3>Legal pages</h3>
         <p>Privacy policy, imprint, terms, and EAA statement linked from the homepage.</p>
       </div>
       <div class="card">
-        <div class="icon">🛡️</div>
+        <div class="icon"></div>
         <h3>Security headers</h3>
         <p>CSP, X-Content-Type-Options, Referrer-Policy — OWASP baseline, NIS2 Art. 21.</p>
       </div>
       <div class="card">
-        <div class="icon">🔍</div>
+        <div class="icon"></div>
         <h3>Platform detection</h3>
         <p>Identifies the CMS or stack (WordPress, Shopify, Next.js, etc.) — purely informational.</p>
       </div>
@@ -158,19 +150,19 @@ footer a{color:var(--accent)}
     <h2>Why the extension?</h2>
     <div class="grid2">
       <div class="card">
-        <h3>⚡ Instant on any site</h3>
+        <h3>Instant on any site</h3>
         <p>No need to copy-paste URLs. Click the icon — your current domain is pre-filled. One more click and you see the results.</p>
       </div>
       <div class="card">
-        <h3>🏷️ Persistent score badge</h3>
+        <h3>Persistent score badge</h3>
         <p>The toolbar icon shows your last scan score (green/yellow/red). A quick visual indicator of compliance health for any site you visit.</p>
       </div>
       <div class="card">
-        <h3>🔗 Pro upgrade path</h3>
+        <h3>Pro upgrade path</h3>
         <p>Need documented proof? The scan results link to Pro — auditor-ready PDF reports, DPA docs, NIS2 clauses and EAA statements.</p>
       </div>
       <div class="card">
-        <h3>🔒 No tracking</h3>
+        <h3>No tracking</h3>
         <p>The extension sends your target URL to the public API — nothing else. No analytics, no telemetry, no user tracking. Open source.</p>
       </div>
     </div>
@@ -190,12 +182,42 @@ footer a{color:var(--accent)}
   </div>
 </section>
 
-<footer>
-  <div class="wrap">
-    <div>EUComply — EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
-    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

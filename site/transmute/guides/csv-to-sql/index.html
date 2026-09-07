@@ -5,51 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Convert CSV to SQL INSERT Statements (MySQL, PostgreSQL, SQLite)</title>
 <meta name="description" content="Turn any CSV, JSON, YAML or XML file into ready-to-run INSERT statements from the command line. Handles quotes, NULLs and numeric types. Free CLI examples.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔁</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <meta property="og:title" content="Convert CSV to SQL INSERT Statements">
 <meta property="og:description" content="Turn CSV, JSON, YAML or XML into INSERT statements from the terminal. Free CLI, correct quoting, numbers stay numbers.">
 <meta property="og:type" content="article">
-<style>
-:root{--ink:#101828;--muted:#4a5a6a;--line:#dde3ea;--bg:#fff;--soft:#f5f7fa;--accent:#7c3aed;--accent-dark:#6023d0;}
-*{margin:0;padding:0;box-sizing:border-box}
+<style>:root{--ink:#101828;--muted:#4a5a6a;--line:#dde3ea;--bg:#fff;--soft:#f5f7fa;--accent:#7c3aed;--accent-dark:#6023d0;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a:hover{color:var(--accent)}
 h1{font-size:34px;line-height:1.2;margin:40px 0 8px;letter-spacing:-.02em}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
 h2{font-size:24px;margin:36px 0 10px;letter-spacing:-.01em}
 p{margin-bottom:16px}
 code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono','Fira Code','Consolas',monospace}
 pre{background:#17122b;color:#e6e2f5;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.6;margin:16px 0;font-family:'SF Mono','Fira Code','Consolas',monospace}
-pre .cm{color:#7d7699}pre .prompt{color:#7d7699}pre .kw{color:#b79bf5}pre .str{color:#a8d88a}
-.cta-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:24px;margin:40px 0}
+pre .cm{color:#7d7699}
+pre .prompt{color:#7d7699}
+pre .kw{color:#b79bf5}
+pre .str{color:#a8d88a}
 .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:10px 22px;border-radius:8px;font-weight:600;margin-top:8px}
-.btn:hover{background:var(--accent-dark)}
-footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var(--muted);font-size:13px;text-align:center}
-</style>
+.btn:hover{background:var(--accent-dark)}</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a href="/transmute/" class="logo">Trans<span>mute</span></a>
-    <nav>
-      <a href="/transmute/">Free Demo</a>
-      <a href="/deskuptime/">DeskUptime</a>
-      <a href="/tools/format/">Web Converter</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 
 <h1>Convert CSV to SQL INSERT Statements</h1>
-<p class="meta">📅 September 2026 · 4 min read · <a href="/transmute/">Try it in your browser →</a></p>
+<p class="meta">September 2026 · 4 min read · <a href="/transmute/">Try it in your browser →</a></p>
 
 <p>You have a CSV export — users, products, sensor readings — and you need it into a database. Most answers online are one-off Python scripts or websites that choke on files with more than a few thousand rows. Here's the shortest reliable path, straight from the terminal.</p>
 
@@ -102,7 +101,7 @@ INSERT INTO "users" ("id", "name", "email") VALUES
   <p>The Transmute CLI is free (<code>npx github:mahope/transmute</code>). The desktop app adds an interactive pipeline builder, live preview and batch processing — one-time $19, no subscription.</p>
   <a href="/transmute/" class="btn">Try the live demo →</a>
   &nbsp;
-  <a href="/transmute/#pricing" class="btn">See pricing</a>
+  <a href="https://transmute.run/" class="btn">See pricing</a>
 </div>
 
 <div class="cta-box" style="background:#fff">
@@ -111,10 +110,42 @@ INSERT INTO "users" ("id", "name", "email") VALUES
 
 </div>
 
-<footer>
-  <p><a href="/transmute/">Transmute</a> · <a href="/deskuptime/">DeskUptime</a> · <a href="/tools/format/">Free Web Converter</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
-  <p style="margin-top:8px">© 2026 Mahope. All transformations run locally on your machine.</p>
-</footer>
 
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

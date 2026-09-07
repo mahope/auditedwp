@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How EUComply Works — Free Website Compliance Scanner Guide</title>
 <meta name="description" content="How EUComply's free compliance scanner works: enter any URL, get a 10-second GDPR, NIS2, DORA & EAA report. Step-by-step guide with example. No install, no sign-up, all platforms.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/how-it-works/">
 <meta property="og:title" content="How EUComply Works — Free Website Compliance Scanner">
 <meta property="og:description" content="Enter any URL, get a free compliance report in 10 seconds. Here's exactly what the scanner checks and what each result means for your site.">
@@ -13,18 +13,10 @@
 <meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
       --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
-*{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
 .hero{text-align:center;padding:48px 0 24px}
 h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
 h1 em{font-style:normal;color:var(--accent)}
@@ -33,7 +25,8 @@ h1 em{font-style:normal;color:var(--accent)}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
 .btn.ghost:hover{border-color:var(--accent)}
-.btn.green{background:var(--ok)}.btn.green:hover{background:#146336}
+.btn.green{background:var(--ok)}
+.btn.green:hover{background:#146336}
 section{padding:44px 0;border-top:1px solid var(--line)}
 h2{font-size:26px;letter-spacing:-.02em;margin-bottom:8px}
 .lede{color:var(--muted);max-width:640px;margin-bottom:24px;font-size:15px}
@@ -58,33 +51,29 @@ h2{font-size:26px;letter-spacing:-.02em;margin-bottom:8px}
 .procta .btn:hover{filter:brightness(.95)}
 .procta .btn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);margin-left:10px}
 .procta .btn.ghost:hover{border-color:rgba(255,255,255,.6)}
-footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-footer a{color:var(--accent)}
-@media(max-width:700px){
-  h1{font-size:27px}
-  .grid3{grid-template-columns:1fr}
-  nav a:not(.cta){display:none}
-  .procta{padding:28px 20px}
-}
-</style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+@media(max-width:700px){h1{font-size:27px}
+.grid3{grid-template-columns:1fr}
+.procta{padding:28px 20px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
       <a href="/pricing/">Pricing</a>
-      <a href="/pro/">Pro</a>
-      <a href="/store/">Templates</a>
-      <a href="/compare/">Compare</a>
-      <a href="/guides/">Guides</a>
-      <a class="cta" href="/scan/">Scan a URL →</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap hero">
   <h1>How the EUComply scanner works — <em>step by step.</em></h1>
@@ -118,13 +107,13 @@ footer a{color:var(--accent)}
       <p>Every check is a pass/fail (or warning) test based on what the page exposes. None require interpreting the full site — each check runs in under a second.</p>
 
       <div class="check"><span class="mark">✓</span> <strong>SSL / HTTPS + HSTS:</strong> Is the site served over HTTPS with Strict-Transport-Security? (GDPR Art. 32 — security of processing)</div>
-      <div class="check"><span class="warn-mark">⚡</span> <strong>Cookie consent:</strong> Does the page load a known consent platform (Cookiebot, OneTrust, CookieYes, etc.)? (ePrivacy Directive — prior consent for non-essential cookies)</div>
-      <div class="check"><span class="warn-mark">⚡</span> <strong>Google Consent Mode v2:</strong> Does the page include gtag/dataLayer signals for consent-based ad personalization? (Required since March 2024 for EU ad conversion tracking)</div>
+      <div class="check"><span class="warn-mark"></span> <strong>Cookie consent:</strong> Does the page load a known consent platform (Cookiebot, OneTrust, CookieYes, etc.)? (ePrivacy Directive — prior consent for non-essential cookies)</div>
+      <div class="check"><span class="warn-mark"></span> <strong>Google Consent Mode v2:</strong> Does the page include gtag/dataLayer signals for consent-based ad personalization? (Required since March 2024 for EU ad conversion tracking)</div>
       <div class="check"><span class="mark">✓</span> <strong>Form + privacy link:</strong> If the page has forms, is a privacy policy link visible nearby? (GDPR Art. 13 — transparency at data collection)</div>
       <div class="check"><span class="mark">✓</span> <strong>Legal pages:</strong> Does the homepage link to a privacy policy, imprint/impressum, accessibility statement, and terms? (GDPR, eCommerce Directive, EAA)</div>
       <div class="check"><span class="mark">✓</span> <strong>Security headers:</strong> Are CSP, X-Content-Type-Options, Referrer-Policy, and X-Frame-Options set? (NIS2 Art. 21 — supply-chain security baseline)</div>
       <div class="check"><span class="mark">✓</span> <strong>DORA / resilience:</strong> Do the page contents mention operational resilience, incident reporting, or ICT risk management? (DORA — EU 2022/2554 for financial & ICT entities)</div>
-      <div class="check"><span class="warn-mark">⚡</span> <strong>Trackers without consent:</strong> Does the page load GA4, Meta Pixel, TikTok, Hotjar, or other trackers before a consent signal? (Most common EU fine trigger for SMB sites)</div>
+      <div class="check"><span class="warn-mark"></span> <strong>Trackers without consent:</strong> Does the page load GA4, Meta Pixel, TikTok, Hotjar, or other trackers before a consent signal? (Most common EU fine trigger for SMB sites)</div>
       <div class="check"><span class="mark">✓</span> <strong>Platform fingerprint:</strong> What CMS or platform runs the site? (Informational — helps interpret other results)</div>
     </div>
 
@@ -157,17 +146,17 @@ footer a{color:var(--accent)}
     <h2>How it's different from other scanners</h2>
     <div class="grid3">
       <div class="card">
-        <div class="icon">🌐</div>
+        <div class="icon"></div>
         <h3>Works on every platform</h3>
         <p>Most compliance tools only work with WordPress (plugin-based) or scan a single page. EUComply checks <strong>any</strong> public URL — WordPress, Shopify, Webflow, Next.js, Squarespace, static HTML.</p>
       </div>
       <div class="card">
-        <div class="icon">🆓</div>
+        <div class="icon"></div>
         <h3>No sign-up for scanning</h3>
         <p>Free tier requires zero registration. Enter a URL, get a report. No "sign up to see results" gate, no limits. Pro only when you need daily monitoring, PDF reports, and templates.</p>
       </div>
       <div class="card">
-        <div class="icon">🔬</div>
+        <div class="icon"></div>
         <h3>Multiple regulations in one scan</h3>
         <p>One scan checks GDPR (privacy, security, consent), NIS2 (headers, supply chain), DORA (resilience disclosures), and EAA (accessibility statement). One report instead of four separate tools.</p>
       </div>
@@ -248,12 +237,42 @@ footer a{color:var(--accent)}
 }
 </script>
 
-<footer>
-  <div class="wrap">
-    <div>EUComply — free EU compliance scanning for every website.<br>⚖️ Automated technical checks only. Not legal advice.</div>
-    <div><a href="/">Home</a> · <a href="/scan/">Scanner</a> · <a href="/pro/">Pro</a> · <a href="/store/">Templates</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

@@ -21,60 +21,55 @@
   "author": { "@type": "Organization", "name": "Regex Tester" }
 }
 </script>
-<style>
-  :root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace}
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-  .wrap{max-width:820px;margin:0 auto;padding:0 16px}
-  header{border-bottom:1px solid var(--line);padding:12px 0;background:var(--surface)}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:700;font-size:17px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:6px}
-  .logo-code{font-family:var(--mono);color:var(--accent);font-weight:400}
-  nav{display:flex;gap:16px;align-items:center}
-  nav a{color:var(--muted);text-decoration:none;font-size:13px}
-  nav a:hover{color:var(--ink)}
-  nav a.cta{background:var(--accent);color:#fff;padding:6px 12px;border-radius:6px;font-weight:600}
-  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;padding:40px 0 6px}
-  .sub{color:var(--muted);font-size:15px;margin-bottom:36px}
-  h2{font-size:21px;font-weight:700;margin:36px 0 10px;letter-spacing:-.01em;border-bottom:1px solid var(--line);padding-bottom:6px}
-  h3{font-size:16px;font-weight:600;margin:28px 0 6px}
-  p{color:var(--ink);margin-bottom:12px;font-size:15px}
-  p.muted{color:var(--muted);font-size:13.5px}
-  .pattern-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0;position:relative}
-  .pattern-box .re{font-family:var(--mono);font-size:15px;background:var(--code-bg);padding:4px 10px;border-radius:4px;color:var(--accent);font-weight:600;word-break:break-all}
-  .pattern-box .desc{font-size:14px;color:var(--ink);margin-top:6px;line-height:1.6}
-  .pattern-box .test-link{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent);text-decoration:underline;font-weight:600}
-  .pattern-box .use{font-size:13px;color:var(--muted);margin-top:4px}
-  code{font-family:var(--mono);background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13.5px;word-break:break-word}
-  pre{font-family:var(--mono);background:var(--code-bg);padding:12px 16px;border-radius:var(--radius);overflow-x:auto;font-size:13px;line-height:1.5;margin:12px 0}
-  .toc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:28px}
-  .toc h3{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-  .toc a{display:block;color:var(--accent);text-decoration:none;font-size:14px;padding:3px 0}
-  .toc a:hover{text-decoration:underline}
-  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:#eef2ff;color:var(--accent);margin-right:4px;text-transform:uppercase;letter-spacing:.04em}
-  footer{border-top:1px solid var(--line);padding:24px 0;margin-top:48px;color:var(--muted);font-size:13px}
-  footer a{color:var(--accent)}
-  .pro-box{background:linear-gradient(135deg,#eef2ff,#f8f9fa);border:2px solid var(--accent);border-radius:var(--radius);padding:24px;margin:36px 0;text-align:center}
-  .pro-box h3{font-size:18px;margin:0 0 6px}
-  .pro-box p{font-size:14px;color:var(--muted);margin:0 0 14px}
-  .pro-box .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px}
-  .pro-box .btn:hover{background:var(--accent-hover)}
-  @media(max-width:640px){h1{font-size:23px}.wrap{padding:0 12px}}
-</style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<style>:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px}
+h1{font-size:30px;font-weight:700;letter-spacing:-.02em;padding:40px 0 6px}
+.sub{color:var(--muted);font-size:15px;margin-bottom:36px}
+h2{font-size:21px;font-weight:700;margin:36px 0 10px;letter-spacing:-.01em;border-bottom:1px solid var(--line);padding-bottom:6px}
+h3{font-size:16px;font-weight:600;margin:28px 0 6px}
+p{color:var(--ink);margin-bottom:12px;font-size:15px}
+p.muted{color:var(--muted);font-size:13.5px}
+.pattern-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0;position:relative}
+.pattern-box .re{font-family:var(--mono);font-size:15px;background:var(--code-bg);padding:4px 10px;border-radius:4px;color:var(--accent);font-weight:600;word-break:break-all}
+.pattern-box .desc{font-size:14px;color:var(--ink);margin-top:6px;line-height:1.6}
+.pattern-box .test-link{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent);text-decoration:underline;font-weight:600}
+.pattern-box .use{font-size:13px;color:var(--muted);margin-top:4px}
+code{font-family:var(--mono);background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13.5px;word-break:break-word}
+pre{font-family:var(--mono);background:var(--code-bg);padding:12px 16px;border-radius:var(--radius);overflow-x:auto;font-size:13px;line-height:1.5;margin:12px 0}
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:28px}
+.toc h3{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.toc a{display:block;color:var(--accent);text-decoration:none;font-size:14px;padding:3px 0}
+.toc a:hover{text-decoration:underline}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:#eef2ff;color:var(--accent);margin-right:4px;text-transform:uppercase;letter-spacing:.04em}
+.pro-box{background:linear-gradient(135deg,#eef2ff,#f8f9fa);border:2px solid var(--accent);border-radius:var(--radius);padding:24px;margin:36px 0;text-align:center}
+.pro-box h3{font-size:18px;margin:0 0 6px}
+.pro-box p{font-size:14px;color:var(--muted);margin:0 0 14px}
+.pro-box .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px}
+.pro-box .btn:hover{background:var(--accent-hover)}
+@media(max-width:640px){h1{font-size:23px}
+.wrap{padding:0 12px}}</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/regex/">.<span class="logo-code">*</span> Regex Tester</a>
-    <nav>
-      <a href="/regex/">Tester</a>
-      <a href="/regex/cheat-sheet/">Cheat Sheet</a>
-      <a href="/regex/tutorial/">Tutorial</a>
-      <a class="cta" href="/regex/#pro">Pro $2/mo</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 
 <div class="wrap">
 
@@ -83,30 +78,30 @@
 
 <div class="toc">
   <h3>Patterns</h3>
-  <a href="#email">📧 Email address</a>
-  <a href="#url">🔗 URL / web address</a>
-  <a href="#phone">📞 Phone number</a>
-  <a href="#date">📅 Date (YYYY-MM-DD)</a>
-  <a href="#time">⏰ Time (HH:MM)</a>
-  <a href="#ipv4">🌐 IPv4 address</a>
-  <a href="#ipv6">🌐 IPv6 address</a>
-  <a href="#password">🔐 Password strength (8+ chars, mixed)</a>
-  <a href="#username">👤 Username (alphanumeric + underscore)</a>
-  <a href="#hex">🎨 Hex color code</a>
-  <a href="#creditcard">💳 Credit card number</a>
-  <a href="#zip">📮 US ZIP code</a>
-  <a href="#slug">🔡 URL slug</a>
-  <a href="#htmltag">🏷️ HTML tag</a>
-  <a href="#number">#️⃣ Number with decimals</a>
-  <a href="#domain">🌍 Domain name</a>
-  <a href="#file">📄 File extension</a>
-  <a href="#mac">🔧 MAC address</a>
-  <a href="#ssn">🆔 SSN (US)</a>
+  <a href="#email">Email address</a>
+  <a href="#url">URL / web address</a>
+  <a href="#phone">Phone number</a>
+  <a href="#date">Date (YYYY-MM-DD)</a>
+  <a href="#time">Time (HH:MM)</a>
+  <a href="#ipv4">IPv4 address</a>
+  <a href="#ipv6">IPv6 address</a>
+  <a href="#password">Password strength (8+ chars, mixed)</a>
+  <a href="#username">Username (alphanumeric + underscore)</a>
+  <a href="#hex">Hex color code</a>
+  <a href="#creditcard">Credit card number</a>
+  <a href="#zip">US ZIP code</a>
+  <a href="#slug">URL slug</a>
+  <a href="#htmltag">HTML tag</a>
+  <a href="#number">#⃣ Number with decimals</a>
+  <a href="#domain">Domain name</a>
+  <a href="#file">File extension</a>
+  <a href="#mac">MAC address</a>
+  <a href="#ssn">SSN (US)</a>
   <a href="#whitespace">␣ Trim whitespace</a>
 </div>
 
 <!-- === 1. Email === -->
-<h2 id="email">📧 Email address</h2>
+<h2 id="email">Email address</h2>
 <div class="pattern-box">
   <div class="re">^[\w\.\-]+@[\w\-]+\.\w{2,}$</div>
   <p class="desc">Validates a basic email format — local part, @, domain, and TLD of at least 2 characters. Does <strong>not</strong> check whether the domain exists.</p>
@@ -117,7 +112,7 @@
 Rejects: @example.com, user@.com, user@com</pre>
 
 <!-- === 2. URL === -->
-<h2 id="url">🔗 URL / web address</h2>
+<h2 id="url">URL / web address</h2>
 <div class="pattern-box">
   <div class="re">https?:\/\/([\w\-]+\.)+[\w\-]+(\/[\w\-\.\/~%]*)?</div>
   <p class="desc">Matches http and https URLs, with optional paths. Protocol is required to avoid false matches on plain words containing dots.</p>
@@ -128,7 +123,7 @@ Rejects: @example.com, user@.com, user@com</pre>
 Rejects: example.com, ftp://files.example.com</pre>
 
 <!-- === 3. Phone === -->
-<h2 id="phone">📞 Phone number</h2>
+<h2 id="phone">Phone number</h2>
 <div class="pattern-box">
   <div class="re">^\+?[\d\s\-\(\)]{7,15}$</div>
   <p class="desc">Accepts international phone numbers with optional + prefix, spaces, hyphens, and parentheses. Length range covers most global formats.</p>
@@ -139,7 +134,7 @@ Rejects: example.com, ftp://files.example.com</pre>
 Rejects: 123 (too short), +abc-def-ghij</pre>
 
 <!-- === 4. Date YYYY-MM-DD === -->
-<h2 id="date">📅 Date (YYYY-MM-DD)</h2>
+<h2 id="date">Date (YYYY-MM-DD)</h2>
 <div class="pattern-box">
   <div class="re">^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$</div>
   <p class="desc">Validates ISO-8601 date format with month (01–12) and day (01–31) range checking. Note: does not catch Feb 30 or leap-year edge cases — use a proper date parser for that.</p>
@@ -150,7 +145,7 @@ Rejects: 123 (too short), +abc-def-ghij</pre>
 Rejects: 2026-13-01, 2026-08-32, 2026-8-25</pre>
 
 <!-- === 5. Time HH:MM === -->
-<h2 id="time">⏰ Time (HH:MM)</h2>
+<h2 id="time">Time (HH:MM)</h2>
 <div class="pattern-box">
   <div class="re">^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$</div>
   <p class="desc">Validates 24-hour time format. Hours 00–23, minutes 00–59.</p>
@@ -161,7 +156,7 @@ Rejects: 2026-13-01, 2026-08-32, 2026-8-25</pre>
 Rejects: 24:00, 12:60, 8:30, 12:5</pre>
 
 <!-- === 6. IPv4 === -->
-<h2 id="ipv4">🌐 IPv4 address</h2>
+<h2 id="ipv4">IPv4 address</h2>
 <div class="pattern-box">
   <div class="re">^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)$</div>
   <p class="desc">Matches valid IPv4 addresses where each octet is 0–255. Uses non-capturing groups <code>(?:...)</code> for cleaner matching.</p>
@@ -172,7 +167,7 @@ Rejects: 24:00, 12:60, 8:30, 12:5</pre>
 Rejects: 256.1.2.3, 192.168.1.300, .1.2.3</pre>
 
 <!-- === 7. IPv6 === -->
-<h2 id="ipv6">🌐 IPv6 address (simplified)</h2>
+<h2 id="ipv6">IPv6 address (simplified)</h2>
 <div class="pattern-box">
   <div class="re">^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$</div>
   <p class="desc">Matches full (non-abbreviated) IPv6 addresses — 8 groups of 1–4 hex characters separated by colons. Does not cover <code>::</code> shorthand.</p>
@@ -183,7 +178,7 @@ Rejects: 256.1.2.3, 192.168.1.300, .1.2.3</pre>
 Rejects: 2001:db8::1 (shorthand), 2001:xyz::1</pre>
 
 <!-- === 8. Password === -->
-<h2 id="password">🔐 Password strength (8+ chars, mixed)</h2>
+<h2 id="password">Password strength (8+ chars, mixed)</h2>
 <div class="pattern-box">
   <div class="re">^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$</div>
   <p class="desc">Requires at least 8 characters with at least one lowercase, one uppercase, one digit, and one special character (<code>\W</code> = non-word character). Uses lookaheads (<code>(?=...)</code>) for each requirement.</p>
@@ -194,7 +189,7 @@ Rejects: 2001:db8::1 (shorthand), 2001:xyz::1</pre>
 Rejects: password, PASSWORD1, Pass1 (too short)</pre>
 
 <!-- === 9. Username === -->
-<h2 id="username">👤 Username (alphanumeric + underscore)</h2>
+<h2 id="username">Username (alphanumeric + underscore)</h2>
 <div class="pattern-box">
   <div class="re">^[a-zA-Z0-9_]{3,16}$</div>
   <p class="desc">Alphanumeric characters and underscores only, 3–16 characters long. Common for forum signups, social handles, and developer usernames.</p>
@@ -205,7 +200,7 @@ Rejects: password, PASSWORD1, Pass1 (too short)</pre>
 Rejects: abc (too short), user@name, a-very-long-username-here</pre>
 
 <!-- === 10. Hex color === -->
-<h2 id="hex">🎨 Hex color code</h2>
+<h2 id="hex">Hex color code</h2>
 <div class="pattern-box">
   <div class="re">^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$</div>
   <p class="desc">Matches 3-digit and 6-digit hex color codes with <code>#</code> prefix. Case-insensitive for hex digits.</p>
@@ -216,7 +211,7 @@ Rejects: abc (too short), user@name, a-very-long-username-here</pre>
 Rejects: #abcd (4 chars), fff (no #), #gggggg</pre>
 
 <!-- === 11. Credit card === -->
-<h2 id="creditcard">💳 Credit card number</h2>
+<h2 id="creditcard">Credit card number</h2>
 <div class="pattern-box">
   <div class="re">^\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}$</div>
   <p class="desc">Matches 16-digit card numbers with optional spaces or hyphens every 4 digits. Use a Luhn check function for real validation — regex alone cannot detect valid card numbers.</p>
@@ -227,7 +222,7 @@ Rejects: #abcd (4 chars), fff (no #), #gggggg</pre>
 Rejects: 123456789 (wrong length), abcd-efgh-ijkl-mnop</pre>
 
 <!-- === 12. US ZIP === -->
-<h2 id="zip">📮 US ZIP code</h2>
+<h2 id="zip">US ZIP code</h2>
 <div class="pattern-box">
   <div class="re">^\d{5}(-\d{4})?$</div>
   <p class="desc">Matches 5-digit ZIP codes with optional +4 extension.</p>
@@ -238,7 +233,7 @@ Rejects: 123456789 (wrong length), abcd-efgh-ijkl-mnop</pre>
 Rejects: 1234 (too short), 123456, 94105-123</pre>
 
 <!-- === 13. URL slug === -->
-<h2 id="slug">🔡 URL slug</h2>
+<h2 id="slug">URL slug</h2>
 <div class="pattern-box">
   <div class="re">^[a-z0-9]+(?:-[a-z0-9]+)*$</div>
   <p class="desc">Lowercase alphanumeric slug with single hyphens between words. No leading/trailing hyphens, no double hyphens.</p>
@@ -249,7 +244,7 @@ Rejects: 1234 (too short), 123456, 94105-123</pre>
 Rejects: Hello-World, -leading, trailing-, double--hyphen</pre>
 
 <!-- === 14. HTML tag === -->
-<h2 id="htmltag">🏷️ HTML tag</h2>
+<h2 id="htmltag">HTML tag</h2>
 <div class="pattern-box">
   <div class="re"><([a-z][a-z0-9]*)\b[^>]*>(.*?)<\/\1></div>
   <p class="desc">Matches an HTML open/close tag pair, capturing the tag name in group 1 and content in group 2. Uses the backreference <code>\1</code> to match the closing tag name.</p>
@@ -261,7 +256,7 @@ Rejects: Hello-World, -leading, trailing-, double--hyphen</pre>
   Group 2: Content</pre>
 
 <!-- === 15. Number with decimals === -->
-<h2 id="number">#️⃣ Number with decimals</h2>
+<h2 id="number">#⃣ Number with decimals</h2>
 <div class="pattern-box">
   <div class="re">^-?\d+(\.\d+)?$</div>
   <p class="desc">Matches integers and decimal numbers, with optional negative sign. Requires at least one digit before and after the decimal point.</p>
@@ -272,7 +267,7 @@ Rejects: Hello-World, -leading, trailing-, double--hyphen</pre>
 Rejects: 3. (trailing dot), .5 (leading dot), 1,5 (wrong separator)</pre>
 
 <!-- === 16. Domain === -->
-<h2 id="domain">🌍 Domain name</h2>
+<h2 id="domain">Domain name</h2>
 <div class="pattern-box">
   <div class="re">^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$</div>
   <p class="desc">Validates domain names: labels separated by dots, each label 1–63 characters, TLD at least 2 letters. Lowercase only.</p>
@@ -283,7 +278,7 @@ Rejects: 3. (trailing dot), .5 (leading dot), 1,5 (wrong separator)</pre>
 Rejects: example, .com, -example.com, example-.com</pre>
 
 <!-- === 17. File extension === -->
-<h2 id="file">📄 File extension</h2>
+<h2 id="file">File extension</h2>
 <div class="pattern-box">
   <div class="re">\.(pdf|docx?|xlsx?|pptx?|txt|zip|tar\.gz)$</div>
   <p class="desc">Matches common file extensions at the end of a filename. Case-sensitive by default.</p>
@@ -294,7 +289,7 @@ Rejects: example, .com, -example.com, example-.com</pre>
 Rejects: file.pdfx, script.PDF (case mismatch), document</pre>
 
 <!-- === 18. MAC address === -->
-<h2 id="mac">🔧 MAC address</h2>
+<h2 id="mac">MAC address</h2>
 <div class="pattern-box">
   <div class="re">^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$</div>
   <p class="desc">Matches MAC addresses in colon-separated or hyphen-separated format. Each of the 6 groups is 2 hex digits.</p>
@@ -305,7 +300,7 @@ Rejects: file.pdfx, script.PDF (case mismatch), document</pre>
 Rejects: 00:1A:2B:3C:4D:5G, 001A2B3C4D5E (no separator), 00:1A:2B:3C:4D (5 groups)</pre>
 
 <!-- === 19. SSN === -->
-<h2 id="ssn">🆔 SSN (US)</h2>
+<h2 id="ssn">SSN (US)</h2>
 <div class="pattern-box">
   <div class="re">^\d{3}-\d{2}-\d{4}$</div>
   <p class="desc">Matches the standard US Social Security Number format XXX-XX-XXXX. Does not validate SSN ranges or check against known invalid numbers.</p>
@@ -328,7 +323,7 @@ After replacement: "hello world"</pre>
 
 <!-- === Pro CTA === -->
 <div class="pro-box">
-  <h3>⚡ Regex Tester Pro</h3>
+  <h3>Regex Tester Pro</h3>
   <p>Save patterns, share with your team, use our AI regex explainer, and get syntax highlighting in every language. Just $2/month.</p>
   <a class="btn" href="/regex/#pro">See Pro features →</a>
 </div>
@@ -344,7 +339,7 @@ After replacement: "hello world"</pre>
   <li><strong>Use the Replace mode</strong> — test substitutions and transformations</li>
 </ol>
 
-<p class="muted">⚠️ <strong>Important:</strong> Regex validation is a first-pass filter, not a security boundary. Server-side validation is mandatory for any data that enters your system. These patterns are starting points — adapt them to your specific requirements.</p>
+<p class="muted"><strong>Important:</strong> Regex validation is a first-pass filter, not a security boundary. Server-side validation is mandatory for any data that enters your system. These patterns are starting points — adapt them to your specific requirements.</p>
 
 <h2>When to avoid regex</h2>
 
@@ -360,11 +355,42 @@ After replacement: "hello world"</pre>
 
 </div>
 
-<footer>
-  <div class="wrap">
-    <a href="/regex/">Regex Tester</a> · <a href="/regex/cheat-sheet/">Cheat Sheet</a> · <a href="/regex/tutorial/">Tutorial</a> · <a href="/regex/#pro">Pro</a> · <a href="/privacy/">Privacy</a>
+
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

@@ -6,46 +6,34 @@
 <title>Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide (2026)</title>
 <meta name="description" content="Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop tool beats the bash script.">
 <link rel="canonical" href="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <meta property="og:title" content="Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide">
 <meta property="og:description" content="Webhook setups for Discord, Telegram and Slack plus a free self-hosted checker — get downtime alerts into your team chat without a SaaS subscription.">
 <meta property="og:url" content="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:16px}
-  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
-  header{border-bottom:1px solid var(--line);padding:14px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-  article{padding:40px 0 60px}
-  h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;margin-bottom:8px}
-  .meta{font-size:14px;color:var(--muted);margin-bottom:32px;border-bottom:1px solid var(--line);padding-bottom:12px}
-  h2{font-size:24px;margin:36px 0 12px;letter-spacing:-.01em}
-  h3{font-size:18px;margin:24px 0 8px}
-  p{margin-bottom:16px}
-  ul,ol{margin:0 0 16px 24px}
-  li{margin-bottom:4px}
-  code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px}
-  pre{background:#1e293b;color:#e2e8f0;padding:16px 20px;border-radius:8px;font-size:14px;overflow-x:auto;margin:0 0 16px;line-height:1.5}
-  pre code{background:none;padding:0;color:inherit}
-  .cta-box{margin:32px 0;background:var(--soft);border:1.5px solid var(--line);border-radius:12px;padding:28px;text-align:center}
-  .cta-box h3{font-size:20px;margin:0 0 6px}
-  .cta-box p{color:var(--muted);font-size:15px;margin-bottom:16px}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;transition:background .15s}
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line);text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;transition:border-color .15s;margin-top:4px}
-  .btn.ghost:hover{border-color:var(--accent)}
-  table{width:100%;border-collapse:collapse;margin:20px 0}
-  td,th{border:1px solid var(--line);padding:10px 14px;text-align:left;font-size:14px}
-  th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
-  .highlight{background:#fef9e7;border-left:4px solid #f0b400;padding:12px 16px;border-radius:4px;margin-bottom:16px}
-</style>
+<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:16px}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+article{padding:40px 0 60px}
+h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;margin-bottom:8px}
+.meta{font-size:14px;color:var(--muted);margin-bottom:32px;border-bottom:1px solid var(--line);padding-bottom:12px}
+h2{font-size:24px;margin:36px 0 12px;letter-spacing:-.01em}
+h3{font-size:18px;margin:24px 0 8px}
+p{margin-bottom:16px}
+ul,ol{margin:0 0 16px 24px}
+li{margin-bottom:4px}
+code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#1e293b;color:#e2e8f0;padding:16px 20px;border-radius:8px;font-size:14px;overflow-x:auto;margin:0 0 16px;line-height:1.5}
+pre code{background:none;padding:0;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line);text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;transition:border-color .15s;margin-top:4px}
+.btn.ghost:hover{border-color:var(--accent)}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+td,th{border:1px solid var(--line);padding:10px 14px;text-align:left;font-size:14px}
+th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.highlight{background:#fef9e7;border-left:4px solid #f0b400;padding:12px 16px;border-radius:4px;margin-bottom:16px}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -59,18 +47,26 @@
   "publisher": {"@type": "Organization", "name": "DeskUptime"}
 }
 </script>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">Desk<span>Uptime</span></a>
-    <nav>
-      <a href="/blog/">Blog</a>
-      <a href="/deskuptime/">DeskUptime</a>
-      <a class="cta" href="/deskuptime/">Get it — $19 once</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/" aria-current="page">Blog</a>
     </nav>
+    
   </div>
 </header>
+<div class="pg-legacy">
+
+
+
 <div class="wrap">
 <article>
 <h1>Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide (2026)</h1>
@@ -89,7 +85,7 @@
 <li>Test it:</li>
 </ol>
 <pre><code>curl -X POST -H "Content-Type: application/json" \
-  -d '{"content":"🔴 https://example.com is DOWN (HTTP 503)"}' \
+  -d '{"content":" https://example.com is DOWN (HTTP 503)"}' \
   "$DISCORD_WEBHOOK_URL"</code></pre>
 <p>Rate limits are generous (~30 messages/min per webhook), which is far more than any honest monitor needs.</p>
 
@@ -103,7 +99,7 @@
 </ol>
 <pre><code>curl -s "https://api.telegram.org/bot$TG_TOKEN/sendMessage" \
   -d chat_id="$CHAT_ID" \
-  -d text="🔴 example.com is DOWN (HTTP 503)"</code></pre>
+  -d text=" example.com is DOWN (HTTP 503)"</code></pre>
 
 <h2 id="slack">Method 3: Slack incoming webhooks</h2>
 <p>Slack requires creating a Slack App once:</p>
@@ -113,7 +109,7 @@
 <li>Post with the same JSON shape as Discord:</li>
 </ol>
 <pre><code>curl -X POST -H "Content-Type: application/json" \
-  -d '{"text":"🔴 https://example.com is DOWN"}' \
+  -d '{"text":" https://example.com is DOWN"}' \
   "$SLACK_WEBHOOK_URL"</code></pre>
 
 <h2 id="glue">The missing piece: something that detects the outage</h2>
@@ -134,13 +130,13 @@ for url in $URLS; do
   code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url")
   if [ "$code" != "200" ]; then
     curl -s -X POST -H "Content-Type: application/json" \
-      -d "{\"content\":\"🔴 $url DOWN (HTTP $code)\"}" "$DISCORD_WEBHOOK_URL"
+      -d "{\"content\":\" $url DOWN (HTTP $code)\"}" "$DISCORD_WEBHOOK_URL"
   fi
 done</code></pre>
 <p>It works, but note what it doesn't do: no recovery notifications ("back up again"), no alert deduplication (you'll get pinged every 5 minutes during an outage), and no history. Each of those is another 50 lines of bash — this is where most people decide a $19 tool beats maintaining a script.</p>
 
 <h2 id="deskuptime">Doing it without writing anything</h2>
-<p><a href="/deskuptime/">DeskUptime</a> is a desktop app built around exactly this pattern: it checks your URLs on an interval and posts to Discord, Telegram-compatible webhooks or any generic webhook endpoint when something breaks — including recovery notices, so you also get the 🟢 message when the site comes back.</p>
+<p><a href="/deskuptime/">DeskUptime</a> is a desktop app built around exactly this pattern: it checks your URLs on an interval and posts to Discord, Telegram-compatible webhooks or any generic webhook endpoint when something breaks — including recovery notices, so you also get the  message when the site comes back.</p>
 
 <div class="cta-box">
 <h3>Skip the bash script</h3>
@@ -168,55 +164,42 @@ done</code></pre>
 </article>
 
 </div>
-<footer style="border-top:1px solid var(--line);padding:20px 0;font-size:13px;color:var(--muted)">
-  <div class="wrap">© 2026 DeskUptime · <a href="/privacy/" style="color:var(--muted)">Privacy</a> · <a href="/terms/" style="color:var(--muted)">Terms</a></div>
-<!-- DeskUptime live check widget — self-contained, drop into any page.
-     Usage: paste this file's contents where the widget should appear.
-     Requires no external CSS/JS besides what's inline below. -->
-<div id="du-check" style="max-width:640px;margin:28px auto;background:#f9fafb;border:1px solid #e4e7ec;border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="font-size:17px;font-weight:700;color:#101828;margin-bottom:4px">Check any site right now — free</div>
-  <div style="font-size:13.5px;color:#475467;margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
-  <form id="du-form" style="display:flex;gap:8px;flex-wrap:wrap">
-    <input id="du-url" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Website URL to check" required
-           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;outline:none">
-    <button type="submit"
-            style="padding:11px 20px;background:#2868d0;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
-  </form>
-  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:#fff;border:1px solid #e4e7ec;border-radius:8px;padding:14px" aria-live="polite"></div>
-  <div style="margin-top:12px;font-size:13px;color:#475467">Want an alert <em>before</em> it breaks?
-    <a href="/deskuptime/" style="color:#2868d0;font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
-</div>
-<script>
-(function(){
-  var f=document.getElementById('du-form');
-  if(!f) return;
-  f.addEventListener('submit',async function(e){
-    e.preventDefault();
-    var raw=document.getElementById('du-url').value.trim();
-    var res=document.getElementById('du-result');
-    if(!raw) return;
-    var url=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
-    res.style.display='block';
-    res.innerHTML='⏳ Checking '+url+' …';
-    try{
-      var r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent(url));
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      var d=await r.json();
-      if(d.error){res.innerHTML='❌ Error: '+d.error;return;}
-      var up=d.status>=200&&d.status<400;
-      var days=d.sslDaysRemaining;
-      res.innerHTML=
-        (up?'✅':'❌')+' <strong>'+d.status+' '+d.statusText+'</strong> · '+d.responseMs+'ms<br>'+
-        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+days+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
-        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+d.finalUrl):'')+
-        (up&&days!=null&&days<15?'<br><span style="color:#b03030;font-weight:600">Your certificate expires within two weeks — renew it now.</span>':'');
-    }catch(err){
-      res.innerHTML='❌ Network error: '+err.message;
-    }
-  });
-})();
-</script>
 
+
+</div><!--/pg-legacy-->
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
 </footer>
 </body>
 </html>
