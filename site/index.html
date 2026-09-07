@@ -1,400 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUComply — Free EU Compliance Scan for Any Website</title>
-<meta name="description" content="Free online EU compliance scanner. Enter any URL and check HTTPS, cookie consent, privacy policy, forms and security headers against GDPR, NIS2, DORA and EAA requirements. Works on WordPress, Shopify, Webflow, Squarespace, Next.js — every stack.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<title>EUComply — free compliance scan for websites with EU visitors</title>
+<meta name="description" content="Enter a URL and get a free technical check of the things EU regulators ask about first: HTTPS, cookie consent, trackers loaded before consent, privacy links and security headers. No sign-up, nothing stored.">
 <link rel="canonical" href="https://eucomplypro.com/">
-  
-<meta property="og:title" content="EUComply — Free EU Compliance Scan for Any Website">
-<meta property="og:description" content="Enter any URL. Get a free GDPR, NIS2, DORA and EAA compliance report in seconds. No installation, no WordPress required.">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<meta property="og:title" content="EUComply — free compliance scan for websites with EU visitors">
+<meta property="og:description" content="Nine technical checks against GDPR, ePrivacy, NIS2 and EAA expectations. Free, no sign-up, nothing stored.">
 <meta property="og:url" content="https://eucomplypro.com/">
 <meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="EUComply — Free EU Compliance Scan">
-<meta name="twitter:description" content="Scan any URL for GDPR, NIS2, DORA & EAA gaps. Free. Works on every platform.">
-<meta name="twitter:image" content="https://eucomplypro.com/images/eucomply-og.png">
 <style>
-  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
-  header{border-bottom:1px solid var(--line);padding:14px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-  .hero{text-align:center;padding:52px 0 32px}
-  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
-  h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
-  h1 em{font-style:normal;color:var(--accent)}
-  .sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto 24px}
-  .scanbox{display:flex;gap:10px;max-width:540px;margin:0 auto;flex-wrap:wrap;justify-content:center}
-  .scanbox input{flex:1;min-width:200px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
-  .scanbox input:focus{border-color:var(--accent)}
-  .scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
-  .scanbox button:hover{background:var(--accent-dark)}
-  .scanbox button[disabled]{opacity:.6;cursor:wait}
-  .err{color:var(--fail);font-size:14px;min-height:22px;margin-top:8px;font-weight:600}
-  .examples{font-size:13px;color:var(--muted);margin-top:10px}
-  .examples button{background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;margin:0 3px;font-size:12.5px;color:var(--accent);cursor:pointer}
-  .examples button:hover{border-color:var(--accent)}
-  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
-  .btn.ghost:hover{border-color:var(--accent)}
-  .btn.green{background:var(--ok)}.btn.green:hover{background:#146336}
-  .note{font-size:12.5px;color:var(--muted);margin-top:10px}
-  section{padding:48px 0;border-top:1px solid var(--line)}
-  h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
-  .lede{color:var(--muted);max-width:640px;margin-bottom:28px;font-size:15px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
-  .card h3{font-size:16px;margin-bottom:6px}
-  .card p{font-size:14px;color:var(--muted)}
-  .card .icon{font-size:24px;margin-bottom:6px}
-  .guide-card{text-decoration:none;display:block;transition:border-color .15s}
-  .guide-card:hover{border-color:var(--accent)}
-  .guide-card p{color:var(--muted);font-size:14px;margin-bottom:0}
-  .checks{list-style:none;margin:16px 0}
-  .checks li{padding:5px 0 5px 24px;position:relative;font-size:14px;color:var(--ink);border-bottom:1px solid var(--soft)}
-  .checks li:last-child{border:0}
-  .checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-  .pricing-card{background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:28px;text-align:center}
-  .pricing-card.featured{border-color:var(--accent);background:#f8faff}
-  .pricing-card h3{font-size:18px;margin-bottom:4px}
-  .pricing-card .price{font-size:36px;font-weight:800;color:var(--accent);margin:12px 0 4px}
-  .pricing-card .price span{font-size:16px;font-weight:400;color:var(--muted)}
-  .pricing-card .per{font-size:13px;color:var(--muted);margin-bottom:16px}
-  .pricing-card ul{list-style:none;text-align:left;margin:16px 0;font-size:14px}
-  .pricing-card ul li{padding:6px 0 6px 22px;position:relative}
-  .pricing-card ul li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-  .pricing-card ul li.missing{color:var(--muted)}
-  .pricing-card ul li.missing::before{content:"—";color:var(--line)}
-  .faq details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:8px;background:var(--bg)}
-  .faq summary{font-weight:600;cursor:pointer;font-size:15px}
-  .faq p{color:var(--muted);font-size:14px;margin-top:6px}
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  .platforms{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px}
-  .platforms span{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:500}
-  .integrations-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-  .integrations-row a{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 18px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500}
-  .integrations-row a:hover{border-color:var(--accent);color:var(--accent)}
-  @media(max-width:700px){h1{font-size:28px}.grid2,.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
+  .steps li { counter-increment: step; max-width: none; }
+  .steps li::before { content: counter(step); display: block; font-weight: 650; color: var(--accent); margin-bottom: 0.3rem; }
+  .steps li b { display: block; margin-bottom: 0.2rem; }
+  .steps li p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .limits { border-left: 3px solid var(--warn); padding-left: 1.1rem; }
+  .limits p { margin: 0 0 0.6rem; }
+  .book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem 3rem; align-items: start; }
+  .book ol { padding-left: 1.2rem; margin: 0.5rem 0 0; columns: 2; column-gap: 2rem; font-size: 0.95rem; }
+  .book ol li { break-inside: avoid; margin-bottom: 0.25rem; }
+  @media (max-width: 720px) { .book { grid-template-columns: 1fr; } .book ol { columns: 1; } }
 </style>
-<link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
-<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
-<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <div class="logo">EU<span>Comply</span></div>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/pro/">Pro</a>
-      <a href="/guides/">Guides</a>
-      <a href="/store/">Templates</a>
-      <a href="/deskuptime/">Monitor</a>
-      <a class="cta" href="/scan/">Scan a URL →</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li><a href="/da/" hreflang="da" lang="da">DA</a></li><li><a href="/de/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/" hreflang="fr" lang="fr">FR</a></li></ul>
   </div>
 </header>
 
-<div class="wrap hero">
-  <div class="badge">Free online scanner · EU compliance · Works on any platform</div>
-  <h1>Scan <em>any website</em> for EU compliance gaps — free.</h1>
-  <p class="sub">Enter a URL and instantly check HTTPS security, cookie consent, privacy-policy links, forms, and security headers against EU requirements. Works on WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, static HTML — every stack.</p>
+<main>
+  <section class="pg hero">
+    <h1>A free compliance scan for websites with visitors in the EU.</h1>
+    <p class="lede">Enter a URL. EUComply fetches the page the way a browser does and checks nine things regulators, auditors and procurement teams tend to ask about first. No account, nothing stored.</p>
+    <form class="scanform" action="/scan/" method="get">
+      <input type="text" name="url" placeholder="yourdomain.com" aria-label="Website address to scan" required autocomplete="url" inputmode="url">
+      <button class="btn" type="submit">Run the scan</button>
+    </form>
+    <p class="scan-hint">Takes about ten seconds. The scan reads the public HTML and HTTP headers of the page you give it — nothing more.</p>
+  </section>
 
-  <form class="scanbox" action="/scan/" method="get">
-    <input type="text" name="url" placeholder="yourdomain.com" aria-label="Website URL to scan" required>
-    <button type="submit">Run free scan</button>
-  </form>
-  <div class="examples">Try:
-    <button type="button" onclick="document.location='/scan/?url=wordpress.org'">wordpress.org</button>
-    <button type="button" onclick="document.location='/scan/?url=shopify.com'">shopify.com</button>
-    <button type="button" onclick="document.location='/scan/?url=webflow.com'">webflow.com</button>
-  </div>
-</div>
-
-<section id="checks">
-  <div class="wrap">
-    <h2>Nine compliance checks, one URL</h2>
-    <p class="lede">Enter any domain. EUComply checks the nine most common EU compliance gaps — no installation, no sign-up, no WordPress required.</p>
-    <div class="grid3">
-      <div class="card">
-        <div class="icon">🔒</div>
-        <h3>SSL &amp; HTTPS</h3>
-        <p>TLS certificate validation + HSTS header check. Without it, GDPR Art. 32 (security) and browser "Not Secure" warnings hurt trust.</p>
+  <section class="pg sec">
+    <h2>Who it is for</h2>
+    <div class="cols">
+      <div>
+        <h3>People who run a website</h3>
+        <p>You have customers or readers in Europe and no legal department. You want to know whether the obvious things are in place before a customer, a competitor or a regulator points them out.</p>
       </div>
-      <div class="card">
-        <div class="icon">🍪</div>
-        <h3>Cookie Consent</h3>
-        <p>Detects 15+ consent platforms in served markup (Cookiebot, OneTrust, CookieYes, Complianz…). ePrivacy Directive requires prior consent.</p>
+      <div>
+        <h3>Agencies and freelancers</h3>
+        <p>You hand over sites and get the compliance questions afterwards. Run a scan before launch and again after every redesign, and send the client a link to the result instead of a promise.</p>
       </div>
-      <div class="card">
-        <div class="icon">📋</div>
-        <h3>Forms &amp; Privacy Link</h3>
-        <p>Forms found without a visible privacy-policy link are a top GDPR enforcement target (Art. 13). Checks if your data collection is documented.</p>
-      </div>
-      <div class="card">
-        <div class="icon">📄</div>
-        <h3>Legal Pages</h3>
-        <p>Looks for Privacy Policy, Imprint/Impressum, and EAA accessibility statement linked from your homepage — required by GDPR, eCommerce Directive, and EAA.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🛡️</div>
-        <h3>Security Headers</h3>
-        <p>CSP, X-Content-Type-Options, Referrer-Policy, frame protection — OWASP baseline and NIS2 Art. 21 supply-chain security requirement.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🔔</div>
-        <h3>Consent Mode v2</h3>
-        <p>Detects Google Consent Mode v2 signals (gtag, dataLayer, ad_storage/analytics_storage). Required since March 2024 for EU ad personalization — without it, Google Ads conversion tracking is restricted.</p>
-      </div>
-      <div class="card">
-        <div class="icon">📢</div>
-        <h3>IAB TCF</h3>
-        <p>Detects IAB Transparency &amp; Consent Framework — used by ad-tech platforms and publishers for GDPR-compliant programmatic advertising.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🎯</div>
-        <h3>Trackers without consent</h3>
-        <p>Google Analytics, Meta Pixel, TikTok, Hotjar +8 more. Loading non-essential trackers before consent breaches GDPR Art. 6 and ePrivacy — the most common EU fine against SMB websites.</p>
+      <div>
+        <h3>Developers</h3>
+        <p>You added the consent banner and the headers three deploys ago. The scan tells you whether they are still there. The checks are open source, so you can read exactly what "pass" means.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="platforms">
-  <div class="wrap" style="text-align:center">
-    <h2>Works on every platform</h2>
-    <p class="lede" style="margin:0 auto 12px">The scanner checks HTTP/HTML — there are no platform assumptions. Confirmed working on all major stacks.</p>
-    <div class="platforms">
-      <span>WordPress</span>
-      <span>Shopify</span>
-      <span>Webflow</span>
-      <span>Squarespace</span>
-      <span>Wix</span>
-      <span>Next.js</span>
-      <span>Drupal</span>
-      <span>Joomla</span>
-      <span>Static HTML</span>
-      <span>+ any other HTTP site</span>
+  <section class="pg sec">
+    <h2>How the scan works</h2>
+    <ol class="steps">
+      <li><b>You give it a URL</b><p>A domain is enough. The scanner normalises it and fetches the front page over HTTPS.</p></li>
+      <li><b>It reads what a browser would receive</b><p>Response headers, TLS details and the served HTML. It does not log in, click, fill forms or crawl other pages.</p></li>
+      <li><b>It runs nine checks</b><p>Each check looks for concrete evidence: a header that is present, a consent script that loads, a privacy link next to a form.</p></li>
+      <li><b>You get a result you can share</b><p>Pass, warning or fix needed for each check, with a suggested fix. The result lives in the link, not in a database.</p></li>
+    </ol>
+  </section>
+
+  <section class="pg sec">
+    <h2>What it checks</h2>
+    <p class="lede">Nine checks, each tied to a specific rule or widely accepted baseline. The scanner reports what it found, not what it thinks of you.</p>
+    <ul class="ledger">
+      <li><b>HTTPS and HSTS</b><p>Is the site served over TLS, and does it send Strict-Transport-Security? GDPR Article 32 expects appropriate technical security; HSTS is the cheap part of it.</p></li>
+      <li><b>Cookie consent</b><p>Looks for a known consent platform (Cookiebot, OneTrust, Klaro, Complianz and about a dozen more) in the served HTML. The ePrivacy Directive requires consent before non-essential cookies.</p></li>
+      <li><b>Trackers before consent</b><p>Checks whether Google Analytics, Meta Pixel, TikTok, Hotjar and similar scripts load without any consent mechanism on the page. This is the most common reason small sites are fined.</p></li>
+      <li><b>Google Consent Mode v2</b><p>Detects the consent-mode signals Google has required for EU ad personalisation since March 2024. Only relevant if you run Google Ads or Analytics.</p></li>
+      <li><b>IAB TCF</b><p>Detects the Transparency and Consent Framework used by publishers and ad-tech. Informational for most sites.</p></li>
+      <li><b>Forms and privacy notice</b><p>If the page has a form, is there a link to a privacy policy? GDPR Article 13 requires informing people at the point of collection.</p></li>
+      <li><b>Legal pages</b><p>Are a privacy policy, terms, an imprint (mandatory in Germany and Austria) and an accessibility statement linked from the front page?</p></li>
+      <li><b>Security headers</b><p>Content-Security-Policy, X-Content-Type-Options, Referrer-Policy and frame protection. Not a law, but the baseline NIS2 auditors and cyber insurers expect.</p></li>
+      <li><b>Operational resilience wording</b><p>For financial-sector and ICT-provider sites: does the site mention incident reporting, continuity and ICT risk, as DORA expects? Skipped silently for everyone else.</p></li>
+    </ul>
+  </section>
+
+  <section class="pg sec">
+    <h2>What it cannot tell you</h2>
+    <div class="limits">
+      <p>The scan looks at one page, once, from the outside. It cannot see what your consent banner does after someone clicks, what your privacy policy actually says, how you process data on the server, or whether your contracts with processors exist.</p>
+      <p>A full score means the visible basics are in place. It does not mean you are compliant, and no automated tool can honestly claim that. Use the result as a to-do list and as evidence that you checked, not as a certificate.</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="how">
-  <div class="wrap" style="text-align:center">
-    <h2>Three ways to use EUComply</h2>
-    <p class="lede" style="margin:0 auto 24px">The online scanner works on any URL. The Chrome extension puts it in your toolbar. And for WordPress users, the plugin adds self-hosted scanning from your admin dashboard.</p>
-    <div class="grid3" style="text-align:left">
-          <div class="card" style="text-align:center">
-            <div class="icon">🌐</div>
-            <h3>Online Scanner (any platform)</h3>
-            <p>Enter a URL, get results in seconds. No sign-up, no installation, no plugin. Works on every website — WordPress, Shopify, Webflow, Squarespace, Next.js, or hand-written HTML.</p>
-            <a class="btn" href="/scan/">Try the free scanner →</a>
-          </div>
-          <div class="card" style="text-align:center">
-            <div class="icon">🧩</div>
-            <h3>Chrome Extension</h3>
-            <p>Click the toolbar icon to scan your current tab. Auto-fills the URL, shows the score in the toolbar badge, and links to detailed results. Free, no sign-up.</p>
-            <a class="btn ghost" href="/extension/">Read more →</a>
-          </div>
-          <div class="card" style="text-align:center">
-            <div class="icon">⚙️</div>
-            <h3>WordPress Plugin</h3>
-            <p>Same checks, run from your WordPress admin dashboard. Includes backup detection, plugin health, and WordPress core version checks. Free, open source (GPL v2).</p>
-            <a class="btn ghost" href="assets/eucomply-1.2.0.zip">↓ Download plugin (ZIP)</a>
-          </div>
+  <section class="pg sec">
+    <h2>The guide, free as a PDF</h2>
+    <div class="book">
+      <div>
+        <p><em>EU Website Compliance Guide 2026</em> is a 24-page handbook for the person who owns the website rather than the lawyer. Each chapter explains one rule, what it asks of a website in practice, and ends with a checklist you can run against your own site.</p>
+        <p>It covers the same ground as the scanner plus the things a scanner cannot see: what a privacy policy must contain, when an imprint is mandatory, what the Accessibility Act means for a shop, and how NIS2 and DORA reach suppliers.</p>
+        <div class="actions">
+          <a class="btn" href="/book/eu-website-compliance-guide-2026.pdf">Download the PDF</a>
+          <a class="btn ghost" href="/book/">About the guide</a>
         </div>
       </div>
-    </section>
-
-<section id="pricing">
-  <div class="wrap">
-    <h2>Pricing</h2>
-    <p class="lede">The online scanner is free for any URL — no limits, no sign-up. Pro generates the documentation you need to prove compliance to auditors, clients, and insurers.</p>
-    <div class="grid2">
-      <div class="pricing-card">
-        <h3>Free Scanner</h3>
-        <div class="price">$0</div>
-        <div class="per">No sign-up, no limits</div>
-        <ul>
-          <li>SSL / HTTPS + HSTS check</li>
-          <li>Cookie consent detection (15+ platforms)</li>
-          <li>Google Consent Mode v2 check</li>
-          <li>Form + privacy link audit</li>
-          <li>Legal pages scan (privacy, imprint, EAA)</li>
-          <li>Security headers check (CSP, XFO, HSTS)</li>
-          <li>Platform fingerprint</li>
-        </ul>
-        <a class="btn ghost" href="/scan/">Scan any URL →</a>
-      </div>
-      <div class="pricing-card featured">
-        <h3>Pro</h3>
-        <div class="price">$79<span>/yr</span></div>
-        <div class="per">Per site · Annual subscription</div>
-        <ul>
-          <li>Everything in Free, plus:</li>
-          <li>📄 PDF compliance report (auditor-ready)</li>
-          <li>📋 DPA generator (GDPR data processing agreement)</li>
-          <li>📑 NIS2 vendor clause kit</li>
-          <li>♿ EAA accessibility statement generator</li>
-          <li>📊 Quarterly compliance narrative</li>
-          <li>📧 Email alerts on compliance changes</li>
-        </ul>
-        <a class="btn" href="/pro/">Get Pro — $79/yr</a>
-        <p class="note">Payment via Lemon Squeezy (cards, PayPal, Apple Pay) · 14-day refunds</p>
-        <p class="note">Comparing vendors? See how EUComply stacks up: <a href="/vs/cookiebot/">Cookiebot</a> · <a href="/vs/iubenda/">iubenda</a> · <a href="/vs/onetrust/">OneTrust</a> · <a href="/vs/enzuzo/">Enzuzo</a> · <a href="/vs/osano/">Osano</a> · <a href="/vs/termly/">Termly</a> · <a href="/vs/usercentrics/">Usercentrics</a> · <a href="/vs/complianz/">Complianz</a></p>
+      <div>
+        <ol>
+          <li>Why compliance matters in 2026</li>
+          <li>GDPR fundamentals for websites</li>
+          <li>Cookie consent: what the law requires</li>
+          <li>Privacy policy: the Article 13 checklist</li>
+          <li>Imprint and legal notice</li>
+          <li>Security headers</li>
+          <li>Third-party trackers</li>
+          <li>European Accessibility Act</li>
+          <li>NIS2 and DORA</li>
+          <li>Email: SPF, DKIM, DMARC</li>
+          <li>Compliance by platform</li>
+          <li>Monthly maintenance checklist</li>
+          <li>Tools and resources</li>
+          <li>Regulation overview table</li>
+        </ol>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="guides">
-  <div class="wrap">
-    <h2>Popular guides</h2>
-    <p class="lede">Straight-to-the-point answers on the compliance questions site owners actually get fined for.</p>
-    <div class="grid3" style="text-align:left">
-      <a class="card guide-card" href="/gdpr-compliance-check/">
-        <div class="icon">🇪🇺</div>
-        <h3>Is My Website GDPR Compliant?</h3>
-        <p>Free instant check: paste your URL and get a plain-language compliance score — the exact patterns behind the biggest EU fines.</p>
-      </a>
-      <a class="card guide-card" href="/gdpr-scanner-free/">
-        <div class="icon">🆓</div>
-        <h3>Free GDPR Scanner</h3>
-        <p>Free, unlimited, no sign-up: paste your URL and check consent, trackers and security headers on any platform in 10 seconds.</p>
-      </a>
-      <a class="card guide-card" href="/gdpr-fine-calculator/">
-        <div class="icon">💰</div>
-        <h3>GDPR Fine Calculator</h3>
-        <p>What could non-compliance cost you? See your Article 83 maximum exposure and the fines small websites actually receive. Free, instant.</p>
-      </a>
-      <a class="card guide-card" href="/cookie-banner-check/">
-        <div class="icon">✅</div>
-        <h3>Is My Cookie Banner Compliant?</h3>
-        <p>Free instant check: paste your URL and test pre-consent tracking, reject-button parity and Consent Mode v2 — any platform.</p>
-      </a>
-      <a class="card guide-card" href="/blog/gdpr-cookie-fines-tracker/">
-        <div class="icon">⚖️</div>
-        <h3>GDPR Cookie Fines Tracker</h3>
-        <p>Google €325M, SHEIN €150M and every major consent penalty (2025–2026), with what triggered each fine.</p>
-      </a>
-      <a class="card guide-card" href="/blog/eu-cookie-consent-guide-2026/">
-        <div class="icon">🍪</div>
-        <h3>EU Cookie Consent 2026</h3>
-        <p>Complete requirements guide: valid consent, reject button, proof of consent — for any platform.</p>
-      </a>
-      <a class="card guide-card" href="/blog/best-free-gdpr-compliance-checkers-2026/">
-        <div class="icon">🔍</div>
-        <h3>Best Free GDPR Compliance Checkers 2026</h3>
-        <p>10 free tools compared side-by-side: which checks what, which need sign-up, and which works on your platform. Updated for 2026.</p>
-      </a>
+  <section class="pg sec">
+    <h2>Pricing, honestly</h2>
+    <p>The scanner, the guide and the checklists are free and will stay free. A Pro plan at 79 USD per year is planned: daily re-scans of your site, an email when a check starts failing, and a PDF report you can forward to a client or auditor. Document templates (data processing agreement, NIS2 vendor clauses, accessibility statement) will be sold separately from 29 USD.</p>
+    <p class="status">Pro launches when checkout is live; the free scanner is complete. <a href="/pricing/">Read the pricing page</a> for what is planned.</p>
+  </section>
+
+  <section class="pg sec faq">
+    <h2>Questions people ask</h2>
+    <details>
+      <summary>Do you store the URLs or results?</summary>
+      <p>No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. A counter of total scans is kept; domains and results are not. If you register a site for daily monitoring, that domain and your email are stored for that purpose only.</p>
+    </details>
+    <details>
+      <summary>Is the scan itself GDPR-friendly?</summary>
+      <p>The site sets no cookies and loads nothing from third parties: no fonts, no analytics scripts, no embeds. The scanner fetches your public page the way any visitor would.</p>
+    </details>
+    <details>
+      <summary>Does it work for non-WordPress sites?</summary>
+      <p>Yes. It reads HTTP and HTML, so it works on Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, hand-written HTML and anything else that serves a page. It identifies the platform when it can, so the suggested fixes are relevant.</p>
+    </details>
+    <details>
+      <summary>My site passed. Am I compliant?</summary>
+      <p>You have the visible basics in place, which is further than most sites get. Compliance also involves what you do with data, what your documents say and how you handle requests. The guide and the checklists cover that part.</p>
+    </details>
+    <details>
+      <summary>Why were the legal-document generators removed?</summary>
+      <p>Earlier versions of this site offered generators for privacy policies, imprints, terms and refund policies. They produced documents that looked legal without a lawyer behind them. That is not a service I am comfortable offering, so they are gone. The <a href="/checklist/">checklists</a> tell you what such documents must contain.</p>
+    </details>
+  </section>
+
+  <section class="pg sec">
+    <h2>Who makes this</h2>
+    <p>EUComply is built and maintained by <a href="https://mahoje.dk">Mads Holst Jensen</a>, a developer in Odense, Denmark, who builds and looks after websites for agencies and small businesses. It started as an internal pre-launch check and became a public tool because clients kept asking for it. The scanner's source is on <a href="https://github.com/mahope/eucomply-scanner">GitHub</a>; if a check is wrong, open an issue.</p>
+    <p>Available in <a href="/da/" hreflang="da" lang="da">dansk</a>, <a href="/de/" hreflang="de" lang="de">Deutsch</a> and <a href="/fr/" hreflang="fr" lang="fr">français</a>.</p>
+  </section>
+</main>
+
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
     </div>
-    <p style="text-align:center;margin-top:20px"><a href="/blog/" style="color:var(--accent);font-weight:600">All 28 guides →</a> · <a href="/book/" style="color:var(--accent);font-weight:600">📖 Compliance ebook — $14.99</a></p>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="wrap faq">
-    <h2>FAQ</h2>
-    <details open>
-      <summary>Does this work on my platform?</summary>
-      <p>Yes — the scanner checks HTTP responses and HTML markup. It works on <strong>any website</strong>: WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, Joomla, static HTML, or custom stacks. The only requirement is a public URL.</p>
-    </details>
-    <details>
-      <summary>Do I need to install something?</summary>
-      <p>No. The online scanner works entirely from your browser — just enter a URL. If you use <strong>WordPress</strong>, you can optionally install the free plugin to run scans from your admin dashboard with additional WordPress-specific checks (backup status, plugin health, core version).</p>
-    </details>
-    <details>
-      <summary>Which regulations does it cover?</summary>
-      <p>EUComply checks against requirements from: <strong>GDPR</strong> (Art. 5, 13, 25, 32 — data protection, privacy by design, security), <strong>NIS2</strong> (Art. 18 — recovery, Art. 21 — supply chain), <strong>DORA</strong> (Art. 6 — ICT risk), and <strong>EAA</strong> (accessibility statement requirement). The checks identify technical gaps — they are not legal advice.</p>
-    </details>
-    <details>
-      <summary>Is my data stored or tracked?</summary>
-      <p>No. The scanner fetches the URL, runs checks in memory, and returns results. No scan data, URLs, or IPs are logged or stored. The WordPress plugin runs everything on your own server — no data leaves your installation.</p>
-    </details>
-    <details>
-      <summary>Who needs Pro?</summary>
-      <p>Anyone who needs <strong>documented proof</strong> of compliance — web agencies managing client sites, SaaS companies responding to vendor questionnaires, businesses subject to EU procurement or insurance reviews. Pro generates auditor-ready PDFs and legal templates you can forward directly.</p>
-    </details>
-    <details>
-      <summary>What about the European Accessibility Act (EAA)?</summary>
-      <p>The EAA (effective June 2025) requires accessible digital services. EUComply checks for an accessibility statement page on your site. Pro generates an EAA conformance statement template. Full WCAG audit requires a dedicated tool — the scanner tells you where to start.</p>
-    </details>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div>EUComply — free EU compliance scanning for any website.<br>⚖️ Automated technical checks only. Not legal advice. · <a href="/store/" style="color:var(--accent)">ComplianceDocs</a> · <a href="/badge/" style="color:var(--accent)">Badge</a> · <a href="/devnotify/" style="color:var(--accent)">DevNotify</a> · <a href="/transmute/" style="color:var(--accent)">Transmute</a> · <a href="/privacy/" style="color:var(--accent)">Privacy</a> · <a href="/terms/" style="color:var(--accent)">Terms</a></div>
-    <div>Scanner engine is open source (MIT) — <a href="https://github.com/mahope/eucomply-scanner" style="color:var(--accent)" target="_blank">GitHub</a> · <a href="/plugin/" style="color:var(--accent)">WP Plugin</a> · <a href="/de/was-ist-ein-impressum/" style="color:var(--accent)" hreflang="de">Deutsch: Was ist ein Impressum?</a></div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebApplication",
-      "name": "EUComply",
-      "url": "/",
-      "applicationCategory": "SecurityApplication",
-      "operatingSystem": "Web",
-      "description": "Free online EU compliance scanner. Enter any URL and check HTTPS, cookie consent, privacy policy, forms and security headers against GDPR, NIS2, DORA and EAA requirements.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Does this work on my platform?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes — the scanner checks HTTP responses and HTML markup. It works on any website: WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, Joomla, static HTML, or custom stacks. The only requirement is a public URL." }
-        },
-        {
-          "@type": "Question",
-          "name": "Do I need to install something?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The online scanner works entirely from your browser — just enter a URL. WordPress users can optionally install the free plugin to run scans from the admin dashboard." }
-        },
-        {
-          "@type": "Question",
-          "name": "Which regulations does it cover?",
-          "acceptedAnswer": { "@type": "Answer", "text": "EUComply checks against requirements from GDPR (Art. 5, 13, 25, 32), NIS2 (Art. 18, 21), DORA (Art. 6), and EAA (accessibility statement requirement). The checks identify technical gaps — they are not legal advice." }
-        },
-        {
-          "@type": "Question",
-          "name": "Is my data stored or tracked?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The scanner fetches the URL, runs checks in memory, and returns results. No scan data, URLs, or IPs are logged or stored." }
-        },
-        {
-          "@type": "Question",
-          "name": "Who needs Pro?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Anyone who needs documented proof of compliance — web agencies managing client sites, SaaS companies responding to vendor questionnaires, businesses subject to EU procurement or insurance reviews." }
-        }
-      ]
-    }
-  ]
-}
-</script>
-
 </body>
 </html>

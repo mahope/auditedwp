@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="da" data-dark-ok>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EUComply — gratis compliance-scan af websites med besøgende fra EU</title>
+<meta name="description" content="Indtast en URL og få et gratis teknisk tjek af det, EU-myndigheder spørger om først: HTTPS, cookiesamtykke, trackere der indlæses før samtykke, privatlivslinks og sikkerhedsheadere. Ingen oprettelse, intet gemmes.">
+<link rel="canonical" href="https://eucomplypro.com/da/">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<meta property="og:title" content="EUComply — gratis compliance-scan af websites med besøgende fra EU">
+<meta property="og:description" content="Ni tekniske tjek op imod forventningerne i GDPR, ePrivacy, NIS2 og EAA. Gratis, ingen oprettelse, intet gemmes.">
+<meta property="og:url" content="https://eucomplypro.com/da/">
+<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
+<meta property="og:type" content="website">
+<style>
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
+  .steps li { counter-increment: step; max-width: none; }
+  .steps li::before { content: counter(step); display: block; font-weight: 650; color: var(--accent); margin-bottom: 0.3rem; }
+  .steps li b { display: block; margin-bottom: 0.2rem; }
+  .steps li p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .limits { border-left: 3px solid var(--warn); padding-left: 1.1rem; }
+  .limits p { margin: 0 0 0.6rem; }
+  .book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem 3rem; align-items: start; }
+  .book ol { padding-left: 1.2rem; margin: 0.5rem 0 0; columns: 2; column-gap: 2rem; font-size: 0.95rem; }
+  .book ol li { break-inside: avoid; margin-bottom: 0.25rem; }
+  @media (max-width: 720px) { .book { grid-template-columns: 1fr; } .book ol { columns: 1; } }
+</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/da/">EUComply</a>
+    <nav class="sh-nav" aria-label="Hovedmenu">
+      <a href="/da/scan/">Scan</a>
+      <a href="/da/book/">Guide</a>
+      <a href="/checklist/">Tjeklister</a>
+      <a href="/da/pricing/">Priser</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+    <ul class="sh-lang" aria-label="Language"><li><a href="/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/" hreflang="fr" lang="fr">FR</a></li></ul>
+  </div>
+</header>
+
+
+<main>
+  <section class="pg hero">
+    <h1>Et gratis compliance-scan af websites med besøgende i EU.</h1>
+    <p class="lede">Indtast en URL. EUComply henter siden, som en browser ville gøre det, og tjekker ni ting, som myndigheder, revisorer og indkøbsafdelinger som regel spørger om først. Ingen konto, intet gemmes.</p>
+    <form class="scanform" action="/da/scan/" method="get">
+      <input type="text" name="url" placeholder="ditdomæne.dk" aria-label="Webadresse der skal scannes" required autocomplete="url" inputmode="url">
+      <button class="btn" type="submit">Kør scanningen</button>
+    </form>
+    <p class="scan-hint">Tager cirka ti sekunder. Scanningen læser den offentlige HTML og HTTP-headerne på den side, du angiver — ikke andet.</p>
+  </section>
+
+  <section class="pg sec">
+    <h2>Hvem det er til</h2>
+    <div class="cols">
+      <div>
+        <h3>Folk der driver et website</h3>
+        <p>Du har kunder eller læsere i Europa og ingen juridisk afdeling. Du vil vide, om de oplagte ting er på plads, før en kunde, en konkurrent eller en myndighed gør dig opmærksom på dem.</p>
+      </div>
+      <div>
+        <h3>Bureauer og freelancere</h3>
+        <p>Du afleverer sites og får compliance-spørgsmålene bagefter. Kør et scan før lancering og igen efter hvert redesign, og send kunden et link til resultatet i stedet for et løfte.</p>
+      </div>
+      <div>
+        <h3>Udviklere</h3>
+        <p>Du tilføjede samtykkebanneret og headerne for tre deploys siden. Scanningen fortæller dig, om de stadig er der. Tjekkene er open source, så du kan læse præcis, hvad "bestået" betyder.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Sådan fungerer scanningen</h2>
+    <ol class="steps">
+      <li><b>Du giver den en URL</b><p>Et domæne er nok. Scanneren normaliserer det og henter forsiden over HTTPS.</p></li>
+      <li><b>Den læser det, en browser ville modtage</b><p>Svarheadere, TLS-detaljer og den leverede HTML. Den logger ikke ind, klikker ikke, udfylder ikke formularer og crawler ikke andre sider.</p></li>
+      <li><b>Den kører ni tjek</b><p>Hvert tjek leder efter konkret dokumentation: en header, der er til stede, et samtykkescript, der indlæses, et privatlivslink ved siden af en formular.</p></li>
+      <li><b>Du får et resultat, du kan dele</b><p>Bestået, advarsel eller skal rettes for hvert tjek, med et forslag til rettelse. Resultatet ligger i linket, ikke i en database.</p></li>
+    </ol>
+  </section>
+
+  <section class="pg sec">
+    <h2>Hvad den tjekker</h2>
+    <p class="lede">Ni tjek, hver knyttet til en konkret regel eller en bredt anerkendt grundstandard. Scanneren rapporterer, hvad den fandt, ikke hvad den mener om dig.</p>
+    <ul class="ledger">
+      <li><b>HTTPS og HSTS</b><p>Leveres sitet over TLS, og sender det Strict-Transport-Security? GDPR-artikel 32 forventer passende teknisk sikkerhed; HSTS er den billige del af den.</p></li>
+      <li><b>Cookiesamtykke</b><p>Leder efter en kendt samtykkeplatform (Cookiebot, OneTrust, Klaro, Complianz og et dusin andre) i den leverede HTML. ePrivacy-direktivet kræver samtykke før ikke-nødvendige cookies.</p></li>
+      <li><b>Trackere før samtykke</b><p>Tjekker, om Google Analytics, Meta Pixel, TikTok, Hotjar og lignende scripts indlæses uden nogen samtykkemekanisme på siden. Det er den mest almindelige grund til, at små sites får bøder.</p></li>
+      <li><b>Google Consent Mode v2</b><p>Finder de consent mode-signaler, Google har krævet til annoncepersonalisering i EU siden marts 2024. Kun relevant, hvis du bruger Google Ads eller Analytics.</p></li>
+      <li><b>IAB TCF</b><p>Finder Transparency and Consent Framework, som bruges af udgivere og adtech. Til orientering for de fleste sites.</p></li>
+      <li><b>Formularer og privatlivsoplysning</b><p>Hvis siden har en formular, er der så et link til en privatlivspolitik? GDPR-artikel 13 kræver, at folk oplyses på indsamlingstidspunktet.</p></li>
+      <li><b>Juridiske sider</b><p>Er der links fra forsiden til privatlivspolitik, handelsbetingelser, et impressum (obligatorisk i Tyskland og Østrig) og en tilgængelighedserklæring?</p></li>
+      <li><b>Sikkerhedsheadere</b><p>Content-Security-Policy, X-Content-Type-Options, Referrer-Policy og beskyttelse mod indramning. Ikke et lovkrav, men den grundstandard NIS2-revisorer og cyberforsikringer forventer.</p></li>
+      <li><b>Formuleringer om operationel modstandsdygtighed</b><p>For sites i finanssektoren og hos IKT-leverandører: nævner sitet hændelsesrapportering, kontinuitet og IKT-risiko, som DORA forventer? Springes stille over for alle andre.</p></li>
+    </ul>
+  </section>
+
+  <section class="pg sec">
+    <h2>Hvad den ikke kan fortælle dig</h2>
+    <div class="limits">
+      <p>Scanningen ser på én side, én gang, udefra. Den kan ikke se, hvad dit samtykkebanner gør, efter nogen klikker, hvad din privatlivspolitik faktisk siger, hvordan du behandler data på serveren, eller om dine databehandleraftaler findes.</p>
+      <p>Fuld score betyder, at de synlige grundting er på plads. Det betyder ikke, at du overholder reglerne, og det kan intet automatisk værktøj ærligt påstå. Brug resultatet som en huskeliste og som dokumentation for, at du har tjekket, ikke som et certifikat.</p>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Guiden, gratis som PDF</h2>
+    <div class="book">
+      <div>
+        <p><em>EU Website Compliance Guide 2026</em> er en håndbog på 24 sider til den, der ejer websitet, snarere end til advokaten. Hvert kapitel forklarer én regel, hvad den i praksis kræver af et website, og slutter med en tjekliste, du kan køre igennem på dit eget site.</p>
+        <p>Den dækker det samme som scanneren plus det, en scanner ikke kan se: hvad en privatlivspolitik skal indeholde, hvornår et impressum er obligatorisk, hvad tilgængelighedsdirektivet (EAA) betyder for en webshop, og hvordan NIS2 og DORA rammer leverandører.</p>
+        <div class="actions">
+          <a class="btn" href="/book/eu-website-compliance-guide-2026.pdf">Hent PDF'en</a>
+          <a class="btn ghost" href="/da/book/">Om guiden</a>
+        </div>
+      </div>
+      <div>
+        <ol>
+          <li>Hvorfor compliance betyder noget i 2026</li>
+          <li>GDPR-grundlag for websites</li>
+          <li>Cookiesamtykke: hvad loven kræver</li>
+          <li>Privatlivspolitik: tjeklisten til artikel 13</li>
+          <li>Impressum og juridiske oplysninger</li>
+          <li>Sikkerhedsheadere</li>
+          <li>Tredjepartstrackere</li>
+          <li>Tilgængelighedsdirektivet (EAA)</li>
+          <li>NIS2 og DORA</li>
+          <li>E-mail: SPF, DKIM, DMARC</li>
+          <li>Compliance pr. platform</li>
+          <li>Månedlig vedligeholdelsestjekliste</li>
+          <li>Værktøjer og ressourcer</li>
+          <li>Oversigtstabel over regulering</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Priser, ærligt talt</h2>
+    <p>Scanneren, guiden og tjeklisterne er gratis og forbliver gratis. En Pro-plan til 79 USD om året er planlagt: daglige genscanninger af dit site, en e-mail når et tjek begynder at fejle, og en PDF-rapport, du kan sende videre til en kunde eller revisor. Dokumentskabeloner (databehandleraftale, NIS2-leverandørklausuler, tilgængelighedserklæring) sælges separat fra 29 USD.</p>
+    <p class="status">Pro åbner, når betaling er koblet på; den gratis scanner er færdig. <a href="/da/pricing/">Læs prissiden</a> for at se, hvad der er planlagt.</p>
+  </section>
+
+  <section class="pg sec faq">
+    <h2>Spørgsmål folk stiller</h2>
+    <details>
+      <summary>Gemmer I URL'er eller resultater?</summary>
+      <p>Nej. Scanningen kører i en Cloudflare Worker, sender resultatet tilbage til din browser og glemmer det. Der føres en tæller over det samlede antal scanninger; domæner og resultater gemmes ikke. Hvis du tilmelder et site til daglig overvågning, gemmes domænet og din e-mailadresse til det formål og intet andet.</p>
+    </details>
+    <details>
+      <summary>Er selve scanningen GDPR-venlig?</summary>
+      <p>Sitet sætter ingen cookies og indlæser intet fra tredjeparter: ingen skrifttyper, ingen analysescripts, ingen indlejringer. Scanneren henter din offentlige side, som enhver besøgende ville gøre det.</p>
+    </details>
+    <details>
+      <summary>Virker den på sites, der ikke kører WordPress?</summary>
+      <p>Ja. Den læser HTTP og HTML, så den virker på Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, håndskrevet HTML og alt andet, der leverer en side. Den identificerer platformen, når den kan, så forslagene til rettelser er relevante.</p>
+    </details>
+    <details>
+      <summary>Mit site bestod. Overholder jeg så reglerne?</summary>
+      <p>Du har de synlige grundting på plads, og det er længere, end de fleste sites når. Overholdelse handler også om, hvad du gør med data, hvad dine dokumenter siger, og hvordan du håndterer henvendelser. Guiden og tjeklisterne dækker den del.</p>
+    </details>
+    <details>
+      <summary>Hvorfor er generatorerne til juridiske dokumenter fjernet?</summary>
+      <p>Tidligere versioner af dette site tilbød generatorer til privatlivspolitikker, impressum, handelsbetingelser og returpolitikker. De producerede dokumenter, der så juridiske ud uden en advokat bag. Det er ikke en ydelse, jeg har det godt med at tilbyde, så de er væk. <a href="/checklist/">Tjeklisterne</a> fortæller dig, hvad sådanne dokumenter skal indeholde.</p>
+    </details>
+  </section>
+
+  <section class="pg sec">
+    <h2>Hvem står bag</h2>
+    <p>EUComply er bygget og vedligeholdt af <a href="https://mahoje.dk">Mads Holst Jensen</a>, udvikler i Odense, som bygger og passer websites for bureauer og små virksomheder. Det begyndte som et internt tjek før lancering og blev et offentligt værktøj, fordi kunderne blev ved med at spørge efter det. Scannerens kildekode ligger på <a href="https://github.com/mahope/eucomply-scanner">GitHub</a>; er et tjek forkert, så opret et issue.</p>
+    <p>Findes også på <a href="/" hreflang="en" lang="en">English</a>, <a href="/de/" hreflang="de" lang="de">Deutsch</a> og <a href="/fr/" hreflang="fr" lang="fr">français</a>.</p>
+  </section>
+</main>
+
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Udviklet af <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — udvikler og teknisk partner, Odense.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scannerens kildekode på GitHub</a></p>
+      <p class="sf-note">Sitet sætter ingen cookies og indlæser hverken trackere eller eksterne skrifttyper. Alt her er teknisk vejledning, ikke juridisk rådgivning.</p>
+    </div>
+    <div>
+      <h2>På dette site</h2>
+      <ul>
+        <li><a href="/da/scan/">Scan</a></li>
+        <li><a href="/da/book/">Guide</a></li>
+        <li><a href="/checklist/">Tjeklister</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR-bødeberegner</a></li>
+        <li><a href="/da/pricing/">Priser</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privatliv</a> · <a href="/terms/">Vilkår</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Også fra mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

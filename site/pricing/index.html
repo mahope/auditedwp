@@ -1,369 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUComply Pricing — Free Scan · Pro $79/yr · Templates from $29</title>
-<meta name="description" content="Pricing for EUComply compliance tools: free website scanner, Pro automated monitoring ($79/year), and ComplianceDocs document templates ($29–$149). Works on WordPress, Shopify, Webflow, Next.js — every stack.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<title>Pricing — EUComply</title>
+<meta name="description" content="The scanner, the guide and the checklists are free. A Pro plan at 79 USD a year and document templates from 29 USD are planned; neither is on sale yet.">
 <link rel="canonical" href="https://eucomplypro.com/pricing/">
-<meta property="og:title" content="EUComply Pricing — Free · Pro $79/yr · Templates $29">
-<meta property="og:description" content="Choose the right EU compliance tier. Free one-off scan. Pro automated monitoring. Lawyer-inspired templates. Pay when you need more than the basics.">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/pricing/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/pricing/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pricing/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pricing/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pricing/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<meta property="og:title" content="Pricing — EUComply">
+<meta property="og:description" content="Free scanner and guide. Pro at 79 USD a year and templates from 29 USD are planned, not yet on sale.">
 <meta property="og:url" content="https://eucomplypro.com/pricing/">
-<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "EUComply",
-  "offers": [
-    {"@type":"Offer","name":"Free Scan","price":"0","priceCurrency":"USD","description":"One-off compliance scan for any URL. Shareable report.","eligibleCustomerType":"Business,User","availability":"https://schema.org/InStock"},
-    {"@type":"Offer","name":"EUComply Pro","price":"79","priceCurrency":"USD","priceInterval":"P1Y","description":"Daily automated compliance monitoring, PDF auditor reports, live badge, document templates and email alerts.","eligibleCustomerType":"Business","availability":"https://schema.org/PreOrder"},
-    {"@type":"Offer","name":"ComplianceDocs","price":"29","priceCurrency":"USD","priceInterval":"P1M","description":"Lawyer-inspired DPA, NDA, NIS2 clauses and EAA statement templates.","eligibleCustomerType":"Business","availability":"https://schema.org/PreOrder"}
-  ],
-  "description": "EU compliance scanner, monitoring and document templates. Platform-independent. Works on any website stack.",
-  "category": "Software as a Service",
-  "audience": {"@type":"BusinessAudience","geographicArea":{"@type":"Country","name":"EU"}},
-  "manufacturer": {"@type":"Organization","name":"Mahope"}
-}
-</script>
 <style>
-:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--gold:#d4a620;}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-.wrap{max-width:960px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0}
-header .wrap{display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
-
-/* Hero */
-.hero{text-align:center;padding:48px 0 20px}
-.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:14px}
-h1{font-size:36px;line-height:1.2;letter-spacing:-.025em;max-width:700px;margin:0 auto 12px}
-h1 em{font-style:normal;color:var(--accent)}
-.sub{font-size:17px;color:var(--muted);max-width:600px;margin:0 auto 24px}
-
-/* Pricing cards */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:32px auto}
-.pricing-card{background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:28px 24px;text-align:center;display:flex;flex-direction:column;transition:box-shadow .15s}
-.pricing-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
-.pricing-card.featured{border-color:var(--accent);background:#f8faff;position:relative}
-.pricing-card.featured::before{content:"Most popular";position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:999px;letter-spacing:.03em}
-.pricing-card h3{font-size:18px;margin-bottom:2px}
-.pricing-card .tagline{font-size:13px;color:var(--muted);margin-bottom:12px}
-.pricing-card .price{font-size:40px;font-weight:800;color:var(--ink);margin:12px 0 4px;letter-spacing:-.03em}
-.pricing-card .price span{font-size:14px;font-weight:400;color:var(--muted)}
-.pricing-card .per{font-size:13px;color:var(--muted);margin-bottom:16px;min-height:18px}
-.pricing-card .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:14px;transition:background .15s;width:100%}
-.pricing-card .btn:hover{background:var(--accent-dark)}
-.pricing-card .btn.gold{background:var(--gold);color:#3a2d0a}
-.pricing-card .btn.gold:hover{background:#c49120}
-.pricing-card .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--line)}
-.pricing-card .btn.ghost:hover{border-color:var(--accent)}
-.pricing-card ul{list-style:none;text-align:left;margin:20px 0 16px;flex:1;font-size:14px}
-.pricing-card ul li{padding:7px 0 7px 22px;position:relative;border-bottom:1px solid var(--soft)}
-.pricing-card ul li:last-child{border-bottom:none}
-.pricing-card ul li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-.pricing-card ul li.check{color:var(--ink);font-weight:500}
-.pricing-card ul li.check ~ li{color:var(--muted);font-size:13px}
-.pricing-card ul li{color:var(--muted)}
-.pricing-card ul li strong{color:var(--ink)}
-
-/* Comparison table */
-section{padding:44px 0;border-top:1px solid var(--line)}
-h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px;text-align:center}
-.lede{color:var(--muted);max-width:600px;margin:0 auto 28px;text-align:center;font-size:15px}
-.compare{width:100%;border-collapse:collapse;font-size:14px}
-.compare th,.compare td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
-.compare th{background:var(--soft);font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;border-bottom:2px solid var(--line)}
-.compare .check{color:var(--ok);font-weight:700}
-.compare .cross{color:#ccc}
-.compare tr:hover td{background:var(--soft)}
-
-/* FAQ */
-.faq-item{padding:18px 0;border-bottom:1px solid var(--line)}
-.faq-item:last-child{border-bottom:none}
-.faq-q{font-weight:600;font-size:15px;margin-bottom:4px}
-.faq-a{font-size:14px;color:var(--muted);line-height:1.7}
-.faq-a a{color:var(--accent)}
-
-/* CTA section */
-.cta-section{text-align:center;padding:48px 0;background:var(--soft);border-radius:12px;margin:32px 0}
-.cta-section h2{margin-bottom:10px}
-.cta-section .btn{margin:0 6px}
-
-/* Responsive */
-@media(max-width:800px){
-  .pricing-grid{grid-template-columns:1fr;max-width:400px;margin:24px auto}
-  h1{font-size:28px}
-  .pricing-card.featured{order:-1}
-}
-@media(max-width:500px){
-  nav a:not(.cta){display:none}
-  .compare{font-size:12px}
-  .compare th,.compare td{padding:8px 6px}
-}
+  .cmp { width: 100%; border-collapse: collapse; margin: 1.5rem 0 0; font-size: 0.95rem; }
+  .cmp th, .cmp td { text-align: left; padding: 0.6rem 0.75rem 0.6rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cmp th { font-weight: 600; }
+  .cmp td:not(:first-child), .cmp th:not(:first-child) { width: 7rem; }
+  .cmp-wrap { overflow-x: auto; }
 </style>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <a class="logo" href="/">EU<span>Comply</span></a>
-    <nav>
-      <a href="/scan/">Scanner</a>
-      <a href="/how-it-works/">How it works</a>
-      <a href="/store/">Templates</a>
-      <a href="/guides/">Guides</a>
-      <a class="cta" href="/pro/">Pro</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/">EUComply</a>
+    <nav class="sh-nav" aria-label="Main">
+      <a href="/scan/">Scan</a>
+      <a href="/book/">Guide</a>
+      <a href="/checklist/">Checklists</a>
+      <a href="/pricing/" aria-current="page">Pricing</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li><a href="/da/pricing/" hreflang="da" lang="da">DA</a></li><li><a href="/de/pricing/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/pricing/" hreflang="fr" lang="fr">FR</a></li></ul>
   </div>
 </header>
 
-<div class="wrap">
+<main>
+  <section class="pg hero">
+    <h1>Free where it matters. Paid when it exists.</h1>
+    <p class="lede">The scanner, the guide and every checklist on this site are free and will stay free. Two paid things are planned. Neither can be bought today, and there is no waiting list to join.</p>
+  </section>
 
-<div class="hero">
-  <div class="badge">Simple, transparent pricing</div>
-  <h1>Start free. Upgrade when you need <em>more than a scan</em>.</h1>
-  <p class="sub">One-off compliance scan is free for every URL. When you need daily monitoring, audit trails, or legal-ready templates, you pay only for what you use.</p>
-</div>
+  <section class="pg sec">
+    <div class="plans">
+      <div class="plan free">
+        <h2>Scanner</h2>
+        <p class="price">Free</p>
+        <p class="per">No account, no limits</p>
+        <ul>
+          <li>Nine checks on any public URL</li>
+          <li>Suggested fix for each finding</li>
+          <li>Shareable result link</li>
+          <li>Daily re-check by email, while the monitoring service is in test</li>
+          <li>The 24-page guide as a PDF</li>
+          <li>GDPR, NIS2 and EAA checklists</li>
+        </ul>
+        <a class="btn" href="/scan/">Run the scan</a>
+      </div>
+      <div class="plan">
+        <h2>Pro</h2>
+        <p class="price">79 USD</p>
+        <p class="per">per website, per year — planned</p>
+        <ul>
+          <li>Daily re-scans with a 30-day history</li>
+          <li>Email when a check goes from pass to fail</li>
+          <li>PDF report with findings and dates, for clients and auditors</li>
+          <li>A badge you can put in the footer, linking to the latest result</li>
+          <li>Document templates included</li>
+        </ul>
+        <p class="status">Pro launches when checkout is live; the free scanner is complete.</p>
+      </div>
+      <div class="plan">
+        <h2>Templates</h2>
+        <p class="price">from 29 USD</p>
+        <p class="per">one-off, editable files — planned</p>
+        <ul>
+          <li>Data processing agreement (GDPR Art. 28)</li>
+          <li>NIS2 and DORA vendor clauses</li>
+          <li>Accessibility statement (EAA)</li>
+          <li>Mutual NDA clause set</li>
+          <li>Client compliance report kit</li>
+        </ul>
+        <p class="status">Written as starting points with comments on each clause. Have counsel read the filled-in result before you sign anything.</p>
+      </div>
+    </div>
+  </section>
 
-<!--- Pricing cards --->
-<div class="pricing-grid">
+  <section class="pg sec">
+    <h2>What each tier will include</h2>
+    <div class="cmp-wrap">
+    <table class="cmp">
+      <thead><tr><th>Feature</th><th>Free</th><th>Pro</th><th>Templates</th></tr></thead>
+      <tbody>
+        <tr><td>One-off scan of any URL</td><td>Yes</td><td>Yes</td><td>—</td></tr>
+        <tr><td>Platform detection and fix suggestions</td><td>Yes</td><td>Yes</td><td>—</td></tr>
+        <tr><td>Guide and checklists</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Daily re-scans and history</td><td>In test</td><td>Yes</td><td>—</td></tr>
+        <tr><td>Email on a failing check</td><td>In test</td><td>Yes</td><td>—</td></tr>
+        <tr><td>PDF report</td><td>—</td><td>Yes</td><td>—</td></tr>
+        <tr><td>Footer badge with live result</td><td>—</td><td>Yes</td><td>—</td></tr>
+        <tr><td>DPA, vendor clauses, accessibility statement</td><td>—</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>NDA clauses and report kit</td><td>—</td><td>—</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
 
-  <!-- Free -->
-  <div class="pricing-card">
-    <h3>Free</h3>
-    <div class="tagline">One-off scan &amp; scorecard</div>
-    <div class="price">$0 <span>per scan</span></div>
-    <div class="per">No account needed · Unlimited URLs</div>
-    <a class="btn ghost" href="/scan/">Try it now →</a>
-    <ul>
-      <li>9-point compliance check (SSL, cookies, forms, legal, headers, DORA, EAA, NIS2)</li>
-      <li>Shareable scorecard with pass/fail badges</li>
-      <li>Works on every website platform</li>
-      <li>10–15 seconds per scan</li>
-      <li>No sign-up, no installation</li>
-    </ul>
-  </div>
+  <section class="pg sec faq">
+    <h2>Questions</h2>
+    <details>
+      <summary>Why is there no buy button?</summary>
+      <p>Because payment is not connected yet, and a button that leads nowhere is worse than none. When Pro opens, this page will say so and the price will be the one listed here.</p>
+    </details>
+    <details>
+      <summary>Will the free scanner get worse when Pro launches?</summary>
+      <p>No. The scanner is finished as it is. Pro adds repetition, history and paperwork on top; it does not take checks away.</p>
+    </details>
+    <details>
+      <summary>Why per website?</summary>
+      <p>Because the cost is per site scanned daily. If you look after many sites, get in touch through <a href="https://mahoje.dk">mahoje.dk</a> before buying several subscriptions.</p>
+    </details>
+    <details>
+      <summary>Are the templates legal advice?</summary>
+      <p>No. They are documents written by a developer who has had to sign a lot of them, with comments explaining each clause. Use them to arrive at the lawyer with a draft instead of a blank page.</p>
+    </details>
+    <details>
+      <summary>Which currency and payment methods?</summary>
+      <p>Prices are in USD. Payment will run through a merchant of record that handles EU VAT and issues a proper invoice. Cards and PayPal are planned.</p>
+    </details>
+  </section>
+</main>
 
-  <!-- Pro -->
-  <div class="pricing-card featured">
-    <h3>Pro</h3>
-    <div class="tagline">Automated daily compliance monitoring</div>
-    <div class="price">$79 <span>/ year</span></div>
-    <div class="per">per website · launch pricing</div>
-    <a class="btn gold" href="#" data-checkout="pro" data-checkout-label="Get launch access →">Waiting for payments...</a>
-    <ul>
-      <li><strong>Everything in Free, plus:</strong></li>
-      <li>Daily automated re-scans &amp; change detection</li>
-      <li>Auditor-ready PDF reports with findings history</li>
-      <li>EUComply compliance badge for your site</li>
-      <li>Email alerts on compliance changes</li>
-      <li>DPA &amp; NIS2 document templates included</li>
-      <li>Live dashboard with compliance timeline</li>
-      <li>30-day scan history &amp; change log</li>
-    </ul>
-  </div>
-
-  <!-- Templates -->
-  <div class="pricing-card">
-    <h3>ComplianceDocs</h3>
-    <div class="tagline">Lawyer-inspired legal templates</div>
-    <div class="price">$29 <span>– $149</span></div>
-    <div class="per">one-time purchase · instant download</div>
-    <a class="btn ghost" href="/store/">Browse templates →</a>
-    <ul>
-      <li><strong>Professional document templates:</strong></li>
-      <li>Data Processing Agreement (DPA)</li>
-      <li>NIS2 vendor due diligence &amp; clauses</li>
-      <li>NDA for EU compliance engagements</li>
-      <li>EAA accessibility statement</li>
-      <li>Compliance report kit (Excel + template)</li>
-      <li>Lawyer-inspired, reviewed regularly</li>
-      <li>Editable formats (DOCX/ODT)</li>
-    </ul>
-  </div>
-
-</div>
-
-<!--- Comparison table --->
-<section>
-<h2>Side-by-side comparison</h2>
-<p class="lede">See exactly what each tier includes. Green ✓ = included, — = not included.</p>
-
-<table class="compare">
-<thead>
-<tr>
-  <th>Feature</th>
-  <th style="text-align:center">Free</th>
-  <th style="text-align:center">Pro ($79/yr)</th>
-  <th style="text-align:center">Docs ($29–149)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>One-off compliance scan (any URL)</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>9-point check (SSL, cookies, forms, legal, headers, DORA, NIS2, EAA, trackers)</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>Platform detection (WordPress, Shopify, Webflow, …)</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>Shareable scorecard &amp; badge</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td><strong>Daily automated monitoring</strong></td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td><strong>Auditor-ready PDF reports</strong></td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>Email alerts on compliance drift</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>Compliance badge for your website</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td>Live compliance dashboard</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td style="text-align:center;color:#ccc">—</td>
-</tr>
-<tr>
-  <td><strong>DPA template (data processing agreement)</strong></td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr>
-  <td><strong>NIS2 vendor due diligence &amp; clauses</strong></td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr>
-  <td><strong>EAA accessibility statement template</strong></td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr>
-  <td>NDA document template</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr>
-  <td>Compliance report kit (Excel + template)</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr>
-  <td>Editable DOCX format</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td style="text-align:center;color:#ccc">—</td>
-  <td class="check" style="text-align:center">✓</td>
-</tr>
-<tr style="border-top:2px solid var(--accent);background:#f8faff">
-  <td><strong>Best for</strong></td>
-  <td style="text-align:center;font-size:13px">Quick check, curiosity, one-off</td>
-  <td style="text-align:center;font-size:13px"><strong>Ongoing compliance, agencies, audit trails</strong></td>
-  <td style="text-align:center;font-size:13px">Legal paperwork, procurement, vendor docs</td>
-</tr>
-</tbody>
-</table>
-</section>
-
-<!--- FAQ --->
-<section>
-<h2>Frequently asked questions</h2>
-
-<div class="faq-item">
-  <div class="faq-q">Can I use Pro on multiple websites?</div>
-  <div class="faq-a">Yes — each Pro subscription covers one website. If you manage multiple sites, you can add separate subscriptions per site. Volume pricing is planned for 5+ sites.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">What happens after I purchase Pro?</div>
-  <div class="faq-a">You enter your website URL and we start daily monitoring immediately. You get a dashboard, your first PDF report within minutes, and email alerts whenever the scan detects changes that could affect compliance. All document templates are available right away.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">Do I need to install anything?</div>
-  <div class="faq-a">No. EUComply is a cloud service — you give us your URL, we do the scanning. No code, no plugin, no server access needed. The <a href="/extension/">browser extension</a> is optional and adds in-page scanning.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">Can I try Pro before paying?</div>
-  <div class="faq-a">Absolutely — <a href="/scan/">run the free scanner</a> on your site right now. It runs the same 9-point check. If you find the report useful and want ongoing monitoring, Pro is ready when you are.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">What payment methods do you accept?</div>
-  <div class="faq-a">Credit/debit cards, Apple Pay, Google Pay, and PayPal — processed through Lemon Squeezy, a Merchant of Record that handles EU VAT and US sales tax for you. You get a proper invoice.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">Can I cancel anytime?</div>
-  <div class="faq-a">Yes. Pro is billed yearly — cancel before the next renewal and you keep access through the end of your current billing period. No lock-in, no early termination fee.</div>
-</div>
-
-<div class="faq-item">
-  <div class="faq-q">Are the document templates lawyer-approved?</div>
-  <div class="faq-a">Our templates are created by compliance professionals and reviewed periodically against regulatory changes. They are professional tools, not a substitute for legal advice — we recommend having a qualified attorney review any template before use.</div>
-</div>
-</section>
-
-<!--- CTA --->
-<div class="cta-section">
-  <h2>Still not sure?</h2>
-  <p class="lede" style="margin-bottom:20px">The free scanner takes 10 seconds. No sign-up, no obligation.</p>
-  <a class="btn" href="/scan/">Scan your website now →</a>
-  <a class="btn ghost" href="/how-it-works/">How it works →</a>
-</div>
-
-</div><!-- /wrap -->
-
-<footer style="padding:24px 0;border-top:1px solid var(--line);margin-top:32px">
-  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)">
-    <span>&copy; 2026 Mahope · <a href="/privacy/" style="color:var(--muted)">Privacy</a> · <a href="/terms/" style="color:var(--muted)">Terms</a></span>
-    <span>Secure payments via Lemon Squeezy</span>
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
+      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+    </div>
+    <div>
+      <h2>On this site</h2>
+      <ul>
+        <li><a href="/scan/">Scan</a></li>
+        <li><a href="/book/">Guide</a></li>
+        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
-<script src="/assets/checkout.js" defer></script>
 </body>
 </html>

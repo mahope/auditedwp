@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr" data-dark-ok>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EUComply — scan de conformité gratuit pour les sites web ayant des visiteurs dans l’UE</title>
+<meta name="description" content="Saisissez une URL et obtenez une vérification technique gratuite des points que les autorités européennes examinent en premier : HTTPS, consentement aux cookies, traceurs chargés avant consentement, liens vers la politique de confidentialité et en-têtes de sécurité. Sans inscription, rien n’est conservé.">
+<link rel="canonical" href="https://eucomplypro.com/fr/">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<meta property="og:title" content="EUComply — scan de conformité gratuit pour les sites web ayant des visiteurs dans l’UE">
+<meta property="og:description" content="Neuf vérifications techniques au regard du RGPD, de la directive ePrivacy, de NIS2 et de l’EAA. Gratuit, sans inscription, rien n’est conservé.">
+<meta property="og:url" content="https://eucomplypro.com/fr/">
+<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
+<meta property="og:type" content="website">
+<style>
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
+  .steps li { counter-increment: step; max-width: none; }
+  .steps li::before { content: counter(step); display: block; font-weight: 650; color: var(--accent); margin-bottom: 0.3rem; }
+  .steps li b { display: block; margin-bottom: 0.2rem; }
+  .steps li p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .limits { border-left: 3px solid var(--warn); padding-left: 1.1rem; }
+  .limits p { margin: 0 0 0.6rem; }
+  .book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem 3rem; align-items: start; }
+  .book ol { padding-left: 1.2rem; margin: 0.5rem 0 0; columns: 2; column-gap: 2rem; font-size: 0.95rem; }
+  .book ol li { break-inside: avoid; margin-bottom: 0.25rem; }
+  @media (max-width: 720px) { .book { grid-template-columns: 1fr; } .book ol { columns: 1; } }
+</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/fr/">EUComply</a>
+    <nav class="sh-nav" aria-label="Menu principal">
+      <a href="/fr/scan/">Scanner</a>
+      <a href="/fr/book/">Guide</a>
+      <a href="/checklist/">Check-lists</a>
+      <a href="/fr/pricing/">Tarifs</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+    <ul class="sh-lang" aria-label="Language"><li><a href="/" hreflang="en" lang="en">EN</a></li><li><a href="/da/" hreflang="da" lang="da">DA</a></li><li><a href="/de/" hreflang="de" lang="de">DE</a></li><li><span aria-current="true" lang="fr">FR</span></li></ul>
+  </div>
+</header>
+
+
+<main>
+  <section class="pg hero">
+    <h1>Un scan de conformité gratuit pour les sites web ayant des visiteurs dans l’UE.</h1>
+    <p class="lede">Saisissez une URL. EUComply charge la page comme le ferait un navigateur et vérifie neuf points que les régulateurs, les auditeurs et les services achats demandent généralement en premier. Sans compte, rien n’est conservé.</p>
+    <form class="scanform" action="/fr/scan/" method="get">
+      <input type="text" name="url" placeholder="votredomaine.com" aria-label="Adresse du site web à analyser" required autocomplete="url" inputmode="url">
+      <button class="btn" type="submit">Lancer le scan</button>
+    </form>
+    <p class="scan-hint">Cela prend une dizaine de secondes. Le scan lit le HTML public et les en-têtes HTTP de la page que vous indiquez — rien de plus.</p>
+  </section>
+
+  <section class="pg sec">
+    <h2>À qui cela s’adresse</h2>
+    <div class="cols">
+      <div>
+        <h3>Ceux qui gèrent un site web</h3>
+        <p>Vous avez des clients ou des lecteurs en Europe et pas de service juridique. Vous voulez savoir si l’essentiel est en place avant qu’un client, un concurrent ou un régulateur ne vous le fasse remarquer.</p>
+      </div>
+      <div>
+        <h3>Agences et freelances</h3>
+        <p>Vous livrez des sites et les questions de conformité arrivent après. Lancez un scan avant la mise en ligne et après chaque refonte, puis envoyez au client un lien vers le résultat plutôt qu’une promesse.</p>
+      </div>
+      <div>
+        <h3>Développeurs</h3>
+        <p>Vous avez ajouté la bannière de consentement et les en-têtes il y a trois déploiements. Le scan vous dit s’ils sont toujours là. Les vérifications sont open source, vous pouvez donc lire exactement ce que « réussi » signifie.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Comment fonctionne le scan</h2>
+    <ol class="steps">
+      <li><b>Vous indiquez une URL</b><p>Un domaine suffit. Le scanner le normalise et charge la page d’accueil en HTTPS.</p></li>
+      <li><b>Il lit ce qu’un navigateur recevrait</b><p>Les en-têtes de réponse, les détails TLS et le HTML servi. Il ne se connecte pas, ne clique pas, ne remplit aucun formulaire et n’explore pas d’autres pages.</p></li>
+      <li><b>Il effectue neuf vérifications</b><p>Chaque vérification cherche une preuve concrète : un en-tête présent, un script de consentement qui se charge, un lien de confidentialité à côté d’un formulaire.</p></li>
+      <li><b>Vous obtenez un résultat à partager</b><p>Réussi, avertissement ou correction nécessaire pour chaque vérification, avec une correction suggérée. Le résultat vit dans le lien, pas dans une base de données.</p></li>
+    </ol>
+  </section>
+
+  <section class="pg sec">
+    <h2>Ce qu’il vérifie</h2>
+    <p class="lede">Neuf vérifications, chacune liée à une règle précise ou à une référence largement admise. Le scanner rapporte ce qu’il a trouvé, pas ce qu’il pense de vous.</p>
+    <ul class="ledger">
+      <li><b>HTTPS et HSTS</b><p>Le site est-il servi en TLS et envoie-t-il l’en-tête Strict-Transport-Security ? L’article 32 du RGPD exige des mesures techniques de sécurité appropriées ; HSTS en est la partie la moins coûteuse.</p></li>
+      <li><b>Consentement aux cookies</b><p>Recherche une plateforme de consentement connue (Cookiebot, OneTrust, Klaro, Complianz et une douzaine d’autres) dans le HTML servi. La directive ePrivacy exige le consentement avant tout cookie non essentiel.</p></li>
+      <li><b>Traceurs avant consentement</b><p>Vérifie si Google Analytics, Meta Pixel, TikTok, Hotjar et les scripts similaires se chargent sans aucun mécanisme de consentement sur la page. C’est la raison la plus fréquente pour laquelle les petits sites sont sanctionnés.</p></li>
+      <li><b>Google Consent Mode v2</b><p>Détecte les signaux du mode consentement que Google exige pour la personnalisation des annonces dans l’UE depuis mars 2024. Pertinent uniquement si vous utilisez Google Ads ou Analytics.</p></li>
+      <li><b>IAB TCF</b><p>Détecte le Transparency and Consent Framework utilisé par les éditeurs et l’ad-tech. Informatif pour la plupart des sites.</p></li>
+      <li><b>Formulaires et information sur la confidentialité</b><p>Si la page contient un formulaire, y a-t-il un lien vers une politique de confidentialité ? L’article 13 du RGPD impose d’informer les personnes au moment de la collecte.</p></li>
+      <li><b>Pages légales</b><p>Une politique de confidentialité, des conditions générales, des mentions légales (obligatoires en Allemagne et en Autriche) et une déclaration d’accessibilité sont-elles liées depuis la page d’accueil ?</p></li>
+      <li><b>En-têtes de sécurité</b><p>Content-Security-Policy, X-Content-Type-Options, Referrer-Policy et protection contre le framing. Ce n’est pas une loi, mais c’est la base qu’attendent les auditeurs NIS2 et les assureurs cyber.</p></li>
+      <li><b>Formulations sur la résilience opérationnelle</b><p>Pour les sites du secteur financier et des prestataires TIC : le site mentionne-t-il la notification des incidents, la continuité et le risque TIC, comme l’attend DORA ? Ignoré silencieusement pour tous les autres.</p></li>
+    </ul>
+  </section>
+
+  <section class="pg sec">
+    <h2>Ce qu’il ne peut pas vous dire</h2>
+    <div class="limits">
+      <p>Le scan examine une page, une fois, de l’extérieur. Il ne peut pas voir ce que fait votre bannière de consentement après un clic, ce que dit réellement votre politique de confidentialité, comment vous traitez les données côté serveur, ni si vos contrats avec vos sous-traitants existent.</p>
+      <p>Un score maximal signifie que les bases visibles sont en place. Cela ne signifie pas que vous êtes conforme, et aucun outil automatisé ne peut honnêtement le prétendre. Utilisez le résultat comme une liste de tâches et comme preuve que vous avez vérifié, pas comme un certificat.</p>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Le guide, gratuit en PDF</h2>
+    <div class="book">
+      <div>
+        <p><em>EU Website Compliance Guide 2026</em> est un manuel de 24 pages destiné à la personne qui gère le site web plutôt qu’au juriste. Chaque chapitre explique une règle, ce qu’elle exige concrètement d’un site web, et se termine par une checklist à appliquer à votre propre site.</p>
+        <p>Il couvre le même terrain que le scanner, plus ce qu’un scanner ne peut pas voir : ce que doit contenir une politique de confidentialité, quand les mentions légales sont obligatoires, ce que l’Acte européen sur l’accessibilité signifie pour une boutique en ligne, et comment NIS2 et DORA atteignent les fournisseurs.</p>
+        <div class="actions">
+          <a class="btn" href="/book/eu-website-compliance-guide-2026.pdf">Télécharger le PDF</a>
+          <a class="btn ghost" href="/fr/book/">À propos du guide</a>
+        </div>
+      </div>
+      <div>
+        <ol>
+          <li>Pourquoi la conformité compte en 2026</li>
+          <li>Les fondamentaux du RGPD pour les sites web</li>
+          <li>Consentement aux cookies : ce que la loi exige</li>
+          <li>Politique de confidentialité : la checklist de l’article 13</li>
+          <li>Mentions légales</li>
+          <li>En-têtes de sécurité</li>
+          <li>Traceurs tiers</li>
+          <li>Acte européen sur l’accessibilité</li>
+          <li>NIS2 et DORA</li>
+          <li>E-mail : SPF, DKIM, DMARC</li>
+          <li>Conformité par plateforme</li>
+          <li>Checklist de maintenance mensuelle</li>
+          <li>Outils et ressources</li>
+          <li>Tableau récapitulatif des réglementations</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Les tarifs, honnêtement</h2>
+    <p>Le scanner, le guide et les checklists sont gratuits et le resteront. Une offre Pro à 79 USD par an est prévue : nouveaux scans quotidiens de votre site, un e-mail lorsqu’une vérification commence à échouer, et un rapport PDF à transmettre à un client ou à un auditeur. Des modèles de documents (accord de traitement des données, clauses fournisseurs NIS2, déclaration d’accessibilité) seront vendus séparément à partir de 29 USD.</p>
+    <p class="status">Pro sera disponible lorsque le paiement sera activé ; le scanner gratuit est complet. <a href="/fr/pricing/">Consultez la page des tarifs</a> pour voir ce qui est prévu.</p>
+  </section>
+
+  <section class="pg sec faq">
+    <h2>Questions fréquentes</h2>
+    <details>
+      <summary>Conservez-vous les URL ou les résultats ?</summary>
+      <p>Non. Le scan s’exécute dans un Cloudflare Worker, renvoie le résultat à votre navigateur et l’oublie. Un compteur du nombre total de scans est conservé ; les domaines et les résultats ne le sont pas. Si vous enregistrez un site pour la surveillance quotidienne, ce domaine et votre adresse e-mail sont conservés à cette seule fin.</p>
+    </details>
+    <details>
+      <summary>Le scan lui-même respecte-t-il le RGPD ?</summary>
+      <p>Le site ne dépose aucun cookie et ne charge rien depuis des tiers : ni polices, ni scripts d’analyse, ni contenus intégrés. Le scanner charge votre page publique comme le ferait n’importe quel visiteur.</p>
+    </details>
+    <details>
+      <summary>Fonctionne-t-il pour les sites qui ne sont pas sous WordPress ?</summary>
+      <p>Oui. Il lit du HTTP et du HTML, il fonctionne donc avec Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, du HTML écrit à la main et tout ce qui sert une page. Il identifie la plateforme quand c’est possible, afin que les corrections suggérées soient pertinentes.</p>
+    </details>
+    <details>
+      <summary>Mon site a réussi le scan. Suis-je conforme ?</summary>
+      <p>Vous avez les bases visibles en place, ce qui est déjà plus que la plupart des sites. La conformité concerne aussi ce que vous faites des données, ce que disent vos documents et la manière dont vous traitez les demandes. Le guide et les checklists couvrent cette partie.</p>
+    </details>
+    <details>
+      <summary>Pourquoi les générateurs de documents juridiques ont-ils été retirés ?</summary>
+      <p>Les versions précédentes de ce site proposaient des générateurs de politiques de confidentialité, de mentions légales, de conditions générales et de politiques de remboursement. Ils produisaient des documents d’apparence juridique sans juriste derrière. Ce n’est pas un service que je suis à l’aise de proposer, alors ils ont disparu. Les <a href="/checklist/">checklists</a> vous indiquent ce que ces documents doivent contenir.</p>
+    </details>
+  </section>
+
+  <section class="pg sec">
+    <h2>Qui est derrière ce projet</h2>
+    <p>EUComply est conçu et maintenu par <a href="https://mahoje.dk">Mads Holst Jensen</a>, développeur à Odense, au Danemark, qui crée et entretient des sites web pour des agences et des petites entreprises. Né d’une vérification interne avant mise en ligne, il est devenu un outil public parce que les clients le demandaient sans cesse. Le code source du scanner est sur <a href="https://github.com/mahope/eucomply-scanner">GitHub</a> ; si une vérification est erronée, ouvrez une issue.</p>
+    <p>Également disponible en <a href="/" hreflang="en" lang="en">English</a>, en <a href="/da/" hreflang="da" lang="da">dansk</a> et en <a href="/de/" hreflang="de" lang="de">Deutsch</a>.</p>
+  </section>
+</main>
+
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Développé par <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — développeur et partenaire technique, Odense, Danemark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Code source du scanner sur GitHub</a></p>
+      <p class="sf-note">Ce site ne dépose aucun cookie et ne charge ni traceur ni police externe. Tout ce qui figure ici est une aide technique, pas un conseil juridique.</p>
+    </div>
+    <div>
+      <h2>Sur ce site</h2>
+      <ul>
+        <li><a href="/fr/scan/">Scanner</a></li>
+        <li><a href="/fr/book/">Guide</a></li>
+        <li><a href="/checklist/">Check-lists</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">Calculateur d'amende RGPD</a></li>
+        <li><a href="/fr/pricing/">Tarifs</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Confidentialité</a> · <a href="/terms/">Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Également par mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

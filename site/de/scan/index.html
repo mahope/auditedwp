@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" data-dark-ok>
+<html lang="de" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scan a website for EU compliance gaps — EUComply</title>
-<meta name="description" content="Free scan of any URL: HTTPS and HSTS, cookie consent, trackers loaded before consent, privacy links on forms, legal pages and security headers. Results in seconds, nothing stored.">
-<link rel="canonical" href="https://eucomplypro.com/scan/">
+<title>Website auf EU-Compliance-Lücken prüfen — EUComply</title>
+<meta name="description" content="Kostenloser Scan jeder URL: HTTPS und HSTS, Cookie-Einwilligung, Tracker vor der Einwilligung, Datenschutz-Links an Formularen, rechtliche Seiten und Sicherheits-Header. Ergebnis in Sekunden, nichts wird gespeichert.">
+<link rel="canonical" href="https://eucomplypro.com/de/scan/">
 <link rel="alternate" hreflang="en" href="https://eucomplypro.com/scan/">
 <link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/scan/">
 <link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/scan/">
 <link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/scan/">
 <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/scan/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
-<meta property="og:title" content="Scan a website for EU compliance gaps">
-<meta property="og:description" content="Nine technical checks in about ten seconds. Free, no sign-up.">
-<meta property="og:url" content="https://eucomplypro.com/scan/">
+<meta property="og:title" content="Website auf EU-Compliance-Lücken prüfen">
+<meta property="og:description" content="Neun technische Prüfungen in etwa zehn Sekunden. Kostenlos, ohne Registrierung.">
+<meta property="og:url" content="https://eucomplypro.com/de/scan/">
 <meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
 <meta property="og:type" content="website">
 <style>
@@ -34,28 +34,29 @@
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/" aria-current="page">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
+    <a class="sh-brand" href="/de/">EUComply</a>
+    <nav class="sh-nav" aria-label="Hauptmenü">
+      <a href="/de/scan/" aria-current="page">Scan</a>
+      <a href="/de/book/">Leitfaden</a>
+      <a href="/checklist/">Checklisten</a>
+      <a href="/de/pricing/">Preise</a>
       <a href="/blog/">Blog</a>
     </nav>
-    <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li><a href="/da/scan/" hreflang="da" lang="da">DA</a></li><li><a href="/de/scan/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/scan/" hreflang="fr" lang="fr">FR</a></li></ul>
+    <ul class="sh-lang" aria-label="Language"><li><a href="/scan/" hreflang="en" lang="en">EN</a></li><li><a href="/da/scan/" hreflang="da" lang="da">DA</a></li><li><span aria-current="true" lang="de">DE</span></li><li><a href="/fr/scan/" hreflang="fr" lang="fr">FR</a></li></ul>
   </div>
 </header>
 
+
 <main>
   <section class="pg hero">
-    <h1>Scan a website for the EU compliance basics.</h1>
-    <p class="lede">Nine checks on the front page of any site: transport security, consent, trackers, privacy links, legal pages and headers. Free, no account, and the result is not stored anywhere.</p>
+    <h1>Eine Website auf die EU-Compliance-Grundlagen prüfen.</h1>
+    <p class="lede">Neun Prüfungen auf der Startseite jeder Website: Transportsicherheit, Einwilligung, Tracker, Datenschutz-Links, rechtliche Seiten und Header. Kostenlos, ohne Konto, und das Ergebnis wird nirgends gespeichert.</p>
     <form class="scanform" id="scan-form" data-keep>
-      <input type="text" id="url-input" name="url" placeholder="yourdomain.com" aria-label="Website address to scan" required autocomplete="url" inputmode="url">
-      <button class="btn" type="submit" id="scan-btn">Run the scan</button>
+      <input type="text" id="url-input" name="url" placeholder="ihredomain.de" aria-label="Adresse der zu prüfenden Website" required autocomplete="url" inputmode="url">
+      <button class="btn" type="submit" id="scan-btn">Scan starten</button>
     </form>
     <p class="scan-err" id="scan-err" role="alert"></p>
-    <p class="scan-hint">Try it on <button type="button" data-url="wordpress.org">wordpress.org</button>, <button type="button" data-url="shopify.com">shopify.com</button> or <button type="button" data-url="webflow.com">webflow.com</button>.</p>
+    <p class="scan-hint">Probieren Sie es mit <button type="button" data-url="wordpress.org">wordpress.org</button>, <button type="button" data-url="shopify.com">shopify.com</button> oder <button type="button" data-url="webflow.com">webflow.com</button>.</p>
   </section>
 
   <section class="pg sec" id="results" aria-live="polite">
@@ -65,35 +66,35 @@
     </div>
     <div id="cards"></div>
     <div class="actions">
-      <button type="button" class="btn ghost" id="share-btn">Copy link to this result</button>
-      <button type="button" class="btn ghost" id="print-btn">Print</button>
+      <button type="button" class="btn ghost" id="share-btn">Link zu diesem Ergebnis kopieren</button>
+      <button type="button" class="btn ghost" id="print-btn">Drucken</button>
     </div>
-    <p class="scan-hint" style="margin-top:1rem">A pass means the scanner found evidence on this page. A warning means it could not tell. Fix needed means something expected is missing. Read the <a href="/checklist/">checklists</a> for the parts no scanner can see.</p>
+    <p class="scan-hint" style="margin-top:1rem">„Bestanden“ heißt, der Scanner hat auf dieser Seite Belege gefunden. „Warnung“ heißt, er konnte es nicht feststellen. „Handlungsbedarf“ heißt, etwas Erwartetes fehlt. Lesen Sie die <a href="/checklist/">Checklisten</a> für die Teile, die kein Scanner sehen kann.</p>
 
     <div class="monitor">
-      <h3>Check this site again every morning</h3>
-      <p class="scan-hint">Register <strong id="mon-host"></strong> and you get an email when a check changes from pass to fail. Free while the monitoring service is in test; your address is used for this and nothing else.</p>
+      <h3>Diese Website jeden Morgen erneut prüfen</h3>
+      <p class="scan-hint">Registrieren Sie <strong id="mon-host"></strong>, und Sie erhalten eine E-Mail, wenn eine Prüfung von „bestanden“ auf „fehlgeschlagen“ wechselt. Kostenlos, solange der Überwachungsdienst im Test ist; Ihre Adresse wird dafür und für nichts anderes verwendet.</p>
       <form id="mon-form" data-keep>
-        <input type="email" id="mon-email" placeholder="you@company.com" required aria-label="Email address" autocomplete="email">
-        <button class="btn" type="submit" id="mon-btn">Start daily checks</button>
+        <input type="email" id="mon-email" placeholder="sie@firma.de" required aria-label="E-Mail-Adresse" autocomplete="email">
+        <button class="btn" type="submit" id="mon-btn">Tägliche Prüfung starten</button>
       </form>
       <p class="msg" id="mon-msg" role="status"></p>
-      <p id="mon-unsub" hidden><a href="#" id="mon-unsub-link">Stop checking this site</a></p>
+      <p id="mon-unsub" hidden><a href="#" id="mon-unsub-link">Diese Website nicht mehr prüfen</a></p>
     </div>
   </section>
 
   <section class="pg sec explain-sec">
-    <h2>What each check means</h2>
+    <h2>Was die einzelnen Prüfungen bedeuten</h2>
     <dl class="explain">
-      <dt>HTTPS and HSTS</dt><dd>The site must be served over TLS. HSTS tells browsers never to try plain HTTP again. A missing HSTS header is a warning, not a failure.</dd>
-      <dt>Cookie consent</dt><dd>Looks for a known consent platform in the HTML. If you set no non-essential cookies you do not need one, and you can ignore the warning.</dd>
-      <dt>Trackers before consent</dt><dd>Analytics and advertising scripts that load without any consent mechanism on the page. Under ePrivacy and GDPR Article 6 these need prior consent.</dd>
-      <dt>Google Consent Mode v2</dt><dd>Only relevant if you use Google Ads or Analytics with EU visitors. Without it, Google limits your measurement.</dd>
-      <dt>IAB TCF</dt><dd>Relevant for publishers selling programmatic ads. Everyone else can ignore it.</dd>
-      <dt>Forms and privacy notice</dt><dd>A form without a privacy link nearby is the easiest GDPR finding there is. Add the link and a short sentence on what you do with the data.</dd>
-      <dt>Legal pages</dt><dd>Privacy policy and terms for everyone; an imprint if you sell to Germany or Austria; an accessibility statement if the Accessibility Act applies to you.</dd>
-      <dt>Security headers</dt><dd>CSP, X-Content-Type-Options, Referrer-Policy and X-Frame-Options or frame-ancestors. Cheap to add, and the first thing a security questionnaire asks about.</dd>
-      <dt>Operational resilience</dt><dd>Checks for DORA-related wording on sites in financial services or their ICT suppliers. Other sites get an informational note only.</dd>
+      <dt>HTTPS und HSTS</dt><dd>Die Website muss über TLS ausgeliefert werden. HSTS weist Browser an, nie wieder unverschlüsseltes HTTP zu versuchen. Ein fehlender HSTS-Header ist eine Warnung, kein Fehlschlag.</dd>
+      <dt>Cookie-Einwilligung</dt><dd>Sucht im HTML nach einer bekannten Consent-Plattform. Wenn Sie keine nicht notwendigen Cookies setzen, brauchen Sie keine und können die Warnung ignorieren.</dd>
+      <dt>Tracker vor der Einwilligung</dt><dd>Analytics- und Werbe-Scripts, die ohne Einwilligungsmechanismus auf der Seite geladen werden. Nach ePrivacy und Art. 6 DSGVO brauchen diese eine vorherige Einwilligung.</dd>
+      <dt>Google Consent Mode v2</dt><dd>Nur relevant, wenn Sie Google Ads oder Analytics mit Besuchern aus der EU einsetzen. Ohne ihn schränkt Google Ihre Messung ein.</dd>
+      <dt>IAB TCF</dt><dd>Relevant für Publisher, die programmatische Werbung verkaufen. Alle anderen können es ignorieren.</dd>
+      <dt>Formulare und Datenschutzhinweis</dt><dd>Ein Formular ohne Datenschutz-Link in der Nähe ist der einfachste DSGVO-Befund überhaupt. Ergänzen Sie den Link und einen kurzen Satz dazu, was Sie mit den Daten tun.</dd>
+      <dt>Rechtliche Seiten</dt><dd>Datenschutzerklärung und AGB für alle; ein Impressum, wenn Sie nach Deutschland oder Österreich verkaufen; eine Barrierefreiheitserklärung, wenn das Barrierefreiheitsgesetz für Sie gilt.</dd>
+      <dt>Sicherheits-Header</dt><dd>CSP, X-Content-Type-Options, Referrer-Policy und X-Frame-Options oder frame-ancestors. Günstig einzubauen und das Erste, wonach ein Sicherheitsfragebogen fragt.</dd>
+      <dt>Operationale Resilienz</dt><dd>Prüft auf DORA-bezogene Formulierungen bei Websites von Finanzdienstleistern oder deren IKT-Zulieferern. Andere Websites erhalten nur einen informativen Hinweis.</dd>
     </dl>
   </section>
 </main>
@@ -103,14 +104,14 @@
   var API = 'https://eucomply-scan.mahope-eeb.workers.dev';
   var WATCH = 'https://eucomply-watch.mahope-eeb.workers.dev';
   var T = {
-    scanning: 'Scanning…', run: 'Run the scan', enter: 'Enter a domain first.',
-    failed: 'The scan could not be completed.', network: 'Network error. Try again in a moment.',
-    passed: ' of ', checks: ' checks passed', platform: 'Platform: ',
-    pass: 'Pass', warn: 'Warning', manual: 'Check manually', fail: 'Fix needed', fix: 'Suggested fix: ',
-    copied: 'Link copied', copy: 'Copy link to this result',
-    registering: 'Registering…', start: 'Start daily checks', running: 'Daily checks running',
-    first: 'Run a scan first, then register the site.', regfail: 'Registration failed. Try again.',
-    unsubhint: 'Enter the email you registered with, then click again.'
+    scanning: 'Wird geprüft…', run: 'Scan starten', enter: 'Geben Sie zuerst eine Domain ein.',
+    failed: 'Der Scan konnte nicht abgeschlossen werden.', network: 'Netzwerkfehler. Versuchen Sie es gleich noch einmal.',
+    passed: ' von ', checks: ' Prüfungen bestanden', platform: 'Plattform: ',
+    pass: 'Bestanden', warn: 'Warnung', manual: 'Manuell prüfen', fail: 'Handlungsbedarf', fix: 'Lösungsvorschlag: ',
+    copied: 'Link kopiert', copy: 'Link zu diesem Ergebnis kopieren',
+    registering: 'Wird registriert…', start: 'Tägliche Prüfung starten', running: 'Tägliche Prüfung läuft',
+    first: 'Führen Sie zuerst einen Scan durch und registrieren Sie dann die Website.', regfail: 'Registrierung fehlgeschlagen. Versuchen Sie es noch einmal.',
+    unsubhint: 'Geben Sie die E-Mail-Adresse ein, mit der Sie sich registriert haben, und klicken Sie erneut.'
   };
   var form = document.getElementById('scan-form');
   var input = document.getElementById('url-input');
@@ -211,7 +212,7 @@
         body: JSON.stringify({ url: target, email: monEmail.value.trim() }) });
       var d = await r.json();
       if (r.ok && d.ok) {
-        monMsg.className = 'msg ok'; monMsg.textContent = d.message || (target + ' is now checked daily.');
+        monMsg.className = 'msg ok'; monMsg.textContent = d.message || (target + ' wird jetzt täglich geprüft.');
         monBtn.textContent = T.running; document.getElementById('mon-unsub').hidden = false;
       } else {
         monMsg.className = 'msg err'; monMsg.textContent = d.error || T.regfail;
@@ -241,26 +242,26 @@
   <div class="sf-in">
     <div>
       <h2>EUComply</h2>
-      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
-      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
-      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
+      <p class="sf-maker">Entwickelt von <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — Entwickler und technischer Partner, Odense, Dänemark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Quellcode des Scanners auf GitHub</a></p>
+      <p class="sf-note">Diese Website setzt keine Cookies und lädt weder Tracker noch externe Schriften. Alles hier ist technische Orientierung, keine Rechtsberatung.</p>
     </div>
     <div>
-      <h2>On this site</h2>
+      <h2>Auf dieser Website</h2>
       <ul>
-        <li><a href="/scan/">Scan</a></li>
-        <li><a href="/book/">Guide</a></li>
-        <li><a href="/checklist/">Checklists</a></li>
+        <li><a href="/de/scan/">Scan</a></li>
+        <li><a href="/de/book/">Leitfaden</a></li>
+        <li><a href="/checklist/">Checklisten</a></li>
         <li><a href="/nis2-checklist/">NIS2</a></li>
         <li><a href="/eaa-checklist/">EAA</a></li>
-        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
-        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="/gdpr-fine-calculator/">DSGVO-Bußgeldrechner</a></li>
+        <li><a href="/de/pricing/">Preise</a></li>
         <li><a href="/blog/">Blog</a></li>
-        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+        <li><a href="/privacy/">Datenschutz</a> · <a href="/terms/">Nutzungsbedingungen</a></li>
       </ul>
     </div>
     <div>
-      <h2>Also by mahoje.dk</h2>
+      <h2>Ebenfalls von mahoje.dk</h2>
       <ul>
         <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
         <li><a href="https://deskuptime.com">deskuptime.com</a></li>

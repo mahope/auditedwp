@@ -1,221 +1,218 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuditedWP — White-Label WordPress-Wartung mit revisionssicherem Änderungsprotokoll. Für Agenturen.</title>
-<meta name="description" content="Wholesale-WordPress-Wartung für Web-Agenturen mit prüffähiger Änderungsdokumentation, EU-Hosting und AVV als Standard. Sie fakturieren den Kunden, wir betreiben die Technik.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<title>EUComply — kostenloser Compliance-Scan für Websites mit Besuchern aus der EU</title>
+<meta name="description" content="URL eingeben und eine kostenlose technische Prüfung der Punkte erhalten, nach denen EU-Aufsichtsbehörden zuerst fragen: HTTPS, Cookie-Einwilligung, Tracker vor der Einwilligung, Datenschutz-Links und Sicherheits-Header. Keine Registrierung, nichts wird gespeichert.">
 <link rel="canonical" href="https://eucomplypro.com/de/">
-
-<style>
-  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--bg:#fff;--soft:#f9fafb;
-        --accent:#175cd3;--accent-dark:#084cad;--ok:#067647;--warn:#b54708;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header{border-bottom:1px solid var(--line);padding:18px 0}
-  header .wrap{display:flex;align-items:center;justify-content:space-between}
-  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:24px;font-size:15px}
-  nav a.cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-weight:600}
-  .hero{text-align:center;padding:72px 0 48px}
-  .badge{display:inline-block;background:#eff8ff;color:var(--accent);border:1px solid #b2ddff;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
-  h1{font-size:44px;line-height:1.15;letter-spacing:-.03em;max-width:840px;margin:0 auto 18px}
-  h1 em{font-style:normal;color:var(--accent)}
-  .sub{font-size:19px;color:var(--muted);max-width:720px;margin:0 auto 32px}
-  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:17px}
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid #b2ddff;margin-left:12px}
-  .note{font-size:13px;color:var(--muted);margin-top:14px}
-  section{padding:56px 0;border-top:1px solid var(--line)}
-  h2{font-size:30px;letter-spacing:-.02em;margin-bottom:8px}
-  .lede{color:var(--muted);max-width:680px;margin-bottom:36px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .card{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)}
-  .card h3{font-size:17px;margin-bottom:8px}
-  .card p{font-size:14.5px;color:var(--muted)}
-  .vs{background:#fffcf5;border-color:#fedf89}
-  .vs h3{color:var(--warn)}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
-  th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-  td b{font-size:16px}
-  ol.steps{max-width:680px;margin:24px auto 0;counter-reset:s;list-style:none}
-  ol.steps li{position:relative;padding:0 0 22px 52px;counter-increment:s}
-  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
-  ol.steps li strong{display:block}
-  ol.steps li span{color:var(--muted);font-size:15px}
-  .faq details{border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;background:var(--bg)}
-  .faq summary{font-weight:600;cursor:pointer}
-  .faq p{color:var(--muted);font-size:15px;margin-top:8px}
-  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-  @media(max-width:800px){h1{font-size:32px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
-</style>
 <link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/">
 <link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/">
 <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<meta property="og:title" content="EUComply — kostenloser Compliance-Scan für Websites mit Besuchern aus der EU">
+<meta property="og:description" content="Neun technische Prüfungen gegen die Erwartungen aus DSGVO, ePrivacy, NIS2 und EAA. Kostenlos, ohne Registrierung, nichts wird gespeichert.">
+<meta property="og:url" content="https://eucomplypro.com/de/">
+<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
+<meta property="og:type" content="website">
+<style>
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
+  .steps li { counter-increment: step; max-width: none; }
+  .steps li::before { content: counter(step); display: block; font-weight: 650; color: var(--accent); margin-bottom: 0.3rem; }
+  .steps li b { display: block; margin-bottom: 0.2rem; }
+  .steps li p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .limits { border-left: 3px solid var(--warn); padding-left: 1.1rem; }
+  .limits p { margin: 0 0 0.6rem; }
+  .book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem 3rem; align-items: start; }
+  .book ol { padding-left: 1.2rem; margin: 0.5rem 0 0; columns: 2; column-gap: 2rem; font-size: 0.95rem; }
+  .book ol li { break-inside: avoid; margin-bottom: 0.25rem; }
+  @media (max-width: 720px) { .book { grid-template-columns: 1fr; } .book ol { columns: 1; } }
+</style>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
 <body>
-
-<header>
-  <div class="wrap">
-    <div class="logo">Audited<span>WP</span></div>
-    <nav>
-      <a href="#how">So funktioniert es</a>
-      <a href="#pricing">Preise</a>
-      <a href="#faq">FAQ</a>
-      <a href="/store/">Vorlagen</a>
-      <a href="/">EN</a>
-      <a class="cta" href="#pricing">Großhandelspreise ansehen</a>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-brand" href="/de/">EUComply</a>
+    <nav class="sh-nav" aria-label="Hauptmenü">
+      <a href="/de/scan/">Scan</a>
+      <a href="/de/book/">Leitfaden</a>
+      <a href="/checklist/">Checklisten</a>
+      <a href="/de/pricing/">Preise</a>
+      <a href="/blog/">Blog</a>
     </nav>
+    <ul class="sh-lang" aria-label="Language"><li><a href="/" hreflang="en" lang="en">EN</a></li><li><a href="/da/" hreflang="da" lang="da">DA</a></li><li><span aria-current="true" lang="de">DE</span></li><li><a href="/fr/" hreflang="fr" lang="fr">FR</a></li></ul>
   </div>
 </header>
 
-<div class="wrap hero">
-  <div class="badge">White-Label · EU-Hosting &amp; EU-Jurisdiktion · AVV inklusive</div>
-  <h1>WordPress-Wartung für Ihre Agentur — <em>mit einem Prüfspuren-Nachweis, den Sie wirklich zeigen können.</em></h1>
-  <p class="sub">Sie behalten Kunde und Marge. Wir übernehmen Updates, Backups und Security-Patches — und dokumentieren jede einzelne Änderung, damit Sie die Frage beantworten können, die andere Care-Plans nicht beantworten können: <strong>„Zeigen Sie mir, was wann von wem gemacht wurde."</strong></p>
-  <a class="btn" href="#pricing">Großhandelspreise ansehen</a>
-  <a class="btn ghost" href="/template/">Kostenlose NIS2-Auftragsverarbeiter-Klauseln ↓</a>
-  <p class="note">Keine 24/7-Versprechen, die wir nicht halten können. Wiederherstellung am nächsten Werktag, monatliche Wartungsfenster, vollständige Änderungshistorie.</p>
-</div>
 
-<section>
-  <div class="wrap">
-    <h2>Warum Agenturen uns statt generischen White-Label-Care-Plans wählen</h2>
-    <p class="lede">Generische Wholesale-Wartung ist ein Commodity — Dutzende Anbieter verkaufen sie. Neu in 2026–27 ist: Einkauf, Versicherer und Prüfer Ihrer Kunden (DORA Art. 28, NIS2-Lieferkette, EAA-Dokumentation) verlangen zunehmend <em>Nachweise</em> statt Zusicherungen. Dafür sind wir von Tag eins gebaut.</p>
-    <div class="grid3">
-      <div class="card">
-        <h3>Prüffähiges Änderungsprotokoll</h3>
-        <p>Jedes Update, jeder Patch, jedes Backup und jede Wiederherstellung wird pro Website protokolliert — mit Zeitstempel, Verantwortlichkeit, exportierbar. Geben Sie es dem Prüfer oder der Versicherung Ihres Kunden, statt selbst Berichte zu schreiben.</p>
+<main>
+  <section class="pg hero">
+    <h1>Ein kostenloser Compliance-Scan für Websites mit Besuchern in der EU.</h1>
+    <p class="lede">Geben Sie eine URL ein. EUComply ruft die Seite so ab, wie ein Browser es tun würde, und prüft neun Punkte, nach denen Aufsichtsbehörden, Prüfer und Einkaufsabteilungen meist zuerst fragen. Kein Konto, nichts wird gespeichert.</p>
+    <form class="scanform" action="/de/scan/" method="get">
+      <input type="text" name="url" placeholder="ihredomain.de" aria-label="Adresse der zu prüfenden Website" required autocomplete="url" inputmode="url">
+      <button class="btn" type="submit">Scan starten</button>
+    </form>
+    <p class="scan-hint">Dauert etwa zehn Sekunden. Der Scan liest das öffentliche HTML und die HTTP-Header der angegebenen Seite — mehr nicht.</p>
+  </section>
+
+  <section class="pg sec">
+    <h2>Für wen es gedacht ist</h2>
+    <div class="cols">
+      <div>
+        <h3>Menschen, die eine Website betreiben</h3>
+        <p>Sie haben Kunden oder Leser in Europa und keine Rechtsabteilung. Sie möchten wissen, ob die offensichtlichen Dinge in Ordnung sind, bevor ein Kunde, ein Wettbewerber oder eine Behörde Sie darauf hinweist.</p>
       </div>
-      <div class="card">
-        <h3>Ausschließlich EU-Infrastruktur &amp; -Verträge</h3>
-        <p>EU-gehostete Backups, EU-Jurisdiktion, GDPR-Auftragsverarbeitungsvertrag (AVV) als Standard. Gebaut, um Schrems-II-Fragen in Kundenverträgen zu bestehen.</p>
+      <div>
+        <h3>Agenturen und Freelancer</h3>
+        <p>Sie übergeben Websites und bekommen die Compliance-Fragen hinterher. Führen Sie vor dem Launch und nach jedem Redesign einen Scan durch und schicken Sie dem Kunden einen Link zum Ergebnis statt eines Versprechens.</p>
       </div>
-      <div class="card">
-        <h3>Sie besitzen die Kundenbeziehung</h3>
-        <p>Vollständig anonymer White-Label-Betrieb unter NDA. Wir kontaktieren Ihre Kunden nie. Sie fakturieren €100–300/Site/Monat; unser Großhandelspreis ist ein Bruchteil davon.</p>
-      </div>
-      <div class="card">
-        <h3>Vierteljährliche Compliance-Einordnung</h3>
-        <p>Eine verständliche Quartalszusammenfassung pro Kunde, die Sie unverändert weiterleiten können: Was hat sich geändert, welche Risiken wurden geschlossen, was ist geplant. Mit Ihrem Namen darauf.</p>
-      </div>
-      <div class="card vs">
-        <h3>Ehrliche SLA — kein fake 24/7</h3>
-        <p>Wir verkaufen bewusst keinen Rund-um-die-Uhr-Notdienst. Sie erhalten Wiederherstellung am nächsten Werktag, geplante Wartungsfenster und einen dokumentierten Prozess. Kunden, die 24/7 brauchen, sind nicht unser Markt.</p>
-      </div>
-      <div class="card">
-        <h3>Von Operatoren gebaut, für Reseller bepreist</h3>
-        <p>Die Wartung läuft mit moderner Automatisierung (ein Operator + Agents), unsere Kosten bleiben niedrig — und Ihre Marge bei über 60%.</p>
+      <div>
+        <h3>Entwickler</h3>
+        <p>Sie haben das Consent-Banner und die Header vor drei Deployments eingebaut. Der Scan sagt Ihnen, ob sie noch da sind. Die Prüfungen sind Open Source, Sie können also genau nachlesen, was „bestanden“ bedeutet.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="how">
-  <div class="wrap">
-    <h2>So funktioniert es</h2>
+  <section class="pg sec">
+    <h2>So funktioniert der Scan</h2>
     <ol class="steps">
-      <li><strong>Tarif wählen</strong><span>Sagen Sie uns, wie viele Websites abgedeckt werden sollen. Monatlich kündbar nach Tarifregeln — kein Enterprise-Beschaffungsmarathon.</span></li>
-      <li><strong>Onboarding-Gespräch + AVV</strong><span>Wir unterschreiben Ihren AVV/NDA, richten die Audit-Log-Struktur ein und geben Ihnen die White-Label-Berichtsvorlagen. Die einmalige Einrichtungsgebühr deckt das ab.</span></li>
-      <li><strong>Zugänge übergeben</strong><span>Wir nehmen jede Website auf: Baseline-Audit, Backup-Snapshot, mit Ihnen abgestimmte Update-Richtlinie. Üblicherweise innerhalb von 3 Werktagen pro Batch.</span></li>
-      <li><strong>Wir betreiben, Sie verkaufen weiter</strong><span>Updates, Monitoring, Patches und Restores laufen unter Ihrer Marke. Sie erhalten das Änderungsprotokoll und die Quartalszusammenfassung zum Weiterleiten. <a href="/sample/">Beispiel einer Prüfspur ansehen →</a></span></li>
+      <li><b>Sie geben eine URL an</b><p>Eine Domain reicht. Der Scanner normalisiert sie und ruft die Startseite über HTTPS ab.</p></li>
+      <li><b>Er liest, was ein Browser empfangen würde</b><p>Response-Header, TLS-Details und das ausgelieferte HTML. Er loggt sich nicht ein, klickt nicht, füllt keine Formulare aus und crawlt keine weiteren Seiten.</p></li>
+      <li><b>Er führt neun Prüfungen durch</b><p>Jede Prüfung sucht nach konkreten Belegen: ein vorhandener Header, ein Consent-Script, das geladen wird, ein Datenschutz-Link neben einem Formular.</p></li>
+      <li><b>Sie erhalten ein Ergebnis, das Sie teilen können</b><p>Bestanden, Warnung oder Handlungsbedarf für jede Prüfung, mit einem Lösungsvorschlag. Das Ergebnis steckt im Link, nicht in einer Datenbank.</p></li>
     </ol>
-  </div>
-</section>
+  </section>
 
-<section id="pricing">
-  <div class="wrap">
-    <h2>Großhandelspreise</h2>
-    <table>
-      <tr><th></th><th>Starter</th><th>Growth</th><th>Scale</th></tr>
-      <tr><td>Websites enthalten</td><td><b>1–10</b></td><td><b>11–25</b></td><td><b>26+</b></td></tr>
-      <tr><td>Preis pro Site / Monat</td><td><b>€29</b></td><td><b>€29</b></td><td><b>€19</b></td></tr>
-      <tr><td>Laufzeit</td><td>Monatlich kündbar</td><td>Monatlich kündbar</td><td>12 Monate</td></tr>
-      <tr><td>Änderungsprotokoll &amp; Audit-Export</td><td>✔</td><td>✔</td><td>✔</td></tr>
-      <tr><td>AVV + NDA-Onboarding</td><td>✔</td><td>✔</td><td>✔</td></tr>
-      <tr><td>Quartals-Compliance-Zusammenfassung</td><td>—</td><td>Add-on €99/Quartal</td><td>Enthalten</td></tr>
-    </table>
-    <p style="font-size:13px;color:var(--muted);margin-top:10px">Einmalige Einrichtungsgebühr: <strong>€290 pro Agentur</strong> (Onboarding, AVV, White-Label-Vorlagen). Beispiel: Eine Agentur mit 15 Websites zahlt €435/Monat im Großhandel und fakturiert ihren Kunden typischerweise €150–300/Site/Monat — eine dokumentierte Marge von über 60%.</p>
-    <p style="margin-top:28px"><a class="btn" href="/scan/">Kostenloser EU-Compliance-Scan Ihrer Website →</a></p>
-    <p class="note">Zahlung per Stripe nach dem Onboarding-Gespräch. Abrechnung in EUR oder USD.</p>
+  <section class="pg sec">
+    <h2>Was geprüft wird</h2>
+    <p class="lede">Neun Prüfungen, jede an eine konkrete Vorschrift oder einen allgemein anerkannten Standard gebunden. Der Scanner berichtet, was er gefunden hat, nicht, was er von Ihnen hält.</p>
+    <ul class="ledger">
+      <li><b>HTTPS und HSTS</b><p>Wird die Website über TLS ausgeliefert, und sendet sie Strict-Transport-Security? Art. 32 DSGVO verlangt angemessene technische Sicherheit; HSTS ist der günstige Teil davon.</p></li>
+      <li><b>Cookie-Einwilligung</b><p>Sucht im ausgelieferten HTML nach einer bekannten Consent-Plattform (Cookiebot, OneTrust, Klaro, Complianz und etwa ein Dutzend weitere). Die ePrivacy-Richtlinie verlangt eine Einwilligung vor nicht notwendigen Cookies.</p></li>
+      <li><b>Tracker vor der Einwilligung</b><p>Prüft, ob Google Analytics, Meta Pixel, TikTok, Hotjar und ähnliche Scripts ohne Einwilligungsmechanismus auf der Seite geladen werden. Das ist der häufigste Grund, warum kleine Websites Bußgelder bekommen.</p></li>
+      <li><b>Google Consent Mode v2</b><p>Erkennt die Consent-Mode-Signale, die Google seit März 2024 für personalisierte Werbung in der EU verlangt. Nur relevant, wenn Sie Google Ads oder Analytics einsetzen.</p></li>
+      <li><b>IAB TCF</b><p>Erkennt das Transparency and Consent Framework, das Publisher und Ad-Tech verwenden. Für die meisten Websites nur informativ.</p></li>
+      <li><b>Formulare und Datenschutzhinweis</b><p>Wenn die Seite ein Formular enthält: Gibt es einen Link zur Datenschutzerklärung? Art. 13 DSGVO verlangt, dass Personen zum Zeitpunkt der Erhebung informiert werden.</p></li>
+      <li><b>Rechtliche Seiten</b><p>Sind Datenschutzerklärung, AGB, ein Impressum (in Deutschland und Österreich Pflicht) und eine Barrierefreiheitserklärung von der Startseite aus verlinkt?</p></li>
+      <li><b>Sicherheits-Header</b><p>Content-Security-Policy, X-Content-Type-Options, Referrer-Policy und Frame-Schutz. Kein Gesetz, aber der Standard, den NIS2-Prüfer und Cyberversicherer erwarten.</p></li>
+      <li><b>Formulierungen zur operationalen Resilienz</b><p>Für Websites aus dem Finanzsektor und von IKT-Dienstleistern: Erwähnt die Website Vorfallmeldung, Kontinuität und IKT-Risiko, wie DORA es erwartet? Bei allen anderen wird die Prüfung stillschweigend übersprungen.</p></li>
+    </ul>
+  </section>
 
-    <div style="margin-top:40px;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--soft)" id="calc">
-      <h3 style="font-size:18px;margin-bottom:6px">Ihre Marge in Zahlen</h3>
-      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Schieberegler bewegen. So sieht White-Labeling mit uns in Ihrer Größenordnung aus.</p>
-      <label style="display:block;font-size:14px;font-weight:600">Abgedeckte Websites: <span id="sitesVal">10</span></label>
-      <input type="range" id="sites" min="1" max="60" value="10" style="width:100%;accent-color:var(--accent)">
-      <label style="display:block;margin-top:14px;font-size:14px;font-weight:600">Ihr Verkaufspreis pro Site/Monat (€): <span id="retailVal">150</span></label>
-      <input type="range" id="retail" min="50" max="300" step="5" value="150" style="width:100%;accent-color:var(--accent)">
-      <div id="calcOut" style="margin-top:18px;font-size:15px;line-height:1.9"></div>
+  <section class="pg sec">
+    <h2>Was der Scan nicht sagen kann</h2>
+    <div class="limits">
+      <p>Der Scan betrachtet eine Seite, einmal, von außen. Er kann nicht sehen, was Ihr Consent-Banner nach einem Klick tut, was Ihre Datenschutzerklärung tatsächlich sagt, wie Sie Daten auf dem Server verarbeiten oder ob Ihre Verträge mit Auftragsverarbeitern existieren.</p>
+      <p>Eine volle Punktzahl bedeutet, dass die sichtbaren Grundlagen vorhanden sind. Sie bedeutet nicht, dass Sie compliant sind, und kein automatisches Werkzeug kann das ehrlich behaupten. Nutzen Sie das Ergebnis als To-do-Liste und als Nachweis, dass Sie geprüft haben, nicht als Zertifikat.</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="template">
-  <div class="wrap">
-    <h2>Kostenlose Vorlage: NIS2/DORA-Lieferantenklauseln für Ihre Kundenverträge</h2>
-    <p class="lede">Nicht sicher, ob Ihr aktueller Care-Plan-Anbieter eine DORA-Art.-28-Prüfung bestehen würde? Laden Sie unseren kostenlosen Klausel-Leitfaden herunter — was ein regulierter Kunde 2026–27 von seinem Wartungsdienstleister verlangen wird. Ohne Verpflichtungen.</p>
-    <p style="margin-top:24px"><a class="btn" href="/template/">Leitfaden online lesen — kostenlos, ohne Anmeldung →</a></p>
-  </div>
-</section>
+  <section class="pg sec">
+    <h2>Der Leitfaden, kostenlos als PDF</h2>
+    <div class="book">
+      <div>
+        <p><em>EU Website Compliance Guide 2026</em> ist ein 24-seitiges Handbuch für die Person, der die Website gehört, nicht für den Anwalt. Jedes Kapitel erklärt eine Vorschrift, was sie in der Praxis von einer Website verlangt, und endet mit einer Checkliste, die Sie an Ihrer eigenen Website durchgehen können.</p>
+        <p>Er deckt dasselbe ab wie der Scanner, plus die Dinge, die ein Scanner nicht sehen kann: was eine Datenschutzerklärung enthalten muss, wann ein Impressum Pflicht ist, was das Barrierefreiheitsgesetz für einen Shop bedeutet und wie NIS2 und DORA Zulieferer erreichen.</p>
+        <div class="actions">
+          <a class="btn" href="/book/eu-website-compliance-guide-2026.pdf">PDF herunterladen</a>
+          <a class="btn ghost" href="/de/book/">Über den Leitfaden</a>
+        </div>
+      </div>
+      <div>
+        <ol>
+          <li>Warum Compliance 2026 wichtig ist</li>
+          <li>DSGVO-Grundlagen für Websites</li>
+          <li>Cookie-Einwilligung: was das Gesetz verlangt</li>
+          <li>Datenschutzerklärung: die Checkliste zu Art. 13 DSGVO</li>
+          <li>Impressum und Anbieterkennzeichnung</li>
+          <li>Sicherheits-Header</li>
+          <li>Tracker von Drittanbietern</li>
+          <li>European Accessibility Act</li>
+          <li>NIS2 und DORA</li>
+          <li>E-Mail: SPF, DKIM, DMARC</li>
+          <li>Compliance nach Plattform</li>
+          <li>Monatliche Wartungs-Checkliste</li>
+          <li>Werkzeuge und Ressourcen</li>
+          <li>Übersichtstabelle der Vorschriften</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
-<section id="faq">
-  <div class="wrap faq">
-    <h2>FAQ</h2>
-    <details open>
-      <summary>Sind Sie wirklich vollständig White-Label?</summary>
-      <p>Ja. Wir arbeiten unter NDA und kontaktieren Ihre Kunden nie. Berichte und Kommunikation tragen Ihr Branding; Vorlagen erhalten Sie beim Onboarding.</p>
-    </details>
-    <details>
-      <summary>Was genau enthält die „Prüfspur"?</summary>
-      <p>Pro Website: jedes Plugin-/Core-/Theme-Update (Vorher-/Nachher-Versionen), jedes durchgeführte und getestete Backup, jeder Security-Patch, jede Wiederherstellung — mit Zeitstempel und Operator-Identität. Exportierbar als PDF/CSV für Prüfungen, Versicherer oder Kundenreviews. <a href="/sample/">Arbeitsbeispiel ansehen →</a></p>
-    </details>
-    <details>
-      <summary>Wo werden Daten gehostet?</summary>
-      <p>Alle operativen Daten und Backups liegen innerhalb der EU unter EU-Jurisdiktion. Ein Standard-AVV wird beim Onboarding unterschrieben.</p>
-    </details>
-    <details>
-      <summary>Bieten Sie 24/7-Notfallreaktion?</summary>
-      <p>Nein — bewusst nicht. Wir bieten Wiederherstellung am nächsten Werktag und geplante Wartungsfenster mit dokumentiertem Prozess. Wenn Ihre Kunden 24/7-Incident-Response benötigen, sind wir nicht der richtige Partner — und sagen das vorab offen.</p>
-    </details>
-    <details>
-      <summary>Welche Plattformen decken Sie ab?</summary>
-      <p>WordPress (einzelne Sites und Multisite), inklusive WooCommerce. Kein WordPress? Fragen Sie — wir übernehmen eine begrenzte Anzahl von Engagements mit anderen CMS.</p>
-    </details>
-  </div>
-</section>
+  <section class="pg sec">
+    <h2>Preise, ehrlich</h2>
+    <p>Der Scanner, der Leitfaden und die Checklisten sind kostenlos und bleiben es. Ein Pro-Tarif für 79 USD pro Jahr ist geplant: tägliche erneute Scans Ihrer Website, eine E-Mail, sobald eine Prüfung fehlschlägt, und ein PDF-Bericht, den Sie an einen Kunden oder Prüfer weiterleiten können. Dokumentvorlagen (Auftragsverarbeitungsvertrag, NIS2-Lieferantenklauseln, Barrierefreiheitserklärung) werden separat ab 29 USD verkauft.</p>
+    <p class="status">Pro startet, sobald die Bezahlung angebunden ist; der kostenlose Scanner ist fertig. <a href="/de/pricing/">Auf der Preisseite</a> steht, was geplant ist.</p>
+  </section>
 
-<footer>
-  <div class="wrap">
-    <div>AuditedWP — White-Label WordPress-Betrieb für EU-Agenturen.<br>Interesse? <a href="/scan/" style="color:var(--accent)">Kostenlosen Compliance-Scan ausprobieren</a> · <a href="/store/" style="color:var(--accent)">Compliance-Dokumentvorlagen</a></div>
-    <div>EU-Betrieb · DSGVO-konforme Verarbeitung · © 2026</div>
+  <section class="pg sec faq">
+    <h2>Häufige Fragen</h2>
+    <details>
+      <summary>Speichern Sie die URLs oder Ergebnisse?</summary>
+      <p>Nein. Der Scan läuft in einem Cloudflare Worker, gibt das Ergebnis an Ihren Browser zurück und vergisst es. Ein Zähler der Gesamtzahl der Scans wird geführt; Domains und Ergebnisse nicht. Wenn Sie eine Website für die tägliche Überwachung registrieren, werden diese Domain und Ihre E-Mail-Adresse ausschließlich für diesen Zweck gespeichert.</p>
+    </details>
+    <details>
+      <summary>Ist der Scan selbst DSGVO-konform?</summary>
+      <p>Die Website setzt keine Cookies und lädt nichts von Dritten: keine Schriften, keine Analytics-Scripts, keine Einbettungen. Der Scanner ruft Ihre öffentliche Seite so ab, wie jeder Besucher es tun würde.</p>
+    </details>
+    <details>
+      <summary>Funktioniert er auch für Websites ohne WordPress?</summary>
+      <p>Ja. Er liest HTTP und HTML, funktioniert also mit Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, handgeschriebenem HTML und allem anderen, das eine Seite ausliefert. Wo möglich, erkennt er die Plattform, damit die Lösungsvorschläge passen.</p>
+    </details>
+    <details>
+      <summary>Meine Website hat bestanden. Bin ich compliant?</summary>
+      <p>Die sichtbaren Grundlagen sind vorhanden, und damit sind Sie weiter als die meisten Websites. Compliance umfasst aber auch, was Sie mit Daten tun, was Ihre Dokumente sagen und wie Sie mit Anfragen umgehen. Der Leitfaden und die Checklisten decken diesen Teil ab.</p>
+    </details>
+    <details>
+      <summary>Warum wurden die Generatoren für Rechtstexte entfernt?</summary>
+      <p>Frühere Versionen dieser Website boten Generatoren für Datenschutzerklärungen, Impressen, AGB und Widerrufsbelehrungen an. Sie erzeugten Dokumente, die juristisch aussahen, ohne dass ein Anwalt dahinterstand. Das ist kein Angebot, mit dem ich mich wohlfühle, also sind sie weg. Die <a href="/checklist/">Checklisten</a> sagen Ihnen, was solche Dokumente enthalten müssen.</p>
+    </details>
+  </section>
+
+  <section class="pg sec">
+    <h2>Wer dahintersteht</h2>
+    <p>EUComply wird von <a href="https://mahoje.dk">Mads Holst Jensen</a> entwickelt und gepflegt, einem Entwickler aus Odense, Dänemark, der Websites für Agenturen und kleine Unternehmen baut und betreut. Es begann als interne Prüfung vor dem Launch und wurde zu einem öffentlichen Werkzeug, weil Kunden immer wieder danach fragten. Der Quellcode des Scanners liegt auf <a href="https://github.com/mahope/eucomply-scanner">GitHub</a>; wenn eine Prüfung falsch ist, eröffnen Sie ein Issue.</p>
+    <p>Auch verfügbar auf <a href="/" hreflang="en" lang="en">English</a>, <a href="/da/" hreflang="da" lang="da">dansk</a> und <a href="/fr/" hreflang="fr" lang="fr">français</a>.</p>
+  </section>
+</main>
+
+<footer class="sf">
+  <div class="sf-in">
+    <div>
+      <h2>EUComply</h2>
+      <p class="sf-maker">Entwickelt von <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — Entwickler und technischer Partner, Odense, Dänemark.</p>
+      <p><a href="https://github.com/mahope/eucomply-scanner">Quellcode des Scanners auf GitHub</a></p>
+      <p class="sf-note">Diese Website setzt keine Cookies und lädt weder Tracker noch externe Schriften. Alles hier ist technische Orientierung, keine Rechtsberatung.</p>
+    </div>
+    <div>
+      <h2>Auf dieser Website</h2>
+      <ul>
+        <li><a href="/de/scan/">Scan</a></li>
+        <li><a href="/de/book/">Leitfaden</a></li>
+        <li><a href="/checklist/">Checklisten</a></li>
+        <li><a href="/nis2-checklist/">NIS2</a></li>
+        <li><a href="/eaa-checklist/">EAA</a></li>
+        <li><a href="/gdpr-fine-calculator/">DSGVO-Bußgeldrechner</a></li>
+        <li><a href="/de/pricing/">Preise</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/privacy/">Datenschutz</a> · <a href="/terms/">Nutzungsbedingungen</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Ebenfalls von mahoje.dk</h2>
+      <ul>
+        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
+        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
+        <li><a href="https://transmute.run">transmute.run</a></li>
+        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
+        <li><a href="https://mahope.tools">mahope.tools</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
-
-
-<script>
-(function(){
-  var s=document.getElementById('sites'),r=document.getElementById('retail');
-  function fmt(n){return '€'+n.toLocaleString('de-DE')}
-  function upd(){
-    var n=+s.value,p=+r.value;
-    var ws=n>=26?19:29, setup=290;
-    document.getElementById('sitesVal').textContent=n;
-    document.getElementById('retailVal').textContent=p;
-    var cost=ws*n+setup, rev=p*n, mrr=rev-cost;
-    var pct=rev?Math.round(mrr/rev*100):0;
-    document.getElementById('calcOut').innerHTML=
-      'Ihr Umsatz: <b>'+fmt(rev)+'/Monat</b><br>'+
-      'Unser Großhandel ('+fmt(ws)+'/Site'+(n>=26?' + einmalige Einrichtung '+fmt(setup):'')+') + Einrichtungsgebühr: <b>'+fmt(cost)+'</b><br>'+
-      '<span style="color:var(--ok);font-size:17px"><b>Ihre Marge: '+fmt(mrr)+'/Monat ('+pct+'%)</b></span>';
-  }
-  s.addEventListener('input',upd);r.addEventListener('input',upd);upd();
-})();
-</script>
 </body>
 </html>
