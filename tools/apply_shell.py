@@ -91,6 +91,41 @@ GENERATORS = ["impressum-generator", "privacy-policy-generator", "terms-of-servi
 
 SKIP_FILES = {"shared/live-check-widget.html"}
 
+# Pages whose content duplicates another page: canonical points there, and they stay out of the sitemap.
+CANONICAL_OVERRIDES = {"/pro/": "/pricing/"}
+
+# Hand-written titles where the automatic shortening would cut a sentence in half.
+TITLE_OVERRIDES = {
+    "/": "EUComply — free EU compliance scan for websites",
+    "/da/": "EUComply — gratis compliance-scan af websites",
+    "/de/": "EUComply — kostenloser Compliance-Scan für Websites",
+    "/fr/": "EUComply — scan de conformité gratuit pour sites web",
+    "/fr/scan/": "Scanner un site web : lacunes de conformité européenne",
+    "/blog/dora-for-ecommerce-2026/": "DORA for E-Commerce: Does It Apply to Online Stores?",
+    "/blog/hsts-preload-guide/": "HSTS Preload Guide 2026: Enable HSTS the Right Way",
+    "/blog/meta-pixel-gdpr-consent/": "Meta Pixel and GDPR: When the Pixel Is Illegal in the EU",
+    "/cli/": "eucomply-scanner — EU Compliance Scanner CLI",
+    "/consent-mode-v2-check/": "Consent Mode v2 Check — Are Your Signals Correct?",
+    "/de/deskuptime/": "DeskUptime — Websites vom Schreibtisch überwachen, ohne Abo",
+    "/es/deskuptime/": "DeskUptime — Monitoriza tus sitios web sin suscripción",
+    "/fr/deskuptime/": "DeskUptime — Surveillance de sites web sans abonnement",
+    "/de/was-ist-ein-impressum/": "Was ist ein Impressum? Pflicht, Inhalte, Abmahnungsrisiko",
+    "/deskuptime/change-monitor/": "Website Change Monitor — Free Content-Change Check",
+    "/devnotify/github-notification-sounds-macos/": "Custom Sounds and Quiet Hours for GitHub Notifications",
+    "/devnotify/guides/github-emails-after-unsubscribing/": "Still Getting GitHub Emails After Unsubscribing?",
+    "/devnotify/guides/github-watch-vs-star/": "GitHub Watch vs Star: What Each Does to Notifications",
+    "/devnotify/vs/gitify/": "DevNotify vs Gitify — Which GitHub Notification App?",
+    "/devnotify/vs/chrome-extension/": "GitHub Notifications: Chrome Extension vs Menu Bar App",
+    "/devnotify/vs/github-mobile-push/": "GitHub Notifications: Phone vs Mac Menu Bar",
+    "/guides/": "All Guides — EU Compliance, Conversion and GitHub",
+    "/regex/": "Regex Tester — Test and Debug Regular Expressions",
+    "/regex/examples/": "Regex Examples — 20 Practical Patterns",
+    "/vs/osano/": "EUComply vs Osano (2026): Scanner vs Consent Platform",
+}
+
+STOPWORDS = {"a", "an", "and", "or", "the", "in", "on", "to", "for", "of", "with", "vs", "your", "is",
+             "after", "should", "at", "by", "from", "that", "this", "it", "as", "into", "und", "et", "für", "ohne"}
+
 HEADER_TPL = (PARTIALS / "header.html").read_text(encoding="utf-8")
 FOOTER_TPL = (PARTIALS / "footer.html").read_text(encoding="utf-8")
 
@@ -564,7 +599,10 @@ def short_title(t: str, limit: int = 60) -> str:
                 return cand
     cut = t[: limit + 1]
     cut = cut[: cut.rfind(" ")] if " " in cut else cut[:limit]
-    return cut.rstrip(" ,;:-–—")
+    words = cut.rstrip(" ,;:-–—").split(" ")
+    while len(words) > 3 and words[-1].lower().strip("?:,") in STOPWORDS:
+        words.pop()
+    return " ".join(words).rstrip(" ,;:-–—")
 
 
 def short_desc(d: str, limit: int = 155) -> str:
@@ -691,12 +729,12 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
         return html
     head, rest = html[:hi], html[hi:]
     body = rest
-    canonical = ORIGIN + url
+    canonical = ORIGIN + CANONICAL_OVERRIDES.get(url, url)
     noindex = bool(re.search(r'name="robots"[^>]*noindex', head))
 
     tm = re.search(r"<title>(.*?)</title>", head, re.S)
     full_title = re.sub(r"\s+", " ", htmlmod.unescape(tm.group(1))).strip() if tm else ""
-    title = short_title(full_title) if full_title else ""
+    title = TITLE_OVERRIDES.get(url) or (short_title(full_title) if full_title else "")
     if not title:
         h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
         title = short_title(text_of(h1.group(1))) if h1 else "EUComply"
@@ -919,7 +957,7 @@ def build_sitemap():
         head = p.read_text(encoding="utf-8")[:6000]
         if re.search(r'name="robots"[^>]*noindex', head):
             continue
-        if not rel.endswith("index.html"):
+        if not rel.endswith("index.html") or rel_url(p) in CANONICAL_OVERRIDES:
             continue
         urls.append((rel_url(p), lastmod_for(p)))
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',

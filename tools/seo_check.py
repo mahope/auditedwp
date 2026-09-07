@@ -28,6 +28,15 @@ def meta(head, attr, name):
     return htmlmod.unescape(m.group(1)) if m else None
 
 
+def _head_ok(target: str) -> bool:
+    try:
+        req = urllib.request.Request(target, method="HEAD", headers={"User-Agent": "seo_check/1.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return r.status == 200
+    except Exception:
+        return False
+
+
 def check(html: str, url: str, all_pages: dict | None = None) -> list:
     f = []
     hi = html.find("</head>")
@@ -58,7 +67,11 @@ def check(html: str, url: str, all_pages: dict | None = None) -> list:
     elif not c.group(1).startswith(ORIGIN):
         f.append("canonical off-domain")
     elif url and c.group(1) != url:
-        f.append(f"canonical differs: {c.group(1)}")
+        # A page may deliberately point at the page it duplicates, as long as that page exists.
+        target = c.group(1)
+        exists = target in all_pages if all_pages is not None else _head_ok(target)
+        if not exists:
+            f.append(f"canonical differs: {target}")
     noindex = bool(re.search(r'name="robots"[^>]*noindex', head))
     if not noindex:
         for p in ("og:title", "og:description", "og:url", "og:image", "og:type"):

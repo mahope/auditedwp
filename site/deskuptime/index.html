@@ -432,7 +432,8 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
   }).catch(function(){});
 
   // Waitlist signup
-  document.getElementById('pro-waitlist-form').addEventListener('submit', async function(e){
+  var waitlistForm = document.getElementById('pro-waitlist-form');
+  if (waitlistForm) waitlistForm.addEventListener('submit', async function(e){
     e.preventDefault();
     var email = document.getElementById('pro-email').value.trim();
     var msg = document.getElementById('pro-msg');
