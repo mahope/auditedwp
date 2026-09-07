@@ -33,7 +33,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'EUCOMPLY_VERSION', '1.2.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://eucomply.lemonsqueezy.com/buy/pro' );
-define( 'EUCOMPLY_LS_PRODUCT', 'pro' ); // Lemon Squeezy product slug — set when product is created
+define( 'EUCOMPLY_LS_PRODUCT', 0 ); // Lemon Squeezy numeric product id for EUComply Pro (live) — 0 = accept any key from the store
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 
@@ -949,8 +949,8 @@ class EUComply {
         if ( empty( $key ) ) {
             return false;
         }
-        // Key format: EC-PRO- followed by 16 alphanumeric chars (Lemon Squeezy default is UUID-ish).
-        if ( 0 !== strpos( $key, 'EC-PRO-' ) || strlen( $key ) < 22 ) {
+        // Lemon Squeezy issues UUID-shaped keys (8-4-4-4-12 hex).
+        if ( ! preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $key ) ) {
             return false;
         }
         $verified = get_option( 'eucomply_pro_verified', '' );
@@ -978,24 +978,31 @@ class EUComply {
      * @return bool|null True/False on definitive answer, null when API unreachable.
      */
     private function verify_license_remote( $key ) {
-        $response = wp_remote_post(
-            'https://api.lemonsqueezy.com/v1/licenses/activate',
-            array(
-                'timeout' => 10,
-                'body'    => array(
-                    'product_id'  => EUCOMPLY_LS_PRODUCT,
-                    'license_key' => $key,
-                    'instance_name' => parse_url( home_url(), PHP_URL_HOST ) ?: 'eucomply',
-                ),
-            )
-        );
+        // First run activates an instance for this site; later runs validate that
+        // instance so daily re-checks do not consume the activation limit.
+        $instance_id = get_option( 'eucomply_ls_instance_id', '' );
+        if ( $instance_id ) {
+            $endpoint = 'https://api.lemonsqueezy.com/v1/licenses/validate';
+            $body     = array( 'license_key' => $key, 'instance_id' => $instance_id );
+        } else {
+            $endpoint = 'https://api.lemonsqueezy.com/v1/licenses/activate';
+            $body     = array(
+                'license_key'   => $key,
+                'instance_name' => parse_url( home_url(), PHP_URL_HOST ) ?: 'eucomply',
+            );
+        }
+        $response = wp_remote_post( $endpoint, array( 'timeout' => 10, 'body' => $body ) );
         if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
             // LS returns 404 for an invalid key — treat as definitive failure only on 404.
             $code = is_wp_error( $response ) ? 0 : wp_remote_retrieve_response_code( $response );
             return 404 === $code ? false : null;
         }
         $data = json_decode( wp_remote_retrieve_body( $response ), true );
-        if ( ! is_array( $data ) || empty( $data['activated'] ) ) {
+        if ( ! is_array( $data ) || ( empty( $data['activated'] ) && empty( $data['valid'] ) ) ) {
+            return false;
+        }
+        // Reject keys that belong to another product in the same store.
+        if ( EUCOMPLY_LS_PRODUCT && ! empty( $data['meta']['product_id'] ) && (int) $data['meta']['product_id'] !== (int) EUCOMPLY_LS_PRODUCT ) {
             return false;
         }
         // Store the instance id so the license can be deactivated later if needed.
