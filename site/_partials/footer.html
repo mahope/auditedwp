@@ -1,34 +1,47 @@
 <footer class="sf">
-  <div class="sf-in">
+  <div class="container sf-grid">
     <div>
       <h2>EUComply</h2>
-      <p class="sf-maker">{{built_by}} <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — {{maker_desc}}</p>
-      <p><a href="https://github.com/mahope/eucomply-scanner">{{source_on_github}}</a></p>
-      <p class="sf-note">{{privacy_note}} {{legal_note}}</p>
+      <p>{{product_line}}</p>
+      <ul>
+        <li><a href="{{p_scan}}">{{nav_scan}}</a></li>
+        <li><a href="/cli/">CLI</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner">{{source_on_github}}</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner/releases">{{releases}}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>{{col_family}}</h2>
+      <ul>
+        <li><a href="https://eucomplypro.com/" aria-current="true">EUComply</a></li>
+        <li><a href="https://cleancopy.tools/">Clean Copy</a></li>
+        <li><a href="https://deskuptime.com/">DeskUptime</a></li>
+        <li><a href="https://transmute.run/">Transmute</a></li>
+        <li><a href="https://bugbottle.dev/">BugBottle</a></li>
+        <li><a href="https://mahope.tools/">{{fam_all}}</a></li>
+      </ul>
     </div>
     <div>
       <h2>{{col_site}}</h2>
       <ul>
-        <li><a href="{{p_scan}}">{{nav_scan}}</a></li>
-        <li><a href="{{p_book}}">{{nav_guide}}</a></li>
-        <li><a href="/checklist/">{{nav_checklists}}</a></li>
-        <li><a href="/nis2-checklist/">NIS2</a></li>
-        <li><a href="/eaa-checklist/">EAA</a></li>
-        <li><a href="/gdpr-fine-calculator/">{{fine_calc}}</a></li>
-        <li><a href="{{p_pricing}}">{{nav_pricing}}</a></li>
-        <li><a href="/blog/">{{nav_blog}}</a></li>
         <li><a href="/privacy/">{{privacy}}</a> · <a href="/terms/">{{terms}}</a></li>
+        <li><a href="/.well-known/security.txt">{{security}}</a></li>
+        <li><a href="/llms.txt">llms.txt</a></li>
+        <li><a href="/sitemap.xml">{{sitemap}}</a></li>
+        <li><a href="{{p_search}}">{{search}}</a></li>
+        <li><button type="button" class="sf-bug">{{report_bug}}</button></li>
       </ul>
+      <a class="sf-badge" href="https://bugbottle.dev/"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6l1 4h-8zM8 7h8v9a4 4 0 0 1-8 0zM8 12H5M19 12h-3"/></svg>{{powered_by}}</a>
     </div>
     <div>
-      <h2>{{col_sisters}}</h2>
-      <ul>
-        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
-        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
-        <li><a href="https://transmute.run">transmute.run</a></li>
-        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
-        <li><a href="https://mahope.tools">mahope.tools</a></li>
-      </ul>
+      <p class="sf-maker">{{built_by}} <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — {{maker_desc}}</p>
+      <p class="sf-note">{{privacy_note}}</p>
+      <p class="sf-note">{{legal_note}}</p>
     </div>
+  </div>
+  <div class="container sf-bottom">
+    <span>© {{year}} EUComply</span>
+    <span>{{scanner_mit}}</span>
+    {{langswitch}}
   </div>
 </footer>

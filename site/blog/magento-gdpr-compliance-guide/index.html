@@ -24,8 +24,7 @@
 <meta name="twitter:title" content="Magento &amp; Adobe Commerce GDPR Compliance Guide 2026">
 <meta name="twitter:description" content="GDPR for Magento and Adobe Commerce: consent management, auditing extensions, data subject rights, security, and a free scanner that works on any Magento site.">
 <meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
-<style>:root{--ink:var(--accent-dark);--muted:var(--accent);--line:var(--soft);--accent:var(--accent);--ok:var(--ok);--warn:var(--warn);--bg:var(--panel);}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;background:var(--bg)}
+<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;background:var(--bg)}
 h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
 .meta a{color:var(--accent)}
@@ -55,27 +54,36 @@ table th,table td{border:1px solid var(--line);padding:10px 12px;text-align:left
 table th{background:var(--panel);font-weight:700;font-size:13px}
 @media(max-width:600px){h1{font-size:26px}
 table th,table td{padding:7px 8px;font-size:12.5px}
-.pg-legacy{padding:20px 16px}}
+.pg-legacy{padding:20px 0 20px 0}}
 .keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .keep-reading a{color:var(--accent);text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}
-.pg-legacy{max-width:780px;margin:0 auto;padding:32px 24px}</style>
+.pg-legacy{padding:32px 0 32px 0}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Magento & Adobe Commerce GDPR Compliance Guide 2026", "description": "GDPR compliance guide for Magento and Adobe Commerce stores in 2026: consent management, extensions and processors, data subject rights, security basics, and a free scanner.", "mainEntityOfPage": "/blog/magento-gdpr-compliance-guide/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/magento-gdpr-compliance-guide/","url":"https://eucomplypro.com/blog/magento-gdpr-compliance-guide/","name":"Magento & Adobe Commerce GDPR Compliance Guide 2026","description":"GDPR compliance guide for Magento and Adobe Commerce stores in 2026: consent management, extensions and processors, data subject rights, security basics.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
-<link rel="stylesheet" href="/assets/site.css?v=618ceaee">
-<script>document.documentElement.classList.add("js")</script>
-<script src="/assets/site.js?v=559b8aa8" defer></script>
+<link rel="stylesheet" href="/assets/site.css?v=8721a767">
+<script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
+<script src="/assets/site.js?v=d6b4fa53" defer></script>
+<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://eucomplypro.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://eucomplypro.com/blog/"},{"@type":"ListItem","position":3,"name":"Magento & Adobe Commerce GDPR Compliance Guide 2026","item":"https://eucomplypro.com/blog/magento-gdpr-compliance-guide/"}]}</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="fam" aria-label="Mahope tools">
+  <div class="container">
+    <span class="fam-label">Mahope tools:</span>
+    <a href="https://eucomplypro.com/" aria-current="true">EUComply</a>
+    <a href="https://cleancopy.tools/">Clean Copy</a>
+    <a href="https://deskuptime.com/">DeskUptime</a>
+    <a href="https://transmute.run/">Transmute</a>
+    <a href="https://bugbottle.dev/">BugBottle</a>
+    <a class="fam-all" href="https://mahope.tools/">All tools</a>
+  </div>
+</nav>
 <header class="sh">
-  <div class="sh-in">
-    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
-    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
-      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
+  <div class="container">
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
     <div class="sh-menu" id="sh-menu">
       <nav class="sh-nav" aria-label="Main">
         <a href="/scan/">Scan</a>
@@ -84,16 +92,32 @@ table th,table td{padding:7px 8px;font-size:12.5px}
         <a href="/pricing/">Pricing</a>
         <a href="/blog/" aria-current="page">Blog</a>
       </nav>
-      
+      <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
+    </div>
+    <div class="sh-tools">
+      <button class="sh-btn sh-search" type="button" aria-label="Search this site" title="Search this site (Ctrl+K)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="sh-search-txt">Search</span><kbd aria-hidden="true">Ctrl K</kbd>
+      </button>
+      <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
+      <button class="sh-btn sh-theme" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="ic ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ic ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ic ic-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="sh-btn sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+        <svg class="ic ic-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="ic ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
   </div>
 </header>
+<main class="container layout-prose" id="main" data-shell>
+<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/blog/">Blog</a></li><li><span aria-current="page">Magento &amp; Adobe Commerce GDPR Compliance Guide 2026</span></li></ol></nav><!--/shell:crumbs-->
+<!--shell:grid--><div class="prose-grid"><div class="prose"><details class="toc-details"><summary>Contents</summary><ol><li class="lvl2"><a href="#1-does-gdpr-apply-to-your-magento-store">1. Does GDPR apply to your Magento store?</a></li><li class="lvl2"><a href="#2-seven-compliance-requirements-for-magento-stores">2. Seven compliance requirements for Magento stores</a></li><li class="lvl3"><a href="#a-lawful-basis-for-every-processing-activity">a) Lawful basis for every processing activity</a></li><li class="lvl3"><a href="#b-consent-management">b) Consent management</a></li><li class="lvl3"><a href="#c-privacy-policy-that-matches-reality">c) Privacy policy that matches reality</a></li><li class="lvl3"><a href="#d-dpas-with-every-processor">d) DPAs with every processor</a></li><li class="lvl3"><a href="#e-data-subject-rights-technically-feasible">e) Data subject rights — technically feasible</a></li><li class="lvl3"><a href="#f-security-measures">f) Security measures</a></li><li class="lvl3"><a href="#g-breach-readiness">g) Breach readiness</a></li><li class="lvl2"><a href="#3-cookie-consent-options-on-magento">3. Cookie consent options on Magento</a></li><li class="lvl2"><a href="#4-common-compliance-mistakes-on-magento">4. Common compliance mistakes on Magento</a></li><li class="lvl2"><a href="#5-free-compliance-check-for-your-magento-store">5. Free compliance check for your Magento store</a></li></ol></details><!--/shell:grid-->
 <div class="pg-legacy">
-
 <h1>Magento &amp; Adobe Commerce GDPR Compliance Guide 2026</h1>
-<p class="meta"><time datetime="2026-08-30">August 30, 2026</time> · Filed under: <a href="/blog/">Guides</a> ·
-  <a href="/scan/">Free compliance scanner →</a>
-</p>
+<!--shell:meta--><p class="art-meta"><time datetime="2026-08-25">Published 2026-08-25</time><span>4 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
 
 <div class="toc">
   <h2>Table of Contents</h2>
@@ -110,7 +134,7 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 <p>Magento is self-hosted (or PaaS-hosted Adobe Commerce Cloud), which cuts both ways: you control everything, and you're responsible for everything the platform would otherwise handle. Here is what that means concretely.</p>
 
 <section id="applies">
-<h2>1. Does GDPR apply to your Magento store?</h2>
+<h2 id="1-does-gdpr-apply-to-your-magento-store">1. Does GDPR apply to your Magento store?</h2>
 <p>Yes, if any of these are true:</p>
 <ul>
 <li>You sell or ship to customers in the EU or EEA</li>
@@ -122,28 +146,28 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 </section>
 
 <section id="requirements">
-<h2>2. Seven compliance requirements for Magento stores</h2>
+<h2 id="2-seven-compliance-requirements-for-magento-stores">2. Seven compliance requirements for Magento stores</h2>
 
-<h3>a) Lawful basis for every processing activity</h3>
+<h3 id="a-lawful-basis-for-every-processing-activity">a) Lawful basis for every processing activity</h3>
 <p>Map your activities to bases: order fulfilment = contract; fraud prevention = legitimate interests; marketing cookies and newsletters = consent; tax records = legal obligation. Write the map down — regulators ask for it.</p>
 
-<h3>b) Consent management</h3>
+<h3 id="b-consent-management">b) Consent management</h3>
 <ul>
 <li>Non-essential cookies blocked until opt-in</li>
 <li>Reject as prominent as accept, no pre-ticks, consent logs kept</li>
 <li>Granular choices where practical (analytics vs. marketing)</li>
 </ul>
 
-<h3>c) Privacy policy that matches reality</h3>
+<h3 id="c-privacy-policy-that-matches-reality">c) Privacy policy that matches reality</h3>
 <p>It must reflect your actual stack: hosting provider, payment gateways, ERP/accounting integrations, marketing automation, review platforms, live chat, and any extensions that transmit data externally.</p>
 
-<h3>d) DPAs with every processor</h3>
+<h3 id="d-dpas-with-every-processor">d) DPAs with every processor</h3>
 <p>Hosting, payment providers, email service, analytics, each extension vendor whose module phones home. Magento's extension ecosystem makes this the most commonly failed item — many modules silently send data to third-party endpoints.</p>
 
-<h3>e) Data subject rights — technically feasible</h3>
+<h3 id="e-data-subject-rights-technically-feasible">e) Data subject rights — technically feasible</h3>
 <p>Access and deletion requests must be answerable within a month. In Magento that means: customer account data, quotes, orders (which often can't be fully deleted for accounting reasons — pseudonymize instead), newsletter lists, logs, backups policy, and synced copies in connected systems.</p>
 
-<h3>f) Security measures</h3>
+<h3 id="f-security-measures">f) Security measures</h3>
 <ul>
 <li>Admin panel on a non-default path, restricted by IP where possible, with 2FA enforced</li>
 <li>HTTPS everywhere, HSTS enabled</li>
@@ -151,12 +175,12 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 <li>Least-privilege admin roles; encrypted database backups</li>
 </ul>
 
-<h3>g) Breach readiness</h3>
+<h3 id="g-breach-readiness">g) Breach readiness</h3>
 <p>Personal-data breaches must be reported to a supervisory authority within 72 hours where risk exists. Know in advance who decides and how you'd notify.</p>
 </section>
 
 <section id="consent">
-<h2>3. Cookie consent options on Magento</h2>
+<h2 id="3-cookie-consent-options-on-magento">3. Cookie consent options on Magento</h2>
 <ol>
 <li><strong>Dedicated extensions:</strong> several CMP extensions exist on the Magento Marketplace (Cookiebot connector, Mageplaza GDPR, Amasty GDPR and similar). Evaluate them on one criterion first: do they hard-block script execution, or merely hide the banner?</li>
 <li><strong>External CMP via Google Tag Manager Consent Mode:</strong> works well if GTM manages your tags, but requires correct configuration of consent defaults per region — EU visitors must default to denied.</li>
@@ -165,7 +189,7 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 </section>
 
 <section id="mistakes">
-<h2>4. Common compliance mistakes on Magento</h2>
+<h2 id="4-common-compliance-mistakes-on-magento">4. Common compliance mistakes on Magento</h2>
 <ul>
 <li><span class="cross">✗</span> Extensions transmitting customer data to vendor endpoints nobody audited</li>
 <li><span class="cross">✗</span> Old customer records retained forever with no retention policy</li>
@@ -177,7 +201,7 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 </section>
 
 <section id="scan">
-<h2>5. Free compliance check for your Magento store</h2>
+<h2 id="5-free-compliance-check-for-your-magento-store">5. Free compliance check for your Magento store</h2>
 <p>The technical layer is checkable today. The free <a href="/scan/">EUComply scanner</a> takes any public URL — Magento, Adobe Commerce Cloud, headwind storefronts — and checks cookie banner behavior, pre-consent tracking, security headers, form handling and more.</p>
 <p><a href="/scan/" class="btn">Scan your store free →</a></p>
 <p>Scheduled re-scans across your whole domain and prioritized reports come with <a href="/pro/">EUComply Pro</a>.</p>
@@ -205,39 +229,56 @@ table th,table td{padding:7px 8px;font-size:12.5px}
 
 <p><strong>Related:</strong> Compliance is only half the story — <a href="/blog/website-down-checker/">knowing when your site goes down</a> is the other. See our <a href="/blog/free-uptime-monitoring-tools-2026/">free uptime monitoring tools comparison</a>.</p>
 </div><!--/pg-legacy-->
+<!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="prev" href="/blog/nis2-board-liability/" rel="prev"><small>Newer</small><b>NIS2 Board &amp; Director Liability: What Every Executive Must Know in 2026</b></a><a class="next" href="/blog/iab-tcf-compliance-guide/" rel="next"><small>Older</small><b>IAB Transparency &amp; Consent Framework (TCF) — What It Is and How to Check</b></a></nav><!--/shell:pn-->
+<!--shell:grid-end--></div><aside class="toc-side" aria-label="Contents"><h2>Contents</h2><ol><li class="lvl2"><a href="#1-does-gdpr-apply-to-your-magento-store">1. Does GDPR apply to your Magento store?</a></li><li class="lvl2"><a href="#2-seven-compliance-requirements-for-magento-stores">2. Seven compliance requirements for Magento stores</a></li><li class="lvl3"><a href="#a-lawful-basis-for-every-processing-activity">a) Lawful basis for every processing activity</a></li><li class="lvl3"><a href="#b-consent-management">b) Consent management</a></li><li class="lvl3"><a href="#c-privacy-policy-that-matches-reality">c) Privacy policy that matches reality</a></li><li class="lvl3"><a href="#d-dpas-with-every-processor">d) DPAs with every processor</a></li><li class="lvl3"><a href="#e-data-subject-rights-technically-feasible">e) Data subject rights — technically feasible</a></li><li class="lvl3"><a href="#f-security-measures">f) Security measures</a></li><li class="lvl3"><a href="#g-breach-readiness">g) Breach readiness</a></li><li class="lvl2"><a href="#3-cookie-consent-options-on-magento">3. Cookie consent options on Magento</a></li><li class="lvl2"><a href="#4-common-compliance-mistakes-on-magento">4. Common compliance mistakes on Magento</a></li><li class="lvl2"><a href="#5-free-compliance-check-for-your-magento-store">5. Free compliance check for your Magento store</a></li></ol></aside></div><!--/shell:grid-end-->
+</main>
 <footer class="sf">
-  <div class="sf-in">
+  <div class="container sf-grid">
     <div>
       <h2>EUComply</h2>
-      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner, Odense, Denmark.</p>
-      <p><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></p>
-      <p class="sf-note">This site sets no cookies and loads no trackers or external fonts. Everything here is technical guidance, not legal advice.</p>
-    </div>
-    <div>
-      <h2>On this site</h2>
+      <p>A free scanner for the EU compliance basics of any website, plus the guides to fix what it finds.</p>
       <ul>
         <li><a href="/scan/">Scan</a></li>
-        <li><a href="/book/">Guide</a></li>
-        <li><a href="/checklist/">Checklists</a></li>
-        <li><a href="/nis2-checklist/">NIS2</a></li>
-        <li><a href="/eaa-checklist/">EAA</a></li>
-        <li><a href="/gdpr-fine-calculator/">GDPR fine calculator</a></li>
-        <li><a href="/pricing/">Pricing</a></li>
-        <li><a href="/blog/">Blog</a></li>
-        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+        <li><a href="/cli/">CLI</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases and changelog</a></li>
       </ul>
     </div>
     <div>
-      <h2>Also by mahoje.dk</h2>
+      <h2>Mahope tools</h2>
       <ul>
-        <li><a href="https://cleancopy.tools">cleancopy.tools</a></li>
-        <li><a href="https://deskuptime.com">deskuptime.com</a></li>
-        <li><a href="https://transmute.run">transmute.run</a></li>
-        <li><a href="https://bugbottle.dev">bugbottle.dev</a></li>
-        <li><a href="https://mahope.tools">mahope.tools</a></li>
+        <li><a href="https://eucomplypro.com/" aria-current="true">EUComply</a></li>
+        <li><a href="https://cleancopy.tools/">Clean Copy</a></li>
+        <li><a href="https://deskuptime.com/">DeskUptime</a></li>
+        <li><a href="https://transmute.run/">Transmute</a></li>
+        <li><a href="https://bugbottle.dev/">BugBottle</a></li>
+        <li><a href="https://mahope.tools/">All tools</a></li>
       </ul>
     </div>
+    <div>
+      <h2>Site</h2>
+      <ul>
+        <li><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></li>
+        <li><a href="/.well-known/security.txt">Security</a></li>
+        <li><a href="/llms.txt">llms.txt</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="/search/">Search</a></li>
+        <li><button type="button" class="sf-bug">Report a bug</button></li>
+      </ul>
+      <a class="sf-badge" href="https://bugbottle.dev/"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6l1 4h-8zM8 7h8v9a4 4 0 0 1-8 0zM8 12H5M19 12h-3"/></svg>Feedback powered by BugBottle</a>
+    </div>
+    <div>
+      <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner for small businesses, Odense, Denmark.</p>
+      <p class="sf-note">No cookies, no trackers, no external fonts.</p>
+      <p class="sf-note">Everything here is technical guidance, not legal advice.</p>
+    </div>
+  </div>
+  <div class="container sf-bottom">
+    <span>© 2026 EUComply</span>
+    <span>Scanner and CLI are MIT licensed.</span>
+    <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
   </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bugbottle@0.5.0/dist/bugbottle.js" data-endpoint="https://mahope.tools/api/bugreport" data-locale="en" data-primary="#0b6e4f" data-brand="EUComply" data-position="bottom-right" data-scrub defer></script>
 </body>
 </html>

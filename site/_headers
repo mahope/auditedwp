@@ -5,10 +5,13 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://assets.lemonsqueezy.com https://app.lemonsqueezy.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.mahope-eeb.workers.dev https://api.lemonsqueezy.com https://rdap.org https://api.github.com; frame-src https://*.lemonsqueezy.com; form-action 'self' https://*.lemonsqueezy.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://assets.lemonsqueezy.com https://app.lemonsqueezy.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://mahope.tools https://*.mahope-eeb.workers.dev https://api.lemonsqueezy.com https://rdap.org https://api.github.com; frame-src https://*.lemonsqueezy.com; form-action 'self' https://*.lemonsqueezy.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests
 
 /assets/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=31536000, immutable
+
+/search-index.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /images/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
