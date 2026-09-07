@@ -303,7 +303,7 @@
   if (scanForm && cards) {
     var KEY = 'ec.recent';
     var read = function () { try { return JSON.parse(store(KEY) || '[]'); } catch (e) { return []; } };
-    var box = document.createElement('div'); box.className = 'recent'; box.setAttribute('aria-label', t.recent);
+    var box = document.createElement('div'); box.className = 'recent'; box.setAttribute('role', 'group'); box.setAttribute('aria-label', t.recent);
     var after = document.getElementById('scan-err') || scanForm;
     after.parentNode.insertBefore(box, after.nextSibling);
     var render = function () {
