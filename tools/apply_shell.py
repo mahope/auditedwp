@@ -689,6 +689,13 @@ def neutralise_buy_buttons(html: str, lang: str) -> str:
         href = re.search(r'href="([^"]*)"', attrs)
         href = href.group(1) if href else ""
         external_checkout = re.search(r"lemonsqueezy|gumroad|stripe|paddle|checkout", href, re.I)
+        # Only short, button-like elements: a post card or a comparison card whose text
+        # happens to mention a price is content, and a TOC link to "#start-monitoring"
+        # is navigation.  Both were wiped by an earlier, looser version of this rule.
+        if re.search(r"<(h\d|p|div|ul|ol|li|section|article)\b", inner, re.I) or len(text.strip()) > 48:
+            return m.group(0)
+        if href.startswith("#") and "btn" not in attrs:
+            return m.group(0)
         if "data-checkout" in attrs or external_checkout or (BUY_TEXT.search(text) and (
             href == "" or href.startswith("#") or href.startswith("javascript") or
             href.startswith("/pro") or href.startswith("/pricing") or "waitlist" in href or
