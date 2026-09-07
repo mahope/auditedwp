@@ -1,16 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HSTS Preload Guide 2026: How to Enable HTTP Strict Transport Security Correctly</title>
-<meta name="description" content="Step-by-step HSTS guide: what Strict-Transport-Security is, how to send the header on Nginx, Apache, Cloudflare and Netlify, max-age values, preload requirements, and common mistakes that break subdomains.">
+<title>HSTS Preload Guide 2026: How to Enable HTTP Strict Transport</title>
+<meta name="description" content="Step-by-step HSTS guide: what Strict-Transport-Security is, how to send the header on Nginx, Apache, Cloudflare and Netlify, max-age values, preload.">
 <link rel="canonical" href="https://eucomplypro.com/blog/hsts-preload-guide/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/blog/hsts-preload-guide/">
 <meta property="og:title" content="HSTS Preload Guide 2026: Enable HTTP Strict Transport Security Correctly">
 <meta property="og:description" content="What HSTS is, correct header syntax, max-age guidance, preload list requirements, and the mistakes that take subdomains offline.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eucomplypro.com/blog/hsts-preload-guide/">
-<style>:root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HSTS Preload Guide 2026: Enable HTTP Strict Transport Security Correctly">
+<meta name="twitter:description" content="What HSTS is, correct header syntax, max-age guidance, preload list requirements, and the mistakes that take subdomains offline.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--accent);--line:var(--soft);--accent:var(--accent);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65}
 h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
@@ -20,45 +34,52 @@ h3{font-size:17px;margin:24px 0 8px}
 p{margin-bottom:14px}
 li{margin-bottom:6px}
 ul,ol{padding-left:22px;margin-bottom:16px}
-.toc{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
+.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:24px 0}
 .toc h2{font-size:16px;margin:0 0 10px;padding:0;border:none}
 .toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0;font-size:14px}
 .toc a:hover{text-decoration:underline}
-.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
-.box.warn{background:#fff8ef;border-color:#ffd699}
-pre{background:#101828;color:#e4e7ec;border-radius:8px;padding:16px 18px;font-size:13.5px;overflow-x:auto;margin:14px 0;line-height:1.5}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2f4f7;padding:1px 6px;border-radius:4px;font-size:.92em}
+.box{background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+.box.warn{background:var(--panel);border-color:var(--warn)}
+pre{background:var(--accent-dark);color:var(--soft);border-radius:8px;padding:16px 18px;font-size:13.5px;overflow-x:auto;margin:14px 0;line-height:1.5}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--panel);padding:1px 6px;border-radius:4px;font-size:.92em}
 pre code{background:none;padding:0;color:inherit}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-.tag{display:inline-block;background:#e5effa;color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+th{background:var(--panel);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tag{display:inline-block;background:var(--panel);color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
 @media(max-width:600px){h1{font-size:26px}}
-.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
-.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a{color:var(--accent);text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}
 .pg-legacy{max-width:780px;margin:0 auto;padding:32px 24px}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"Article","headline":"HSTS preload guide: how to enable HTTP Strict Transport Security without breaking your site","description":"Step-by-step HSTS guide: what Strict-Transport-Security is, how to send the header on Nginx, Apache, Cloudflare and Netlify, max-age values, preload.","url":"https://eucomplypro.com/blog/hsts-preload-guide/","mainEntityOfPage":"https://eucomplypro.com/blog/hsts-preload-guide/","inLanguage":"en","image":"https://eucomplypro.com/images/og/en.png","datePublished":"2026-08-26","dateModified":"2026-09-07","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/" aria-current="page">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
 
 <h1>HSTS preload guide: how to enable HTTP Strict Transport Security without breaking your site</h1>
 <p class="meta">Published 26 August 2026 · 9 min read · <span class="tag">Security headers</span> <span class="tag">HTTPS</span> <span class="tag">Compliance</span></p>
@@ -69,18 +90,18 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 <!-- DeskUptime live check widget — self-contained, drop into any page.
      Usage: paste this file's contents where the widget should appear.
      Requires no external CSS/JS besides what's inline below. -->
-<div id="du-check" style="max-width:640px;margin:28px auto;background:#f9fafb;border:1px solid #e4e7ec;border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="font-size:17px;font-weight:700;color:#101828;margin-bottom:4px">Check any site right now — free</div>
-  <div style="font-size:13.5px;color:#475467;margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
+<div id="du-check" style="max-width:640px;margin:28px auto;background:var(--panel);border:1px solid var(--soft);border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="font-size:17px;font-weight:700;color:var(--accent-dark);margin-bottom:4px">Check any site right now — free</div>
+  <div style="font-size:13.5px;color:var(--accent);margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
   <form id="du-form" style="display:flex;gap:8px;flex-wrap:wrap">
     <input id="du-url" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Website URL to check" required
-           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;outline:none">
+           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid var(--soft);border-radius:8px;font-size:14px;outline:none">
     <button type="submit"
-            style="padding:11px 20px;background:#2868d0;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
+            style="padding:11px 20px;background:var(--accent);color:var(--panel);border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
   </form>
-  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:#fff;border:1px solid #e4e7ec;border-radius:8px;padding:14px" aria-live="polite"></div>
-  <div style="margin-top:12px;font-size:13px;color:#475467">Want an alert <em>before</em> it breaks?
-    <a href="/deskuptime/" style="color:#2868d0;font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
+  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:var(--panel);border:1px solid var(--soft);border-radius:8px;padding:14px" aria-live="polite"></div>
+  <div style="margin-top:12px;font-size:13px;color:var(--accent)">Want an alert <em>before</em> it breaks?
+    <a href="/deskuptime/" style="color:var(--accent);font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
 </div>
 <script>
 (function(){
@@ -132,12 +153,12 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 
 <h2 id="header">2. The header, explained field by field</h2>
 <pre><code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code></pre>
-<table>
+<div class="tbl"><table>
   <tr><th>Directive</th><th>Meaning</th></tr>
   <tr><td><code>max-age=31536000</code></td><td>Browsers remember "HTTPS only" for this many seconds. 31536000 = one year.</td></tr>
   <tr><td><code>includeSubDomains</code></td><td>The rule applies to every subdomain too (<strong>app.</strong>, <strong>api.</strong>, <strong>staging.</strong>…). Required for preload.</td></tr>
   <tr><td><code>preload</code></td><td>Says you consent to being hardcoded into browser preload lists.</td></tr>
-</table>
+</table></div>
 <p>The header is ignored entirely on non-HTTPS responses — browsers only honor it over a secure connection with no certificate errors.</p>
 
 <h2 id="how">3. How to enable it</h2>
@@ -168,13 +189,13 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 
 <h2 id="maxage">4. Choosing a max-age value safely</h2>
 <p>Do not jump straight to one year. Roll out gradually so a mistake doesn't lock visitors out:</p>
-<table>
+<div class="tbl"><table>
   <tr><th>Phase</th><th>Header</th><th>Duration</th></tr>
   <tr><td>1. Test</td><td><code>max-age=300</code> (5 min)</td><td>A day</td></tr>
   <tr><td>2. Confirm</td><td><code>max-age=604800</code> (1 week)</td><td>A week</td></tr>
   <tr><td>3. Commit</td><td><code>max-age=2592000</code> (1 month)</td><td>A month</td></tr>
   <tr><td>4. Full</td><td><code>max-age=31536000</code> + preload flags</td><td>Permanent</td></tr>
-</table>
+</table></div>
 <div class="box warn"><strong>Warning:</strong> while max-age is active, browsers will refuse plain-HTTP connections until it expires. If your certificate expires or a subdomain only has HTTP, those users see errors you cannot remotely undo. Fix certificates first, then extend max-age.</div>
 
 <h2 id="preload">5. Submitting to the HSTS preload list</h2>
@@ -220,10 +241,10 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 
 <p>How does EUComply compare with the established tools? See <a href="/pro/vs-termly/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
 
-<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
+<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel)">
   <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
-  <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
-  <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
+  <p style="margin:8px 0;font-size:14px;color:var(--muted)">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
+  <p style="margin:0"><a href="/book/" style="color:var(--accent);font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
 
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/nis2-compliance-checklist-saas/">NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply</a></li><li><a href="/blog/nis2-board-liability/">NIS2 Board & Director Liability: What Executives Must Know — EUComply</a></li><li><a href="/blog/nis2-vendor-supply-chain-compliance/">NIS2 Vendor & Supply Chain Compliance Guide 2026 — EUComply</a></li></ul></nav>
@@ -250,8 +271,6 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
   ]
 }
 </script>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

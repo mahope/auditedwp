@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Redirect Chain Checker — Trace Every Redirect Hop, Free</title>
-<meta name="description" content="Trace the full redirect chain of any URL: every hop, status code, latency and whether HTTPS is used at each step. Free, no signup, works with any website or CMS.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+<meta name="description" content="Trace the full redirect chain of any URL: every hop, status code, latency and whether HTTPS is used at each step.">
 <link rel="canonical" href="https://eucomplypro.com/deskuptime/redirect-chain-checker/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Deskuptime">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/redirect-chain-checker/">
 <meta property="og:title" content="Redirect Chain Checker — Trace Every Hop Free">
 <meta property="og:description" content="See every redirect hop from one URL to its final destination: status codes, latency, HTTPS per step.">
-<meta property="og:url" content="https://eucomplypro.com/deskuptime/redirect-chain-checker/">
-<meta property="og:type" content="website">
 <meta property="og:image" content="https://eucomplypro.com/deskuptime/og-image.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Redirect Chain Checker — Trace Every Hop Free">
-<meta name="twitter:description" content="Full redirect chain trace: every hop, status code, latency and HTTPS flag.">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
-        --code:#1e293b;}
+<meta name="twitter:description" content="See every redirect hop from one URL to its final destination: status codes, latency, HTTPS per step.">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/og-image.svg">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);
+        --accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok);--warn:var(--warn);
+        --code:var(--accent-dark);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:960px;margin:0 auto;padding:0 20px}
 .hero{background:var(--soft);padding:56px 0;text-align:center}
-.badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+.badge{display:inline-block;background:var(--panel);color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
 h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
 h1 span{color:var(--accent)}
 .sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
-.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
 section{padding:48px 0}
@@ -35,14 +44,14 @@ h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
 input[type=text]{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:8px}
 input[type=text]:focus{outline:2px solid var(--accent);offset:-1px}
 label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:var(--panel);border-radius:10px;overflow:hidden}
 th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 tr:last-child td{border-bottom:0}
 .pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
-.p-ok{background:#e3f3ea;color:var(--ok)}
-.p-red{background:#fbe5e5;color:#b03030}
-.p-warn{background:#fdf0e0;color:var(--warn)}
+.p-ok{background:var(--accent-soft);color:var(--ok)}
+.p-red{background:var(--panel);color:var(--fail)}
+.p-warn{background:var(--panel);color:var(--warn)}
 .note{font-size:13px;color:var(--muted);margin-top:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
 .card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
@@ -51,7 +60,7 @@ tr:last-child td{border-bottom:0}
 details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
 summary{font-weight:700;cursor:pointer}
 details p{margin-top:8px;color:var(--muted);font-size:15px}
-pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
+pre{background:var(--code);color:var(--accent-soft);padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
 code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
 @media(max-width:700px){h1{font-size:28px}
 .grid3{grid-template-columns:1fr}}</style>
@@ -95,26 +104,32 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
   ]
 }
 </script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/deskuptime/redirect-chain-checker/","url":"https://eucomplypro.com/deskuptime/redirect-chain-checker/","name":"Redirect Chain Checker — Trace Every Redirect Hop, Free","description":"Trace the full redirect chain of any URL: every hop, status code, latency and whether HTTPS is used at each step.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="hero">
   <div class="wrap">
@@ -158,7 +173,7 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <p>An HTTP→HTTPS chain means visitors hit an insecure hop first. HSTS plus a direct HTTPS redirect fixes it.</p>
       </div>
     </div>
-    <table>
+    <div class="tbl"><table>
       <thead><tr><th></th><th>This free checker</th><th>SaaS site auditors</th><th>DeskUptime</th></tr></thead>
       <tbody>
         <tr><td>Per-hop trace + latency</td><td>✓ free</td><td>Paid tiers</td><td>✓ included</td></tr>
@@ -166,7 +181,7 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <tr><td>Alerts when a chain changes</td><td>✗</td><td>Email/push</td><td>✓ native notifications</td></tr>
         <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
@@ -248,9 +263,6 @@ document.getElementById('url').addEventListener('keydown',function(e){
   if(e.key==='Enter')doTrace();
 });
 </script>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

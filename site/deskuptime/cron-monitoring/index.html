@@ -1,39 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cron Job Monitoring — Know When a Scheduled Job Fails | DeskUptime</title>
-<meta name="description" content="Silent cron failures cost hours of debugging. Check and understand any cron expression for free, then let DeskUptime watch the endpoint or output your job touches and alert you the moment it stops behaving. Works with any stack — Linux crontab, Kubernetes CronJobs, GitHub Actions, systemd timers.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+<title>Cron Job Monitoring — Know When a Scheduled Job Fails</title>
+<meta name="description" content="Silent cron failures cost hours of debugging. Check and understand any cron expression for free, then let DeskUptime watch the endpoint or output your job.">
 <link rel="canonical" href="https://eucomplypro.com/deskuptime/cron-monitoring/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Deskuptime">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/cron-monitoring/">
 <meta property="og:title" content="Cron Job Monitoring">
 <meta property="og:description" content="Free cron expression checker for any schedule, plus continuous endpoint monitoring when it matters. No account, no subscription.">
-<meta property="og:url" content="https://eucomplypro.com/deskuptime/cron-monitoring/">
-<meta property="og:type" content="website">
 <meta property="og:image" content="https://eucomplypro.com/deskuptime/assets/og-cron-monitoring.png">
-<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-cron-monitoring.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cron Job Monitoring">
-<meta name="twitter:description" content="Free cron expression checker plus scheduled endpoint alerts with DeskUptime — $19 once, no subscription.">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
-        --code:#1e293b;}
+<meta name="twitter:description" content="Free cron expression checker for any schedule, plus continuous endpoint monitoring when it matters. No account, no subscription.">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-cron-monitoring.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);
+        --accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok);--warn:var(--warn);
+        --code:var(--accent-dark);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:960px;margin:0 auto;padding:0 20px}
 .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
-.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+.badge{display:inline-block;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
 h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:760px;margin:0 auto 14px}
 h1 span{color:var(--accent)}
 .sub{font-size:17px;color:var(--muted);max-width:660px;margin:0 auto 26px}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
 .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
 section{padding:52px 0;border-bottom:1px solid var(--line)}
 h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
 .lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
-pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
+pre{background:var(--code);color:var(--accent-soft);border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
 code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
 table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -46,18 +54,18 @@ th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:upperc
 .checkbox{max-width:720px;margin:24px auto 0;border:1px solid var(--line);border-radius:12px;padding:26px;background:var(--soft);text-align:left}
 .checkbox label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
 .row{display:flex;gap:10px}
-.row input[type=text]{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:15px;background:#fff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.row button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.row input[type=text]{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:15px;background:var(--panel);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.row button{background:var(--accent);color:var(--panel);border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;cursor:pointer;var(--panel)-space:nowrap}
 .row button:hover{background:var(--accent-dark)}
 #result{margin-top:16px;font-size:14px;display:none;border-radius:8px;padding:14px 16px}
-#result.ok{display:block;background:#eaf6ef;color:var(--ok);border:1px solid #bfe4cf}
-#result.bad{display:block;background:#fdf0ea;color:var(--warn);border:1px solid #f2cdb4}
+#result.ok{display:block;background:var(--panel);color:var(--ok);border:1px solid var(--ok)}
+#result.bad{display:block;background:var(--panel);color:var(--warn);border:1px solid var(--warn)}
 #result dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin-top:6px;font-size:14px}
 #result dt{color:inherit;opacity:.75}
 #result dd{margin:0;font-weight:600}
 #result ol{margin:6px 0 0 20px}
 .examples{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
-.examples button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;cursor:pointer;color:var(--ink)}
+.examples button{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;cursor:pointer;color:var(--ink)}
 .examples button:hover{border-color:var(--accent);color:var(--accent)}
 details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
 summary{font-weight:600;cursor:pointer;font-size:15px}
@@ -111,26 +119,32 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
   ]
 }
 </script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/deskuptime/cron-monitoring/","url":"https://eucomplypro.com/deskuptime/cron-monitoring/","name":"Cron Job Monitoring — Know When a Scheduled Job Fails","description":"Silent cron failures cost hours of debugging. Check and understand any cron expression for free, then let DeskUptime watch the endpoint or output your job.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="hero">
   <div class="wrap">
@@ -174,7 +188,7 @@ deskuptime watch https://example.com/jobs/status --interval 300</pre>
   <div class="wrap">
     <h2>Cron field reference</h2>
     <p class="lede">The five fields, what each accepts, and the mistakes people make with them.</p>
-    <table>
+    <div class="tbl"><table>
       <thead><tr><th>Field</th><th>Range</th><th>Common values</th></tr></thead>
       <tbody>
         <tr><td>Minute</td><td>0–59</td><td><code class="inline">*/15</code> every 15 min · <code class="inline">0</code> on the hour</td></tr>
@@ -183,7 +197,7 @@ deskuptime watch https://example.com/jobs/status --interval 300</pre>
         <tr><td>Month</td><td>1–12</td><td><code class="inline">*</code> every month · <code class="inline">1-6</code> Jan–Jun</td></tr>
         <tr><td>Day of week</td><td>0–7 (0 and 7 = Sunday)</td><td><code class="inline">1-5</code> weekdays · <code class="inline">0</code> Sundays</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <p class="note">Watch out: when both day-of-month and day-of-week are restricted, most cron implementations run if <em>either</em> matches — not both. And <code class="inline">@daily</code>, <code class="inline">@hourly</code> etc. are aliases for fixed expressions, not extra features.</p>
   </div>
 </section>
@@ -213,7 +227,7 @@ deskuptime watch https://example.com/jobs/status --interval 300</pre>
   <div class="wrap">
     <h2>How to monitor a cron job without installing anything on the server</h2>
     <p class="lede">Dedicated cron services use dead-man heartbeats that require modifying every job. There's a simpler route for anything that already produces an HTTP-visible signal:</p>
-    <table>
+    <div class="tbl"><table>
       <thead><tr><th>Your job already produces…</th><th>DeskUptime watches…</th><th>Alerts when…</th></tr></thead>
       <tbody>
         <tr><td>A status/health endpoint</td><td>The URL on a short interval</td><td>It returns errors, times out, or slows down</td></tr>
@@ -221,7 +235,7 @@ deskuptime watch https://example.com/jobs/status --interval 300</pre>
         <tr><td>A public log or JSON artifact</td><td>The artifact URL + freshness</td><td>Status flips, or the file disappears</td></tr>
         <tr><td>Nothing HTTP-visible yet</td><td>One line added to the job: <code class="inline">curl -fsS https://yoursite/jobs/ping?job=backup</code></td><td>The ping endpoint stops refreshing</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <p class="note">Works the same whether the scheduler is Linux crontab, Kubernetes CronJob, GitHub Actions, systemd timer or a CI pipeline — a URL is a URL.</p>
     <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
@@ -367,9 +381,6 @@ function doCheck(){
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 document.getElementById('cexpr').addEventListener('keydown',e=>{if(e.key==='Enter')doCheck();});
 </script>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

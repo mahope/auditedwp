@@ -1,19 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GitHub Notifications in Discord: 3 Working Methods (2026) — DevNotify</title>
-<meta name="description" content="Want your GitHub notifications delivered to Discord? Three real methods — the official webhook, a bot, and a local alternative — compared honestly, including where each one falls short.">
+<title>GitHub Notifications in Discord: 3 Working Methods (2026)</title>
+<meta name="description" content="Want your GitHub notifications delivered to Discord? Three real methods — the official webhook, a bot, and a local alternative — compared honestly.">
 <link rel="canonical" href="https://eucomplypro.com/devnotify/guides/github-notifications-discord/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="DevNotify">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/github-notifications-discord/">
 <meta property="og:title" content="GitHub Notifications in Discord: 3 Working Methods">
 <meta property="og:description" content="Webhooks, bots, and a local option — how to get GitHub activity into Discord without the noise.">
-<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/github-notifications-discord/">
+<meta property="og:image" content="https://eucomplypro.com/devnotify/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="/devnotify/og-image.png">
-<meta name="twitter:image" content="/devnotify/og-image.png">
-<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+<meta name="twitter:title" content="GitHub Notifications in Discord: 3 Working Methods">
+<meta name="twitter:description" content="Webhooks, bots, and a local option — how to get GitHub activity into Discord without the noise.">
+<meta name="twitter:image" content="https://eucomplypro.com/devnotify/og-image.png">
+<style>:root{--bg:var(--accent-dark);--panel:var(--accent-dark);--border:var(--ink);--text:var(--accent-soft);--muted:var(--muted);--accent:var(--accent);--green:var(--ok);--radius:12px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding:0 20px}
 a{color:var(--accent)}
@@ -28,32 +39,38 @@ table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.95rem}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
 th{color:var(--text)}
 td{color:var(--muted)}
-.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:var(--ok);margin-top:14px}
 .btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
 .keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
 .keep-reading h2{font-size:1rem;margin:0 0 10px}
 .keep-reading li{margin-bottom:6px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "GitHub Notifications in Discord: 3 Working Methods (2026) — DevNotify", "description": "Webhooks, bots, and a local option — how to get GitHub activity into Discord without the noise.", "mainEntityOfPage": "/devnotify/guides/github-notifications-discord/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/devnotify/guides/github-notifications-discord/","url":"https://eucomplypro.com/devnotify/guides/github-notifications-discord/","name":"GitHub Notifications in Discord: 3 Working Methods (2026)","description":"Want your GitHub notifications delivered to Discord? Three real methods — the official webhook, a bot, and a local alternative — compared honestly.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <article class="wrap">
 <h1>GitHub Notifications in Discord: 3 Working Methods</h1>
@@ -109,14 +126,14 @@ third-party bot holding your webhooks, nothing leaves your machine.</p>
 </div>
 
 <h2>Which should you pick?</h2>
-<table>
+<div class="tbl"><table>
   <tr><th></th><th>Webhook</th><th>Bot</th><th>Menu bar app</th></tr>
   <tr><td><strong>Best for</strong></td><td>Team-wide repo activity in one channel</td><td>Per-person pings inside Discord</td><td>Your own review requests &amp; mentions</td></tr>
   <tr><td><strong>Setup time</strong></td><td>~5 min</td><td>~15 min + OAuth trust</td><td>~2 min</td></tr>
   <tr><td><strong>Noise level</strong></td><td>High — mutes itself quickly</td><td>Medium</td><td>You control what counts as unread</td></tr>
   <tr><td><strong>Data leaves your devices?</strong></td><td>Yes (to Discord)</td><td>Yes (to the bot host)</td><td>No</td></tr>
   <tr><td><strong>Fails when…</strong></td><td>Event filters misconfigured</td><td>Bot goes unmaintained</td><td>— (polls GitHub API directly)</td></tr>
-</table>
+</table></div>
 
 <h2>The combination that actually works</h2>
 <p>Many developers end up running two layers: a narrowly-filtered webhook for
@@ -135,9 +152,6 @@ bar approach works better for it.</p>
 </ul>
 </nav>
 </article>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

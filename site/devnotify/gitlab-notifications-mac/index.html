@@ -1,18 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GitLab Notifications in Your Mac Menu Bar — DevNotify</title>
-<meta name="description" content="DevNotify puts your GitLab to-dos in your macOS menu bar. Unread count at a glance, one click to any merge request or issue. 100% local — your token stays on your Mac. $19 lifetime license, free 7-day trial.">
+<title>GitLab Notifications in Your Mac Menu Bar</title>
+<meta name="description" content="DevNotify puts your GitLab to-dos in your macOS menu bar. Unread count at a glance, one click to any merge request or issue.">
 <link rel="canonical" href="https://eucomplypro.com/devnotify/gitlab-notifications-mac/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="DevNotify">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/devnotify/gitlab-notifications-mac/">
 <meta property="og:title" content="GitLab Notifications in Your Mac Menu Bar — DevNotify">
 <meta property="og:description" content="See your GitLab to-dos at a glance in the macOS menu bar. One click to any MR or issue. 100% local. $19 lifetime license.">
-<meta property="og:url" content="https://eucomplypro.com/devnotify/gitlab-notifications-mac/">
+<meta property="og:image" content="https://eucomplypro.com/devnotify/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="/devnotify/og-image.png">
-<meta name="twitter:image" content="/devnotify/og-image.png">
+<meta name="twitter:title" content="GitLab Notifications in Your Mac Menu Bar — DevNotify">
+<meta name="twitter:description" content="See your GitLab to-dos at a glance in the macOS menu bar. One click to any MR or issue. 100% local. $19 lifetime license.">
+<meta name="twitter:image" content="https://eucomplypro.com/devnotify/og-image.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -27,8 +38,8 @@
 }
 </script>
 <style>:root{
-  --bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
-  --accent:#fc6d26;--green:#3fb950;--radius:12px;
+  --bg:var(--accent-dark);--panel:var(--accent-dark);--border:var(--ink);--text:var(--accent-soft);--muted:var(--muted);
+  --accent:var(--warn);--green:var(--ok);--radius:12px;
 }
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6}
 .wrap{max-width:900px;margin:0 auto;padding:0 20px}
@@ -38,20 +49,20 @@ a{color:var(--accent)}
 .hero h1 em{font-style:normal;color:var(--accent)}
 .hero p.sub{color:var(--muted);font-size:1.15rem;max-width:640px;margin:0 auto 28px}
 .btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;font-size:1rem}
-.btn-primary{background:var(--green);color:#04180a}
+.btn-primary{background:var(--green);color:var(--ok)}
 .btn-primary:hover{filter:brightness(1.08)}
 .btn-ghost{border:1px solid var(--border);color:var(--text)}
 .btn-ghost:hover{border-color:var(--muted)}
 .price-note{color:var(--muted);font-size:.95rem}
 .price-note strong{color:var(--text)}
-.mockup{max-width:360px;margin:36px auto 0;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.mockup{max-width:360px;margin:36px auto 0;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;box-shadow:0 20px 50px var(--soft)}
 .mockup .bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border)}
 .mockup .bar span{width:10px;height:10px;border-radius:50%;background:var(--border)}
 .mockup ul{list-style:none;padding:8px 0}
-.mockup li{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #21262d;font-size:.85rem}
+.mockup li{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--ink);font-size:.85rem}
 .mockup li:last-child{border-bottom:none}
 .mockup .repo{color:var(--muted)}
-.badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;background:#4a2c12;color:#f5b98a}
+.badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;var(--panel)-space:nowrap;background:var(--warn);color:var(--warn)}
 .features{padding:60px 0}
 .features h2,.how h2,.faq h2{text-align:center;font-size:1.8rem;margin-bottom:40px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
@@ -61,7 +72,7 @@ a{color:var(--accent)}
 .how{padding:60px 0;border-top:1px solid var(--border)}
 .steps{max-width:640px;margin:0 auto}
 .step{display:flex;gap:18px;margin-bottom:24px}
-.step .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--panel);font-weight:700;display:flex;align-items:center;justify-content:center}
 .step p{color:var(--muted)}
 .step strong{color:var(--text)}
 .faq{padding:60px 0;border-top:1px solid var(--border)}
@@ -69,26 +80,33 @@ a{color:var(--accent)}
 .faq summary{cursor:pointer;font-weight:600}
 .faq p{color:var(--muted);margin-top:10px;font-size:.95rem}
 @media(max-width:600px){.hero{padding:48px 0 30px}}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/devnotify/gitlab-notifications-mac/","url":"https://eucomplypro.com/devnotify/gitlab-notifications-mac/","name":"GitLab Notifications in Your Mac Menu Bar","description":"DevNotify puts your GitLab to-dos in your macOS menu bar. Unread count at a glance, one click to any merge request or issue.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this work with GitLab's to-dos or its email notifications?","acceptedAnswer":{"@type":"Answer","text":"DevNotify uses GitLab's official to-do list API — the same items you see under the bell icon on gitlab.com: review requests, assignments, mentions, pipeline failures on your MRs. It doesn't touch your email settings."}},{"@type":"Question","name":"Does my token leave my Mac?","acceptedAnswer":{"@type":"Answer","text":"No. It is stored locally by the app and used only to call gitlab.com directly from your machine."}},{"@type":"Question","name":"\"App can't be opened\" on first launch","acceptedAnswer":{"@type":"Answer","text":"The DMG isn't signed with an Apple Developer certificate yet. Right-click DevNotify.app → Open → Open. You only have to do this once."}},{"@type":"Question","name":"Can I use it with GitHub as well?","acceptedAnswer":{"@type":"Answer","text":"Yes — switch platform in Preferences and paste a GitHub token instead. One app covers both."}},{"@type":"Question","name":"What does the trial include?","acceptedAnswer":{"@type":"Answer","text":"Everything. Full functionality for 7 days. After that, a $19 lifetime license unlocks it permanently."}}]}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <section class="hero">
   <div class="wrap">
@@ -149,9 +167,6 @@ a{color:var(--accent)}
     <details><summary>What does the trial include?</summary><p>Everything. Full functionality for 7 days. After that, a $19 lifetime license unlocks it permanently.</p></details>
   </div>
 </section>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

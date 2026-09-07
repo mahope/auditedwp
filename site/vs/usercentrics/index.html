@@ -1,29 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUComply vs Usercentrics (2026): A Simpler, Cheaper Alternative</title>
+<title>EUComply vs Usercentrics (2026)</title>
 <meta name="description" content="Compare EUComply ($79/yr) vs Usercentrics ($34+/mo Pro). Free universal compliance scanner for any website — no setup marathons, no session auto-upgrades.">
 <link rel="canonical" href="https://eucomplypro.com/vs/usercentrics/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/vs/usercentrics/">
 <meta property="og:title" content="EUComply vs Usercentrics (2026): A Simpler, Cheaper Alternative">
 <meta property="og:description" content="Usercentrics is powerful but complex and priced from $34/month. EUComply offers a free universal compliance scanner and Pro monitoring at $79/year — works on every platform.">
-<meta property="og:url" content="https://eucomplypro.com/vs/usercentrics/">
-<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
+<meta name="twitter:title" content="EUComply vs Usercentrics (2026): A Simpler, Cheaper Alternative">
+<meta name="twitter:description" content="Usercentrics is powerful but complex and priced from $34/month. EUComply offers a free universal compliance scanner and Pro monitoring at $79/year — works on every platform.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);--accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok);--warn:var(--warn);--fail:var(--fail);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px}
 .hero{text-align:center;padding:48px 0 32px}
 h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;max-width:700px;margin:0 auto 12px}
 h1 em{font-style:normal;color:var(--accent)}
 .sub{font-size:15px;color:var(--muted);max-width:640px;margin:0 auto 24px}
-.alert{border:2px solid #d4a030;border-radius:10px;padding:16px 20px;background:#fff9e6;text-align:left;margin-bottom:28px;font-size:14px}
-.alert strong{color:#8a6d00}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+.alert{border:2px solid var(--warn);border-radius:10px;padding:16px 20px;background:var(--panel);text-align:left;margin-bottom:28px;font-size:14px}
+.alert strong{color:var(--warn)}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
 .btn:hover{background:var(--accent-dark)}
 .btn.green{background:var(--ok)}
-.btn.green:hover{background:#146336}
+.btn.green:hover{background:var(--ok)}
 section{padding:40px 0;border-top:1px solid var(--line)}
 h2{font-size:24px;letter-spacing:-.02em;margin-bottom:8px}
 .lede{color:var(--muted);max-width:620px;margin-bottom:24px;font-size:14px}
@@ -31,41 +44,47 @@ h2{font-size:24px;letter-spacing:-.02em;margin-bottom:8px}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--soft);font-weight:700}
-tr.eu td{background:#eef5ff}
+tr.eu td{background:var(--panel)}
 .check{color:var(--ok);font-weight:700}
 .cross{color:var(--fail)}
 .price{font-size:24px;font-weight:800}
 .price small{font-size:14px;font-weight:400;color:var(--muted)}
 .price-box{border:2px solid var(--line);border-radius:10px;padding:20px;text-align:center;flex:1}
-.price-box.highlight{border-color:var(--accent);background:#f8faff}
+.price-box.highlight{border-color:var(--accent);background:var(--panel)}
 .price-grid{display:flex;gap:16px;margin-top:16px}
 blockquote{border-left:3px solid var(--accent);padding:12px 16px;margin:16px 0;background:var(--soft);font-size:14px;color:var(--muted);border-radius:0 6px 6px 0}
 blockquote cite{display:block;margin-top:4px;font-style:normal;font-weight:600;color:var(--ink);font-size:13px}
-.verdict{border:2px solid var(--ok);border-radius:10px;padding:20px;background:#eef9f2;margin-top:20px}
+.verdict{border:2px solid var(--ok);border-radius:10px;padding:20px;background:var(--panel);margin-top:20px}
 .verdict h3{color:var(--ok)}
 @media(max-width:700px){h1{font-size:24px}
 .price-grid{flex-direction:column}}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "EUComply vs Usercentrics (2026): A Simpler, Cheaper Alternative", "description": "Usercentrics is powerful but complex and priced from $34/month. EUComply offers a free universal compliance scanner and Pro monitoring at $79/year — works on every platform.", "mainEntityOfPage": "/vs/usercentrics/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/vs/usercentrics/","url":"https://eucomplypro.com/vs/usercentrics/","name":"EUComply vs Usercentrics (2026)","description":"Compare EUComply ($79/yr) vs Usercentrics ($34+/mo Pro). Free universal compliance scanner for any website — no setup marathons, no session auto-upgrades.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="wrap hero">
   <h1>EUComply vs Usercentrics (2026): <em>A Simpler, Cheaper Alternative</em></h1>
@@ -82,7 +101,7 @@ blockquote cite{display:block;margin-top:4px;font-style:normal;font-weight:600;c
     <h2>Feature Comparison</h2>
     <p class="lede">How EUComply and Usercentrics compare across the features that matter for EU compliance.</p>
     <div class="compare-wrap">
-    <table>
+    <div class="tbl"><table>
       <tr><th>Feature</th><th>EUComply</th><th>Usercentrics Web CMP</th></tr>
       <tr class="eu"><td>Pricing</td><td><strong>Free</strong> — unlimited scans<br><strong>Pro $79/yr</strong> (~$6.58/mo)</td><td>Free tier (limited)<br>Pro ~$34/mo · Business ~$56/mo<br>Billed monthly or annually</td></tr>
       <tr class="eu"><td>GDPR compliance scan</td><td class="check">HTTPS, cookies, forms, legal pages, headers</td><td class="check">Deep cookie/vendor scanning</td></tr>
@@ -95,7 +114,7 @@ blockquote cite{display:block;margin-top:4px;font-style:normal;font-weight:600;c
       <tr class="eu"><td>Cookie consent banner</td><td class="cross">Detects existing banners — does not provide one</td><td class="check">Full CMP with banner + consent records</td></tr>
       <tr class="eu"><td>API / CLI</td><td class="check">Free API + CLI tool</td><td class="cross">Not part of self-serve plans</td></tr>
       <tr class="eu"><td>Setup effort</td><td class="check">Paste a URL — results in seconds, no account needed</td><td class="cross">Setup difficulty is the top-cited G2 con</td></tr>
-    </table>
+    </table></div>
     </div>
   </div>
 </section>
@@ -166,9 +185,6 @@ blockquote cite{display:block;margin-top:4px;font-style:normal;font-weight:600;c
     <p style="text-align:center;margin-top:16px;font-size:13.5px;color:var(--muted)">More comparisons: <a href="/vs/cookiebot/">Cookiebot</a> · <a href="/vs/onetrust/">OneTrust</a> · <a href="/vs/termly/">Termly</a> · <a href="/vs/iubenda/">iubenda</a> · <a href="/vs/enzuzo/">Enzuzo</a> · <a href="/vs/osano/">Osano</a> · <a href="/vs/complianz/">Complianz</a></p>
   </div>
 </section>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

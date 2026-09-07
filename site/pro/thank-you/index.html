@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>You're in — EUComply Pro | Setup Guide</title>
 <meta name="description" content="Thank you for purchasing EUComply Pro. Here is how to set up your account and start monitoring your website in 2 minutes.">
+<link rel="canonical" href="https://eucomplypro.com/pro/thank-you/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
 <meta name="robots" content="noindex">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44}
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);
+        --accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:680px;margin:0 auto;padding:0 20px}
 .hero{text-align:center;padding:56px 0 36px}
@@ -18,39 +23,45 @@ h1{font-size:32px;line-height:1.2;letter-spacing:-.025em;max-width:600px;margin:
 .steps{list-style:none;counter-reset:step;margin:28px 0}
 .steps li{counter-increment:step;display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--soft);align-items:flex-start}
 .steps li:last-child{border:0}
-.step-num{background:var(--accent);color:#fff;width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.step-num{background:var(--accent);color:var(--panel);width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
 .steps h3{font-size:16px;margin-bottom:4px}
 .steps p{font-size:14px;color:var(--muted)}
 .steps code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:13px}
 .card{border:1px solid var(--line);border-radius:10px;padding:24px;background:var(--soft);margin:16px 0}
 .card h3{font-size:16px;margin-bottom:8px}
 .card p{font-size:14px;color:var(--muted)}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
 .btn:hover{background:var(--accent-dark)}
 .btn.green{background:var(--ok)}
-.btn.green:hover{background:#146336}
+.btn.green:hover{background:var(--ok)}
 @media(max-width:600px){h1{font-size:26px}
 .steps li{flex-direction:column;gap:8px}}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/pro/thank-you/","url":"https://eucomplypro.com/pro/thank-you/","name":"You're in — EUComply Pro | Setup Guide","description":"Thank you for purchasing EUComply Pro. Here is how to set up your account and start monitoring your website in 2 minutes.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="wrap hero">
   <div class="check"></div>
@@ -93,7 +104,7 @@ h1{font-size:32px;line-height:1.2;letter-spacing:-.025em;max-width:600px;margin:
   <p style="margin-top:12px"><a class="btn" href="/pro/dashboard/">Open the dashboard →</a></p>
 </div>
 
-<div class="card" style="background:#fff;border-color:var(--line)">
+<div class="card" style="background:var(--panel);border-color:var(--line)">
   <h3>Need help?</h3>
   <p>Start with the <a href="/scan/">free scanner</a> for instant checks. Visit the <a href="/blog/">guides section</a> for step-by-step GDPR, NIS2, and EAA walkthroughs. For anything else, use the <a href="/privacy/">contact form</a> — we reply within 24 hours.</p>
 </div>
@@ -103,9 +114,6 @@ h1{font-size:32px;line-height:1.2;letter-spacing:-.025em;max-width:600px;margin:
 </div>
 
 </div>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

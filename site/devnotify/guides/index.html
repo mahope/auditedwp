@@ -1,16 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>All GitHub Notification Guides — Fixes, Setup &amp; Noise Control | DevNotify</title>
-<meta name="description" content="Every guide we've written about GitHub notifications: fix missing alerts, route Slack/Discord/Teams, tame the noise on macOS, Windows, Linux, iPhone and Android. Free, no signup.">
+<title>All GitHub Notification Guides</title>
+<meta name="description" content="Every guide we've written about GitHub notifications: fix missing alerts, route Slack/Discord/Teams, tame the noise on macOS, Windows, Linux, iPhone and.">
 <link rel="canonical" href="https://eucomplypro.com/devnotify/guides/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="DevNotify">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/">
 <meta property="og:title" content="All GitHub Notification Guides | DevNotify">
 <meta property="og:description" content="Fixes, routing and noise-control guides for GitHub notifications on every platform.">
-<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/">
-<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="All GitHub Notification Guides | DevNotify">
+<meta name="twitter:description" content="Fixes, routing and noise-control guides for GitHub notifications on every platform.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--bg:var(--accent-dark);--panel:var(--accent-dark);--border:var(--ink);--text:var(--accent-soft);--muted:var(--muted);--accent:var(--accent);--green:var(--ok);--radius:12px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6}
 .wrap{max-width:900px;margin:0 auto;padding:0 20px}
 a{color:var(--accent)}
@@ -18,31 +32,38 @@ h1{font-size:clamp(1.7rem,4.5vw,2.4rem);margin:44px 0 12px;line-height:1.2}
 .sub{color:var(--muted);font-size:1.05rem;margin-bottom:36px}
 h2{font-size:1.3rem;margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 ul.g{list-style:none}
-ul.g li{padding:9px 0;border-bottom:1px solid #21262d}
+ul.g li{padding:9px 0;border-bottom:1px solid var(--ink)}
 ul.g a{text-decoration:none;font-size:.98rem}
 ul.g a:hover{text-decoration:underline}
 .count{color:var(--muted);font-size:.85rem;font-weight:400}
-.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:10px}</style>
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:var(--ok);margin-top:10px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "All GitHub Notification Guides — Fixes, Setup & Noise Control | DevNotify", "description": "Fixes, routing and noise-control guides for GitHub notifications on every platform.", "mainEntityOfPage": "/devnotify/guides/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/devnotify/guides/","url":"https://eucomplypro.com/devnotify/guides/","name":"All GitHub Notification Guides","description":"Every guide we've written about GitHub notifications: fix missing alerts, route Slack/Discord/Teams, tame the noise on macOS, Windows, Linux, iPhone and.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
 
 <main class="wrap">
 <h1>GitHub notification guides</h1>
@@ -108,8 +129,6 @@ ul.g a:hover{text-decoration:underline}
 <p style="color:var(--muted);font-size:.85rem;margin-top:10px">$19 lifetime license after a free 7-day trial · macOS, Windows, Linux</p>
 </div>
 </main>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

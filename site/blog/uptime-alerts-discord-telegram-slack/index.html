@@ -1,18 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide (2026)</title>
-<meta name="description" content="Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop tool beats the bash script.">
+<title>Uptime Alerts to Discord, Telegram or Slack</title>
+<meta name="description" content="Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop.">
 <link rel="canonical" href="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
 <meta property="og:title" content="Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide">
 <meta property="og:description" content="Webhook setups for Discord, Telegram and Slack plus a free self-hosted checker — get downtime alerts into your team chat without a SaaS subscription.">
-<meta property="og:url" content="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
-<meta property="og:type" content="article">
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--accent-dark:#1a4f9e}
+<meta name="twitter:title" content="Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide">
+<meta name="twitter:description" content="Webhook setups for Discord, Telegram and Slack plus a free self-hosted checker — get downtime alerts into your team chat without a SaaS subscription.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);--accent:var(--accent);--accent-dark:var(--accent)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:16px}
 .wrap{max-width:720px;margin:0 auto;padding:0 20px}
 article{padding:40px 0 60px}
@@ -24,16 +36,16 @@ p{margin-bottom:16px}
 ul,ol{margin:0 0 16px 24px}
 li{margin-bottom:4px}
 code{background:var(--soft);padding:2px 6px;border-radius:4px;font-size:14px}
-pre{background:#1e293b;color:#e2e8f0;padding:16px 20px;border-radius:8px;font-size:14px;overflow-x:auto;margin:0 0 16px;line-height:1.5}
+pre{background:var(--accent-dark);color:var(--accent-soft);padding:16px 20px;border-radius:8px;font-size:14px;overflow-x:auto;margin:0 0 16px;line-height:1.5}
 pre code{background:none;padding:0;color:inherit}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;transition:background .15s}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line);text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block;transition:border-color .15s;margin-top:4px}
 .btn.ghost:hover{border-color:var(--accent)}
 table{width:100%;border-collapse:collapse;margin:20px 0}
 td,th{border:1px solid var(--line);padding:10px 14px;text-align:left;font-size:14px}
 th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
-.highlight{background:#fef9e7;border-left:4px solid #f0b400;padding:12px 16px;border-radius:4px;margin-bottom:16px}</style>
+.highlight{background:var(--panel);border-left:4px solid var(--warn);padding:12px 16px;border-radius:4px;margin-bottom:16px}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -47,25 +59,32 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
   "publisher": {"@type": "Organization", "name": "DeskUptime"}
 }
 </script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","url":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","name":"Uptime Alerts to Discord, Telegram or Slack","description":"Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/" aria-current="page">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
 
 <div class="wrap">
 <article>
@@ -115,13 +134,13 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
 <h2 id="glue">The missing piece: something that detects the outage</h2>
 <p>The webhooks above only send when something calls them. You need a checker on a schedule. Your options:</p>
 
-<table>
+<div class="tbl"><table>
 <tr><th>Option</th><th>Cost</th><th>Effort</th><th>Catch</th></tr>
 <tr><td>SaaS free tier (UptimeRobot etc.)</td><td>$0</td><td>5 min</td><td>5-min check interval, limited monitors, upsells</td></tr>
 <tr><td>cron + curl on your own machine/server</td><td>$0</td><td>20 min</td><td>You maintain the loop and state yourself</td></tr>
 <tr><td>GitHub Actions cron</td><td>$0</td><td>15 min</td><td>Cron is best-effort, can drift minutes</td></tr>
 <tr><td>Desktop app (DeskUptime)</td><td>$19 one-time</td><td>2 min</td><td>Your machine must be awake</td></tr>
-</table>
+</table></div>
 
 <p>A minimal self-hosted loop looks like this:</p>
 <pre><code># check.sh — run from cron every 5 minutes
@@ -164,8 +183,6 @@ done</code></pre>
 </article>
 
 </div>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

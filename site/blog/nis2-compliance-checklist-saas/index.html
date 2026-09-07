@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply</title>
-<meta name="description" content="A practical NIS2 compliance checklist for SaaS companies: find out if you're in scope, what Art. 21 requires, which security measures to implement first, and how to document compliance for enterprise customers.">
+<title>NIS2 Compliance Checklist for SaaS Companies (2026)</title>
+<meta name="description" content="A practical NIS2 compliance checklist for SaaS companies: find out if you're in scope, what Art.">
 <link rel="canonical" href="https://eucomplypro.com/blog/nis2-compliance-checklist-saas/">
-  
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/blog/nis2-compliance-checklist-saas/">
 <meta property="og:title" content="NIS2 Compliance Checklist for SaaS Companies (2026)">
 <meta property="og:description" content="Are you in NIS2 scope? A practical checklist for SaaS companies: Art. 21 measures, supplier security, incident handling, and documentation — with a free scanner to check your own site.">
-<meta property="og:url" content="https://eucomplypro.com/blog/nis2-compliance-checklist-saas/">
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;--accent:#2868d0;--ok:#1a7a44;}
+<meta name="twitter:title" content="NIS2 Compliance Checklist for SaaS Companies (2026)">
+<meta name="twitter:description" content="Are you in NIS2 scope? A practical checklist for SaaS companies: Art. 21 measures, supplier security, incident handling, and documentation — with a free scanner to check your own site.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);--accent:var(--accent);--ok:var(--ok);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
 .wrap{max-width:720px;margin:0 auto;padding:0 20px}
 .meta{color:var(--muted);font-size:13px;margin:32px 0 8px}
@@ -24,39 +37,45 @@ ul,ol{padding-left:24px;margin-bottom:16px}
 li{margin-bottom:6px}
 .callout{background:var(--soft);border-left:4px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0}
 .callout p{margin:0;font-size:14px}
-.callout.warn{border-left-color:#b85a0a}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
-.btn:hover{background:#1a4f9e}
+.callout.warn{border-left-color:var(--warn)}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px}
+.btn:hover{background:var(--accent)}
 table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
 th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}
 th{background:var(--soft);font-weight:600}
 @media(max-width:700px){h1{font-size:24px}}
-.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
-.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a{color:var(--accent);text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply", "description": "Are you in NIS2 scope? A practical checklist for SaaS companies: Art. 21 measures, supplier security, incident handling, and documentation — with a free scanner to check your own site.", "mainEntityOfPage": "/blog/nis2-compliance-checklist-saas/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/nis2-compliance-checklist-saas/","url":"https://eucomplypro.com/blog/nis2-compliance-checklist-saas/","name":"NIS2 Compliance Checklist for SaaS Companies (2026)","description":"A practical NIS2 compliance checklist for SaaS companies: find out if you're in scope, what Art.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/" aria-current="page">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <article class="wrap">
   <p class="meta">Aug 23, 2026 · 9 min read · NIS2</p>
@@ -79,7 +98,7 @@ th{background:var(--soft);font-weight:600}
   <h2>Step 2: The ten measures of Art. 21 — mapped to SaaS practice</h2>
   <p>Article 21 lists the risk-management measures member states must require. Here is what each means for a typical SaaS company:</p>
 
-  <table>
+  <div class="tbl"><table>
     <tr><th>Art. 21 requirement</th><th>What it looks like in a SaaS company</th></tr>
     <tr><td>Risk analysis &amp; information system security policies</td><td>A written security policy, a threat model for your product, documented acceptance of major risks</td></tr>
     <tr><td>Incident handling</td><td>A documented process: detect → triage → contain → notify (see Step 4) → post-mortem. Test it once a year.</td></tr>
@@ -91,7 +110,7 @@ th{background:var(--soft);font-weight:600}
     <tr><td>Cryptography / encryption policies</td><td>TLS everywhere, encryption at rest for customer data, key management that is actually written down</td></tr>
     <tr><td>HR security, access control, asset management</td><td>Least-privilege access, offboarding checklists, an inventory of systems holding customer data</td></tr>
     <tr><td>MFA / secured communications</td><td>Multi-factor authentication for admin access and internal systems (explicitly required)</td></tr>
-  </table>
+  </table></div>
 
   <h3>Where to start if you can only do three things this quarter</h3>
   <ol>
@@ -135,17 +154,14 @@ th{background:var(--soft);font-weight:600}
   </ul>
 <p>How does EUComply compare with the established tools? See <a href="/pro/vs-osano/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
 
-<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
+<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel)">
   <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
-  <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
-  <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
+  <p style="margin:8px 0;font-size:14px;color:var(--muted)">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
+  <p style="margin:0"><a href="/book/" style="color:var(--accent);font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
 
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/nis2-board-liability/">NIS2 Board & Director Liability: What Executives Must Know — EUComply</a></li><li><a href="/blog/nis2-vendor-supply-chain-compliance/">NIS2 Vendor & Supply Chain Compliance Guide 2026 — EUComply</a></li><li><a href="/blog/dora-compliance-guide/">DORA Compliance: What Financial Websites Need to Know (2026 Practical Guide)</a></li><li><a href="/blog/hsts-preload-guide/">HSTS Preload Guide 2026: How to Enable HTTP Strict Transport Security Correctly</a></li></ul></nav>
 </article>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

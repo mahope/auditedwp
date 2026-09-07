@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Transmute — Desktop Data Transformer</title>
 <meta name="description" content="Transform JSON, CSV, YAML, and XML data on your desktop. No uploads. No subscriptions. One-time $19.">
-<meta name="keywords" content="json to csv, csv to json, data transformer, yaml converter, desktop app, developer tools">
+<link rel="canonical" href="https://eucomplypro.com/transmute/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Transmute">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/transmute/">
 <meta property="og:title" content="Transmute — Desktop Data Transformer">
 <meta property="og:description" content="Transform JSON, CSV, YAML, and XML data on your desktop. No uploads. No subscriptions.">
-<meta property="og:url" content="https://eucomplypro.com/transmute/">
-<meta property="og:type" content="website">
-<link rel="canonical" href="https://eucomplypro.com/transmute/">
+<meta property="og:image" content="https://eucomplypro.com/images/og/transmute.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Transmute — Desktop Data Transformer">
+<meta name="twitter:description" content="Transform JSON, CSV, YAML, and XML data on your desktop. No uploads. No subscriptions.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/transmute.png">
+<meta name="keywords" content="json to csv, csv to json, data transformer, yaml converter, desktop app, developer tools">
 <style>:root{
-  --bg: #0f0f13;
-  --surface: #18181d;
-  --border: #2a2a32;
-  --text: #e4e4e7;
-  --dim: #8a8a96;
-  --accent: #6366f1;
-  --accent-hover: #818cf8;
-  --green: #22c55e;
-  --code-bg: #1e1e24;
+  --bg: var(--ink);
+  --surface: var(--ink);
+  --border: var(--ink);
+  --text: var(--soft);
+  --dim: var(--muted);
+  --accent: var(--accent);
+  --accent-hover: var(--accent);
+  --green: var(--ok);
+  --code-bg: var(--ink);
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
@@ -36,7 +49,7 @@ body{font-family: var(--font);background: var(--bg);color: var(--text);line-heig
 /* CTA */
 .cta{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
 .btn{ display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
-.btn-primary{ background: var(--accent); color: white; }
+.btn-primary{ background: var(--accent); color: var(--panel); }
 .btn-primary:hover{ background: var(--accent-hover); transform: translateY(-1px); }
 .btn-secondary{ background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 .btn-secondary:hover{ border-color: var(--accent); }
@@ -53,13 +66,13 @@ body{font-family: var(--font);background: var(--bg);color: var(--text);line-heig
 .demo-box textarea, .demo-box select{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-family: var(--mono); font-size: 0.85rem; resize: vertical; }
 .demo-box textarea{ min-height: 160px; }
 .demo-box select{ cursor: pointer; }
-.pipe-preview{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 0.8rem; color: var(--accent); overflow-x: auto; white-space: pre; margin-bottom: 12px; min-height: 40px; }
+.pipe-preview{ background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 0.8rem; color: var(--accent); overflow-x: auto; var(--panel)-space: pre; margin-bottom: 12px; min-height: 40px; }
 /* Features */
 .features{ padding: 0 0 60px; }
 .features h2{ text-align: center; font-size: 1.8rem; margin-bottom: 40px; }
 .feature-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
 .feature-card{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-.feature-card .icon{ width: 40px; height: 40px; border-radius: 8px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
+.feature-card .icon{ width: 40px; height: 40px; border-radius: 8px; background: var(--accent); color: var(--panel); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
 .feature-card h3{ font-size: 1rem; margin-bottom: 8px; }
 .feature-card p{ font-size: 0.9rem; color: var(--dim); }
 /* CLI examples */
@@ -87,26 +100,33 @@ body{font-family: var(--font);background: var(--bg);color: var(--text);line-heig
 /* Footer */
 .footer{ text-align: center; padding: 40px 0; border-top: 1px solid var(--border); color: var(--dim); font-size: 0.85rem; }
 .footer a{ color: var(--text); }</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/transmute/","url":"https://eucomplypro.com/transmute/","name":"Transmute — Desktop Data Transformer","description":"Transform JSON, CSV, YAML, and XML data on your desktop. No uploads. No subscriptions. One-time $19.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is this different from web-based tools like JSON Formatter?","acceptedAnswer":{"@type":"Answer","text":"Online tools require you to paste your data into a website — your data travels over the network and sits on someone else's server. Transmute runs entirely on your machine. Nothing leaves your computer. For sensitive data (customer info, API keys, internal reports), that matters."}},{"@type":"Question","name":"Is the CLI really free forever?","acceptedAnswer":{"@type":"Answer","text":"Yes. The CLI ( npm i -g @mahope/transmute ) is free and open source. No limits, no trial, no upgrade nag. The desktop app adds an interactive GUI, pipeline builder, history, and batch processing — but the CLI covers everything for daily use."}},{"@type":"Question","name":"What platforms do you support?","acceptedAnswer":{"@type":"Answer","text":"The CLI works anywhere Node.js runs (macOS, Windows, Linux). The desktop app is built with Tauri and ships native installers for all three platforms."}},{"@type":"Question","name":"Can I use this in CI/CD or scripts?","acceptedAnswer":{"@type":"Answer","text":"Yes. The CLI is designed for piping: `cat data.json | transmute --pipe '...' --output csv`. Works in GitHub Actions, cron jobs, shell scripts, anything with Node.js."}},{"@type":"Question","name":"When will the desktop app and payment be available?","acceptedAnswer":{"@type":"Answer","text":"Payment processing is pending our payment provider setup. The CLI is available immediately. We'll announce when checkout is live."}}]}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <section class="hero">
   <div class="container">
@@ -172,7 +192,7 @@ body{font-family: var(--font);background: var(--bg);color: var(--text);line-heig
       <button class="btn btn-secondary quick-btn" style="padding:4px 12px;font-size:0.8rem;" data-pipe='[{"op":"count"}]'>Count rows</button>
       <button class="btn btn-secondary quick-btn" style="padding:4px 12px;font-size:0.8rem;" data-pipe='[{"op":"head","n":3}]'>First 3</button>
     </div>
-    <div id="transformError" style="color:#ef4444;font-size:0.85rem;margin-top:8px;display:none;"></div>
+    <div id="transformError" style="color:var(--fail);font-size:0.85rem;margin-top:8px;display:none;"></div>
   </div>
 </section>
 
@@ -526,9 +546,6 @@ body{font-family: var(--font);background: var(--bg);color: var(--text);line-heig
   pipeEl.addEventListener('input', debounceRun);
 })();
 </script>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

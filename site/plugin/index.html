@@ -1,21 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WordPress Plugin — EUComply</title>
+<title>WordPress Plugin</title>
 <meta name="description" content="The EUComply WordPress plugin: server-side compliance checks from your admin dashboard. Free download, optional Pro upgrade.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="canonical" href="https://eucomplypro.com/plugin/">
-<style>:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2ea44f}
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/plugin/">
+<meta property="og:title" content="WordPress Plugin — EUComply">
+<meta property="og:description" content="The EUComply WordPress plugin: server-side compliance checks from your admin dashboard. Free download, optional Pro upgrade.">
+<meta property="og:image" content="https://eucomplypro.com/images/og/plugin.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WordPress Plugin — EUComply">
+<meta name="twitter:description" content="The EUComply WordPress plugin: server-side compliance checks from your admin dashboard. Free download, optional Pro upgrade.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/plugin.png">
+<style>:root{--bg:var(--accent-dark);--card:var(--accent-dark);--line:var(--ink);--text:var(--accent-soft);--muted:var(--muted);--accent:var(--ok)}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
 .wrap{max-width:720px;margin:0 auto}
-a{color:#58a6ff}
+a{color:var(--accent)}
 h1{font-size:28px;margin-bottom:8px}
-h2{font-size:20px;margin:28px 0 10px;color:#79c0ff}
+h2{font-size:20px;margin:28px 0 10px;color:var(--accent)}
 p,li{color:var(--muted);margin-bottom:10px}
 code{background:var(--card);border:1px solid var(--line);padding:2px 6px;border-radius:4px;font-size:14px}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;margin:14px 0}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;margin:14px 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px;margin-top:20px}
 ul{padding-left:22px}
 .back{font-size:14px}
@@ -36,25 +53,32 @@ ul{padding-left:22px}
   }
 }
 </script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/plugin/","url":"https://eucomplypro.com/plugin/","name":"WordPress Plugin","description":"The EUComply WordPress plugin: server-side compliance checks from your admin dashboard. Free download, optional Pro upgrade.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
 
 <div class="wrap">
   <a class="back" href="/">← Back to EUComply</a>
@@ -86,8 +110,6 @@ ul{padding-left:22px}
     <p>The plugin is open source under GPL v2. It runs entirely on your own server; scans never leave your installation unless you generate a Pro report. See our <a href="/privacy/">privacy policy</a>.</p>
   </div>
 </div>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

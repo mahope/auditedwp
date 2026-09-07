@@ -1,31 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>eucomply-scanner — EU Compliance Scanner for the Command Line</title>
-<meta name="description" content="Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack. Free CLI, npm install eucomply-scanner.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+<title>eucomply-scanner — EU Compliance Scanner for the Command</title>
+<meta name="description" content="Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack.">
 <link rel="canonical" href="https://eucomplypro.com/cli/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/cli/">
 <meta property="og:title" content="eucomply-scanner — Compliance scanning in your terminal">
-<meta property="og:description" content="One command, nine compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA & EAA technical checks.">
+<meta property="og:description" content="One command, nine compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA &amp; EAA technical checks.">
+<meta property="og:image" content="https://eucomplypro.com/images/og/cli.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;}
+<meta name="twitter:title" content="eucomply-scanner — Compliance scanning in your terminal">
+<meta name="twitter:description" content="One command, nine compliance checks, any CMS. Free open-source CLI for GDPR, NIS2, DORA &amp; EAA technical checks.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/cli.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);
+      --accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px}
 .hero{text-align:center;padding:48px 0 24px}
 h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;max-width:720px;margin:0 auto 12px}
 h1 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-size:.85em;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:2px 10px}
 .sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 auto 28px}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px}
 .btn:hover{background:var(--accent-dark)}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
 section{padding:44px 0;border-top:1px solid var(--line)}
 h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
 .lede{color:var(--muted);max-width:640px;margin-bottom:24px;font-size:15px}
-pre{background:#0d1522;color:#dbe6f5;border-radius:10px;padding:20px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;overflow-x:auto;margin:16px 0}
-pre .c{color:#7d93b3}
+pre{background:var(--accent-dark);color:var(--accent-soft);border-radius:10px;padding:20px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;overflow-x:auto;margin:16px 0}
+pre .c{color:var(--accent)}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
 .card h3{font-size:16px;margin-bottom:6px}
@@ -34,8 +48,8 @@ pre .c{color:#7d93b3}
 .checks{list-style:none;margin:14px 0}
 .checks li{padding:5px 0 5px 28px;position:relative;font-size:15px}
 .checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-.badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
-.probox{border:2px solid var(--accent);border-radius:12px;padding:26px;text-align:center;background:#f8faff;margin-top:8px}
+.badge{display:inline-block;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+.probox{border:2px solid var(--accent);border-radius:12px;padding:26px;text-align:center;background:var(--panel);margin-top:8px}
 @media(max-width:700px){h1{font-size:25px}
 .grid3{grid-template-columns:1fr}}</style>
 <script type="application/ld+json">
@@ -54,26 +68,32 @@ pre .c{color:#7d93b3}
   }
 }
 </script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/cli/","url":"https://eucomplypro.com/cli/","name":"eucomply-scanner — EU Compliance Scanner for the Command","description":"Scan any website for GDPR, NIS2, DORA and EAA compliance gaps from your terminal. Works on WordPress, Shopify, Webflow, Next.js — any stack.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="wrap hero">
   <div class="badge"> Open source · MIT</div>
@@ -167,9 +187,6 @@ node bin/eucomply-scan.js https://yourdomain.com</pre>
     </div>
   </div>
 </section>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

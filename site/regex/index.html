@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Regex Tester — Test & Debug Regular Expressions Online (Free)</title>
-<meta name="description" content="Free online regex tester. Test regular expressions with live highlighting, match groups, and a built-in cheat sheet. 100% client-side, no data leaves your browser.">
-<meta property="og:title" content="Regex Tester — Test & Debug Regular Expressions Online">
-<meta property="og:description" content="Live regex testing with full match highlighting, captures, and substitution. Free and private — everything runs in your browser.">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Regex Tester — Free Online Tool">
-<meta name="twitter:description" content="Test regular expressions live in your browser. Private, no server, no tracking.">
+<title>Regex Tester — Test &amp; Debug Regular Expressions Online</title>
+<meta name="description" content="Free online regex tester. Test regular expressions with live highlighting, match groups, and a built-in cheat sheet.">
 <link rel="canonical" href="https://eucomplypro.com/regex/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>.*</text></svg>">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/regex/">
+<meta property="og:title" content="Regex Tester — Test &amp; Debug Regular Expressions Online">
+<meta property="og:description" content="Live regex testing with full match highlighting, captures, and substitution. Free and private — everything runs in your browser.">
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Regex Tester — Test &amp; Debug Regular Expressions Online">
+<meta name="twitter:description" content="Live regex testing with full match highlighting, captures, and substitution. Free and private — everything runs in your browser.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Regex Tester","url":"https://eucomplypro.com/regex/","description":"Test regular expressions live in your browser with highlighting, capture groups, and substitution support.","applicationCategory":"DeveloperApplication","operatingSystem":"All","browserRequirements":"Requires JavaScript"}
 </script>
-<style>:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--match-bg:#ffd43b55;--match-bg-active:#ffd43baa;--group-bg:#e7f5ff;--code-bg:#e9ecef;--radius:8px;--font:sans-serif;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px rgba(0,0,0,.08)}
+<style>:root{--bg:var(--panel);--surface:var(--panel);--ink:var(--accent-dark);--muted:var(--muted);--line:var(--soft);--accent:var(--accent);--accent-hover:var(--accent);--match-bg:var(--line);--match-bg-active:var(--warn);--group-bg:var(--panel);--code-bg:var(--soft);--radius:8px;--font:sans-serif;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px var(--soft)}
 *::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,var(--font);background:var(--bg);color:var(--ink);line-height:1.6}
 .wrap{max-width:960px;margin:0 auto;padding:0 16px}
@@ -32,7 +43,7 @@ h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
 @media(min-width:640px){.tool-grid{grid-template-columns:1fr 1fr}}
 label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
 textarea,input[type="text"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);font-family:var(--mono);font-size:13px;background:var(--bg);color:var(--ink);transition:border .15s;outline:none;resize:vertical;min-height:40px}
-textarea:focus,input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px #4361ee33}
+textarea:focus,input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--line)}
 textarea{min-height:100px;tab-size:2}
 .input-group{position:relative}
 .input-group input{padding-right:80px}
@@ -40,12 +51,12 @@ textarea{min-height:100px;tab-size:2}
 .flags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
 .flags label{cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--bg);padding:4px 10px;border-radius:6px;border:1px solid var(--line);transition:all .15s;user-select:none}
 .flags input[type="checkbox"]{accent-color:var(--accent);width:14px;height:14px}
-.flags label:has(input:checked){background:var(--accent);color:#fff;border-color:var(--accent)}
+.flags label:has(input:checked){background:var(--accent);color:var(--panel);border-color:var(--accent)}
 .flag-desc{font-size:11px;color:var(--muted);margin-left:12px;}
 /* Mode switch */
 .mode-btns{display:flex;gap:8px;margin-top:8px}
 .mode-btn{padding:6px 14px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:inherit}
-.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode-btn.active{background:var(--accent);color:var(--panel);border-color:var(--accent)}
 .mode-btn:not(.active):hover{background:var(--line)}
 /* Results */
 .results{margin-top:20px}
@@ -53,7 +64,7 @@ textarea{min-height:100px;tab-size:2}
 .result-header h3{font-size:14px;font-weight:600}
 .match-count{font-size:13px;color:var(--muted)}
 /* Test string with highlighted matches */
-.test-output{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:12px;font-family:var(--mono);font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-all;min-height:60px;overflow-x:auto;tab-size:2}
+.test-output{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:12px;font-family:var(--mono);font-size:13px;line-height:1.8;var(--panel)-space:pre-wrap;word-break:break-all;min-height:60px;overflow-x:auto;tab-size:2}
 .test-output mark{background:var(--match-bg);border-radius:2px;padding:1px 0;transition:background .2s;cursor:pointer}
 .test-output mark:hover,.test-output mark.active{background:var(--match-bg-active)}
 .test-output .match-highlight{background:var(--match-bg);border-radius:2px;padding:1px 0}
@@ -67,9 +78,9 @@ textarea{min-height:100px;tab-size:2}
 .match-groups .group-num{color:var(--accent);font-weight:600}
 .match-groups .group-empty{color:var(--muted)}
 /* Substitution output */
-.sub-output{background:var(--code-bg);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:13px;white-space:pre-wrap;word-break:break-all;min-height:40px;margin-top:8px}
+.sub-output{background:var(--code-bg);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:13px;var(--panel)-space:pre-wrap;word-break:break-all;min-height:40px;margin-top:8px}
 /* Error */
-.error{color:#d92d2d;font-size:13px;font-family:var(--mono);padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);margin-top:8px;display:none}
+.error{color:var(--fail);font-size:13px;font-family:var(--mono);padding:8px 12px;background:var(--panel);border:1px solid var(--fail-soft);border-radius:var(--radius);margin-top:8px;display:none}
 .error.show{display:block}
 /* Cheat sheet */
 .cheatsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:24px;display:none}
@@ -82,7 +93,7 @@ textarea{min-height:100px;tab-size:2}
 /* Footer */
 footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:var(--muted);font-size:12px;margin-top:48px}
 /* Pro upsell — visible with pricing, checkout placeholder ready */
-.pro-upsell{background:linear-gradient(135deg,#4361ee08,#4361ee18);border:1px dashed var(--accent);border-radius:var(--radius);padding:20px;margin-top:24px;text-align:center}
+.pro-upsell{background:linear-gradient(135deg,var(--line),var(--line));border:1px dashed var(--accent);border-radius:var(--radius);padding:20px;margin-top:24px;text-align:center}
 .pro-upsell h3{font-size:18px;color:var(--ink);margin-bottom:6px}
 .pro-upsell .price{font-size:28px;font-weight:700;color:var(--accent);margin:8px 0}
 .pro-upsell .price span{font-size:13px;color:var(--muted);font-weight:400}
@@ -90,37 +101,43 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .pro-upsell .features{display:inline-block;text-align:left;margin:12px auto;font-size:13px;line-height:2}
 .pro-upsell .features li{list-style:none;color:var(--ink)}
 .pro-upsell .features li::before{content:"✓ ";color:var(--accent);font-weight:700}
-.pro-upsell .checkout-btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 32px;border-radius:var(--radius);text-decoration:none;font-size:15px;font-weight:500;transition:background .15s;border:none;cursor:pointer}
+.pro-upsell .checkout-btn{display:inline-block;background:var(--accent);color:var(--panel);padding:12px 32px;border-radius:var(--radius);text-decoration:none;font-size:15px;font-weight:500;transition:background .15s;border:none;cursor:pointer}
 .pro-upsell .checkout-btn:hover{background:var(--accent-hover)}
 .pro-upsell .checkout-btn.disabled{opacity:.5;cursor:not-allowed;background:var(--muted);pointer-events:none}
 .pro-upsell .status-msg{font-size:11px;color:var(--muted);margin-top:8px}
 /* Error states */
-.invalid-regex{color:#d92d2d;border-color:#d92d2d}
+.invalid-regex{color:var(--fail);border-color:var(--fail)}
 /* Empty state */
 .empty-state{text-align:center;padding:24px;color:var(--muted);font-size:14px}
 /* Loading / responsive tweaks */
 @media(max-width:480px){h1{font-size:22px}.hero{padding:24px 0 16px}.tool{padding:14px}}
 .pg-legacy{padding:0}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/regex/","url":"https://eucomplypro.com/regex/","name":"Regex Tester — Test & Debug Regular Expressions Online","description":"Free online regex tester. Test regular expressions with live highlighting, match groups, and a built-in cheat sheet.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="wrap">
 
@@ -441,8 +458,6 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 
 })();
 </script>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

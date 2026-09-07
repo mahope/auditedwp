@@ -1,19 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GitHub Notifications Keep Coming Back as Unread — How to Stop It (2026) — DevNotify</title>
-<meta name="description" content="You read a GitHub notification and it shows up unread again hours later. Why notifications resurrect themselves — participating vs watching, auto-subscriptions, and how to stop each cause.">
+<title>GitHub Notifications Keep Coming Back as Unread</title>
+<meta name="description" content="You read a GitHub notification and it shows up unread again hours later.">
 <link rel="canonical" href="https://eucomplypro.com/devnotify/guides/github-notifications-coming-back-unread/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="DevNotify">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/github-notifications-coming-back-unread/">
 <meta property="og:title" content="GitHub notifications keep coming back as unread — why, and how to stop it">
 <meta property="og:description" content="Resurrecting notifications have specific causes: watching vs participating, automatic subscriptions, and issue state changes. Fix each one.">
-<meta property="og:url" content="https://eucomplypro.com/devnotify/guides/github-notifications-coming-back-unread/">
+<meta property="og:image" content="https://eucomplypro.com/devnotify/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="/devnotify/og-image.png">
-<meta name="twitter:image" content="/devnotify/og-image.png">
-<style>:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--radius:12px}
+<meta name="twitter:title" content="GitHub notifications keep coming back as unread — why, and how to stop it">
+<meta name="twitter:description" content="Resurrecting notifications have specific causes: watching vs participating, automatic subscriptions, and issue state changes. Fix each one.">
+<meta name="twitter:image" content="https://eucomplypro.com/devnotify/og-image.png">
+<style>:root{--bg:var(--accent-dark);--panel:var(--accent-dark);--border:var(--ink);--text:var(--accent-soft);--muted:var(--muted);--accent:var(--accent);--green:var(--ok);--radius:12px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding:0 20px}
 a{color:var(--accent)}
@@ -25,32 +36,38 @@ p strong,li strong{color:var(--text)}
 ol li,ul li{margin-bottom:14px}
 code{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.85rem;color:var(--text)}
 pre code{display:block;padding:14px;overflow-x:auto;border-radius:8px;line-height:1.5}
-.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:#04180a;margin-top:14px}
+.btn{display:inline-block;padding:13px 26px;border-radius:var(--radius);font-weight:600;text-decoration:none;background:var(--green);color:var(--ok);margin-top:14px}
 .btn-buy{background:transparent;color:var(--text);border:1px solid var(--border)}
 .keep-reading{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:40px 0 0}
 .keep-reading h2{font-size:1rem;margin:0 0 10px}
 .keep-reading li{margin-bottom:6px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "GitHub Notifications Keep Coming Back as Unread — How to Stop It (2026) — DevNotify", "description": "Resurrecting notifications have specific causes: watching vs participating, automatic subscriptions, and issue state changes. Fix each one.", "mainEntityOfPage": "/devnotify/guides/github-notifications-coming-back-unread/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/devnotify/guides/github-notifications-coming-back-unread/","url":"https://eucomplypro.com/devnotify/guides/github-notifications-coming-back-unread/","name":"GitHub Notifications Keep Coming Back as Unread","description":"You read a GitHub notification and it shows up unread again hours later.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <article class="wrap">
 <h1>GitHub notifications keep coming back as unread</h1>
@@ -139,9 +156,6 @@ lifetime license.</p>
 </ul>
 </div>
 </article>
-
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

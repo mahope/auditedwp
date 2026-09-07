@@ -3,20 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUComply — gratis compliance-scan af websites med besøgende fra EU</title>
-<meta name="description" content="Indtast en URL og få et gratis teknisk tjek af det, EU-myndigheder spørger om først: HTTPS, cookiesamtykke, trackere der indlæses før samtykke, privatlivslinks og sikkerhedsheadere. Ingen oprettelse, intet gemmes.">
+<title>EUComply — gratis compliance-scan af websites med besøgende</title>
+<meta name="description" content="Indtast en URL og få et gratis teknisk tjek af det, EU-myndigheder spørger om først: HTTPS, cookiesamtykke, trackere der indlæses før samtykke.">
 <link rel="canonical" href="https://eucomplypro.com/da/">
 <link rel="alternate" hreflang="en" href="https://eucomplypro.com/">
 <link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/">
 <link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/">
 <link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/">
 <link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230b6e4f'/></svg>">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="da_DK">
+<meta property="og:url" content="https://eucomplypro.com/da/">
 <meta property="og:title" content="EUComply — gratis compliance-scan af websites med besøgende fra EU">
 <meta property="og:description" content="Ni tekniske tjek op imod forventningerne i GDPR, ePrivacy, NIS2 og EAA. Gratis, ingen oprettelse, intet gemmes.">
-<meta property="og:url" content="https://eucomplypro.com/da/">
-<meta property="og:image" content="https://eucomplypro.com/images/eucomply-og.png">
-<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/images/og/da.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EUComply — gratis compliance-scan af websites med besøgende fra EU">
+<meta name="twitter:description" content="Ni tekniske tjek op imod forventningerne i GDPR, ePrivacy, NIS2 og EAA. Gratis, ingen oprettelse, intet gemmes.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/da.png">
 <style>
   .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
   .steps li { counter-increment: step; max-width: none; }
@@ -30,23 +42,33 @@
   .book ol li { break-inside: avoid; margin-bottom: 0.25rem; }
   @media (max-width: 720px) { .book { grid-template-columns: 1fr; } .book ol { columns: 1; } }
 </style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebSite","@id":"https://eucomplypro.com/#website","url":"https://eucomplypro.com/","name":"EUComply","inLanguage":"da","description":"Indtast en URL og få et gratis teknisk tjek af det, EU-myndigheder spørger om først: HTTPS, cookiesamtykke, trackere der indlæses før samtykke.","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@id":"https://eucomplypro.com/#org"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@id":"https://eucomplypro.com/#org","@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Gemmer I URL'er eller resultater?","acceptedAnswer":{"@type":"Answer","text":"Nej. Scanningen kører i en Cloudflare Worker, sender resultatet tilbage til din browser og glemmer det. Der føres en tæller over det samlede antal scanninger; domæner og resultater gemmes ikke. Hvis du tilmelder et site til daglig overvågning, gemmes domænet og din e-mailadresse til det formål og intet andet."}},{"@type":"Question","name":"Er selve scanningen GDPR-venlig?","acceptedAnswer":{"@type":"Answer","text":"Sitet sætter ingen cookies og indlæser intet fra tredjeparter: ingen skrifttyper, ingen analysescripts, ingen indlejringer. Scanneren henter din offentlige side, som enhver besøgende ville gøre det."}},{"@type":"Question","name":"Virker den på sites, der ikke kører WordPress?","acceptedAnswer":{"@type":"Answer","text":"Ja. Den læser HTTP og HTML, så den virker på Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, håndskrevet HTML og alt andet, der leverer en side. Den identificerer platformen, når den kan, så forslagene til rettelser er relevante."}},{"@type":"Question","name":"Mit site bestod. Overholder jeg så reglerne?","acceptedAnswer":{"@type":"Answer","text":"Du har de synlige grundting på plads, og det er længere, end de fleste sites når. Overholdelse handler også om, hvad du gør med data, hvad dine dokumenter siger, og hvordan du håndterer henvendelser. Guiden og tjeklisterne dækker den del."}},{"@type":"Question","name":"Hvorfor er generatorerne til juridiske dokumenter fjernet?","acceptedAnswer":{"@type":"Answer","text":"Tidligere versioner af dette site tilbød generatorer til privatlivspolitikker, impressum, handelsbetingelser og returpolitikker. De producerede dokumenter, der så juridiske ud uden en advokat bag. Det er ikke en ydelse, jeg har det godt med at tilbyde, så de er væk. Tjeklisterne fortæller dig, hvad sådanne dokumenter skal indeholde."}}]}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/da/">EUComply</a>
-    <nav class="sh-nav" aria-label="Hovedmenu">
-      <a href="/da/scan/">Scan</a>
-      <a href="/da/book/">Guide</a>
-      <a href="/checklist/">Tjeklister</a>
-      <a href="/da/pricing/">Priser</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    <ul class="sh-lang" aria-label="Language"><li><a href="/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/" hreflang="fr" lang="fr">FR</a></li></ul>
+    <a class="sh-brand" href="/da/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Hovedmenu">
+        <a href="/da/scan/">Scan</a>
+        <a href="/da/book/">Guide</a>
+        <a href="/checklist/">Tjeklister</a>
+        <a href="/da/pricing/">Priser</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      <ul class="sh-lang" aria-label="Language"><li><a href="/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/" hreflang="fr" lang="fr">FR</a></li></ul>
+    </div>
   </div>
 </header>
-
 
 <main>
   <section class="pg hero">
@@ -179,7 +201,6 @@
     <p>Findes også på <a href="/" hreflang="en" lang="en">English</a>, <a href="/de/" hreflang="de" lang="de">Deutsch</a> og <a href="/fr/" hreflang="fr" lang="fr">français</a>.</p>
   </section>
 </main>
-
 <footer class="sf">
   <div class="sf-in">
     <div>

@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GDPR Compliance Check — Is Your Website Breaking EU Law? Free Scan.</title>
-<meta name="description" content="Free instant GDPR compliance check. Paste your URL and see if your site fails the cookie-consent, tracking and security patterns behind real EU fines. No sign-up, works on every platform — WordPress, Shopify, Webflow, Wix or hand-coded HTML.">
+<title>GDPR Compliance Check — Is Your Website Breaking EU Law?</title>
+<meta name="description" content="Free instant GDPR compliance check. Paste your URL and see if your site fails the cookie-consent, tracking and security patterns behind real EU fines.">
 <link rel="canonical" href="https://eucomplypro.com/gdpr-compliance-check/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/gdpr-compliance-check/">
 <meta property="og:title" content="GDPR Compliance Check — Free, Instant, Any Platform">
 <meta property="og:description" content="Cookie-consent failures are the pattern behind the biggest GDPR fines. Check your site free in 10 seconds — no sign-up, any platform.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://eucomplypro.com/gdpr-compliance-check/">
+<meta property="og:image" content="https://eucomplypro.com/images/og/gdpr-compliance-check.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
-      --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;--fail:#b03030;}
+<meta name="twitter:title" content="GDPR Compliance Check — Free, Instant, Any Platform">
+<meta name="twitter:description" content="Cookie-consent failures are the pattern behind the biggest GDPR fines. Check your site free in 10 seconds — no sign-up, any platform.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/gdpr-compliance-check.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--muted);--line:var(--accent);--bg:var(--panel);--soft:var(--panel);
+      --accent:var(--accent);--accent-dark:var(--accent);--ok:var(--ok);--warn:var(--warn);--fail:var(--fail);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 .wrap{max-width:920px;margin:0 auto;padding:0 20px}
 .hero{text-align:center;padding:52px 0 32px}
@@ -22,7 +35,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .scanbox{display:flex;gap:10px;max-width:560px;margin:28px auto 8px;flex-wrap:wrap;justify-content:center}
 .scanbox input{flex:1;min-width:220px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s}
 .scanbox input:focus{border-color:var(--accent)}
-.scanbox button{padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.scanbox button{padding:13px 26px;background:var(--accent);color:var(--panel);border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;var(--panel)-space:nowrap}
 .scanbox button:hover{background:var(--accent-dark)}
 .scanbox button[disabled]{opacity:.6;cursor:wait}
 .err{color:var(--fail);font-size:14px;text-align:center;min-height:20px}
@@ -43,12 +56,12 @@ h1 em{font-style:normal;color:var(--accent)}
 .card.warn{border-left-color:var(--warn)}
 .card b{display:block;margin-bottom:4px}
 .pill{float:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
-.card.pass .pill{background:#e6f4ea;color:var(--ok)}
-.card.fail .pill{background:#fdeaea;color:var(--fail)}
-.card.warn .pill{background:#fff3e2;color:var(--warn)}
+.card.pass .pill{background:var(--accent-soft);color:var(--ok)}
+.card.fail .pill{background:var(--panel);color:var(--fail)}
+.card.warn .pill{background:var(--panel);color:var(--warn)}
 .card p{color:var(--muted);font-size:13px;margin-top:4px}
 .pro-cta{margin-top:22px;text-align:center}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px;transition:background .15s}
 .btn:hover{background:var(--accent-dark)}
 section{padding:44px 0;border-top:1px solid var(--line)}
 h2{font-size:26px;letter-spacing:-.02em;margin-bottom:10px}
@@ -56,7 +69,7 @@ h3{font-size:17px;margin:22px 0 8px}
 p{margin-bottom:12px}
 li{margin-bottom:6px}
 ul,ol{padding-left:22px;margin-bottom:14px}
-.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:18px 0;font-size:14.5px}
+.box{background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:16px 20px;margin:18px 0;font-size:14.5px}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
@@ -66,26 +79,32 @@ summary{font-weight:700;cursor:pointer;font-size:15px}
 details p{margin-top:8px;color:var(--muted);font-size:14.5px}
 @media(max-width:600px){h1{font-size:25px}
 h2{font-size:21px}}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/gdpr-compliance-check/","url":"https://eucomplypro.com/gdpr-compliance-check/","name":"GDPR Compliance Check — Is Your Website Breaking EU Law?","description":"Free instant GDPR compliance check. Paste your URL and see if your site fails the cookie-consent, tracking and security patterns behind real EU fines.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <div class="hero wrap">
   <h1>Is your website <em>breaking GDPR</em>? Find out free — in 10 seconds.</h1>
@@ -120,14 +139,14 @@ h2{font-size:21px}}</style>
   <div class="wrap">
     <h2>What the check looks at</h2>
     <p>The scan runs nine technical checks against your live page. The ones that matter most — because they are the exact patterns regulators fine for:</p>
-    <table>
+    <div class="tbl"><table>
       <tr><th>Check</th><th>Why it matters</th></tr>
       <tr><td>Trackers before consent</td><td>Analytics or ad cookies firing before the visitor clicks is the pattern behind the SHEIN (€150M) and American Express decisions. It is invisible to you — but not to a regulator's test tool.</td></tr>
       <tr><td>Google Consent Mode v2</td><td>Required since March 2024 for EEA ad personalisation. Missing signals silently break Google Ads measurement.</td></tr>
       <tr><td>IAB TCF signals</td><td>Most large ad platforms read consent through IAB's Transparency &amp; Consent Framework. Missing TCF wiring means "reject" may not reach them.</td></tr>
       <tr><td>HTTPS &amp; security headers</td><td>Unencrypted pages fail the baseline of GDPR Art. 32 and NIS2 expectations — and lose visitor trust.</td></tr>
       <tr><td>Privacy policy reachable</td><td>The ePrivacy rule requires clear information before consent; an unreachable policy undermines the entire legal basis.</td></tr>
-    </table>
+    </table></div>
     <div class="box">
       <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Marketing adds scripts, CMP settings drift, tag managers change. <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when something breaks.
     </div>
@@ -265,8 +284,6 @@ h2{font-size:21px}}</style>
   }
 })();
 </script>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

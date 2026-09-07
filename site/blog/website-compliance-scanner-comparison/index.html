@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Website Compliance Scanners Compared: What a Free Scan Actually Checks (2026)</title>
-<meta name="description" content="What website compliance scanners actually test — cookie consent, SSL hardening, privacy policy links — and how free automated scans compare to manual audits and paid tools. Includes the full EUComply check list.">
+<title>Website Compliance Scanners Compared</title>
+<meta name="description" content="What website compliance scanners actually test — cookie consent, SSL hardening, privacy policy links — and how free automated scans compare to manual.">
 <link rel="canonical" href="https://eucomplypro.com/blog/website-compliance-scanner-comparison/">
-  
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/blog/website-compliance-scanner-comparison/">
 <meta property="og:title" content="Website Compliance Scanners Compared: What a Free Scan Actually Checks">
 <meta property="og:description" content="Cookie consent, SSL hardening, privacy policy links: what automated compliance scanners can and cannot detect.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eucomplypro.com/blog/website-compliance-scanner-comparison/">
-<style>:root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Website Compliance Scanners Compared: What a Free Scan Actually Checks">
+<meta name="twitter:description" content="Cookie consent, SSL hardening, privacy policy links: what automated compliance scanners can and cannot detect.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--accent);--line:var(--soft);--accent:var(--accent);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65}
 h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
@@ -20,41 +33,48 @@ h3{font-size:17px;margin:24px 0 8px}
 p{margin-bottom:14px}
 li{margin-bottom:6px}
 ul,ol{padding-left:22px;margin-bottom:16px}
-.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
-.box.warn{background:#fff8ef;border-color:#ffd699}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
-.btn:hover{background:#1557b0}
+.box{background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+.box.warn{background:var(--panel);border-color:var(--warn)}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
+.btn:hover{background:var(--accent)}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-.tag{display:inline-block;background:#e5effa;color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+th{background:var(--panel);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tag{display:inline-block;background:var(--panel);color:var(--accent);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
 @media(max-width:600px){h1{font-size:26px}}
-.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
-.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a{color:var(--accent);text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}
 .pg-legacy{max-width:780px;margin:0 auto;padding:32px 24px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Website Compliance Scanners Compared: What a Free Scan Actually Checks (2026)", "description": "Cookie consent, SSL hardening, privacy policy links: what automated compliance scanners can and cannot detect.", "mainEntityOfPage": "/blog/website-compliance-scanner-comparison/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/website-compliance-scanner-comparison/","url":"https://eucomplypro.com/blog/website-compliance-scanner-comparison/","name":"Website Compliance Scanners Compared","description":"What website compliance scanners actually test — cookie consent, SSL hardening, privacy policy links — and how free automated scans compare to manual.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/" aria-current="page">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
 
 <h1>Website compliance scanners compared: what a free scan actually checks (2026)</h1>
 <p class="meta">Published 24 August 2026 · 9 min read · <span class="tag">Comparison</span> <span class="tag">Tools</span> <span class="tag">GDPR</span></p>
@@ -67,12 +87,12 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 
 <h2>The three layers of compliance checking</h2>
 
-<table>
+<div class="tbl"><table>
   <tr><th>Layer</th><th>What it covers</th><th>Automated?</th></tr>
   <tr><td>Technical signals</td><td>HTTPS/HSTS, security headers, cookie banner presence, privacy policy links, tracking scripts</td><td>Fully</td></tr>
   <tr><td>Behavioural checks</td><td>Cookies firing before consent, reject-button parity, third-party trackers</td><td>Partially (needs real browser)</td></tr>
   <tr><td>Legal substance</td><td>Whether your policy text actually matches your data practices; records of consent; DPA filings</td><td>No tool can judge this</td></tr>
-</table>
+</table></div>
 
 <p>Any scanner that claims to "make you GDPR compliant" with one click is overselling layer 3. A good scanner does layer 1 reliably, flags obvious layer-2 problems, and tells you clearly where automation ends.</p>
 
@@ -105,12 +125,12 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 
 <h2>Who needs which</h2>
 
-<table>
+<div class="tbl"><table>
   <tr><th>You are…</th><th>Sensible setup</th></tr>
   <tr><td>Freelancer / small business site</td><td>Free scan quarterly + generated policies (<a href="/checklist/">compliance checklist</a>)</td></tr>
   <tr><td>Agency managing client sites</td><td>Scan every client + documented reports (<a href="/pro/">EUComply Pro</a>, $79/yr) before handover</td></tr>
   <tr><td>E-commerce / high traffic</td><td>Scans + generated docs + periodic human review of policy substance</td></tr>
-</table>
+</table></div>
 
 <h2>Bottom line</h2>
 <p>A free scan won't make you compliant, but it catches the specific technical failures behind most cookie-related complaints — missing banners, weak TLS, unreachable policies — in seconds and for nothing. That makes it the correct first step for any site, on any platform:</p>
@@ -128,15 +148,13 @@ th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04
 </div>
 
 
-<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
+<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel)">
   <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
-  <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
-  <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
+  <p style="margin:8px 0;font-size:14px;color:var(--muted)">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
+  <p style="margin:0"><a href="/book/" style="color:var(--accent);font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
 
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/shopify-gdpr-compliance-guide/">Shopify GDPR Compliance Guide 2026: What Store Owners Actually Need</a></li><li><a href="/blog/wix-gdpr-compliance-guide/">Wix GDPR Compliance Guide 2026: What Site Owners Actually Need</a></li><li><a href="/blog/webflow-gdpr-compliance-guide/">Webflow GDPR Compliance Guide 2026: What Site Owners Actually Need</a></li><li><a href="/blog/gdpr-compliance-for-agencies/">GDPR Compliance for Digital Agencies: Managing 20+ Client Sites (2026) — EUComply</a></li></ul></nav>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">

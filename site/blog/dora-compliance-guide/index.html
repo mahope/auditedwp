@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-dark-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DORA Compliance: What Financial Websites Need to Know (2026 Practical Guide)</title>
-<meta name="description" content="Digital Operational Resilience Act (DORA) compliance for financial entities, banks, fintechs, and ICT providers. What the regulation requires, when it applies, and a free scan to check your own site for resilience disclosures.">
+<title>DORA Compliance: What Financial Websites Need to Know</title>
+<meta name="description" content="Digital Operational Resilience Act (DORA) compliance for financial entities, banks, fintechs, and ICT providers.">
 <link rel="canonical" href="https://eucomplypro.com/blog/dora-compliance-guide/">
-  
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://eucomplypro.com/blog/dora-compliance-guide/">
 <meta property="og:title" content="DORA Compliance: What Financial Websites Need to Know (2026)">
 <meta property="og:description" content="Digital Operational Resilience Act (EU 2022/2554) — a practical guide for financial entities and their ICT providers. Includes a free DORA resilience scan.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eucomplypro.com/blog/dora-compliance-guide/">
-<style>:root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#175cd3;}
+<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DORA Compliance: What Financial Websites Need to Know (2026)">
+<meta name="twitter:description" content="Digital Operational Resilience Act (EU 2022/2554) — a practical guide for financial entities and their ICT providers. Includes a free DORA resilience scan.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<style>:root{--ink:var(--accent-dark);--muted:var(--accent);--line:var(--soft);--accent:var(--accent);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65}
 h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin-bottom:10px}
 .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
@@ -20,49 +33,55 @@ h3{font-size:17px;margin:24px 0 8px}
 p{margin-bottom:14px}
 li{margin-bottom:6px}
 ul,ol{padding-left:22px;margin-bottom:16px}
-.box{background:#eff8ff;border:1px solid #b2ddff;border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
-.box.warn{background:#fff8ef;border-color:#ffd699}
-.box.ok{background:#e6f7ed;border-color:#a1dbb6}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
-.btn:hover{background:#1557b0}
+.box{background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px}
+.box.warn{background:var(--panel);border-color:var(--warn)}
+.box.ok{background:var(--panel);border-color:var(--ok)}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:10px 20px;border-radius:6px;font-size:14px;margin:8px 0}
+.btn:hover{background:var(--accent)}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:#f9fafb;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-blockquote{border-left:3px solid var(--accent);padding:10px 16px;margin:18px 0;background:#f9faff;border-radius:0 6px 6px 0;font-size:14.5px;color:var(--muted)}
-code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
-.toc{border:1px solid var(--line);border-radius:8px;padding:18px 24px;margin:20px 0;background:#fafbfc}
+th{background:var(--panel);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+blockquote{border-left:3px solid var(--accent);padding:10px 16px;margin:18px 0;background:var(--panel);border-radius:0 6px 6px 0;font-size:14.5px;color:var(--muted)}
+code{background:var(--panel);padding:2px 7px;border-radius:4px;font-size:13.5px}
+.toc{border:1px solid var(--line);border-radius:8px;padding:18px 24px;margin:20px 0;background:var(--panel)}
 .toc ol{list-style:none;counter-reset:item}
 .toc li{counter-increment:item;margin-bottom:6px}
 .toc li::before{content:counters(item,".")". ";font-weight:600;color:var(--accent)}
 @media(max-width:700px){h1{font-size:25px}
 .pg-legacy{padding:20px 14px}}
-.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid rgba(148,163,184,.25)}
+.keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
 .keep-reading h2{font-size:20px;margin-bottom:12px}
 .keep-reading ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
-.keep-reading a{color:#7dd3fc;text-decoration:none}
+.keep-reading a{color:var(--accent);text-decoration:none}
 .keep-reading a:hover{text-decoration:underline}
 .pg-legacy{max-width:780px;margin:0 auto;padding:32px 24px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "DORA Compliance: What Financial Websites Need to Know (2026 Practical Guide)", "description": "Digital Operational Resilience Act (EU 2022/2554) — a practical guide for financial entities and their ICT providers. Includes a free DORA resilience scan.", "mainEntityOfPage": "/blog/dora-compliance-guide/index.html", "author": {"@type": "Organization", "name": "ComplianceDocs"}, "publisher": {"@type": "Organization", "name": "ComplianceDocs"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/dora-compliance-guide/","url":"https://eucomplypro.com/blog/dora-compliance-guide/","name":"DORA Compliance: What Financial Websites Need to Know","description":"Digital Operational Resilience Act (DORA) compliance for financial entities, banks, fintechs, and ICT providers.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="/">EUComply</a>
-    <nav class="sh-nav" aria-label="Main">
-      <a href="/scan/">Scan</a>
-      <a href="/book/">Guide</a>
-      <a href="/checklist/">Checklists</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="/blog/" aria-current="page">Blog</a>
-    </nav>
-    
+    <a class="sh-brand" href="/"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Main">
+        <a href="/scan/">Scan</a>
+        <a href="/book/">Guide</a>
+        <a href="/checklist/">Checklists</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </nav>
+      
+    </div>
   </div>
 </header>
 <div class="pg-legacy">
-
-
-
 
 <h1>DORA Compliance: What Financial Websites Actually Need to Know (2026)</h1>
 
@@ -96,7 +115,7 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
 
 <p>DORA covers a broad range of financial entities under EU financial services legislation:</p>
 
-<table>
+<div class="tbl"><table>
   <tr><th>Category</th><th>Examples</th><th>In scope?</th></tr>
   <tr><td>Banks & credit institutions</td><td>Retail, investment, private banks</td><td>Yes</td></tr>
   <tr><td>Payment institutions</td><td>Stripe, PayPal, Adyen, Wise</td><td>Yes</td></tr>
@@ -105,7 +124,7 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
   <tr><td>Insurance & reinsurance</td><td>Carriers, brokers</td><td>Yes</td></tr>
   <tr><td>ICT third-party providers</td><td>Cloud services (AWS, Azure), data analytics, compliance SaaS</td><td>Yes — critical TPPs are designated by ESAs</td></tr>
   <tr><td>Small / non-interconnected firms</td><td>Small investment advisors</td><td>Partial — simplified regime</td></tr>
-</table>
+</table></div>
 
 <p>If your company provides <strong>ICT services to financial entities</strong> — even if you are not a financial entity yourself — DORA may apply to you through the <strong>third-party oversight</strong> framework.</p>
 
@@ -150,7 +169,7 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
 
 <p>Our free scanner now includes a <strong>DORA/resilience check</strong> that looks for six categories of operational resilience signals in any website's public HTML:</p>
 
-<table>
+<div class="tbl"><table>
   <tr><th>Signal</th><th>What it looks for</th></tr>
   <tr><td>DORA / resilience framework</td><td>Mentions of "Digital Operational Resilience Act" or "DORA regulation"</td></tr>
   <tr><td>ICT incident reporting</td><td>Process for reporting ICT incidents or security breaches</td></tr>
@@ -158,7 +177,7 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
   <tr><td>ICT risk management</td><td>Information security risk framework, risk assessments</td></tr>
   <tr><td>Third-party / supply chain risk</td><td>Vendor risk management, outsourcing oversight</td></tr>
   <tr><td>Resilience testing</td><td>Penetration testing, vulnerability scanning, red team exercises</td></tr>
-</table>
+</table></div>
 
 <p>The scan works on any website — WordPress, custom-built, or enterprise platform. No installation, no registration, no cost.</p>
 
@@ -166,14 +185,14 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
 
 <h2 id="timeline">6. Timeline & enforcement</h2>
 
-<table>
+<div class="tbl"><table>
   <tr><th>Date</th><th>Milestone</th></tr>
   <tr><td>16 Jan 2023</td><td>DORA entered into force</td></tr>
   <tr><td>17 Jan 2025</td><td><strong>Application date</strong> — DORA became legally enforceable</td></tr>
   <tr><td>2025–2026</td><td>National competent authorities begin supervisory assessments; first enforcement actions expected</td></tr>
   <tr><td>2026–2027</td><td>ESAs designate critical ICT third-party providers; first TLPT cycles completed</td></tr>
   <tr><td>2027</td><td>First comprehensive DORA reviews by European Supervisory Authorities (EBA, EIOPA, ESMA)</td></tr>
-</table>
+</table></div>
 
 <div class="box warn">
 <strong>Heads up:</strong> DORA enforcement is already active in 2026. National supervisors (e.g., BaFin in Germany, FCA in the UK's equivalent regime, Finansinspektionen in Sweden) have the authority to impose penalties for non-compliance. EU member states set their own penalty regimes — fines can reach <strong>2% of total annual turnover</strong> for the most serious breaches.
@@ -183,13 +202,13 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
 
 <p>If you're responsible for compliance across multiple EU frameworks, here is how DORA relates to the other big regulations:</p>
 
-<table>
+<div class="tbl"><table>
   <tr><th>Regulation</th><th>Scope</th><th>Focus</th><th>Applies to websites?</th><th>Penalties</th></tr>
   <tr><td><strong>DORA</strong></td><td>Financial entities + ICT TPPs</td><td>Operational resilience (ICT continuity, incident response, testing)</td><td>Yes — as a channel for disclosures</td><td>Up to 2% turnover</td></tr>
   <tr><td><strong>GDPR</strong></td><td>All orgs processing EU personal data</td><td>Data protection, privacy, consent</td><td>Yes — cookies, forms, privacy notices</td><td>Up to €20M or 4%</td></tr>
   <tr><td><strong>NIS2</strong></td><td>Essential & important entities</td><td>Network & information security, incident reporting, supply chain</td><td>Yes — security headers, breach reporting</td><td>Up to €10M or 2%</td></tr>
   <tr><td><strong>EAA</strong></td><td>Commerce/services websites</td><td>Digital accessibility (WCAG)</td><td>Yes — accessibility statement, alt text</td><td>Varies by member state</td></tr>
-</table>
+</table></div>
 
 <p>DORA and NIS2 share some overlaps (both require incident reporting, risk management, and testing). The difference: <strong>NIS2</strong> applies broadly to critical infrastructure (energy, transport, health, digital infrastructure), while <strong>DORA</strong> is specifically for financial-sector operational resilience.</p>
 
@@ -228,15 +247,13 @@ code{background:#f2f4f7;padding:2px 7px;border-radius:4px;font-size:13.5px}
 
 <p>How does EUComply compare with the established tools? See <a href="/pro/vs-onetrust/">our head-to-head comparison</a> — pricing, features and where each one falls short.</p>
 
-<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid #d0d8e0;border-left:4px solid #2868d0;border-radius:10px;background:#f8faff">
+<aside class="book-cta" style="margin:32px 0;padding:20px 22px;border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel)">
   <strong style="font-size:16px">The Practical Guide to EU Compliance 2026</strong>
-  <p style="margin:8px 0;font-size:14px;color:#4a5a6a">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
-  <p style="margin:0"><a href="/book/" style="color:#2868d0;font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
+  <p style="margin:8px 0;font-size:14px;color:var(--muted)">Everything in this guide — plus GDPR, NIS2, DORA and EAA checklists, templates and a 90-day action plan — in one 24-page handbook. Instant PDF download.</p>
+  <p style="margin:0"><a href="/book/" style="color:var(--accent);font-weight:600;text-decoration:none">Get the ebook — $14.99 →</a></p>
 </aside>
 
 <nav class="keep-reading" aria-label="Related guides" data-related><h2>Keep reading</h2><ul><li><a href="/blog/nis2-compliance-checklist-saas/">NIS2 Compliance Checklist for SaaS Companies (2026) — EUComply</a></li><li><a href="/blog/nis2-board-liability/">NIS2 Board & Director Liability: What Executives Must Know — EUComply</a></li><li><a href="/blog/nis2-vendor-supply-chain-compliance/">NIS2 Vendor & Supply Chain Compliance Guide 2026 — EUComply</a></li><li><a href="/blog/dora-for-ecommerce-2026/">DORA for E-Commerce: Does the Digital Operational Resilience Act Apply to Online Stores? (2026 Guide)</a></li></ul></nav>
-
-
 </div><!--/pg-legacy-->
 <footer class="sf">
   <div class="sf-in">
