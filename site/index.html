@@ -45,9 +45,9 @@
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebSite","@id":"https://eucomplypro.com/#website","url":"https://eucomplypro.com/","name":"EUComply","inLanguage":"en","description":"Enter a URL and get a free technical check of the things EU regulators ask about first: HTTPS, cookie consent, trackers loaded before consent, privacy.","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@id":"https://eucomplypro.com/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://eucomplypro.com/search/?q={search_term_string}"},"query-input":"required name=search_term_string"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@id":"https://eucomplypro.com/#org","@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you store the URLs or results?","acceptedAnswer":{"@type":"Answer","text":"No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. A counter of total scans is kept; domains and results are not. If you register a site for daily monitoring, that domain and your email are stored for that purpose only."}},{"@type":"Question","name":"Is the scan itself GDPR-friendly?","acceptedAnswer":{"@type":"Answer","text":"The site sets no cookies and loads nothing from third parties: no fonts, no analytics scripts, no embeds. The scanner fetches your public page the way any visitor would."}},{"@type":"Question","name":"Does it work for non-WordPress sites?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads HTTP and HTML, so it works on Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, hand-written HTML and anything else that serves a page. It identifies the platform when it can, so the suggested fixes are relevant."}},{"@type":"Question","name":"My site passed. Am I compliant?","acceptedAnswer":{"@type":"Answer","text":"You have the visible basics in place, which is further than most sites get. Compliance also involves what you do with data, what your documents say and how you handle requests. The guide and the checklists cover that part."}},{"@type":"Question","name":"Why were the legal-document generators removed?","acceptedAnswer":{"@type":"Answer","text":"Earlier versions of this site offered generators for privacy policies, imprints, terms and refund policies. They produced documents that looked legal without a lawyer behind them. That is not a service I am comfortable offering, so they are gone. The checklists tell you what such documents must contain."}}]}</script>
-<link rel="stylesheet" href="/assets/site.css?v=8721a767">
+<link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
-<script src="/assets/site.js?v=d6b4fa53" defer></script>
+<script src="/assets/site.js?v=184b5cbf" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -155,6 +155,19 @@
       <p>The scan looks at one page, once, from the outside. It cannot see what your consent banner does after someone clicks, what your privacy policy actually says, how you process data on the server, or whether your contracts with processors exist.</p>
       <p>A full score means the visible basics are in place. It does not mean you are compliant, and no automated tool can honestly claim that. Use the result as a to-do list and as evidence that you checked, not as a certificate.</p>
     </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Where the rules stand</h2>
+    <ol class="dates">
+      <li><time datetime="2018-05-25">25 May 2018</time><b>GDPR applies</b><p>Consent, privacy notices and the right to be informed cover every website with visitors in the EU.</p></li>
+      <li><time datetime="2024-10-17">17 Oct 2024</time><b>NIS2 transposition deadline</b><p>Essential and important entities in 18 sectors need risk measures and incident reporting; national laws are still arriving.</p></li>
+      <li><time datetime="2025-01-17">17 Jan 2025</time><b>DORA applies</b><p>Financial entities and their ICT providers must manage ICT risk, test resilience and report incidents.</p></li>
+      <li><time datetime="2025-06-28">28 Jun 2025</time><b>European Accessibility Act applies</b><p>New e-commerce, banking and ticketing services must be accessible; services that already existed have until 28 June 2030.</p></li>
+      <li><time datetime="2026-08-02">2 Aug 2026</time><b>AI Act: most obligations apply</b><p>Chatbots and generated content must be labelled; the high-risk rules for regulated products follow in 2027.</p></li>
+      <li><time datetime="2026-09-11">11 Sep 2026</time><b>Cyber Resilience Act reporting</b><p>Makers of products with digital elements must report actively exploited vulnerabilities; the full obligations apply from 11 December 2027.</p></li>
+    </ol>
+    <p class="dates-note">The dates are when the EU rules start to apply. National implementation can add earlier or stricter deadlines.</p>
   </section>
 
   <section class="pg sec">

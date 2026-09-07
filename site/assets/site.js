@@ -6,19 +6,23 @@
   root.classList.add('js');
   var lang = (root.lang || 'en').slice(0, 2);
   var T = {
-    en: { search: 'Search this site', noresults: 'No pages match', results: 'results', copy: 'Copy', copied: 'Copied', top: 'Back to top',
+    en: { topics: 'Filter by topic', all: 'All', shown: function (n) { return n + ' of ' + this.total + ' guides'; }, ticked: function (n, t) { return n + ' of ' + t + ' ticked'; }, md: 'Copy as Markdown', mdDone: 'Copied', scanmd: 'Copy result as Markdown', check: 'Check', result: 'Result', detail: 'Detail', scanned: 'Scanned',
+          search: 'Search this site', noresults: 'No pages match', results: 'results', copy: 'Copy', copied: 'Copied', top: 'Back to top',
           recent: 'Recent scans', clear: 'clear', link: 'Copy link', linked: 'Link copied', open: 'Open', navigate: 'to navigate', close: 'to close',
           sections: { blog: 'Blog', guides: 'Guides', checklists: 'Checklists', tools: 'Tools', compare: 'Comparisons', pages: 'Pages', deskuptime: 'DeskUptime', devnotify: 'DevNotify', transmute: 'Transmute', store: 'Templates', pro: 'Pro' },
           ago: function (m) { return m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; } },
-    da: { search: 'Søg på sitet', noresults: 'Ingen sider matcher', results: 'resultater', copy: 'Kopiér', copied: 'Kopieret', top: 'Til toppen',
+    da: { topics: 'Filtrér efter emne', all: 'Alle', shown: function (n) { return n + ' af ' + this.total + ' guides'; }, ticked: function (n, t) { return n + ' af ' + t + ' afkrydset'; }, md: 'Kopiér som Markdown', mdDone: 'Kopieret', scanmd: 'Kopiér resultat som Markdown', check: 'Tjek', result: 'Resultat', detail: 'Detalje', scanned: 'Scannet',
+          search: 'Søg på sitet', noresults: 'Ingen sider matcher', results: 'resultater', copy: 'Kopiér', copied: 'Kopieret', top: 'Til toppen',
           recent: 'Seneste scanninger', clear: 'ryd', link: 'Kopiér link', linked: 'Link kopieret', open: 'Åbn', navigate: 'for at navigere', close: 'for at lukke',
           sections: { blog: 'Blog', guides: 'Guides', checklists: 'Tjeklister', tools: 'Værktøjer', compare: 'Sammenligninger', pages: 'Sider', deskuptime: 'DeskUptime', devnotify: 'DevNotify', transmute: 'Transmute', store: 'Skabeloner', pro: 'Pro' },
           ago: function (m) { return m < 60 ? m + ' min siden' : m < 1440 ? Math.round(m / 60) + ' t siden' : Math.round(m / 1440) + ' d siden'; } },
-    de: { search: 'Website durchsuchen', noresults: 'Keine Seiten gefunden', results: 'Treffer', copy: 'Kopieren', copied: 'Kopiert', top: 'Nach oben',
+    de: { topics: 'Nach Thema filtern', all: 'Alle', shown: function (n) { return n + ' von ' + this.total + ' Leitfäden'; }, ticked: function (n, t) { return n + ' von ' + t + ' abgehakt'; }, md: 'Als Markdown kopieren', mdDone: 'Kopiert', scanmd: 'Ergebnis als Markdown kopieren', check: 'Prüfung', result: 'Ergebnis', detail: 'Detail', scanned: 'Geprüft',
+          search: 'Website durchsuchen', noresults: 'Keine Seiten gefunden', results: 'Treffer', copy: 'Kopieren', copied: 'Kopiert', top: 'Nach oben',
           recent: 'Letzte Scans', clear: 'leeren', link: 'Link kopieren', linked: 'Link kopiert', open: 'Öffnen', navigate: 'zum Navigieren', close: 'zum Schließen',
           sections: { blog: 'Blog', guides: 'Leitfäden', checklists: 'Checklisten', tools: 'Werkzeuge', compare: 'Vergleiche', pages: 'Seiten', deskuptime: 'DeskUptime', devnotify: 'DevNotify', transmute: 'Transmute', store: 'Vorlagen', pro: 'Pro' },
           ago: function (m) { return m < 60 ? 'vor ' + m + ' Min.' : m < 1440 ? 'vor ' + Math.round(m / 60) + ' Std.' : 'vor ' + Math.round(m / 1440) + ' Tagen'; } },
-    fr: { search: 'Rechercher sur le site', noresults: 'Aucune page trouvée', results: 'résultats', copy: 'Copier', copied: 'Copié', top: 'Haut de page',
+    fr: { topics: 'Filtrer par thème', all: 'Tous', shown: function (n) { return n + ' sur ' + this.total + ' guides'; }, ticked: function (n, t) { return n + ' sur ' + t + ' cochés'; }, md: 'Copier en Markdown', mdDone: 'Copié', scanmd: 'Copier le résultat en Markdown', check: 'Contrôle', result: 'Résultat', detail: 'Détail', scanned: 'Analysé',
+          search: 'Rechercher sur le site', noresults: 'Aucune page trouvée', results: 'résultats', copy: 'Copier', copied: 'Copié', top: 'Haut de page',
           recent: 'Scans récents', clear: 'effacer', link: 'Copier le lien', linked: 'Lien copié', open: 'Ouvrir', navigate: 'pour naviguer', close: 'pour fermer',
           sections: { blog: 'Blog', guides: 'Guides', checklists: 'Check-lists', tools: 'Outils', compare: 'Comparatifs', pages: 'Pages', deskuptime: 'DeskUptime', devnotify: 'DevNotify', transmute: 'Transmute', store: 'Modèles', pro: 'Pro' },
           ago: function (m) { return m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; } }
@@ -332,14 +336,99 @@
     mo.observe(cards, { childList: true });
   }
 
+  /* ---- Blog index: filter the guides by regulation or topic ---- */
+  var posts = $$('main a.post');
+  if (posts.length > 6) {
+    var TOPICS = [
+      ['gdpr', 'GDPR', /gdpr|privacy|data protection|refund|impressum|abmahnung|agenc/i],
+      ['consent', 'Cookies & consent', /cookie|consent|pixel|analytics|tcf|tracking|cmp\b/i],
+      ['nis2', 'NIS2', /nis2/i],
+      ['dora', 'DORA', /dora/i],
+      ['eaa', 'Accessibility (EAA)', /\beaa\b|accessibility/i],
+      ['security', 'Security', /hsts|security|ssl|certificate|header|\btls\b/i],
+      ['monitoring', 'Monitoring', /monitor|uptime|alert|cron|down\b|status/i],
+      ['compare', 'Comparisons', /alternative|compared?\b|\bvs\b|checkers|scanners/i]
+    ];
+    var grid = document.createElement('div'); grid.className = 'post-grid';
+    posts[0].parentNode.insertBefore(grid, posts[0]);
+    posts.forEach(function (p) {
+      var txt = p.textContent;
+      p.dataset.topics = TOPICS.filter(function (tp) { return tp[2].test(txt); }).map(function (tp) { return tp[0]; }).join(' ');
+      grid.appendChild(p);
+    });
+    var bar = document.createElement('div'); bar.className = 'post-filter'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', t.topics);
+    var count = document.createElement('span'); count.className = 'n'; count.setAttribute('aria-live', 'polite');
+    var used = TOPICS.filter(function (tp) { return posts.some(function (p) { return p.dataset.topics.split(' ').indexOf(tp[0]) >= 0; }); });
+    var apply = function (key) {
+      var n = 0;
+      posts.forEach(function (p) { var on = !key || p.dataset.topics.split(' ').indexOf(key) >= 0; p.hidden = !on; if (on) n++; });
+      $$('button', bar).forEach(function (b) { b.setAttribute('aria-pressed', (b.dataset.key || '') === (key || '') ? 'true' : 'false'); });
+      count.textContent = t.shown.call({ total: posts.length }, n);
+      try { history.replaceState(null, '', key ? '?topic=' + key : location.pathname); } catch (e) {}
+    };
+    [['', t.all]].concat(used).forEach(function (tp) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = tp[1]; b.dataset.key = tp[0];
+      b.addEventListener('click', function () { apply(tp[0]); });
+      bar.appendChild(b);
+    });
+    bar.appendChild(count);
+    grid.parentNode.insertBefore(bar, grid);
+    var q = new URLSearchParams(location.search).get('topic');
+    apply(used.some(function (tp) { return tp[0] === q; }) ? q : '');
+  }
+
+  /* ---- Scan page: the result as Markdown, for a client or an auditor ---- */
+  var shareBtn = document.getElementById('share-btn');
+  if (shareBtn && cards) {
+    var mdBtn = document.createElement('button'); mdBtn.type = 'button'; mdBtn.className = shareBtn.className; mdBtn.textContent = t.scanmd;
+    shareBtn.parentNode.insertBefore(mdBtn, shareBtn.nextSibling);
+    mdBtn.addEventListener('click', function () {
+      var hostEl = $('#score-meta a'), scoreEl = document.getElementById('score-num');
+      var rows = $$('.rcard', cards).map(function (c) {
+        var h = $('h3', c), pill = $('.pill', c), p = $('p', c), fix = $('.fix', c);
+        var title = h ? h.textContent.replace(pill ? pill.textContent : '', '').trim() : '';
+        var cell = function (s) { return String(s || '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim(); };
+        return '| ' + cell(title) + ' | ' + cell(pill && pill.textContent) + ' | ' + cell(p && p.textContent) + (fix ? ' ' + cell(fix.textContent) : '') + ' |';
+      });
+      var md = '# EUComply — ' + (hostEl ? hostEl.textContent : '') + '\n\n' + t.scanned + ' ' + new Date().toISOString().slice(0, 10) +
+        (scoreEl && /\d/.test(scoreEl.textContent) ? ' · ' + scoreEl.textContent.trim() + '/100' : '') + '\n' + location.href + '\n\n' +
+        '| ' + t.check + ' | ' + t.result + ' | ' + t.detail + ' |\n|---|---|---|\n' + rows.join('\n') + '\n';
+      copy(md, mdBtn, t.mdDone, t.scanmd);
+    });
+  }
+
   /* ---- Checklists: keep ticks between visits, offer a reset ---- */
   var boxes = $$('main label.item input[type="checkbox"]');
   if (boxes.length > 4) {
     var CK = 'ec.check:' + location.pathname;
     var saved = {}; try { saved = JSON.parse(store(CK) || '{}'); } catch (e) {}
+    var tools = document.createElement('div'); tools.className = 'ck-tools';
+    var ticked = document.createElement('span'); ticked.className = 'ck-count'; ticked.setAttribute('aria-live', 'polite');
+    var mdCk = document.createElement('button'); mdCk.type = 'button'; mdCk.className = 'btn secondary sm'; mdCk.textContent = t.md;
+    tools.appendChild(ticked); tools.appendChild(mdCk);
+    var firstCat = boxes[0].closest('section') || boxes[0].closest('.cat');
+    if (firstCat) firstCat.parentNode.insertBefore(tools, firstCat);
+    var recount = function () { ticked.textContent = t.ticked(boxes.filter(function (b) { return b.checked; }).length, boxes.length); };
+    mdCk.addEventListener('click', function () {
+      var h1 = $('main h1'), out = ['# ' + (h1 ? h1.textContent.trim() : document.title), '', location.href.split('#')[0] + ' · ' + new Date().toISOString().slice(0, 10), ''];
+      $$('main section').forEach(function (sec) {
+        var items = $$('label.item input[type="checkbox"]', sec);
+        if (!items.length) return;
+        var h = $('h2, h3', sec);
+        if (h) out.push('## ' + h.textContent.trim(), '');
+        items.forEach(function (b) {
+          var lab = b.closest('label'), tt = $('.t', lab), w = $('.w', lab);
+          var text = (tt ? tt.textContent : lab.textContent).replace(/\s+/g, ' ').trim();
+          out.push('- [' + (b.checked ? 'x' : ' ') + '] ' + text + (w ? ' (' + w.textContent.trim() + ')' : ''));
+        });
+        out.push('');
+      });
+      copy(out.join('\n'), mdCk, t.mdDone, t.md);
+    });
     boxes.forEach(function (b, i) {
       if (saved[i]) { b.checked = true; b.dispatchEvent(new Event('change', { bubbles: true })); }
-      b.addEventListener('change', function () { saved[i] = b.checked ? 1 : 0; store(CK, JSON.stringify(saved)); });
+      b.addEventListener('change', function () { saved[i] = b.checked ? 1 : 0; store(CK, JSON.stringify(saved)); recount(); });
     });
+    recount();
   }
 })();

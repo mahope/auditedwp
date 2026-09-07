@@ -45,9 +45,9 @@
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebSite","@id":"https://eucomplypro.com/#website","url":"https://eucomplypro.com/","name":"EUComply","inLanguage":"da","description":"Indtast en URL og få et gratis teknisk tjek af det, EU-myndigheder spørger om først: HTTPS, cookiesamtykke, trackere der indlæses før samtykke.","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@id":"https://eucomplypro.com/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://eucomplypro.com/da/search/?q={search_term_string}"},"query-input":"required name=search_term_string"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@id":"https://eucomplypro.com/#org","@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Gemmer I URL'er eller resultater?","acceptedAnswer":{"@type":"Answer","text":"Nej. Scanningen kører i en Cloudflare Worker, sender resultatet tilbage til din browser og glemmer det. Der føres en tæller over det samlede antal scanninger; domæner og resultater gemmes ikke. Hvis du tilmelder et site til daglig overvågning, gemmes domænet og din e-mailadresse til det formål og intet andet."}},{"@type":"Question","name":"Er selve scanningen GDPR-venlig?","acceptedAnswer":{"@type":"Answer","text":"Sitet sætter ingen cookies og indlæser intet fra tredjeparter: ingen skrifttyper, ingen analysescripts, ingen indlejringer. Scanneren henter din offentlige side, som enhver besøgende ville gøre det."}},{"@type":"Question","name":"Virker den på sites, der ikke kører WordPress?","acceptedAnswer":{"@type":"Answer","text":"Ja. Den læser HTTP og HTML, så den virker på Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, håndskrevet HTML og alt andet, der leverer en side. Den identificerer platformen, når den kan, så forslagene til rettelser er relevante."}},{"@type":"Question","name":"Mit site bestod. Overholder jeg så reglerne?","acceptedAnswer":{"@type":"Answer","text":"Du har de synlige grundting på plads, og det er længere, end de fleste sites når. Overholdelse handler også om, hvad du gør med data, hvad dine dokumenter siger, og hvordan du håndterer henvendelser. Guiden og tjeklisterne dækker den del."}},{"@type":"Question","name":"Hvorfor er generatorerne til juridiske dokumenter fjernet?","acceptedAnswer":{"@type":"Answer","text":"Tidligere versioner af dette site tilbød generatorer til privatlivspolitikker, impressum, handelsbetingelser og returpolitikker. De producerede dokumenter, der så juridiske ud uden en advokat bag. Det er ikke en ydelse, jeg har det godt med at tilbyde, så de er væk. Tjeklisterne fortæller dig, hvad sådanne dokumenter skal indeholde."}}]}</script>
-<link rel="stylesheet" href="/assets/site.css?v=8721a767">
+<link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
-<script src="/assets/site.js?v=d6b4fa53" defer></script>
+<script src="/assets/site.js?v=184b5cbf" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Spring til indhold</a>
@@ -155,6 +155,19 @@
       <p>Scanningen ser på én side, én gang, udefra. Den kan ikke se, hvad dit samtykkebanner gør, efter nogen klikker, hvad din privatlivspolitik faktisk siger, hvordan du behandler data på serveren, eller om dine databehandleraftaler findes.</p>
       <p>Fuld score betyder, at de synlige grundting er på plads. Det betyder ikke, at du overholder reglerne, og det kan intet automatisk værktøj ærligt påstå. Brug resultatet som en huskeliste og som dokumentation for, at du har tjekket, ikke som et certifikat.</p>
     </div>
+  </section>
+
+  <section class="pg sec">
+    <h2>Hvor reglerne står</h2>
+    <ol class="dates">
+      <li><time datetime="2018-05-25">25. maj 2018</time><b>GDPR gælder</b><p>Samtykke, privatlivspolitik og oplysningspligt gælder for ethvert website med besøgende i EU.</p></li>
+      <li><time datetime="2024-10-17">17. okt. 2024</time><b>Frist for NIS2-implementering</b><p>Væsentlige og vigtige enheder i 18 sektorer skal have risikostyring og hændelsesrapportering på plads; de nationale love er stadig på vej.</p></li>
+      <li><time datetime="2025-01-17">17. jan. 2025</time><b>DORA gælder</b><p>Finansielle virksomheder og deres IKT-leverandører skal styre IKT-risiko, teste robusthed og rapportere hændelser.</p></li>
+      <li><time datetime="2025-06-28">28. juni 2025</time><b>Tilgængelighedsdirektivet (EAA) gælder</b><p>Nye webshops, bank- og billettjenester skal være tilgængelige; tjenester der fandtes i forvejen har frist til 28. juni 2030.</p></li>
+      <li><time datetime="2026-08-02">2. aug. 2026</time><b>AI-forordningen: de fleste pligter gælder</b><p>Chatbots og genereret indhold skal mærkes; reglerne for højrisikosystemer i regulerede produkter følger i 2027.</p></li>
+      <li><time datetime="2026-09-11">11. sep. 2026</time><b>Cyber Resilience Act: rapporteringspligt</b><p>Producenter af produkter med digitale elementer skal rapportere aktivt udnyttede sårbarheder; de fulde krav gælder fra 11. december 2027.</p></li>
+    </ol>
+    <p class="dates-note">Datoerne er, hvornår EU-reglerne begynder at gælde. National implementering kan give tidligere eller strengere frister.</p>
   </section>
 
   <section class="pg sec">
