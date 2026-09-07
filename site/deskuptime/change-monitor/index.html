@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Change Monitor — Free Content-Change Check, Desktop Alerts</title>
+<meta name="description" content="Check whether any web page's content has changed, free, via its SHA-256 fingerprint. Then let DeskUptime watch it on a schedule and alert you when it changes. Works with any website platform.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/deskuptime/change-monitor/">
+<meta property="og:title" content="Website Change Monitor">
+<meta property="og:description" content="Free content-change check for any web page, plus scheduled desktop alerts when it changes. No account, no subscription.">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/change-monitor/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/deskuptime/assets/og-change-monitor.png">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-change-monitor.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Website Change Monitor">
+<meta name="twitter:description" content="Free content-change check for any web page, plus desktop alerts when it changes.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  nav a.cta:hover{background:var(--accent-dark)}
+  .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:760px;margin:0 auto 14px}
+  h1 span{color:var(--accent)}
+  .sub{font-size:17px;color:var(--muted);max-width:660px;margin:0 auto 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+  .lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
+  pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
+  code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+  .checkbox{max-width:640px;margin:24px auto 0;border:1px solid var(--line);border-radius:12px;padding:26px;background:var(--soft);text-align:left}
+  .checkbox label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+  .row{display:flex;gap:10px}
+  .row input[type=text]{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
+  .row button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+  .row button:hover{background:var(--accent-dark)}
+  #result{margin-top:16px;font-size:14px;display:none;border-radius:8px;padding:14px 16px;word-break:break-all}
+  #result.ok{display:block;background:#eaf6ef;color:var(--ok);border:1px solid #bfe4cf}
+  #result.bad{display:block;background:#fdf0ea;color:var(--warn);border:1px solid #f2cdb4}
+  #result code{background:rgba(0,0,0,.06);padding:2px 6px;border-radius:4px;font-size:13px}
+  details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
+  summary{font-weight:600;cursor:pointer;font-size:15px}
+  details p{color:var(--muted);font-size:14px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}.row{flex-direction:column}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Windows, Linux (CLI)",
+      "description": "Desktop website monitor with content-change detection, SSL certificate alerts, uptime checks and domain expiry tracking. One-time purchase, no subscription.",
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How can I tell if a web page has changed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Fetch the page twice and compare a fingerprint of its content. The checker above computes the SHA-256 hash of the raw HTML — if the hash differs from an earlier check, something on the page changed." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my hash change even though nothing visible changed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Raw HTML hashes are strict: CSRF tokens, session nonces, rotating ad slots or timestamps inside the HTML will change the hash without any visible difference. DeskUptime Pro lets you ignore parts of the page so you only get alerted about changes that matter." }
+        },
+        {
+          "@type": "Question",
+          "name": "What can I monitor for content changes?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Competitor pricing pages, product availability, documentation changelogs, job postings, government notices, ticket availability, terms-of-service updates — any public page that matters to you." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this legal / allowed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Checking a public page occasionally is what every browser does on every visit. Keep intervals reasonable, respect robots.txt where applicable, and never use change monitoring to circumvent paywalls or access controls." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is this different from Visualping or changedetection.io?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Those are cloud services with monthly fees ($9–30/mo) that fetch pages on their servers. DeskUptime runs on your own machine — one $19 payment, no subscription, and the pages you watch are fetched from your network, not a third party's." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup</span>
+    <h1>Website <span>change monitor</span> — know when any page changes, not after a customer tells you</h1>
+    <p class="sub">Competitor prices, stock levels, policy updates, changelogs — anything published on the web can be watched. Fingerprint any page below for free, then let DeskUptime re-check it on a schedule and alert you the moment it changes.</p>
+    <a class="btn" href="#checker">Fingerprint a page now</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Free page-change fingerprint</h2>
+    <p class="lede">Enter any URL. We compute the SHA-256 hash of the page's HTML — compare it to a previous run and you know exactly whether the content changed.</p>
+    <div class="checkbox">
+      <label for="purl">Page URL</label>
+      <div class="row">
+        <input type="text" id="purl" placeholder="https://example.com/pricing" aria-label="Page URL" autocomplete="off" spellcheck="false">
+        <button id="go" onclick="doHash()">Get fingerprint</button>
+      </div>
+      <div id="result" role="status"></div>
+    </div>
+    <p class="note">Prefer the terminal? Do the same yourself:</p>
+<pre>curl -sL https://example.com/pricing | sha256sum
+# run again later — a different hash means the page changed
+
+# or let DeskUptime do it continuously:
+deskuptime watch https://example.com/pricing --interval 300</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pages that change quietly — and cost you</h2>
+    <p class="lede">Nobody re-reads a page they read last month. That is precisely when the important edits happen.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Terms &amp; policies</h3>
+        <p>Providers update terms, SLAs and privacy policies with a blog post nobody reads. The new clause applies whether you noticed or not.</p>
+      </div>
+      <div class="card">
+        <h3>Prices &amp; stock</h3>
+        <p>Supplier price lists, competitor plans, drop pages and restocks move without announcement. First one to see the change wins.</p>
+      </div>
+      <div class="card">
+        <h3>Status &amp; docs</h3>
+        <p>API deprecations, breaking changelog entries, incident post-mortems — published once, on a page you'll only visit when it's already too late.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>A cloud diffing service vs. your own machine</h2>
+    <p class="lede">Content monitoring exists as SaaS. Here is how it compares.</p>
+    <table>
+      <thead><tr><th></th><th>Cloud monitors<br>(Visualping, Distill…)</th><th>Self-hosted diff tools</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Cost</td><td>$9–30/month</td><td>Free + your server time</td><td>$19 once, then $0</td></tr>
+        <tr><td>Who fetches the pages</td><td>Their servers (shared IPs)</td><td>Your server</td><td>Your own machine</td></tr>
+        <tr><td>Setup</td><td>Account + plan limits</td><td>Docker/cron to maintain</td><td>Install, add URL, done</td></tr>
+        <tr><td>Uptime &amp; SSL checks too</td><td>Separate products</td><td>You build it</td><td>Included</td></tr>
+        <tr><td>Privacy</td><td>They see everything you watch</td><td>Yours</td><td>Yours — checks run locally</td></tr>
+      </tbody>
+    </table>
+    <p class="note">One $19 license covers unlimited URLs on up to 3 machines. No monthly fee, ever.</p>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Watch it from your menu bar</h2>
+    <p class="lede">The free checker answers “has it changed by now?”. DeskUptime flips the question around.</p>
+<pre># Watch a page and get notified when its content changes:
+deskuptime watch https://competitor.com/pricing --interval 300
+
+# Combine with uptime and SSL in one config file:
+deskuptime start   # runs everything in ~/.deskuptime/config.toml</pre>
+    <p style="text-align:center"><a class="btn ghost" href="/deskuptime/downloads/">Download for macOS / Windows →</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>How can I tell if a web page has changed?</summary>
+      <p>Fetch it twice and compare fingerprints. The checker above computes the SHA-256 hash of the raw HTML — a different hash than your earlier check means the content changed. Save today's hash, re-run tomorrow.</p>
+    </details>
+    <details>
+      <summary>The hash changes but the page looks identical — why?</summary>
+      <p>Raw HTML hashing is strict. CSRF tokens, session nonces, cache-busters and rotating ad slots all alter the bytes without changing anything visible. The DeskUptime desktop app lets you exclude parts of the page so alerts only fire for real changes.</p>
+    </details>
+    <details>
+      <summary>What kinds of pages is this useful for?</summary>
+      <p>Pricing pages, product/restock pages, documentation changelogs, terms of service, job postings, tender and permit notices, university admission pages — any public page whose change would matter to you.</p>
+    </details>
+    <details>
+      <summary>Is watching a page like this okay?</summary>
+      <p>An occasional check of a public page is what every browser does on every visit. Use sensible intervals (minutes, not milliseconds), respect robots.txt where applicable, and don't try to bypass paywalls or login walls — DeskUptime only sees what an anonymous visitor sees.</p>
+    </details>
+    <details>
+      <summary>Does it work on any website platform?</summary>
+      <p>Yes. A URL is a URL — WordPress, Shopify, Webflow, Squarespace, Notion, a PDF behind a link, or hand-written HTML. Nothing is installed on the target site and no CMS-specific knowledge is needed.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      Related: <a href="/deskuptime/domain-expiry-monitor/">Domain expiry monitor</a> ·
+      <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry monitor</a> ·
+      <a href="/deskuptime/cron-monitoring/">Cron job monitoring</a> ·
+      <a href="/deskuptime/bulk-url-checker/">Bulk URL checker</a> · Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+function cleanUrl(v){
+  v=v.trim();
+  if(!v)return'';
+  if(!/^https?:\/\//i.test(v))v='https://'+v;
+  return v;
+}
+async function doHash(){
+  const raw=document.getElementById('purl').value.trim();
+  const box=document.getElementById('result');
+  if(!raw){box.className='bad';box.textContent='Enter a URL first.';return;}
+  let u;
+  try{u=new URL(cleanUrl(raw));}catch(e){box.className='bad';box.textContent='"'+raw+'" is not a valid URL.';return;}
+  box.className='ok';box.textContent='Fetching and hashing '+u.href+' …';
+  try{
+    const r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/hash?url='+encodeURIComponent(u.href));
+    const d=await r.json();
+    if(d.error||!r.ok){box.className='bad';box.textContent='Could not fetch the page: '+(d.error||('HTTP '+r.status));return;}
+    box.className='ok';
+    box.innerHTML=u.hostname+' · '+d.contentBytes.toLocaleString()+' bytes · HTTP '+d.status+
+      '<br>SHA-256 fingerprint:<br><code>'+d.sha256+'</code>'+
+      '<br>Save this value. Run the check again later — a different hash means the page changed.';
+  }catch(e){
+    box.className='bad';box.textContent='Lookup failed: '+e.message;
+  }
+}
+document.getElementById('purl').addEventListener('keydown',e=>{if(e.key==='Enter')doHash();});
+</script>
+
+</body>
+</html>

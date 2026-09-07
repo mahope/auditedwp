@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regex Tester — Test & Debug Regular Expressions Online (Free)</title>
+<meta name="description" content="Free online regex tester. Test regular expressions with live highlighting, match groups, and a built-in cheat sheet. 100% client-side, no data leaves your browser.">
+<meta property="og:title" content="Regex Tester — Test & Debug Regular Expressions Online">
+<meta property="og:description" content="Live regex testing with full match highlighting, captures, and substitution. Free and private — everything runs in your browser.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Regex Tester — Free Online Tool">
+<meta name="twitter:description" content="Test regular expressions live in your browser. Private, no server, no tracking.">
+<link rel="canonical" href="https://eucomplypro.com/regex/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>.*</text></svg>">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Regex Tester","url":"https://eucomplypro.com/regex/","description":"Test regular expressions live in your browser with highlighting, capture groups, and substitution support.","applicationCategory":"DeveloperApplication","operatingSystem":"All","browserRequirements":"Requires JavaScript"}
+</script>
+<style>
+:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--match-bg:#ffd43b55;--match-bg-active:#ffd43baa;--group-bg:#e7f5ff;--code-bg:#e9ecef;--radius:8px;--font:sans-serif;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px rgba(0,0,0,.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,var(--font);background:var(--bg);color:var(--ink);line-height:1.6;padding:0}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+/* Header */
+header{border-bottom:1px solid var(--line);padding:12px 0;background:var(--surface)}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:17px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:6px}
+.logo-code{font-family:var(--mono);color:var(--accent);font-weight:400}
+nav{display:flex;gap:16px;align-items:center}
+nav a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .15s}
+nav a:hover{color:var(--ink)}
+/* Hero */
+.hero{text-align:center;padding:40px 0 24px}
+h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.hero p{color:var(--muted);font-size:14px;max-width:480px;margin:0 auto}
+/* Tool */
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:24px}
+.tool-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.tool-grid{grid-template-columns:1fr 1fr}}
+label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+textarea,input[type="text"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);font-family:var(--mono);font-size:13px;background:var(--bg);color:var(--ink);transition:border .15s;outline:none;resize:vertical;min-height:40px}
+textarea:focus,input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px #4361ee33}
+textarea{min-height:100px;tab-size:2}
+.input-group{position:relative}
+.input-group input{padding-right:80px}
+/* Flags */
+.flags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.flags label{cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--bg);padding:4px 10px;border-radius:6px;border:1px solid var(--line);transition:all .15s;user-select:none}
+.flags input[type="checkbox"]{accent-color:var(--accent);width:14px;height:14px}
+.flags label:has(input:checked){background:var(--accent);color:#fff;border-color:var(--accent)}
+.flag-desc{font-size:11px;color:var(--muted);margin-left:12px;}
+/* Mode switch */
+.mode-btns{display:flex;gap:8px;margin-top:8px}
+.mode-btn{padding:6px 14px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:inherit}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode-btn:not(.active):hover{background:var(--line)}
+/* Results */
+.results{margin-top:20px}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.result-header h3{font-size:14px;font-weight:600}
+.match-count{font-size:13px;color:var(--muted)}
+/* Test string with highlighted matches */
+.test-output{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:12px;font-family:var(--mono);font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-all;min-height:60px;overflow-x:auto;tab-size:2}
+.test-output mark{background:var(--match-bg);border-radius:2px;padding:1px 0;transition:background .2s;cursor:pointer}
+.test-output mark:hover,.test-output mark.active{background:var(--match-bg-active)}
+.test-output .match-highlight{background:var(--match-bg);border-radius:2px;padding:1px 0}
+/* Match details */
+.match-details{margin-top:12px;font-family:var(--mono);font-size:12px}
+.match-details details{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:6px;padding:6px 10px}
+.match-details summary{cursor:pointer;color:var(--ink);font-weight:500;font-size:12px}
+.match-details summary em{font-style:normal;color:var(--muted);font-weight:400}
+.match-groups{padding:8px 0 0 16px;list-style:none}
+.match-groups li{padding:2px 0;color:var(--ink)}
+.match-groups .group-num{color:var(--accent);font-weight:600}
+.match-groups .group-empty{color:var(--muted)}
+/* Substitution output */
+.sub-output{background:var(--code-bg);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:13px;white-space:pre-wrap;word-break:break-all;min-height:40px;margin-top:8px}
+/* Error */
+.error{color:#d92d2d;font-size:13px;font-family:var(--mono);padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);margin-top:8px;display:none}
+.error.show{display:block}
+/* Cheat sheet */
+.cheatsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:24px;display:none}
+.cheatsheet.show{display:block}
+.cheatsheet h3{font-size:16px;margin-bottom:12px}
+.cheatsheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.cheatsheet-item{background:var(--bg);padding:10px;border-radius:6px;border:1px solid var(--line)}
+.cheatsheet-item code{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.cheatsheet-item .desc{font-size:12px;color:var(--muted);margin-top:2px}
+/* Footer */
+footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:var(--muted);font-size:12px;margin-top:48px}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+/* Pro upsell — visible with pricing, checkout placeholder ready */
+.pro-upsell{background:linear-gradient(135deg,#4361ee08,#4361ee18);border:1px dashed var(--accent);border-radius:var(--radius);padding:20px;margin-top:24px;text-align:center}
+.pro-upsell h3{font-size:18px;color:var(--ink);margin-bottom:6px}
+.pro-upsell .price{font-size:28px;font-weight:700;color:var(--accent);margin:8px 0}
+.pro-upsell .price span{font-size:13px;color:var(--muted);font-weight:400}
+.pro-upsell p{font-size:13px;color:var(--muted);margin-bottom:12px}
+.pro-upsell .features{display:inline-block;text-align:left;margin:12px auto;font-size:13px;line-height:2}
+.pro-upsell .features li{list-style:none;color:var(--ink)}
+.pro-upsell .features li::before{content:"✓ ";color:var(--accent);font-weight:700}
+.pro-upsell .checkout-btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 32px;border-radius:var(--radius);text-decoration:none;font-size:15px;font-weight:500;transition:background .15s;border:none;cursor:pointer}
+.pro-upsell .checkout-btn:hover{background:var(--accent-hover)}
+.pro-upsell .checkout-btn.disabled{opacity:.5;cursor:not-allowed;background:var(--muted);pointer-events:none}
+.pro-upsell .status-msg{font-size:11px;color:var(--muted);margin-top:8px}
+/* Error states */
+.invalid-regex{color:#d92d2d;border-color:#d92d2d}
+/* Empty state */
+.empty-state{text-align:center;padding:24px;color:var(--muted);font-size:14px}
+/* Loading / responsive tweaks */
+@media(max-width:480px){h1{font-size:22px}.hero{padding:24px 0 16px}.tool{padding:14px}}
+</style>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/regex/" class="logo"><span class="logo-code">.*</span> Regex&shy;Tester</a>
+    <nav>
+      <a href="#" id="cheatsheet-toggle">Quick Ref</a>
+      <a href="/regex/cheat-sheet/" style="color:var(--muted)">Cheat Sheet</a>
+      <a href="/regex/examples/" style="color:var(--muted)">Examples</a>
+      <a href="/regex/tutorial/" style="color:var(--muted)">Tutorial</a>
+      <a href="/" style="color:var(--muted)">EUComply</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="hero">
+  <h1>Test regular expressions. Live.</h1>
+  <p>Type a regex and test string below. Matches highlight in real time. 100% private — nothing leaves your browser.</p>
+</div>
+
+<div class="tool">
+  <div class="tool-grid">
+    <div>
+      <label for="regex">Regular Expression</label>
+      <div class="input-group">
+        <input type="text" id="regex" placeholder="[a-z]+" value="\b[A-Z][a-z]+\b" spellcheck="false" autocomplete="off">
+      </div>
+      <div class="flags">
+        <label><input type="checkbox" id="flag-g" checked> g <span class="flag-desc">global</span></label>
+        <label><input type="checkbox" id="flag-i"> i <span class="flag-desc">case-insensitive</span></label>
+        <label><input type="checkbox" id="flag-m"> m <span class="flag-desc">multiline</span></label>
+        <label><input type="checkbox" id="flag-s"> s <span class="flag-desc">dotall</span></label>
+        <label><input type="checkbox" id="flag-u"> u <span class="flag-desc">unicode</span></label>
+        <label><input type="checkbox" id="flag-y"> y <span class="flag-desc">sticky</span></label>
+      </div>
+    </div>
+    <div>
+      <label for="test-string">Test String</label>
+      <textarea id="test-string" placeholder="Paste or type the text to search..." spellcheck="false">Alice and Bob met Carol at the Django conference in Aarhus. They exchanged 42 emails before the event.</textarea>
+    </div>
+  </div>
+
+  <div class="mode-btns">
+    <button class="mode-btn active" data-mode="match">Match</button>
+    <button class="mode-btn" data-mode="replace">Replace</button>
+  </div>
+
+  <div id="replace-input" style="display:none;margin-top:8px">
+    <label for="replacement">Replacement</label>
+    <input type="text" id="replacement" value="$1 (matched)" spellcheck="false" placeholder="$1 — reference capture groups with $1, $2, etc.">
+  </div>
+
+  <div class="error" id="error"></div>
+
+  <div class="results">
+    <div class="result-header">
+      <h3>Matches</h3>
+      <span class="match-count" id="match-count">0 matches</span>
+    </div>
+    <div class="test-output" id="test-output">
+      <span class="empty-state">Enter a regex and test string to see matches</span>
+    </div>
+    <div id="sub-output" class="sub-output" style="display:none"></div>
+    <div class="match-details" id="match-details"></div>
+  </div>
+
+  <!-- Pro upsell — pricing visible, checkout activates when LS key arrives -->
+  <div class="pro-upsell" id="pro-upsell">
+    <h3>✨ Regex Tester Pro</h3>
+    <div class="price">$2 <span>/ month</span> &middot; $19 <span>/ year</span></div>
+    <ul class="features">
+      <li>Save custom patterns and shareable links</li>
+      <li>Regex API for automated testing in CI/CD</li>
+      <li>Team collections and collaborative patterns</li>
+      <li>Priority support</li>
+    </ul>
+    <button class="checkout-btn disabled" id="checkout-btn">Payment opening soon</button>
+    <div class="status-msg" id="checkout-msg">Checkout will be available once payment processing is configured.</div>
+  </div>
+</div>
+
+<div class="cheatsheet" id="cheatsheet">
+  <h3>Quick Reference</h3>
+  <div class="cheatsheet-grid">
+    <div class="cheatsheet-item"><code>.</code><div class="desc">Any character except newline</div></div>
+    <div class="cheatsheet-item"><code>\d</code><div class="desc">Digit [0-9]</div></div>
+    <div class="cheatsheet-item"><code>\w</code><div class="desc">Word char [a-zA-Z0-9_]</div></div>
+    <div class="cheatsheet-item"><code>\s</code><div class="desc">Whitespace</div></div>
+    <div class="cheatsheet-item"><code>\b</code><div class="desc">Word boundary</div></div>
+    <div class="cheatsheet-item"><code>^</code><div class="desc">Start of string/line (m)</div></div>
+    <div class="cheatsheet-item"><code>$</code><div class="desc">End of string/line (m)</div></div>
+    <div class="cheatsheet-item"><code>*</code><div class="desc">0 or more</div></div>
+    <div class="cheatsheet-item"><code>+</code><div class="desc">1 or more</div></div>
+    <div class="cheatsheet-item"><code>?</code><div class="desc">0 or 1 (lazy)</div></div>
+    <div class="cheatsheet-item"><code>{n,m}</code><div class="desc">Between n and m</div></div>
+    <div class="cheatsheet-item"><code>(...)</code><div class="desc">Capture group</div></div>
+    <div class="cheatsheet-item"><code>(?:...)</code><div class="desc">Non-capture group</div></div>
+    <div class="cheatsheet-item"><code>(?=...)</code><div class="desc">Lookahead</div></div>
+    <div class="cheatsheet-item"><code>(?!...)</code><div class="desc">Negative lookahead</div></div>
+    <div class="cheatsheet-item"><code>(?&lt;=...)</code><div class="desc">Lookbehind</div></div>
+    <div class="cheatsheet-item"><code>(?&lt;!...)</code><div class="desc">Negative lookbehind</div></div>
+    <div class="cheatsheet-item"><code>|</code><div class="desc">Alternation (OR)</div></div>
+    <div class="cheatsheet-item"><code>[...]</code><div class="desc">Character class</div></div>
+    <div class="cheatsheet-item"><code>[^...]</code><div class="desc">Negated char class</div></div>
+    <div class="cheatsheet-item"><code>\1</code><div class="desc">Backreference (group 1)</div></div>
+    <div class="cheatsheet-item"><code>\\</code><div class="desc">Escape character</div></div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><span class="logo-code">.*</span> Regex Tester — Free online developer tool. 100% client-side, no tracking, no data leaving your browser.</p>
+    <p style="margin-top:4px"><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Built for developers</p>
+  </div>
+</footer>
+
+<script>
+(function() {
+  const els = {
+    regex: document.getElementById('regex'),
+    testString: document.getElementById('test-string'),
+    flags: ['g','i','m','s','u','y'].map(f => document.getElementById('flag-' + f)),
+    error: document.getElementById('error'),
+    testOutput: document.getElementById('test-output'),
+    subOutput: document.getElementById('sub-output'),
+    matchCount: document.getElementById('match-count'),
+    matchDetails: document.getElementById('match-details'),
+    replaceInput: document.getElementById('replace-input'),
+    replacement: document.getElementById('replacement'),
+    modeBtns: document.querySelectorAll('.mode-btn'),
+    cheatsheet: document.getElementById('cheatsheet'),
+    cheatsheetToggle: document.getElementById('cheatsheet-toggle'),
+  };
+
+  function getFlags() {
+    return els.flags.filter(cb => cb.checked).map(cb => cb.id.replace('flag-','')).join('');
+  }
+
+  function getMode() {
+    const active = document.querySelector('.mode-btn.active');
+    return active ? active.dataset.mode : 'match';
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function updateResults() {
+    const pattern = els.regex.value;
+    const testStr = els.testString.value;
+    const flags = getFlags();
+    const mode = getMode();
+
+    els.error.classList.remove('show');
+    els.error.textContent = '';
+    els.testOutput.innerHTML = '';
+    els.subOutput.style.display = 'none';
+    els.matchDetails.innerHTML = '';
+    els.matchCount.textContent = '0 matches';
+
+    if (!pattern || !testStr) {
+      els.testOutput.innerHTML = '<span class="empty-state">' +
+        (!pattern ? 'Enter a regular expression' : 'Enter text to test against') + '</span>';
+      return;
+    }
+
+    let regex;
+    try {
+      regex = new RegExp(pattern, flags);
+    } catch(e) {
+      els.error.textContent = e.message;
+      els.error.classList.add('show');
+      els.testOutput.innerHTML = '<span class="empty-state">Invalid regular expression</span>';
+      els.regex.classList.add('invalid-regex');
+      return;
+    }
+    els.regex.classList.remove('invalid-regex');
+
+    if (mode === 'replace') {
+      const replacement = els.replacement.value;
+      let result;
+      try {
+        result = testStr.replace(regex, replacement);
+      } catch(e) {
+        els.error.textContent = 'Replace error: ' + e.message;
+        els.error.classList.add('show');
+        return;
+      }
+      els.subOutput.style.display = 'block';
+      els.subOutput.textContent = result;
+
+      // Show match count for the replacement
+      const matches = [...testStr.matchAll(regex)];
+      els.matchCount.textContent = matches.length + ' match' + (matches.length !== 1 ? 'es' : '') + ' replaced';
+      els.testOutput.innerHTML = escapeHtml(testStr);
+      els.matchDetails.innerHTML = '';
+      return;
+    }
+
+    // Match mode — find and highlight matches
+    const matches = [...testStr.matchAll(regex)];
+    const count = matches.length;
+    els.matchCount.textContent = count + ' match' + (count !== 1 ? 'es' : '');
+
+    if (count === 0) {
+      els.testOutput.innerHTML = '<span class="empty-state">No matches found</span>';
+      els.matchDetails.innerHTML = '';
+      return;
+    }
+
+    // Build highlighted output
+    let lastIndex = 0;
+    let html = '';
+    const matchData = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      const m = matches[i];
+      const idx = m.index;
+      const len = m[0].length;
+
+      // Text before this match
+      if (idx > lastIndex) {
+        html += escapeHtml(testStr.slice(lastIndex, idx));
+      }
+
+      // The match itself
+      html += '<mark data-match="' + i + '">' + escapeHtml(m[0]) + '</mark>';
+      lastIndex = idx + len;
+
+      matchData.push({
+        index: i,
+        fullMatch: m[0],
+        groups: m.slice(1),
+        namedGroups: m.groups || null,
+        position: idx,
+        length: len
+      });
+    }
+
+    // Remaining text after last match
+    if (lastIndex < testStr.length) {
+      html += escapeHtml(testStr.slice(lastIndex));
+    }
+
+    els.testOutput.innerHTML = html;
+
+    // Build match details
+    if (matchData.length > 0) {
+      let detailsHtml = '';
+      for (const md of matchData) {
+        const hasGroups = md.groups.length > 0 || (md.namedGroups && Object.keys(md.namedGroups).length > 0);
+        detailsHtml += '<details>';
+        detailsHtml += '<summary>Match #' + (md.index + 1) +
+          ' <em>«' + escapeHtml(md.fullMatch.length > 30 ? md.fullMatch.slice(0,30) + '…' : md.fullMatch) + '»</em>' +
+          ' at position ' + md.position + '</summary>';
+
+        if (!hasGroups) {
+          detailsHtml += '<p style="font-size:12px;padding:4px 0;color:var(--muted)">No capture groups</p>';
+        } else {
+          detailsHtml += '<ol class="match-groups">';
+          for (let g = 0; g < md.groups.length; g++) {
+            const val = md.groups[g];
+            detailsHtml += '<li><span class="group-num">$' + (g+1) + ':</span> ' +
+              (val !== undefined ? escapeHtml(val) : '<span class="group-empty">(undefined)</span>') + '</li>';
+          }
+          if (md.namedGroups) {
+            for (const [name, val] of Object.entries(md.namedGroups)) {
+              detailsHtml += '<li><span class="group-num">$<' + escapeHtml(name) + '>:</span> ' +
+                (val !== undefined ? escapeHtml(val) : '<span class="group-empty">(undefined)</span>') + '</li>';
+            }
+          }
+          detailsHtml += '</ol>';
+        }
+        detailsHtml += '</details>';
+      }
+      els.matchDetails.innerHTML = detailsHtml;
+    }
+
+    // Click handler for match highlights
+    document.querySelectorAll('.test-output mark').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.test-output mark').forEach(m => m.classList.remove('active'));
+        this.classList.add('active');
+        // Scroll to the corresponding match detail
+        const idx = this.dataset.match;
+        const detail = els.matchDetails.querySelector('details:nth-child(' + (+idx+1) + ')');
+        if (detail) {
+          detail.open = true;
+          detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+    });
+  }
+
+  // Event listeners
+  els.regex.addEventListener('input', updateResults);
+  els.testString.addEventListener('input', updateResults);
+  els.flags.forEach(cb => cb.addEventListener('change', updateResults));
+  els.replacement.addEventListener('input', updateResults);
+
+  // Mode switch
+  els.modeBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      els.modeBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      els.replaceInput.style.display = this.dataset.mode === 'replace' ? 'block' : 'none';
+      updateResults();
+    });
+  });
+
+  // Cheat sheet toggle
+  els.cheatsheetToggle.addEventListener('click', function(e) {
+    e.preventDefault();
+    els.cheatsheet.classList.toggle('show');
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Ctrl+Enter or Cmd+Enter: test (refresh)
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      updateResults();
+    }
+    // Escape: close cheat sheet
+    if (e.key === 'Escape' && els.cheatsheet.classList.contains('show')) {
+      els.cheatsheet.classList.remove('show');
+    }
+  });
+
+  // Initial run
+  updateResults();
+
+  // Store the update function for external access
+  window.regexTester = { updateResults };
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domain Expiry Monitor — Free Check, Desktop Alerts</title>
+<meta name="description" content="Check any domain's expiration date for free via RDAP, then get alerted before it expires. No account. Works with every TLD and every website platform — WordPress, Shopify, Webflow, static sites.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/deskuptime/domain-expiry-monitor/">
+<meta property="og:title" content="Domain Expiry Monitor">
+<meta property="og:description" content="Free domain expiry check plus desktop alerts before your domain expires. Works with any domain and any website platform.">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/domain-expiry-monitor/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/deskuptime/assets/og-domain-expiry.png">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-domain-expiry.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Domain Expiry Monitor">
+<meta name="twitter:description" content="Free domain expiry check plus desktop alerts before your domain expires.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  nav a.cta:hover{background:var(--accent-dark)}
+  .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:720px;margin:0 auto 14px}
+  h1 span{color:var(--accent)}
+  .sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+  .lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
+  pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
+  code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+  .checkbox{max-width:640px;margin:24px auto 0;border:1px solid var(--line);border-radius:12px;padding:26px;background:var(--soft);text-align:left}
+  .checkbox label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+  .row{display:flex;gap:10px}
+  .row input[type=text]{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
+  .row button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;cursor:pointer}
+  .row button:hover{background:var(--accent-dark)}
+  #result{margin-top:16px;font-size:14px;display:none;border-radius:8px;padding:14px 16px}
+  #result.ok{display:block;background:#eaf6ef;color:var(--ok);border:1px solid #bfe4cf}
+  #result.bad{display:block;background:#fdf0ea;color:var(--warn);border:1px solid #f2cdb4}
+  details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
+  summary{font-weight:600;cursor:pointer;font-size:15px}
+  details p{color:var(--muted);font-size:14px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}.row{flex-direction:column}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Windows, Linux (CLI)",
+      "description": "Desktop website monitor with domain expiry tracking, SSL certificate alerts, uptime checks and content-change detection. One-time purchase, no subscription.",
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I check when my domain expires?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Enter the domain in the checker above, or look up the 'expiration' event in the registry's RDAP record (rdap.org redirects to the right registry for each TLD). DeskUptime does this automatically on a schedule and alerts you before expiry." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if my domain expires?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The website and email stop working immediately once DNS is suspended. After a short grace period the domain can be auctioned or re-registered by anyone — recovering a dropped domain is often impossible." }
+        },
+        {
+          "@type": "Question",
+          "name": "Doesn't auto-renew make this unnecessary?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Auto-renew fails silently when the card on file expires, billing emails go to an old address, or the registrar locks the account. Domains registered years ago under a former employee's account are the classic case. An expiry monitor is the safety net that catches those silent failures." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work with all TLDs?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The checker uses RDAP, which covers most gTLDs (.com, .net, .app, etc.) and a growing number of ccTLDs. A few registries still only offer WHOIS; the DeskUptime desktop app and CLI fall back to WHOIS where RDAP is unavailable." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup</span>
+    <h1>Domain expiry <span>monitor</span> — never lose a domain to a missed renewal</h1>
+    <p class="sub">An expired domain takes your website, email and API down — and after the grace period, anyone can register it. Check any domain below for free, then let DeskUptime watch it daily and alert you months ahead.</p>
+    <a class="btn" href="#checker">Check a domain now</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Free domain expiry checker</h2>
+    <p class="lede">Enter any domain. We read its official expiration date from the registry's RDAP record — no login, no scraping.</p>
+    <div class="checkbox">
+      <label for="domain">Domain name</label>
+      <div class="row">
+        <input type="text" id="domain" placeholder="example.com" aria-label="Domain name" autocomplete="off" spellcheck="false">
+        <button id="go" onclick="doCheck()">Check</button>
+      </div>
+      <div id="result" role="status"></div>
+    </div>
+    <p class="note">Prefer the terminal? The same lookup yourself:</p>
+<pre>curl -s https://rdap.org/domain/example.com \
+  | python3 -c "import json,sys;print(next(e['eventDate'] for e in json.load(sys.stdin)['events'] if e['eventAction']=='expiration'))"</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How domains get lost in 2026</h2>
+    <p class="lede">Auto-renew was supposed to end this. It mostly moved the failure somewhere quieter.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Expired payment cards</h3>
+        <p>Auto-renew charges the card on file. When that card expires or is replaced, the charge fails — and the notification lands in an inbox nobody reads.</p>
+      </div>
+      <div class="card">
+        <h3>Nobody owns the domain</h3>
+        <p>The domain sits in an account created by a freelancer or a former employee. Renewal emails go to their address. You find out when the site goes dark.</p>
+      </div>
+      <div class="card">
+        <h3>Dropped means gone</h3>
+        <p>After the grace period, expired domains are auctioned or snapped up by resellers within minutes. Recovery costs hundreds — or is simply impossible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>A one-time check isn't monitoring</h2>
+    <p class="lede">Checking today tells you nothing about the renewal that quietly fails next quarter.</p>
+    <table>
+      <thead><tr><th></th><th>Manual WHOIS lookup</th><th>Cron script</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Runs automatically</td><td>✗</td><td>✓ (if you maintain it)</td><td>✓</td></tr>
+        <tr><td>Alerts well before expiry</td><td>✗</td><td>You build it</td><td>✓ built-in thresholds</td></tr>
+        <tr><td>SSL &amp; uptime checks too</td><td>✗</td><td>You build it</td><td>✓ included</td></tr>
+        <tr><td>Server to maintain</td><td>—</td><td>Required</td><td>None — runs on your machine</td></tr>
+        <tr><td>Monthly cost</td><td>Your time</td><td>~$5 server</td><td>$0 after $19 one-time</td></tr>
+      </tbody>
+    </table>
+    <p class="note">DeskUptime is a desktop app: your domains are checked from your own machine and never touch our servers. One-time $19, no subscription.</p>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>How do I check when my domain expires?</summary>
+      <p>Use the checker above, or read the <code class="inline">expiration</code> event from the registry's RDAP record (<code class="inline">curl -s https://rdap.org/domain/example.com</code>). DeskUptime automates exactly that lookup on a schedule and alerts you ahead of time.</p>
+    </details>
+    <details>
+      <summary>What happens the day a domain expires?</summary>
+      <p>DNS is suspended almost immediately: the website stops resolving, email bounces, API calls fail. There is usually a redemption grace period of around 30 days, but after that the domain is released — and desirable domains are re-registered within minutes.</p>
+    </details>
+    <details>
+      <summary>Doesn't auto-renew handle this?</summary>
+      <p>Until it doesn't. Expired cards, changed billing emails, registrar account lockouts and domains stranded in a former employee's account all break auto-renew silently. That's precisely what a monitor catches.</p>
+    </details>
+    <details>
+      <summary>Does it work with all TLDs?</summary>
+      <p>The web checker uses RDAP, which covers most gTLDs (.com, .net, .io, .app …) and many ccTLDs. Some country registries don't publish expiry data via RDAP yet — those domains will return "not available via RDAP". The desktop app and CLI fall back to WHOIS where needed.</p>
+    </details>
+    <details>
+      <summary>Can I monitor domains I don't own?</summary>
+      <p>Yes. Registration data is public by design. Freelancers and agencies use this to watch client domains too — so the renewal problem surfaces on your dashboard instead of in an angry client call.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      Related: <a href="/deskuptime/cron-monitoring/">Cron job monitoring</a> ·
+      <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry monitor</a> ·
+      <a href="/deskuptime/no-subscription-uptime-monitoring/">No-subscription uptime monitoring</a> ·
+      <a href="/deskuptime/bulk-url-checker/">Bulk URL checker</a> · Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+function cleanDomain(v){
+  v=v.trim();
+  v=v.replace(/^[a-z]+:\/\//i,'').replace(/^www\./i,'').split(/[/?#]/)[0];
+  return v.toLowerCase();
+}
+async function doCheck(){
+  const raw=document.getElementById('domain').value.trim();
+  const box=document.getElementById('result');
+  if(!raw){box.className='bad';box.textContent='Enter a domain first.';return;}
+  const d=cleanDomain(raw);
+  if(!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(d)){
+    box.className='bad';box.textContent='"'+raw+'" does not look like a valid domain (example.com).';return;
+  }
+  box.className='ok';box.textContent='Looking up '+d+'…';
+  try{
+    const r=await fetch('https://rdap.org/domain/'+encodeURIComponent(d),{headers:{'Accept':'application/rdap+json'}});
+    if(r.status===404){box.className='bad';box.textContent=d+' — not found in any registry. It may be unregistered or use a TLD without RDAP support.';return;}
+    if(!r.ok){box.className='bad';box.textContent=d+' — registry returned HTTP '+r.status+'. Try again later.';return;}
+    const data=await r.json();
+    const exp=(data.events||[]).find(e=>e.eventAction==='expiration');
+    if(!exp||!exp.eventDate){box.className='bad';box.textContent=d+' — this registry does not publish an expiry date via RDAP.';return;}
+    const expDate=new Date(exp.eventDate);
+    const days=Math.ceil((expDate-new Date())/86400000);
+    const when=expDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    if(days>=0){
+      box.className='ok';
+      box.textContent=d+' — expires '+when+' ('+days+' day'+(days===1?'':'s')+' from today)'+(days<60?' ⚠ renew soon':'');
+    }else{
+      box.className='bad';
+      box.textContent=d+' — EXPIRED '+(-days)+' day'+(days===-1?'':'s')+' ago ('+when+'). If this is your domain, renew it at your registrar now.';
+    }
+  }catch(e){
+    box.className='bad';box.textContent='Lookup failed: '+e.message;
+  }
+}
+document.getElementById('domain').addEventListener('keydown',e=>{if(e.key==='Enter')doCheck();});
+</script>
+
+</body>
+</html>

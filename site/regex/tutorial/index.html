@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regex Tutorial for Beginners — Learn Regular Expressions Step by Step</title>
+<meta name="description" content="A complete regex tutorial for beginners. Learn regular expressions from scratch with practical examples, interactive exercises, and a free online tester.">
+<meta property="og:title" content="Regex Tutorial for Beginners — Learn Regular Expressions Step by Step">
+<meta property="og:description" content="Master regular expressions from scratch. This guide covers patterns, quantifiers, groups, anchors, lookarounds, and practical use cases with real examples.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eucomplypro.com/regex/tutorial/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Regex Tutorial for Beginners">
+<meta name="twitter:description" content="Learn regular expressions from scratch. Step-by-step tutorial with examples and a free online tester.">
+<link rel="canonical" href="https://eucomplypro.com/regex/tutorial/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>.*</text></svg>">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Regex Tutorial for Beginners — Learn Regular Expressions Step by Step","description":"A complete regex tutorial for beginners. Learn regular expressions from scratch with practical examples, interactive exercises, and a free online tester.","url":"https://eucomplypro.com/regex/tutorial/","author":{"@type":"Person","name":"Regex Tester Team"},"datePublished":"2026-08-27","dateModified":"2026-08-27"}
+</script>
+<style>
+:root{--bg:#f8f9fa;--surface:#fff;--ink:#1a1a2e;--muted:#6c757d;--line:#dee2e6;--accent:#4361ee;--accent-hover:#3a56d4;--code-bg:#e9ecef;--radius:8px;--mono:'SF Mono','Fira Code','Cascadia Code',monospace;--shadow:0 1px 3px rgba(0,0,0,.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+/* Header */
+header{border-bottom:1px solid var(--line);padding:12px 0;background:var(--surface)}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:17px;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:6px}
+.logo-code{font-family:var(--mono);color:var(--accent);font-weight:400}
+nav{display:flex;gap:16px;align-items:center}
+nav a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .15s}
+nav a:hover{color:var(--ink)}
+/* Hero */
+.hero{text-align:center;padding:40px 0 24px}
+h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:14px;max-width:560px;margin:0 auto}
+.hero .cta{margin-top:16px;display:inline-block;background:var(--accent);color:#fff;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-size:14px;font-weight:500;transition:background .15s}
+.hero .cta:hover{background:var(--accent-hover)}
+/* Content */
+article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:32px;margin-bottom:32px}
+section{margin-bottom:40px}
+section:last-child{margin-bottom:0}
+h2{font-size:24px;font-weight:600;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;font-weight:600;margin:24px 0 12px;color:var(--ink)}
+h4{font-size:15px;font-weight:600;margin:16px 0 8px;color:var(--ink)}
+p{color:var(--ink);margin-bottom:12px;font-size:15px}
+p:last-child{margin-bottom:0}
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+th{background:var(--code-bg);text-align:left;padding:8px 12px;font-weight:600;border:1px solid var(--line)}
+td{padding:8px 12px;border:1px solid var(--line);vertical-align:top}
+tr:nth-child(even){background:var(--bg)}
+/* Code */
+code,pre{font-family:var(--mono);font-size:13px}
+p code,li code,td code{background:var(--code-bg);padding:1px 5px;border-radius:3px;font-size:12px}
+pre{background:var(--code-bg);padding:12px 16px;border-radius:var(--radius);overflow-x:auto;margin:12px 0;font-size:12px;line-height:1.5}
+/* Lists */
+ul,ol{padding-left:20px;margin-bottom:12px;font-size:15px}
+li{margin-bottom:6px}
+/* Info boxes */
+.info{background:#e7f5ff;border:1px solid #b6d4fe;border-radius:var(--radius);padding:12px 16px;margin:16px 0;font-size:14px}
+.info strong{color:var(--accent)}
+.tip{background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:12px 16px;margin:16px 0;font-size:14px}
+.tip strong{color:#856404}
+.warn{background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);padding:12px 16px;margin:16px 0;font-size:14px}
+.warn strong{color:#d92d2d}
+/* TOC */
+.toc{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px}
+.toc h3{margin:0 0 10px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.toc ol{margin:0;padding-left:18px;font-size:14px}
+.toc li{margin-bottom:4px}
+.toc a{color:var(--accent);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+/* Footer */
+footer{text-align:center;padding:24px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:24px}
+footer a{color:var(--muted);text-decoration:underline}
+/* Match highlight example */
+.match-demo{color:#d92d2d;font-weight:600}
+.match-highlight{background:#ffd43b55;padding:1px 4px;border-radius:2px}
+/* Responsive */
+@media(max-width:640px){article{padding:20px 16px;margin:0 -16px 32px;border-radius:0;border-left:none;border-right:none}h1{font-size:24px}h2{font-size:20px}}
+</style>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<body>
+
+<header>
+<div class="wrap">
+<a href="https://eucomplypro.com/regex/" class="logo"><span class="logo-code">.*</span> Regex Tester</a>
+<nav>
+<a href="https://eucomplypro.com/regex/">Tester</a>
+<a href="https://eucomplypro.com/regex/examples/">Examples</a>
+<a href="https://eucomplypro.com/regex/cheat-sheet/">Cheat Sheet</a>
+<a href="https://eucomplypro.com/regex/tutorial/">Tutorial</a>
+</nav>
+</div>
+</header>
+
+<div class="wrap">
+<div class="hero">
+<h1>Regex Tutorial for Beginners</h1>
+<p>Learn regular expressions from scratch. This step-by-step guide covers everything from literal characters to advanced patterns — with real examples you can test yourself.</p>
+<a href="https://eucomplypro.com/regex/" class="cta">Try the Free Regex Tester →</a>
+</div>
+
+<article>
+
+<div class="toc">
+<h3>Table of Contents</h3>
+<ol>
+<li><a href="#what-is-regex">What Is a Regular Expression?</a></li>
+<li><a href="#literal-characters">Literal Characters — The Simplest Pattern</a></li>
+<li><a href="#character-classes">Character Classes — Matching a Set of Characters</a></li>
+<li><a href="#quantifiers">Quantifiers — How Many Times?</a></li>
+<li><a href="#anchors">Anchors — Where in the String?</a></li>
+<li><a href="#wildcard">The Wildcard — Matching Anything</a></li>
+<li><a href="#escaping">Escaping Special Characters</a></li>
+<li><a href="#groups">Groups and Capturing</a></li>
+<li><a href="#alternation">Alternation — This or That</a></li>
+<li><a href="#lookahead">Lookahead and Lookbehind</a></li>
+<li><a href="#common-patterns">Common Real-World Patterns</a></li>
+<li><a href="#next-steps">Next Steps</a></li>
+</ol>
+</div>
+
+<section id="what-is-regex">
+<h2>1. What Is a Regular Expression?</h2>
+
+<p>A regular expression (regex) is a sequence of characters that defines a <strong>search pattern</strong>. Think of it as a miniature programming language for finding, extracting, and manipulating text.</p>
+
+<p>Every developer encounters regex sooner or later — whether you're validating an email address, extracting data from a log file, finding all phone numbers in a document, or replacing text across thousands of files. Regex is one of those skills that pays for itself a hundred times over.</p>
+
+<div class="info">
+<strong>Key insight:</strong> Regex is not about memorizing cryptic symbols. It's about understanding a small set of building blocks. Once you know the blocks, you can read and write any pattern.
+</div>
+
+<h3>What Can You Do With Regex?</h3>
+
+<ul>
+<li><strong>Validate</strong> — Is this email address format valid? Is this phone number real?</li>
+<li><strong>Search</strong> — Find all URLs, dates, or IP addresses in a document.</li>
+<li><strong>Extract</strong> — Pull the username from an email, the error code from a log line.</li>
+<li><strong>Replace</strong> — Change date formats, mask credit card numbers, clean up data.</li>
+<li><strong>Split</strong> — Break a string into parts by a pattern rather than a fixed character.</li>
+</ul>
+</section>
+
+<section id="literal-characters">
+<h2>2. Literal Characters — The Simplest Pattern</h2>
+
+<p>The most basic regex is a literal character. The pattern <code>cat</code> matches the letters <code>c</code>, <code>a</code>, <code>t</code> in that exact order. It's like a search function — but regex is <em>anywhere</em> in the string by default.</p>
+
+<table>
+<thead><tr><th>Pattern</th><th>Matches</th><th>Does Not Match</th></tr></thead>
+<tbody>
+<tr><td><code>cat</code></td><td><span class="match-highlight">cat</span>, copy<span class="match-highlight">cat</span>, <span class="match-highlight">cat</span>alyst</td><td>dog, car, ct</td></tr>
+<tr><td><code>hello</code></td><td><span class="match-highlight">hello</span>, <span class="match-highlight">hello</span> world</td><td>hell, hallo, he110</td></tr>
+<tr><td><code>123</code></td><td><span class="match-highlight">123</span>, abc<span class="match-highlight">123</span></td><td>12, 1234</td></tr>
+</tbody>
+</table>
+
+<div class="tip">
+<strong>Try it:</strong> Open the <a href="https://eucomplypro.com/regex/">Regex Tester</a>, type <code>hello</code> in the pattern field and <code>hello world, hello there!</code> in the test string. Notice how it finds <em>both</em> occurrences.
+</div>
+
+<p>Literal characters are case-sensitive by default. <code>Cat</code> does not match <code>cat</code>. Most regex engines let you enable a case-insensitive flag (usually <code>i</code>).</p>
+</section>
+
+<section id="character-classes">
+<h2>3. Character Classes — Matching a Set of Characters</h2>
+
+<p>Sometimes you want to match <em>any one</em> of several characters. Character classes let you do that using square brackets <code>[...]</code>.</p>
+
+<table>
+<thead><tr><th>Pattern</th><th>Meaning</th><th>Matches</th></tr></thead>
+<tbody>
+<tr><td><code>[aeiou]</code></td><td>Any vowel</td><td><span class="match-highlight">a</span>ppl<span class="match-highlight">e</span>, <span class="match-highlight">o</span>ct<span class="match-highlight">o</span>p<span class="match-highlight">u</span>s</td></tr>
+<tr><td><code>[0-9]</code></td><td>Any digit (same as <code>\d</code>)</td><td>Page <span class="match-highlight">5</span>, room <span class="match-highlight">1</span><span class="match-highlight">0</span><span class="match-highlight">1</span></td></tr>
+<tr><td><code>[a-z]</code></td><td>Any lowercase letter</td><td><span class="match-highlight">h</span><span class="match-highlight">e</span><span class="match-highlight">l</span><span class="match-highlight">l</span><span class="match-highlight">o</span></td></tr>
+<tr><td><code>[a-zA-Z]</code></td><td>Any letter (upper or lower)</td><td><span class="match-highlight">H</span><span class="match-highlight">e</span><span class="match-highlight">l</span><span class="match-highlight">l</span><span class="match-highlight">o</span></td></tr>
+<tr><td><code>[^0-9]</code></td><td>Any character that is NOT a digit</td><td><span class="match-highlight">a</span>1<span class="match-highlight">b</span>2<span class="match-highlight">c</span>3</td></tr>
+</tbody>
+</table>
+
+<h3>Shorthand Character Classes</h3>
+
+<p>Because character classes are so common, regex has shorthand versions:</p>
+
+<table>
+<thead><tr><th>Shorthand</th><th>Equivalent</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>\d</code></td><td><code>[0-9]</code></td><td>Any digit</td></tr>
+<tr><td><code>\w</code></td><td><code>[a-zA-Z0-9_]</code></td><td>Any word character (letter, digit, underscore)</td></tr>
+<tr><td><code>\s</code></td><td><code>[ \t\n\r\f]</code></td><td>Any whitespace (space, tab, newline)</td></tr>
+<tr><td><code>\D</code></td><td><code>[^0-9]</code></td><td>Any non-digit</td></tr>
+<tr><td><code>\W</code></td><td><code>[^a-zA-Z0-9_]</code></td><td>Any non-word character</td></tr>
+<tr><td><code>\S</code></td><td><code>[^ \t\n\r\f]</code></td><td>Any non-whitespace</td></tr>
+</tbody>
+</table>
+
+<pre># Example: Find all prices in a text
+Pattern: \d+\.\d{2}
+Text:    "Apples cost 2.99, bananas 1.49, oranges 3.00"
+Matches: 2.99, 1.49, 3.00</pre>
+
+<div class="tip">
+<strong>Tip:</strong> <code>\d</code> is shorter than <code>[0-9]</code>, but <code>[0-9]</code> is clearer when you're teaching someone. Use the shorthand when you're comfortable.
+</div>
+</section>
+
+<section id="quantifiers">
+<h2>4. Quantifiers — How Many Times?</h2>
+
+<p>Quantifiers tell regex how many times a character or group should appear. They come after the thing they apply to.</p>
+
+<table>
+<thead><tr><th>Quantifier</th><th>Meaning</th><th>Example</th><th>Matches</th></tr></thead>
+<tbody>
+<tr><td><code>*</code></td><td>Zero or more</td><td><code>ab*c</code></td><td><span class="match-highlight">ac</span>, <span class="match-highlight">abc</span>, <span class="match-highlight">abbc</span>, <span class="match-highlight">abbbc</span></td></tr>
+<tr><td><code>+</code></td><td>One or more</td><td><code>ab+c</code></td><td><span class="match-highlight">abc</span>, <span class="match-highlight">abbc</span> (not <code>ac</code>)</td></tr>
+<tr><td><code>?</code></td><td>Zero or one (optional)</td><td><code>ab?c</code></td><td><span class="match-highlight">ac</span>, <span class="match-highlight">abc</span> (not <code>abbc</code>)</td></tr>
+<tr><td><code>{3}</code></td><td>Exactly 3</td><td><code>\d{3}</code></td><td><span class="match-highlight">123</span>, <span class="match-highlight">456</span> in <code>12345</code></td></tr>
+<tr><td><code>{2,4}</code></td><td>Between 2 and 4</td><td><code>\d{2,4}</code></td><td><span class="match-highlight">12</span>, <span class="match-highlight">123</span>, <span class="match-highlight">1234</span></td></tr>
+<tr><td><code>{2,}</code></td><td>2 or more</td><td><code>\d{2,}</code></td><td><span class="match-highlight">12</span>, <span class="match-highlight">123</span>, <span class="match-highlight">12345</span></td></tr>
+</tbody>
+</table>
+
+<h3>Greedy vs. Lazy Matching</h3>
+
+<p>By default, quantifiers are <strong>greedy</strong> — they match as much as possible. Adding a <code>?</code> after the quantifier makes it <strong>lazy</strong> — it matches as little as possible.</p>
+
+<pre>Text:    &lt;div&gt;Hello&lt;/div&gt;&lt;div&gt;World&lt;/div&gt;
+Pattern: &lt;.+&gt;   (greedy — matches the whole string)
+Pattern: &lt;.+?&gt;  (lazy — matches each tag individually)
+Match 1: &lt;div&gt;  (lazy finds each one)
+Match 2: &lt;/div&gt;
+Match 3: &lt;div&gt;
+Match 4: &lt;/div&gt;</pre>
+
+<div class="info">
+<strong>Remember:</strong> <code>+</code> means "at least one", <code>*</code> means "any number (including zero)", <code>?</code> means "optional". When in doubt, test both greedy and lazy.
+</div>
+</section>
+
+<section id="anchors">
+<h2>5. Anchors — Where in the String?</h2>
+
+<p>Anchors don't match characters — they match <strong>positions</strong> in the string.</p>
+
+<table>
+<thead><tr><th>Anchor</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>^</code></td><td>Start of string</td><td><code>^hello</code> matches <span class="match-highlight">hello</span> world but not <code>say hello</code></td></tr>
+<tr><td><code>$</code></td><td>End of string</td><td><code>world$</code> matches hello <span class="match-highlight">world</span> but not <code>world peace</code></td></tr>
+<tr><td><code>\b</code></td><td>Word boundary</td><td><code>\bcat\b</code> matches <span class="match-highlight">cat</span> but not <code>catalog</code> or <code>copycat</code></td></tr>
+<tr><td><code>\B</code></td><td>Non-word boundary</td><td><code>\Bcat</code> matches copy<span class="match-highlight">cat</span> but not <span class="match-highlight">cat</span></td></tr>
+</tbody>
+</table>
+
+<h3>When to Use Anchors</h3>
+
+<p>Anchors are essential for <strong>validation</strong>. Without them, a pattern like <code>\d{5}</code> will match any five-digit sequence anywhere — including inside a ten-digit number. With anchors, <code>^\d{5}$</code> ensures the entire string is exactly five digits.</p>
+
+<pre># Without anchors — matches anywhere
+Pattern: \d{5}
+Text:    "zip 90210 code"
+Match:   90210 ✅ — but also finds 5 digits inside longer numbers
+
+# With anchors — matches only whole string
+Pattern: ^\d{5}$
+Text:    "90210"
+Match:   90210 ✅
+
+Text:    "90210-1234"
+Match:   No match ❌ (because the string has more than 5 chars)</pre>
+
+<div class="tip">
+<strong>Rule of thumb:</strong> Always use <code>^...$</code> when validating a complete field like an email, phone number, or ZIP code. Skip anchors when you're searching for a pattern inside a larger text.
+</div>
+</section>
+
+<section id="wildcard">
+<h2>6. The Wildcard — Matching Anything</h2>
+
+<p>The dot <code>.</code> matches any single character except a newline. It's regex's wildcard.</p>
+
+<table>
+<thead><tr><th>Pattern</th><th>Matches</th></tr></thead>
+<tbody>
+<tr><td><code>c.t</code></td><td><span class="match-highlight">cat</span>, <span class="match-highlight">cot</span>, <span class="match-highlight">cut</span>, <span class="match-highlight">c.t</span>, <span class="match-highlight">c0t</span></td></tr>
+<tr><td><code>h.t</code></td><td><span class="match-highlight">hat</span>, <span class="match-highlight">hot</span>, <span class="match-highlight">hit</span>, <span class="match-highlight">hut</span></td></tr>
+<tr><td><code>...</code></td><td>Any three characters: <span class="match-highlight">abc</span>, <span class="match-highlight">123</span>, <span class="match-highlight">a b</span></td></tr>
+</tbody>
+</table>
+
+<p>Combined with quantifiers, the dot is extremely powerful — and dangerous:</p>
+
+<pre>Pattern: .*     — matches everything (entire string)
+Pattern: .+     — matches everything except empty strings
+Pattern: .{3,}  — matches any string of 3+ characters</pre>
+
+<div class="warn">
+<strong>Be careful:</strong> <code>.*</code> is the most common source of regex bugs. It matches everything, including characters you didn't intend. Always prefer more specific patterns when possible:
+<ul style="margin-top:8px">
+<li>Instead of <code>.*</code>, use <code>\w*</code> or <code>[a-z]*</code> if you know what you're looking for</li>
+<li>Instead of <code>.+</code>, use <code>\d+</code> for digits</li>
+<li>Use lazy quantifiers (<code>.*?</code>) when you want the smallest match</li>
+</ul>
+</div>
+</section>
+
+<section id="escaping">
+<h2>7. Escaping Special Characters</h2>
+
+<p>What if you want to match a literal dot, asterisk, or dollar sign? Since these characters have special meaning in regex, you need to <strong>escape</strong> them with a backslash <code>\</code>.</p>
+
+<table>
+<thead><tr><th>To Match</th><th>Write</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>A literal dot</td><td><code>\.</code></td><td><code>example\.com</code> matches <span class="match-highlight">example.com</span> (but not <code>exampleXcom</code>)</td></tr>
+<tr><td>A literal asterisk</td><td><code>\*</code></td><td><code>4\*4</code> matches <span class="match-highlight">4*4</span></td></tr>
+<tr><td>A literal dollar sign</td><td><code>\$</code></td><td><code>\$\d+</code> matches <span class="match-highlight">$19</span>, <span class="match-highlight">$99</span></td></tr>
+<tr><td>A literal backslash</td><td><code>\\\\</code></td><td><code>C:\\\\Users</code> matches <code>C:\Users</code></td></tr>
+<tr><td>A literal plus</td><td><code>\+</code></td><td><code>\+1</code> matches <span class="match-highlight">+1</span> in phone numbers</td></tr>
+</tbody>
+</table>
+
+<p>Special characters that need escaping when you want them literally: <code>\. ^ $ * + ? { } [ ] \ | ( )</code></p>
+
+<div class="tip">
+<strong>Memory trick:</strong> If your pattern isn't matching what you expect, check whether you're accidentally using a special character as a literal. A dot in regex is a wildcard — if you want an actual period, write <code>\.</code>.
+</div>
+</section>
+
+<section id="groups">
+<h2>8. Groups and Capturing</h2>
+
+<p>Parentheses <code>(...)</code> serve two purposes in regex: they <strong>group</strong> parts of a pattern together, and they <strong>capture</strong> the matched text for later use.</p>
+
+<h3>Capturing Groups</h3>
+
+<pre>Pattern: (\w+)@(\w+)\.(\w+)
+Text:    "user@example.com"
+Group 1: user
+Group 2: example
+Group 3: com</pre>
+
+<p>Each pair of parentheses creates a capture group. You can reference these groups by number: <code>$1</code>, <code>$2</code>, etc. This is incredibly useful for replacements.</p>
+
+<pre># Replace: Swap first and last name
+Pattern:   (\w+), (\w+)
+Replace:   $2 $1
+Text:      "Doe, John"
+Result:    "John Doe"</pre>
+
+<h3>Non-Capturing Groups</h3>
+
+<p>Sometimes you need to group but don't want to capture. Use <code>(?:...)</code> instead:</p>
+
+<pre>Pattern: (?:Mr|Mrs|Ms)\.?\s(\w+)
+Text:    "Mr. Smith" and "Mrs Jones"
+Group 1: Smith, Jones  (only the name is captured, not the title)</pre>
+
+<h3>Backreferences</h3>
+
+<p>Inside the same pattern, <code>\1</code>, <code>\2</code> refer back to previously captured groups. This is useful for finding repeated words or matching paired HTML tags:</p>
+
+<pre># Find repeated words
+Pattern: (\w+) \1
+Text:    "the the"
+Match:   the the ✅
+
+# Match opening and closing HTML tags
+Pattern: <(\w+)>.*?</\1>
+Text:    "&lt;b&gt;bold&lt;/b&gt; and &lt;i&gt;italic&lt;/i&gt;"
+Matches: &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;</pre>
+</section>
+
+<section id="alternation">
+<h2>9. Alternation — This or That</h2>
+
+<p>The pipe <code>|</code> acts like an OR operator. It matches the pattern on either side.</p>
+
+<pre>Pattern: cat|dog
+Text:    "I have a cat and a dog"
+Matches: cat, dog</pre>
+
+<p>Alternation is often combined with groups to limit the scope:</p>
+
+<pre>Pattern: (apple|banana) pie
+Text:    "apple pie is better than banana pie"
+Matches: apple pie, banana pie
+
+# Without parentheses, the pipe applies to the whole pattern
+Pattern: apple|banana pie
+Text:    "apple pie"
+Match:   apple (just "apple", not "apple pie")</pre>
+
+<div class="info">
+<strong>Key rule:</strong> The pipe has the lowest precedence of all regex operators. Use parentheses to control what it applies to. <code>apple|banana pie</code> means <code>apple</code> OR <code>banana pie</code>, not <code>apple pie</code> OR <code>banana pie</code>.
+</div>
+</section>
+
+<section id="lookahead">
+<h2>10. Lookahead and Lookbehind</h2>
+
+<p>Lookaheads and lookbehinds are <strong>zero-width assertions</strong> — they check if a pattern can be matched without including it in the result. Think of them as "peek ahead" or "peek behind" without consuming characters.</p>
+
+<h3>Lookahead <code>(?=...)</code></h3>
+
+<p>Matches if the pattern inside <em>follows</em> the current position, but doesn't include it:</p>
+
+<pre>Pattern: \d+(?= dollars)
+Text:    "50 dollars, 30 euros"
+Matches: 50 (only "50", not "dollars")</pre>
+
+<h3>Negative Lookahead <code>(?!...)</code></h3>
+
+<p>Matches if the pattern inside does <em>not</em> follow:</p>
+
+<pre>Pattern: \d+(?! dollars)
+Text:    "50 dollars, 30 euros"
+Matches: 30 (only "30", not "euros")</pre>
+
+<h3>Lookbehind <code>(?<=...)</code></h3>
+
+<p>Matches if the pattern inside <em>precedes</em> the current position:</p>
+
+<pre>Pattern: (?<=\$)\d+
+Text:    "Price: $50, Cost: 30"
+Matches: 50 (only the number after $)</pre>
+
+<h3>Negative Lookbehind <code>(?<!...)</code></h3>
+
+<p>Matches if the pattern inside does <em>not</em> precede:</p>
+
+<pre>Pattern: (?<!\$)\d+
+Text:    "Price: $50, Cost: 30"
+Matches: 30 (only the number without $)</pre>
+
+<div class="tip">
+<strong>Practical use:</strong> Lookarounds are perfect for extracting values without including the surrounding context. For example, extracting prices: <code>(?<=\$)\d+\.?\d*</code> finds all dollar amounts and returns just the number.
+</div>
+</section>
+
+<section id="common-patterns">
+<h2>11. Common Real-World Patterns</h2>
+
+<p>Here are patterns you'll actually use. Copy them, test them, modify them:</p>
+
+<table>
+<thead><tr><th>Purpose</th><th>Pattern</th></tr></thead>
+<tbody>
+<tr><td>Email address</td><td><code>^[\w.-]+@[\w.-]+\.\w{2,}$</code></td></tr>
+<tr><td>URL</td><td><code>https?://[\w./?-]+</code></td></tr>
+<tr><td>US phone number</td><td><code>\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}</code></td></tr>
+<tr><td>IP address (IPv4)</td><td><code>\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b</code></td></tr>
+<tr><td>Date (YYYY-MM-DD)</td><td><code>\d{4}-\d{2}-\d{2}</code></td></tr>
+<tr><td>Time (HH:MM)</td><td><code>\b\d{2}:\d{2}\b</code></td></tr>
+<tr><td>Hexadecimal color</td><td><code>#[0-9a-fA-F]{6}</code></td></tr>
+<tr><td>Username (3-16 chars, alphanumeric)</td><td><code>^[a-zA-Z0-9_]{3,16}$</code></td></tr>
+<tr><td>File path</td><td><code>[\w./-]+\.\w+</code></td></tr>
+<tr><td>Whitespace trim</td><td><code>^\s+|\s+$</code></td></tr>
+</tbody>
+</table>
+
+<div class="warn">
+<strong>Simple but not perfect:</strong> These patterns are good for common use cases but not exhaustive. Email validation, for example, is famously complex. These patterns catch 99% of real-world cases and are a starting point — adjust them for your specific needs.
+</div>
+</section>
+
+<section id="next-steps">
+<h2>12. Next Steps</h2>
+
+<p>You now know enough regex to handle 80% of real-world tasks. Here's what to do next:</p>
+
+<ol>
+<li><strong>Practice.</strong> Open the <a href="https://eucomplypro.com/regex/">Regex Tester</a> and experiment. Try finding patterns in your own text.</li>
+<li><strong>Bookmark the <a href="https://eucomplypro.com/regex/cheat-sheet/">Cheat Sheet</a>.</strong> It's your reference when you forget a syntax.</li>
+<li><strong>Start small.</strong> Use regex for simple tasks first: find all numbers, extract URLs, validate formats.</li>
+<li><strong>Build up.</strong> Combine what you've learned. A validation pattern often uses anchors, character classes, quantifiers, and groups together.</li>
+<li><strong>Test edge cases.</strong> Empty strings, very long strings, strings with special characters — regex behavior can surprise you.</li>
+</ol>
+
+<div class="info">
+<strong>Remember:</strong> Every regex expert was once a beginner. The difference is practice. The more you use regex, the more natural it becomes. And when you're stuck — <a href="https://eucomplypro.com/regex/">test it live</a> to see what's happening.
+</div>
+</section>
+
+</article>
+</div>
+
+<footer>
+<div class="wrap">
+<p><a href="https://eucomplypro.com/regex/">Regex Tester</a> — Free online regex tester with live highlighting. 100% client-side, no data leaves your browser.</p>
+<p><a href="https://eucomplypro.com/regex/cheat-sheet/">Cheat Sheet</a> | <a href="https://eucomplypro.com/regex/tutorial/">Tutorial</a> | <a href="https://eucomplypro.com/">Home</a></p>
+</div>
+</footer>
+
+</body>
+</html>

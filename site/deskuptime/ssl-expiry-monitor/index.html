@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL Certificate Expiry Monitor — Free Check, Desktop Alerts</title>
+<meta name="description" content="Check any website's SSL certificate expiry for free, then get alerted before it expires. No account, no plugin. Works with any website or stack — WordPress, Shopify, static sites, APIs.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/deskuptime/ssl-expiry-monitor/">
+<meta property="og:title" content="SSL Certificate Expiry Monitor">
+<meta property="og:description" content="Free SSL expiry check plus desktop alerts before your certificate expires. Works with any website.">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/ssl-expiry-monitor/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/deskuptime/assets/og-ssl.png">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-ssl.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SSL Certificate Expiry Monitor">
+<meta name="twitter:description" content="Free SSL expiry check plus desktop alerts before your certificate expires.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  nav a.cta:hover{background:var(--accent-dark)}
+  .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:720px;margin:0 auto 14px}
+  h1 span{color:var(--accent)}
+  .sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 auto 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+  .lede{color:var(--muted);max-width:620px;margin:0 auto 28px;text-align:center;font-size:16px}
+  pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:22px;font-size:13.5px;line-height:1.65;overflow-x:auto;margin:18px 0}
+  code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+  .checkbox{max-width:640px;margin:24px auto 0;border:1px solid var(--line);border-radius:12px;padding:26px;background:var(--soft);text-align:left}
+  .checkbox label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+  .row{display:flex;gap:10px}
+  .row input[type=url]{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
+  .row button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:14px;cursor:pointer}
+  .row button:hover{background:var(--accent-dark)}
+  #result{margin-top:16px;font-size:14px;display:none;border-radius:8px;padding:14px 16px}
+  #result.ok{display:block;background:#eaf6ef;color:var(--ok);border:1px solid #bfe4cf}
+  #result.bad{display:block;background:#fdf0ea;color:var(--warn);border:1px solid #f2cdb4}
+  details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
+  summary{font-weight:600;cursor:pointer;font-size:15px}
+  details p{color:var(--muted);font-size:14px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Windows, Linux (CLI)",
+      "description": "Desktop website monitor with SSL certificate expiry tracking, uptime checks and content-change detection. One-time purchase, no subscription.",
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I check when my SSL certificate expires?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Enter your URL in the checker above, or run: openssl s_client -connect example.com:443 -servername example.com 2>/dev/null | openssl x509 -noout -enddate. DeskUptime does this automatically on a schedule and alerts you before expiry." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if my SSL certificate expires?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Browsers show a full-page security warning to every visitor, APIs reject connections, and many apps stop working entirely. Traffic and sales drop to near zero until the certificate is renewed." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do auto-renewing certificates still expire unexpectedly?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Let's Encrypt certificates renew every 60-90 days, and renewal fails silently whenever DNS changes, the ACME challenge breaks, or a deployment misconfigures the server. An expiry monitor is the safety net that catches those silent failures." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work with any website or only certain platforms?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Any website or API endpoint. Certificate checks happen at the TLS layer, so WordPress, Shopify, Webflow, static sites and hand-rolled servers all work identically. Nothing is installed on your server." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup</span>
+    <h1>SSL certificate expiry <span>monitor</span> — catch it before your visitors do</h1>
+    <p class="sub">An expired certificate means a full-page browser warning, broken APIs and lost traffic. Check any domain below for free — then let DeskUptime watch it daily and alert you before it happens.</p>
+    <a class="btn" href="#checker">Check a domain now</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Free SSL expiry checker</h2>
+    <p class="lede">Enter any public URL. We read the certificate's not-after date straight from the TLS handshake.</p>
+    <div class="checkbox">
+      <label for="url">Website URL</label>
+      <div class="row">
+        <input type="url" id="url" placeholder="https://example.com" aria-label="Website URL">
+        <button id="go" onclick="doCheck()">Check</button>
+      </div>
+      <div id="result" role="status"></div>
+    </div>
+    <p class="note">Prefer the terminal? Run the same check yourself:</p>
+<pre>openssl s_client -connect example.com:443 -servername example.com 2&gt;/dev/null \
+  | openssl x509 -noout -enddate</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why certificates still expire in 2026</h2>
+    <p class="lede">Auto-renewal solved most of this — until it quietly stops working.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Silent renewal failures</h3>
+        <p>DNS changes, moved servers and broken ACME challenges all fail without an error you'll see. You find out from a visitor — or a browser warning.</p>
+      </div>
+      <div class="card">
+        <h3>Shorter certificate lifetimes</h3>
+        <p>Let's Encrypt certs last 90 days and the industry is moving shorter still. More renewals per year means more chances for one to fail.</p>
+      </div>
+      <div class="card">
+        <h3>Nobody owns the checklist</h3>
+        <p>On small teams, "someone renews the cert" is everyone's job — so it's nobody's. A monitor makes the deadline visible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>A one-time check isn't monitoring</h2>
+    <p class="lede">Checking today tells you nothing about the day your renewal fails three weeks from now.</p>
+    <table>
+      <thead><tr><th></th><th>Manual check</th><th>Cron script</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Runs automatically</td><td>✗</td><td>✓ (if you maintain it)</td><td>✓</td></tr>
+        <tr><td>Alerts before expiry</td><td>✗</td><td>You build it</td><td>✓ built-in thresholds</td></tr>
+        <tr><td>Uptime &amp; content-change checks too</td><td>✗</td><td>You build it</td><td>✓ included</td></tr>
+        <tr><td>Server to maintain</td><td>—</td><td>Required</td><td>None — runs on your machine</td></tr>
+        <tr><td>Monthly cost</td><td>Your time</td><td>~$5 server</td><td>$0 after $19 one-time</td></tr>
+      </tbody>
+    </table>
+    <p class="note">DeskUptime is a desktop app: your URLs are checked from your own machine and never touch our servers. One-time $19, no subscription.</p>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>How do I check when my SSL certificate expires?</summary>
+      <p>Use the checker above, or run <code class="inline">openssl s_client -connect example.com:443 -servername example.com 2>/dev/null | openssl x509 -noout -enddate</code>. DeskUptime automates exactly that check on a schedule and alerts you ahead of time.</p>
+    </details>
+    <details>
+      <summary>Do auto-renewing certificates still fail?</summary>
+      <p>Yes — that's the trap. Let's Encrypt renewals break silently when DNS changes, the ACME challenge can't complete, or a deploy reconfigures the server. Everything looks fine until the cert runs out.</p>
+    </details>
+    <details>
+      <summary>How far in advance should I be warned?</summary>
+      <p>Two to four weeks is comfortable: enough to fix a broken renewal flow, wait out registrar delays, or escalate to whoever controls DNS. DeskUptime lets you set the threshold.</p>
+    </details>
+    <details>
+      <summary>Does it work with any website?</summary>
+      <p>Yes. TLS certificate checks are platform-independent — WordPress, Shopify, Webflow, Squarespace, static hosts and API endpoints all behave identically. No agent or plugin is installed anywhere.</p>
+    </details>
+    <details>
+      <summary>Can I check internal or non-public domains?</summary>
+      <p>The web checker only reaches public URLs. The DeskUptime desktop app and CLI check anything your machine can reach — staging domains, intranet hosts, localhost services.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      <a href="/deskuptime/github-actions/">GitHub Actions guide</a> ·
+      <a href="/deskuptime/bulk-url-checker/">Bulk URL checker</a> · Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a> ·
+      <a href="/deskuptime/vs/statuscake/">vs StatusCake</a> ·
+      <a href="/deskuptime/vs/uptime-kuma/">vs Uptime Kuma</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+async function doCheck(){
+  const input=document.getElementById('url').value.trim();
+  const box=document.getElementById('result');
+  if(!input){box.className='bad';box.textContent='Enter a URL first.';return;}
+  let host;
+  try{host=new URL(input.startsWith('http')?input:'https://'+input).hostname;}
+  catch(e){box.className='bad';box.textContent='That does not look like a valid URL.';return;}
+  box.className='ok';box.textContent='Checking '+host+'…';
+  try{
+    const r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent('https://'+host));
+    const d=await r.json();
+    if(d && typeof d.sslDaysRemaining==='number'){
+      const days=d.sslDaysRemaining;
+      const when=d.sslExpiresAt?(' (expires '+d.sslExpiresAt+')'):'';
+      if(days>=0){box.className='ok';box.textContent=host+' — certificate valid for '+days+' more day'+(days===1?'':'s')+when+(days<21?' ⚠ renew soon':'');}
+      else{box.className='bad';box.textContent=host+' — certificate EXPIRED '+(-days)+' day'+(days===-1?'':'s')+' ago.';}
+    }else if(d && d.sslError){
+      box.className='bad';box.textContent=host+' — could not read certificate: '+d.sslError;
+    }else{
+      box.className='bad';box.textContent=host+' — no certificate data returned (is the site reachable over HTTPS?).';
+    }
+  }catch(e){
+    box.className='bad';box.textContent='Check failed: '+e.message;
+  }
+}
+document.getElementById('url').addEventListener('keydown',e=>{if(e.key==='Enter')doCheck();});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is Your Website Down? How to Check (and Get Notified) in 2026</title>
+<meta name="description" content="Your site might be down right now and you wouldn't know. Here's how to tell whether it's really down or just you — and how to get notified the second it goes offline, free.">
+<link rel="canonical" href="https://eucomplypro.com/blog/website-down-checker/">
+<meta property="og:title" content="Is Your Website Down? How to Check (and Get Notified)">
+<meta property="og:description" content="How to tell if a website is really down, what to do about it, and how to get alerted before your customers notice.">
+<meta property="og:url" content="https://eucomplypro.com/blog/website-down-checker/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#2868d0;--bg:#fff;--soft:#f9fafb;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;background:var(--bg)}
+  .wrap{max-width:800px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin:40px 0 10px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{font-size:24px;letter-spacing:-.02em;margin:40px 0 12px;padding-top:8px}
+  h3{font-size:18px;margin:28px 0 8px}
+  p{margin-bottom:16px;font-size:16px}
+  ul,ol{margin:0 0 20px 20px}
+  li{margin-bottom:6px;font-size:16px}
+  a{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+  th{background:var(--soft);text-align:left;padding:10px 12px;border:1px solid var(--line);font-weight:700}
+  td{padding:10px 12px;border:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even){background:var(--soft)}
+  .tldr{border:1px solid var(--accent);background:#f0f4ff;border-radius:10px;padding:20px;margin:24px 0;font-size:15px}
+  .tldr strong{display:block;margin-bottom:6px;font-size:16px;color:var(--accent)}
+  code{background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:14px}
+  pre{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:13px;margin:16px 0}
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  footer{border-top:1px solid var(--line);padding:24px 0;margin-top:48px;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:28px}nav a:not(.cta){display:none}}
+  .keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+  .keep-reading h2{font-size:20px;margin-bottom:12px;border:none;padding:0}
+</style>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "Is Your Website Down? How to Check (and Get Notified) in 2026", "description": "How to tell if a website is really down, what to do about it, and how to get alerted before your customers notice.", "author": {"@type": "Organization", "name": "DeskUptime"}, "datePublished": "2026-08-29", "inLanguage": "en"}
+</script>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/deskuptime/" class="logo">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/">Product</a>
+      <a href="/blog/">Blog</a>
+      <a class="cta" href="/deskuptime/#try">Try it free →</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>Is Your Website Down? How to Check (and Get Notified) in 2026</h1>
+  <p class="meta">Updated August 29, 2026 · 6 min read</p>
+
+  <div class="tldr">
+    <strong>TL;DR</strong>
+    Most downtime is discovered by customers, not by the site owner. First figure out
+    whether the site is really down or it's just your connection. Then set up monitoring
+    so you're told within minutes — not hours. A desktop tool like
+    <a href="/deskuptime/">DeskUptime</a> does this from your own machine for $0,
+    checking as often as you like with no monthly bill.
+  
+<!-- DeskUptime live check widget — self-contained, drop into any page.
+     Usage: paste this file's contents where the widget should appear.
+     Requires no external CSS/JS besides what's inline below. -->
+<div id="du-check" style="max-width:640px;margin:28px auto;background:#f9fafb;border:1px solid #e4e7ec;border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="font-size:17px;font-weight:700;color:#101828;margin-bottom:4px">Check any site right now — free</div>
+  <div style="font-size:13.5px;color:#475467;margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
+  <form id="du-form" style="display:flex;gap:8px;flex-wrap:wrap">
+    <input id="du-url" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Website URL to check" required
+           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;outline:none">
+    <button type="submit"
+            style="padding:11px 20px;background:#2868d0;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
+  </form>
+  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:#fff;border:1px solid #e4e7ec;border-radius:8px;padding:14px" aria-live="polite"></div>
+  <div style="margin-top:12px;font-size:13px;color:#475467">Want an alert <em>before</em> it breaks?
+    <a href="/deskuptime/" style="color:#2868d0;font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
+</div>
+<script>
+(function(){
+  var f=document.getElementById('du-form');
+  if(!f) return;
+  f.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var raw=document.getElementById('du-url').value.trim();
+    var res=document.getElementById('du-result');
+    if(!raw) return;
+    var url=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
+    res.style.display='block';
+    res.innerHTML='⏳ Checking '+url+' …';
+    try{
+      var r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent(url));
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var d=await r.json();
+      if(d.error){res.innerHTML='❌ Error: '+d.error;return;}
+      var up=d.status>=200&&d.status<400;
+      var days=d.sslDaysRemaining;
+      res.innerHTML=
+        (up?'✅':'❌')+' <strong>'+d.status+' '+d.statusText+'</strong> · '+d.responseMs+'ms<br>'+
+        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+days+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
+        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+d.finalUrl):'')+
+        (up&&days!=null&&days<15?'<br><span style="color:#b03030;font-weight:600">Your certificate expires within two weeks — renew it now.</span>':'');
+    }catch(err){
+      res.innerHTML='❌ Network error: '+err.message;
+    }
+  });
+})();
+</script>
+
+</div>
+
+  <h2>Step 1: Is it actually down — or just for you?</h2>
+  <p>Before you panic, rule out these common false alarms:</p>
+  <ul>
+    <li><strong>Your local network.</strong> Open another website. If nothing loads, the problem is your connection, not your site.</li>
+    <li><strong>DNS propagation.</strong> If you recently changed DNS records or hosts, some visitors may see the old (broken) setup while others see fine. DNS can take up to 48 hours to fully propagate.</li>
+    <li><strong>Browser cache.</strong> Try a private/incognito window or a different browser.</li>
+    <li><strong>A specific page, not the whole site.</strong> A 404 on one URL doesn't mean the site is down. Test the homepage directly.</li>
+  </ul>
+  <p>The quickest technical check is a status code request:</p>
+  <pre>curl -I https://yoursite.com</pre>
+  <p>You want to see <code>HTTP/2 200</code>. Anything in the 5xx range (500, 502, 503, 504) means the server itself is failing. A timeout with no response at all usually means the server is offline or unreachable.</p>
+
+  <h2>Step 2: What do the error codes mean?</h2>
+  <table>
+    <tr><th>Status</th><th>Meaning</th><th>Who fixes it</th></tr>
+    <tr><td>200</td><td>All good — page served normally</td><td>—</td></tr>
+    <tr><td>301 / 302</td><td>Redirect (normal, but check where it points)</td><td>—</td></tr>
+    <tr><td>403</td><td>Access forbidden — often a firewall or permissions issue</td><td>You or your host</td></tr>
+    <tr><td>404</td><td>Page not found — broken link, not downtime</td><td>You</td></tr>
+    <tr><td>500</td><td>Server error — code crashed</td><td>You or developer</td></tr>
+    <tr><td>502 / 504</td><td>Bad gateway / timeout — backend not responding</td><td>Host or developer</td></tr>
+    <tr><td>503</td><td>Service unavailable — overloaded or in maintenance mode</td><td>Host</td></tr>
+  </table>
+
+  <h2>Step 3: What to do while it's down</h2>
+  <ol>
+    <li><strong>Check your hosting provider's status page</strong> first — if it's their outage, there's nothing to fix on your side.</li>
+    <li><strong>Contact support with evidence:</strong> the timestamp, the URL, and the exact status code or timeout.</li>
+    <li><strong>Put up a maintenance page</strong> if the outage will last — even a static page preserves trust better than an error.</li>
+    <li><strong>Note when it recovered.</strong> Total downtime duration matters for SLA claims with your host.</li>
+  </ol>
+
+  <h2>Step 4: The real fix — know before your customers do</h2>
+  <p>The average small-business website owner finds out about downtime from an angry
+  email or a dip in sales. Monitoring services exist precisely to close that gap —
+  but they're sold as subscriptions that scale badly:</p>
+  <table>
+    <tr><th>Approach</th><th>Cost after year 1</th><th>Catch</th></tr>
+    <tr><td>UptimeRobot free tier</td><td>$0</td><td>5-minute checks, 50 monitors, upsells</td></tr>
+    <tr><td>Pingdom</td><td>$144+/yr</td><td>Priced per check</td></tr>
+    <tr><td>Better Stack</td><td>$300+/yr for real use</td><td>Free tier is very limited</td></tr>
+    <tr><td>Desktop monitor (DeskUptime)</td><td>$0</td><td>Checks run while your machine is on</td></tr>
+  </table>
+  <p>A desktop monitor checks from your own machine, so there are no servers to pay
+  for — which is why it can be free forever and check every 30 seconds if you want.
+  The honest trade-off: it can't watch your site while your computer is asleep. For
+  freelancers and agencies working on client sites during the day, that's exactly the
+  window that matters.</p>
+
+  <hr>
+  <p><strong>Start monitoring in 10 seconds</strong> — no account, no install beyond Node:</p>
+<pre>npx github:mahope/deskuptime check https://yoursite.com</pre>
+  <p><a class="btn" style="background:#2868d0;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block"
+       href="/deskuptime/">See DeskUptime →</a></p>
+
+  <div class="keep-reading">
+    <h2>Keep reading</h2>
+    <ul>
+      <li><a href="/blog/ssl-certificate-expiry-monitoring/">SSL certificate expiry monitoring guide</a></li>
+      <li><a href="/blog/one-time-purchase-uptime-monitor/">Uptime monitoring without the monthly bill — desktop vs SaaS</a></li>
+      <li><a href="/blog/cron-job-failure-alerts-2026/">Cron job failure alerts</a></li>
+      <li><a href="/blog/free-uptime-monitoring-tools-2026/">Free uptime monitoring tools compared (SaaS vs. desktop vs. CLI)</a></li>
+      <li><a href="/blog/hsts-preload-guide/">HSTS preload: what it is and how to enable it</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Mahope</span>
+    <span><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

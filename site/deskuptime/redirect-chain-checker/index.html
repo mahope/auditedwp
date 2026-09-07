@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirect Chain Checker — Trace Every Redirect Hop, Free</title>
+<meta name="description" content="Trace the full redirect chain of any URL: every hop, status code, latency and whether HTTPS is used at each step. Free, no signup, works with any website or CMS.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/deskuptime/redirect-chain-checker/">
+<meta property="og:title" content="Redirect Chain Checker — Trace Every Hop Free">
+<meta property="og:description" content="See every redirect hop from one URL to its final destination: status codes, latency, HTTPS per step.">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/redirect-chain-checker/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/deskuptime/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Redirect Chain Checker — Trace Every Hop Free">
+<meta name="twitter:description" content="Full redirect chain trace: every hop, status code, latency and HTTPS flag.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav .cta{color:var(--accent);font-weight:700}
+  .hero{background:var(--soft);padding:56px 0;text-align:center}
+  .badge{display:inline-block;background:#e5edfb;color:var(--accent-dark);font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+  h1 span{color:var(--accent)}
+  .sub{max-width:640px;margin:0 auto 22px;color:var(--muted);font-size:17px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  section{padding:48px 0}
+  h2{font-size:26px;letter-spacing:-.01em;margin-bottom:10px}
+  .lede{color:var(--muted);margin-bottom:22px}
+  .checkbox{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:22px}
+  input[type=text]{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:8px}
+  input[type=text]:focus{outline:2px solid var(--accent);offset:-1px}
+  label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;background:#fff;border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;font-weight:700;font-size:12px;padding:2px 9px;border-radius:99px}
+  .p-ok{background:#e3f3ea;color:var(--ok)}
+  .p-red{background:#fbe5e5;color:#b03030}
+  .p-warn{background:#fdf0e0;color:var(--warn)}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  details{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+  summary{font-weight:700;cursor:pointer}
+  details p{margin-top:8px;color:var(--muted);font-size:15px}
+  pre{background:var(--code);color:#dbe6f3;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;margin-top:12px}
+  code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.9em}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime Redirect Chain Checker",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web browser",
+      "description": "Free redirect chain checker: trace every redirect hop from any URL to its final destination, with status codes, latency and HTTPS per step.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does a redirect chain checker show?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Every hop between the URL you enter and its final destination: each intermediate status code (301, 302, etc.), where it points, how long each hop took in milliseconds, and whether that hop uses HTTPS." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why should I care about long redirect chains?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Chains of three or more hops slow down page loads, waste crawl budget in search engines, and can break link equity. Google recommends at most one hop between the original URL and the final destination." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work with any website or CMS?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Any public URL. The check is plain HTTP(S) at the protocol level, so WordPress, Shopify, Webflow, static hosts, API endpoints and hand-rolled servers all behave identically." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this redirect checker free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email. Nothing is logged or stored. DeskUptime Pro ($19 one-time) adds scheduled monitoring of your URLs with alerts when something breaks." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/bulk-url-checker/">Bulk checker</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">Free tool · no signup · instant</span>
+    <h1>Redirect chain checker — see <span>every hop</span>, end to end</h1>
+    <p class="sub">Paste a URL and watch the full chain unfold: each 301, 302 and meta refresh on the way to the final page — with per-hop latency and HTTPS flags. Free, nothing stored.</p>
+    <a class="btn" href="#checker">Trace a redirect chain</a>
+    <a class="btn ghost" href="/deskuptime/">See DeskUptime →</a>
+  </div>
+</div>
+
+<section id="checker">
+  <div class="wrap">
+    <h2>Trace any URL's redirects</h2>
+    <p class="lede">Up to 10 hops are followed. Nothing is stored.</p>
+    <div class="checkbox">
+      <label for="url">URL to trace</label>
+      <input type="text" id="url" placeholder="http://example.com" autocomplete="off" inputmode="url">
+      <div style="margin-top:12px"><button id="go" class="btn" onclick="doTrace()">Trace redirects</button></div>
+      <div id="result" role="status" aria-live="polite"></div>
+    </div>
+    <p class="note">Prefer the terminal? <code class="inline">curl -sI http://example.com</code> shows the first hop only — DeskUptime traces all of them.</p>
+  </div>
+</section>
+
+<section style="background:var(--soft)">
+  <div class="wrap">
+    <h2>Why chains matter more than you think</h2>
+    <p class="lede">A redirect is fine. A chain of them is a slow leak.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Speed</h3>
+        <p>Every extra hop adds a full round trip before the browser gets real content. Three hops can mean half a second of dead time.</p>
+      </div>
+      <div class="card">
+        <h3>SEO</h3>
+        <p>Crawlers follow chains and dilute signals along the way. Keep it to one hop from source to final URL.</p>
+      </div>
+      <div class="card">
+        <h3>Mixed content</h3>
+        <p>An HTTP→HTTPS chain means visitors hit an insecure hop first. HSTS plus a direct HTTPS redirect fixes it.</p>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>This free checker</th><th>SaaS site auditors</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Per-hop trace + latency</td><td>✓ free</td><td>Paid tiers</td><td>✓ included</td></tr>
+        <tr><td>Runs continuously</td><td>✗ manual</td><td>✓</td><td>✓ your interval</td></tr>
+        <tr><td>Alerts when a chain changes</td><td>✗</td><td>Email/push</td><td>✓ native notifications</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
+      </tbody>
+    </table>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>What exactly gets traced?</summary>
+      <p>Each hop: the URL requested, the returned status code, where its Location header points, the response time in milliseconds, and whether that hop used HTTPS. Up to 10 hops are followed before a possible loop is flagged.</p>
+    </details>
+    <details>
+      <summary>Does it work with any website or stack?</summary>
+      <p>Yes. These are plain HTTP requests — no agent, plugin or platform integration. WordPress, Shopify, Webflow, static sites and API endpoints all behave identically.</p>
+    </details>
+    <details>
+      <summary>Can I check internal or staging URLs?</summary>
+      <p>The web tool only reaches public URLs. The DeskUptime app and CLI check anything your own machine can reach — localhost, intranet hosts, staging domains behind a VPN.</p>
+    </details>
+    <details>
+      <summary>Is my data stored?</summary>
+      <p>No. The trace runs live and returns to your browser. No logs, no history, no account.</p>
+    </details>
+    <details>
+      <summary>How do I shorten a long chain?</summary>
+      <p>Point every old URL directly at its final destination instead of through intermediates, update internal links to skip redirects entirely, and serve the HTTPS version directly rather than hopping through HTTP.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      Also try: <a href="/deskuptime/bulk-url-checker/">Bulk URL checker</a> ·
+ <a href="/deskuptime/ssl-expiry-monitor/">SSL expiry checker</a> ·
+ <a href="/deskuptime/response-time-monitor/">Response time checker</a> ·
+      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const inp=document.getElementById('url'),box=document.getElementById('result');
+  function norm(v){
+    v=v.trim();
+    if(!v)return '';
+    let u=v.startsWith('http')?v:'https://'+v,p=new URL(u);
+    if(!/^https?:$/.test(p.protocol))throw new Error('bad');
+    return u;
+  }
+  window.doTrace=async function(){
+    let u;
+    try{u=norm(inp.value);}catch(e){box.innerHTML='<p class="note">That is not a valid http(s) URL.</p>';return;}
+    if(!u){box.innerHTML='<p class="note">Enter a URL first.</p>';}
+    box.setAttribute('aria-busy','true');
+    box.innerHTML='<p>Tracing '+esc(u)+'…</p>';
+    try{
+      const r=await fetch('https://deskuptime-redirect-trace.mahope-eeb.workers.dev/trace?url='+encodeURIComponent(u));
+      const d=await r.json();
+      if(d.error){box.innerHTML='<p class="note">'+esc(d.error)+'</p>';return;}
+      let html='<p style="margin-top:14px"><strong>'+d.hopCount+' hop'+(d.hopCount===1?'':'s')+'</strong>'
+        +' · total '+d.totalMs+' ms · final status '
+        +(d.finalStatus>=200&&d.finalStatus<400?'<span class="pill p-ok">'+d.finalStatus+'</span>':'<span class="pill p-red">'+(d.finalStatus||'ERR')+'</span>')
+        +(d.allHttps?'':' · <span class="pill p-warn">insecure hop present</span>')+'</p>';
+      html+='<table><thead><tr><th>#</th><th>URL</th><th>Status</th><th>Time</th><th>HTTPS</th></tr></thead><tbody>';
+      for(const h of d.hops){
+        html+='<tr><td>'+(h.step||'—')+'</td><td>'+esc(h.url||'')+(h.redirectTo?'<br><small>→ '+esc(h.redirectTo)+'</small>':'')+(h.error?'<br><small class="note">'+esc(h.error)+'</small>':'')+'</td>'
+          +'<td>'+(h.status?((h.status>=200&&h.status<400)?'<span class="pill p-ok">'+h.status+'</span>':((h.status>=300&&h.status<400)?'<span class="pill p-warn">'+h.status+'</span>':'<span class="pill p-red">'+h.status+'</span>')):'—')+'</td>'
+          +'<td>'+(typeof h.responseMs==='number'?h.responseMs+' ms':'—')+'</td>'
+          +'<td>'+(h.https?'✓':'<span class="pill p-warn">no</span>')+'</td></tr>';
+      }
+      html+='</tbody></table>';
+      if(d.hopCount>2){
+        html+='<p class="note"><strong>'+d.hopCount+' hops is long.</strong> Point older URLs straight at their final destination — each extra hop costs load time and SEO signal. Want to know when a chain grows? <a href="/deskuptime/#pro">DeskUptime watches it for you — $19 once.</a></p>';
+      }else{
+        html+='<p class="note">Want these checks running on a schedule with alerts when something breaks? <a href="/deskuptime/#pro">DeskUptime does that — $19 once.</a></p>';
+      }
+      box.innerHTML=html;
+    }catch(e){
+      box.removeAttribute('aria-busy');
+      box.innerHTML='<p class="note">Could not reach the check service. Try again.</p>';
+      return;
+    }
+    box.removeAttribute('aria-busy');
+  };
+  function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+})();
+document.getElementById('url').addEventListener('keydown',function(e){
+  if(e.key==='Enter')doTrace();
+});
+</script>
+
+</body>
+</html>

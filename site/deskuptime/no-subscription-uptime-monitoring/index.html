@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uptime Monitoring Without a Subscription — Pay Once, Own It</title>
+<meta name="description" content="Tired of $7–20/month just to know your site is up? Compare subscription uptime monitors with DeskUptime's one-time $19 desktop app. No account, no monthly bill, no cloud. Works with any website.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="canonical" href="https://eucomplypro.com/deskuptime/no-subscription-uptime-monitoring/">
+<meta property="og:title" content="Uptime Monitoring Without a Subscription">
+<meta property="og:description" content="One-time $19 desktop uptime monitor vs monthly SaaS bills. No account, no cloud, works with any website.">
+<meta property="og:url" content="https://eucomplypro.com/deskuptime/no-subscription-uptime-monitoring/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://eucomplypro.com/deskuptime/assets/og-no-subscription.png">
+<meta name="twitter:image" content="https://eucomplypro.com/deskuptime/assets/og-no-subscription.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Uptime Monitoring Without a Subscription">
+<meta name="twitter:description" content="One-time $19 desktop uptime monitor vs monthly SaaS bills.">
+<style>
+  :root{--ink:#0b1a2a;--muted:#4a5a6a;--line:#d0d8e0;--bg:#fff;--soft:#f5f7fa;
+        --accent:#2868d0;--accent-dark:#1a4f9e;--ok:#1a7a44;--warn:#b85a0a;
+        --code:#1e293b;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  nav a.cta:hover{background:var(--accent-dark)}
+  .hero{text-align:center;padding:56px 0 36px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;background:#eef3f9;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+  h1{font-size:38px;line-height:1.18;letter-spacing:-.03em;max-width:720px;margin:0 auto 14px}
+  h1 span{color:var(--accent)}
+  .sub{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:8px;font-size:15px;transition:background .15s}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--soft)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:28px;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+  .lede{color:var(--muted);max-width:640px;margin:0 auto 28px;text-align:center;font-size:16px}
+  code.inline{background:var(--soft);padding:2px 7px;border-radius:5px;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .card p{font-size:14px;color:var(--muted)}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+  details{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:10px;background:var(--bg)}
+  summary{font-weight:600;cursor:pointer;font-size:15px}
+  details p{color:var(--muted);font-size:14px;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--accent)}
+  @media(max-width:700px){h1{font-size:28px}.grid3{grid-template-columns:1fr}nav a:not(.cta){display:none}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskUptime",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Windows, Linux (CLI)",
+      "description": "Desktop website monitor with uptime checks, SSL expiry tracking and content-change detection. One-time purchase, no subscription.",
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is there any uptime monitor without a monthly fee?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. DeskUptime is a desktop app that watches your websites from your own machine. You pay $19 once for a license key and never get a monthly bill. Free options like cron scripts or Uptime Kuma exist too, but they require you to build or host something." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do uptime monitors charge every month?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Cloud monitors run checks from their servers around the clock, so they pay for infrastructure continuously and pass that cost on as a subscription. A desktop app runs the same checks from your machine, so there is no server cost after you buy." }
+        },
+        {
+          "@type": "Question",
+          "name": "What are the real trade-offs of a desktop monitor?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Your computer needs to be on for background watch mode, and alerts only fire while it runs. For freelancers and small teams who work at the computer anyway, that trade-off is exactly why the price can be one-time instead of recurring." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I try it before paying?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The CLI is free and open source — run npx github:mahope/deskuptime check https://yoursite.com right now, no signup. The desktop app download is also free; the license key unlocks Pro features like unlimited URLs and system notifications." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/deskuptime/">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/github-actions/">GitHub Actions</a>
+      <a href="/deskuptime/vs/">Comparisons</a>
+      <a class="cta" href="/deskuptime/#pro">Get DeskUptime — $19</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge">One-time payment · no account</span>
+    <h1>Uptime monitoring <span>without a subscription</span></h1>
+    <p class="sub">Knowing your site is up shouldn't cost $84–240 a year. DeskUptime checks your URLs from your own machine — pay $19 once, keep it forever.</p>
+    <a class="btn" href="#math">See the cost math →</a>
+    <a class="btn ghost" href="/deskuptime/#pro">Get DeskUptime</a>
+  </div>
+</div>
+
+<section id="math">
+  <div class="wrap">
+    <h2>The subscription math</h2>
+    <p class="lede">Popular monitors and what they charge per year, per seat.</p>
+    <table>
+      <thead><tr><th>Monitor</th><th>Cheapest paid tier</th><th>Per year</th><th>5 years</th></tr></thead>
+      <tbody>
+        <tr><td>UptimeRobot Pro</td><td>$7/mo</td><td>$84</td><td>$420</td></tr>
+        <tr><td>Pingdom</td><td>$12/mo</td><td>$144</td><td>$720</td></tr>
+        <tr><td>StatusCake</td><td>~$6/mo</td><td>$72</td><td>$360</td></tr>
+        <tr><td>Better Stack</td><td>$20/mo</td><td>$240</td><td>$1,200</td></tr>
+        <tr><td><strong>DeskUptime</strong></td><td><strong>$19 once</strong></td><td><strong>$19</strong></td><td><strong>$19</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="note">Prices are each vendor's published entry tiers as of 2026 and may change — check their sites before deciding. The point stands either way: subscriptions compound, one-time purchases don't.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How can it be one-time?</h2>
+    <p class="lede">Because there are no servers between your machine and your sites.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3>Your machine does the checking</h3>
+        <p>Cloud monitors pay for data centers 24/7 and bill you monthly to cover it. DeskUptime runs those same HTTP, TLS and content checks locally — zero infrastructure cost after purchase.</p>
+      </div>
+      <div class="card">
+        <h3>No account, no data trail</h3>
+        <p>Nothing to sign up for, nothing phoning home. Your URL list lives on your disk, not in someone else's database. That privacy is a feature, not a cost saving we apologize for.</p>
+      </div>
+      <div class="card">
+        <h3>Free tier that isn't crippled</h3>
+        <p>The CLI (<code class="inline">npx github:mahope/deskuptime check &lt;url&gt;</code>) is free forever and open source. You can verify exactly how checks work before spending anything.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Honest comparison</h2>
+    <p class="lede">A one-time desktop tool isn't right for everyone. Here's when it wins and when it doesn't.</p>
+    <table>
+      <thead><tr><th></th><th>Cloud SaaS monitor</th><th>Self-hosted (Kuma)</th><th>DeskUptime</th></tr></thead>
+      <tbody>
+        <tr><td>Cost over 3 years</td><td>$216–720+</td><td>~$60–180 VPS</td><td>$19</td></tr>
+        <tr><td>Setup time</td><td>Account + config</td><td>Server + Docker + updates</td><td>Install, add URLs, done</td></tr>
+        <tr><td>Checks while your PC sleeps?</td><td>✓</td><td>✓</td><td>✗ — needs the machine on</td></tr>
+        <tr><td>Team dashboards, status pages</td><td>✓</td><td>Partial</td><td>✗</td></tr>
+        <tr><td>Who sees your URLs</td><td>Their servers</td><td>Your server</td><td>Nobody — local only</td></tr>
+      </tbody>
+    </table>
+    <p class="note">If you need 24/7 coverage while every machine is off, or status pages for clients, a SaaS is genuinely the better fit — pick one and pay them. If you monitor a handful of sites during working hours, that's what you're overpaying for.</p>
+    <p style="text-align:center;margin-top:22px"><a class="btn" href="/deskuptime/#pro">Get DeskUptime — $19 once</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details>
+      <summary>Is there really an uptime monitor with no monthly fee?</summary>
+      <p>Yes — DeskUptime is a desktop app. You pay $19 once for a license key and it keeps checking your sites from your machine. Free routes also exist (cron scripts, self-hosted Uptime Kuma) but they mean building or hosting something yourself.</p>
+    </details>
+    <details>
+      <summary>What's the catch compared to Pingdom or UptimeRobot?</summary>
+      <p>The catch is honest and stated above: checks stop when your computer is off, and there are no team dashboards or hosted status pages. Cloud SaaS earns its subscription for teams that need those. Solo developers and freelancers usually don't.</p>
+    </details>
+    <details>
+      <summary>Do I need to keep my laptop awake?</summary>
+      <p>For continuous watch mode, yes. Quick manual checks work any time the machine is on. Many users pair DeskUptime during the day with a free cloud tier overnight — and still save money versus a paid SaaS plan.</p>
+    </details>
+    <details>
+      <summary>Does it work with any website or CMS?</summary>
+      <p>Yes. Checks happen at the HTTP/TLS level, so WordPress, Shopify, Webflow, Squarespace, static sites and API endpoints all behave identically. Nothing gets installed on your server.</p>
+    </details>
+    <details>
+      <summary>What happens after I pay the $19?</summary>
+      <p>You receive a license key by email instantly via Lemon Squeezy. Enter it once in the desktop app and Pro features unlock — 3 machines per license. 14-day refund policy, no questions asked.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://github.com/mahope">Mahope</a> · Engine open source on <a href="https://github.com/mahope/deskuptime">GitHub</a>
+    <span>
+      <a href="/deskuptime/github-actions/">GitHub Actions guide</a> ·
+      Comparisons: <a href="/deskuptime/vs/uptimerobot/">vs UptimeRobot</a> ·
+      <a href="/deskuptime/vs/pingdom/">vs Pingdom</a> ·
+      <a href="/deskuptime/vs/statuscake/">vs StatusCake</a> ·
+      <a href="/deskuptime/vs/better-stack/">vs Better Stack</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

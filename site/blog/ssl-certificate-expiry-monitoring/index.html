@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL Certificate Expiry Monitoring: Never Get the "Your Connection Is Not Private" Surprise (2026)</title>
+<meta name="description" content="Expired SSL certificates take sites down and scare customers away — and they almost always expire because nobody was watching. How to check expiry dates, set up reminders, and monitor certificates automatically.">
+<link rel="canonical" href="https://eucomplypro.com/blog/ssl-certificate-expiry-monitoring/">
+<meta property="og:title" content="SSL Certificate Expiry Monitoring: Never Get Caught by an Expired Certificate">
+<meta property="og:description" content="How to check when your SSL certificate expires, why certs keep expiring unnoticed, and how to automate monitoring before browsers block your site.">
+<meta property="og:url" content="https://eucomplypro.com/blog/ssl-certificate-expiry-monitoring/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#101828;--muted:#475467;--line:#e4e7ec;--accent:#2868d0;--bg:#fff;--soft:#f9fafb;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.65;background:var(--bg)}
+  .wrap{max-width:800px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);padding:14px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:800;font-size:18px;text-decoration:none;color:var(--ink);letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+  nav a.cta{background:var(--accent);color:#fff;padding:7px 14px;border-radius:6px;font-weight:600;font-size:13px}
+  h1{font-size:34px;letter-spacing:-.025em;line-height:1.2;margin:40px 0 10px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{font-size:24px;letter-spacing:-.02em;margin:40px 0 12px;padding-top:8px}
+  h3{font-size:18px;margin:28px 0 8px}
+  p{margin-bottom:16px;font-size:16px}
+  ul,ol{margin:0 0 20px 20px}
+  li{margin-bottom:6px;font-size:16px}
+  a{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+  th{background:var(--soft);text-align:left;padding:10px 12px;border:1px solid var(--line);font-weight:700}
+  td{padding:10px 12px;border:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even){background:var(--soft)}
+  .tldr{border:1px solid var(--accent);background:#f0f4ff;border-radius:10px;padding:20px;margin:24px 0;font-size:15px}
+  .tldr strong{display:block;margin-bottom:6px;font-size:16px;color:var(--accent)}
+  code{background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:14px}
+  pre{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:13px;margin:16px 0}
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  footer{border-top:1px solid var(--line);padding:24px 0;margin-top:48px;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:700px){h1{font-size:28px}nav a:not(.cta){display:none}}
+  .keep-reading{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+  .keep-reading h2{font-size:20px;margin-bottom:12px;border:none;padding:0}
+</style>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "SSL Certificate Expiry Monitoring: Never Get Caught by an Expired Certificate", "description": "How to check when your SSL certificate expires, why certs keep expiring unnoticed, and how to automate monitoring before browsers block your site.", "author": {"@type": "Organization", "name": "DeskUptime"}, "datePublished": "2026-08-31", "inLanguage": "en"}
+</script>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;052b0d28f232434c92b8fe2ab3f014d3&quot;}'></script></head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="/deskuptime/" class="logo">Desk<span>Uptime</span></a>
+    <nav>
+      <a href="/deskuptime/">Product</a>
+      <a href="/blog/">Blog</a>
+      <a class="cta" href="/deskuptime/#try">Try it free →</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>SSL Certificate Expiry Monitoring: Never Get the "Your Connection Is Not Private" Surprise (2026)</h1>
+  <p class="meta">Updated August 31, 2026 · 6 min read</p>
+
+  <div class="tldr">
+    <strong>TL;DR</strong>
+    Expired TLS certificates are still one of the most common causes of sudden
+    outages — and they are almost always preventable, because the expiry date is
+    known months in advance. The failure isn't technical, it's that nobody was
+    watching the date. Check your certificates now with
+    <code>openssl s_client</code> or an online checker, then set up automated
+    expiry monitoring so you get warned at 30, 14 and 7 days.
+    <a href="/deskuptime/">DeskUptime</a> checks certificate expiry on every
+    scheduled run and warns you in the app — $19 once, no subscription.
+  
+<!-- DeskUptime live check widget — self-contained, drop into any page.
+     Usage: paste this file's contents where the widget should appear.
+     Requires no external CSS/JS besides what's inline below. -->
+<div id="du-check" style="max-width:640px;margin:28px auto;background:#f9fafb;border:1px solid #e4e7ec;border-radius:12px;padding:22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="font-size:17px;font-weight:700;color:#101828;margin-bottom:4px">Check any site right now — free</div>
+  <div style="font-size:13.5px;color:#475467;margin-bottom:14px">Status, response time and SSL certificate expiry in seconds. No sign-up.</div>
+  <form id="du-form" style="display:flex;gap:8px;flex-wrap:wrap">
+    <input id="du-url" type="text" inputmode="url" placeholder="yourdomain.com" aria-label="Website URL to check" required
+           style="flex:1;min-width:180px;padding:11px 14px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;outline:none">
+    <button type="submit"
+            style="padding:11px 20px;background:#2868d0;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Check now</button>
+  </form>
+  <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:#fff;border:1px solid #e4e7ec;border-radius:8px;padding:14px" aria-live="polite"></div>
+  <div style="margin-top:12px;font-size:13px;color:#475467">Want an alert <em>before</em> it breaks?
+    <a href="/deskuptime/" style="color:#2868d0;font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
+</div>
+<script>
+(function(){
+  var f=document.getElementById('du-form');
+  if(!f) return;
+  f.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var raw=document.getElementById('du-url').value.trim();
+    var res=document.getElementById('du-result');
+    if(!raw) return;
+    var url=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
+    res.style.display='block';
+    res.innerHTML='⏳ Checking '+url+' …';
+    try{
+      var r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent(url));
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var d=await r.json();
+      if(d.error){res.innerHTML='❌ Error: '+d.error;return;}
+      var up=d.status>=200&&d.status<400;
+      var days=d.sslDaysRemaining;
+      res.innerHTML=
+        (up?'✅':'❌')+' <strong>'+d.status+' '+d.statusText+'</strong> · '+d.responseMs+'ms<br>'+
+        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+days+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
+        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+d.finalUrl):'')+
+        (up&&days!=null&&days<15?'<br><span style="color:#b03030;font-weight:600">Your certificate expires within two weeks — renew it now.</span>':'');
+    }catch(err){
+      res.innerHTML='❌ Network error: '+err.message;
+    }
+  });
+})();
+</script>
+
+</div>
+
+  <h2>Why expired certificates keep taking websites down</h2>
+  <p>When a TLS certificate expires, browsers don't show a gentle warning — they
+  put up a full-page red screen ("Your connection is not private") and many
+  visitors leave immediately. API clients start rejecting requests. Mobile apps
+  that pin certificates can stop working entirely.</p>
+  <p>The pattern behind nearly every incident is the same:</p>
+  <ul>
+    <li>The cert was installed once and forgotten.</li>
+    <li>Auto-renewal was never configured — or silently broke after a DNS change, server migration or ACME account issue.</li>
+    <li>Nobody had a reminder tied to the actual certificate, only a calendar entry from last year that no longer exists.</li>
+  </ul>
+  <p>Even with Let's Encrypt's 90-day certificates, renewal failures are common
+  enough that certificate expiry remains a top-five cause of avoidable downtime
+  for small and mid-size sites.</p>
+
+  <h2>Step 1: Check your expiry dates right now</h2>
+  <p>On any Mac or Linux machine:</p>
+  <pre>echo | openssl s_client -servername yoursite.com -connect yoursite.com:443 2>/dev/null \
+  | openssl x509 -noout -dates -issuer -subject</pre>
+  <p>This prints <code>notBefore</code> and <code>notAfter</code> — the dates that matter.
+  Do this for every domain and subdomain you run, including staging and API hosts.
+  Don't forget certificates on mail servers or load balancers, which browser visitors never see but other systems depend on.</p>
+
+  <h2>Step 2: Fix auto-renewal properly</h2>
+  <p>If you use Let's Encrypt / Certbot, verify renewal actually works instead of assuming it does:</p>
+  <pre>certbot renew --dry-run</pre>
+  <p>If it fails, fix it today. Common causes: the HTTP-01 challenge path is blocked,
+  the DNS record points somewhere else since a migration, or the cron/systemd timer
+  was disabled. If you're on Cloudflare or another proxy with origin certificates,
+  note those have long lifetimes but still expire — and they won't renew themselves.</p>
+
+  <h2>Step 3: Monitor expiry independently of renewal</h2>
+  <p>This is the step most teams skip. Auto-renewal can break at any time; monitoring
+  tells you <em>before</em> the expiry date whether something went wrong. You want alerts
+  at roughly 30, 14 and 7 days before expiry — early enough to react calmly.</p>
+  <table>
+    <tr><th>Option</th><th>Cost</th><th>Good for</th></tr>
+    <tr><td>Certbot hooks / custom script + email</td><td>Free</td><td>Single-server setups where you control cron</td></tr>
+    <tr><td>UptimeRobot SSL checks</td><td>Free tier (5-min checks)</td><td>A handful of public URLs</td></tr>
+    <tr><td>Pingdom / Site24x7 SSL checks</td><td>$15+/month</td><td>Teams already paying for full SaaS monitoring</td></tr>
+    <tr><td><a href="/deskuptime/">DeskUptime</a> desktop monitor</td><td>$19 one-time</td><td>Frequent SSL + uptime checks from your own machine, no monthly bill</td></tr>
+  </table>
+
+  <h3>What to look for in a monitoring setup</h3>
+  <ul>
+    <li><strong>Coverage of all hosts</strong> — not just the main domain. Wildcard and multi-SAN certs cover several names; make sure each name is checked.</li>
+    <li><strong>Days-until-expiry thresholds</strong>, not just "expired" alerts. An "expired" alert is an outage report; a 30-day alert is a task.</li>
+    <li><strong>Chain validation</strong> — an incomplete chain shows as broken in some browsers even while the leaf cert is valid.</li>
+  </ul>
+
+  <h2>How DeskUptime handles it</h2>
+  <p>DeskUptime runs on your Mac or Windows PC and re-checks every monitored URL on
+  your schedule — as often as every minute if you want. Each HTTPS check validates
+  the certificate chain and tracks days until expiry, so a soon-to-expire cert shows
+  up in the dashboard long before browsers block anyone. Because it runs locally,
+  there's no per-monitor pricing and no data about your infrastructure sent to a third party.</p>
+  <pre>npx github:mahope/deskuptime check https://yoursite.com</pre>
+  <p>The CLI above gives you an instant health report including certificate status;
+  the desktop app adds continuous scheduling and notifications.</p>
+
+  <h2>Quick checklist</h2>
+  <ol>
+    <li>List every hostname you serve over HTTPS (including internal ones).</li>
+    <li>Check each cert's <code>notAfter</code> date with openssl.</li>
+    <li>Run <code>certbot renew --dry-run</code> (or your platform's equivalent).</li>
+    <li>Set up independent expiry monitoring with 30/14/7-day warnings.</li>
+    <li>Add cert checks for staging and API hosts too — customers aren't the only ones who break.</li>
+  </ol>
+
+  <p>Certificate expiry is the cheapest outage to prevent: the date is printed on
+  the certificate itself. All that's missing is something watching it.</p>
+
+  <hr>
+
+  <div class="keep-reading">
+    <h2>Keep reading</h2>
+    <ul>
+      <li><a href="/blog/cron-job-failure-alerts-2026/">Cron job failure alerts</a></li>
+      <li><a href="/blog/one-time-purchase-uptime-monitor/">Uptime monitoring without the monthly bill — desktop vs SaaS</a></li>
+      <li><a href="/blog/checkly-alternative-2026/">Checkly alternatives compared</a></li>
+      <li><a href="/blog/pingdom-alternative-2026/">Pingdom alternatives compared</a></li>
+      <li><a href="/blog/free-uptime-monitoring-tools-2026/">Free uptime monitoring tools compared</a></li>
+      <li><a href="/blog/hsts-preload-guide/">HSTS preload guide</a></li>
+      <li><a href="/blog/website-down-checker/">Is your website down? How to check and get notified</a></li>
+    </ul>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Mahope</span>
+    <span><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
