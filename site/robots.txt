@@ -6,5 +6,7 @@ Disallow: /terms-of-service-generator/
 Disallow: /refund-policy-generator/
 Disallow: /cookie-policy-generator/
 Disallow: /tools/
+Disallow: /pro/dashboard/
+Disallow: /shared/
 
 Sitemap: https://eucomplypro.com/sitemap.xml

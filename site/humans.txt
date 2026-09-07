@@ -1,0 +1,12 @@
+/* TEAM */
+  Maker: Mads Holst Jensen
+  Site: https://mahoje.dk
+  Location: Odense, Denmark
+  Contact: mads@mahoje.dk
+
+/* SITE */
+  Standards: HTML5, CSS, vanilla JavaScript
+  Hosting: Cloudflare Pages, Cloudflare Workers for the scanner API
+  Fonts: none loaded; the system typeface
+  Tracking: none; no cookies
+  Scanner source: https://github.com/mahope/eucomply-scanner

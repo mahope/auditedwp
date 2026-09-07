@@ -1,0 +1,67 @@
+# EUComply — full description
+
+EUComply (https://eucomplypro.com) is a free technical compliance scanner for websites that have visitors in the European Union, plus a set of guides and checklists around it. It is built and maintained by Mads Holst Jensen, developer and technical partner in Odense, Denmark (https://mahoje.dk). The site is available in English, Danish (/da/), German (/de/) and French (/fr/) for the front page, the scanner, the pricing page and the guide.
+
+Everything on the site is technical guidance, not legal advice. The site sets no cookies, loads no trackers and no external fonts.
+
+## What the scanner does
+
+You enter a URL on https://eucomplypro.com/scan/. The scanner fetches the page the way a browser would, reads the public HTML and the HTTP response headers, and runs nine checks. It takes about ten seconds. No account is needed and nothing is stored; the result is shown on the page and can be re-created with a shareable link that just re-runs the scan.
+
+The nine checks and the rule each maps to:
+
+1. HTTPS and HSTS. Is the site served over TLS, and does it send a Strict-Transport-Security header? GDPR Article 32 expects appropriate technical security.
+2. Cookie consent. Looks for a known consent platform (Cookiebot, OneTrust, Klaro, Complianz and about a dozen more) in the served HTML. The ePrivacy Directive requires consent before non-essential cookies.
+3. Trackers before consent. Checks whether Google Analytics, Meta Pixel, TikTok, Hotjar and similar scripts load without any consent mechanism on the page. This is the most common reason small sites are fined.
+4. Google Consent Mode v2. Detects the consent-mode signals Google has required for EU ad personalisation since March 2024. Only relevant if the site runs Google Ads or Analytics.
+5. IAB TCF. Detects the Transparency and Consent Framework used by publishers and ad-tech. Informational for most sites.
+6. Forms and privacy notice. If the page has a form, is there a link to a privacy policy? GDPR Article 13 requires informing people at the point of collection.
+7. Legal pages. Are a privacy policy, terms, an imprint (mandatory in Germany and Austria) and an accessibility statement linked from the front page?
+8. Security headers. Content-Security-Policy, X-Content-Type-Options, Referrer-Policy and frame protection. Not a law, but the baseline NIS2 auditors and cyber insurers expect.
+9. Operational resilience wording. For financial-sector and ICT-provider sites: does the site mention incident reporting, continuity and ICT risk, as DORA expects? Skipped silently for everyone else.
+
+Each finding is reported as pass, warn or fail with a short explanation and a suggested fix. The scanner also detects the platform (Shopify, WordPress, Webflow and others) to make the fix suggestions specific.
+
+Limits: the scan reads one page as served. It cannot see server-side processing, contracts, data-processing agreements, retention practice or anything behind a login. A pass means the technical signal is present, not that the site is compliant.
+
+## API workers
+
+The scanner and the related tools run as Cloudflare Workers under mahope-eeb.workers.dev. The scanner source is public at https://github.com/mahope/eucomply-scanner.
+
+- eucomply-scan: GET /scan?url=<site> returns the nine checks as JSON. This is what the scan page calls.
+- eucomply-watch: status endpoint for the planned daily re-check service (in test).
+- deskuptime-quickcheck, deskuptime-headers, deskuptime-redirect-trace: the live check widgets on the Deskuptime pages (uptime, security headers, redirect chains).
+- waitlist-eucomply and devnotify-metrics: small config and counter endpoints used by product pages.
+
+There is no public API key or rate-limit documentation; the workers are meant to be called from the site's own pages.
+
+## Guides and checklists
+
+- EU Website Compliance Guide 2026 (https://eucomplypro.com/book/): a free 24-page PDF handbook written in August 2026 for the person who owns the website. One rule per chapter (GDPR, ePrivacy, NIS2, DORA, EAA), what it asks of a site in practice, and a checklist at the end of each. No email required to download.
+- GDPR compliance checklist (https://eucomplypro.com/checklist/), NIS2 checklist (https://eucomplypro.com/nis2-checklist/), European Accessibility Act checklist (https://eucomplypro.com/eaa-checklist/): interactive self-assessments that keep state in the browser only.
+- GDPR fine calculator (https://eucomplypro.com/gdpr-fine-calculator/): the Article 83 maximum exposure from annual turnover.
+- Focused checks: cookie banner check (/cookie-banner-check/), Google Consent Mode v2 check (/consent-mode-v2-check/), GDPR compliance check (/gdpr-compliance-check/), all built on the same scanner.
+- Comparisons of consent-management platforms (/cmp-comparison/, /compare/) and of EUComply against other compliance tools (/vs/).
+- Blog (https://eucomplypro.com/blog/): practical articles on cookie consent patterns, Abmahnung risk for shops selling into Germany, DORA and EAA for e-commerce, HSTS preload, Meta Pixel and consent, platform guides for Shopify, WooCommerce and BigCommerce, and a series on uptime monitoring and alternatives to hosted monitoring services.
+- German-language articles under /de/ on Impressum obligations and cookie-banner fines.
+
+## Pricing
+
+The scanner, the guide and every checklist are free and will stay free. Two paid things are planned and cannot be bought yet; there is no waiting list.
+
+- Pro: 79 USD per website per year. Daily re-scans with a 30-day history, an email when a check goes from pass to fail, a PDF report with findings and dates, and a footer badge linking to the latest result.
+- Document templates: from 29 USD one-off. Data processing agreement (GDPR Art. 28), NIS2 and DORA vendor clauses, accessibility statement (EAA), mutual NDA clause set, client compliance report kit. Written as starting points with comments on each clause; counsel should read the filled-in result before anything is signed.
+
+## Sister products from mahoje.dk
+
+- Deskuptime (https://deskuptime.com): a desktop website monitor for macOS and Windows with a one-time purchase instead of a monthly fee. Uptime, SSL expiry, security headers and redirect checks from your own machine. Pages on this site under /deskuptime/, with German, French and Spanish versions.
+- Transmute (https://transmute.run): a desktop data transformer for converting and reshaping structured files locally. Pages under /transmute/.
+- DevNotify (https://eucomplypro.com/devnotify/): GitHub notifications in the menu bar on macOS, Windows and Linux. Unread count at a glance, one click to any PR or issue, the token stays on the machine. 19 USD lifetime licence. Guides under /devnotify/guides/.
+- cleancopy.tools, bugbottle.dev and mahope.tools: smaller utilities by the same maker.
+
+## Contact and policies
+
+- Maker: Mads Holst Jensen, https://mahoje.dk, mads@mahoje.dk
+- Security reports: https://eucomplypro.com/.well-known/security.txt
+- Privacy: https://eucomplypro.com/privacy/ — Terms: https://eucomplypro.com/terms/
+- Sitemap: https://eucomplypro.com/sitemap.xml
