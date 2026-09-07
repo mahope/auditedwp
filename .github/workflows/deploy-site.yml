@@ -1,0 +1,46 @@
+name: deploy-site
+
+# Deployer site/ til Cloudflare Pages (projekt "auditedwp" -> eucomplypro.com)
+# ved push på main. Kilden i site/ er allerede shell-injiceret (tools/apply_shell.py
+# køres lokalt) — workflowet bygger intet, det uploader kun.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pages-auditedwp
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy til Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: site
+          command: pages deploy . --project-name auditedwp --branch main --commit-dirty=true
+
+      - name: Tjek produktion
+        run: |
+          url="https://eucomplypro.com/"
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -sS -o body.html -w '%{http_code}' "$url" || echo 000)
+            if [ "$code" = "200" ] && grep -q "mahoje.dk" body.html; then
+              echo "OK: $url svarer 200 og indeholder mahoje.dk"
+              exit 0
+            fi
+            echo "Forsøg $i: status $code — venter 10s"
+            sleep 10
+          done
+          echo "FEJL: $url gav status $code eller manglede 'mahoje.dk'"
+          exit 1
