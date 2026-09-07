@@ -102,6 +102,16 @@ ICON_LINKS = """<link rel="icon" href="/favicon.ico" sizes="32x32">
 
 JS_BOOT = '<script>document.documentElement.classList.add("js")</script>'
 
+
+def asset_version(name: str) -> str:
+    """Short content hash so a changed asset gets a new URL past the CDN cache."""
+    import hashlib
+    return hashlib.sha1((SITE / "assets" / name).read_bytes()).hexdigest()[:8]
+
+
+CSS_V = asset_version("site.css")
+JS_V = asset_version("site.js")
+
 # ----------------------------------------------------------------- helpers
 
 def rel_url(path: Path) -> str:
@@ -830,8 +840,8 @@ def process(path: Path) -> bool:
         tags = "".join(f'\n<link rel="alternate" hreflang="{l}" href="{ORIGIN}{u}">' for l, u in alts.items())
         tags += f'\n<link rel="alternate" hreflang="x-default" href="{ORIGIN}{alts.get("en", url)}">'
         html = re.sub(r'(<link rel="canonical"[^>]*>)', lambda m: m.group(1) + tags, html, count=1)
-    html = html.replace("</head>", '<link rel="stylesheet" href="/assets/site.css">\n'
-                        + JS_BOOT + '\n<script src="/assets/site.js" defer></script>\n</head>', 1)
+    html = html.replace("</head>", f'<link rel="stylesheet" href="/assets/site.css?v={CSS_V}">\n'
+                        + JS_BOOT + f'\n<script src="/assets/site.js?v={JS_V}" defer></script>\n</head>', 1)
 
     # --- inline CSS: drop legacy shell rules and map colours (not for pages authored for the shell)
     if not native:
