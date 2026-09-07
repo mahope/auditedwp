@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Inject the shared EUComply shell (header, footer, site.css) into every HTML
-page under site/, strip legacy shell CSS/markup, clean up hype, and rebuild
+"""Inject the shared EUComply shell (header, footer, site.css, site.js) into every
+HTML page under site/, strip legacy shell CSS/markup, map legacy colours to the
+design tokens, fill in SEO head tags and JSON-LD, clean up hype, and rebuild
 sitemap.xml.  Idempotent: safe to run repeatedly.
 
     python tools/apply_shell.py            # apply to all pages
     python tools/apply_shell.py --dry-run  # report only
 """
+import colorsys
+import datetime as dt
+import html as htmlmod
+import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -17,9 +23,14 @@ PARTIALS = SITE / "_partials"
 ORIGIN = "https://eucomplypro.com"
 LANGS = ["en", "da", "de", "fr"]
 DRY = "--dry-run" in sys.argv
+TODAY = dt.date.today().isoformat()
+AUTHOR = {"@type": "Person", "name": "Mads Holst Jensen", "url": "https://mahoje.dk"}
+ORG = {"@type": "Organization", "name": "EUComply", "url": ORIGIN + "/",
+       "logo": {"@type": "ImageObject", "url": ORIGIN + "/icon-512.png"},
+       "founder": AUTHOR}
 
 I18N = {
-    "en": dict(nav_label="Main", nav_scan="Scan", nav_guide="Guide", nav_checklists="Checklists",
+    "en": dict(nav_label="Main", menu_label="Menu", nav_scan="Scan", nav_guide="Guide", nav_checklists="Checklists",
                nav_pricing="Pricing", nav_blog="Blog", built_by="Built by",
                maker_desc="developer and technical partner, Odense, Denmark.",
                source_on_github="Scanner source on GitHub",
@@ -31,7 +42,7 @@ I18N = {
                checklist_link="compliance checklist",
                gen_title="This generator has been taken down",
                ),
-    "da": dict(nav_label="Hovedmenu", nav_scan="Scan", nav_guide="Guide", nav_checklists="Tjeklister",
+    "da": dict(nav_label="Hovedmenu", menu_label="Menu", nav_scan="Scan", nav_guide="Guide", nav_checklists="Tjeklister",
                nav_pricing="Priser", nav_blog="Blog", built_by="Udviklet af",
                maker_desc="udvikler og teknisk partner, Odense.",
                source_on_github="Scannerens kildekode på GitHub",
@@ -43,7 +54,7 @@ I18N = {
                checklist_link="compliance-tjekliste",
                gen_title="Denne generator er taget ned",
                ),
-    "de": dict(nav_label="Hauptmenü", nav_scan="Scan", nav_guide="Leitfaden", nav_checklists="Checklisten",
+    "de": dict(nav_label="Hauptmenü", menu_label="Menü", nav_scan="Scan", nav_guide="Leitfaden", nav_checklists="Checklisten",
                nav_pricing="Preise", nav_blog="Blog", built_by="Entwickelt von",
                maker_desc="Entwickler und technischer Partner, Odense, Dänemark.",
                source_on_github="Quellcode des Scanners auf GitHub",
@@ -55,7 +66,7 @@ I18N = {
                checklist_link="Compliance-Checkliste",
                gen_title="Dieser Generator wurde abgeschaltet",
                ),
-    "fr": dict(nav_label="Menu principal", nav_scan="Scanner", nav_guide="Guide", nav_checklists="Check-lists",
+    "fr": dict(nav_label="Menu principal", menu_label="Menu", nav_scan="Scanner", nav_guide="Guide", nav_checklists="Check-lists",
                nav_pricing="Tarifs", nav_blog="Blog", built_by="Développé par",
                maker_desc="développeur et partenaire technique, Odense, Danemark.",
                source_on_github="Code source du scanner sur GitHub",
@@ -70,6 +81,7 @@ I18N = {
 }
 I18N["es"] = I18N["en"]
 LANG_LABEL = {"en": "EN", "da": "DA", "de": "DE", "fr": "FR", "es": "ES"}
+OG_LOCALE = {"en": "en_GB", "da": "da_DK", "de": "de_DE", "fr": "fr_FR", "es": "es_ES"}
 
 # Pages whose localised versions live under /<lang>/ when they exist.
 CORE = {"", "scan/", "pricing/", "book/"}
@@ -81,6 +93,14 @@ SKIP_FILES = {"shared/live-check-widget.html"}
 
 HEADER_TPL = (PARTIALS / "header.html").read_text(encoding="utf-8")
 FOOTER_TPL = (PARTIALS / "footer.html").read_text(encoding="utf-8")
+
+ICON_LINKS = """<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">"""
+
+JS_BOOT = '<script>document.documentElement.classList.add("js")</script>'
 
 # ----------------------------------------------------------------- helpers
 
@@ -155,6 +175,32 @@ def render_shell(url: str, lang: str) -> tuple[str, str]:
     return header.strip(), footer.strip()
 
 
+# ------------------------------------------------------------- git dates
+
+def git_dates() -> dict:
+    """{relpath: (first_commit_date, last_commit_date)} for files under site/."""
+    out = {}
+    try:
+        log = subprocess.run(["git", "log", "--format=@%cs", "--name-only", "--", "site"],
+                             cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
+    except Exception:
+        return out
+    cur = None
+    for line in log.splitlines():
+        if line.startswith("@"):
+            cur = line[1:]
+        elif line.strip() and cur:
+            rel = line.strip()
+            if rel.startswith("site/"):
+                rel = rel[5:]
+            first, last = out.get(rel, (cur, cur))
+            out[rel] = (cur, last)  # log is newest-first: keep last, overwrite first
+    return out
+
+
+GIT_DATES = git_dates()
+
+
 # ---------------------------------------------------------------- CSS filter
 
 SHELL_SEL = re.compile(
@@ -164,7 +210,7 @@ SHELL_SEL = re.compile(
 
 
 def split_rules(css: str):
-    """Yield (selector, body, is_at_block) for top-level rules; handles one level of nesting."""
+    """Yield (selector, body) for top-level rules; handles one level of nesting."""
     i, n = 0, len(css)
     while i < n:
         j = css.find("{", i)
@@ -221,6 +267,117 @@ def filter_css(css: str) -> str:
     return "\n".join(out)
 
 
+# ------------------------------------------------------- colour tokenising
+
+NAMED = {"white": (255, 255, 255), "black": (0, 0, 0), "#fff": (255, 255, 255), "#000": (0, 0, 0)}
+
+
+def _rgb(tok: str):
+    t = tok.strip().lower()
+    if t in ("white", "black"):
+        return NAMED[t], 1.0
+    if t.startswith("#"):
+        h = t[1:]
+        if len(h) in (3, 4):
+            h = "".join(c * 2 for c in h)
+        if len(h) not in (6, 8):
+            return None, None
+        try:
+            r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        except ValueError:
+            return None, None
+        a = int(h[6:8], 16) / 255 if len(h) == 8 else 1.0
+        return (r, g, b), a
+    m = re.match(r"rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)", t)
+    if m:
+        r, g, b = (int(float(m.group(i))) for i in (1, 2, 3))
+        a = float(m.group(4)) if m.group(4) else 1.0
+        return (r, g, b), a
+    return None, None
+
+
+def token_for(colour: str) -> str | None:
+    """Map a hard-coded colour to the nearest design token, or None to keep it."""
+    rgb, a = _rgb(colour)
+    if rgb is None:
+        return None
+    r, g, b = (c / 255 for c in rgb)
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    hue = h * 360
+    if a < 0.5:
+        return "var(--line)" if l > 0.35 else "var(--soft)"
+    if s < 0.18 or (l > 0.93):
+        if l > 0.93:
+            return "var(--panel)"
+        if l > 0.82:
+            return "var(--soft)"
+        if l > 0.62:
+            return "var(--line)"
+        if l > 0.3:
+            return "var(--muted)"
+        return "var(--ink)"
+    # saturated
+    if l > 0.85:
+        if 80 <= hue <= 170:
+            return "var(--accent-soft)"
+        if hue < 70 or hue > 330:
+            return "var(--warn-soft)" if 20 < hue < 70 else "var(--fail-soft)"
+        return "var(--accent-soft)"
+    if 80 <= hue <= 170:
+        return "var(--ok)"
+    if 170 < hue <= 300:
+        return "var(--accent-dark)" if l < 0.3 else "var(--accent)"
+    if hue <= 18 or hue > 330:
+        return "var(--fail)"
+    if l < 0.6:
+        return "var(--warn)"
+    return "var(--warn)"
+
+
+COLOUR_RE = re.compile(r"(?<![\w-])(#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3,4}\b|rgba?\([^)]*\)|\bwhite\b|\bblack\b)")
+
+
+def tokenize_decls(decls: str) -> str:
+    """Rewrite colours inside a run of CSS declarations. Skips url() payloads."""
+    parts = re.split(r"(url\([^)]*\))", decls)
+    for i in range(0, len(parts), 2):
+        def rep(m):
+            tok = token_for(m.group(1))
+            return tok or m.group(1)
+        parts[i] = COLOUR_RE.sub(rep, parts[i])
+    return "".join(parts)
+
+
+def tokenize_css(css: str) -> str:
+    """Apply tokenize_decls to every declaration block, leaving selectors alone."""
+    out, i, n = [], 0, len(css)
+    while i < n:
+        j = css.find("{", i)
+        if j < 0:
+            out.append(css[i:])
+            break
+        out.append(css[i : j + 1])
+        depth, k = 1, j + 1
+        while k < n and depth:
+            if css[k] == "{":
+                depth += 1
+            elif css[k] == "}":
+                depth -= 1
+            k += 1
+        body = css[j + 1 : k - 1]
+        if "{" in body:
+            out.append(tokenize_css(body))
+        else:
+            out.append(tokenize_decls(body))
+        out.append("}")
+        i = k
+    return "".join(out)
+
+
+def tokenize_style_attrs(html: str) -> str:
+    return re.sub(r'style="([^"]*)"', lambda m: 'style="' + tokenize_decls(m.group(1)) + '"', html)
+
+
 # ---------------------------------------------------------------- cleaners
 
 EMOJI = re.compile(
@@ -252,7 +409,6 @@ INNERMOST_TAGS = ("span", "p", "li", "small", "strong", "em", "div", "h1", "h2",
 
 def remove_element_around(html: str, pos: int) -> str | None:
     """Remove the innermost element (of INNERMOST_TAGS) containing text position pos."""
-    # walk back to the nearest opening tag whose matching close comes after pos
     start = html.rfind("<", 0, pos)
     tries = 0
     while start >= 0 and tries < 12:
@@ -260,9 +416,7 @@ def remove_element_around(html: str, pos: int) -> str | None:
         m = re.match(r"<(%s)\b[^>]*>" % "|".join(INNERMOST_TAGS), html[start:], re.I)
         if m:
             tag = m.group(1).lower()
-            close = re.compile(r"</%s\s*>" % tag, re.I)
-            # find matching close accounting for nesting of the same tag
-            depth, i = 0, start
+            depth = 0
             for mm in re.finditer(r"<(/?)%s\b[^>]*>" % tag, html[start:], re.I):
                 if mm.group(1) == "":
                     depth += 1
@@ -284,7 +438,6 @@ def strip_social_proof(html: str) -> str:
             break
         new = remove_element_around(html, m.start())
         if new is None:
-            # fall back: delete the sentence
             s = html.rfind(".", 0, m.start()) + 1
             e = html.find(".", m.end())
             e = len(html) if e < 0 else e + 1
@@ -361,6 +514,288 @@ def outside_code(html: str, fn):
     return "".join(parts)
 
 
+def wrap_tables(html: str) -> str:
+    """Give every <table> a horizontally scrolling wrapper (idempotent)."""
+    def repl(m):
+        start = m.start()
+        before = html[max(0, start - 40) : start]
+        if re.search(r'<div class="tbl">\s*$', before):
+            return m.group(0)
+        return '<div class="tbl">' + m.group(0) + "</div>"
+    return re.sub(r"<table\b.*?</table>", repl, html, flags=re.S | re.I)
+
+
+def add_missing_alt(html: str) -> str:
+    return re.sub(r"<img\b(?![^>]*\balt=)([^>]*?)(/?)>", r'<img alt=""\1\2>', html, flags=re.I)
+
+
+# ----------------------------------------------------------------- SEO head
+
+BRAND_SUFFIX = re.compile(r"\s*[|—–-]\s*(EUComply|DevNotify|ComplianceDocs|Deskuptime|DeskUptime|Transmute)\s*$", re.I)
+
+
+def text_of(fragment: str) -> str:
+    t = re.sub(r"<script.*?</script>|<style.*?</style>", " ", fragment, flags=re.S | re.I)
+    t = re.sub(r"<[^>]+>", " ", t)
+    t = htmlmod.unescape(t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def short_title(t: str, limit: int = 60) -> str:
+    t = re.sub(r"\s+", " ", htmlmod.unescape(t)).strip()
+    t = BRAND_SUFFIX.sub("", t)
+    if len(t) <= limit:
+        return t
+    for sep in (" — ", " – ", " | ", ": ", " (", " - ", "? "):
+        idx = t.rfind(sep, 0, limit + 1)
+        if idx >= 25:
+            cand = t[: idx + (1 if sep == "? " else 0)].strip()
+            if len(cand) <= limit:
+                return cand
+    cut = t[: limit + 1]
+    cut = cut[: cut.rfind(" ")] if " " in cut else cut[:limit]
+    return cut.rstrip(" ,;:-–—")
+
+
+def short_desc(d: str, limit: int = 155) -> str:
+    d = re.sub(r"\s+", " ", htmlmod.unescape(d)).strip()
+    if len(d) <= limit:
+        return d
+    idx = d.rfind(". ", 0, limit)
+    if idx >= 70:
+        return d[: idx + 1]
+    cut = d[:limit]
+    cut = cut[: cut.rfind(" ")]
+    return cut.rstrip(" ,;:-–—") + "."
+
+
+def attr_escape(s: str) -> str:
+    return s.replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def find_meta(head: str, attr: str, name: str) -> str | None:
+    m = re.search(r'<meta\s+[^>]*%s="%s"[^>]*content="([^"]*)"' % (attr, re.escape(name)), head, re.I)
+    if not m:
+        m = re.search(r'<meta\s+[^>]*content="([^"]*)"[^>]*%s="%s"' % (attr, re.escape(name)), head, re.I)
+    return htmlmod.unescape(m.group(1)) if m else None
+
+
+def remove_meta(head: str, attr: str, name: str) -> str:
+    return re.sub(r'\s*<meta\s+[^>]*%s="%s"[^>]*>' % (attr, re.escape(name)), "", head, flags=re.I)
+
+
+def slug_for_og(url: str) -> str:
+    s = url.strip("/")
+    return (s.replace("/", "-") if s else "home")
+
+
+def og_image_for(url: str, lang: str, current: str | None) -> str:
+    """Pick the best existing OG image for this page."""
+    if current and "eucomply-og.png" not in current and not current.startswith("/images/og/"):
+        path = current.replace(ORIGIN, "")
+        if path.startswith("/") and (SITE / path.lstrip("/")).exists():
+            return ORIGIN + path
+    cands = [f"/images/og/{slug_for_og(url)}.png",
+             f"/images/og/{slug_for_og(strip_lang(url))}.png" if lang != "en" and slug_for_og(strip_lang(url)) != "home" else None,
+             f"/images/og/{lang}.png", "/images/og/en.png", "/images/eucomply-og.png"]
+    for c in cands:
+        if c and (SITE / c.lstrip("/")).exists():
+            return ORIGIN + c
+    return ORIGIN + "/images/eucomply-og.png"
+
+
+def site_name_for(url: str) -> str:
+    base = strip_lang(url)
+    if base.startswith("/devnotify/"):
+        return "DevNotify"
+    if base.startswith("/deskuptime/"):
+        return "Deskuptime"
+    if base.startswith("/transmute/"):
+        return "Transmute"
+    if base.startswith("/store/"):
+        return "ComplianceDocs by EUComply"
+    return "EUComply"
+
+
+MONTHS = {m: i for i, m in enumerate(
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
+def find_date(body: str) -> str | None:
+    m = re.search(r'<time[^>]*datetime="(\d{4}-\d{2}-\d{2})', body)
+    if m:
+        return m.group(1)
+    meta = re.search(r'class="meta"[^>]*>(.*?)</', body, re.S)
+    scope = meta.group(1) if meta else body[:6000]
+    m = re.search(r"\b(20\d{2}-\d{2}-\d{2})\b", scope)
+    if m:
+        return m.group(1)
+    m = re.search(r"\b([A-Z][a-z]{2,8})\.? (\d{1,2}), (20\d{2})\b", scope)
+    if m and m.group(1)[:3].lower() in MONTHS:
+        return f"{m.group(3)}-{MONTHS[m.group(1)[:3].lower()]:02d}-{int(m.group(2)):02d}"
+    m = re.search(r"\b(\d{1,2})\.? ([A-Z][a-zé]{2,9}) (20\d{2})\b", scope)
+    if m and m.group(2)[:3].lower() in MONTHS:
+        return f"{m.group(3)}-{MONTHS[m.group(2)[:3].lower()]:02d}-{int(m.group(1)):02d}"
+    return None
+
+
+def is_article(url: str, body: str) -> bool:
+    base = strip_lang(url)
+    if base in ("/blog/", "/guides/", "/devnotify/guides/", "/devnotify/", "/deskuptime/", "/transmute/", "/vs/"):
+        return False
+    if base.startswith(("/blog/", "/guides/", "/devnotify/guides/")):
+        return True
+    return bool(re.search(r'class="meta"[^>]*>[^<]*(min read|\d{4}-\d{2}-\d{2}|20\d{2})', body))
+
+
+def existing_ld_types(html: str) -> set:
+    types = set()
+    for m in re.finditer(r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S | re.I):
+        types.update(re.findall(r'"@type"\s*:\s*"([^"]+)"', m.group(1)))
+    return types
+
+
+def faq_from_details(body: str) -> list:
+    items = []
+    for m in re.finditer(r"<details\b[^>]*>(.*?)</details>", body, re.S | re.I):
+        inner = m.group(1)
+        sm = re.search(r"<summary\b[^>]*>(.*?)</summary>", inner, re.S | re.I)
+        if not sm:
+            continue
+        q = text_of(sm.group(1))
+        a = text_of(inner[sm.end():])
+        if len(q) > 8 and len(a) > 20:
+            items.append({"@type": "Question", "name": q,
+                          "acceptedAnswer": {"@type": "Answer", "text": a[:1200]}})
+    return items
+
+
+def ld_script(obj: dict) -> str:
+    return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/") + "</script>"
+
+
+def seo_head(html: str, url: str, lang: str, rel: str) -> str:
+    """Normalise <head>: title, description, canonical, OG, Twitter, icons, JSON-LD."""
+    hi = html.find("</head>")
+    if hi < 0:
+        return html
+    head, rest = html[:hi], html[hi:]
+    body = rest
+    canonical = ORIGIN + url
+    noindex = bool(re.search(r'name="robots"[^>]*noindex', head))
+
+    tm = re.search(r"<title>(.*?)</title>", head, re.S)
+    full_title = re.sub(r"\s+", " ", htmlmod.unescape(tm.group(1))).strip() if tm else ""
+    title = short_title(full_title) if full_title else ""
+    if not title:
+        h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
+        title = short_title(text_of(h1.group(1))) if h1 else "EUComply"
+        full_title = title
+    if tm:
+        head = head[: tm.start()] + "<title>" + attr_escape(title) + "</title>" + head[tm.end():]
+    else:
+        head = re.sub(r"(<meta charset[^>]*>)", r"\1\n<title>" + attr_escape(title) + "</title>", head, count=1)
+
+    desc = find_meta(head, "name", "description") or find_meta(head, "property", "og:description")
+    if not desc:
+        main = body[body.find("<main"):] if "<main" in body else body
+        for pm in re.finditer(r"<p\b[^>]*>(.*?)</p>", main, re.S):
+            t = text_of(pm.group(1))
+            if len(t) >= 60:
+                desc = t
+                break
+        desc = desc or title
+    desc = short_desc(desc)
+    head = remove_meta(head, "name", "description")
+    head = re.sub(r"(<title>.*?</title>)", lambda m: m.group(1) + '\n<meta name="description" content="' + attr_escape(desc) + '">', head, count=1, flags=re.S)
+
+    # canonical
+    head = re.sub(r'\s*<link\s+rel="canonical"[^>]*>', "", head, flags=re.I)
+    head = head.replace("</title>", "</title>", 1)
+    head = re.sub(r'(<meta name="description"[^>]*>)', lambda m: m.group(1) + f'\n<link rel="canonical" href="{canonical}">', head, count=1)
+
+    # icons (the old inline SVG data-URI icon contains ">" inside the attribute, so it goes first)
+    head = re.sub(r'\s*<link\s+rel="icon"\s+href="data:image/svg\+xml,[^"]*"[^>]*>', "", head, flags=re.I)
+    head = re.sub(r"\s*<(?:rect|text|path|circle|g)\b[^\n]*?</svg>\">", "", head)
+    head = re.sub(r'\s*<link\s+rel="(icon|apple-touch-icon|manifest|shortcut icon)"[^>]*>', "", head, flags=re.I)
+    head = remove_meta(head, "name", "theme-color")
+    head = re.sub(r'(<link rel="canonical"[^>]*>)', lambda m: m.group(1) + "\n" + ICON_LINKS, head, count=1)
+
+    # Open Graph / Twitter
+    og_title = find_meta(head, "property", "og:title") or full_title
+    og_desc = find_meta(head, "property", "og:description") or desc
+    og_type = find_meta(head, "property", "og:type") or ("article" if is_article(url, body) else "website")
+    og_img = og_image_for(url, lang, find_meta(head, "property", "og:image"))
+    for p in ("og:title", "og:description", "og:type", "og:url", "og:image", "og:site_name", "og:locale",
+              "og:image:width", "og:image:height", "og:image:alt"):
+        head = remove_meta(head, "property", p)
+    for p in ("twitter:card", "twitter:title", "twitter:description", "twitter:image", "twitter:site", "twitter:creator"):
+        head = remove_meta(head, "name", p)
+    og = [
+        f'<meta property="og:type" content="{og_type}">',
+        f'<meta property="og:site_name" content="{attr_escape(site_name_for(url))}">',
+        f'<meta property="og:locale" content="{OG_LOCALE[lang]}">',
+        f'<meta property="og:url" content="{canonical}">',
+        f'<meta property="og:title" content="{attr_escape(og_title)}">',
+        f'<meta property="og:description" content="{attr_escape(short_desc(og_desc, 200))}">',
+        f'<meta property="og:image" content="{og_img}">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{attr_escape(og_title)}">',
+        f'<meta name="twitter:description" content="{attr_escape(short_desc(og_desc, 200))}">',
+        f'<meta name="twitter:image" content="{og_img}">',
+    ]
+    head = re.sub(r'(<meta name="theme-color"[^>]*>)', lambda m: m.group(1) + "\n" + "\n".join(og), head, count=1)
+
+    # JSON-LD: strip ours from a previous run, then add what is missing
+    head = re.sub(r'\s*<script type="application/ld\+json" data-shell>.*?</script>', "", head, flags=re.S)
+    types = existing_ld_types(head + body)
+    blocks = []
+    base = strip_lang(url)
+    web_page = {"@type": "WebPage", "@id": canonical, "url": canonical, "name": title, "description": desc,
+                "inLanguage": lang, "isPartOf": {"@type": "WebSite", "@id": ORIGIN + "/#website"},
+                "author": AUTHOR}
+    if base == "/":
+        if "WebSite" not in types:
+            blocks.append({"@context": "https://schema.org", "@type": "WebSite", "@id": ORIGIN + "/#website",
+                           "url": ORIGIN + "/", "name": "EUComply", "inLanguage": lang,
+                           "description": desc, "author": AUTHOR, "publisher": {"@id": ORIGIN + "/#org"}})
+        if "Organization" not in types:
+            blocks.append({"@context": "https://schema.org", "@id": ORIGIN + "/#org", **ORG})
+    elif base == "/scan/":
+        if "SoftwareApplication" not in types:
+            blocks.append({"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "EUComply scanner",
+                           "url": canonical, "applicationCategory": "SecurityApplication", "operatingSystem": "Web",
+                           "description": desc, "inLanguage": lang, "isAccessibleForFree": True,
+                           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+                           "author": AUTHOR, "publisher": ORG})
+    elif is_article(url, body):
+        if "Article" not in types and "BlogPosting" not in types and "TechArticle" not in types:
+            first, last = GIT_DATES.get(rel, (TODAY, TODAY))
+            published = find_date(body) or first
+            modified = max(last, published)
+            h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
+            blocks.append({"@context": "https://schema.org", "@type": "Article",
+                           "headline": (text_of(h1.group(1)) if h1 else full_title)[:110],
+                           "description": desc, "url": canonical, "mainEntityOfPage": canonical,
+                           "inLanguage": lang, "image": og_img,
+                           "datePublished": published, "dateModified": modified,
+                           "author": AUTHOR, "publisher": ORG})
+    if "WebPage" not in types and base not in ("/",) and not blocks:
+        blocks.append({"@context": "https://schema.org", **web_page})
+    if "FAQPage" not in types:
+        faq = faq_from_details(body)
+        if len(faq) >= 2:
+            blocks.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faq})
+    if blocks:
+        scripts = "\n".join(ld_script(b).replace('<script type="application/ld+json">', '<script type="application/ld+json" data-shell>', 1) for b in blocks)
+        head = head.rstrip() + "\n" + scripts + "\n"
+    if noindex:
+        head = re.sub(r'\s*<meta\s+property="og:[^>]*>|\s*<meta\s+name="twitter:[^>]*>', "", head)
+    return head + rest
+
+
 # ----------------------------------------------------------------- per page
 
 def process(path: Path) -> bool:
@@ -372,40 +807,52 @@ def process(path: Path) -> bool:
     html = path.read_text(encoding="utf-8")
     orig = html
     is_devnotify = "/devnotify/" in url
-    native = 'data-dark-ok' in html[:400]  # pages written for the new shell
+    native = "pg-legacy" not in html and "data-dark-ok" in html[:400]  # pages written for the new shell
 
-    # --- head: stylesheet, beacon, hreflang
+    # --- <html>: language and dark-mode opt-in
+    def html_tag(m):
+        attrs = m.group(1)
+        attrs = re.sub(r'\s*lang="[^"]*"', "", attrs)
+        attrs = re.sub(r"\s*data-dark-ok\b", "", attrs)
+        return f'<html lang="{lang}" data-dark-ok{attrs}>'
+    html = re.sub(r"<html\b([^>]*)>", html_tag, html, count=1)
+
+    # --- head: stylesheet, scripts, beacon, hreflang
     html = re.sub(r"\s*<link[^>]+/assets/site\.css[^>]*>", "", html)
+    html = re.sub(r"\s*<script[^>]*/assets/site\.js[^>]*></script>", "", html)
+    html = html.replace("\n" + JS_BOOT, "").replace(JS_BOOT, "")
     html = re.sub(r"\s*<script[^>]*cloudflareinsights[^>]*></script>", "", html, flags=re.I)
     html = re.sub(r"\s*<script[^>]*/assets/checkout\.js[^>]*></script>", "", html, flags=re.I)
     html = re.sub(r'\s*<link[^>]+rel="alternate"[^>]+hreflang=[^>]*>', "", html)
+    html = seo_head(html, url, lang, rel)
     alts = alternates(url)
     if len(alts) >= 2 and "noindex" not in html[:3000]:
         tags = "".join(f'\n<link rel="alternate" hreflang="{l}" href="{ORIGIN}{u}">' for l, u in alts.items())
         tags += f'\n<link rel="alternate" hreflang="x-default" href="{ORIGIN}{alts.get("en", url)}">'
-        html = re.sub(r'(<link rel="canonical"[^>]*>)', lambda m: m.group(1) + tags, html, count=1) \
-            if 'rel="canonical"' in html else html.replace("</head>", tags + "\n</head>", 1)
-    html = html.replace("</head>", '<link rel="stylesheet" href="/assets/site.css">\n</head>', 1)
+        html = re.sub(r'(<link rel="canonical"[^>]*>)', lambda m: m.group(1) + tags, html, count=1)
+    html = html.replace("</head>", '<link rel="stylesheet" href="/assets/site.css">\n'
+                        + JS_BOOT + '\n<script src="/assets/site.js" defer></script>\n</head>', 1)
 
-    # --- inline CSS: drop legacy shell rules (not for pages authored for the shell)
+    # --- inline CSS: drop legacy shell rules and map colours (not for pages authored for the shell)
     if not native:
         def css_repl(m):
-            return m.group(1) + filter_css(m.group(2)) + m.group(3)
+            return m.group(1) + tokenize_css(filter_css(m.group(2))) + m.group(3)
         html = re.sub(r"(<style\b[^>]*>)(.*?)(</style>)", css_repl, html, flags=re.S | re.I)
+        html = outside_code(html, tokenize_style_attrs)
 
     # --- body: remove old header/footer, insert shell
     header, footer = render_shell(url, lang)
     html = re.sub(r"<header\b[^>]*>.*?</header>\s*", "", html, count=1, flags=re.S | re.I)
-    # article-style breadcrumb nav right after <body>
     html = re.sub(r"(<body\b[^>]*>)\s*<nav\b[^>]*>(?:(?!</nav>).)*?(?:← ?EUComply|&larr;|EUComply)(?:(?!</nav>).)*?</nav>\s*",
                   r"\1\n", html, count=1, flags=re.S | re.I)
-    # last footer
     footers = list(re.finditer(r"<footer\b[^>]*>.*?</footer>\s*", html, flags=re.S | re.I))
     if footers:
         f = footers[-1]
         html = html[: f.start()] + html[f.end():]
     html = re.sub(r'<div class="pg-legacy">\n?', "", html, count=1)
-    html = html.replace("</div><!--/pg-legacy-->", "", 1)
+    html = re.sub(r"\s*</div><!--/pg-legacy-->", "", html, count=1)
+    html = re.sub(r"(<body\b[^>]*>)\s*", r"\1\n", html, count=1)
+    html = re.sub(r"\s*</body>", "\n</body>", html, count=1)
     if native:
         html = re.sub(r"(<body\b[^>]*>)", lambda m: m.group(1) + "\n" + header + "\n", html, count=1)
         html = html.replace("</body>", footer + "\n</body>", 1)
@@ -415,6 +862,8 @@ def process(path: Path) -> bool:
 
     # --- cross-cutting clean-up
     html = html.replace("auditedwp.pages.dev", "eucomplypro.com")
+    html = outside_code(html, wrap_tables)
+    html = outside_code(html, add_missing_alt)
     if not is_devnotify and not native:
         def clean(txt):
             txt = EMOJI.sub("", txt)
@@ -428,7 +877,6 @@ def process(path: Path) -> bool:
         html = neutralise_buy_buttons(html, lang)
         html = fix_generator_links(html, lang)
         html = product_ctas(html, url)
-        # tidy leftovers such as "<h3> HTTPS" after emoji removal
         html = re.sub(r"(<(h[1-6]|p|li|span|strong|b|td|th|a)\b[^>]*>)\s+(?=\S)", r"\1", html)
     elif native:
         html = fix_generator_links(html, lang)
@@ -440,6 +888,16 @@ def process(path: Path) -> bool:
 
 # ------------------------------------------------------------------ sitemap
 
+def lastmod_for(p: Path) -> str:
+    rel = p.relative_to(SITE).as_posix()
+    html = p.read_text(encoding="utf-8")
+    m = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})', html)
+    if m:
+        return m.group(1)
+    first, last = GIT_DATES.get(rel, (TODAY, TODAY))
+    return last
+
+
 def build_sitemap():
     urls = []
     for p in sorted(SITE.rglob("*.html")):
@@ -448,18 +906,18 @@ def build_sitemap():
             continue
         if rel.split("/")[0] in GENERATORS:
             continue
-        head = p.read_text(encoding="utf-8")[:4000]
+        head = p.read_text(encoding="utf-8")[:6000]
         if re.search(r'name="robots"[^>]*noindex', head):
             continue
         if not rel.endswith("index.html"):
-            # loose files like devnotify/privacy.html duplicate their /privacy/ folder
             continue
-        urls.append(rel_url(p))
+        urls.append((rel_url(p), lastmod_for(p)))
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">']
-    for u in urls:
+    for u, mod in urls:
         lines.append("  <url>")
         lines.append(f"    <loc>{ORIGIN}{u}</loc>")
+        lines.append(f"    <lastmod>{mod}</lastmod>")
         alts = alternates(u)
         if len(alts) >= 2:
             for l, a in alts.items():

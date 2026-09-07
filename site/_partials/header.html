@@ -1,13 +1,19 @@
 <header class="sh">
   <div class="sh-in">
-    <a class="sh-brand" href="{{home}}">EUComply</a>
-    <nav class="sh-nav" aria-label="{{nav_label}}">
-      <a href="{{p_scan}}"{{cur_scan}}>{{nav_scan}}</a>
-      <a href="{{p_book}}"{{cur_book}}>{{nav_guide}}</a>
-      <a href="/checklist/"{{cur_checklist}}>{{nav_checklists}}</a>
-      <a href="{{p_pricing}}"{{cur_pricing}}>{{nav_pricing}}</a>
-      <a href="/blog/"{{cur_blog}}>{{nav_blog}}</a>
-    </nav>
-    {{langswitch}}
+    <a class="sh-brand" href="{{home}}"><svg class="sh-mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <button class="sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="{{menu_label}}">
+      <svg class="ic ic-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="{{nav_label}}">
+        <a href="{{p_scan}}"{{cur_scan}}>{{nav_scan}}</a>
+        <a href="{{p_book}}"{{cur_book}}>{{nav_guide}}</a>
+        <a href="/checklist/"{{cur_checklist}}>{{nav_checklists}}</a>
+        <a href="{{p_pricing}}"{{cur_pricing}}>{{nav_pricing}}</a>
+        <a href="/blog/"{{cur_blog}}>{{nav_blog}}</a>
+      </nav>
+      {{langswitch}}
+    </div>
   </div>
 </header>
