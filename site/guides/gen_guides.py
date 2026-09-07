@@ -60,7 +60,7 @@ footer a{{color:var(--accent);text-decoration:none}}
     <a href="/" class="logo">Quick<span>Format</span></a>
     <nav>
       <a href="/tools/format/">Free Converter</a>
-      <a href="/quickconvert/">Desktop App</a>
+      <a href="/transmute/">Transmute Desktop</a>
       <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
     </nav>
   </div>
@@ -75,8 +75,8 @@ footer a{{color:var(--accent);text-decoration:none}}
 
 <div class="cta-box">
   <h3>Convert {pair} in one click</h3>
-  <p>QuickFormat lives in your Mac menu bar. Paste, click, done — JSON, YAML, CSV, TOML and XML, offline.</p>
-  <a href="/quickconvert/" class="btn green">Get QuickFormat for Mac — $9 →</a>
+  <p>Transmute runs the conversion on your machine — paste it in, or script it from the command line. JSON, YAML, CSV, TOML and XML, fully offline.</p>
+  <a href="/transmute/" class="btn green">Get Transmute Desktop — $19 one-time →</a>
   &nbsp;
   <a href="/tools/format/" class="btn">Or use the free web converter</a>
 </div>
@@ -84,7 +84,7 @@ footer a{{color:var(--accent);text-decoration:none}}
 </div>
 
 <footer>
-  <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/quickconvert/">QuickFormat for Mac</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+  <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/transmute/">Transmute</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
   <p style="margin-top:8px">© 2026 Mahope. All conversions run locally in your browser or on your machine.</p>
 </footer>
 
@@ -107,7 +107,7 @@ guides["yaml-to-json"] = dict(
 
 <h2 id="cli">Method 1: CLI Tools (Fastest for Developers)</h2>
 
-<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
+<h3>Using <code>transmute</code></h3>
 <p>The <code>qf</code> CLI detects the format automatically, so you never argue about flags:</p>
 
 <pre><span class="prompt">$</span> <span class="kw">cat</span> config.yaml | <span class="kw">qf</span> --to json
@@ -132,7 +132,7 @@ guides["yaml-to-json"] = dict(
 <p>For a one-off conversion, paste into the <a href="/tools/format/">free browser-based converter</a>. It runs entirely client-side — your data is never uploaded anywhere, so it's safe for configs containing hostnames or secrets you'd rather not send to a random site.</p>
 
 <h2 id="desktop">Method 3: A Menu Bar App for Daily Use</h2>
-<p>If you convert formats more than a few times a week, the <a href="/quickconvert/">QuickFormat desktop app</a> sits in your Mac menu bar: paste YAML, hit the shortcut, copy JSON out. No terminal, no browser tab hunting.</p>
+<p>If you convert formats more than a few times a week, the <a href="/transmute/">Transmute desktop app</a> runs on Mac, Windows and Linux: paste YAML, see JSON instantly, copy it out. No terminal, no browser tab hunting.</p>
 
 <h2>Common Pitfalls</h2>
 <ul>
@@ -144,8 +144,8 @@ guides["yaml-to-json"] = dict(
 <h2>Which should you pick?</h2>
 <ul>
 <li><strong>One-off:</strong> free <a href="/tools/format/">web converter</a>.</li>
-<li><strong>Scripts/CI:</strong> <a href="/quickconvert/">qf CLI</a> — pipe in, pipe out.</li>
-<li><strong>Daily use:</strong> <a href="/quickconvert/">QuickFormat for Mac</a> — $9 one-time, offline.</li>
+<li><strong>Scripts/CI:</strong> <a href="/transmute/">Transmute CLI</a> — pipe in, pipe out.</li>
+<li><strong>Daily use:</strong> <a href="/transmute/">Transmute Desktop</a> — $19 one-time, offline.</li>
 </ul>
 """)
 
@@ -160,7 +160,7 @@ guides["json-to-csv"] = dict(
 
 <h2 id="cli">Method 1: CLI (Best for Automation)</h2>
 
-<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
+<h3>Using <code>transmute</code></h3>
 
 <pre><span class="prompt">$</span> <span class="kw">cat</span> users.json | <span class="kw">qf</span> --to csv
 <span class="nm">id,name,email
@@ -193,10 +193,10 @@ df.to_csv(<span class="str">"users.csv"</span>, index=<span class="kw">False</sp
 <blockquote><p><strong>Rule of thumb:</strong> CSV can only represent one table. If your JSON has arrays of objects inside rows, decide: flatten each array into a joined string, split into multiple CSVs, or repeat the parent row per child. There's no universally correct answer — pick what your spreadsheet needs.</p></blockquote>
 
 <ul>
-<li><strong>Automation:</strong> <a href="/quickconvert/">qf CLI</a> — deterministic, scriptable.</li>
+<li><strong>Automation:</strong> <a href="/transmute/">Transmute CLI</a> — deterministic, scriptable.</li>
 <li><strong>One-off, sensitive data:</strong> <a href="/tools/format/">local web converter</a>.</li>
 <li><strong>Messy/nested data at scale:</strong> pandas.</li>
-<li><strong>Frequent conversions on a Mac:</strong> <a href="/quickconvert/">QuickFormat</a> — $9 once, lives in the menu bar.</li>
+<li><strong>Frequent conversions:</strong> <a href="/transmute/">Transmute Desktop</a> — $19 one-time, on your desktop.</li>
 </ul>
 """)
 
@@ -211,7 +211,7 @@ guides["csv-to-json"] = dict(
 
 <h2 id="cli">Method 1: CLI</h2>
 
-<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
+<h3>Using <code>transmute</code></h3>
 
 <pre><span class="prompt">$</span> <span class="kw">cat</span> users.csv | <span class="kw">qf</span> --to json
 <span class="nm">[
@@ -244,9 +244,9 @@ print(json.dumps(data, indent=2))</pre>
 </ul>
 
 <ul>
-<li><strong>Scripts:</strong> <a href="/quickconvert/">qf CLI</a>.</li>
+<li><strong>Scripts:</strong> <a href="/transmute/">Transmute CLI</a>.</li>
 <li><strong>One-off:</strong> <a href="/tools/format/">web converter</a>.</li>
-<li><strong>Every day:</strong> <a href="/quickconvert/">QuickFormat for Mac</a>, $9 one-time.</li>
+<li><strong>Every day:</strong> <a href="/transmute/">Transmute Desktop</a>, $19 one-time.</li>
 </ul>
 """)
 
@@ -295,9 +295,168 @@ guides["toml-vs-yaml"] = dict(
 <ul>
 <li><strong>New app config, shallow structure:</strong> TOML. Fewer foot-guns.</li>
 <li><strong>Kubernetes-style manifests, deep nesting, ecosystem pressure:</strong> YAML. Fight the battle you're in.</li>
-<li><strong>Need both?</strong> Keep sources in whichever, convert with <a href="/quickconvert/">qf</a> or the <a href="/tools/format/">web tool</a> when a consumer demands the other format.</li>
+<li><strong>Need both?</strong> Keep sources in whichever, convert with <a href="/transmute/">Transmute</a> or the <a href="/tools/format/">web tool</a> when a consumer demands the other format.</li>
 </ul>
 """)
+
+# ---------- yaml-to-csv ----------
+guides["yaml-to-csv"] = dict(
+    title="How to Convert YAML to CSV (3 Ways: CLI, Python, Web)",
+    desc="Convert YAML to CSV correctly: yq, qf and Python methods compared, including how to flatten nested lists into spreadsheet columns.",
+    h1="How to Convert YAML to CSV (3 Ways)",
+    read=5, pair="YAML → CSV",
+    body="""
+<p>Config lives in YAML, spreadsheets live in CSV. Sooner or later someone asks you for the Kubernetes inventory, the Docker Compose service list or the Ansible host vars as a spreadsheet. Here's how to get there without mangling the data.</p>
+
+<h2 id="cli">Method 1: CLI Tools</h2>
+
+<h3>Using <code>transmute</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">cat</span> services.yaml | <span class="kw">qf</span> --to csv
+<span class="nm">name,image,replicas
+web,nginx:latest,3
+api,node:20,2</span></pre>
+
+<p><code>qf</code> auto-detects YAML on input, takes the top-level list of objects (or a named key containing one) and emits proper CSV headers. Nested maps are flattened with dot notation (<code>resources.limits.cpu</code> becomes its own column).</p>
+
+<h3>Using <code>yq</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">yq</span> -o=json eval services.yaml | <span class="kw">jq</span> -r '(.[0] | keys_unsorted) as $cols | $cols, .[] | [.[$cols[]]] | @csv'</pre>
+
+<p>There's no direct YAML→CSV path in <code>yq</code>, so this pipes through JSON and <code>jq</code>. It works, but it's two tools and a cryptic filter.</p>
+
+<h2 id="python">Method 2: Python (stdlib + PyYAML)</h2>
+
+<pre><span class="kw">import</span> yaml, csv, sys
+data = yaml.safe_load(open(<span class="str">"services.yaml"</span>))
+rows = data[<span class="str">"services"</span>] <span class="kw">if</span> isinstance(data, dict) <span class="kw">else</span> data
+<span class="kw">with</span> open(<span class="str">"out.csv"</span>, <span class="str">"w"</span>, newline=<span class="str">""</span>) <span class="kw">as</span> f:
+    w = csv.DictWriter(f, fieldnames=rows[<span class="literal">0</span>].keys())
+    w.writeheader()
+    w.writerows(rows)</pre>
+
+<p>Fine for a one-off — but note it assumes flat rows. Nested values will serialize as Python dicts unless you flatten them first.</p>
+
+<h2 id="web">Method 3: Free Online Converter</h2>
+<p>Paste YAML into the <a href="/tools/format/">browser converter</a> and copy CSV out. It runs entirely client-side, so cluster names and internal hostnames never leave your machine.</p>
+
+<h2>The Hard Part: Lists of Lists</h2>
+<blockquote><p><strong>Reality check:</strong> YAML can express arbitrarily deep nesting; CSV is one flat table. Ports lists, volume mounts, environment maps — each needs a decision: join into one cell (<code>8080|8443</code>), repeat the parent row, or split into a second sheet. No tool makes that choice correctly for you, because it depends on what the reader wants.</p></blockquote>
+
+<ul>
+<li><strong>One-off:</strong> free <a href="/tools/format/">web converter</a>.</li>
+<li><strong>Scripts/CI:</strong> <a href="/transmute/">Transmute CLI</a> — pipe in, pipe out.</li>
+<li><strong>Weekly spreadsheet requests:</strong> <a href="/transmute/">Transmute Desktop</a> — $19 one-time.</li>
+</ul>
+"""
+)
+
+# ---------- json-to-sql ----------
+guides["json-to-sql"] = dict(
+    title="How to Convert JSON to SQL INSERT Statements (CLI, Python)",
+    desc="Turn JSON arrays into ready-to-run SQL INSERT statements: qf CLI, jq and Python methods, plus how to avoid quoting and type bugs.",
+    h1="How to Convert JSON to SQL INSERT Statements",
+    read=5, pair="JSON → SQL",
+    body="""
+<p>Migrating seed data, importing an API export into Postgres, loading fixtures — the job is always the same: take a JSON array of objects and turn it into <code>INSERT</code> statements your database will accept without a fight.</p>
+
+<h2 id="cli">Method 1: CLI</h2>
+
+<h3>Using <code>transmute</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">cat</span> users.json | <span class="kw">qf</span> --to sql --table users
+<span class="nm">INSERT INTO users (id, name, email) VALUES (1, 'Alice', 'alice@example.com');
+INSERT INTO users (id, name, email) VALUES (2, 'Bob', 'bob@example.com');</span></pre>
+
+<p>Column names come from the first object's keys, types are preserved (numbers stay unquoted, strings get proper escaping), and <code>--table</code> names the target table. Pipe it straight into your database:</p>
+
+<pre><span class="prompt">$</span> <span class="kw">cat</span> users.json | <span class="kw">qf</span> --to sql --table users | psql mydb</pre>
+
+<h3>Using <code>jq</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">jq</span> -r '.[] | "INSERT INTO users VALUES (\(.id), \(.name), \(.email));"' users.json</pre>
+
+<p>This one-liner works only while your data stays simple. The moment a name contains an apostrophe (<code>O'Brien</code>) the generated SQL breaks — <code>jq</code> doesn't know SQL quoting rules. If any field is user-entered text, use a tool that escapes properly.</p>
+
+<h2 id="python">Method 2: Python</h2>
+
+<pre><span class="kw">import</span> json, sqlite3
+rows = json.load(open(<span class="str">"users.json"</span>))
+db = sqlite3.connect(<span class="str">"app.db"</span>)
+db.executemany(
+    <span class="str">"INSERT INTO users (id, name, email) VALUES (?, ?, ?)"</span>,
+    [(r[<span class="str">"id"</span>], r[<span class="str">"name"</span>], r[<span class="str">"email"</span>]) <span class="kw">for</span> r <span class="kw">in</span> rows],
+)
+db.commit()</pre>
+
+<p>The parameterized-queries route is the safest if you're inserting into SQLite directly — no string building at all. It only works when you control the database connection, though; if you need a .sql file to hand off, generate statements instead.</p>
+
+<h2>Gotchas That Corrupt Data</h2>
+<ul>
+<li><strong>Quoting:</strong> a single apostrophe in <code>O'Brien</code> breaks naive string concatenation. Correct generators double the quote ('') per the SQL standard.</li>
+<li><strong>NULL vs missing:</strong> a missing key should usually become <code>NULL</code>, not the string <code>"null"</code> or an empty column list mismatch.</li>
+<li><strong>Dates:</strong> JSON has no date type — ISO strings pass through fine, but make sure the target column isn't typed in a way that rejects them.</li>
+<li><strong>Bulk inserts:</strong> thousands of individual statements are slow to replay. Wrap them in a transaction, or use your database's native bulk format (Postgres <code>COPY</code>) for big loads.</li>
+</ul>
+
+<ul>
+<li><strong>Scripts &amp; handoffs:</strong> <a href="/transmute/">Transmute CLI</a> — JSON in, escaped SQL out.</li>
+<li><strong>Direct import:</strong> Python with parameterized queries.</li>
+<li><strong>Quick checks:</strong> <a href="/tools/format/">free web converter</a> handles JSON ⇄ CSV ⇄ YAML locally in the browser.</li>
+</ul>
+"""
+)
+
+# ---------- json-to-toml ----------
+guides["json-to-toml"] = dict(
+    title="How to Convert JSON to TOML (CLI, Python)",
+    desc="Convert JSON to TOML correctly: transmute CLI and Python methods compared, including how nested objects, arrays and nulls map between the two formats.",
+    h1="How to Convert JSON to TOML",
+    read=4, pair="JSON → TOML",
+    body="""
+<p>You're adopting Rust or Python packaging conventions and want your config in <code>Cargo.toml</code>/<code>pyproject.toml</code> style — but your data starts life as JSON from an API or an export. Here's how to convert it cleanly.</p>
+
+<h2 id="cli">Method 1: CLI</h2>
+
+<h3>Using <code>transmute</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">cat</span> config.json | <span class="kw">transmute</span> --to toml
+<span class="nm">name</span> = <span class="str">"my-app"</span>
+<span class="nm">version</span> = <span class="str">"2.0"</span>
+<span class="nm">retries</span> = 3</pre>
+
+<p>The format is auto-detected on input, so there are no flags to argue with. Nested objects become TOML sections (<code>[server.tls]</code>), scalars keep their types, and strings are escaped per the TOML spec.</p>
+
+<h3>Using <code>dasel</code></h3>
+
+<pre><span class="prompt">$</span> <span class="kw">dasel</span> convert -r json -w toml &lt; config.json</pre>
+
+<p><code>dasel</code> handles many formats both ways. It's a solid alternative if you already have Go installed; otherwise a single static binary like Transmute is quicker to set up.</p>
+
+<h2 id="python">Method 2: Python</h2>
+
+<pre><span class="kw">import</span> json, tomli_w
+data = json.load(open(<span class="str">"config.json"</span>))
+<span class="kw">with</span> open(<span class="str">"config.toml"</span>, <span class="str">"wb"</span>) <span class="kw">as</span> f:
+    tomli_w.dump(data, f)</pre>
+
+<p><code>tomli_w</code> writes TOML fast and correctly. One caveat: Python dicts must be converted to TOML-compatible types first — tuples work as arrays, sets don't.</p>
+
+<h2>Gotchas: JSON and TOML Are Not Equivalent</h2>
+<ul>
+<li><strong>Mixed-type arrays:</strong> TOML allows them (<code>items = [1, "two"]</code>) but some round-trips through other tools will coerce types.</li>
+<li><strong>null:</strong> TOML has no null. A JSON <code>null</code> must become an omitted key, an empty string, or a sentinel value — pick deliberately.</li>
+<li><strong>Top-level nesting depth:</strong> deeply nested JSON produces long chains of bracket-sections in TOML. If your structure nests more than ~3 levels, YAML may be the better target.</li>
+<li><strong>Keys with dots:</strong> <code>{"a.b": 1}</code> needs quoting in TOML (<code>"a.b" = 1</code>) or it silently becomes section <code>[a]</code>. Good generators quote; naive ones corrupt.</li>
+</ul>
+
+<ul>
+<li><strong>Scripts/CI:</strong> <a href="/transmute/">Transmute CLI</a> — JSON in, spec-correct TOML out.</li>
+<li><strong>Python projects:</strong> <code>tomli_w</code> for direct file writing.</li>
+<li><strong>Quick checks:</strong> free <a href="/tools/format/">web converter</a> handles JSON ⇄ TOML locally in the browser.</li>
+</ul>
+"""
+)
 
 for slug, g in guides.items():
     d = os.path.join(BASE, slug)

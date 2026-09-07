@@ -71,7 +71,7 @@ footer a{color:var(--accent);text-decoration:none}
     <a href="/" class="logo">Quick<span>Format</span></a>
     <nav>
       <a href="/tools/format/">Free Converter</a>
-      <a href="/quickconvert/">Desktop App</a>
+      <a href="/transmute/">Desktop App</a>
       <a href="/guides/json-vs-yaml/">JSON vs YAML</a>
     </nav>
   </div>
@@ -88,10 +88,10 @@ footer a{color:var(--accent);text-decoration:none}
 
 <h2>Method 1: CLI Tools (Fastest for Developers)</h2>
 
-<h3>Using <code>qf</code> (QuickFormat CLI)</h3>
-<p>The <code>qf</code> CLI is a zero-dependency tool that detects format automatically and converts in one command:</p>
+<h3>Using <code>transmute</code></h3>
+<p>The <code>transmute</code> CLI detects the format automatically and converts in one command:</p>
 
-<pre><span class="prompt">$</span> <span class="kw">echo</span> <span class="str">'{"name":"test","version":2}'</span> | <span class="kw">qf</span> --to yaml
+<pre><span class="prompt">$</span> <span class="kw">echo</span> <span class="str">'{"name":"test","version":2}'</span> | <span class="kw">transmute</span> --to yaml
 <span class="nm">name</span>: <span class="str">test</span>
 <span class="nm">version</span>: <span class="str">2</span></pre>
 
@@ -102,18 +102,18 @@ footer a{color:var(--accent);text-decoration:none}
 <pre><span class="prompt">$</span> <span class="kw">npx</span> quick-format --help</pre>
 
 <p>The CLI also handles file input:</p>
-<pre><span class="prompt">$</span> <span class="kw">cat</span> data.json | <span class="kw">qf</span> --to yaml > config.yml
-<span class="prompt">$</span> <span class="kw">qf</span> --from json --to yaml < data.json > output.yml</pre>
+<pre><span class="prompt">$</span> <span class="kw">cat</span> data.json | <span class="kw">transmute</span> --to yaml > config.yml
+<span class="prompt">$</span> <span class="kw">transmute</span> --from json --to yaml < data.json > output.yml</pre>
 
 <h3>Using <code>yq</code> (Alternative)</h3>
 <p>The popular <code>yq</code> tool also converts between formats:</p>
 <pre><span class="prompt">$</span> <span class="kw">yq</span> -P '.' data.json > data.yml  <span class="cm"># -P = pretty print</span></pre>
 
-<p>However, <code>yq</code> only handles JSON ↔ YAML. QuickFormat's <code>qf</code> handles <strong>all five formats</strong> (JSON, YAML, CSV, TOML, XML) — one tool for every conversion.</p>
+<p>However, <code>yq</code> only handles JSON ↔ YAML. Transmute handles <strong>all five formats</strong> (JSON, YAML, CSV, TOML, XML) — one tool for every conversion.</p>
 
 <h2>Method 2: Free Online Web Tool (No Install)</h2>
 
-<p>Don't want to install anything? Use the <a href="/tools/format/">QuickFormat Web Converter</a>. It runs entirely in your browser — nothing is uploaded to any server.</p>
+<p>Don't want to install anything? Use the <a href="/tools/format/">web converter</a>. It runs entirely in your browser — nothing is uploaded to any server.</p>
 
 <ol>
 <li>Open <a href="/tools/format/">the JSON→YAML converter</a></li>
@@ -127,18 +127,18 @@ footer a{color:var(--accent);text-decoration:none}
 <p><strong>Best for:</strong> Occasional use, when you're on someone else's machine, or when you want to try before you buy the desktop app.</p>
 
 <blockquote>
-  <p>💡 <strong>Privacy note:</strong> Unlike many online converters that upload your data to a server, QuickFormat's web tool processes everything in your browser using standard JavaScript parsing. Your API keys, database configs, and secrets never leave your computer.</p>
+  <p>💡 <strong>Privacy note:</strong> Unlike many online converters that upload your data to a server, Transmute's web tool processes everything in your browser using standard JavaScript parsing. Your API keys, database configs, and secrets never leave your computer.</p>
 </blockquote>
 
-<h2>Method 3: QuickFormat Desktop App (For Daily Power Users)</h2>
+<h2>Method 3: Transmute Desktop App (For Daily Power Users)</h2>
 
-<p>If you convert formats more than a few times a week, the <a href="/quickconvert/">QuickFormat desktop app</a> lives in your Mac menu bar and converts in <strong>one click</strong> — no browser tab, no window switching.</p>
+<p>If you convert formats more than a few times a week, the <a href="/transmute/">Transmute desktop app</a> runs on Mac, Windows and Linux — paste data in, convert instantly, no browser tab needed.</p>
 
 <h3>Why upgrade from the free web tool?</h3>
 
 <div class="table-wrap">
 <table>
-<tr><th>Feature</th><th>Free Web Tool</th><th>QuickFormat Desktop</th></tr>
+<tr><th>Feature</th><th>Free Web Tool</th><th>Transmute Desktop</th></tr>
 <tr><td>Price</td><td>Free</td><td><strong>$9 one-time</strong></td></tr>
 <tr><td>Works offline</td><td class="cross">❌</td><td class="check">✅</td></tr>
 <tr><td>Menu bar access</td><td class="cross">❌</td><td class="check">✅ One click</td></tr>
@@ -155,8 +155,8 @@ footer a{color:var(--accent);text-decoration:none}
 
 <div class="cta-box">
   <h3>🔄 Convert JSON → YAML in one click</h3>
-  <p>QuickFormat for Mac — $9 one-time. Works offline. Your data stays on your Mac.</p>
-  <a href="/quickconvert/" class="btn">Download QuickFormat →</a>
+  <p>Transmute Desktop — $19 one-time. Works offline. Your data stays on your machine.</p>
+  <a href="/transmute/" class="btn">Get Transmute →</a>
   <span style="display:inline-block;margin:0 12px;color:var(--muted)">or</span>
   <a href="/tools/format/" class="btn green">Try Free Web Tool</a>
 </div>
@@ -180,8 +180,8 @@ footer a{color:var(--accent);text-decoration:none}
 
 <ul>
 <li><strong>Once or twice:</strong> Use the <a href="/tools/format/">free web tool</a> — no install, no setup, just paste and go.</li>
-<li><strong>Scripting/automation:</strong> Use <a href="/quickconvert/">qf CLI</a> — pipe data in, pipe YAML out.</li>
-<li><strong>Daily use:</strong> Get the <a href="/quickconvert/">QuickFormat desktop app</a> — $9 one-time, menu bar access, global shortcut, offline.</li>
+<li><strong>Scripting/automation:</strong> Use the <a href="/transmute/">Transmute CLI</a> — pipe data in, pipe YAML out.</li>
+<li><strong>Daily use:</strong> Get the <a href="/transmute/">Transmute desktop app</a> — $19 one-time, works offline.</li>
 </ul>
 
 </div>
@@ -189,7 +189,7 @@ footer a{color:var(--accent);text-decoration:none}
 <p>More conversion guides: <a href="/guides/yaml-to-json/">YAML to JSON</a> · <a href="/guides/json-to-csv/">JSON to CSV</a> · <a href="/guides/csv-to-json/">CSV to JSON</a> · <a href="/guides/toml-vs-yaml/">TOML vs YAML</a></p>
 <footer>
   <div class="wrap">
-    <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/quickconvert/">QuickFormat for Mac</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+    <p><a href="/">EUComply Scanner</a> · <a href="/tools/format/">Free Format Converter</a> · <a href="/transmute/">Transmute Desktop</a> · <a href="/guides/json-vs-yaml/">JSON vs YAML Guide</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
   </div>
 </footer>
 

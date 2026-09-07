@@ -16,7 +16,7 @@ for i in $(seq 1 $MAX); do
   # kvote-tjek foer hver iteration
   code=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
     -H "Authorization: Bearer $OPENROUTER_API_KEY" -H 'Content-Type: application/json' \
-    -d '{"model":"stealth/ox-alpha","messages":[{"role":"user","content":"hi"}],"max_tokens":5}' \
+    -d '{"model":"z-ai/glm-5.3-flash","messages":[{"role":"user","content":"hi"}],"max_tokens":5}' \
     https://openrouter.ai/api/v1/chat/completions)
   if [ "$code" != "200" ]; then
     echo "$(date -Iseconds) kvote opbrugt (HTTP $code) - stopper for i dag" >> "$LOG"

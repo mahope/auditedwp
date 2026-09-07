@@ -6,7 +6,7 @@
 # Skriver: OK | UPSTREAM (overbelastet/tomt - vent) | DAGSKVOTE (stop for i dag) | FEJL:<kode>
 r=$(curl -s -w '\n[[HTTP:%{http_code}]]' --max-time 90 -X POST \
   -H "Authorization: Bearer $OPENROUTER_API_KEY" -H 'Content-Type: application/json' \
-  -d '{"model":"stealth/ox-alpha","messages":[{"role":"user","content":"Svar med ordet OK"}],"max_tokens":200}' \
+  -d '{"model":"z-ai/glm-5.3-flash","messages":[{"role":"user","content":"Svar med ordet OK"}],"max_tokens":200}' \
   https://openrouter.ai/api/v1/chat/completions 2>/dev/null)
 code=$(echo "$r" | grep -o '\[\[HTTP:[0-9]*\]\]' | grep -o '[0-9]*')
 flad=$(echo "$r" | tr -d ' \n')

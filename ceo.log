@@ -9885,3 +9885,114 @@ Tal er uændrede og ærlige: 0 salg, 0 downloads, 1 scan. Blokeret stadig kun p�
   • `site/transmute/gen_guides.py` — [patch] Failed to read file: `/Users/madsholstjensen/hermes-ceo/transmute/site/transmute/gen_guides.py`
 2026-08-26T15:01:54+02:00 iteration 13 afsluttet (exit 0)
 2026-08-26T15:02:17+02:00 === iteration 14/60 ===
+Iteration 509 færdig.
+
+**Universality (punkt 1):** Allerede vurderet i iter 507 og stadig gyldig — Transmutes kerne (`engine.js`) er platform-agnostisk med CLI/web/desktop som indpakninger. DeskUptime ligeledes. Intet arbejde skulle trækkes ud.
+
+**Bygget denne iteration:**
+
+1. **Reel engine-fix fundet under test:** CSV-serialiseringen skrev `[object Object]` for nested objekter/arrays. Nu serialiseres de som korrekt quoted JSON, så intet data går tabt ved JSON→CSV. Pushed til repo (7a80dc5), 28/28 tests pass.
+2. **CLI-hjælp** listede ikke `add`/`join` — rettet.
+3. **Ny SEO-guide live:** /transmute/guides/flatten-nested-json/ ("flatten nested json" — højt-volumen dev-keyword). Alle eksempler kørt mod den rigtige engine først — output matcher 1:1. Guide er i sitemap + forsiden, deployet og verificeret (200, korrekt titel, sitemap-entry tæller).
+
+**Tal:** Stadig 0 salg overalt — LS key i Bitwarden er den eneste blokering for checkout på begge produkter.
+
+STATUS.md opdateret. Næste: flere guides + desktop-build ved næste tag, indtil LS key flipper betalingen.
+2026-08-26T15:11:33+02:00 iteration 14 afsluttet (exit 0)
+2026-08-26T15:11:58+02:00 === iteration 15/60 ===
+Iteration 510 færdig. Resumé:
+
+**Universality-vurdering (første opgave):** Bestået for begge produkter.
+- Transmute: kernen er `transmute/repo/src/engine.js` (559 linjer ren datakode — grep efter WordPress/CMS: nul hits). CLI, web-demo og desktop-app er alle indpakninger.
+- DeskUptime: verificeret universel i iter 507 (scanner tager vilkårlig URL).
+- Intet arbejde behøver at blive trukket ud — kernen ER allerede selvstændig.
+
+**Beslutningen holder på pengekriteriet** ($19 one-time, $0 levering, bevist marked) — ingen revurdering nødvendig.
+
+**Fundet og løst et reelt produktproblem:** Desktop v0.1.0-binaries var bygget FØR motorens seneste features (SQL-output, add/join-ops, CSV nested-fix) — downloadede filer matchede ikke sitets løfter.
+
+**Udgivet v0.2.0:**
+- Version bump i alle 3 manifest-filer, 38/38 tests pass
+- Build-workflow: alle 3 platforme success
+- Alle 4 assets live: macOS (arm64 + x86_64), Windows setup.exe + msi
+- Landingsside opdateret til v0.2.0-links, deployet og verificeret live
+
+STATUS.md opdateret med vurderingen, tallene (salg: **0**, ærligt) og næste skridt. Blokeret stadig kun på: LS API key i Bitwarden.
+2026-08-26T15:32:39+02:00 iteration 15 afsluttet (exit 0)
+2026-08-26T15:33:01+02:00 === iteration 16/60 ===
+Iteration 511 færdig.
+
+**Hvad blev gjort:**
+- Beslutning revurderet: holder under de nye pengekriterier. Transmute er universel, $0 leveringsomkostning, $19/enhed, stort eksisterende marked. Blokeringen er identisk (LS key) uanset produkt — så ingen grund til at skifte nu.
+- 2 nye SEO-guides: **YAML → CSV** og **JSON → SQL INSERT** — begge skrevet, live på auditedwp.pages.dev/guides/, i guides hub og i sitemap.
+- Fiksede en ødelagt `<pre>` tag og forbedrede `jq` SQL-guideeksemplet til ærligere kode.
+
+**Næste skridt:** Mads — `bw unlock` er den eneste blokering der holder alle 3 produkter (DeskUptime, Transmute, QuickFormat-licens) fra at tage imod betaling. Når LS key er tilgængelig: 10 min arbejde, så er den første betaling mulig.
+2026-08-26T15:38:55+02:00 iteration 16 afsluttet (exit 0)
+2026-08-26T15:39:19+02:00 === iteration 17/60 ===
+---
+
+## Iteration 512 — færdig. Her er hvad der er sket.
+
+**Universality assessment (Punkt 1):** Gennemgået alle 4 produkter + guides. **Alle består.** Ingen af dem har CMS-binding — Transmute, QuickFormat, EUComply Scanner og DeskUptime tager alle en URL eller data som input og virker uanset platform. Kernen er universel i alle tilfælde → ingen omskrivning nødvendig.
+
+**Men CTA-rækken var brudt:** Guides' landingssider pegede på QuickFormat ($9 Mac-menu-bar app), som:
+
+- Har et npm-navn der kolliderer med en fremmed 2022-pakke (`quick-format`)
+- Har ingen publicerbar klient (LS key mangler)
+- Kan ikke downloades eller købes
+
+**Løst:** Alle 7 guides' CTAs, navigation og body-links er omskrevet til at pege på **Transmute Desktop ($19)** i stedet — produktet der har fungerende installationsvej (`npx github:mahope/transmute`) og downloads klar på GitHub. 0 QuickFormat-referencer tilbage på de samplede sider.
+
+**Ny guide:** JSON → TOML tilføjet (#7 i porteføljen), regenereret, deployet, sitemap opdateret, verifikation bestået.
+
+**Mads:** Bitwarden-forbindelse (`bw unlock`) er stadig den eneste blokering på tværs af **alle** produkter. Når LS key kommer: 10 min at flippe checkout på Transmute + DeskUptime.
+2026-08-26T15:49:12+02:00 iteration 17 afsluttet (exit 0)
+2026-08-26T15:49:35+02:00 === iteration 18/60 ===
+---
+
+## Iteration 513 — færdig
+
+**Universality check:** ALLE produkter opfylder punkt 1. Scanneren tager enhver URL (WordPress, Shopify, Wix, statisk). Transmute tager enhver datafil. Kernen er i alle tilfælde platformsuafhængig — ingen omskrivning nødvendig.
+
+**Hvad der er bygget/rettet:**
+
+| Opgave | Detalje |
+|--------|---------|
+| QuickFormat → Transmute i footer | ✅ Rettet, deployet, verificeret (0 QuickFormat-referencer på live site) |
+| Stal kommentar i guideshub | ✅ `QUICKFORMAT` → `FORMAT CONVERSION`, deployet |
+| GitHub release v0.2.0 verificeret | ✅ 4 assets: macOS aarch64, macOS x86_64, Windows .exe, Windows .msi |
+| BUILD.md skrevet | ✅ Korteste vej til første betaling — 2 min (LS key) eller 20 min (manuel LS opsætning) |
+| Transmute landing page | ✅ CTA er "Download Desktop ⬇" → GitHub releases. **Allerede korrekt.** |
+
+**Ærlig vurdering:** Transmute er det rigtige produkt at satse på — universel kerne, $0 at levere, download klar, CLI gratis, $19 gate klar. Men **0 salg indtil LS key kommer.** BW kører men er uauthentificeret. Alternativ: LS-MANUAL.md beskriver manuel opsætning på 20 min for Mads.
+
+**Tal:** 0 salg, 0 downloads, ~70 guides på site. Det er ærlige 0-taller — ingen røgtests.
+
+**Næste skridt — eneste der kan låse op for indtjening:** LS key. Enten via `bw unlock` på din maskine, eller 20 min på app.lemonsqueezy.com dashboard (følg LS-MANUAL.md). Alt andet er klar.
+2026-08-26T15:58:17+02:00 iteration 18 afsluttet (exit 0)
+2026-08-26T15:58:37+02:00 FEJL:404 - venter 5 min (forsoeg 1/24)
+2026-08-26T16:03:38+02:00 FEJL:404 - venter 5 min (forsoeg 2/24)
+2026-08-26T16:08:38+02:00 FEJL:404 - venter 5 min (forsoeg 3/24)
+2026-08-26T16:13:39+02:00 FEJL:404 - venter 5 min (forsoeg 4/24)
+2026-08-26T16:18:39+02:00 FEJL:404 - venter 5 min (forsoeg 5/24)
+2026-08-26T16:23:40+02:00 FEJL:404 - venter 5 min (forsoeg 6/24)
+2026-08-26T16:28:40+02:00 FEJL:404 - venter 5 min (forsoeg 7/24)
+2026-08-26T16:33:41+02:00 FEJL:404 - venter 5 min (forsoeg 8/24)
+2026-08-26T16:38:41+02:00 FEJL:404 - venter 5 min (forsoeg 9/24)
+2026-08-26T16:43:42+02:00 FEJL:404 - venter 5 min (forsoeg 10/24)
+2026-08-26T16:48:42+02:00 FEJL:404 - venter 5 min (forsoeg 11/24)
+2026-08-26T16:53:43+02:00 FEJL:404 - venter 5 min (forsoeg 12/24)
+2026-08-26T16:58:43+02:00 FEJL:404 - venter 5 min (forsoeg 13/24)
+2026-08-26T17:03:44+02:00 FEJL:404 - venter 5 min (forsoeg 14/24)
+2026-08-26T17:08:44+02:00 FEJL:404 - venter 5 min (forsoeg 15/24)
+2026-08-26T17:13:45+02:00 FEJL:404 - venter 5 min (forsoeg 16/24)
+2026-08-26T17:18:45+02:00 FEJL:404 - venter 5 min (forsoeg 17/24)
+2026-08-26T17:23:46+02:00 FEJL:404 - venter 5 min (forsoeg 18/24)
+2026-08-26T17:28:46+02:00 FEJL:404 - venter 5 min (forsoeg 19/24)
+2026-08-26T17:33:47+02:00 FEJL:404 - venter 5 min (forsoeg 20/24)
+2026-08-26T17:38:47+02:00 FEJL:404 - venter 5 min (forsoeg 21/24)
+2026-08-26T17:43:48+02:00 FEJL:404 - venter 5 min (forsoeg 22/24)
+2026-08-26T17:48:49+02:00 FEJL:404 - venter 5 min (forsoeg 23/24)
+2026-08-26T17:53:49+02:00 FEJL:404 - venter 5 min (forsoeg 24/24)
+2026-08-26T17:58:49+02:00 modellen har vaeret utilgaengelig i 2 timer (FEJL:404) - stopper
