@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, backups, forms, plugin health. Pro ($79/yr): auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,13 +30,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.2.0' );
+define( 'EUCOMPLY_VERSION', '1.3.0' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
-define( 'EUCOMPLY_PRO_URL', 'https://eucomplypro.com/pro/' );
-define( 'EUCOMPLY_LICENSE_API_URL', 'https://api.lemonsqueezy.com/v1/licenses/verify' );
-define( 'EUCOMPLY_LS_PRODUCT_ID', '' ); // Lemon Squeezy product id — set when product is created
+define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
+define( 'EUCOMPLY_LICENSE_API', 'https://mahope.tools/api/license/' );
+define( 'EUCOMPLY_LICENSE_PRODUCT', 'eucomply-pro' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
+define( 'EUCOMPLY_LICENSE_GRACE', 7 * DAY_IN_SECONDS ); // keep a verified Pro status this long while the license server is unreachable
 
 /**
  * Activation guard — prevent activation on unsupported PHP or WordPress.
@@ -725,7 +726,15 @@ class EUComply {
         $saved = false;
         if ( ! empty( $_POST ) && check_admin_referer( 'eucomply_settings' ) ) {
             if ( isset( $_POST['eucomply_pro_key'] ) ) {
-                update_option( 'eucomply_pro_key', sanitize_text_field( wp_unslash( $_POST['eucomply_pro_key'] ) ) );
+                $new_key = self::normalise_key( sanitize_text_field( wp_unslash( $_POST['eucomply_pro_key'] ) ) );
+                if ( get_option( 'eucomply_pro_key', '' ) !== $new_key ) {
+                    // A new key is verified from scratch.
+                    update_option( 'eucomply_pro_key', $new_key );
+                    delete_option( 'eucomply_pro_verified' );
+                    delete_option( 'eucomply_pro_verified_at' );
+                    delete_option( 'eucomply_pro_last_ok_at' );
+                    delete_transient( 'eucomply_license_retry' );
+                }
                 $saved = true;
             }
             if ( isset( $_POST['eucomply_agency_name'] ) ) {
@@ -744,10 +753,12 @@ class EUComply {
             <form method="post" class="eucomply-settings">
                 <?php wp_nonce_field( 'eucomply_settings' ); ?>
                 <label for="eucomply_pro_key">Pro License Key</label>
-                <input type="text" id="eucomply_pro_key" name="eucomply_pro_key" value="<?php echo esc_attr( $pro_key ); ?>" placeholder="Leave empty for free version">
-                <p class="desc">Enter your license key to unlock Pro features. <a href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Buy Pro ($79/yr) →</a></p>
+                <input type="text" id="eucomply_pro_key" name="eucomply_pro_key" value="<?php echo esc_attr( $pro_key ); ?>" placeholder="32-character key, or leave empty for the free version" autocomplete="off" spellcheck="false">
+                <p class="desc">Enter the license key from your purchase email to unlock Pro on this website. <a href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>" target="_blank" rel="noopener noreferrer">Buy Pro ($79 per website per year) →</a></p>
                 <?php if ( $is_pro ) : ?>
                     <p style="color:#1a7a44;font-weight:600;margin-top:4px">✓ Pro license active</p>
+                <?php elseif ( '' !== $pro_key ) : ?>
+                    <p style="color:#c03030;font-weight:600;margin-top:4px">License key not accepted. Check that all 32 characters are copied, or reply to your purchase email for help.</p>
                 <?php endif; ?>
 
                 <label for="eucomply_agency_name">Agency / Business Name</label>
@@ -942,66 +953,148 @@ class EUComply {
      * Determine if Pro license is active.
      *
      * A key counts as Pro if it has the right format AND has been verified
-     * against the Lemon Squeezy license API (result cached for 24h). Format-only
-     * keys get one grace verification attempt on save.
+     * against the Mahope license server (result cached for 24h). When the
+     * server cannot be reached (network error or 5xx), the last successful
+     * verification is trusted for EUCOMPLY_LICENSE_GRACE (7 days), so an
+     * outage never locks a paying customer out.
      */
     private function is_pro() {
-        $key = get_option( 'eucomply_pro_key', '' );
-        if ( empty( $key ) ) {
+        $key = self::normalise_key( get_option( 'eucomply_pro_key', '' ) );
+        if ( '' === $key || ! preg_match( '/^[a-f0-9]{32}$/', $key ) ) {
             return false;
         }
-        // Key format: EC-PRO- followed by 16 alphanumeric chars.
-        if ( 0 !== strpos( $key, 'EC-PRO-' ) || strlen( $key ) < 22 ) {
-            return false;
-        }
-        $verified = get_option( 'eucomply_pro_verified', '' );
-        if ( '1' === $verified ) {
+        $verified = '1' === get_option( 'eucomply_pro_verified', '' );
+        if ( $verified ) {
             // Re-verify at most once a day so refunds/expiries take effect.
             $checked_at = (int) get_option( 'eucomply_pro_verified_at', 0 );
-            if ( time() - $checked_at < DAY_IN_SECONDS ) {
+            if ( time() - $checked_at < EUCOMPLY_LICENSE_CACHE_TTL ) {
                 return true;
             }
         }
-        // Attempt remote verification; fall back to previously verified state.
-        $ok = $this->verify_license_remote( $key );
+        // After a failed attempt, wait before calling the server again so an
+        // outage does not add a 10-second timeout to every admin page load.
+        $ok = get_transient( 'eucomply_license_retry' ) ? null : $this->verify_license_remote( $key );
         if ( null === $ok ) {
-            // API unreachable: trust previous verification if any.
-            return '1' === $verified;
+            set_transient( 'eucomply_license_retry', 1, HOUR_IN_SECONDS );
+            // Server unreachable: keep the last valid Pro status for the grace period.
+            $last_ok = (int) get_option( 'eucomply_pro_last_ok_at', 0 );
+            return $verified && ( time() - $last_ok ) < EUCOMPLY_LICENSE_GRACE;
         }
+        delete_transient( 'eucomply_license_retry' );
         update_option( 'eucomply_pro_verified', $ok ? '1' : '0' );
         update_option( 'eucomply_pro_verified_at', time() );
+        if ( $ok ) {
+            update_option( 'eucomply_pro_last_ok_at', time() );
+        }
         return $ok;
     }
 
     /**
-     * Verify a license key against the Lemon Squeezy License API.
-     *
-     * @return bool|null True/False on definitive answer, null when API unreachable.
+     * License keys are 32 lowercase hex characters; trim and lowercase input.
      */
-    private function verify_license_remote( $key ) {
+    private static function normalise_key( $key ) {
+        return strtolower( trim( (string) $key ) );
+    }
+
+    /**
+     * Device id sent to the license server: the site's hostname.
+     */
+    private static function device_id() {
+        $host = wp_parse_url( home_url(), PHP_URL_HOST );
+        return substr( $host ? strtolower( $host ) : 'eucomply', 0, 128 );
+    }
+
+    /**
+     * POST a JSON body to the Mahope license API.
+     *
+     * @return array|null Array with 'code' and decoded 'data', or null on a
+     *                    network error.
+     */
+    private function license_request( $endpoint, $body ) {
         $response = wp_remote_post(
-            EUCOMPLY_LICENSE_API_URL,
+            EUCOMPLY_LICENSE_API . $endpoint,
             array(
                 'timeout' => 10,
-                'body'    => array(
-                    'license_key'   => $key,
-                    'instance_name' => 'eucomply-' . parse_url( home_url(), PHP_URL_HOST ),
+                'headers' => array(
+                    'Content-Type' => 'application/json',
+                    'Accept'       => 'application/json',
                 ),
+                'body'    => wp_json_encode( $body ),
             )
         );
-        if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+        if ( is_wp_error( $response ) ) {
             return null;
         }
-        $data = json_decode( wp_remote_retrieve_body( $response ), true );
-        if ( ! is_array( $data ) || empty( $data['valid'] ) ) {
+        return array(
+            'code' => (int) wp_remote_retrieve_response_code( $response ),
+            'data' => json_decode( wp_remote_retrieve_body( $response ), true ),
+        );
+    }
+
+    /**
+     * Verify a license key against the Mahope license API.
+     *
+     * The first check activates this site (device_id = hostname); later checks
+     * validate, so daily re-checks do not use up activations.
+     *
+     * @return bool|null True/False on a definitive answer, null when the server
+     *                   is unreachable or answers with a temporary error.
+     */
+    private function verify_license_remote( $key ) {
+        $device = self::device_id();
+        $body   = array(
+            'license_key' => $key,
+            'device_id'   => $device,
+            'product'     => EUCOMPLY_LICENSE_PRODUCT,
+        );
+        // Activation is remembered per key and hostname, so a moved site activates again.
+        $marker  = md5( $key . '|' . $device );
+        $refused = false;
+
+        if ( get_option( 'eucomply_license_activation', '' ) === $marker ) {
+            $ok = $this->license_verdict( $this->license_request( 'validate', $body ), 'valid' );
+            if ( false !== $ok ) {
+                return $ok;
+            }
+            // Not valid for this device: forget the activation and try to activate once.
+            delete_option( 'eucomply_license_activation' );
+            $refused = true;
+        }
+
+        $ok = $this->license_verdict( $this->license_request( 'activate', $body ), 'activated' );
+        if ( true === $ok ) {
+            update_option( 'eucomply_license_activation', $marker );
+        }
+        // The server already said "not valid"; a failed retry must not revive the grace period.
+        if ( null === $ok && $refused ) {
             return false;
         }
-        // A refunded or disabled license must not stay Pro.
-        $status = isset( $data['license_key']['status'] ) ? $data['license_key']['status'] : '';
-        if ( 'active' !== $status ) {
+        return $ok;
+    }
+
+    /**
+     * Map a license API response to true/false/null.
+     *
+     * 200 with ok + the expected flag is a pass. 400 (bad format), 403 (expired,
+     * revoked or another product), 404 (unknown key) and 409 (device limit
+     * reached) are definitive refusals. Anything else (network errors, 5xx,
+     * rate limits, unreadable bodies) is temporary and returns null.
+     */
+    private function license_verdict( $res, $flag ) {
+        if ( null === $res ) {
+            return null;
+        }
+        if ( 200 === $res['code'] ) {
+            $data = is_array( $res['data'] ) ? $res['data'] : array();
+            if ( empty( $data['ok'] ) ) {
+                return null;
+            }
+            return ! empty( $data[ $flag ] );
+        }
+        if ( in_array( $res['code'], array( 400, 403, 404, 409 ), true ) ) {
             return false;
         }
-        return true;
+        return null;
     }
 }
 

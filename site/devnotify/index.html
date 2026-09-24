@@ -284,7 +284,7 @@ a{color:var(--accent)}
       <p id="notify-msg" style="font-size:.85rem;margin-top:8px;min-height:1.2em" role="status"></p>
       <p style="font-size:.78rem;color:var(--muted);margin-top:4px">One email at launch, nothing else. Address stored until launch, then deleted. No cookies, no tracking.</p>
     </form>
-    <p class="price-note" style="margin-top:16px">Checkout is processed by Lemon Squeezy as Merchant of Record.</p>
+    <p class="price-note" style="margin-top:16px">Payment will be processed by Stripe.</p>
   </div>
 </section>
 
@@ -327,13 +327,13 @@ a{color:var(--accent)}
 </section>
 
 <script>
-// Buy button reveals the notify-me form until the LS checkout URL exists.
-// When checkout goes live, replace this block with: buyBtn -> LS checkout URL.
+// Buy button reveals the notify-me form until a payment link exists.
+// When sales open, replace this block with: buyBtn -> Stripe payment link.
 const METRICS_URL='https://devnotify-metrics.mahope-eeb.workers.dev';
 const buyBtn=document.getElementById('buy-btn');
 const notifyForm=document.getElementById('notify-form');
 // Runtime checkout detection: when the worker has a CHECKOUT_URL secret set,
-// the buy button becomes a live Lemon Squeezy checkout link and the waitlist
+// the buy button becomes a live Stripe payment link and the waitlist
 // form hides automatically. No redeploy needed.
 fetch(METRICS_URL+'/config').then(r=>r.json()).then(function(cfg){
   var url = cfg && (cfg.checkout_url || cfg.checkoutUrl);
@@ -394,6 +394,7 @@ if(buyBtn&&notifyForm){
         <li><a href="/cli/">CLI</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases and changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Support the free scanner</a></li>
       </ul>
     </div>
     <div>

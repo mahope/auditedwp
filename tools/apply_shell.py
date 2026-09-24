@@ -95,7 +95,7 @@ I18N = {
                search_placeholder="e.g. cookie banner, NIS2, HSTS", search_button="Search",
                search_noscript="Search needs JavaScript. The sitemap lists every page.",
                nf_search="Or search the site", nf_placeholder="What are you looking for?",
-               pro_status="Pro launches when checkout is live; the free scanner is complete.",
+               pro_status="The free scanner is complete and stays free.", support="Support the free scanner",
                checklist_link="compliance checklist",
                gen_title="This generator has been taken down",
                ),
@@ -118,7 +118,7 @@ I18N = {
                search_placeholder="fx cookie-banner, NIS2, HSTS", search_button="Søg",
                search_noscript="Søgning kræver JavaScript. Sitemappet viser alle sider.",
                nf_search="Eller søg på sitet", nf_placeholder="Hvad leder du efter?",
-               pro_status="Pro åbner, når betaling er koblet på; den gratis scanner er færdig.",
+               pro_status="Den gratis scanner er færdig og forbliver gratis.", support="Støt den gratis scanner",
                checklist_link="compliance-tjekliste",
                gen_title="Denne generator er taget ned",
                ),
@@ -141,7 +141,7 @@ I18N = {
                search_placeholder="z. B. Cookie-Banner, NIS2, HSTS", search_button="Suchen",
                search_noscript="Die Suche benötigt JavaScript. Die Sitemap listet jede Seite.",
                nf_search="Oder die Website durchsuchen", nf_placeholder="Wonach suchen Sie?",
-               pro_status="Pro startet, sobald die Bezahlung angebunden ist; der kostenlose Scanner ist fertig.",
+               pro_status="Der kostenlose Scanner ist fertig und bleibt kostenlos.", support="Den kostenlosen Scanner unterstützen",
                checklist_link="Compliance-Checkliste",
                gen_title="Dieser Generator wurde abgeschaltet",
                ),
@@ -164,7 +164,7 @@ I18N = {
                search_placeholder="ex. bandeau cookies, NIS2, HSTS", search_button="Rechercher",
                search_noscript="La recherche nécessite JavaScript. Le plan du site liste chaque page.",
                nf_search="Ou rechercher sur le site", nf_placeholder="Que cherchez-vous ?",
-               pro_status="Pro sera disponible lorsque le paiement sera activé ; le scanner gratuit est complet.",
+               pro_status="Le scanner gratuit est complet et reste gratuit.", support="Soutenir le scanner gratuit",
                checklist_link="check-list de conformité",
                gen_title="Ce générateur a été retiré",
                ),
@@ -673,6 +673,7 @@ def strip_waitlist_forms(html: str, lang: str) -> str:
     return re.sub(r"<form\b[^>]*>.*?</form>", repl, html, flags=re.S | re.I)
 
 
+LIVE_CHECKOUT = ("https://buy.stripe.com/", "https://donate.stripe.com/")
 DEAD_BUY = re.compile(r"<(a|button)\b([^>]*)>((?:(?!</\1>).)*?)</\1>", re.S | re.I)
 BUY_TEXT = re.compile(
     r"(buy|get pro|upgrade|checkout|reserve|pre-?order|purchase|notify me|waiting for payments"
@@ -688,7 +689,10 @@ def neutralise_buy_buttons(html: str, lang: str) -> str:
         text = re.sub(r"<[^>]+>", "", inner)
         href = re.search(r'href="([^"]*)"', attrs)
         href = href.group(1) if href else ""
-        external_checkout = re.search(r"lemonsqueezy|gumroad|stripe|paddle|checkout", href, re.I)
+        # Live Stripe payment and donation links are real buttons, never dead ones.
+        if href.startswith(LIVE_CHECKOUT):
+            return m.group(0)
+        external_checkout = re.search(r"stripe|paddle|checkout", href, re.I)
         # Only short, button-like elements: a post card or a comparison card whose text
         # happens to mention a price is content, and a TOC link to "#start-monitoring"
         # is navigation.  Both were wiped by an earlier, looser version of this rule.

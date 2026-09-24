@@ -93,16 +93,16 @@ td,th{padding:8px 10px;font-size:13px}}</style>
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Windows",
       "description": "Desktop website monitor: uptime, SSL certificate expiry and content-change checks. One-time purchase, runs on your machine.",
-      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD", "availability": "https://schema.org/PreOrder" }
+      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
         {"@type":"Question","name":"Does DeskUptime work with any website?","acceptedAnswer":{"@type":"Answer","text":"Yes. It takes any URL and checks it over plain HTTP — WordPress, Shopify, Wix, Squarespace, Webflow, static sites, hand-coded HTML. No plugin or integration is installed on the monitored site."}},
         {"@type":"Question","name":"Do I need my computer running all the time?","acceptedAnswer":{"@type":"Answer","text":"For continuous background monitoring, yes — that is the trade-off for a one-time price instead of a monthly SaaS bill. Quick checks can be run at any time without watch mode."}},
-        {"@type":"Question","name":"What happens after I buy?","acceptedAnswer":{"@type":"Answer","text":"You receive a license key instantly by email from Lemon Squeezy. Enter it once in the desktop app and Pro features unlock. 3 activations per license."}},
+        {"@type":"Question","name":"What happens after I buy?","acceptedAnswer":{"@type":"Answer","text":"Your license key is shown right after payment and sent by email. Enter it once in the desktop app to turn on the Pro features. 3 activations per license."}},
         {"@type":"Question","name":"Is there a subscription?","acceptedAnswer":{"@type":"Answer","text":"No. $19 one-time covers all v1.x updates. Major version upgrades come at a discount for existing customers, never as an automatic charge."}},
-        {"@type":"Question","name":"Can I get a refund?","acceptedAnswer":{"@type":"Answer","text":"Yes — 14 days, no questions asked, handled through Lemon Squeezy's checkout."}}
+        {"@type":"Question","name":"Can I get a refund?","acceptedAnswer":{"@type":"Answer","text":"Yes — 14 days, no questions asked. Reply to your receipt email and it is refunded."}}
       ]
     }
   ]
@@ -170,7 +170,7 @@ td,th{padding:8px 10px;font-size:13px}}</style>
     <div class="price-label">one-time · 3 activations · lifetime updates</div>
   </div>
   <div class="btn-wrap">
-    <span class="status">Pro launches when checkout is live; the free scanner is complete.</span>
+    <a class="btn" href="https://buy.stripe.com/7sY9AS9eX3Iu418fJ5bMQ01" data-keep rel="noopener">Buy Pro — $19</a>
     <a href="https://deskuptime.com/" class="btn ghost">Try CLI Free</a>
     <a href="https://github.com/mahope/deskuptime" class="btn ghost">GitHub</a>
   </div>
@@ -325,7 +325,7 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
     </div>
     <div class="card">
       <h3>License key</h3>
-      <p>Pro features get via Lemon Squeezy license key. 3 machines per purchase. No DRM, no phone-home — just a key.</p>
+      <p>Pro features are switched on with a license key. 3 machines per purchase. No DRM, just a key.</p>
     </div>
     <div class="card">
       <h3>Lifetime updates</h3>
@@ -342,9 +342,9 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
   <div>
     <div class="card" style="margin-bottom:14px"><h3>Does DeskUptime work with any website?</h3><p>Yes. It takes any URL and checks it over plain HTTP — WordPress, Shopify, Wix, Squarespace, Webflow, static sites, hand-coded HTML. No plugin or integration is ever installed on the site you monitor.</p></div>
     <div class="card" style="margin-bottom:14px"><h3>Do I need my computer running all the time?</h3><p>For continuous background monitoring in watch mode, yes — that's the trade-off for a $19 one-time price instead of a monthly SaaS bill. For quick "is it up right now?" checks, no: run a check from the CLI or this page any time.</p></div>
-    <div class="card" style="margin-bottom:14px"><h3>What happens after I buy?</h3><p>You receive a license key instantly by email from Lemon Squeezy (our payment provider). Enter it once in the desktop app and Pro features get. 3 activations per license, no DRM phone-home.</p></div>
+    <div class="card" style="margin-bottom:14px"><h3>What happens after I buy?</h3><p>Payment goes through Stripe. Your license key is shown right after payment and sent by email. Enter it once in the desktop app to turn on the Pro features. 3 activations per license.</p></div>
     <div class="card" style="margin-bottom:14px"><h3>Is there a subscription?</h3><p>No. $19 one-time covers all v1.x updates. If we ever ship a major new version, existing customers get a discount — never an automatic charge.</p></div>
-    <div class="card"><h3>Can I get a refund?</h3><p>Yes — 14 days, no questions asked, handled through Lemon Squeezy's checkout. Email us and it's processed.</p></div>
+    <div class="card"><h3>Can I get a refund?</h3><p>Yes — 14 days, no questions asked. Reply to your receipt email and it is refunded.</p></div>
   </div>
 </div>
 </section>
@@ -352,7 +352,7 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
 <section id="pro" class="cta-section">
 <div class="wrap">
   <h2>Get DeskUptime Pro</h2>
-  <p class="sub">$19 one-time. License key get the desktop app, system notifications and unlimited URLs. Watch mode is free in the CLI.</p>
+  <p class="sub">$19 one-time. The license key turns on the desktop app, system notifications and unlimited URLs. Watch mode is free in the CLI.</p>
 
   <div style="background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:28px;text-align:center">
     <div style="font-size:48px;font-weight:800;color:var(--accent);letter-spacing:-.03em">$19</div>
@@ -365,43 +365,19 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
       <li style="padding:5px 0 5px 22px;position:relative">✓ Unlimited URLs</li>
       <li style="padding:5px 0 5px 22px;position:relative">✓ Lifetime updates (v1.x)</li>
     </ul>
-    <div id="pro-status" style="margin-top:20px;padding:12px 20px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;font-size:13px;text-align:center">
-       License sales starting soon via Lemon Squeezy.<br>
-      Leave your email and we'll notify you.
-    </div>
-    <p style="margin-top:14px;font-size:14px">Meanwhile, try the free tools:</p>
+    <p style="margin-top:20px"><a class="btn" href="https://buy.stripe.com/7sY9AS9eX3Iu418fJ5bMQ01" data-keep rel="noopener">Buy DeskUptime Pro — $19</a></p>
+    <p style="font-size:13px;color:var(--muted)">Payment through Stripe. License key on screen and by email.</p>
+    <p style="margin-top:14px;font-size:14px">Or try the free tools first:</p>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px">
       <a href="https://deskuptime.com/" class="btn" target="_blank" rel="noopener noreferrer" style="font-size:14px">Download Desktop (free trial)</a>
       <a href="https://deskuptime.com/" class="btn" style="background:transparent;color:var(--accent);border:1px solid var(--accent);font-size:14px">Get the free CLI</a>
     </div>
-    <p class="status">Pro launches when checkout is live; the free scanner is complete.</p>
   </div>
 </div>
 </section>
 
 <script>
 (function() {
-  var WAITLIST = 'https://waitlist-eucomply.mahope-eeb.workers.dev';
-  var CONFIG = 'https://eucomply-scan.mahope-eeb.workers.dev/config';
-
-  // Live checkout: if a 'deskuptime' checkout URL exists, replace everything with a Buy button
-  fetch(CONFIG).then(function(r){ return r.json(); }).then(function(cfg){
-    var url = cfg && cfg.checkout_urls && cfg.checkout_urls['deskuptime'];
-    if (!url) return;
-    var box = document.getElementById('pro-status');
-    var form = document.getElementById('pro-waitlist-form');
-    if (box) box.style.display = 'none';
-    if (form) {
-      var a = document.createElement('a');
-      a.className = 'btn';
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Buy Now — $19 · instant license key';
-      a.style.marginTop = '16px';
-      form.parentNode.replaceChild(a, form);
-    }
-  }).catch(function(){});
 
   // Live quick check widget
   document.getElementById('live-check-form').addEventListener('submit', async function(e){
@@ -443,42 +419,6 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
       dataDiv.innerHTML = '❌ <span class="warn">Network error:</span> ' + err.message;
     }
   });
-  fetch(WAITLIST).then(function(r){ return r.json(); }).then(function(d){
-    var el = document.getElementById('pro-status');
-    if (el && d && d.count > 0) {
-      el.innerHTML = '⏳ License sales starting soon via Lemon Squeezy.<br>' +
-        d.count + ' ' + (d.count === 1 ? 'person has' : 'people have') + ' already joined the launch list.';
-    }
-  }).catch(function(){});
-
-  // Waitlist signup
-  var waitlistForm = document.getElementById('pro-waitlist-form');
-  if (waitlistForm) waitlistForm.addEventListener('submit', async function(e){
-    e.preventDefault();
-    var email = document.getElementById('pro-email').value.trim();
-    var msg = document.getElementById('pro-msg');
-    var btn = document.getElementById('pro-notify-btn');
-    if (!email) { msg.textContent = 'Please enter your email.'; return; }
-    btn.disabled = true;
-    try {
-      var r = await fetch(WAITLIST, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, source: 'deskuptime-pro' })
-      });
-      var d = await r.json();
-      if (r.ok) {
-        msg.textContent = d.message || "You're on the list!";
-        btn.textContent = '✓ Joined';
-      } else {
-        msg.textContent = d.error || 'Try again.';
-        btn.disabled = false;
-      }
-    } catch (err) {
-      msg.textContent = 'Network error — please try again.';
-      btn.disabled = false;
-    }
-  });
 })();
   // Copy CLI command to clipboard
   document.addEventListener('DOMContentLoaded', function() {
@@ -506,6 +446,7 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
         <li><a href="/cli/">CLI</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases and changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Support the free scanner</a></li>
       </ul>
     </div>
     <div>

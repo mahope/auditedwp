@@ -45,7 +45,7 @@ h2{font-size:1.3rem;margin-bottom:.5rem}
 .wmsg{margin-top:.6rem;font-size:.85rem}
 .wmsg.ok{color:var(--acc)}
 .wmsg.err{color:var(--warn)}</style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "GDPR Data Processing Agreement Template (Art. 28)", "description": "Complete Art. 28 DPA template with guidance comments. View the first sections free, buy for $59, download instantly.", "brand": {"@type": "Brand", "name": "ComplianceDocs"}, "offers": {"@type": "Offer", "price": "59", "priceCurrency": "USD", "availability": "https://schema.org/PreOrder", "url": "/store/dpa/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "GDPR Data Processing Agreement Template (Art. 28)", "description": "Complete Art. 28 DPA template with guidance comments. View the first sections free, buy for $59, download instantly.", "brand": {"@type": "Brand", "name": "ComplianceDocs"}, "offers": {"@type": "Offer", "price": "59", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "/store/dpa/"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Store", "item": "/store/"}]}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/store/dpa/","url":"https://eucomplypro.com/store/dpa/","name":"GDPR Data Processing Agreement Template (Art. 28) — $59","description":"A complete controller→processor DPA template following GDPR Art. 28, with sub-processor terms, EU-hosting clauses and guidance comments.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
@@ -106,8 +106,7 @@ h2{font-size:1.3rem;margin-bottom:.5rem}
 
 <div class="buybar">
 <div><span class="price">$59</span> <span style="font-size:.85rem;color:var(--muted)">one-time · Markdown + PDF</span></div>
-<p class="status">Pro launches when checkout is live; the free scanner is complete.</p>
-<div class="wmsg" id="wmsg"></div>
+<a class="btn" href="https://buy.stripe.com/bJe7sK8aT4My7dk7czbMQ05" data-keep rel="noopener">Buy now — $59</a>
 </div>
 
 <section>
@@ -166,7 +165,7 @@ Onboarding Manual referenced as Annex A.
 Sub-processors · Assistance · Deletion · Audit rights · Liability · Signatures</span></div>
 <div class="gate">
 <p>You've read the preview. The full document has <strong>9 sections plus annex structure</strong>, ready to fill in.</p>
-<button class="btn" onclick="document.getElementById('buyform').querySelector('input').focus()">Get notified — $59 at launch</button>
+<a class="btn" href="https://buy.stripe.com/bJe7sK8aT4My7dk7czbMQ05" data-keep rel="noopener">Buy the full document — $59</a>
 </div>
 </section>
 
@@ -177,7 +176,7 @@ Sub-processors · Assistance · Deletion · Audit rights · Liability · Signatu
 <dt style="font-weight:600;margin-top:10px">How do I receive the document?</dt>
 <dd style="margin:2px 0 0;color:var(--ink)">Instantly after checkout — download link on screen and by email.</dd>
 <dt style="font-weight:600;margin-top:10px">Who handles the payment?</dt>
-<dd style="margin:2px 0 0;color:var(--ink)">Lemon Squeezy acts as merchant of record and handles cards, PayPal, Apple Pay, VAT and sales tax worldwide.</dd>
+<dd style="margin:2px 0 0;color:var(--ink)">Stripe processes the payment (card, Apple Pay, Google Pay). Prices are shown in USD, EUR or DKK depending on your country.</dd>
 <dt style="font-weight:600;margin-top:10px">What's the license?</dt>
 <dd style="margin:2px 0 0;color:var(--ink)">Use the documents for yourself and for your own clients, as many times as you like. Reselling or republishing the template itself isn't allowed.</dd>
 <dt style="font-weight:600;margin-top:10px">Is this legal advice?</dt>
@@ -186,61 +185,6 @@ Sub-processors · Assistance · Deletion · Audit rights · Liability · Signatu
 </section>
 
 </div>
-
-<script>
-document.getElementById('buyform').addEventListener('submit', async function(e){
-  e.preventDefault();
-  var input=this.querySelector('input'), msg=document.getElementById('wmsg'), btn=this.querySelector('button');
-  var email=input.value.trim();
-  if(!email){msg.textContent='Please enter your email.';msg.className='wmsg err';return;}
-  btn.disabled=true;btn.textContent='Sending…';
-  try{
-    var r=await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,source:'compliancedocs-dpa-product'})});
-    var d=await r.json();
-    if(r.ok){msg.textContent=d.message||"You're on the launch list. We'll email you the moment checkout opens.";msg.className='wmsg ok';input.value='';btn.textContent='✓ Noted';btn.classList.add('sent');}
-    else{msg.textContent=d.error||'Try again.';msg.className='wmsg err';btn.disabled=false;btn.textContent='Notify me at launch';}
-  }catch(err){msg.textContent='Network error.';msg.className='wmsg err';btn.disabled=false;btn.textContent='Notify me at launch';}
-});
-</script>
-
-<!-- DYNAMIC-CHECKOUT -->
-<script>
-var PRODUCT_ID = 'dpa';
-</script>
-<script>
-(async function(){
-  try{
-    var r = await fetch('https://waitlist-eucomply.mahope-eeb.workers.dev/config');
-    if(!r.ok) return;
-    var cfg = await r.json();
-    if(!(cfg && cfg.checkout_url)) return;
-    var urls = cfg.checkout_urls || {};
-    var url = urls[PRODUCT_ID] || cfg.checkout_url;
-    if(!url) return;
-    // 1. Erstat venteliste-formular med koeb-link
-    document.querySelectorAll('#buyform, #bundleform').forEach(function(f){
-      var price = f.textContent.match(/\$(\d+)/);
-      var label = 'Buy now' + (price ? ' — $' + price[1] : '') + ' · instant download';
-      var a = document.createElement('a');
-      a.className = f.className.replace('wform','btn') || 'btn';
-      if(!a.classList.contains('btn')) a.classList.add('btn');
-      a.href = url; a.target = '_blank'; a.rel = 'noopener';
-      a.style.cssText = 'display:inline-block;padding:8px 14px;background:var(--acc,#2868d0);color:#fff;border-radius:4px;text-decoration:none;font-weight:600';
-      a.textContent = label;
-      f.parentNode.replaceChild(a, f);
-    });
-    // 2. Konvertér "Get notified"-knappper til koeb-links
-    document.querySelectorAll('button[onclick*="buyform"]').forEach(function(b){
-      var a = document.createElement('a');
-      a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.className = b.className;
-      a.textContent = b.textContent.replace(/Get notified/i, 'Buy now');
-      b.parentNode.replaceChild(a, b);
-    });
-    // 3. Skjul "notify me"-tekster
-    document.querySelectorAll('.wmsg').forEach(function(m){ m.textContent = ''; });
-  }catch(e){ /* worker ikke tilgaengelig — behold venteliste */ }
-})();
-</script>
 </div><!--/pg-legacy-->
 </main>
 <footer class="sf">
@@ -253,6 +197,7 @@ var PRODUCT_ID = 'dpa';
         <li><a href="/cli/">CLI</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases and changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Support the free scanner</a></li>
       </ul>
     </div>
     <div>

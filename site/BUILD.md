@@ -12,7 +12,7 @@ TRIN   HVAD                          STATUS
  4     Pro Dashboard                 ✅ LIVE (/pro/dashboard/)
  5     Daily monitoring Worker       ✅ LIVE (eucomply-watch)
  6     Blog/SEO (17 artikler)        ✅ LIVE
- 7     Checkout via Lemon Squeezy      ❌ Venter på LS API-nøgle (Bitwarden)
+ 7     Checkout via Stripe           ✅ LIVE (betalingslinks, 24/9-26)
  8     Første betalende kunde        ⏳ Timer efter trin 7
 ```
 
@@ -22,22 +22,16 @@ TRIN   HVAD                          STATUS
 2. Scanner sit site → får sin egen score + fejl-liste
 3. Resultat-CTA er **personlig**: nævner antal fundne problemer og hvad Pro gør ved netop dem
 4. Klik til /pro/ → pris på 5 sekunder ($79/yr), sammenligningstabel, live dashboard-demo
-5. "Buy Pro" → Lemon Squeezy checkout (via CHECKOUT_URL secret på workeren)
+5. "Buy Pro" → Stripe-betalingslink (statisk i siden) → licensnøgle fra mahope.tools
 
-## Når LS-nøglen ligger i Bitwarden
+## Betaling og licens (24/9-26)
 
-Pro-siden henter allerede checkout-URL'en fra workeren. Én handling:
-
-```bash
-wrangler secret put CHECKOUT_URL --name eucomply-scan   # = LS checkout-link
-```
-
-Knappen skifter automatisk fra waitlist-fallback til direkte checkout.
-Samme dag kan første kunde betale. (Alternativt oprettes produktet selv via
-LS write-API, når nøglen kan læses.)
+Tidligere Lemon Squeezy; nu Stripe. Købsknapperne er faste Stripe-betalingslinks
+direkte i HTML'en (se `business/planer/2026-09-24-stripe-kontrakt.md`).
+`tools/apply_shell.py` lader links til buy.stripe.com/donate.stripe.com stå.
+WordPress-pluginet validerer nøgler mod `https://mahope.tools/api/license/`.
 
 ## Ikke bygget endnu (bevidst)
 
-- Licensvalidering mod Gumroad API — først når der findes en rigtig nøgle at teste med
 - Bulk/agency-prisning — version 2, når der er betalende kunder
 - Flere sprog — version 2

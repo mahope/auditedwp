@@ -126,7 +126,7 @@ a{color:var(--accent)}</style>
 <h2 id="preise">Preise</h2>
 <div class="price-box">
 <div class="big-price">19&nbsp;$</div>
-<div style="font-size:13px;color:var(--muted);margin-bottom:16px">einmalig · 3 Aktivierungen · EU-MwSt. wird an der Kasse abgewickelt</div>
+<div style="font-size:13px;color:var(--muted);margin-bottom:16px">einmalig · 3 Aktivierungen</div>
 <ul style="list-style:none;font-size:14px;text-align:left;display:inline-block;padding-left:22px">
 <li style="padding:5px 0">✓ Desktop-App (Mac + Windows)</li>
 <li style="padding:5px 0">✓ Monitoring im Hintergrund</li>
@@ -134,46 +134,12 @@ a{color:var(--accent)}</style>
 <li style="padding:5px 0">✓ Unbegrenzte URLs</li>
 <li style="padding:5px 0">✓ Lebenslange Updates (v1.x)</li>
 </ul>
-<div id="pro-status" style="margin-top:20px;padding:12px 20px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;font-size:13px">
- Lizenzen sind in Kürze über Lemon Squeezy erhältlich.<br>
-Hinterlasse deine E-Mail-Adresse, um benachrichtigt zu werden.
-</div>
-<p class="status">Pro startet, sobald die Bezahlung angebunden ist; der kostenlose Scanner ist fertig.</p>
+<p style="margin-top:20px"><a class="btn" href="https://buy.stripe.com/7sY9AS9eX3Iu418fJ5bMQ01" data-keep rel="noopener">DeskUptime Pro kaufen — 19&nbsp;$</a></p>
 </div>
 
-<p class="note">Sichere Zahlung über Lemon Squeezy (<em>Merchant of Record</em>) — die EU-Mehrwertsteuer wird für dich berechnet und abgeführt. Lizenzschlüssel sofort per E-Mail.</p>
+<p class="note">Sichere Zahlung über Stripe. Der Lizenzschlüssel erscheint direkt nach der Zahlung und kommt zusätzlich per E-Mail.</p>
 
 </div>
-
-<script>
-(function(){
-  var WAITLIST='https://waitlist-eucomply.mahope-eeb.workers.dev';
-  var CONFIG='https://eucomply-scan.mahope-eeb.workers.dev/config';
-  fetch(CONFIG).then(function(r){return r.json()}).then(function(cfg){
-    var url=cfg&&cfg.checkout_urls&&cfg.checkout_urls['deskuptime'];
-    if(!url)return;
-    var box=document.getElementById('pro-status');
-    var form=document.getElementById('pro-waitlist-form');
-    if(box)box.style.display='none';
-    if(form){
-      var a=document.createElement('a');
-      a.className='btn';a.href=url;a.target='_blank';a.rel='noopener noreferrer';
-      a.textContent='Kaufen — 19&nbsp;$ · Lizenzschlüssel sofort';
-      form.parentNode.replaceChild(a,form);
-    }
-  }).catch(function(){});
-  var f=document.getElementById('pro-waitlist-form');
-  if(f)f.addEventListener('submit',function(e){
-    e.preventDefault();
-    var email=document.getElementById('pro-email').value.trim();
-    if(!email)return;
-    fetch(WAITLIST+'/add',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:email,source:'de-landing'})})
-    .then(function(){document.getElementById('pro-msg').textContent='Danke! Wir melden uns, sobald die Lizenzen verfügbar sind.'})
-    .catch(function(){document.getElementById('pro-msg').textContent='Fehler — bitte erneut versuchen.'});
-  });
-})();
-</script>
 </div><!--/pg-legacy-->
 </main>
 <footer class="sf">
@@ -186,6 +152,7 @@ Hinterlasse deine E-Mail-Adresse, um benachrichtigt zu werden.
         <li><a href="/cli/">CLI</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner">Quellcode des Scanners auf GitHub</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases und Changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Den kostenlosen Scanner unterstützen</a></li>
       </ul>
     </div>
     <div>

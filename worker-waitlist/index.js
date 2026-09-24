@@ -1,7 +1,7 @@
 /**
  * Waitlist Worker for EUComply
  * Collects emails of people interested in EUComply Pro / ComplianceDocs
- * Stores them in KV for later notification when Lemon Squeezy checkout goes live.
+ * Stores them in KV for later notification when checkout goes live.
  */
 
 // Handle CORS preflight

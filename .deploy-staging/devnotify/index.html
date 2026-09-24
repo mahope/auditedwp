@@ -256,7 +256,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <p id="notify-msg" style="font-size:.85rem;margin-top:8px;min-height:1.2em" role="status"></p>
       <p style="font-size:.78rem;color:var(--muted);margin-top:4px">One email at launch, nothing else. Address stored until launch, then deleted. No cookies, no tracking.</p>
     </form>
-    <p class="price-note" style="margin-top:16px">Checkout is processed by Lemon Squeezy as Merchant of Record.</p>
+    <p class="price-note" style="margin-top:16px">Payment will be processed by Stripe.</p>
   </div>
 </section>
 
@@ -304,8 +304,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 </footer>
 
 <script>
-// Buy button reveals the notify-me form until the LS checkout URL exists.
-// When checkout goes live, replace this block with: buyBtn -> LS checkout URL.
+// Buy button reveals the notify-me form until a payment link exists.
+// When sales open, replace this block with: buyBtn -> Stripe payment link.
 const METRICS_URL='https://devnotify-metrics.mahope-eeb.workers.dev';
 const buyBtn=document.getElementById('buy-btn');
 const notifyForm=document.getElementById('notify-form');

@@ -20,6 +20,9 @@ $options = array(
     'eucomply_pro_key',
     'eucomply_pro_verified',
     'eucomply_pro_verified_at',
+    'eucomply_pro_last_ok_at',
+    'eucomply_license_activation',
+    'eucomply_ls_instance_id',
     'eucomply_agency_name',
     'eucomply_pro_dpa_date',
     'eucomply_pro_nis2_date',
@@ -32,6 +35,8 @@ foreach ( $options as $option ) {
     // For sites in a multisite network, also delete site-level.
     delete_site_option( $option );
 }
+
+delete_transient( 'eucomply_license_retry' );
 
 // ── Unschedule the weekly scan cron ──────────────────────────────────────────
 $timestamp = wp_next_scheduled( 'eucomply_weekly_scan' );

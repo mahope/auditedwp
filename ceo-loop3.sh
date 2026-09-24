@@ -50,7 +50,7 @@ MADS HAR AENDRET MANDATET 23. august:
 - Domaene: KOEB ER AABENT. Cloudflare Registrar-adgang er verificeret 23/8. Vaelg navn, skriv det i DECISION.md, sig til.
 
 ENDNU NYERE RAMMER (23. august, aften):
-- BETALING: Gumroad er DROPPET. Mads har en Lemon Squeezy-konto. Den er MoR (haandterer moms) OG har en skrive-API, saa du kan selv oprette produkt og checkout naar noeglen ligger i Bitwarden (ventes 24/8). Brug ALDRIG Stripe direkte - saa skal vi selv koere OSS-moms.
+- BETALING: Alt salg koerer via Stripe-betalingslinks og licensserveren paa mahope.tools (tidligere Lemon Squeezy, som afviste kontoen 24/9). Kontrakten med links og licens-API: business/planer/2026-09-24-stripe-kontrakt.md i workspacet. Ingen Stripe-noegler i kode eller sider.
 - AMAZON KDP KAN ALDRIG AUTOMATISERES. Ingen offentlig API. Mads skal uploade manuelt. Planlaeg aldrig omkring det.
 - HELT FRIE RAMMER: Mads siger du maa gaa videre til HELT NYE PROJEKTER, ogsaa uden for hans fagomraade. Web/compliance er hvor vi startede, ikke en graense.
 - ER DU BLOKERET: start noget NYT frem for at pudse det gamle igen. Skriv blokeringen som EN linje i STATUS.md og gaa videre. Gentag den ALDRIG iteration efter iteration.

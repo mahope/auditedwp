@@ -109,7 +109,8 @@ li{margin-bottom:6px}</style>
 <p><strong>When you subscribe to a waitlist or purchase a product:</strong></p>
 <ul>
 <li>Email address (only if you voluntarily provide it via a waitlist form)</li>
-<li>Purchase data is handled entirely by our payment processor (Lemon Squeezy) — we receive only your email and purchase confirmation</li>
+<li>Card details are handled entirely by our payment processor (Stripe) and never reach us. From Stripe we receive your name, email address, country and what you bought, so we can issue your license key or download link</li>
+<li>License keys are stored on our license server (mahope.tools) together with your email address. The EUComply WordPress plugin sends the license key and your site's hostname to it once a day to check the license</li>
 </ul>
 
 <h2 id="3-how-we-use-your-data">3. How we use your data</h2>
@@ -141,7 +142,7 @@ li{margin-bottom:6px}</style>
 <p>We use:</p>
 <ul>
 <li><strong>Cloudflare</strong> — CDN and hosting (privacy policy: cloudflare.com/privacypolicy)</li>
-<li><strong>Lemon Squeezy</strong> — Payment processing and product delivery (privacy policy: lemonsqueezy.com/privacy)</li>
+<li><strong>Stripe</strong> — Payment processing (privacy policy: stripe.com/privacy)</li>
 </ul>
 <p>No other third-party scripts, analytics, or tracking services are loaded on this website.</p>
 
@@ -168,6 +169,7 @@ li{margin-bottom:6px}</style>
         <li><a href="/cli/">CLI</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner">Scanner source on GitHub</a></li>
         <li><a href="https://github.com/mahope/eucomply-scanner/releases">Releases and changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Support the free scanner</a></li>
       </ul>
     </div>
     <div>

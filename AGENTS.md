@@ -20,21 +20,22 @@ har nogen: det får os til at satse videre på noget der ikke virker.
   præcis det tal Mads skal bruge for at vælge, hvad der er værd at bygge videre på.
 
 
-## Betaling: Lemon Squeezy, ikke Gumroad (23. august 2026)
+## Betaling: Stripe og egen licensserver (24. september 2026)
 
-**Gumroad er droppet.** Mads har ingen Gumroad-konto — men han HAR en Lemon
-Squeezy-konto (`mads@mahope.dk`). Den er bedre på to måder der begge betyder
-noget for dig:
+Tidligere Lemon Squeezy (afviste kontoen 24/9) og før det Gumroad (droppet 23/8).
+Alt salg kører nu via **Stripe-betalingslinks** på Mahopes Stripe-konto og
+licensering via **Mahopes egen licensserver** (`https://mahope.tools/api/license/`
+— `activate`, `validate`, `deactivate`).
 
-- Du beholder ~92 % mod Gumroads ~87 %, og begge er Merchant of Record, så
-  EU-moms og amerikansk sales tax afregnes for dig. Vi bygger ALDRIG
-  momshåndtering selv — derfor bruger vi ikke Stripe direkte.
-- **Lemon Squeezy har en fuld skrive-API.** Du kan selv oprette produkt, pris og
-  checkout-link. Gumroads API kan reelt kun læse. Det er forskellen på at vente
-  på Mads og at kunne handle selv.
-
-**Nøglen kommer i Bitwarden**, forventeligt 24. august. Når den ligger der,
-opretter du produktet selv, tester et køb og går efter første rigtige betaling.
+- Kontrakten med alle betalingslinks, product_keys og licens-API'ets regler ligger
+  i workspacet: `business/planer/2026-09-24-stripe-kontrakt.md`. Brug links og
+  product_keys derfra — opfind aldrig egne.
+- Ingen Stripe-nøgler i kode, sider eller workers. Klienter bruger kun
+  betalingslinks og licens-API'et.
+- Stripe er ikke Merchant of Record. Moms (EU OSS) er Mads' ansvar, ikke noget
+  du bygger selv.
+- Open-core: gratis værktøjer forbliver gratis. Donationer via
+  `https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c` og `.github/FUNDING.yml`.
 
 **Chrome Web Store:** Mads har allerede en udviklerkonto, og den har også API,
 så du kan udgive selv når OAuth-credentials ligger i Bitwarden.

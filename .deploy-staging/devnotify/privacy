@@ -24,7 +24,7 @@
 <p>If you ask us to notify you when checkout opens, we store only the email address you submit, until launch. It is used for exactly one message and then deleted. No cookies, no tracking, never shared with third parties. You can have it removed any time by writing to the address below.</p>
 
 <h2>Purchases</h2>
-<p>Payments are handled by Lemon Squeezy (Merchant of Record). When you buy a license, Lemon Squeezy processes your payment details and email address under their privacy policy. We receive only what is needed to issue your license key.</p>
+<p>Payments are handled by Stripe. When you buy a license, Stripe processes your payment details and email address under their privacy policy. We receive only what is needed to issue your license key.</p>
 
 <h2>Contact</h2>
 <p>mads@mahope.dk</p>

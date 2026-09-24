@@ -1,11 +1,11 @@
 === EUComply — EU Compliance Audit ===
 Contributors: mahope
-Donate link: /
+Donate link: https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c
 Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl, backup, imprint, legal, accessibility
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,7 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 | EAA Accessibility Statement | — | ✓ |
 | Quarterly compliance report | — | ✓ |
 | Agency name branding in reports | — | ✓ |
-| Lemon Squeezy license validation + refund auto-revoke | — | ✓ |
+| Daily license check, 7-day grace if the license server is down | — | ✓ |
 
 = Why another compliance plugin? =
 
@@ -71,7 +71,11 @@ That's it. No configuration required for the free scan. Pro users enter their li
 
 = Does the plugin send data to external servers? =
 
-No. Every compliance check runs entirely inside your WordPress installation. No telemetry, no analytics, no site data is transmitted. The **only** external call is the Pro license validation, which sends a license key (not site data) to the Lemon Squeezy API.
+No. Every compliance check runs entirely inside your WordPress installation. No telemetry, no analytics, no site data is transmitted. The **only** external call is the Pro license validation, which sends the license key, the site's hostname and the product name (no site content) to the Mahope license server at mahope.tools.
+
+= How do I buy Pro? =
+
+Buy EUComply Pro at https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03 — $79 per website per year, paid securely through Stripe. The license key arrives on the confirmation page and by email. Paste it into EUComply → Settings.
 
 = How is this different from Complianz, CookieYes or WP Activity Log? =
 
@@ -109,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.0 (2026-09-24) =
+
+* **Changed**: Pro licenses are sold through Stripe and verified by the Mahope license server (mahope.tools). Keys are now 32 hex characters. The former Lemon Squeezy validation is removed.
+* **New**: First check activates the site (hostname as device), daily checks validate it.
+* **New**: If the license server cannot be reached, a verified Pro status is kept for 7 days.
+* **Fixed**: Saving a new key now clears the previous key's verification.
+
 = 1.2.0 (2026-08-23) =
 
 * **New**: uninstall.php — full option cleanup when plugin is deleted.
@@ -134,6 +145,9 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * Pro license system with product ID placeholder for future Lemon Squeezy integration.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Required for Pro: licenses now come from Stripe and are checked against mahope.tools. Enter the new 32-character key from your purchase email in EUComply → Settings.
 
 = 1.2.0 =
 Upgrade for the automatic cleanup (uninstall.php), activation guard (no silent failures on old PHP/WP), and a polished readme.txt for wp.org listing. Update from Plugins → Installed Plugins or download the latest zip.
