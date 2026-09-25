@@ -121,6 +121,8 @@ run "tools/test_worker_security.mjs" node tools/test_worker_security.mjs
 run "tools/test_engine_parity.mjs" node tools/test_engine_parity.mjs
 run "tools/test_license_verdicts.php" php tools/test_license_verdicts.php
 run "tools/check_pro_claims.py" python3 tools/check_pro_claims.py
+run "tools/check_cta.py" python3 tools/check_cta.py
+run "tools/check_cta.py --selftest" python3 tools/check_cta.py --selftest
 
 # ------------------------------------------------- 5. publiceret træ (deploy)
 hdr "Publiceret træ"
