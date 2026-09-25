@@ -1,0 +1,45 @@
+name: verify
+
+# Kanonisk kvalitetsgate. Bruges to steder, så der kun er én definition af grøn:
+#   1. på enhver pull_request — så en PR med PHP-syntaksfejl eller SEO-fejl
+#      aldrig kan merge til main og dermed aldrig deploye,
+#   2. fra deploy-site.yml som et job, der skal være grønt før Pages-uploads.
+#
+# Gateen ligger i tools/quality_gate.sh, så lokal og CI-gate er identiske.
+# Der bruges ingen secrets her: PHP, node og python er alt der skal til.
+
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Kør kvalitetsgaten
+        run: bash tools/quality_gate.sh
+
+      - name: Hæng uploadartefaktet op, hvis det blev bygget
+        if: always() && hashFiles('site-dist/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: site-dist/
+          retention-days: 3
+          if-no-files-found: error

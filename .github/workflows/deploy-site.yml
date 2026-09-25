@@ -8,15 +8,23 @@ name: deploy-site
 # deployer aldrig site/ direkte — den deployer site-dist/, som
 # tools/build_public_tree.py bygger ud fra en positivliste og
 # tools/check_public_tree.py afviser, hvis noget internt slap igennem.
+#
+# Verification og upload er to separate jobs: `verify` kalder den genbrugelige
+# .github/workflows/verify.yml og har ingen secrets, så en rød gate stopper
+# før Pages overhovedet røres. Secrets findes kun i `deploy`.
 
 on:
   push:
     branches: [main]
     paths:
       - 'site/**'
-      - 'tools/build_public_tree.py'
-      - 'tools/check_public_tree.py'
-      - '.github/workflows/deploy-site.yml'
+      - 'shared/**'
+      - 'worker-scan/**'
+      - 'worker-watch/**'
+      - 'plugin/**'
+      - 'eucomply-scanner/**'
+      - 'tools/**'
+      - '.github/workflows/'
   workflow_dispatch:
 
 concurrency:
@@ -24,8 +32,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    name: kvalitetsgate
+    uses: ./.github/workflows/verify.yml
+
   deploy:
+    name: deploy til Cloudflare Pages
+    needs: verify
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -36,9 +51,6 @@ jobs:
       - name: Byg det offentlige træ
         run: |
           python3 tools/build_public_tree.py
-
-      - name: Verificér det offentlige træ
-        run: |
           python3 tools/check_public_tree.py
 
       - name: Deploy til Cloudflare Pages
@@ -49,19 +61,74 @@ jobs:
           workingDirectory: site-dist
           command: pages deploy . --project-name auditedwp --branch main --commit-dirty=true
 
-      - name: Tjek produktion
+  check-production:
+    name: tjek produktion
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Tjek indhold, ikke kun status
         run: |
+          # 25/9: den gamle kontrol testede /IMPLEMENTATION_PLAN.md, som aldrig har
+          # ligget i site/. Den var 404 før og efter rettelsen og beviser intet.
+          # Nu testes stier der FAKTISK var eksponeret.
           url="https://eucomplypro.com/"
           for i in 1 2 3 4 5 6; do
             code=$(curl -sS -o body.html -w '%{http_code}' "$url" || echo 000)
             if [ "$code" = "200" ] && grep -q "mahoje.dk" body.html; then
               echo "OK: $url svarer 200 og indeholder mahoje.dk"
-              leak=$(curl -sS -o leaked.md -w '%{http_code}' "$url/IMPLEMENTATION_PLAN.md" || echo 000)
-              echo "kontrol: /IMPLEMENTATION_PLAN.md svarer $leak (forventet 404)"
-              exit 0
+              break
             fi
             echo "Forsøg $i: status $code — venter 10s"
             sleep 10
           done
-          echo "FEJL: $url gav status $code eller manglede 'mahoje.dk'"
-          exit 1
+          if [ "$code" != "200" ]; then
+            echo "FEJL: $url gav status $code"
+            exit 1
+          fi
+
+          # Lek-kontrol. Query-strengen er ikke en cache-buster, Cloudflare bruger
+          # den fulde URL som cache-nøgle, så denne rammer origin og ikke kanten.
+          # Det er hele pointen: de interne dokumenter lå i site/ og er væk derfra,
+          # men ligger stadig cachet i kanten med s-maxage=604800 indtil de udløber
+          # eller bliver purget (spørgsmål 12). Uden query-strengen ville denne
+          # kontrol læse det gamle cachede indhold og fejle uden grund.
+          fail=0
+          for route in /AGENTS.md /BUDGET.md /DECISION.md /STATUS.md /RESEARCH.md \
+                     /KANALPLAN.md /INTERVIEW-GUIDE.md /wrangler.toml \
+                     /ceo-loop3.sh /ops/auditlog.py /POSTS/01-eighty-five-niches.md \
+                     /IMPLEMENTATION_PLAN.md; do
+            code=$(curl -sS -o leak.out -w '%{http_code}' "$url$route?cb=$GITHUB_RUN_ID" || echo 000)
+            if [ "$code" = "200" ]; then
+              echo "FEJL: $route svarer stadig 200 på origin"
+              head -c 200 leak.out; echo
+              fail=1
+            else
+              echo "OK: $route svarer $code (forventet 404)"
+            fi
+          done
+
+          # Adgang til nøgle-sider efter et upload. HTTP 200 er ikke bevis, så
+          # indholdet kontrolleres: de fire pricing-ruter og Pro skal findes.
+          for route in / /pro/ /pricing/ /da/pricing/ /de/pricing/ /fr/pricing/ \
+                     /da/pro/ /de/pro/ /fr/pro/ /scan/ /plugin/ /privacy/ /sample/; do
+            code=$(curl -sS -o page.html -w '%{http_code}' "$url$route?cb=$GITHUB_RUN_ID" || echo 000)
+            bytes=$(wc -c < page.html | tr -d ' ')
+            if [ "$code" != "200" ] || [ "$bytes" -lt 1000 ]; then
+              echo "FEJL: $route svarer $code ($bytes bytes)"
+              fail=1
+            else
+              echo "OK: $route svarer 200 ($bytes bytes)"
+            fi
+          done
+
+          # Plugin-downloadet skal være den version, zip'en der _redirects peger på.
+          code=$(curl -sS -o plug.zip -w '%{http_code}' "$url/assets/eucomply-1.3.2.zip?cb=$GITHUB_RUN_ID" || echo 000)
+          if [ "$code" = "200" ] && [ "$(head -c 2 plug.zip)" = "PK" ]; then
+            echo "OK: /assets/eucomply-1.3.2.zip er 200 og en zip-fil"
+          else
+            echo "FEJL: /assets/eucomply-1.3.2.zip svarer $code"
+            fail=1
+          fi
+
+          exit $fail

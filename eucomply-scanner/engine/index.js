@@ -32,6 +32,11 @@
 // or via the `eucomply-scanner` CLI wrapper
 import { pathToFileURL } from 'node:url';
 
+// Must stay identical to UA in ../../shared/scan-engine.js. runScan() reads it
+// inside its try-block, so a missing const surfaces as "Could not reach <url>"
+// and every scan fails with a message about a domain that is perfectly online.
+const UA = "Mozilla/5.0 (compatible; EUComplyScan/1.0; +https://auditedwp.pages.dev)";
+
 async function main() {
   const args = process.argv.slice(2);
   const url = args.find(a => !a.startsWith('--'));
@@ -345,6 +350,11 @@ export function isPublicHostname(hostname) {
   // "1.2.3") is a shorthand an attacker can use to reach loopback. The URL
   // parser expands it, but callers may pass a bare hostname, so fail closed.
   if (/^[\d.]+$/.test(h)) return false;
+  // Hex and integer forms ("0x7f.0.0.1", "2130706433") are expanded by the URL
+  // parser, so they reach loopback through it. Reject the bare form too, so a
+  // caller that hands this function a hostname gets the same answer as one
+  // that went through new URL().
+  if (/^0[xX][\da-fA-F.]+$/.test(h) || /^\d{9,}$/.test(h)) return false;
   return true;
 }
 

@@ -289,6 +289,11 @@ export function isPublicHostname(hostname) {
   // "1.2.3") is a shorthand an attacker can use to reach loopback. The URL
   // parser expands it, but callers may pass a bare hostname, so fail closed.
   if (/^[\d.]+$/.test(h)) return false;
+  // Hex and integer forms ("0x7f.0.0.1", "2130706433") are expanded by the URL
+  // parser, so they reach loopback through it. Reject the bare form too, so a
+  // caller that hands this function a hostname gets the same answer as one
+  // that went through new URL().
+  if (/^0[xX][\da-fA-F.]+$/.test(h) || /^\d{9,}$/.test(h)) return false;
   return true;
 }
 
