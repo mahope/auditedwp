@@ -1,3 +1,23 @@
+# eucomply-scan-proxy (deprecated)
+
+> **This directory is not the scanner, and it is not published.**
+> `package.json` is marked `private`, so `npm publish` refuses it. It used to
+> claim the name `eucomply-scanner` — the same name as the real scanner in
+> `../eucomply-scanner/` — and two different programs cannot own one npm
+> name. The real scanner won the name; this one kept the code.
+> `tools/check_package_identity.py` now fails the build if that ever changes.
+>
+> This file forwards every scan to a hosted worker, so it only works while
+> that worker is up and it inherits whatever that worker runs. **Use the real
+> scanner instead** — it fetches the page itself, so there is no network hop,
+> no rate limit and no dependency on our production:
+>
+> ```bash
+> npx github:mahope/eucomply-scanner https://example.com
+> ```
+>
+> See `../eucomply-scanner/README.md` for the documented install.
+
 # eucomply-scanner (CLI)
 
 **CLI tool for EU compliance scanning of any website.** Works on WordPress, Shopify, Webflow, Next.js, Squarespace, Wix — any HTML stack.

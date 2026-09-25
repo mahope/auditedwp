@@ -1,7 +1,8 @@
 {
-  "name": "eucomply-scanner",
-  "version": "1.0.0",
-  "description": "CLI tool to scan any URL for GDPR, NIS2, DORA & EAA compliance gaps. Works on any website: WordPress, Shopify, Webflow, Next.js, Squarespace, Wix — any HTML stack.",
+  "name": "eucomply-scan-proxy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DEPRECATED, never published. Thin proxy that forwards scans to the hosted EUComply worker. Use the eucomply-scanner package instead — it scans locally and has no network dependency.",
   "bin": {
     "eucomply": "bin/eucomply-scan.js",
     "eucomply-scan": "bin/eucomply-scan.js"
@@ -20,7 +21,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mahope/eucomply-cli"
+    "url": "git+https://github.com/mahope/auditedwp.git",
+    "directory": "cli"
   },
   "homepage": "https://eucomplypro.com",
   "files": [
@@ -28,8 +30,5 @@
   ],
   "engines": {
     "node": ">=22"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -125,6 +125,8 @@ run "tools/check_cta.py" python3 tools/check_cta.py
 run "tools/check_cta.py --selftest" python3 tools/check_cta.py --selftest
 run "tools/check_runtime.py" python3 tools/check_runtime.py
 run "tools/check_runtime.py --selftest" python3 tools/check_runtime.py --selftest
+run "tools/check_package_identity.py" python3 tools/check_package_identity.py
+run "tools/check_package_identity.py --selftest" python3 tools/check_package_identity.py --selftest
 
 # ------------------------------------------------- 5. publiceret træ (deploy)
 hdr "Publiceret træ"
