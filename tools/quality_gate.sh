@@ -123,6 +123,8 @@ run "tools/test_license_verdicts.php" php tools/test_license_verdicts.php
 run "tools/check_pro_claims.py" python3 tools/check_pro_claims.py
 run "tools/check_cta.py" python3 tools/check_cta.py
 run "tools/check_cta.py --selftest" python3 tools/check_cta.py --selftest
+run "tools/check_runtime.py" python3 tools/check_runtime.py
+run "tools/check_runtime.py --selftest" python3 tools/check_runtime.py --selftest
 
 # ------------------------------------------------- 5. publiceret træ (deploy)
 hdr "Publiceret træ"
