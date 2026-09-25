@@ -20,7 +20,7 @@ import {
   isPublicHostname, isPublicIPv4, isPublicIPv6, expandIPv6,
   normalizeUrl, assertPublicTarget, safeFetch, runScan, readCappedText,
 } from "../shared/scan-engine.js";
-import watch from "../worker-watch/index.js";
+import watch, { checkStates, previousEntry, diffChecks, applyScan } from "../worker-watch/index.js";
 
 let passed = 0;
 const failures = [];
@@ -420,6 +420,217 @@ await test("register and unregister validate their input", async () => {
     assert.equal((await watchFetch("/register", { url: "http://127.0.0.1/", email: "a@b.co" }, "198.51.100.30", env)).status, 400);
     assert.equal((await watchFetch("/register", { url: "shop.example", email: "nope" }, "198.51.100.30", env)).status, 400);
     assert.equal((await watchFetch("/unregister", { url: "shop.example", email: "a@b.co" }, "198.51.100.30", env)).status, 404);
+  } finally { s.restore(); }
+});
+
+/* ------------------------------------------- C. per-check history & alerting */
+
+const GOOD_PAGE = `<!doctype html><html><head><meta name="generator" content="WordPress">
+<meta name="robots" content="index"><link rel="privacy-policy" href="/privacy-policy/">
+<title>Shop</title></head><body><nav><a href="/privacy-policy/">Privacy Policy</a>
+<a href="/terms-and-conditions/">Terms</a></nav><form action="/contact/"><input name="email"></form>
+<!-- IAB TCF consent platform, Consent Mode v2 --></body></html>`;
+
+// Same shop after a bad deploy: legal pages gone, trackers shipping before
+// consent, and the HSTS header gone. `legal` and `trackers` become hard fails,
+// `ssl` becomes a warning — three different states from one page.
+const BROKEN_PAGE = `<!doctype html><html><head><meta name="generator" content="WordPress">
+<meta name="robots" content="index"><title>Shop</title>
+<script src="https://www.google-analytics.com/analytics.js"></script>
+<script src="https://connect.facebook.net/en_US/fbevents.js"></script></head>
+<body><form action="/contact/"><input name="email"></form></body></html>`;
+
+const HSTS = { "Strict-Transport-Security": "max-age=31536000; includeSubDomains" };
+
+/** Run the real engine against a stubbed origin, so the fixtures stay honest. */
+async function scanOf(page, { headers = HSTS } = {}) {
+  const s = stubFetch({ "https://watch.example/": new Response(page, { status: 200, headers: { "Content-Type": "text/html", ...headers } }) });
+  try { return await runScan("https://watch.example/"); } finally { s.restore(); }
+}
+
+/** Drive the real cron handler and wait for the work it hands to waitUntil. */
+async function runCron(env) {
+  const pending = [];
+  await watch.scheduled({ cron: "0 6 * * *" }, env, { waitUntil: (p) => pending.push(p) });
+  await Promise.all(pending);
+}
+
+const recFor = (over = {}) => ({ url: "https://watch.example", email: "owner@shop.example", history: [], lastScore: null, ...over });
+const day = (n) => `2026-09-${String(n).padStart(2, "0")}`;
+const iso = (n) => new Date(Date.UTC(2026, 0, 1) + n * 86_400_000).toISOString().slice(0, 10);
+
+await test("per-check state is tri-state, not the summary score", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  const goodStates = checkStates(good);
+  const badStates = checkStates(broken);
+  assert.equal(goodStates.legal, "pass", "fixture no longer passes the legal check");
+  assert.equal(badStates.legal, "fail", "a missing legal page is a hard fail, not a warning");
+  assert.equal(badStates.ssl, "warn", "https without HSTS is a warning, not a fail");
+  assert.ok(Object.values(badStates).filter(s => s === "warn").length >= 1);
+  // The score is unchanged by this work: a warning still counts as a miss.
+  assert.equal(broken.score.total, good.score.total);
+  assert.ok(broken.score.passed < good.score.passed, "the broken page should score worse");
+  assert.ok(!Object.values(badStates).includes(undefined), "every scored check needs a state");
+});
+
+await test("previousEntry picks the last day that is not today", () => {
+  const h = [{ date: "2026-09-20" }, { date: "2026-09-21" }, { date: "2026-09-22" }];
+  assert.equal(previousEntry(h, "2026-09-22").date, "2026-09-21");
+  assert.equal(previousEntry(h, "2026-09-23").date, "2026-09-22");
+  assert.equal(previousEntry([{ date: "2026-09-22" }], "2026-09-22"), null);
+  assert.equal(previousEntry(undefined, "2026-09-22"), null);
+});
+
+await test("diffChecks reports movement only, never a repeat", () => {
+  const prev = { legal: "pass", ssl: "warn", trackers: "pass" };
+  assert.deepEqual(diffChecks(prev, { ...prev }), [], "identical states must be silent");
+  assert.deepEqual(diffChecks(prev, { legal: "fail", ssl: "warn", trackers: "pass" }).map(c => [c.key, c.from, c.to]), [["legal", "pass", "fail"]]);
+  assert.deepEqual(diffChecks(prev, { legal: "pass", ssl: "fail", trackers: "pass" }).map(c => c.to), ["fail"]);
+  assert.deepEqual(diffChecks({}, { legal: "fail" }).map(c => c.from), ["new"]);
+  assert.deepEqual(diffChecks(prev, { legal: "pass", ssl: "warn" }), [], "a check that vanished is not a regression");
+});
+
+await test("identical scans are silent, and a repeat failure is not mailed twice", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  const r1 = applyScan(recFor(), good, day(1));
+  assert.equal(r1.alert, null, "the first day has no baseline to alert on");
+  const r2 = applyScan(r1.record, good, day(2));
+  assert.equal(r2.alert, null, "an identical daily scan sent an alert");
+  const r3 = applyScan(r2.record, broken, day(3));
+  assert.ok(r3.alert, "pass → fail did not produce an alert");
+  const r4 = applyScan(r3.record, broken, day(4));
+  assert.equal(r4.alert, null, "the same failure was mailed again on day two");
+  const r5 = applyScan(r4.record, good, day(5));
+  assert.equal(r5.alert, null, "a recovery-only day must stay silent, not invent news");
+});
+
+await test("one mail names the check, its old status, the time and the fix", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  const base = applyScan(recFor(), good, day(1)).record;
+  const { record, alert } = applyScan(base, broken, day(2));
+  const keys = alert.regressions.map(r => r.key);
+  // Dropping the legal pages also removes the privacy link the form check needs,
+  // so this fixture legitimately reports four checks — the point is that none of
+  // them is hidden and none of the unchanged ones is repeated.
+  for (const key of ["legal", "trackers", "ssl"]) assert.ok(keys.includes(key), `${key} regressed but was not reported: ${keys.join(",")}`);
+  assert.ok(!keys.includes("dora"), "an unchanged check was reported as a change");
+  const legal = alert.regressions.find(r => r.key === "legal");
+  assert.equal(legal.from, "pass");
+  assert.equal(legal.to, "fail");
+  assert.match(alert.subject, /watch\.example/);
+  // Name, previous status, timestamp and a concrete action — the four things an
+  // agency needs to act without opening a browser.
+  assert.match(alert.text, /legal/i);
+  assert.match(alert.text, /passing → failing/);
+  assert.match(alert.text, new RegExp(broken.scannedAt));
+  assert.match(alert.text, /Fix: /);
+  assert.match(alert.text, new RegExp(`Score: ${broken.score.pct}% \\(previous ${good.score.pct}%\\)`));
+  assert.ok(!/owner@shop\.example/.test(alert.text), "the mail body must not echo the address back");
+  assert.equal(record.lastChecks.legal, "fail");
+});
+
+await test("a re-run of the same day is deduped, not double-counted", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  const base = applyScan(recFor(), good, day(1)).record;
+  const first = applyScan(base, broken, day(2));
+  const again = applyScan(first.record, broken, day(2));
+  assert.equal(again.record.history.filter(h => h.date === day(2)).length, 1);
+  assert.equal(again.alert, null, "a retried cron run must not re-send the same alert");
+});
+
+await test("30 days are kept and older days are dropped", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  let rec = recFor();
+  for (let d = 1; d <= 35; d++) rec = applyScan(rec, good, day(d)).record;
+  assert.equal(rec.history.length, 30, `expected 30 days, got ${rec.history.length}`);
+  assert.equal(rec.history[0].date, day(6), "the oldest retained day is wrong");
+  assert.equal(rec.history.at(-1).date, day(35));
+  assert.ok(rec.history.every(h => h.checks && Object.keys(h.checks).length > 0), "an entry lost its per-check state");
+  assert.ok(rec.history.every(h => h.date >= day(6)), "an expired day survived");
+});
+
+await test("50 and 100 consecutive daily scans stay bounded", async () => {
+  const good = await scanOf(GOOD_PAGE);
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  for (const total of [50, 100]) {
+    let rec = recFor();
+    for (let d = 1; d <= total; d++) rec = applyScan(rec, d % 2 ? good : broken, iso(d)).record;
+    assert.equal(rec.history.length, 30, `${total} scans should still cap at 30 days`);
+    const bytes = JSON.stringify(rec).length;
+    assert.ok(bytes < 32_000, `${total} scans grew the record to ${bytes} bytes`);
+    // The record has to survive a real KV round-trip, not just live in memory.
+    const round = JSON.parse(JSON.stringify(rec));
+    assert.equal(round.history.length, 30);
+    assert.ok(round.lastChecks.legal, "per-check state lost in the round-trip");
+  }
+});
+
+await test("a record with no per-check baseline does not report every failure as new", async () => {
+  // Pre-deploy beta records have score-only history. On the first day after the
+  // per-check deploy there is no baseline: mailing each already-broken check as
+  // "new" would be a burst of false alarms on deploy day. The old score-only
+  // alert is honest and stays, until tomorrow's snapshot makes the diff real.
+  const legacy = { url: "https://watch.example", email: "owner@shop.example", history: [{ date: day(1), score: 100, passed: 9, total: 9 }], lastScore: 100 };
+  const broken = await scanOf(BROKEN_PAGE, { headers: {} });
+  const r1 = applyScan(legacy, broken, day(2));
+  assert.ok(r1.alert, "a real score drop on the transition day should still be reported");
+  assert.equal(r1.alert.regressions.length, 0, "checks without a baseline must not be reported as new");
+  assert.match(r1.alert.subject, /score dropped on https:\/\/watch\.example \(100% → 0%\)/);
+  assert.ok(!/no earlier snapshot/.test(r1.alert.text), "the transition mail leaks 'new' placeholders");
+  assert.equal(r1.record.history.length, 2);
+  assert.ok(r1.record.history.at(-1).checks.legal === "fail", "the first day should still be stored");
+  // The next day has a real baseline, and day two of the same failure is silent.
+  assert.equal(applyScan(r1.record, broken, day(3)).alert, null);
+});
+
+await test("the cron path stores history and mails through the real handler", async () => {
+  const env = resetWatch();
+  const mails = [];
+  env.ALERT_KEY = "test-key";
+  // Yesterday's snapshot is the good page, so today's cron run finds a real
+  // regression rather than an unchanged site.
+  const seeded = applyScan(
+    { url: "https://watch.example", email: "owner@shop.example", history: [], lastScore: null },
+    await scanOf(GOOD_PAGE),
+    new Date(Date.now() - 86_400_000).toISOString().slice(0, 10),
+  );
+  await env.WATCH.put("site:https://watch.example", JSON.stringify(seeded.record));
+  const s = stubFetch({
+    "https://watch.example/": new Response(BROKEN_PAGE, { status: 200, headers: { "Content-Type": "text/html" } }),
+    "https://api.resend.com/emails": (url, init) => { mails.push(JSON.parse(init.body)); return new Response("{}", { status: 200 }); },
+  });
+  try {
+    await runCron(env);
+    assert.equal(mails.length, 1, `expected exactly one mail, got ${mails.length}`);
+    assert.equal(mails[0].to, "owner@shop.example");
+    assert.match(mails[0].subject, /new issues? on https:\/\/watch\.example/);
+    assert.match(mails[0].text, /legal/i);
+    await runCron(env);
+    assert.equal(mails.length, 1, "a second identical cron run sent another mail");
+
+    const rec = JSON.parse(env.WATCH.map.get("site:https://watch.example"));
+    assert.equal(rec.history.length, 2, "a same-day rerun added a second history entry");
+    assert.ok(rec.lastChecks.legal === "fail", "cron did not store per-check state");
+  } finally { s.restore(); }
+});
+
+await test("customer data never reaches the public surface", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const status = await (await watchFetch("/status", { url: "watch.example", ownerToken: reg.ownerToken }, "198.51.100.41", env)).json();
+    const dump = JSON.stringify(status);
+    assert.ok(!dump.includes("private@shop.example"), "the alert address leaked into /status");
+    assert.ok(!dump.includes(reg.ownerToken), "the owner token leaked into /status");
+    const health = await (await watch.fetch(new Request("https://watch.test/health"), env)).json();
+    assert.ok(!JSON.stringify(health).includes("watch.example"), "/health exposes monitored sites");
+    assert.ok(status.checks && Object.keys(status.checks).length > 0, "the owner cannot see per-check state");
   } finally { s.restore(); }
 });
 
