@@ -163,9 +163,10 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 8. Stop offentlig udgivelse af interne og betalte filer
 
-- Status: `TODO`
+- Status: `TODO` — delvis løst i parallel main-commit `b0c6ad5`
+- 2026-09-25: `b0c6ad5` fjernede de eksponerede betalte template-kilder/PDF'er fra både repo og `site/`. Den positive deploy-allowlist og smoke-test mangler stadig.
 - Fejl: 0/2
-- Begrundelse: Pages deployer hele `site/`, som indeholder interne strategidokumenter, scripts, `deliverables/` og andre ikke-offentlige arbejder. Betalte templates i et offentligt repo er allerede eksponeret og må genovervejes som kompromitterede.
+- Begrundelse: Pages deployer hele `site/`, som stadig indeholder interne strategidokumenter, scripts og andre ikke-offentlige arbejder. Betalte templates er fjernet fra det offentlige deploy-træ, men deploy-hygiejnen er endnu ikke permanent sikret.
 - Scope: definer en positivliste for det offentlige build; deploy kun godkendte statiske assets; fjern interne docs, paid source/PDF og driftsscripts fra deploy-artefaktet; opdatér CI til at deploye det verificerede output.
 - Accept:
   - CI/deploy-manifestet indeholder ingen `*.md`, `deliverables/`, `POSTS/`, `ops/`, `.git`, credentials eller uvedkommende produkter.
@@ -227,3 +228,4 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 - 2026-09-25: Research-plan oprettet på commit `fba1971`; endnu ingen `site/**`-ændring og derfor ingen forventet deploy fra denne iteration.
 - `VERIFICÉR DEPLOY: IMPLEMENTATION_PLAN research + prioritering b7b54ac 2026-09-24 23:19 UTC` — ingen deploy forventes, fordi workflowet kun trigges på `site/**` eller workflow-filen.
+- `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — verificér efter næste deploy-vindue indholdet på `/pro/`, `/da/pro/`, `/de/pro/`, `/fr/pro/`, fire pricing-ruter og plugin-`1.3.1`-downloadet; HTTP 200 alene er ikke bevis.
