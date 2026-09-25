@@ -388,7 +388,7 @@ CI-kørsel `36189565613` (`684fbd0`, alle tre jobs `success`) — første gang `
 
 ## Deploy-log
 
-- `VERIFICÉR DEPLOY: hærdet runtime-gate (opgave 13) 2026-09-25 22:30 UTC / 2026-09-26 00:30 CEST` — rører **kun** `tools/check_runtime.py` og `IMPLEMENTATION_PLAN.md`. **Ingen `site/**`-fil**, ingen plugin-ændring og ingen workflow-ændring, så det publicerede træ er uændret: deployen, hvis den kører, er en gentagelse af de 322 filer, der allerede ligger live, og intet på sitet skal ændre sig. Det der skal verificeres er CI og gaten: (1) `kvalitetsgate` kører `tools/check_runtime.py` → `Runtime-gate grøn` med den nye afslutning, der nævner `ingen handling sidder under sit dokumenterede minimum, og 0 afhængigheder står uden lockfile`; (2) `--selftest` ender på `SELFTEST GRØN — alle 23 negative cases fanges` — tallet 23 er det, der adskiller denne iteration fra de 14 fra i forgang; (3) ingen `RUNTIME-ADVARSLER` i loggen, fordi floor 22 er 216 dage fra EOL; (4) `deploy` og `tjek produktion` er grønne, de 12 interne stier svarer stadig 404 med cache-buster, og plugin-zip'en er stadig en zip. workflow-filerne er ikke rørt, så `deploy-site` trigges kun hvis andre filer i `site/**` røres — det er forventet, at denne diff ikke udløser en kørsel.
+- `DEPLOY OK 2026-09-25 22:33 UTC` + `VERIFICÉR DEPLOY: hærdet runtime-gate (opgave 13) 77ab795 2026-09-25 22:30 UTC` — rører **kun** `tools/check_runtime.py` og `IMPLEMENTATION_PLAN.md`. Verificeret i CI, se afsnittet nedenfor. `tools/**` er i `deploy-site`'s `paths`-filter, så diffen udløste en kørsel — godt, fordi det er første gang den nye kontrol efterprøves af CI og ikke kun lokalt. **Ingen `site/**`-fil**, ingen plugin- og ingen workflow-ændring, så det publicerede træ er uændret.
 - 2026-09-25: Research-plan oprettet på commit `fba1971`; endnu ingen `site/**`-ændring og derfor ingen forventet deploy fra denne iteration.
 - 2026-09-25: Opgave 2 (hosted Pro-spec) ændrede kun `IMPLEMENTATION_PLAN.md` og `docs/`, som begge ligger uden for `site/**`. Deploy-workflowet trigges derfor ikke, og der skyldes ingen ny `VERIFICÉR DEPLOY`-note fra denne iteration.
 - `VERIFICÉR DEPLOY: IMPLEMENTATION_PLAN research + prioritering b7b54ac 2026-09-24 23:19 UTC` — ingen deploy forventes, fordi workflowet kun trigges på `site/**` eller workflow-filen.
@@ -415,6 +415,16 @@ Dette er den første `deploy-site`-kørsel, der nogensinde er udløst af en ænd
 - **`wrangler-action@v4.1.3` kørte `wrangler 4.141.0` og deployede uden fejl.** Det var den eneste reelle adfærdsændring, og den er nu verificeret frem for antaget: `✨ Success! Uploaded 2 files (320 already uploaded)`, `✨ Deployment complete!`. De to filer er `_headers` og `_redirects`, som Cloudflare altid sender forfra uanset ændringer — **ikke** en ukendt ændring. Ingen `site/**`-fil var rørt, og sitets indhold er uændret.
 - **Produktionskontrol grøn på indhold, ikke kun status:** alle 12 interne stier svarer 404 med cache-buster, de 13 nøglesider svarer 200 med reelle bytestørrelser (`/` 24 695, `/pro/` 11 891, alle fire pricing- og locale-Pro-ruter), og `/assets/eucomply-1.3.2.zip` er en zip.
 - **Eneste resterende annotation er ikke en Node-advarsel**, men en dateret migrering: `The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026`. Den er ny, har en dato og er derfor en rigtig opgave — se punkt 16.
+
+## Deploy-verificering 2026-09-25 22:33 UTC — CI-kørsel `36197126316` (`77ab795`)
+
+Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i CI, så beviset er loggen, ikke exit code:
+
+- `kvalitetsgate` logger `Runtime-gate grøn: … ingen handling sidder under sit dokumenterede minimum, og 0 afhængigheder står uden lockfile.` Den nye afslutning er den, der adskiller denne kørsel fra i forgang.
+- `--selftest` ender på **`SELFTEST GRØN — alle 23 negative cases fanges`** (var 14). Ingen `RUNTIME-ADVARSLER` i loggen, hvilket er korrekt: floor 22 er 216 dage fra EOL 2027-04-30, altså uden for advarselsvinduet.
+- `GATE GRØN — alle 9 steps bestået` (216 sider, 0 SEO-fund, 322 offentlige filer, 0 interne, 0 døde referencer), og `deploy til Cloudflare Pages` + `tjek produktion` er grønne.
+- Live verificeret med cache-buster mod `77ab795`: `/` 200 (24 695 bytes), `/pro/` 200 (11 891), `/pricing/` 200 (16 120), `/AGENTS.md` 404. Sitets indhold er uændret, som forventet.
+- Eneste annotation er den kendte `ubuntu-latest` → Ubuntu 26 den 19. oktober 2026, som er opgave 14.
 
 ## ❓ Til Mads — tillagt
 
