@@ -43,9 +43,12 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # Node-livscyklus, dato for end-of-life pr. major.
 # Kilde: https://github.com/nodejs/Release/blob/main/schedule.json
-# (hentet 2026-09-25). Holdes her bevidst som en dateret tabel i stedet for at
+# (hentet 2026-09-26). Holdes her bevidst som en dateret tabel i stedet for at
 # hentes fra nettet, så gaten er deterministisk og kan køre uden forbindelse.
-# Opdateres ved den næste runtime-commit — se `REQUIRED_FLOOR`-kommentaren.
+# Node 26 er den nyeste udgivne major: 26.0.0 kom 2026-05-05 og bliver LTS
+# 2026-10-28. Det er *ikke* den samme oplysning som planens tidligere antagelse
+# om at Node 26 "lander omkring oktober 2026" — den fandtes allerede i maj, så
+# tabellen lå et halvt år forældet. Bliver en ny major udgivet, opdateres den her.
 NODE_MAJOR_EOL = {
     18: "2025-04-30",
     20: "2026-04-30",
@@ -54,6 +57,43 @@ NODE_MAJOR_EOL = {
     23: "2025-06-01",
     24: "2028-04-30",
     25: "2026-06-01",
+    26: "2029-04-30",
+}
+
+# Hvor tæt op EOL en advarsel erstatter et rødt resultat. 90 dage er nok til at
+# hæve floor'en, opgradere gaten og få en grøn kørsel med — og langt nok til at
+# gaten ikke larmer på en major, der lige er ved at blive EOL.
+EOL_WARNING_DAYS = 90
+
+# Minimumsmajor pr. GitHub-handling i EUComply-workflows, målt mod den major der
+# kører på Node 24-native. Uden denne tabel kunne nogen skrive `checkout@v4`
+# tilbage, og gaten ville sige grønt, fordi `node-version: '22'` stadig er
+# korrekt — præcis de tre tal, der skilte sig, som opgave 11 fandt, nu i en
+# anden egenskab.
+#
+# Kilde: GitHub API `/repos/<repo>/releases/latest`, hentet 2026-09-26:
+#   actions/checkout         v7.0.1
+#   actions/setup-node       v7.0.0
+#   actions/setup-python     v7.0.0
+#   actions/upload-artifact  v7.0.1
+#   cloudflare/wrangler-action v4.1.3  (fastsat på patch, ikke major — se nedenfor)
+#
+# Samme livscyklus-mønster som `NODE_MAJOR_EOL`: en dateret tabel, der opdateres
+# når den næste major udkommer. Uden den opdatering bliver gaten en dag rød på
+# en handling, der finten kører — derfor er hver linje et *minimum* og ikke et
+# krav om seneste version, så en patch- eller minor-opgradering aldrig kræver
+# en kodeændring her.
+#
+# `wrangler-action` er bevidst fastsat på patch-tagget `v4.1.3` i stedet for
+# `@v4`: 4.1.0 og 4.1.1 blev udgivet defekte og fejler i en workflow, så et
+# flydende major-tag kan trække en ødelagt patch ind i selve deployet. Minimum
+# major er derfor 4, og selve patchen frådes ikke af denne gate — den af CI.
+ACTION_MIN_MAJOR = {
+    "actions/checkout": 7,
+    "actions/setup-node": 7,
+    "actions/setup-python": 7,
+    "actions/upload-artifact": 7,
+    "cloudflare/wrangler-action": 4,
 }
 
 # EUComply egger pakker. Begge går ud til brugere som henholdsvis npm-CLI og
@@ -76,6 +116,16 @@ NODE_VERSION_LINE_RE = re.compile(r"^\s*[-#]*\s*node-version\s*:", re.I | re.M)
 SETUP_NODE_RE = re.compile(r"setup-node", re.I)
 COMMENT_RE = re.compile(r"\s+#.*$", re.M)
 ENGINE_FLOOR_RE = re.compile(r">=\s*(\d+)(?:\.(\d+))?")
+
+# `uses:` må starte med `-` (step), `name:` (gennemgående kontekst) eller stå
+# alene. Kommentarer er strippet før match, ellers kunne en kommenteret
+# `uses:`-linje tælle som en rigtig handling — samme falske grøn som en
+# kommentar med `node-version`.
+USES_RE = re.compile(r"^[ \t]*(?:-\s+)?uses:[ \t]*(\S+)", re.M)
+# En tag som `v7` eller `v4.1.3`. Alt uden en forudgående major regnes som
+# flydende (`main`, `stable`) og kan ikke efterprøves.
+VERSION_REF_RE = re.compile(r"^v?(\d+)(?:\.\d+)*$")
+SHA_REF_RE = re.compile(r"^[0-9a-f]{7,40}$", re.I)
 
 
 def eol_of(major: int) -> date:
@@ -186,7 +236,8 @@ def check_nvmrc(root: Path, floor: tuple) -> list[str]:
     if raw != want:
         return [
             f".nvmrc angiver {raw!r}, mens engines angiver {format_floor(floor)} — "
-            f"skriv {want!r} (en ren major/minor, så nvm og gaten er enige)"
+            f"skriv {want!r}. nvm indlæser også 'lts/*' og patch-numre, men gaten skal "
+            f"kunne regne med at den testede runtime er den erklærede"
         ]
     return []
 
@@ -249,6 +300,100 @@ def check_workflows(root: Path, floor: tuple) -> list[str]:
             "runnernes default, som ikke er den erklærede runtime"
         )
     return findings
+
+
+def check_action_majors(root: Path) -> tuple[list, list]:
+    """Ingen EUComply-handling må sidde på en major under det dokumenterede minimum.
+
+    `node-version: '22'` siger intet om hvilken Node handlingerne selv kører på.
+    Opgave 12 opgræderede dem til Node-24-native majors, men uden denne kontrol
+    kunne `actions/checkout@v4` glide tilbage, og gaten ville være grøn.
+
+    Returnerer (fund, advarsler): en handling på en commit-sha er gyldig kode,
+    men dens major kan ikke læses, så den er en advarsel og ikke et rødt
+    resultat.
+    """
+    findings, warnings = [], []
+    files = _workflow_files(root)
+    if not files:
+        # check_workflows siger allerede "workflows mangler"; her ville et
+        # andet fund blot forvirre.
+        return findings, warnings
+    seen = 0
+    for path in files:
+        rel = path.relative_to(root).as_posix()
+        text = COMMENT_RE.sub("", path.read_text(encoding="utf-8", errors="replace"))
+        for target in USES_RE.findall(text):
+            if target.startswith("./") or target.startswith("docker://"):
+                continue  # lokal composite action eller container — ingen Node-major
+            seen += 1
+            if "@" not in target:
+                findings.append(
+                    f"{rel}: uses: {target} uden @-reference — en flydende reference "
+                    f"kan trække en ny, utestet version ind i gaten eller deployet"
+                )
+                continue
+            name, _, ref = target.partition("@")
+            key = name.strip().lower()
+            if SHA_REF_RE.match(ref):
+                warnings.append(
+                    f"{rel}: {name} er fastsat på en commit-sha ({ref[:7]}), så "
+                    f"minimumsmajoren kan ikke efterprøves automatisk — noter majoren i "
+                    f"ACTION_MIN_MAJOR, eller brug en fast major/patch"
+                )
+                continue
+            match = VERSION_REF_RE.match(ref)
+            if not match:
+                findings.append(
+                    f"{rel}: {name}@{ref} er fastsat på en flydende reference, der ikke "
+                    f"kan efterprøves — sæt en fast major eller patch (fx @v7)"
+                )
+                continue
+            minimum = ACTION_MIN_MAJOR.get(key)
+            if minimum is None:
+                findings.append(
+                    f"{rel}: {name} står ikke i ACTION_MIN_MAJOR — tilføj den med sin "
+                    f"minimum-major og dato, ellers ved vi ikke hvilken Node den kræver"
+                )
+                continue
+            major = int(match.group(1))
+            if major < minimum:
+                findings.append(
+                    f"{rel}: {name}@{ref} er under minimumsmajor v{minimum} "
+                    f"(sidst efterprøvet 2026-09-26 mod GitHub API) — opgradér til "
+                    f"@v{minimum} eller nyere, ellers kører handlingen på en Node-20-major"
+                )
+    if not seen and not findings:
+        findings.append(
+            "ingen EUComply-workflow bruger en tredjepartshandling med en læsbar major — "
+            "handlernes major kan da slet ikke efterprøves"
+        )
+    return findings, warnings
+
+
+def check_eol_soon(packages: list, today: date) -> list[str]:
+    """Advarsel — ikke rødt resultat — når den erklærede floor er tæt på EOL.
+
+    Gaten bliver rød 1. maj 2027 for floor 22, fordi Node 22 så er EOL. Det er
+    rigtigt, men et overraskende rødt resultat en måned inden er dyrere end en
+    advarsel: der er tid til at hæve floor'en og få en grøn kørsel med.
+    """
+    warnings = []
+    for rel, data in packages:
+        floor = read_floor(data.get("engines", {}).get("node") if isinstance(data.get("engines"), dict) else None)
+        if floor is None:
+            continue
+        try:
+            eol = eol_of(floor[0])
+        except ValueError:
+            continue  # allerede et rødt fund i check_engines
+        days = (eol - today).days
+        if 0 <= days <= EOL_WARNING_DAYS:
+            warnings.append(
+                f"{rel}: Node {floor[0]} er EOL om {days} dage ({eol}) — hæv floor'en "
+                f"til en understøttet major inden da, ellers bliver gaten rød uden varsel"
+            )
+    return warnings
 
 
 def check_running_node(floor: tuple, major) -> list[str]:
@@ -323,10 +468,22 @@ def _fallback_floor(root: Path):
 
 
 def run(root: Path, today: date | None = None, probe_node: bool = True) -> list[str]:
-    """Kør alle kontroller mod en given repo-rod og samle fundene.
+    """Kør alle kontroller mod en given repo-rod og returnér kun de røde fund.
+
+    Bevares som tynt lag, så eksisterende kaldsteder og selftesten beholder deres
+    betydning: en streng liste er et rødt resultat.
+    """
+    return collect(root, today, probe_node)[0]
+
+
+def collect(root: Path, today: date | None = None, probe_node: bool = True) -> tuple[list, list]:
+    """Kør alle kontroller og adskil fund fra advarsler.
 
     `probe_node=False` slår kun værtsens Node-version fra, så selftesten er
     deterministisk uanset hvilken Node den bliver kørt på.
+
+    Advarsler er fund, der er ærlige uden at være fejl: de skal kunne læses uden
+    at gaten bliver rød, ellers ender de med at blive slået fra.
     """
     today = today or date.today()
     found: list[str] = []
@@ -354,16 +511,22 @@ def run(root: Path, today: date | None = None, probe_node: bool = True) -> list[
 
     found.extend(check_nvmrc(root, floor))
     found.extend(check_workflows(root, floor))
+    action_findings, action_warnings = check_action_majors(root)
+    found.extend(action_findings)
     if probe_node:
         found.extend(check_running_node(floor, _major_of_running_node()))
     found.extend(check_dependencies(packages))
-    return found
+    return found, action_warnings + check_eol_soon(packages, today)
 
 
 def selftest() -> int:
     """Gaten skal kunne fejle. Vi indplanter fejl og kræv at de fanges."""
     floor = 22
-    today = date(2026, 9, 25)
+    today = date(2026, 9, 26)
+    # Den major, handlingerne i de rene fixtures skal sidde på. Sættes den
+    # lavere, er det ikke længere et rent repo, og selftesten ville gråne over
+    # sit eget fund.
+    clean_action = f"actions/setup-node@v{ACTION_MIN_MAJOR['actions/setup-node']}"
 
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp) / "repo"
@@ -373,7 +536,8 @@ def selftest() -> int:
 
         def write_state(engines_floor=floor, nvmrc_major=str(floor), ci=str(floor),
                         drop_nvmrc=False, drop_engines=False, no_ci=False,
-                        second_floor=None, ci_comment_only=False, no_node_step=False):
+                        second_floor=None, ci_comment_only=False, no_node_step=False,
+                        extra_uses=None, action_ref=None):
             for rel in EUCOMPLY_PACKAGES:
                 path = base / rel
                 data = json.loads(path.read_text(encoding="utf-8"))
@@ -403,14 +567,17 @@ def selftest() -> int:
                 # det så ud til at erklære en runtime uden at gøre det.
                 wf.write_text(
                     "jobs:\n  gate:\n    steps:\n"
-                    "      - uses: actions/setup-node@v4\n"
+                    f"      - uses: {clean_action}\n"
                     f"        # historisk node-version: {floor}\n",
                     encoding="utf-8",
                 )
             else:
+                uses = action_ref or clean_action
+                extra = f"      - uses: {extra_uses}\n" if extra_uses else ""
                 wf.write_text(
                     "jobs:\n  gate:\n    steps:\n"
-                    f"      - uses: actions/setup-node@v4\n        with:\n          node-version: '{ci}'\n",
+                    f"      - uses: {uses}\n        with:\n          node-version: '{ci}'\n"
+                    + extra,
                     encoding="utf-8",
                 )
 
@@ -454,6 +621,18 @@ def selftest() -> int:
              lambda: write_state(ci="lts/*")),
             ("kommentar som eneste node-version", "uden en læsbar node-version",
              lambda: write_state(ci_comment_only=True)),
+            # Opgave 13: `node-version: '22'` siger intet om hvilken Node
+            # handlingerne selv kører på, så en Node-20-major må fanges her.
+            ("handling under sit minimumsmajor", "under minimumsmajor",
+             lambda: write_state(action_ref="actions/checkout@v4")),
+            ("udokumenteret handling", "står ikke i ACTION_MIN_MAJOR",
+             lambda: write_state(extra_uses="acme/build-action@v1")),
+            ("flydende action-reference", "flydende reference, der ikke kan efterprøves",
+             lambda: write_state(action_ref="actions/setup-node@main")),
+            ("action-reference uden @", "uden @-reference",
+             lambda: write_state(action_ref="actions/setup-node")),
+            ("ingen handling at efterprøve", "slet ikke efterprøves",
+             lambda: write_state(no_node_step=True)),
         ]
         for label, needle, mutate in cases:
             mutate()
@@ -465,10 +644,15 @@ def selftest() -> int:
                 return 1
         write_state()
 
+        # Tælleren tæller sig selv, så en ny kontrol ikke kan komme ind uden at
+        # antallet af dækkede fund bliver ved at være sandt.
+        extra = 0
+
         # Værtenes Node-version skal ikke afgøre selftestens udfald, så den
         # prøves direkte med indsprøjtede værdier i stedet.
         if check_running_node((22, None), 20):
             print("selftest: for gammel kørende Node fanget")
+            extra += 1
         else:
             print("SELFTEST FEJLED: Node under flooren blev ikke fanget")
             return 1
@@ -476,6 +660,7 @@ def selftest() -> int:
             print("SELFTEST FEJLED: ulæselig Node-version blev ikke fanget")
             return 1
         print("selftest: ulæselig kørende Node fanget")
+        extra += 1
 
         # En major, der ikke står i livscyklustabellen, må kræve et blik fra et
         # menneske — ellers kan en ny runtime erklæres uden at nogen ved om den
@@ -487,6 +672,7 @@ def selftest() -> int:
             print("SELFTEST FEJLED: ukendt Node-major blev ikke fanget")
             return 1
         print("selftest: ukendt Node-major kræver dokumentation fanget")
+        extra += 1
 
         # En afhængighed uden lockfile betyder en uauditeteret afhængighed.
         (base / "eucomply-scanner" / "package.json").write_text(
@@ -497,9 +683,49 @@ def selftest() -> int:
             print("SELFTEST FEJLED: afhængighed uden lockfile blev ikke fanget")
             return 1
         print("selftest: afhængighed uden lockfile fanget")
+        extra += 1
+
+        # En floor tæt på EOL skal give en advarsel, ikke et rødt resultat. Sådan
+        # fanges det: 2027-02-28 ligger 61 dage før Node 22's EOL 2027-04-30.
+        write_state()
+        near, near_warnings = collect(base, date(2027, 2, 28), probe_node=False)
+        if not any("er EOL om" in w for w in near_warnings):
+            print("SELFTEST FEJLED: en major tæt på EOL gav ingen advarsel")
+            return 1
+        if [f for f in near if "nåede EOL" in f]:
+            print("SELFTEST FEJLED: en major tæt på EOL gav et rødt resultat")
+            return 1
+        print("selftest: major tæt på EOL advarer uden at være rød")
+        extra += 1
+
+        # ...og en floor langt fra EOL skal ikke advare om noget, ellers er
+        # advarslen støj, og en støjende gate bliver slået fra.
+        _, far_warnings = collect(base, today, probe_node=False)
+        if far_warnings:
+            print("SELFTEST FEJLED: en understøttet floor advarede alligevel:", far_warnings)
+            return 1
+        print("selftest: understøttet floor giver ingen advarsel")
+        extra += 1
+
+        # En handling på en commit-sha er gyldig kode, men majoren kan ikke
+        # læses. Det skal siges, uden at gaten bliver rød. Den plantede
+        # afhængighed ovenfor fjernes først, så den eneste mutation der er aktiv
+        # er den, der testes her.
+        for rel in EUCOMPLY_PACKAGES:
+            (base / rel).write_text(
+                json.dumps({"engines": {"node": f">={floor}"}}, indent=2), encoding="utf-8"
+            )
+        write_state(action_ref="actions/setup-node@" + "a1b2c3d" + "0" * 33)
+        sha_found, sha_warnings = collect(base, today, probe_node=False)
+        if not any("commit-sha" in w for w in sha_warnings) or sha_found:
+            print("SELFTEST FEJLED: sha-fastsat handling blev ikke advaret om alene")
+            return 1
+        print("selftest: sha-fastsat handling advaret om, ikke rødt")
+        extra += 1
 
         # Ødelagt JSON må give et fund, ikke et traceback. En gate der
-        # fejler med en stacktrace mister alle de andre fund.
+        # fejler med en stacktrace mister alle de andre fund. Den står sidst,
+        # fordi den med vilje efterlader en fil, der ikke kan læses.
         (base / "eucomply-scanner" / "package.json").write_text(
             '{ "engines": { "node": ">=22" }', encoding="utf-8"
         )
@@ -508,26 +734,49 @@ def selftest() -> int:
             print("SELFTEST FEJLED: ødelagt JSON blev ikke fanget som fund")
             return 1
         print("selftest: ødelagt JSON fanget som fund, ikke som crash")
+        extra += 1
 
-    extra = 4
     print(f"SELFTEST GRØN — alle {len(cases) + extra} negative cases fanges")
     return 0
+
+
+def dependency_total(packages: list) -> int:
+    """Hvor mange afhængigheder der overhovedet er at auditere.
+
+    Begge EUComply-pakker er dependency-free i dag, så udsagnet "ingen
+    afhængighed står uden lockfile" er sandt uden at være prøvet. Summen siger
+    det i grøn-beskeden, så et grønt resultat ikke lader som om der blev auditet
+    noget, der ikke findes — og bliver sandt, den dag en afhængighed tilføjes.
+    """
+    total = 0
+    for _, data in packages:
+        for field in ("dependencies", "devDependencies", "optionalDependencies"):
+            block = data.get(field)
+            if isinstance(block, dict):
+                total += len(block)
+    return total
 
 
 def main() -> int:
     if "--selftest" in sys.argv:
         return selftest()
-    found = run(ROOT)
+    found, warnings = collect(ROOT)
+    if warnings:
+        print("RUNTIME-ADVARSLER (gaten er grøn, men dette bør ses):")
+        for w in warnings:
+            print(f"  ! {w}")
     if found:
         print("RUNTIME-GATE RØD:")
         for f in found:
             print(f"  - {f}")
         print("\nRet dem i ÉN commit: engines + .nvmrc + CI skal vælge samme Node-version.")
         return 1
+    packages, _ = load_packages(ROOT)
     print(
         "Runtime-gate grøn: begge pakker, .nvmrc og CI angiver samme understøttte "
-        "Node-version, gaten kører på den erklærede runtime, og ingen afhængighed "
-        "står uden lockfile."
+        "Node-version, gaten kører på den erklærede runtime, ingen handling sidder "
+        f"under sit dokumenterede minimum, og {dependency_total(packages)} "
+        "afhængigheder står uden lockfile."
     )
     return 0
 
