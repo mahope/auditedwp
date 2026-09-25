@@ -1,15 +1,16 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: færdig — `docs/eucomply-pro-spec.md` skrevet, gennemgået i frisk kontekst og rettet
-Baseline: `main` commit `19f1aa5` efter `git pull --ff-only` 2026-09-25 15:23 UTC
+Sidste iteration: færdig — SSRF/DOM-XSS lukket i scanneren, overvågnings-betaen gjort ejersikker på `ceo/ssrf-monitor-ownership`
+Baseline: `main` commit `28795c3` efter `git pull --ff-only` 2026-09-25 16:13 UTC
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
 
 - `FÆRDIG`: **1 — Ret salgsløfterne til det der virker nu** på `ceo/ret-pro-lofter`.
 - `FÆRDIG`: **2 — Skriv spec for den hosted Pro-værdi** på `ceo/hosted-pro-spec`; `docs/eucomply-pro-spec.md` findes nu.
-- Næste opgave: **3 — Luk SSRF/DOM-XSS og gør hosted monitoring entitlement-sikker**. Den åbne `VERIFICÉR DEPLOY`-note fra opgave 1 skal først verificeres, når næste deploy-vindue er passeret.
+- `FÆRDIG` (del 1 af 2): **3a — SSRF/DOM-XSS + overvågningsejerskab** på `ceo/ssrf-monitor-ownership`, commit `28795c3`.
+- Næste opgave: **3b — resten af opgave 3** (licens-entitlement, 409-vs-definitive-fejl i pluginen, `deactivate`, `warn` i summen, offentlig privacy-tekst).
 - En opgave må markeres `I GANG`, før der laves kode. Efter to mislykkede iterationer markeres den `BLOCKED: <årsag>`, hvorefter næste opgave tages.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
@@ -102,12 +103,24 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 3. Luk SSRF/DOM-XSS og gør hosted monitoring entitlement-sikker
 
-- Status: `TODO`
-- Fejl: 0/2
+- Status: `I GANG` — del A færdig (`28795c3`), del B (`3b`) TODO
+- 2026-09-25 del A — SSRF: `safeFetch` følger redirects manuelt og validerer hvert hop via `assertPublicTarget`. `isPublicIPv4`/`isPublicIPv6`/`expandIPv6` dækker nu IPv4-mapped IPv6, NAT64, 6to4, Teredo, `::/96`, `ff00::/8`, `100::/64`, CGNAT, TEST-NET og 198.18/15. Værter der *ligner* en IP men ikke er en fuld quad (`127.1`, `1.2.3`) afvises fail-closed. Ikke-IP-værter slås op i Cloudflares resolver med 60 s per-isolate-cache; resolver-fejl fejler åbent, et konkret privat svar lukkes. Brødtekst capped ved 2 MB. Redirect-loops afbrydes efter 5 hop.
+- 2026-09-25 del A — fund undervejs: den gamle kode erklærede `::1` og `::` for **offentlige** (`!/(^(::1|::|f[cd]|fe80)/…) && !/^0*0*$/…`), fordi begge betingelser var skrevet omvendt. Den ramte aldrig i praksis, kun fordi `normalizeUrl` kræver et punktum i hostnavnet, så IPv6-literals altid faldt igennem den port. Guarden er testet direkte nu.
+- 2026-09-25 del A — DOM-XSS: HSTS-headeren blev brugt rå i `checks.ssl.detail`. Værdien filtreres nu til headerdirektiver, så en fjendtlig oprindelse ikke kan sende markup med. `checks.ssl` vurderer desuden `finalUrl` frem for den anmodede URL, så en https→http-downgrade opdages i stedet for at blive rapporteret som HTTPS.
+- 2026-09-25 del A — ejerskab: hvert site får et 192-bit `ownerToken`. `/status` flyttede fra `GET /status?url=` til `POST /status {url, ownerToken}` og kræver nu tokenet. En fremmed uden token **og** uden den adresse recorden er oprettet med får 409 på register og 403 på status/unregister — den kan altså hverken læse historik, overtage alarm-mailen eller slette. Ejeren beholder tokenet ved email-skifte. Legacy-records uden token claim'es én gang med den oprindelige adresse og beholder historien. Skrivninger er rate-limaget 5/min pr. IP på et separat `RATE`-namespace.
+- 2026-09-25 del A — **kontraktbrud rettet**: planens acceptkrav sagde at `/register` skulle kræve en gyldig `eucomply-pro`-licens, hvilket direkte modstrider låst beslutning 4 og 21 (den monitoring beta er en fri forsøgsordning, ikke en betalt entitlement) og ville have fjernet en gratis del af tragten. Licens-gating er derfor **ikke** implementeret; sikkerheden løses med ejerskabstokens i stedet. Det kræver Mads' svar på spørgsmål 1, før det evt. indføres.
+- 2026-09-25 del A — samme guard synkroniseret ind i `eucomply-scanner/engine/index.js`, så den publicerede npm-CLI ikke beholder hullet. De to filer er nu fysisk ens i guard- og `runScan`-afsnittet.
+- 2026-09-25 del A — `site/{,da/,de/,fr/}scan/index.html` gemmer owner-tokenet pr. site i `localStorage` og sender det med ved re-registration og sletning, så den eksisterende UX er uændret. Oversættelserne i DA/DE/FR er bevaret.
+- Gate: `27 security checks passed` i nyt `tools/test_worker_security.mjs`; `112 self-tests passed`, `0 unexpected EUComply Pro claims`; root-SEO `216 pages checked, 0 findings`; `npm pack --dry-run` grøn (9 filer, 17 kB); alle fire scan-sider består `node --check` på det indlejrede script. Ingen PHP ændret, så PHP-lint er ikke betinget (kørte alligevel grønt på `plugin/` og `site/plugin/`). Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres: workspace-permissions nægter adgang, så missionskravet kan ikke dokumenteres; gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+- Fejl: 0/2 (denne del)
 - Begrundelse: Den offentlige scanner følger redirects uden at validere hvert hop og kan hente private mål; rå HSTS-responseheadere renderes desuden i `innerHTML`. Monitoring-registreringen kan samtidig skifte en andens email, og `/status` er offentligt. Det er P0/P1-brugerrisiko, privacy-fejl og spam-/SSRF-mulighed.
 - Scope: følg redirects manuelt og valider destinationen ved hvert hop; escape eller render tekstfelter med `textContent`; valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow. Derudover fra specen: skeln `409` fra definitive fejl i pluginen, tilføj `deactivate`/frigiv enhed, vurdér om `warn` skal tælles som fejl i summen, og udsted engangs-owner-token til eksisterende ubetalte beta-records.
 - Accept:
-  - Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.
+  - ~~Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.~~ Erstattet i del A af ejerskabstokens, jf. kontraktbruddet ovenfor. Licens-entitlement er del B og afhænger af Mads' svar på spørgsmål 1.
+  - ~~`/status` afslører ikke email, rå URL-data eller andre kunders historie uden gyldigt owner-token.~~ **Dækket i del A**: `/status` er nu POST og 403 uden token; email og token er aldrig i svaret.
+  - ~~Redirects til private/link-local IPv4/IPv6-mål og falske DNS-svar afvises; hvert hop og sidste destination valideres.~~ **Dækket i del A** — dog fail-open hvis resolveren *selv* er nede; et konkret privat DNS-svar afvises.
+  - ~~En HSTS-header med HTML/scriptpayload renderes som tekst og kan ikke skabe DOM-XSS i scanner-resultater.~~ **Dækket i del A** (filtrering i engine + `esc()` på scan-siden).
+  - ~~Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål, XSSPayload og 503-grace.~~ **Dækket i del A** undtagen 503-grace, som hører til del B.
   - Forkert nøgle, forkert product og nået enheds-/site-grænse giver deterministiske fejl.
   - En eksisterende kunde beholder cached adgang i 7 dage ved licensserver-503/5xx/netværksfejl.
   - `/status` afslører ikke email, rå URL-data eller andre kunders historie uden gyldigt owner-token.
@@ -224,10 +237,12 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 6. **Alarm-tilstand:** er `ALERT_KEY` sat i produktion for `eucomply-watch`? Uden nøglen sender overvågningen ingen mail (`worker-watch/index.js:22`), så enten skal den sættes eller overvågning som produkt skal væk fra siden. Det er ikke opdageligt i repoet.
 7. **Kvotevisning:** findes der en deterministisk måde at få det købte antal websites ud af licensserveren? `devices_in_use` plus `409` er ikke nok til en ærlig kvotebjælke i dashboardet (spec afsnit 5.1).
 8. **Device-idempotens:** er `activate` med et allerede aktiveret `device_id` idempotent uden at optage en ekstra enhed? Det afgør, om et site med både plugin og hosted tæller som ét website.
-9. **Ubeskyttet widget:** `site/shared/live-check-widget.html:33,37,39,42` renderer scanningstjek fra et kundesite i `innerHTML` uden escaping og kalder DeskUptime-workeren. Den ligger i EUComply-deploy-træet, men uden for EUComply-gaten. Skal den rettes her eller i DeskUptime-repoet?
+9. **Worker-deploy:** `shared/scan-engine.js` og `worker-scan/`/`worker-watch/` deployes ikke af CI. Skal de nye workers deployes nu, og hvem gør det — Mads eller en agent med `wrangler`-adgang? Uden det ligger rettelsen i repoet, men produktionen kører den gamle kode.
+10. **Ubeskyttet widget:** `site/shared/live-check-widget.html:33,37,39,42` renderer scanningstjek fra et kundesite i `innerHTML` uden escaping og kalder DeskUptime-workeren. Den ligger i EUComply-deploy-træet, men uden for EUComply-gaten. Skal den rettes her eller i DeskUptime-repoet?
 
 ## Kendte lavprioritets-rester
 
+- `cli/bin/eucomply-scan.js` er en separat, ældre CLI der laver sit eget `fetch(u)` uden redirect-guard. Den ligger uden for EUComply-tragten (sitets Scan CLI-links peger på `eucomply-scanner` på GitHub), men har samme SSRF-mønster. Lav prioritet; samme guard kan genbruges.
 - `deskuptime/` er en forældet kopi med gammel Lemon Squeezy-kode, selvom sitens DeskUptime-side allerede bruger Stripe. Fjern kopien fra EUComply-deploy eller markér repoet tydeligt som legacy; den rigtige app ligger i sit eget repo.
 - DevNotify er et separat produkt og skal ikke blandes ind i EUComply-opgaverne; venter på Mads' Stripe-kontrakt.
 - Gamle root-manifester, 1.2.0-arkivet og legacy-stores skal fjernes fra offentlige/aktive paths, når deploy-hygiejnen løses.
@@ -238,4 +253,5 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 - 2026-09-25: Research-plan oprettet på commit `fba1971`; endnu ingen `site/**`-ændring og derfor ingen forventet deploy fra denne iteration.
 - 2026-09-25: Opgave 2 (hosted Pro-spec) ændrede kun `IMPLEMENTATION_PLAN.md` og `docs/`, som begge ligger uden for `site/**`. Deploy-workflowet trigges derfor ikke, og der skyldes ingen ny `VERIFICÉR DEPLOY`-note fra denne iteration.
 - `VERIFICÉR DEPLOY: IMPLEMENTATION_PLAN research + prioritering b7b54ac 2026-09-24 23:19 UTC` — ingen deploy forventes, fordi workflowet kun trigges på `site/**` eller workflow-filen.
-- `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — verificér efter næste deploy-vindue indholdet på `/pro/`, `/da/pro/`, `/de/pro/`, `/fr/pro/`, fire pricing-ruter og plugin-`1.3.1`-downloadet; HTTP 200 alene er ikke bevis.
+- `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — **DEPLOY OK 2026-09-25 18:15 CEST.** Verificeret på indhold, ikke kun status: `/pro/` viser "Pro includes today" med kun de tre dokumentfunktioner og en separat, tydeligt mærket "Planned features, not included today"-blok; `/pricing/` har nul nutidige claims om daglig re-scan, PDF eller badge; `/da/pro/`, `/de/pro/`, `/fr/pro/` og alle fire pricing-ruter svarer 200; plugin-downloadet på `/assets/eucomply-1.3.1.zip` svarer 200 med `application/zip`, 20569 bytes.
+- `VERIFICÉR DEPLOY: SSRF-guard + overvægtningsejerskab 28795c3 2026-09-25 16:32 UTC` — ændrer `site/**/scan/index.html` (token-håndtering) og rører ikke andre publicfiler. Verificér efter næste deploy-vindue at `/scan/` stadig kan registrere og afmelde, og at de fire locale-siders script ikke har mistet en sætning. Bemærk: **workerne deployes ikke af denne workflow** — `shared/scan-engine.js`, `worker-scan/` og `worker-watch/` kræver et manuelt `wrangler deploy`, hvilket agenten ikke gør. Indtil det sker, er live-scanneren stadig den gamle, sårbare kode, og det gamle `GET /status?url=` svarer stadig 200 indtil worker-deployet.
