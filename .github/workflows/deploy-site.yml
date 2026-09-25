@@ -16,6 +16,10 @@ name: deploy-site
 on:
   push:
     branches: [main]
+    # Alle mønstre skal ende på /**. Det gjorde '.github/workflows/' ikke, og
+    # GitHub matcher det ikke mod filerne i mappen: en ændring i en workflow
+    # triggede aldrig denne kørsel, så den blev aldrig verificeret i CI.
+    # Mærkeligt nok rammer det især de ændringer, der rører selve deployet.
     paths:
       - 'site/**'
       - 'shared/**'
@@ -24,7 +28,7 @@ on:
       - 'plugin/**'
       - 'eucomply-scanner/**'
       - 'tools/**'
-      - '.github/workflows/'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 concurrency:
