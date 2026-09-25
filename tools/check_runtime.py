@@ -96,6 +96,22 @@ ACTION_MIN_MAJOR = {
     "cloudflare/wrangler-action": 4,
 }
 
+# Runner-imageet EUComply-jobs kører på. Fastsat, fordi GitHub har lagt en
+# annotation på alle jobs om at `ubuntu-latest` migrerer til Ubuntu 26 den
+# 19. oktober 2026 (set i CI 2026-09-25). Et flydende label kan så ændre den
+# miljø, gaten er skrevet imod — `php -l`, node, `python3.13`, wrangler — uden at
+# nogen rører repoet. Det er samme fejlklasse som en Node-major der glide: en
+# værdi der står i koden, men ingen kontrollerer.
+#
+# Kravet er *præcist* dette image og ikke et minimum. En runner-image er ikke
+# semver, så der findes ingen "seneste" at hæve til med; og når GitHub en dag
+# fjerner ubuntu-24.04 skal skiftet ske i denne tabel og gives en grøn kørsel,
+# ikke ske automatisk. En matrix som `${{ matrix.os }}` kan ikke efterprøves
+# og er derfor et fund, ikke en undtagelse — `build-devnotify.yml`, som bruger
+# en, ligger i WORKFLOW_EXCLUSIONS.
+RUNNER_IMAGE = "ubuntu-24.04"
+RUNNER_PINNED_AT = "2026-09-26"
+
 # EUComply egger pakker. Begge går ud til brugere som henholdsvis npm-CLI og
 # selvstændigt CLI, så de skal kræve den samme runtime.
 EUCOMPLY_PACKAGES = ("eucomply-scanner/package.json", "cli/package.json")
@@ -122,6 +138,13 @@ ENGINE_FLOOR_RE = re.compile(r">=\s*(\d+)(?:\.(\d+))?")
 # `uses:`-linje tælle som en rigtig handling — samme falske grøn som en
 # kommentar med `node-version`.
 USES_RE = re.compile(r"^[ \t]*(?:-\s+)?uses:[ \t]*(\S+)", re.M)
+# Samme problem som `node-version`: en kommentar må ikke kunne stå for en
+# indstilling. Derfor findes linjen først, og værdien læses kun på en rigtig
+# `runs-on:`-linje.
+RUNS_ON_RE = re.compile(r"^[ \t]*runs-on\s*:(.*)$", re.I | re.M)
+# Job-strukturen: nøgle på to mellemrum, egenskaber på fire. Se _parse_jobs.
+JOB_HEADER_RE = re.compile(r"^  ([A-Za-z0-9_.-]+):\s*(#.*)?$")
+JOB_PROP_RE = re.compile(r"^    ([A-Za-z0-9_.-]+):\s*(.*)$")
 # En tag som `v7` eller `v4.1.3`. Alt uden en forudgående major regnes som
 # flydende (`main`, `stable`) og kan ikke efterprøves.
 VERSION_REF_RE = re.compile(r"^v?(\d+)(?:\.\d+)*$")
@@ -371,6 +394,133 @@ def check_action_majors(root: Path) -> tuple[list, list]:
     return findings, warnings
 
 
+def _parse_jobs(text: str) -> list:
+    """Læs job-strukturen uden et YAML-bibliotek.
+
+    Returnerer [(navn, bruger_genbrugt_workflow, [runs-on-værdier])] for hvert
+    job under `jobs:`.
+
+    Der parses bevidst ikke med PyYAML: gaten skal køre på den `python3` den
+    har ved hånde, og CI's billede må ikke afgøre om gaten virker. GitHub-
+    workflows er desuden maskinskrevet i én fast stil — job-nøgle på to mellemrum,
+    egenskaber på fire — så en målrettet linjescanning er nok og uden afhængighed.
+
+    Kan en fil ikke læses strukturelt, returneres en tom liste, og kaldstedet
+    siger det som en advarsel i stedet for at springe filen over i stilhed.
+    """
+    jobs: list = []
+    in_jobs = False
+    for line in text.splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if not in_jobs:
+            # `jobs:` skal stå i kolonne 0. Alt andet på kolonne 0 afslutter
+            # jobs-blokken, hvilket også gør at `on:` ikke kan forveksles med
+            # et job — det er præcis det `check_workflows` først fejlede på.
+            if re.match(r"^jobs\s*:\s*$", line):
+                in_jobs = True
+            continue
+        if not line.startswith(" "):
+            in_jobs = False  # en ny topniveau-nøgle efter jobs
+            continue
+        header = JOB_HEADER_RE.match(line)
+        if header:
+            jobs.append([header.group(1), False, []])
+            continue
+        prop = JOB_PROP_RE.match(line)
+        if prop and jobs:
+            key, raw = prop.group(1), prop.group(2).strip()
+            if key == "uses":
+                jobs[-1][1] = True
+            elif key == "runs-on":
+                jobs[-1][2].append(raw)
+    return jobs
+
+
+def check_runner_pins(root: Path) -> tuple[list, list]:
+    """Hvert EUComply-job skal køre på det fastsatte runner-image.
+
+    `node-version: '22'` siger intet om hvilket OS-billede jobbet kører på, og
+    `ubuntu-latest` siger intet om hvilken version af det billede, CI får om tre
+    måneder. Uden denne kontrol kan pin'en glide tilbage til `ubuntu-latest` og
+    ingen ser det, før et billede har ændret sig under fødderne på gaten.
+
+    Kontrollen er pr. job og ikke pr. fil. Det er den eneste måde, den dækker
+    det billede, mutationen første gang afslørede: `deploy-site.yml` har tre
+    jobs, hvor `verify` er et genbrugt workflow-kald uden `runs-on`, og de to
+    andre har hver sin. En pr. fil-kontrol er grøn, så snart ÉN job har en pin,
+    så fjernes `runs-on` fra det tredje job, og gaten siger alligevel grønt.
+
+    Et job uden `runs-on` er kun gyldigt, hvis det kalder et genbrugt workflow
+    (`uses:` under jobs) — så vælger den kaldte workflow sit eget billede.
+
+    Returnerer (fund, advarsler): en fil, hvis job-struktur ikke kan læses, er
+    en advarsel. Den springes ikke stift over, men den må heller ikke gøre gaten
+    rød på en syntaks, gaten ikke kan parse.
+    """
+    findings: list[str] = []
+    warnings: list[str] = []
+    files = _workflow_files(root)
+    if not files:
+        # check_workflows siger allerede "workflows mangler".
+        return findings, warnings
+    for path in files:
+        rel = path.relative_to(root).as_posix()
+        text = COMMENT_RE.sub("", path.read_text(encoding="utf-8", errors="replace"))
+        jobs = _parse_jobs(text)
+        if not jobs:
+            warnings.append(
+                f"{rel}: job-strukturen kunne ikke læses, så runs-on er ikke "
+                f"efterprøvet job for job — tjek at job står på to mellemrum under "
+                f"`jobs:`"
+            )
+            # Falder tilbage på rå linjer, så vi ikke ender med at have set
+            # slet intet. En pin, der findes, efterprøves stadig.
+            jobs = [["", False, [v.strip().strip("'\"") for v in RUNS_ON_RE.findall(text)]]]
+            if not RUNS_ON_RE.findall(text):
+                findings.append(
+                    f"{rel}: ingen runs-on at efterprøve — jobbet kører på et billede "
+                    f"gaten ikke ved noget om. Sæt runs-on: {RUNNER_IMAGE}"
+                )
+        for name, reusable, values in jobs:
+            where = f"{rel}: job '{name}'" if name else rel
+            if reusable:
+                continue  # billedet vælges af den kaldte workflow
+            if not values:
+                findings.append(
+                    f"{where} har ingen runs-on — jobbet kører på et billede gaten ikke "
+                    f"ved noget om. Sæt runs-on: {RUNNER_IMAGE}"
+                )
+                continue
+            for value in values:
+                if not value:
+                    findings.append(
+                        f"{where}: runs-on uden værdi — gaten kan ikke se hvilket "
+                        f"billede jobbet kører på. Sæt runs-on: {RUNNER_IMAGE}"
+                    )
+                elif "${{" in value:
+                    findings.append(
+                        f"{where}: runs-on: {value} er et udtryk, gaten ikke kan "
+                        f"efterprøve — brug runs-on: {RUNNER_IMAGE}, eller dokumentér "
+                        f"billedet her"
+                    )
+                elif value == "ubuntu-latest":
+                    findings.append(
+                        f"{where}: runs-on: ubuntu-latest er et flydende label — GitHub "
+                        f"migrerer det til Ubuntu 26 den 19. oktober 2026, så billedet "
+                        f"kan ændre sig uden at nogen rører repoet. Sæt runs-on: "
+                        f"{RUNNER_IMAGE} (fastsat {RUNNER_PINNED_AT})"
+                    )
+                elif value != RUNNER_IMAGE:
+                    findings.append(
+                        f"{where}: runs-on: {value} er ikke det fastsatte image "
+                        f"{RUNNER_IMAGE} (fastsat {RUNNER_PINNED_AT}) — brug "
+                        f"{RUNNER_IMAGE}, eller opdatér RUNNER_IMAGE i denne gate og få "
+                        f"en grøn kørsel på det nye billede"
+                    )
+    return findings, warnings
+
+
 def check_eol_soon(packages: list, today: date) -> list[str]:
     """Advarsel — ikke rødt resultat — når den erklærede floor er tæt på EOL.
 
@@ -511,12 +661,14 @@ def collect(root: Path, today: date | None = None, probe_node: bool = True) -> t
 
     found.extend(check_nvmrc(root, floor))
     found.extend(check_workflows(root, floor))
+    runner_findings, runner_warnings = check_runner_pins(root)
+    found.extend(runner_findings)
     action_findings, action_warnings = check_action_majors(root)
     found.extend(action_findings)
     if probe_node:
         found.extend(check_running_node(floor, _major_of_running_node()))
     found.extend(check_dependencies(packages))
-    return found, action_warnings + check_eol_soon(packages, today)
+    return found, action_warnings + runner_warnings + check_eol_soon(packages, today)
 
 
 def selftest() -> int:
@@ -537,7 +689,8 @@ def selftest() -> int:
         def write_state(engines_floor=floor, nvmrc_major=str(floor), ci=str(floor),
                         drop_nvmrc=False, drop_engines=False, no_ci=False,
                         second_floor=None, ci_comment_only=False, no_node_step=False,
-                        extra_uses=None, action_ref=None):
+                        extra_uses=None, action_ref=None, runner=RUNNER_IMAGE,
+                        drop_runs_on=False, runner_comment_only=False):
             for rel in EUCOMPLY_PACKAGES:
                 path = base / rel
                 data = json.loads(path.read_text(encoding="utf-8"))
@@ -553,20 +706,36 @@ def selftest() -> int:
             else:
                 nvmrc.write_text(nvmrc_major + "\n", encoding="utf-8")
             wf = base / ".github" / "workflows" / "verify.yml"
+            # Runner-pinnen skrives i alle grene, så en mutation af node-version
+            # eller handlinger ikke også udløser et runner-fund. Ellers ville
+            # nålen i hver case ramme den forkerte besked.
+            if drop_runs_on:
+                pin = ""
+            elif runner_comment_only:
+                pin = f"    # runs-on: {runner}\n"
+            else:
+                pin = f"    runs-on: {runner}\n"
+            # Fixture'en har to jobs, ligesom repoets rigtige workflows: et
+            # genbrugt workflow-kald uden runs-on og et job med pin. En fixture
+            # med kun ét job skjulte en falsk grøn, hvor det andet job kunne
+            # miste sin pin uden at nogen så det — præcis fejlen mutationen
+            # mod repoets egne workflows afdøde.
+            reusable_job = "  verify:\n    name: kvalitetsgate\n    uses: ./.github/workflows/verify.yml\n"
             if no_ci:
                 wf.unlink(missing_ok=True)
             elif no_node_step:
                 # Workflow'en findes, men setup-node-steget er væk. Den ser
                 # stadig helt troværdig ud og bygger på runnernes default.
                 wf.write_text(
-                    "jobs:\n  gate:\n    steps:\n      - run: bash tools/quality_gate.sh\n",
+                    "jobs:\n" + reusable_job + "  gate:\n" + pin + "    steps:\n"
+                    "      - run: bash tools/quality_gate.sh\n",
                     encoding="utf-8",
                 )
             elif ci_comment_only:
                 # Kun setup-node og en kommentar der nævner node-version:
                 # det så ud til at erklære en runtime uden at gøre det.
                 wf.write_text(
-                    "jobs:\n  gate:\n    steps:\n"
+                    "jobs:\n" + reusable_job + "  gate:\n" + pin + "    steps:\n"
                     f"      - uses: {clean_action}\n"
                     f"        # historisk node-version: {floor}\n",
                     encoding="utf-8",
@@ -575,7 +744,7 @@ def selftest() -> int:
                 uses = action_ref or clean_action
                 extra = f"      - uses: {extra_uses}\n" if extra_uses else ""
                 wf.write_text(
-                    "jobs:\n  gate:\n    steps:\n"
+                    "jobs:\n" + reusable_job + "  gate:\n" + pin + "    steps:\n"
                     f"      - uses: {uses}\n        with:\n          node-version: '{ci}'\n"
                     + extra,
                     encoding="utf-8",
@@ -633,6 +802,19 @@ def selftest() -> int:
              lambda: write_state(action_ref="actions/setup-node")),
             ("ingen handling at efterprøve", "slet ikke efterprøves",
              lambda: write_state(no_node_step=True)),
+            # Opgave 14: `ubuntu-latest` er et flydende label, og GitHub har
+            # dateret migreringen til Ubuntu 26. Uden disse fem cases kunne
+            # pin'en glide tilbage, og gaten ville være grøn.
+            ("flydende runner-label", "flydende label",
+             lambda: write_state(runner="ubuntu-latest")),
+            ("forkert fastsat runner-image", "er ikke det fastsatte image",
+             lambda: write_state(runner="ubuntu-22.04")),
+            ("runner som ikke kan efterprøves", "udtryk, gaten ikke kan efterprøve",
+             lambda: write_state(runner="${{ matrix.os }}")),
+            ("manglende runs-on i jobbet", "har ingen runs-on",
+             lambda: write_state(drop_runs_on=True)),
+            ("kommenteret runs-on tæller ikke", "har ingen runs-on",
+             lambda: write_state(drop_runs_on=True, runner_comment_only=True)),
         ]
         for label, needle, mutate in cases:
             mutate()
@@ -774,9 +956,9 @@ def main() -> int:
     packages, _ = load_packages(ROOT)
     print(
         "Runtime-gate grøn: begge pakker, .nvmrc og CI angiver samme understøttte "
-        "Node-version, gaten kører på den erklærede runtime, ingen handling sidder "
-        f"under sit dokumenterede minimum, og {dependency_total(packages)} "
-        "afhængigheder står uden lockfile."
+        "Node-version, gaten kører på den erklærede runtime, alle EUComply-jobs er "
+        f"fastsat på {RUNNER_IMAGE}, ingen handling sidder under sit dokumenterede "
+        f"minimum, og {dependency_total(packages)} afhængigheder står uden lockfile."
     )
     return 0
 

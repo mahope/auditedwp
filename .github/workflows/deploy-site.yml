@@ -43,7 +43,10 @@ jobs:
   deploy:
     name: deploy til Cloudflare Pages
     needs: verify
-    runs-on: ubuntu-latest
+    # Se kommentaren på runs-on i verify.yml: ubuntu-latest migrerer til
+    # Ubuntu 26 den 19. oktober 2026, og deployet må ikke stå på et billede
+    # ingen har testet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -72,7 +75,9 @@ jobs:
   check-production:
     name: tjek produktion
     needs: deploy
-    runs-on: ubuntu-latest
+    # Samme pin som de to jobs ovenfor — kontrollen skal ikke køre på et
+    # andet billede end den, der uploadede.
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Tjek indhold, ikke kun status
