@@ -153,7 +153,7 @@ h2{font-size:21px}}</style>
     </div>
     <div class="cards" id="cards"></div>
     <div class="pro-cta">
-      <a class="btn" href="/pro/">Keep checking daily with EUComply Pro — $79/year →</a>
+      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Buy Pro — $79/year per website →</a>
     </div>
   </div>
 </div>
@@ -172,7 +172,7 @@ h2{font-size:21px}}</style>
       <tr><td>Forms with privacy notice links</td><td>Every data-collecting form needs a visible link to your privacy policy.</td></tr>
     </table></div>
     <div class="box">
-      <strong>Fair warning:</strong> a passing score today is not permanent. Marketing adds scripts, CMP settings drift, tag managers change. <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when compliance breaks.
+      <strong>Fair warning:</strong> a passing score today is not permanent. Marketing adds scripts, CMP settings drift, tag managers change. The free scanner supports manual rechecking; hosted daily monitoring is planned and is not included in the current Pro license.
     </div>
   </div>
 </section>
@@ -182,7 +182,7 @@ h2{font-size:21px}}</style>
     <h2>Why "free" doesn't mean shallow</h2>
     <p>Most free GDPR checkers test one thing — whether you have a cookie banner. That misses what regulators actually fine for. This scanner looks at how your site <em>behaves</em>:</p>
     <ol>
-      <li><strong>Pre-consent tracking.</strong> It detects known analytics and ad scripts (Google Analytics, Meta Pixel, TikTok, Hotjar and more) in the served HTML, alongside whether a consent platform is present to gate them.</li>
+      <li><strong>Tracker and consent markers.</strong> It detects known analytics and ad scripts in the served HTML alongside consent-platform markers. It does not observe runtime request order or consent choices.</li>
       <li><strong>Consent plumbing.</strong> A banner that exists but isn't wired to Google Consent Mode v2 or IAB TCF means choices may never reach your ad stack — the exact gap behind recent multi-million-euro decisions.</li>
       <li><strong>Security baseline.</strong> TLS validity plus CSP, HSTS and related headers — GDPR Art. 32's "appropriate technical measures" in their most measurable form.</li>
     </ol>
@@ -195,7 +195,7 @@ h2{font-size:21px}}</style>
     <h2>Frequently asked questions</h2>
     <details open>
       <summary>Is this GDPR scanner really free?</summary>
-      <p>Yes. Scanning any URL is free, unlimited, and requires no account or credit card. The paid product, Pro ($79/year), adds daily re-scans, email alerts and auditor-ready PDF documentation — you only need it if you must prove compliance over time.</p>
+      <p>Yes. Scanning any URL is free, with a rate limit of 10 requests per minute per IP address, and requires no account or credit card. The current Pro license is for the WordPress plugin and provides editable HTML document starters plus an HTML report from the latest WordPress scan. Hosted daily monitoring is not included.</p>
     </details>
     <details>
       <summary>Does it work outside WordPress?</summary>
@@ -228,7 +228,7 @@ h2{font-size:21px}}</style>
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type":"Question","name":"Is this GDPR scanner really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Scanning any URL is free, unlimited, and requires no account or credit card. Pro ($79/year) adds daily re-scans, email alerts and auditor-ready PDF documentation."}},
+    {"@type":"Question","name":"Is this GDPR scanner really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Scanning any URL is free, with a rate limit of 10 requests per minute per IP address, and requires no account or credit card. The current Pro license is for the WordPress plugin and provides editable HTML document starters plus an HTML report from the latest WordPress scan. Hosted daily monitoring is not included."}},
     {"@type":"Question","name":"Does it work outside WordPress?","acceptedAnswer":{"@type":"Answer","text":"Yes. The scanner analyses HTTP responses and HTML markup, so it works identically on Shopify, Wix, Squarespace, Webflow, Next.js, Drupal, Joomla, static HTML and custom stacks."}},
     {"@type":"Question","name":"Do you store my URL or scan results?","acceptedAnswer":{"@type":"Answer","text":"No. Each scan runs in memory and returns its result immediately. No URLs, IPs or scan data are logged or stored."}},
     {"@type":"Question","name":"Is the result a legal opinion?","acceptedAnswer":{"@type":"Answer","text":"No. The scanner identifies technical patterns such as missing consent signals and ungated trackers. Only a qualified lawyer can give legal advice about your specific situation."}},

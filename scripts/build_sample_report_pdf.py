@@ -34,7 +34,7 @@ E.append(Spacer(1, 2))
 E.append(Paragraph(
     "<b>URL:</b> https://shopify.com &nbsp;·&nbsp; <b>Generated:</b> January 15, 2026 – 06:02 UTC<br/>"
     "<b>Platform detected:</b> Shopify &nbsp;·&nbsp; <b>Report ID:</b> EUC-2026-0115-0602<br/>"
-    "<b>Plan:</b> EUComply Pro — daily monitoring (scan #14 of 30-day history)", meta))
+    "<b>Plan:</b> Static concept sample — not current Pro monitoring or customer data", meta))
 E.append(Spacer(1, 10))
 
 # Score box
@@ -53,8 +53,8 @@ score_tbl.setStyle(TableStyle([
     ("TOPPADDING", (0, 0), (-1, -1), 12), ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
 ]))
 E.append(score_tbl)
-E.append(Paragraph("SAMPLE REPORT — illustrative data. Your Pro reports show live results "
-                   "for your own domain.", ParagraphStyle(
+E.append(Paragraph("CONCEPT SAMPLE — illustrative data. This is not a current Pro report. "
+                   "The current Pro license generates an HTML report from the latest WordPress scan.", ParagraphStyle(
                        "note", parent=meta, textColor=WARN, fontSize=8)))
 
 E.append(Paragraph("SCORE SUMMARY", sec))
@@ -110,7 +110,7 @@ for f in [
     E.append(Paragraph("• " + f, body))
 
 E.append(Spacer(1, 14))
-E.append(Paragraph("30-DAY SCORE HISTORY", sec))
+E.append(Paragraph("ILLUSTRATIVE 30-DAY SCORE HISTORY — CONCEPT ONLY", sec))
 hist = Table([["Day 1–10", "Day 11–20", "Day 21–30"],
               ["68%", "70%", "71%"]], colWidths=[56.6*mm]*3)
 hist.setStyle(TableStyle([

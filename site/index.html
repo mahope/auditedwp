@@ -21,13 +21,13 @@
 <meta property="og:locale" content="en_GB">
 <meta property="og:url" content="https://eucomplypro.com/">
 <meta property="og:title" content="EUComply — free compliance scan for websites with EU visitors">
-<meta property="og:description" content="Nine technical checks against GDPR, ePrivacy, NIS2 and EAA expectations. Free, no sign-up, nothing stored.">
+<meta property="og:description" content="Nine technical checks against GDPR, ePrivacy, NIS2 and EAA expectations. Free, no sign-up; aggregate scan counters are kept, not the full URL or results.">
 <meta property="og:image" content="https://eucomplypro.com/images/og/home.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="EUComply — free compliance scan for websites with EU visitors">
-<meta name="twitter:description" content="Nine technical checks against GDPR, ePrivacy, NIS2 and EAA expectations. Free, no sign-up, nothing stored.">
+<meta name="twitter:description" content="Nine technical checks against GDPR, ePrivacy, NIS2 and EAA expectations. Free, no sign-up; aggregate scan counters are kept, not the full URL or results.">
 <meta name="twitter:image" content="https://eucomplypro.com/images/og/home.png">
 <style>
   .steps { counter-reset: step; list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2.5rem; }
@@ -44,7 +44,7 @@
 </style>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebSite","@id":"https://eucomplypro.com/#website","url":"https://eucomplypro.com/","name":"EUComply","inLanguage":"en","description":"Enter a URL and get a free technical check of the things EU regulators ask about first: HTTPS, cookie consent, trackers loaded before consent, privacy.","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@id":"https://eucomplypro.com/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://eucomplypro.com/search/?q={search_term_string}"},"query-input":"required name=search_term_string"}}</script>
 <script type="application/ld+json" data-shell>{"@context":"https://schema.org","@id":"https://eucomplypro.com/#org","@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
-<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you store the URLs or results?","acceptedAnswer":{"@type":"Answer","text":"No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. A counter of total scans is kept; domains and results are not. If you register a site for daily monitoring, that domain and your email are stored for that purpose only."}},{"@type":"Question","name":"Is the scan itself GDPR-friendly?","acceptedAnswer":{"@type":"Answer","text":"The site sets no cookies and loads nothing from third parties: no fonts, no analytics scripts, no embeds. The scanner fetches your public page the way any visitor would."}},{"@type":"Question","name":"Does it work for non-WordPress sites?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads HTTP and HTML, so it works on Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, hand-written HTML and anything else that serves a page. It identifies the platform when it can, so the suggested fixes are relevant."}},{"@type":"Question","name":"My site passed. Am I compliant?","acceptedAnswer":{"@type":"Answer","text":"You have the visible basics in place, which is further than most sites get. Compliance also involves what you do with data, what your documents say and how you handle requests. The guide and the checklists cover that part."}},{"@type":"Question","name":"Why were the legal-document generators removed?","acceptedAnswer":{"@type":"Answer","text":"Earlier versions of this site offered generators for privacy policies, imprints, terms and refund policies. They produced documents that looked legal without a lawyer behind them. That is not a service I am comfortable offering, so they are gone. The checklists tell you what such documents must contain."}}]}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you store the URLs or results?","acceptedAnswer":{"@type":"Answer","text":"No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. The worker keeps a scan counter and hostname-level aggregate statistics, not the full URL or scan results. If you register a site for daily monitoring, that domain and your email are stored for that purpose only."}},{"@type":"Question","name":"Is the scan itself GDPR-friendly?","acceptedAnswer":{"@type":"Answer","text":"The site sets no cookies and loads nothing from third parties: no fonts, no analytics scripts, no embeds. The scanner fetches your public page the way any visitor would."}},{"@type":"Question","name":"Does it work for non-WordPress sites?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads HTTP and HTML, so it works on Shopify, Webflow, Squarespace, Wix, Next.js, Drupal, hand-written HTML and anything else that serves a page. It identifies the platform when it can, so the suggested fixes are relevant."}},{"@type":"Question","name":"My site passed. Am I compliant?","acceptedAnswer":{"@type":"Answer","text":"You have the visible basics in place, which is further than most sites get. Compliance also involves what you do with data, what your documents say and how you handle requests. The guide and the checklists cover that part."}},{"@type":"Question","name":"Why were the legal-document generators removed?","acceptedAnswer":{"@type":"Answer","text":"Earlier versions of this site offered generators for privacy policies, imprints, terms and refund policies. They produced documents that looked legal without a lawyer behind them. That is not a service I am comfortable offering, so they are gone. The checklists tell you what such documents must contain."}}]}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
@@ -97,7 +97,7 @@
 <main class="container" id="main">
   <section class="pg hero">
     <h1>A free compliance scan for websites with visitors in the EU.</h1>
-    <p class="lede">Enter a URL. EUComply fetches the page the way a browser does and checks nine things regulators, auditors and procurement teams tend to ask about first. No account, nothing stored.</p>
+    <p class="lede">Enter a URL. EUComply fetches the page the way a browser does and checks nine things regulators, auditors and procurement teams tend to ask about first. No account; the worker keeps only aggregate scan counters and hostname-level statistics, not the full URL or scan results.</p>
     <form class="scanform" action="/scan/" method="get">
       <input type="text" name="url" placeholder="yourdomain.com" aria-label="Website address to scan" required autocomplete="url" inputmode="url">
       <button class="btn" type="submit">Run the scan</button>
@@ -139,7 +139,7 @@
     <ul class="ledger">
       <li><b>HTTPS and HSTS</b><p>Is the site served over TLS, and does it send Strict-Transport-Security? GDPR Article 32 expects appropriate technical security; HSTS is the cheap part of it.</p></li>
       <li><b>Cookie consent</b><p>Looks for a known consent platform (Cookiebot, OneTrust, Klaro, Complianz and about a dozen more) in the served HTML. The ePrivacy Directive requires consent before non-essential cookies.</p></li>
-      <li><b>Trackers before consent</b><p>Checks whether Google Analytics, Meta Pixel, TikTok, Hotjar and similar scripts load without any consent mechanism on the page. This is the most common reason small sites are fined.</p></li>
+      <li><b>Tracker and consent markers</b><p>Compares Google Analytics, Meta Pixel, TikTok, Hotjar and similar script markers with consent-platform markers in the served HTML. Runtime request order is not observed.</p></li>
       <li><b>Google Consent Mode v2</b><p>Detects the consent-mode signals Google has required for EU ad personalisation since March 2024. Only relevant if you run Google Ads or Analytics.</p></li>
       <li><b>IAB TCF</b><p>Detects the Transparency and Consent Framework used by publishers and ad-tech. Informational for most sites.</p></li>
       <li><b>Forms and privacy notice</b><p>If the page has a form, is there a link to a privacy policy? GDPR Article 13 requires informing people at the point of collection.</p></li>
@@ -204,7 +204,7 @@
 
   <section class="pg sec">
     <h2>Pricing, honestly</h2>
-    <p>The scanner, the guide and the checklists are free and will stay free. Pro costs 79 USD per website per year: daily re-scans of your site, an email when a check starts failing, and a PDF report you can forward to a client or auditor. Document templates (data processing agreement, NIS2 vendor clauses, accessibility statement) are sold separately from 29 USD.</p>
+    <p>The scanner, the guide and the checklists are free and will stay free. Pro costs 79 USD per website per year and unlocks editable HTML document starters plus an HTML report from the latest WordPress scan. Full document templates are sold separately from 29 USD. Hosted daily monitoring is not included.</p>
     <p><a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Buy Pro</a> <a class="btn ghost" href="/pricing/">Compare Free and Pro</a></p>
   </section>
 
@@ -212,7 +212,7 @@
     <h2>Questions people ask</h2>
     <details>
       <summary>Do you store the URLs or results?</summary>
-      <p>No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. A counter of total scans is kept; domains and results are not. If you register a site for daily monitoring, that domain and your email are stored for that purpose only.</p>
+      <p>No. The scan runs in a Cloudflare Worker, returns the result to your browser and forgets it. The worker keeps a scan counter and hostname-level aggregate statistics, not the full URL or scan results. If you register a site for daily monitoring, that domain and your email are stored for that purpose only.</p>
     </details>
     <details>
       <summary>Is the scan itself GDPR-friendly?</summary>

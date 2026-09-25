@@ -153,7 +153,7 @@ h2{font-size:21px}}</style>
     </div>
     <div class="cards" id="cards"></div>
     <div class="pro-cta">
-      <a class="btn" href="/pro/">Keep checking daily with EUComply Pro — $79/year →</a>
+      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">See current Pro tools — $79/year per website →</a>
     </div>
   </div>
 </div>
@@ -161,17 +161,18 @@ h2{font-size:21px}}</style>
 <section>
   <div class="wrap">
     <h2>What the check looks at</h2>
-    <p>The scan runs nine technical checks against your live page. The ones that matter most — because they are the exact patterns regulators fine for:</p>
+    <p>The scan runs nine technical checks against your live page. Its privacy checks read served HTML and response headers rather than observing a visitor session:</p>
     <div class="tbl"><table>
-      <tr><th>Check</th><th>Why it matters</th></tr>
-      <tr><td>Trackers before consent</td><td>Analytics or ad cookies firing before the visitor clicks is the pattern behind the SHEIN (€150M) and American Express decisions. It is invisible to you — but not to a regulator's test tool.</td></tr>
-      <tr><td>Google Consent Mode v2</td><td>Required since March 2024 for EEA ad personalisation. Missing signals silently break Google Ads measurement.</td></tr>
-      <tr><td>IAB TCF signals</td><td>Most large ad platforms read consent through IAB's Transparency &amp; Consent Framework. Missing TCF wiring means "reject" may not reach them.</td></tr>
-      <tr><td>HTTPS &amp; security headers</td><td>Unencrypted pages fail the baseline of GDPR Art. 32 and NIS2 expectations — and lose visitor trust.</td></tr>
-      <tr><td>Privacy policy reachable</td><td>The ePrivacy rule requires clear information before consent; an unreachable policy undermines the entire legal basis.</td></tr>
+      <tr><th>Static signal</th><th>Why it matters</th></tr>
+      <tr><td>Tracker and consent markers</td><td>Known analytics or ad scripts are compared with consent-platform markers in the HTML. Runtime request order is not observed.</td></tr>
+      <tr><td>Google Consent Mode v2 markers</td><td>Looks for the expected v2 parameter names in source; it does not prove correct browser behaviour.</td></tr>
+      <tr><td>IAB TCF markers</td><td>Looks for Transparency &amp; Consent Framework signatures in source; it does not execute a TCF string.</td></tr>
+      <tr><td>HTTPS &amp; security headers</td><td>Checks observable transport and response headers relevant to GDPR Art. 32 and NIS2 risk-management reviews.</td></tr>
+      <tr><td>Privacy policy link</td><td>Looks for common policy paths and links. Legal adequacy and all required notices still need human review.</td></tr>
     </table></div>
+    <p><strong>Important:</strong> this is a static technical check, not a browser session, network trace or legal compliance audit.</p>
     <div class="box">
-      <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Marketing adds scripts, CMP settings drift, tag managers change. <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when something breaks.
+      <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Marketing adds scripts, CMP settings drift, tag managers change. Run the free scanner again after changes; hosted daily monitoring and pass-to-fail alerts are planned, not included in Pro.
     </div>
   </div>
 </section>
@@ -182,7 +183,7 @@ h2{font-size:21px}}</style>
   <div class="wrap">
     <h2>The three mistakes that cost real companies millions</h2>
     <ol>
-      <li><strong>Cookies fire before the click.</strong> Open your own site in an incognito window with dev tools open — if network requests hit analytics or ad domains before you touch the banner, you have pre-consent tracking. This is the single most common finding in enforcement actions against ordinary company sites.</li>
+      <li><strong>Cookies fire before the click.</strong> Open your own site in an incognito window with dev tools open — if network requests hit analytics or ad domains before you touch the banner, you have tracking before consent. This is a common finding in enforcement actions against ordinary company sites.</li>
       <li><strong>"Reject all" is harder than "Accept all".</strong> Equal prominence, equal number of clicks, first banner layer — anything less is a dark pattern under the standard set by CNIL's decisions against Meta and Google.</li>
       <li><strong>Rejecting changes nothing.</strong> Click "Reject all", reload, and watch whether the same cookies fire again. Misconfigured tag managers make this one of the most common audit findings.</li>
     </ol>

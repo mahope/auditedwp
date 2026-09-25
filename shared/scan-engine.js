@@ -404,7 +404,7 @@ export async function runScan(url) {
       "Add security headers. See https://securityheaders.com for guidance on each.";
   }
 
-  // 6. DORA resilience (DNS + email + redundancy signals in HTML)
+  // 6. DORA-related page references (static HTML signals; no DNS lookup)
   const doraMatches = [];
   for (const sig of DORA_SIGNATURES) {
     if (sig.re.test(html)) doraMatches.push(sig.name);
@@ -413,15 +413,15 @@ export async function runScan(url) {
     pass: doraMatches.length >= 2,
     warn: doraMatches.length === 1,
     label: doraMatches.length > 0
-      ? `DORA resilience signals: ${doraMatches.length} found`
-      : "No DORA resilience signals detected",
+      ? `DORA-related page signals: ${doraMatches.length} found`
+      : "No DORA-related page signals detected",
     detail: doraMatches.length > 0
-      ? `Signals found in page/footer: ${doraMatches.join(", ")}.`
-      : "No email-authentication (SPF/DKIM/DMARC), failover, or incident-response signals found in page text. DORA Art. 5-7 require resilience planning, incident management and digital operational testing for financial entities.",
+      ? `Page-text markers found: ${doraMatches.join(", ")}. This is not a DORA assessment.`
+      : "No page-text references to failover, incident response or continuity were found. This scan does not query DNS or assess DORA compliance.",
   };
   if (doraMatches.length < 2) {
     checks.dora.fix =
-      "Ensure your site provides: SPF/DKIM/DMARC records, status page URL, incident-response contact, and business-continuity information in your legal/security documentation.";
+      "Review whether the site publishes useful failover, incident-response and business-continuity information. Verify DNS and regulatory controls separately.";
   }
 
   // 7. Tech fingerprint (informational)

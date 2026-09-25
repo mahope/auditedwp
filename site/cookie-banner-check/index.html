@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Is My Cookie Banner Compliant? Free Check in 10 Seconds</title>
-<meta name="description" content="Paste your URL and get a free, instant cookie banner compliance check: pre-consent tracking, Consent Mode v2, reject button parity, HTTPS and.">
+<meta name="description" content="Paste a URL for a free static check of consent markers, tracker scripts, reject-option text, HTTPS and security headers.">
 <link rel="canonical" href="https://eucomplypro.com/cookie-banner-check/">
 <link rel="alternate" hreflang="en" href="https://eucomplypro.com/cookie-banner-check/">
 <link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/cookie-banner-check/">
@@ -76,7 +76,7 @@ th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing
 td:first-child{font-weight:600}
 @media(max-width:600px){h1{font-size:25px}
 h2{font-size:21px}}</style>
-<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/cookie-banner-check/","url":"https://eucomplypro.com/cookie-banner-check/","name":"Is My Cookie Banner Compliant? Free Check in 10 Seconds","description":"Paste your URL and get a free, instant cookie banner compliance check: pre-consent tracking, Consent Mode v2, reject button parity, HTTPS and.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/cookie-banner-check/","url":"https://eucomplypro.com/cookie-banner-check/","name":"Is My Cookie Banner Compliant? Free Check in 10 Seconds","description":"Paste a URL for a free static check of consent markers, tracker scripts, reject-option text, HTTPS and security headers.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
@@ -153,7 +153,7 @@ h2{font-size:21px}}</style>
     </div>
     <div class="cards" id="cards"></div>
     <div class="pro-cta">
-      <a class="btn" href="/pro/">Monitor this automatically with EUComply Pro — $79/year →</a>
+      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">See current Pro tools — $79/year per website →</a>
     </div>
   </div>
 </div>
@@ -161,17 +161,18 @@ h2{font-size:21px}}</style>
 <section>
   <div class="wrap">
     <h2>What this free check looks at</h2>
-    <p>The scan runs nine technical checks against your live page. The ones regulators actually fine for:</p>
+    <p>The scan reads the live page's HTML and response headers. It looks for these static consent and security markers:</p>
     <div class="tbl"><table>
-      <tr><th>Check</th><th>Why it matters</th></tr>
-      <tr><td>Pre-consent tracking</td><td>Analytics or ad cookies firing before the visitor clicks anything is the pattern behind the SHEIN €150M and American Express €1.5M decisions.</td></tr>
-      <tr><td>Consent Mode v2</td><td>Google requires Consent Mode v2 signals for EEA ad personalisation since March 2024 — missing it quietly breaks Google Ads measurement.</td></tr>
-      <tr><td>Reject-button reality</td><td>A reject option that exists but doesn't stop trackers counts as a knowing violation after the CNIL benchmark decisions.</td></tr>
-      <tr><td>HTTPS &amp; security headers</td><td>NIS2 and GDPR Art. 32 expectations — unencrypted pages fail basic technical compliance.</td></tr>
-      <tr><td>Privacy policy linking</td><td>ePrivacy requires clear information before consent; an unreachable policy undermines the whole legal basis.</td></tr>
+      <tr><th>Static signal</th><th>Why it matters</th></tr>
+      <tr><td>Tracker and consent markers</td><td>Known analytics or ad scripts are compared with consent-platform markers in the served HTML. This does not observe runtime request order.</td></tr>
+      <tr><td>Consent Mode v2 markers</td><td>Google expects Consent Mode v2 signals for EEA ad personalisation. Source markers alone do not prove correct runtime behaviour.</td></tr>
+      <tr><td>Reject-option markup</td><td>The scanner can find reject text or buttons, but it cannot verify what happens after a visitor clicks them.</td></tr>
+      <tr><td>HTTPS &amp; security headers</td><td>These are observable transport and response-header signals for GDPR Art. 32 and NIS2 risk-management reviews.</td></tr>
+      <tr><td>Privacy policy link</td><td>A visible link supports the GDPR requirement for notice at data collection; legal adequacy still needs human review.</td></tr>
     </table></div>
+    <p><strong>Important:</strong> this free check does not run a browser, watch network requests, test consent choices or audit rendered UI behaviour.</p>
     <div class="box">
-      <strong>Fair warning:</strong> a passing banner today doesn't stay passing. Scripts get added by marketing, CMP settings drift, tag managers change. That's why <a href="/pro/">Pro ($79/year)</a> re-scans your site daily and alerts you when something regresses.
+      <strong>Fair warning:</strong> a passing banner today doesn't stay passing. Scripts get added by marketing, CMP settings drift, tag managers change. Run the free scanner again after changes; hosted daily monitoring and pass-to-fail alerts are planned, not included in Pro.
     </div>
   </div>
 </section>
@@ -180,7 +181,7 @@ h2{font-size:21px}}</style>
   <div class="wrap">
     <h2>The three mistakes that cost real companies millions</h2>
     <ol>
-      <li><strong>Cookies fire before the click.</strong> Open your own site in an incognito window with dev tools open — if network requests to analytics or ad domains appear before you touch the banner, you have pre-consent tracking.</li>
+      <li><strong>Cookies fire before the click.</strong> Open your own site in an incognito window with dev tools open — if network requests to analytics or ad domains appear before you touch the banner, you have tracking before consent.</li>
       <li><strong>"Reject all" is harder than "Accept".</strong> Equal prominence, equal number of clicks, first layer of the banner. Anything else is a dark pattern under the standard set by the CNIL's Meta and Google decisions.</li>
       <li><strong>Rejecting changes nothing.</strong> Click Reject all, reload, and watch whether the same cookies still fire. Misconfigured tag managers make this one of the most common audit findings.</li>
     </ol>

@@ -1,30 +1,28 @@
-# Launch email — EUComply Pro (READY, awaiting Mads' approval)
+# Launch email — EUComply Pro (DRAFT, awaiting Mads' approval)
 
 **Status:** Draft only. NOT sent. Requires Mads' explicit yes before any send.
-**Target:** Waitlist subscribers (currently 0 real ones) + one post in own channels.
+**Target:** Opt-in subscribers with a valid email address.
 
 ---
 
-Subject: Your site's EU compliance score — checked daily for less than a coffee a month
+Subject: EUComply Pro for WordPress compliance documents
 
 Hi,
 
-You signed up to hear when EUComply Pro launches. It's live.
+EUComply Pro is live for WordPress sites.
 
-EUComply scans your website daily for GDPR, NIS2, DORA and accessibility (EAA)
-issues — cookie consent, privacy policy links, security headers, and more.
-Works on every platform: WordPress, Shopify, Webflow, Squarespace or hand-coded HTML.
+The free scanner checks any public website from the outside. Pro is a separate WordPress license for teams that also need local compliance document tools.
 
-Pro ($79/year — waitlist launch price $59) includes:
+Pro ($79 per website per year) includes:
 
-- Daily automated compliance scans with email alerts on score drops
-- Auditor-ready PDF reports you can forward to clients, insurers or auditors
-- 30-day compliance history and a live "verified" badge for your site
-- Document templates worth $216+: GDPR DPA, NIS2 vendor clauses, EAA statement
+- A Pro license in the free WordPress plugin
+- Editable HTML starters for a DPA, NIS2/DORA vendor clauses and an EAA statement
+- An HTML report generated from the latest WordPress scan
+- Your agency or business name in generated documents
 
-Try the free scanner first — no signup: https://auditedwp.pages.dev/scan/
+Try the free scanner first — no signup: https://eucomplypro.com/scan/
 
-Your launch price is valid for 7 days from today.
+One Pro license covers one WordPress website. Full document templates are sold separately. Hosted daily monitoring, runtime PDF reports, live verification badges and multi-site management are not included today.
 
 — EUComply
 (Unsubscribe link)
@@ -33,6 +31,4 @@ Your launch price is valid for 7 days from today.
 
 ## Social post (own channels, also needs Mads' OK before posting anywhere public)
 
-> Is your website actually GDPR-compliant? Most site owners find out the hard
-> way. We built a free scanner that checks your site in 10 seconds — GDPR,
-> NIS2, DORA, accessibility. No signup: https://auditedwp.pages.dev/scan/
+> Is your website missing a technical compliance signal? The free EUComply scanner checks any public URL in seconds — no signup: https://eucomplypro.com/scan/

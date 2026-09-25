@@ -96,7 +96,7 @@
 <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/da/">Forside</a></li><li><span aria-current="page">Scan</span></li></ol></nav><!--/shell:crumbs-->
   <section class="pg hero">
     <h1>Scan et website for de grundlæggende EU-krav.</h1>
-    <p class="lede">Ni tjek af forsiden på ethvert site: transportsikkerhed, samtykke, trackere, privatlivslinks, juridiske sider og headere. Gratis, ingen konto, og resultatet gemmes ingen steder.</p>
+    <p class="lede">Ni tjek af forsiden på ethvert site: transportsikkerhed, samtykke, trackere, privatlivslinks, juridiske sider og headere. Gratis, ingen konto, med en grænse på 10 scanninger pr. minut pr. IP-adresse. Workeren gemmer kun samlede scanningstællere og statistik på domænenavne, ikke hele URL'en eller resultaterne.</p>
     <form class="scanform" id="scan-form" data-keep>
       <input type="text" id="url-input" name="url" placeholder="ditdomæne.dk" aria-label="Webadresse der skal scannes" required autocomplete="url" inputmode="url">
       <button class="btn" type="submit" id="scan-btn">Kør scanningen</button>
@@ -119,7 +119,7 @@
 
     <div class="monitor">
       <h3>Tjek dette site igen hver morgen</h3>
-      <p class="scan-hint">Tilmeld <strong id="mon-host"></strong>, og du får en e-mail, når et tjek går fra bestået til fejlet. Gratis, mens overvågningstjenesten er i test; din adresse bruges til dette og intet andet.</p>
+      <p class="scan-hint">Tilmeld <strong id="mon-host"></strong>, og du får en e-mail, når den samlede score falder. Gratis, mens overvågningstjenesten er i test; din adresse bruges til dette og intet andet.</p>
       <form id="mon-form" data-keep>
         <input type="email" id="mon-email" placeholder="dig@firma.dk" required aria-label="E-mailadresse" autocomplete="email">
         <button class="btn" type="submit" id="mon-btn">Start daglige tjek</button>

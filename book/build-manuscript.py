@@ -179,8 +179,8 @@ def main():
     run.font.color.rgb = RGBColor(0x47, 0x54, 0x67)
 
     for url in [
-        "Free compliance scan: https://auditedwp.pages.dev/scan/",
-        "Automated daily monitoring: https://auditedwp.pages.dev/pro/"
+        "Free point-in-time scan: https://eucomplypro.com/scan/",
+        "Current WordPress Pro document tools: https://eucomplypro.com/pro/"
     ]:
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER

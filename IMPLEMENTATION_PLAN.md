@@ -1,14 +1,14 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: research + prioritering, fordi planen ikke fandtes
-Baseline: `main` commit `fba1971` efter `git pull --ff-only`
+Sidste iteration: færdig — salgsløfter, plugin-pakker og produkttruth er rettet og grønt gennemgået
+Baseline: `main` commit `5e244dc` efter `git pull --ff-only`
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
 
-- `I GANG`: ingen. Research-iterationen er færdig.
-- Næste opgave: **1 — Ret salgsløfterne til det der virker nu**.
+- `FÆRDIG`: **1 — Ret salgsløfterne til det der virker nu** på `ceo/ret-pro-lofter`.
+- Næste opgave efter denne: **2 — Skriv spec for den hosted Pro-værdi**; en ny åben `VERIFICÉR DEPLOY`-note skal dog verificeres, når næste deploy-vindue er passeret.
 - En opgave må markeres `I GANG`, før der laves kode. Efter to mislykkede iterationer markeres den `BLOCKED: <årsag>`, hvorefter næste opgave tages.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
@@ -16,14 +16,14 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 
 | Område | Det virker i dag | Det er ikke implementeret eller kan ikke sælges endnu |
 |---|---|---|
-| Gratis webscanner | Ni universelle URL-tjek, forslag til rettelser og et delbart resultat via `shared/scan-engine.js` og `worker-scan/index.js`. | Ingen sammenkoblet Pro-entitlement. |
+| Gratis webscanner | Ni universelle URL-tjek, forslag til rettelser og en delbar gen-kørselse-link via `shared/scan-engine.js` og `worker-scan/index.js`. | Ingen sammenkoblet Pro-entitlement. |
 | Hosted monitoring beta | `worker-watch/index.js` har cron kl. 06:00 UTC, 30 dages samlet score-historik og score-fald-mail. | Registreringen er åben og ikke knyttet til køb eller licens. `/status` er offentligt. Der gemmes kun samlet score, så pass-til-fail pr. check kan ikke implementeres ud fra historikken. |
 | Gratis WordPress-plugin | seks site-/WordPress-tjek og en ugentlig planlagt scan i `plugin/eucomply.php`. | Ingen historik, ikke dagligt. |
-| WordPress-plugin Pro 1.3.0 | Licensen validerer mod Mahope og låser DPA-, NIS2/DORA- og EAA-starthtml samt en rapport fra seneste scan. | Dokumenterne er redigerbare HTML, ikke PDF. Der er ingen hosted konto, historik, badge, mailflow eller flere sites. |
-| Hosted Pro-dashboard | `/pro/dashboard/` er en offentlig demo. | Ikke kundedata, ikke autentificeret og uden tilføj/slet/cancel. Ved fejl dannes 30 dages historik med `Math.random()` i `site/pro/dashboard/index.html:322-336`. |
+| WordPress-plugin Pro 1.3.1 | Licensen validerer mod Mahope og låser DPA-, NIS2/DORA- og EAA-starthtml samt en rapport fra seneste scan. | Dokumenterne er redigerbare HTML, ikke PDF. Der er ingen hosted konto, historik, live badge, mailflow eller flere sites. |
+| Hosted Pro-dashboard | `/pro/dashboard/` er en offentlig konceptdemo med fast, illustrativ data. | Ikke kundedata, ikke autentificeret og uden tilføj/slet/cancel. Den henter ikke live kundedata og bruger ikke længere `Math.random()`. |
 | Rapport | Plugin kan downloade HTML fra seneste scan. | Runtime-PDF og kundespecifikke rapporter findes ikke. Statisk eksempelrapport er kun en demo. |
-| Footer-badge | Der ligger et statisk embed-script. | Scriptet henter ingen score og linker til `location.origin`, ikke et EUComply-resultat, i `site/assets/eucomply-badge.js:23-27,79-90`. |
-| Pro-levering | Stripe-linket er live og licensen virker i plugin. | Watch-worker, dashboard og Stripe-success-flow er ikke koblet sammen. `/pro/thank-you/` lover bl.a. konto, live score, PDF, flere sites og cancel, som ikke findes. |
+| Footer-badge | Der ligger et statisk embed-script, der linker til den gratis scanner. | Scriptet henter ingen score eller live-resultat; det er ikke et verificerbart compliance-badge. |
+| Pro-levering | Stripe-linket er live og licensen virker i plugin. | Watch-worker, dashboard og Stripe-success-flow er ikke koblet sammen. `/pro/thank-you/` er nu kun en plugin-aktiveringsvej. |
 | Betalte templates | Stripe-butikken sælger templates enkeltvis og i bundle. | Fulde betalte filer ligger desfor stadig i det offentlige repo/deploy-træ. De må ikke udvides eller genudgives her. |
 
 ## Låste produktbeslutninger for denne plan
@@ -59,7 +59,12 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 1. Ret alle salgsløfter til den nuværende funktion
 
-- Status: `TODO` — første implementeringsiteration
+- Status: `FÆRDIG` — implementation og lokal kvalitetsgate grøn; live-verificering afventer næste deploy-vindue
+- 2026-09-25: EN/DA/DE/FR Pro og pricing, dashboard, sample, thank-you, plugin, scanner, sammenligninger, blog/SEO, privacy og llms-tekster er bragt på samme dokumenterede Pro-truth. Roadmap står uden for inkluderede funktioner.
+- 2026-09-25: Plugin 1.3.1 og Chrome-extension 1.0.1 er regenereret. Plugin-cron indlæser nu admin-API'er i WP-Cron, og både positiv og definitiv negativ licensstatus caches i 24 timer; 7-dages offline grace er bevaret.
+- 2026-09-25: Scanner- og klientekst kalder nu kun statiske side-/header-markers, ikke browseradfærd eller DNS. Privacy afslører IP-rate-limit, 365-dages aggregater og seks local-storage scans korrekt. Alle gamle `$14.99`-ebook-CTAs er erstattet af den gratis guide.
+- 2026-09-25: Fresh review fandt desuden redirect/DNS-rebinding-SSRF og rå HSTS-header i `innerHTML`; disse er ikke opportunistisk løst i denne diff, men prioriteret i opgave 3. Betalte offentlige filer ligger allerede i opgave 8.
+- Gate: `112 self-tests passed`, `0 unexpected EUComply Pro claims`; PHP-lint og plugin-paritet grøn; Node-smoke `9 checks`; `npm pack --dry-run` grøn; root-SEO `216 pages checked, 0 findings`; sibling build/SEO exit 0 (sibling-SEO fortsat `0 pages`, derfor root-fallback som gyldig evidens).
 - Fejl: 0/2
 - Begrundelse: Stripe er live, men købssiden sælger daglige historier, pass-til-fail-mail, PDF og badge, som ikke findes. Det kan give købsforventninger, refusion og support, der ikke kan opfyldes. Dette er missionens eksplicitte første opgave.
 - Scope:
@@ -90,18 +95,20 @@ Gate-definitionen er låst her, før første implementeringsiteration:
   - En belastningstestmatrix, privacy-datamappe og migrationsplan findes.
   - Specen bruger kun det eksisterende Stripe-link og `eucomply-pro`; den kræver ingen nye Stripeprodukter.
 
-### 3. Gør hosted monitoring entitlement-sikker og ret privacy
+### 3. Luk SSRF/DOM-XSS og gør hosted monitoring entitlement-sikker
 
 - Status: `TODO`
 - Fejl: 0/2
-- Begrundelse: Enhver kan i dag skrive e-mail på en vilkårlig URL og læse offentlig status. Det er ikke en Pro-fordel, skærer privacy-politikken og kan misbruges til spam/SSRF/ressource abuse.
-- Scope: valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow.
+- Begrundelse: Den offentlige scanner følger redirects uden at validere hvert hop og kan hente private mål; rå HSTS-responseheadere renderes desuden i `innerHTML`. Monitoring-registreringen kan samtidig skifte en andens email, og `/status` er offentligt. Det er P0/P1-brugerrisiko, privacy-fejl og spam-/SSRF-mulighed.
+- Scope: følg redirects manuelt og valider destinationen ved hvert hop; escape eller render tekstfelter med `textContent`; valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow.
 - Accept:
   - Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.
   - Forkert nøgle, forkert product og nået enheds-/site-grænse giver deterministiske fejl.
   - En eksisterende kunde beholder cached adgang i 7 dage ved licensserver-503/5xx/netværksfejl.
   - `/status` afslører ikke email, rå URL-data eller andre kunders historie uden gyldigt owner-token.
-  - Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål og 503-grace.
+  - Redirects til private/link-local IPv4/IPv6-mål og falske DNS-svar afvises; hvert hop og sidste destination valideres.
+  - En HSTS-header med HTML/scriptpayload renderes som tekst og kan ikke skabe DOM-XSS i scanner-resultater.
+  - Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål, XSSPayload og 503-grace.
   - Privacy-siden nævner præcist Cloudflare KV, email, Stripe, Resend, BugBottle og local storage med retentionsperioder.
 
 ### 4. Byg ægte historik og pass-til-fail-alerts

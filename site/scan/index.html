@@ -96,7 +96,7 @@
 <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">Scan</span></li></ol></nav><!--/shell:crumbs-->
   <section class="pg hero">
     <h1>Scan a website for the EU compliance basics.</h1>
-    <p class="lede">Nine checks on the front page of any site: transport security, consent, trackers, privacy links, legal pages and headers. Free, no account, and the result is not stored anywhere.</p>
+    <p class="lede">Nine checks on the front page of any site: transport security, consent, trackers, privacy links, legal pages and headers. Free, no account, with a rate limit of 10 requests per minute per IP address. The worker processes the page for the request and keeps only a scan counter and hostname-level aggregate statistics, not the full URL, HTML, or result.</p>
     <form class="scanform" id="scan-form" data-keep>
       <input type="text" id="url-input" name="url" placeholder="yourdomain.com" aria-label="Website address to scan" required autocomplete="url" inputmode="url">
       <button class="btn" type="submit" id="scan-btn">Run the scan</button>
@@ -119,7 +119,7 @@
 
     <div class="monitor">
       <h3>Check this site again every morning</h3>
-      <p class="scan-hint">Register <strong id="mon-host"></strong> and you get an email when a check changes from pass to fail. Free while the monitoring service is in test; your address is used for this and nothing else.</p>
+      <p class="scan-hint">Register <strong id="mon-host"></strong> and you get an email when the overall score drops. Free while the monitoring service is in test; your address is used for this and nothing else.</p>
       <form id="mon-form" data-keep>
         <input type="email" id="mon-email" placeholder="you@company.com" required aria-label="Email address" autocomplete="email">
         <button class="btn" type="submit" id="mon-btn">Start daily checks</button>
@@ -134,7 +134,7 @@
     <dl class="explain">
       <dt>HTTPS and HSTS</dt><dd>The site must be served over TLS. HSTS tells browsers never to try plain HTTP again. A missing HSTS header is a warning, not a failure.</dd>
       <dt>Cookie consent</dt><dd>Looks for a known consent platform in the HTML. If you set no non-essential cookies you do not need one, and you can ignore the warning.</dd>
-      <dt>Trackers before consent</dt><dd>Analytics and advertising scripts that load without any consent mechanism on the page. Under ePrivacy and GDPR Article 6 these need prior consent.</dd>
+      <dt>Tracker and consent markers</dt><dd>Compares known analytics and ad scripts with consent-platform markers in the served HTML. It does not observe runtime request order or consent choices.</dd>
       <dt>Google Consent Mode v2</dt><dd>Only relevant if you use Google Ads or Analytics with EU visitors. Without it, Google limits your measurement.</dd>
       <dt>IAB TCF</dt><dd>Relevant for publishers selling programmatic ads. Everyone else can ignore it.</dd>
       <dt>Forms and privacy notice</dt><dd>A form without a privacy link nearby is the easiest GDPR finding there is. Add the link and a short sentence on what you do with the data.</dd>

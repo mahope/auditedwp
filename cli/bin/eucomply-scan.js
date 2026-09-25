@@ -85,8 +85,8 @@ function renderOne(data, opts) {
 
   // Upsell (unless --quiet)
   if (!opts.quiet) {
-    console.log(dim('Need auditor-ready PDF reports, DPA docs, NIS2 clauses & EAA statements?'));
-    console.log(dim('→ ') + cyan('https://auditedwp.pages.dev/#pricing') + dim('  ($79/yr)'));
+    console.log(dim('Need editable WordPress DPA, NIS2/DORA and EAA starters or an HTML scan report?'));
+    console.log(dim('→ ') + cyan('https://eucomplypro.com/pro/') + dim('  ($79/year per website)'));
     console.log();
   }
 

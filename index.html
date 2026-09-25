@@ -6,10 +6,10 @@
 <title>EUComply — Free EU Compliance Scan for Any Website</title>
 <meta name="description" content="Free online EU compliance scanner. Enter any URL and check HTTPS, cookie consent, privacy policy, forms and security headers against GDPR, NIS2, DORA and EAA requirements. Works on WordPress, Shopify, Webflow, Squarespace, Next.js — every stack.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
-<link rel="canonical" href="https://auditedwp.pages.dev/">
+<link rel="canonical" href="https://eucomplypro.com/">
 <meta property="og:title" content="EUComply — Free EU Compliance Scan for Any Website">
 <meta property="og:description" content="Enter any URL. Get a free GDPR, NIS2, DORA and EAA compliance report in seconds. No installation, no WordPress required.">
-<meta property="og:url" content="https://auditedwp.pages.dev/">
+<meta property="og:url" content="https://eucomplypro.com/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="EUComply — Free EU Compliance Scan">
@@ -184,8 +184,8 @@
       <div class="card" style="text-align:center">
         <div class="icon">⚙️</div>
         <h3>WordPress Plugin</h3>
-        <p>Same checks, run from your WordPress admin dashboard. Includes backup detection, plugin health, and WordPress core version checks. Free, open source (GPL v2).</p>
-        <a class="btn ghost" href="assets/eucomply-1.3.0.zip">↓ Download plugin (ZIP)</a>
+        <p>Six WordPress-specific checks run from your WordPress admin dashboard. They are related to, but not identical with, the nine URL checks in the universal scanner. Includes backup detection, plugin health, and WordPress core version checks. Free, open source (GPL v2).</p>
+        <a class="btn ghost" href="site/assets/eucomply-1.3.1.zip">↓ Download plugin (ZIP)</a>
       </div>
     </div>
   </div>
@@ -194,12 +194,12 @@
 <section id="pricing">
   <div class="wrap">
     <h2>Pricing</h2>
-    <p class="lede">The online scanner is free for any URL — no limits, no sign-up. Pro generates the documentation you need to prove compliance to auditors, clients, and insurers.</p>
+    <p class="lede">The online scanner is free for any URL — no sign-up, with a rate limit of 10 requests per minute per IP address. The current Pro license is for the WordPress plugin and unlocks editable HTML document starters plus an HTML report from the latest WordPress scan.</p>
     <div class="grid2">
       <div class="pricing-card">
         <h3>Free Scanner</h3>
         <div class="price">$0</div>
-        <div class="per">No sign-up, no limits</div>
+        <div class="per">No sign-up; 10 requests/minute per IP address</div>
         <ul>
           <li>SSL / HTTPS + HSTS check</li>
           <li>Cookie consent detection (15+ platforms)</li>
@@ -216,15 +216,14 @@
         <div class="per">Per site · Annual subscription</div>
         <ul>
           <li>Everything in Free, plus:</li>
-          <li>📄 PDF compliance report (auditor-ready)</li>
-          <li>📋 DPA generator (GDPR data processing agreement)</li>
-          <li>📑 NIS2 vendor clause kit</li>
-          <li>♿ EAA accessibility statement generator</li>
-          <li>📊 Quarterly compliance narrative</li>
-          <li>📧 Email alerts on compliance changes</li>
+          <li>📄 HTML compliance report from the latest WordPress scan</li>
+          <li>📋 Editable DPA starter (GDPR data processing agreement)</li>
+          <li>📑 Editable NIS2/DORA vendor clause starter</li>
+          <li>♿ Editable EAA accessibility statement starter</li>
+          <li>🏷️ Agency or business name in generated documents</li>
         </ul>
-        <a class="btn" href="/store/">Get Pro — $79/yr</a>
-        <p class="note">Payment via Stripe · 14-day money-back guarantee</p>
+        <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Buy Pro — $79/year per website</a>
+        <p class="note">Payment via Stripe. Hosted daily monitoring, runtime PDF reports and multi-site management are not included today.</p>
       </div>
     </div>
   </div>
@@ -247,15 +246,15 @@
     </details>
     <details>
       <summary>Is my data stored or tracked?</summary>
-      <p>No. The scanner fetches the URL, runs checks in memory, and returns results. No scan data, URLs, or IPs are logged or stored. The WordPress plugin runs everything on your own server — no data leaves your installation.</p>
+      <p>The scanner runs in a Cloudflare Worker, returns the result to your browser, and keeps only a scan counter and hostname-level aggregate statistics; it does not store the full URL, page HTML, or scan results. The WordPress plugin runs its checks on your server, but Pro license validation sends the license key, site hostname, and product identifier to mahope.tools.</p>
     </details>
     <details>
       <summary>Who needs Pro?</summary>
-      <p>Anyone who needs <strong>documented proof</strong> of compliance — web agencies managing client sites, SaaS companies responding to vendor questionnaires, businesses subject to EU procurement or insurance reviews. Pro generates auditor-ready PDFs and legal templates you can forward directly.</p>
+      <p>WordPress site owners who need editable DPA, NIS2/DORA and EAA document starters plus an HTML report from their latest WordPress scan. The Pro license costs $79 per website per year and covers one website. Full document templates are sold separately.</p>
     </details>
     <details>
       <summary>What about the European Accessibility Act (EAA)?</summary>
-      <p>The EAA (effective June 2025) requires accessible digital services. EUComply checks for an accessibility statement page on your site. Pro generates an EAA conformance statement template. Full WCAG audit requires a dedicated tool — the scanner tells you where to start.</p>
+      <p>The EAA (effective June 2025) requires accessible digital services. EUComply checks for an accessibility statement page on your site. Pro generates an editable EAA statement starter. A full WCAG audit requires a dedicated tool — the scanner tells you where to start.</p>
     </details>
   </div>
 </section>

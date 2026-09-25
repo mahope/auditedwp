@@ -1,15 +1,13 @@
 /**
  * EUComply Compliance Badge
- * Embeddable widget — shows "Scanned by EUComply" on any website.
+ * Embeddable widget — links to the free EUComply scanner on any website.
  * 
  * Usage:
  *   <script async src="https://eucomplypro.com/assets/eucomply-badge.js"
  *           data-eucomply-badge
- *           data-url="https://example.com"
  *           data-position="bottom-right"></script>
  *
  * Options (data-attributes):
- *   data-url        — Your site URL (default: window.location.origin)
  *   data-position   — bottom-left | bottom-right (default: bottom-right)
  *   data-theme      — light | dark (default: light)
  *   data-hide-link  — true to show badge text without hyperlink (default: false)
@@ -20,8 +18,7 @@
   var SCRIPT = document.currentScript || document.querySelector('script[data-eucomply-badge]');
   if (!SCRIPT) return;
 
-  var ORIGIN = location.origin;
-  var SITE_URL = SCRIPT.getAttribute('data-url') || window.location.origin;
+  var ORIGIN = 'https://eucomplypro.com';
   var POSITION = SCRIPT.getAttribute('data-position') || 'bottom-right';
   var THEME    = SCRIPT.getAttribute('data-theme') || 'light';
   var HIDE_LINK = SCRIPT.getAttribute('data-hide-link') === 'true';
@@ -40,7 +37,7 @@
 
   var container = document.createElement('div');
   container.id = 'eucomply-badge-container';
-  container.setAttribute('aria-label', 'EU Compliance Badge — Scanned by EUComply');
+  container.setAttribute('aria-label', 'EUComply scanner link');
 
   var edge = POSITION === 'bottom-left' ? 'left' : 'right';
   container.style.cssText = [
@@ -80,10 +77,10 @@
     textSpan.textContent = '✓ EUComply';
   } else {
     var link = document.createElement('a');
-    link.href = ORIGIN + '/?ref=badge';
+    link.href = ORIGIN + '/scan/?ref=badge';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.textContent = '✓ Scanned by EUComply';
+    link.textContent = '✓ Check your site with EUComply';
     link.style.cssText = 'color:' + colors.accent + ';text-decoration:none;font-weight:600;';
     link.onmouseover = function () { link.style.textDecoration = 'underline'; };
     link.onmouseout = function () { link.style.textDecoration = 'none'; };

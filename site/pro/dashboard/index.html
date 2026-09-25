@@ -3,27 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Dashboard — EUComply Compliance Monitoring</title>
-<meta name="description" content="EUComply Pro dashboard: live compliance score, 30-day history, PDF audit reports, badge embed, and alert settings.">
+<title>Concept demo — EUComply hosted dashboard</title>
+<meta name="description" content="Concept demo for a future hosted dashboard. No customer account or live customer data is shown.">
 <link rel="canonical" href="https://eucomplypro.com/pro/dashboard/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b6e4f">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="EUComply">
-<meta property="og:locale" content="en_GB">
-<meta property="og:url" content="https://eucomplypro.com/pro/dashboard/">
-<meta property="og:title" content="Pro Dashboard — EUComply Compliance Monitoring">
-<meta property="og:description" content="EUComply Pro dashboard: live compliance score, 30-day history, PDF audit reports, badge embed, and alert settings.">
-<meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Pro Dashboard — EUComply Compliance Monitoring">
-<meta name="twitter:description" content="EUComply Pro dashboard: live compliance score, 30-day history, PDF audit reports, badge embed, and alert settings.">
-<meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
+<meta name="robots" content="noindex, follow">
 <style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5}
 /* Header */
 header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
@@ -95,19 +83,17 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
 .alert-row .toggle.on .dot{left:20px}
 .alert-row .email{color:var(--muted);font-size:13px}
 /* Glowing pulse for live indicator */
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;margin-right:6px;vertical-align:middle}
-@media(max-width:700px){.score-row{flex-direction:column}
+.score-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap}
 .score-card{min-width:auto}
 .scan-item .date{min-width:100px}
-.chart-bar .bar-label{font-size:8px}}</style>
-<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/pro/dashboard/","url":"https://eucomplypro.com/pro/dashboard/","name":"Pro Dashboard — EUComply Compliance Monitoring","description":"EUComply Pro dashboard: live compliance score, 30-day history, PDF audit reports, badge embed, and alert settings.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+.chart-bar .bar-label{font-size:8px}</style>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/pro/dashboard/","url":"https://eucomplypro.com/pro/dashboard/","name":"Concept demo — EUComply hosted dashboard","description":"Concept demo for a future hosted dashboard. No customer account or live customer data is shown.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
-<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://eucomplypro.com/"},{"@type":"ListItem","position":2,"name":"Pro","item":"https://eucomplypro.com/pro/"},{"@type":"ListItem","position":3,"name":"Compliance Dashboard — Live Demo (shopify.com)","item":"https://eucomplypro.com/pro/dashboard/"}]}</script>
+<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://eucomplypro.com/"},{"@type":"ListItem","position":2,"name":"Pro","item":"https://eucomplypro.com/pro/"},{"@type":"ListItem","position":3,"name":"Compliance Dashboard — concept demo","item":"https://eucomplypro.com/pro/dashboard/"}]}</script>
 </head>
-<body>
+<body data-product-state="concept-demo">
 <a class="skip" href="#main">Skip to content</a>
 <nav class="fam" aria-label="Mahope tools">
   <div class="container">
@@ -152,18 +138,18 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
   </div>
 </header>
 <main class="container layout-wide" id="main" data-shell>
-<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/pro/">Pro</a></li><li><span aria-current="page">Compliance Dashboard — Live Demo (shopify.com)</span></li></ol></nav><!--/shell:crumbs-->
+<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/pro/">Pro</a></li><li><span aria-current="page">Compliance Dashboard — concept demo</span></li></ol></nav><!--/shell:crumbs-->
 <div class="pg-legacy">
 <div class="dash-hdr">
   <div class="wrap">
     <div class="dash-title">
-      <h1><span class="live-dot"></span>Compliance Dashboard <span style="font-size:13px;font-weight:400;color:var(--muted)">— Live Demo (shopify.com)</span></h1>
-      <p>This is a live demo of the Pro dashboard, running on a real site. Your dashboard looks like this — with your own domain, history and alerts.</p>
+      <h1>Compliance Dashboard <span style="font-size:13px;font-weight:400;color:var(--muted)">— concept demo</span></h1>
+      <p>This is a concept demo of a future hosted dashboard, not a customer account. The domain, history, controls and reports shown are illustrative; no live customer data is displayed.</p>
     </div>
     <div class="dash-site">
       <span></span> <code id="demo-url">your-site.com</code>
       <span style="font-size:12px;color:var(--muted)">·</span>
-      <span style="font-size:12px;color:var(--muted)" id="last-update">Checking…</span>
+      <span style="font-size:12px;color:var(--muted)" id="last-update">Illustrative data</span>
     </div>
   </div>
 </div>
@@ -175,12 +161,12 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
   <div class="score-card">
     <div class="label">Overall Score</div>
     <div class="value good" id="overall-score">—</div>
-    <div class="sub">Last 30 days average</div>
+    <div class="sub">Illustrative 30-day average</div>
   </div>
   <div class="score-card">
-    <div class="label">Scans Today</div>
+    <div class="label">Example Scans</div>
     <div class="value" id="scans-today" style="color:var(--accent)">—</div>
-    <div class="sub">Daily automated check</div>
+    <div class="sub">Illustrative example</div>
   </div>
   <div class="score-card">
     <div class="label">Issues Found</div>
@@ -188,15 +174,15 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
     <div class="sub">Open items needing attention</div>
   </div>
   <div class="score-card">
-    <div class="label">Days Monitored</div>
+    <div class="label">Example Days</div>
     <div class="value" id="days-monitored" style="color:var(--muted)">—</div>
-    <div class="sub">Continuous history</div>
+    <div class="sub">Illustrative history</div>
   </div>
 </div>
 
 <!-- History chart -->
 <div class="chart-area">
-  <h2>30-Day Compliance History <small>Score trend over the last 30 days</small></h2>
+  <h2>Illustrative 30-day history <small>Score trend in this concept demo</small></h2>
   <div class="chart-bars" id="chart-bars"></div>
   <p style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">Each bar is one day's scan. 
     <span style="color:var(--ok)">● Pass</span> · 
@@ -207,9 +193,9 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
 
 <!-- Scan log -->
 <div class="scan-log">
-  <h2>Recent Scans <small>Last 10 automated checks — illustrative example</small></h2>
+  <h2>Illustrative example results <small>Example output only</small></h2>
   <div id="scan-items"></div>
-  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center"><a href="/pro/sample-report/" style="color:var(--accent)">See a full sample report →</a>
+  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center"><a href="/pro/sample-report/" style="color:var(--accent)">View the static sample →</a>
   </p>
 </div>
 
@@ -217,24 +203,24 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
 <h2 style="font-size:16px;margin-bottom:12px;margin-top:4px">Quick Actions</h2>
 <div class="quick-grid">
   <a class="quick-card" href="/pro/sample-report/"><div class="icon"></div>
-    <h3>Download Latest PDF Report</h3>
-    <p>Auditor-ready compliance report with timestamp, findings and fix recommendations.</p>
-    <span class="badge">Included with Pro</span>
+    <h3>View the sample HTML report</h3>
+    <p>Static sample only; runtime PDF reports are not included in the current Pro license.</p>
+    <span class="badge">Sample</span>
   </a>
   <a class="quick-card" href="/badge/"><div class="icon"></div>
-    <h3>Get Your Compliance Badge</h3>
-    <p>Embed a live badge on your site footer showing your latest score. Click-through verifiable.</p>
-    <span class="badge">2 lines of HTML</span>
+    <h3>View the badge concept</h3>
+    <p>A future live verification badge is not included in the current Pro license.</p>
+    <span class="badge">Concept only</span>
   </a>
   <a class="quick-card" href="/store/"><div class="icon"></div>
-    <h3>Download Templates Bundle</h3>
-    <p>DPA (Art. 28 GDPR), NIS2 vendor clauses, EAA accessibility statement — included with Pro.</p>
-    <span class="badge">$216+ value</span>
+    <h3>Templates are sold separately</h3>
+    <p>Full DPA, NIS2/DORA and EAA files are available in the template store; they are not included in the current Pro license.</p>
+    <span class="badge">Separate products</span>
   </a>
   <a class="quick-card" href="/pro/"><div class="icon"></div>
-    <h3>Configure Email Alerts</h3>
-    <p>Get notified when your score drops, a certificate expires, or a new compliance gap is detected.</p>
-    <span class="badge">Included with Pro</span>
+    <h3>Email alerts are not available today</h3>
+    <p>Pass-to-fail email alerts are planned and are not included in the current Pro license.</p>
+    <span class="badge">Roadmap</span>
   </a>
 </div>
 
@@ -261,27 +247,27 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
     <span>Weekly summary report (every Monday)</span>
     <span class="email">—</span>
   </div>
-  <p style="margin-top:12px;font-size:13px;color:var(--muted)">Alert settings shown are part of the Pro plan. <a href="/pro/" style="color:var(--accent)">See what's included →</a></p>
+  <p style="margin-top:12px;font-size:13px;color:var(--muted)">These controls illustrate a future email-alert flow. They are not available today.</p>
 </div>
 
 <!-- Setup wizard -->
 <div class="setup-area">
-  <h2>How Pro Monitoring Works</h2>
+  <h2>Planned hosted monitoring concept</h2>
   <div class="setup-steps">
     <div class="setup-step">
       <div class="num">1</div>
       <h4>Add Your Site</h4>
-      <p>Enter your URL once during checkout. We take it from there.</p>
+      <p>Enter your URL once during a future hosted-service setup. This concept demo does not collect or submit it.</p>
     </div>
     <div class="setup-step">
       <div class="num">2</div>
-      <h4>Daily Automated Scans</h4>
-      <p>Every 24 hours we re-check your site for compliance gaps and score changes.</p>
+      <h4>Planned daily scans</h4>
+      <p>A future hosted service would re-check your site for compliance gaps and score changes.</p>
     </div>
     <div class="setup-step">
       <div class="num">3</div>
       <h4>Monitor &amp; Fix</h4>
-      <p>Check your dashboard, download PDF reports, get email alerts. Proactive compliance, not reactive.</p>
+      <p>This demo illustrates a future report and alert flow. Those features are not available today.</p>
     </div>
   </div>
 </div>
@@ -290,131 +276,101 @@ header{background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
 
 <script>
 (function() {
-  // ── Load live demo data from the monitoring worker ──
-  var DEMO_URL = 'shopify.com';
+  var scoreEl = document.getElementById('overall-score');
+  var scansEl = document.getElementById('scans-today');
+  var issuesEl = document.getElementById('issues-found');
+  var daysEl = document.getElementById('days-monitored');
+  var updateEl = document.getElementById('last-update');
+  var urlEl = document.getElementById('demo-url');
+  var chartEl = document.getElementById('chart-bars');
+  var scanLogEl = document.getElementById('scan-items');
+  if (!scoreEl) return;
 
-  function renderDashboard(data) {
-    var scoreEl = document.getElementById('overall-score');
-    var scansEl = document.getElementById('scans-today');
-    var issuesEl = document.getElementById('issues-found');
-    var daysEl = document.getElementById('days-monitored');
-    var updateEl = document.getElementById('last-update');
-    var urlEl = document.getElementById('demo-url');
-    var chartEl = document.getElementById('chart-bars');
-    var scanLogEl = document.getElementById('scan-items');
+  var score = 72;
+  var days = 14;
+  scoreEl.textContent = score + '%';
+  scoreEl.className = 'value ' + (score >= 70 ? 'good' : score >= 40 ? 'mid' : 'bad');
+  scansEl.textContent = '1 example';
+  issuesEl.textContent = score < 60 ? '3' : score < 80 ? '2' : '0';
+  daysEl.textContent = days + ' example days';
+  updateEl.textContent = 'Example data · 15 Jan 2026';
+  urlEl.textContent = 'example.com';
 
-    if (!scoreEl) return;
-
-    var score = data && data.currentScore != null ? data.currentScore : 72;
-    var days = data && data.days ? data.days : 14;
-    var lastScan = data && data.lastScan ? data.lastScan : new Date().toISOString().split('T')[0];
-
-    // Score display
-    scoreEl.textContent = score + '%';
-    scoreEl.className = 'value ' + (score >= 70 ? 'good' : score >= 40 ? 'mid' : 'bad');
-
-    scansEl.textContent = '1 today';
-    issuesEl.textContent = score < 60 ? '3' : score < 80 ? '2' : '0';
-    daysEl.textContent = days + ' days';
-    updateEl.textContent = 'Last scan: ' + lastScan;
-    urlEl.textContent = DEMO_URL;
-
-    // Generate 30-day history
-    var history = [];
-    var seedScore = score;
-    var today = new Date();
-    for (var i = 29; i >= 0; i--) {
-      var d = new Date(today);
-      d.setDate(d.getDate() - i);
-      var dayScore = seedScore + Math.round((Math.random() - 0.5) * 20);
-      dayScore = Math.max(20, Math.min(100, dayScore));
-      history.push({
-        date: d.toISOString().split('T')[0],
-        score: dayScore,
-        label: (i === 0 ? 'Today' : (i === 1 ? 'Yesterday' : d.toLocaleDateString('en-US', {month:'short', day:'numeric'})))
-      });
-    }
-
-    // Render bars
-    chartEl.innerHTML = '';
-    var maxScore = 100;
-    history.forEach(function(h) {
-      var col = document.createElement('div');
-      col.className = 'chart-bar';
-      var bar = document.createElement('div');
-      var barHeight = Math.max(4, (h.score / maxScore) * 120);
-      bar.style.height = barHeight + 'px';
-      bar.className = 'bar ' + (h.score >= 70 ? 'good' : h.score >= 40 ? 'mid' : 'bad');
-      bar.title = h.date + ': ' + h.score + '%';
-      col.appendChild(bar);
-      var lbl = document.createElement('div');
-      lbl.className = 'bar-label';
-      lbl.textContent = h.label;
-      col.appendChild(lbl);
-      chartEl.appendChild(col);
-    });
-
-    // Generate scan log
-    scanLogEl.innerHTML = '';
-    var issues = [
-      { status: 'pass', text: 'All 6 compliance checks passed', scoreColor: 'good' },
-      { status: 'pass', text: 'SSL certificate valid (203 days)', scoreColor: 'good' },
-      { status: 'warn', text: 'Cookie consent banner detected — needs review', scoreColor: 'mid' },
-      { status: 'pass', text: 'Privacy policy link found in footer', scoreColor: 'good' },
-      { status: 'pass', text: 'HSTS header present, preload ready', scoreColor: 'good' },
-      { status: 'fail', text: 'Sign-up form missing privacy notice checkbox', scoreColor: 'bad' },
-      { status: 'pass', text: 'Impressum / legal notice found', scoreColor: 'good' },
-      { status: 'warn', text: 'Contact form sends data over HTTP (not HTTPS)', scoreColor: 'mid' },
-      { status: 'pass', text: 'GDPR cookie categories defined', scoreColor: 'good' },
-      { status: 'pass', text: 'DORA resilience headers present', scoreColor: 'good' }
-    ];
-
-      var guides = {
-        fail: '/blog/gdpr-cookie-banner-fines/',
-        warn: '/blog/eu-cookie-consent-guide-2026/',
-        pass: '/scan/'
-      };
-    issues.forEach(function(issue, idx) {
-      var item = document.createElement('div');
-      item.className = 'scan-item';
-      var dot = document.createElement('span');
-      dot.className = 'status ' + issue.status;
-      item.appendChild(dot);
-      var date = document.createElement('span');
-      date.className = 'date';
-      var d = new Date();
-      d.setDate(d.getDate() - idx);
-      date.textContent = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-      item.appendChild(date);
-      var text = document.createElement('span');
-      text.textContent = issue.text;
-      item.appendChild(text);
-      var score = document.createElement('span');
-      score.className = 'score';
-      var s = issue.status === 'pass' ? 100 : issue.status === 'warn' ? 60 : 30;
-      score.textContent = s + '%';
-      score.style.color = s >= 80 ? 'var(--ok)' : s >= 50 ? 'var(--warn)' : 'var(--fail)';
-      item.appendChild(score);
-      var actions = document.createElement('span');
-      actions.className = 'actions';
-      var link = document.createElement('a');
-      link.href = guides[issue.status] || '/scan/';
-      link.textContent = issue.status === 'fail' || issue.status === 'warn' ? 'View fix guide →' : 'View details →';
-      actions.appendChild(link);
-      item.appendChild(actions);
-      scanLogEl.appendChild(item);
+  var history = [];
+  var start = new Date(Date.UTC(2026, 0, 15));
+  for (var i = 29; i >= 0; i--) {
+    var d = new Date(start);
+    d.setUTCDate(d.getUTCDate() - i);
+    var dayScore = 68 + ((29 - i) % 6);
+    history.push({
+      date: d.toISOString().split('T')[0],
+      score: dayScore,
+      label: i === 0 ? 'Today' : (i === 1 ? 'Yesterday' : d.toLocaleDateString('en-US', {month:'short', day:'numeric', timeZone:'UTC'}))
     });
   }
 
-  // Fetch live data, fallback to generated
-  fetch('https://eucomply-watch.mahope-eeb.workers.dev/status?url=' + encodeURIComponent(DEMO_URL))
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      renderDashboard({currentScore: d.currentScore, days: d.days, lastScan: d.lastScan});
-    })
-    .catch(function() {
-      renderDashboard({});
-    });
+  chartEl.innerHTML = '';
+  history.forEach(function(h) {
+    var col = document.createElement('div');
+    col.className = 'chart-bar';
+    var bar = document.createElement('div');
+    bar.style.height = Math.max(4, (h.score / 100) * 120) + 'px';
+    bar.className = 'bar ' + (h.score >= 70 ? 'good' : h.score >= 40 ? 'mid' : 'bad');
+    bar.title = h.date + ': ' + h.score + '%';
+    col.appendChild(bar);
+    var lbl = document.createElement('div');
+    lbl.className = 'bar-label';
+    lbl.textContent = h.label;
+    col.appendChild(lbl);
+    chartEl.appendChild(col);
+  });
+
+  scanLogEl.innerHTML = '';
+  var issues = [
+    { status: 'pass', text: 'Example check passed' },
+    { status: 'pass', text: 'Example SSL certificate valid' },
+    { status: 'warn', text: 'Example cookie banner needs review' },
+    { status: 'pass', text: 'Example privacy policy link found' },
+    { status: 'pass', text: 'Example HSTS header present' },
+    { status: 'fail', text: 'Example form missing a privacy notice' },
+    { status: 'pass', text: 'Example legal notice found' },
+    { status: 'warn', text: 'Example contact form needs HTTPS review' },
+    { status: 'pass', text: 'Example cookie categories defined' },
+    { status: 'pass', text: 'Example DORA resilience headers present' }
+  ];
+  var guides = {
+    fail: '/blog/gdpr-cookie-banner-fines/',
+    warn: '/blog/eu-cookie-consent-guide-2026/',
+    pass: '/scan/'
+  };
+  issues.forEach(function(issue, idx) {
+    var item = document.createElement('div');
+    item.className = 'scan-item';
+    var dot = document.createElement('span');
+    dot.className = 'status ' + issue.status;
+    item.appendChild(dot);
+    var date = document.createElement('span');
+    date.className = 'date';
+    date.textContent = '2026-01-' + String(15 - idx).padStart(2, '0');
+    item.appendChild(date);
+    var text = document.createElement('span');
+    text.textContent = issue.text;
+    item.appendChild(text);
+    var score = document.createElement('span');
+    score.className = 'score';
+    var value = issue.status === 'pass' ? 100 : issue.status === 'warn' ? 60 : 30;
+    score.textContent = value + '%';
+    score.style.color = value >= 80 ? 'var(--ok)' : value >= 50 ? 'var(--warn)' : 'var(--fail)';
+    item.appendChild(score);
+    var actions = document.createElement('span');
+    actions.className = 'actions';
+    var link = document.createElement('a');
+    link.href = guides[issue.status] || '/scan/';
+    link.textContent = issue.status === 'fail' || issue.status === 'warn' ? 'View fix guide →' : 'View details →';
+    actions.appendChild(link);
+    item.appendChild(actions);
+    scanLogEl.appendChild(item);
+  });
 })();
 </script>
 </div><!--/pg-legacy-->

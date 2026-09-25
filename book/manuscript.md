@@ -926,6 +926,6 @@ Every website serving EU visitors should pass these checks:
 
 **About This Book**
 
-This handbook was compiled by EUComply — a free website compliance scanner that checks any URL for GDPR compliance signals, security headers, SSL/TLS configuration, and common vulnerabilities. Visit https://auditedwp.pages.dev to scan your website for free.
+This handbook was compiled by EUComply — a free website compliance scanner that checks any URL for GDPR compliance signals, security headers, SSL/TLS configuration, and common vulnerabilities. Visit https://eucomplypro.com to scan your website for free.
 
 The author holds no legal qualifications. This book is a practical guide written from research and industry experience, not a substitute for professional legal advice.
