@@ -13,7 +13,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG` (del 2 af 2): **3b — licens-entitlement, 409-semantik, `deactivate`, `warn` i summen, privatlivstekst** på `ceo/license-409-deactivate`, commit `e9f1e09`.
 - `FÆRDIG` (kode + tests grøn, **ikke live** — kræver worker-deploy): **4 — Byg ægte historik og pass-til-fail-alerts** på `ceo/watch-per-check-history`, commit `1785766`.
 - `FÆRDIG` (kode + CI grøn, live-verificering afventer næste deploy-vindue): **8 — Stop offentlig udgivelse af interne og betalte filer** på `ceo/deploy-hygiene`, commit `317e382`.
-- Næste opgave: **9 — Gør kvalitetsgaten permanent i CI**. Den er uafhængig af alle svar, og opgave 8 har nu lagt den konkrete `build → check → deploy`-rækkefølge som grund, den skal bygge videre på. Herefter **10 — Forbedr konvertering efter ærlig baseline**. Opgave 5 (kunderapporter) kræver stadig svar på spørgsmål 1 og må derfor ikke begyndes.
+- Næste opgave: **9 — Gør kvalitetsgaten permanent i CI**. Den er uafhængig af alle svar, og opgave 8 har lagt `build → check → deploy` som grund. Først skal CI-kontrollen rettes: den tester `/IMPLEMENTATION_PLAN.md`, som aldrig har været eksponeret, så den beviser intet (spørgsmål 12). Herefter **10 — Forbedr konvertering efter ærlig baseline**. Opgave 5 (kunderapporter) kræver svar på spørgsmål 1 og må derfor ikke begyndes.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
