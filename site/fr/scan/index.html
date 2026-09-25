@@ -247,6 +247,18 @@
   var monMsg = document.getElementById('mon-msg');
   var monBtn = document.getElementById('mon-btn');
   var monEmail = document.getElementById('mon-email');
+
+  // The worker hands out an unguessable owner token on registration. It is the
+  // only credential needed to read results or stop the checks, so keep it per
+  // site in local storage. Nothing sensitive is sent anywhere else.
+  function monKey(h) { return 'eucomply.mon.' + h; }
+  function monToken(h) {
+    try { return localStorage.getItem(monKey(h)) || ''; } catch (e) { return ''; }
+  }
+  function monSetToken(h, t) {
+    try { if (t) localStorage.setItem(monKey(h), t); else localStorage.removeItem(monKey(h)); } catch (e) {}
+  }
+
   monForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     monMsg.textContent = ''; monMsg.className = 'msg';
@@ -254,10 +266,14 @@
     if (!target) { monMsg.textContent = T.first; monMsg.className = 'msg err'; return; }
     monBtn.disabled = true; monBtn.textContent = T.registering;
     try {
+      var body = { url: target, email: monEmail.value.trim() };
+      var known = monToken(target);
+      if (known) body.ownerToken = known;
       var r = await fetch(WATCH + '/register', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: target, email: monEmail.value.trim() }) });
+        body: JSON.stringify(body) });
       var d = await r.json();
       if (r.ok && d.ok) {
+        if (d.ownerToken) monSetToken(target, d.ownerToken);
         monMsg.className = 'msg ok'; monMsg.textContent = d.message || (target + ' est désormais vérifié chaque jour.');
         monBtn.textContent = T.running; document.getElementById('mon-unsub').hidden = false;
       } else {
@@ -272,14 +288,17 @@
   document.getElementById('mon-unsub-link').addEventListener('click', async function (e) {
     e.preventDefault();
     var target = lastUrl ? host(lastUrl) : input.value.trim();
+    var token = monToken(target);
     var email = monEmail.value.trim();
-    if (!email) { monMsg.className = 'msg err'; monMsg.textContent = T.unsubhint; monEmail.focus(); return; }
+    if (!token && !email) { monMsg.className = 'msg err'; monMsg.textContent = T.unsubhint; monEmail.focus(); return; }
     try {
+      var body = { url: target };
+      if (token) body.ownerToken = token; else body.email = email;
       var r = await fetch(WATCH + '/unregister', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: target, email: email }) });
+        body: JSON.stringify(body) });
       var d = await r.json();
       monMsg.className = r.ok ? 'msg ok' : 'msg err'; monMsg.textContent = d.message || d.error || '';
-      if (r.ok) { document.getElementById('mon-unsub').hidden = true; monBtn.textContent = T.start; monBtn.disabled = false; }
+      if (r.ok) { monSetToken(target, ''); document.getElementById('mon-unsub').hidden = true; monBtn.textContent = T.start; monBtn.disabled = false; }
     } catch (ex) { monMsg.className = 'msg err'; monMsg.textContent = T.network; }
   });
 })();

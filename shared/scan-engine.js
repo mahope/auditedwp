@@ -158,30 +158,222 @@ export function json(data, status = 200) {
   });
 }
 
-export function isPublicHostname(hostname) {
-  const h = String(hostname || "").toLowerCase().replace(/\.$/, "");
-  // Localhost variants and bare IP literals
-  if (!h || h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) return false;
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) {
-    const [a, b] = h.split(".").map(Number);
-    if (a === 10 || a === 127 || a === 0) return false;
-    if (a === 192 && b === 168) return false;
-    if (a === 172 && b >= 16 && b <= 31) return false;
-    if (a === 169 && b === 254) return false; // link-local incl. cloud metadata
-    if (a === 100 && b >= 64 && b <= 127) return false; // CGNAT
-    if (a >= 224) return false; // multicast/reserved
-    return true;
-  }
-  // IPv6 loopback/link-local/mapped
-  if (h.includes(":")) {
-    return !(/^(::1|::|f[cd]|fe80)/i.test(h)) && !/^0*0*$/i.test(h.replace(/:/g, ""));
-  }
+/** Max redirect hops we follow before giving up. */
+export const MAX_REDIRECTS = 5;
+/** Hard cap on how much of a response body we read (bytes). */
+export const MAX_BODY_BYTES = 2_000_000;
+
+/**
+ * Classify a bare IPv4 literal. Returns true when the address is routable on
+ * the public internet, false for loopback/private/link-local/reserved ranges.
+ * Range list covers RFC 1918, CGNAT, loopback, "this network", link-local
+ * (incl. cloud metadata at 169.254.169.254), benchmarking, multicast and
+ * reserved space.
+ */
+export function isPublicIPv4(a, b, c, d) {
+  if (a === 0) return false;                                   // 0.0.0.0/8   "this network"
+  if (a === 10) return false;                                  // 10/8        private
+  if (a === 127) return false;                                 // 127/8       loopback
+  if (a === 100 && b >= 64 && b <= 127) return false;          // 100.64/10   CGNAT
+  if (a === 169 && b === 254) return false;                    // 169.254/16  link-local + cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return false;           // 172.16/12   private
+  if (a === 192 && b === 0 && c === 0) return false;           // 192.0.0/24  IETF protocol assignments
+  if (a === 192 && b === 0 && c === 2) return false;           // 192.0.2/24  TEST-NET-1
+  if (a === 192 && b === 88 && c === 99) return false;          // 192.88.99/24 6to4 relay anycast
+  if (a === 192 && b === 168) return false;                     // 192.168/16  private
+  if (a === 198 && (b === 18 || b === 19)) return false;        // 198.18/15   benchmarking
+  if (a === 198 && b === 51 && c === 100) return false;         // 198.51.100/24 TEST-NET-2
+  if (a === 203 && b === 0 && c === 113) return false;          // 203.0.113/24 TEST-NET-3
+  if (a >= 224) return false;                                  // 224/4       multicast + 240/4 reserved
   return true;
+}
+
+/**
+ * Expand an IPv6 literal to its 8 hextets, resolving "::" and a trailing
+ * IPv4 tail. Returns null when the input is not a valid IPv6 address.
+ */
+export function expandIPv6(input) {
+  let h = String(input || "").toLowerCase();
+  if (h.startsWith("[") && h.endsWith("]")) h = h.slice(1, -1);
+  if (!h || h.indexOf(":") === -1) return null;
+
+  // Split off a dotted-quad tail (e.g. "::ffff:127.0.0.1").
+  let tail = [];
+  const lastColon = h.lastIndexOf(":");
+  const tailPart = h.slice(lastColon + 1);
+  if (tailPart.includes(".")) {
+    const octets = tailPart.split(".").map(Number);
+    if (octets.length !== 4 || octets.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+    tail = [(octets[0] << 8) | octets[1], (octets[2] << 8) | octets[3]];
+    // The tail occupies the final two 16-bit groups, so fold it into the text
+    // and stop counting it separately.
+    h = h.slice(0, lastColon + 1) + tail.map(v => v.toString(16)).join(":");
+    tail = [];
+  }
+
+  const halves = h.split("::");
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const rear = halves.length === 2 ? (halves[1] ? halves[1].split(":") : []) : [];
+  const middle = 8 - (head.length + rear.length + tail.length);
+  if (halves.length === 1) {
+    if (head.length + tail.length !== 8) return null;
+  } else if (middle < 0) {
+    return null;
+  }
+  const groups = [...head, ...new Array(middle).fill("0"), ...rear, ...tail.map(v => v.toString(16))];
+  if (groups.length !== 8) return null;
+  const out = groups.map(g => (/^[0-9a-f]{1,4}$/.test(g) ? parseInt(g, 16) : NaN));
+  return out.some(Number.isNaN) ? null : out;
+}
+
+/** Classify a bare IPv6 literal. Same contract as isPublicIPv4. */
+export function isPublicIPv6(address) {
+  const g = expandIPv6(address);
+  if (!g) return false;
+  const isZeroPrefix = g.slice(0, 5).every(v => v === 0);
+  const last = g[7];
+
+  // ::1 loopback and :: unspecified
+  if (isZeroPrefix && g[5] === 0 && g[6] === 0) return false;
+  // ::/96 "IPv4-compatible" (::a.b.c.d) is deprecated and reserved; it is
+  // never a legitimate public destination and is a known loopback shorthand.
+  if (isZeroPrefix && g[5] === 0) return false;
+  // ::/128 handled above; 64:ff9b::/96 NAT64 and 64:ff9b:1::/48 map IPv4 — a
+  // private v4 stays private through them, so validate the embedded address.
+  if (g[0] === 0x0064 && g[1] === 0xff9b && g[2] === 0 && g[3] === 0 && g[4] === 0 && g[5] === 0) {
+    return isPublicIPv4((last >> 8) & 0xff, last & 0xff, (g[6] >> 8) & 0xff, g[6] & 0xff);
+  }
+  // IPv4-mapped (::ffff:0:0/96) and IPv4-compatible (::a.b.c.d) — unwrap.
+  if (isZeroPrefix && g[5] === 0xffff) {
+    return isPublicIPv4((g[6] >> 8) & 0xff, g[6] & 0xff, (last >> 8) & 0xff, last & 0xff);
+  }
+  // 6to4 (2002::/16) embeds the v4 address in the next 32 bits.
+  if (g[0] === 0x2002) {
+    return isPublicIPv4((g[1] >> 8) & 0xff, g[1] & 0xff, (g[2] >> 8) & 0xff, g[2] & 0xff);
+  }
+  // Teredo (2001:0000::/32) — server/client IPv4 in the last 32 bits.
+  if (g[0] === 0x2001 && g[1] === 0x0000) {
+    return isPublicIPv4((g[6] >> 8) & 0xff, g[6] & 0xff, (last >> 8) & 0xff, last & 0xff);
+  }
+  if (g[0] === 0xfe80) return false;                 // fe80::/10  link-local
+  if ((g[0] & 0xfe00) === 0xfc00) return false;       // fc00::/7   unique local
+  if ((g[0] & 0xff00) === 0xff00) return false;   // ff00::/8   multicast
+  if (g[0] === 0x2001 && g[1] === 0x0db8) return false; // 2001:db8::/32 documentation
+  if (g[0] === 0x0100 && g[1] === 0x0000 && g[2] === 0x0000) return false; // 100::/64 discard
+  return true;
+}
+
+/** Hostnames that always resolve inside a private/local network. */
+const BLOCKED_HOST_SUFFIXES = [
+  ".localhost", ".local", ".internal", ".home.arpa", ".lan", ".intranet", ".corp", ".private",
+];
+const BLOCKED_HOSTS = new Set([
+  "localhost", "metadata", "metadata.google.internal", "instance-data",
+  "metadata.goog", "169.254.169.254", "metadata.azure.com",
+]);
+
+export function isPublicHostname(hostname) {
+  const raw = String(hostname || "").toLowerCase();
+  const h = raw.replace(/\.$/, "");
+  if (!h) return false;
+  if (BLOCKED_HOSTS.has(h) || BLOCKED_HOST_SUFFIXES.some(sfx => h.endsWith(sfx))) return false;
+  // IPv6 literal — may arrive with the URL parser's surrounding brackets.
+  if (h.startsWith("[") || h.includes(":")) return isPublicIPv6(h);
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) {
+    const [a, b, c, d] = h.split(".").map(Number);
+    if ([a, b, c, d].some(n => !Number.isInteger(n) || n < 0 || n > 255)) return false;
+    return isPublicIPv4(a, b, c, d);
+  }
+  // Anything that is only digits and dots but is not a full quad ("127.1",
+  // "1.2.3") is a shorthand an attacker can use to reach loopback. The URL
+  // parser expands it, but callers may pass a bare hostname, so fail closed.
+  if (/^[\d.]+$/.test(h)) return false;
+  return true;
+}
+
+/**
+ * Best-effort DNS check for hostnames that are not IP literals. A public host
+ * can resolve to a private address (DNS rebinding, or a redirect to a name that
+ * points at 127.0.0.1), so each hop is verified against Cloudflare's resolver
+ * before the request is made. Results are cached per isolate.
+ *
+ * Fails OPEN when the resolver itself is unavailable: the request is still sent,
+ * because otherwise an outage of the resolver would take the whole scanner down.
+ * Fail-closed on an explicit private answer.
+ */
+const DNS_CACHE = new Map();
+const DNS_CACHE_MAX = 200;
+const DNS_TTL_MS = 60_000;
+
+async function dnsResolvesPrivate(hostname) {
+  const now = Date.now();
+  const hit = DNS_CACHE.get(hostname);
+  if (hit && now - hit.at < DNS_TTL_MS) return hit.private;
+
+  let priv = false;
+  try {
+    const types = ["A", "AAAA"];
+    const results = await Promise.all(types.map(async (type) => {
+      const r = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=${type}`,
+        { headers: { Accept: "application/dns-json" }, signal: AbortSignal.timeout(3000) },
+      );
+      if (!r.ok) return null;
+      return await r.json();
+    }));
+    for (const answer of results) {
+      if (!answer || answer.Status !== 0 || !Array.isArray(answer.Answer)) continue;
+      for (const a of answer.Answer) {
+        const data = String(a.data || "");
+        if (a.type === 1 && /^\d{1,3}(\.\d{1,3}){3}$/.test(data)) {
+          const [x, y, z, w] = data.split(".").map(Number);
+          if (!isPublicIPv4(x, y, z, w)) { priv = true; break; }
+        } else if (a.type === 28 && data.includes(":")) {
+          if (!isPublicIPv6(data)) { priv = true; break; }
+        }
+      }
+      if (priv) break;
+    }
+  } catch { /* resolver unavailable — fail open, see doc comment */ }
+
+  if (DNS_CACHE.size >= DNS_CACHE_MAX) DNS_CACHE.clear();
+  DNS_CACHE.set(hostname, { private: priv, at: now });
+  return priv;
+}
+
+/** True when the host is a bare IP literal (so no DNS lookup is useful). */
+function isIpLiteral(hostname) {
+  const h = String(hostname || "").replace(/^\[|\]$/g, "");
+  return /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.includes(":");
+}
+
+/**
+ * Reject any URL that points at a non-public destination. Used for the caller
+ * supplied URL AND for every redirect hop, so a public host cannot bounce us
+ * into a private network or the cloud metadata endpoint.
+ */
+export async function assertPublicTarget(rawUrl, base) {
+  let u;
+  try {
+    u = base ? new URL(rawUrl, base) : new URL(rawUrl);
+  } catch {
+    throw new Error("Invalid URL");
+  }
+  if (!/^https?:$/.test(u.protocol)) throw new Error("Only http and https URLs can be scanned.");
+  if (!isPublicHostname(u.hostname)) {
+    throw new Error("That address is not a public website, so it cannot be scanned.");
+  }
+  if (!isIpLiteral(u.hostname) && await dnsResolvesPrivate(u.hostname)) {
+    throw new Error("That domain resolves to a private address, so it cannot be scanned.");
+  }
+  return u;
 }
 
 export function normalizeUrl(raw) {
   if (!raw || typeof raw !== "string") return null;
   let u = raw.trim();
+  if (u.length > 2048) return null;
   if (!/^https?:\/\//i.test(u)) u = "https://" + u;
   try {
     const p = new URL(u);
@@ -191,35 +383,75 @@ export function normalizeUrl(raw) {
   } catch { return null; }
 }
 
+/**
+ * Fetch a URL following redirects MANUALLY, validating every hop, so no
+ * redirect can steer the request at a private or link-local address.
+ * Never lets the runtime follow a redirect on its own.
+ */
+export async function safeFetch(rawUrl, { headers = {}, timeout = 12_000, maxRedirects = MAX_REDIRECTS } = {}) {
+  let current = await assertPublicTarget(rawUrl);
+  const chain = [];
+  for (let hop = 0; hop <= maxRedirects; hop++) {
+    const resp = await fetch(current.toString(), {
+      headers,
+      redirect: "manual",
+      signal: AbortSignal.timeout(timeout),
+    });
+    const status = resp.status;
+    const isRedirect = status >= 300 && status < 400 && resp.headers.get("location");
+    if (!isRedirect) return { resp, url: current.toString(), chain };
+
+    if (hop === maxRedirects) {
+      throw new Error(`The site redirected more than ${maxRedirects} times.`);
+    }
+    const next = await assertPublicTarget(resp.headers.get("location"), current.toString());
+    chain.push({ from: current.toString(), to: next.toString(), status });
+    current = next;
+  }
+  throw new Error("Too many redirects.");
+}
+
+/** Read a response body, refusing to buffer more than MAX_BODY_BYTES. */
+export async function readCappedText(resp, cap = MAX_BODY_BYTES) {
+  if (!resp.body) return "";
+  const reader = resp.body.getReader();
+  const chunks = [];
+  let total = 0;
+  while (total < cap) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const room = cap - total;
+    chunks.push(value.length > room ? value.subarray(0, room) : value);
+    total += Math.min(value.length, room);
+  }
+  if (total >= cap) await reader.cancel().catch(() => {});
+  const buf = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) { buf.set(c, off); off += c.length; }
+  return new TextDecoder("utf-8", { fatal: false }).decode(buf);
+}
+
 export async function runScan(url) {
-  const rawUrl = url;
   url = normalizeUrl(url);
   if (!url) throw new Error("Invalid URL");
   const started = Date.now();
 
-  // Fetch the page content
-  let resp;
+  // Fetch the page content. Redirects are followed manually and every hop is
+  // validated, so a public host cannot redirect us into a private network.
+  let resp, finalUrl;
   try {
-    resp = await fetch(url, {
-      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
-      redirect: "follow",
-      signal: AbortSignal.timeout(12_000),
-    });
+    const out = await safeFetch(url, { headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" } });
+    resp = out.resp;
+    finalUrl = out.url;
   } catch (e) {
+    const msg = String((e && e.message) || e);
+    if (/not a public website|private address|redirected more than|Only http/.test(msg)) throw new Error(msg);
     throw new Error(`Could not reach ${url} — check that the domain exists and is online.`);
   }
   if (!resp.ok && resp.status >= 400) {
     throw new Error(`The site responded with HTTP ${resp.status} — a compliance scan needs a reachable page.`);
   }
-  const finalUrl = resp.url;
-  let html = "";
-  const contentType = resp.headers.get("Content-Type") || "";
-  if (contentType.includes("text/html") || contentType.includes("application/xhtml")) {
-    html = await resp.text().catch(() => "");
-  } else {
-    // Try to read anyway for meta-pages
-    html = await resp.text().catch(() => "");
-  }
+  const html = await readCappedText(resp);
 
   const checks = {};
 
@@ -291,21 +523,29 @@ export async function runScan(url) {
       "EU ePrivacy rules and GDPR Art. 6 require consent BEFORE loading non-essential trackers. Install a CMP that blocks Google Analytics/Meta Pixel etc. until the visitor consents.";
   }
 
-  const hsts = resp.headers.get("Strict-Transport-Security") || "";
+  // The header value is echoed back to the browser. It is only ever rendered
+  // as text, but a hostile origin can control it, so strip anything that is not
+  // a header directive before it reaches a result page.
+  const hsts = (resp.headers.get("Strict-Transport-Security") || "")
+    .split(";")
+    .map(part => part.trim().replace(/[^A-Za-z0-9=\-.:/ _]/g, ""))
+    .filter(Boolean)
+    .join("; ");
+  const finalIsHttps = finalUrl.startsWith("https:");
   checks.ssl = {
-    pass: url.startsWith("https:") && hsts.length > 0,
-    warn: url.startsWith("https:") && hsts.length === 0,
-    label: hsts ? "HTTPS + HSTS OK" : url.startsWith("https:") ? "HTTPS, no HSTS" : "Not HTTPS",
+    pass: finalIsHttps && hsts.length > 0,
+    warn: finalIsHttps && hsts.length === 0,
+    label: hsts ? "HTTPS + HSTS OK" : finalIsHttps ? "HTTPS, no HSTS" : "Not HTTPS",
     detail: hsts
       ? `HSTS: ${hsts.replace(/;\s*/g, "; ")}`
-      : url.startsWith("https:")
+      : finalIsHttps
         ? 'SSL active but Strict-Transport-Security header missing.'
         : "Site is not served over HTTPS.",
   };
-  if (!hsts && url.startsWith("https:")) {
+  if (!hsts && finalIsHttps) {
     checks.ssl.fix =
       'Add header: Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload" to all responses.';
-  } else if (!url.startsWith("https:")) {
+  } else if (!finalIsHttps) {
     checks.ssl.fix = "Redirect all traffic to https://";
   }
 
