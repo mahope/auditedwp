@@ -1,14 +1,21 @@
 name: deploy-site
 
-# Deployer site/ til Cloudflare Pages (projekt "auditedwp" -> eucomplypro.com)
-# ved push på main. Kilden i site/ er allerede shell-injiceret (tools/apply_shell.py
-# køres lokalt) — workflowet bygger intet, det uploader kun.
+# Deployer det verificerede publicerede træ til Cloudflare Pages
+# (projekt "auditedwp" -> eucomplypro.com) ved push på main.
+# Kilden i site/ er allerede shell-injiceret (tools/apply_shell.py køres
+# lokalt). site/ er dog et fuldt arbejdstræ med interne dokumenter,
+# scripts og forskningsnoter, som ikke må publiceres, så deployen
+# deployer aldrig site/ direkte — den deployer site-dist/, som
+# tools/build_public_tree.py bygger ud fra en positivliste og
+# tools/check_public_tree.py afviser, hvis noget internt slap igennem.
 
 on:
   push:
     branches: [main]
     paths:
       - 'site/**'
+      - 'tools/build_public_tree.py'
+      - 'tools/check_public_tree.py'
       - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
@@ -22,12 +29,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Byg det offentlige træ
+        run: |
+          python3 tools/build_public_tree.py
+
+      - name: Verificér det offentlige træ
+        run: |
+          python3 tools/check_public_tree.py
+
       - name: Deploy til Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: site
+          workingDirectory: site-dist
           command: pages deploy . --project-name auditedwp --branch main --commit-dirty=true
 
       - name: Tjek produktion
@@ -37,6 +56,8 @@ jobs:
             code=$(curl -sS -o body.html -w '%{http_code}' "$url" || echo 000)
             if [ "$code" = "200" ] && grep -q "mahoje.dk" body.html; then
               echo "OK: $url svarer 200 og indeholder mahoje.dk"
+              leak=$(curl -sS -o leaked.md -w '%{http_code}' "$url/IMPLEMENTATION_PLAN.md" || echo 000)
+              echo "kontrol: /IMPLEMENTATION_PLAN.md svarer $leak (forventet 404)"
               exit 0
             fi
             echo "Forsøg $i: status $code — venter 10s"

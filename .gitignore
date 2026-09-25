@@ -1,6 +1,7 @@
 ceo.log
 ceo.log
 .wrangler/
+site-dist/
 devnotify-site/download/*.AppImage
 venv/
 transmute/repo/
