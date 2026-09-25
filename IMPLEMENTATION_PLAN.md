@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: færdig — SSRF/DOM-XSS lukket i scanneren, overvågnings-betaen gjort ejersikker på `ceo/ssrf-monitor-ownership`
-Baseline: `main` commit `28795c3` efter `git pull --ff-only` 2026-09-25 16:13 UTC
+Sidste iteration: færdig — 409-semantik, `deactivate`, 7-dages grace og privatlivstekst rettet på `ceo/license-409-deactivate`
+Baseline: `main` commit `e9f1e09` efter `git pull --ff-only` 2026-09-25 17:03 UTC
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -10,8 +10,8 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG`: **1 — Ret salgsløfterne til det der virker nu** på `ceo/ret-pro-lofter`.
 - `FÆRDIG`: **2 — Skriv spec for den hosted Pro-værdi** på `ceo/hosted-pro-spec`; `docs/eucomply-pro-spec.md` findes nu.
 - `FÆRDIG` (del 1 af 2): **3a — SSRF/DOM-XSS + overvågningsejerskab** på `ceo/ssrf-monitor-ownership`, commit `28795c3`.
-- Næste opgave: **3b — resten af opgave 3** (licens-entitlement, 409-vs-definitive-fejl i pluginen, `deactivate`, `warn` i summen, offentlig privacy-tekst).
-- En opgave må markeres `I GANG`, før der laves kode. Efter to mislykkede iterationer markeres den `BLOCKED: <årsag>`, hvorefter næste opgave tages.
+- `FÆRDIG` (del 2 af 2): **3b — licens-entitlement, 409-semantik, `deactivate`, `warn` i summen, privatlivstekst** på `ceo/license-409-deactivate`, commit `e9f1e09`.
+- Næste opgave: **4 — Byg ægte historik og pass-til-fail-alerts** (afhænger af Mads' svar på spørgsmål 1, hvis licens-gating skal med; ellers kan historikken bygges på den eksisterende owner-token-registrering).
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
@@ -103,7 +103,17 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 3. Luk SSRF/DOM-XSS og gør hosted monitoring entitlement-sikker
 
-- Status: `I GANG` — del A færdig (`28795c3`), del B (`3b`) TODO
+- Status: `FÆRDIG` — del A `28795c3`, del B `e9f1e09` på `ceo/license-409-deactivate`
+- 2026-09-25 del B — **409 låste betalende kunder ude.** `license_verdict` behandlede 409 som definitivt ugyldig og cachede negativt i 24 t, så en kunde med en gyldig nøgle på sit fjerde site fik "nøgle ikke accepteret" og kunne aldrig rydde pladsen, fordi pluginen aldrig kaldte `deactivate`. 409 er nu sit eget verdict `device_limit`: Pro er fra for dette site, nøglen låses ikke, og den negative cache slettes, så en frigivet plads gendannes ved næste tjek (10-minutters backoff i stedet for 24 t).
+- 2026-09-25 del B — **`deactivate` findes nu tre steder:** en "Release this device"-knap på settings, automatisk frigivelse af den gamle nøgle ved nøgleskift, og best-effort frigivelse i `uninstall.php`. Uden dem er en $79-pr.website-licens umulig at flytte, og det er den konkrete værdi ved multi-site.
+- 2026-09-25 del B — **temp-svarene er gjort eksplicitte:** `402`, `429`, `5xx`, netværksfejl og ulæseligt `200`-svar giver alle `null` → 7-dages grace på den cachede status. Kun `400`/`403`/`404` låser. Et nøgleskift sletter også `eucomply_pro_last_ok_at`, så en ny nøgle ikke arver gammel grace.
+- 2026-09-25 del B — **`warn` i summen (spec afsnit 7, åbent punkt) er besluttet:** tallet ændres ikke, fordi en advarsel reelt er en mangel ("HTTPS, no HSTS", ét af to juridiske sider). Til gengæld er den nu **navngivet**: rapporten siger "N af M bestået, W med advarsler, F fejledet. Advarsler tælles ikke som bestået", og tabellen viser PASS/WARN/FAIL i stedet for "FAIL (warning)". Det er den ærlige version af det eksisterende tal.
+- 2026-09-25 del B — **privatlivssiden havde en påstand, del A gjorde falsk:** den sagde, at status-endpointet er offentligt. Den beskriver nu owner-tokenet i stedet for, og at det ligger i local storage.
+- 2026-09-25 del B — **ny obligatorisk test:** `tools/test_license_verdicts.php` (44 tjek) stubber WordPress og dækker hele svarmappingen, 7-dages grace frem og tilbage, at 409 ikke cacher en 24-timers lås, at en frigivet plads gendanner Pro, validate→activate-rækkefølgen og frigivelseskaldet. Det var det eneste acceptkrav i opgave 3 uden dækning.
+- 2026-09-25 del B — plugin 1.3.2 regenereret: `site/plugin/` er byte-identisk med `plugin/`, ny zip på `/assets/eucomply-1.3.2.zip`, `update.json` og downloadlink peger på den, og `tools/check_pro_claims.py`'s `PLUGIN_VERSION` er opdateret (claims-testet fejlede ellers på det).
+- Gate del B: `php -l` grøn på 4 filer; `44 license checks passed`; `112 self-tests passed`, `0 unexpected EUComply Pro claims`; `27 security checks passed`; `npm pack --dry-run` grøn; root-SEO `216 pages checked, 0 findings`. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres: workspace-permissions nægter adgang, så missionskravet kan ikke dokumenteres; gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+- Fejl: 0/2 (del B)
+- Begrundelse: Den offentlige scanner følger redirects uden at validere hvert hop og kan hente private mål; rå HSTS-responseheadere renderes desuden i `innerHTML`. Monitoring-registreringen kan samtidig skifte en andens email, og `/status` er offentligt. Det er P0/P1-brugerrisiko, privacy-fejl og spam-/SSRF-mulighed.
 - 2026-09-25 del A — SSRF: `safeFetch` følger redirects manuelt og validerer hvert hop via `assertPublicTarget`. `isPublicIPv4`/`isPublicIPv6`/`expandIPv6` dækker nu IPv4-mapped IPv6, NAT64, 6to4, Teredo, `::/96`, `ff00::/8`, `100::/64`, CGNAT, TEST-NET og 198.18/15. Værter der *ligner* en IP men ikke er en fuld quad (`127.1`, `1.2.3`) afvises fail-closed. Ikke-IP-værter slås op i Cloudflares resolver med 60 s per-isolate-cache; resolver-fejl fejler åbent, et konkret privat svar lukkes. Brødtekst capped ved 2 MB. Redirect-loops afbrydes efter 5 hop.
 - 2026-09-25 del A — fund undervejs: den gamle kode erklærede `::1` og `::` for **offentlige** (`!/(^(::1|::|f[cd]|fe80)/…) && !/^0*0*$/…`), fordi begge betingelser var skrevet omvendt. Den ramte aldrig i praksis, kun fordi `normalizeUrl` kræver et punktum i hostnavnet, så IPv6-literals altid faldt igennem den port. Guarden er testet direkte nu.
 - 2026-09-25 del A — DOM-XSS: HSTS-headeren blev brugt rå i `checks.ssl.detail`. Værdien filtreres nu til headerdirektiver, så en fjendtlig oprindelse ikke kan sende markup med. `checks.ssl` vurderer desuden `finalUrl` frem for den anmodede URL, så en https→http-downgrade opdages i stedet for at blive rapporteret som HTTPS.
@@ -116,24 +126,21 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 - Begrundelse: Den offentlige scanner følger redirects uden at validere hvert hop og kan hente private mål; rå HSTS-responseheadere renderes desuden i `innerHTML`. Monitoring-registreringen kan samtidig skifte en andens email, og `/status` er offentligt. Det er P0/P1-brugerrisiko, privacy-fejl og spam-/SSRF-mulighed.
 - Scope: følg redirects manuelt og valider destinationen ved hvert hop; escape eller render tekstfelter med `textContent`; valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow. Derudover fra specen: skeln `409` fra definitive fejl i pluginen, tilføj `deactivate`/frigiv enhed, vurdér om `warn` skal tælles som fejl i summen, og udsted engangs-owner-token til eksisterende ubetalte beta-records.
 - Accept:
-  - ~~Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.~~ Erstattet i del A af ejerskabstokens, jf. kontraktbruddet ovenfor. Licens-entitlement er del B og afhænger af Mads' svar på spørgsmål 1.
+  - ~~Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.~~ Erstattet i del A af ejerskabstokens, jf. kontraktbruddet ovenfor. Licens-entitlement er **helt droppet** efter del A: overvågningen er en fri forsøgsordning, og uden Mads' svar på spørgsmål 1 må den ikke låses.
   - ~~`/status` afslører ikke email, rå URL-data eller andre kunders historie uden gyldigt owner-token.~~ **Dækket i del A**: `/status` er nu POST og 403 uden token; email og token er aldrig i svaret.
   - ~~Redirects til private/link-local IPv4/IPv6-mål og falske DNS-svar afvises; hvert hop og sidste destination valideres.~~ **Dækket i del A** — dog fail-open hvis resolveren *selv* er nede; et konkret privat DNS-svar afvises.
   - ~~En HSTS-header med HTML/scriptpayload renderes som tekst og kan ikke skabe DOM-XSS i scanner-resultater.~~ **Dækket i del A** (filtrering i engine + `esc()` på scan-siden).
-  - ~~Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål, XSSPayload og 503-grace.~~ **Dækket i del A** undtagen 503-grace, som hører til del B.
-  - Forkert nøgle, forkert product og nået enheds-/site-grænse giver deterministiske fejl.
-  - En eksisterende kunde beholder cached adgang i 7 dage ved licensserver-503/5xx/netværksfejl.
-  - `/status` afslører ikke email, rå URL-data eller andre kunders historie uden gyldigt owner-token.
-  - Redirects til private/link-local IPv4/IPv6-mål og falske DNS-svar afvises; hvert hop og sidste destination valideres.
-  - En HSTS-header med HTML/scriptpayload renderes som tekst og kan ikke skabe DOM-XSS i scanner-resultater.
-  - Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål, XSSPayload og 503-grace.
-  - Privacy-siden nævner præcist Cloudflare KV, email, Stripe, Resend, BugBottle og local storage med retentionsperioder.
+  - ~~Unit/integrationstest dækker register, repeat register, unregister, ownership, rate limit, redirect-mål, XSSPayload og 503-grace.~~ **Dækket**: del A dækker register/unregister/ownership/rate-limit/redirect/XSS i `tools/test_worker_security.mjs`; **503-grace er dækket i del B** af `tools/test_license_verdicts.php`.
+  - ~~Forkert nøgle, forkert product og nået enheds-/site-grænse giver deterministiske fejl.~~ **Dækket i del B**: `400`/`403`/`404` låser deterministisk; `409` giver sit eget `device_limit`-svar med handlingsanvisning i stedet for generisk afvisning.
+  - ~~En eksisterende kunde beholder cached adgang i 7 dage ved licensserver-503/5xx/netværksfejl.~~ **Dækket i del B og testet**: 503 efter 2 dage → Pro aktiv, efter 8 dage → ikke. Samme for 429 og netværksfejl.
+  - ~~Privacy-siden nævner præcist Cloudflare KV, email, Stripe, Resend, BugBottle og local storage med retentionsperioder.~~ **Dækket**: dækkede det meste i opgave 1; del B rettede den falske påstand om et offentligt status-endpoint og tilføjede owner-tokenet.
 
 ### 4. Byg ægte historik og pass-til-fail-alerts
 
-- Status: `TODO`
+- Status: `I GANG` (udpeget som næste opgave 2026-09-25 efter at opgave 3 blev færdig)
 - Fejl: 0/2
 - Begrundelse: Bureauer skal kunne dokumentere regressioner og få besked om den konkrete check, ikke få tilfældig samlet score.
+- Første skridt i iterationen: skriv per-check-lagringen i `worker-watch/index.js` (daglig `{date, checks: {key: pass|warn|fail}}`, TTL 40 dage) og kør den gennem `tools/test_worker_security.mjs`-mønstret. `warn` skal her være tri-state uafhængigt af den samlede score, jf. beslutningen i opgave 3 del B.
 - Scope: gem seneste og 30 dages per-check-resultater; diff gamle mod nye checks; én mail pr. ny fejl; deduplicér gentagne cron-fejl; link til kundens private resultatside.
 - Accept:
   - Identiske scans sender ingen mail; en check, der skifter pass→fail, sender én mail med checknavn, gammel status, tidspunkt og handlingsforslag.
@@ -255,3 +262,4 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 - `VERIFICÉR DEPLOY: IMPLEMENTATION_PLAN research + prioritering b7b54ac 2026-09-24 23:19 UTC` — ingen deploy forventes, fordi workflowet kun trigges på `site/**` eller workflow-filen.
 - `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — **DEPLOY OK 2026-09-25 18:15 CEST.** Verificeret på indhold, ikke kun status: `/pro/` viser "Pro includes today" med kun de tre dokumentfunktioner og en separat, tydeligt mærket "Planned features, not included today"-blok; `/pricing/` har nul nutidige claims om daglig re-scan, PDF eller badge; `/da/pro/`, `/de/pro/`, `/fr/pro/` og alle fire pricing-ruter svarer 200; plugin-downloadet på `/assets/eucomply-1.3.1.zip` svarer 200 med `application/zip`, 20569 bytes.
 - `VERIFICÉR DEPLOY: SSRF-guard + overvægtningsejerskab 28795c3 2026-09-25 16:32 UTC` — ændrer `site/**/scan/index.html` (token-håndtering) og rører ikke andre publicfiler. Verificér efter næste deploy-vindue at `/scan/` stadig kan registrere og afmelde, og at de fire locale-siders script ikke har mistet en sætning. Bemærk: **workerne deployes ikke af denne workflow** — `shared/scan-engine.js`, `worker-scan/` og `worker-watch/` kræver et manuelt `wrangler deploy`, hvilket agenten ikke gør. Indtil det sker, er live-scanneren stadig den gamle, sårbare kode, og det gamle `GET /status?url=` svarer stadig 200 indtil worker-deployet.
+- `VERIFICÉR DEPLOY: licens-409 + frigiv-enhed + privacy 1.3.2 e9f1e09 2026-09-25 17:40 UTC` — ændrer `site/plugin/index.html` (downloadlink), `site/privacy/index.html`, `site/update.json` og tilføjer `site/assets/eucomply-1.3.2.zip` (1.3.1-zip'en er fjernet fra deploy-træet). Verificér på indhold efter næste vindue: at `/assets/eucomply-1.3.2.zip` svarer 200 med `application/zip` og at den gamde 1.3.1-zip **ikke** længere findes, at downloadknappen på `/plugin/` peger på 1.3.2, og at privatlivssiden ikke længere siger at status-endpointet er offentligt. Sidste deployment er manuel, så plugin-1.3.2-ændringerne når kun kunder ved at de opdaterer fra wp-admin.
