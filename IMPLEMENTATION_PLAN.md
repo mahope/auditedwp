@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-26
-Sidste iteration: færdig — opgave 15. To pakker i repoet erklærede samme npm-navn (`eucomply-scanner`), og det var netop det navn `site/cli/index.html` beder brugerne installere. `cli/` har nu sit eget navn, er `private` og kan ikke publiceres ved et uheld, og `tools/check_package_identity.py` gør kollisionen permanent umulig. **Undervejs blev planens egen SSRF-præmis for `cli/` fundet at være forkert** — filen henter aldrig et brugerstyret værtsnavn — så den rest er lukket med en anden begrundelse end den, den stod til.
-Baseline: `main` commit `f5ed390` efter `git pull --ff-only` 2026-09-26; seneste CI-kørsel `36200263395` grøn på `d2fe1e1`
+Sidste iteration: research + deploy-verificering. Opgave 15 er verificeret live — og **et af planens egne acceptkriterier var forkert**, se afsnittet nedenfor. Iterationen fandt samtidig en **bekræftet DOM-XSS på 28 sider** (skrivebevis medfølger), som blev til en ny opgave 16 i stedet for en halvfærdig rettelse.
+Baseline: `main` commit `7e8fb21` efter `git pull --ff-only` 2026-09-26; seneste CI-kørsel `36202123249` grøn på `7e8fb21`
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -20,7 +20,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG` (kode + selftest grøn, ingen `site/**`-fil rørt): **13 — Hærd `tools/check_runtime.py`**: `check_action_majors` med dokumenteret minimumsmajor pr. handling, advarselsvindue før EOL, præcis `.nvmrc`-besked, ærlig afhængighedssum. Selftesten går fra 14 til 23 negative cases.
 - `FÆRDIG` (kode + selftest grøn, ingen `site/**`-fil rørt): **14 — Pin `ubuntu-24.04` før `ubuntu-latest` bliver Ubuntu 26** på `ceo/pin-runner-ubuntu-2404`. Se afsnittet nedenfor.
 - `FÆRDIG` (kode + 10 selftests + 3 mutationer grøn, ingen `site/**`-fil rørt): **15 — Løs npm-identitetskollisionen mellem `cli/` og motoren** på `ceo/npm-identity-collision`. Se afsnittet nedenfor.
-- Næste opgave: **15 er startklar** og skal tages først, hvis den ikke er taget; herefter er der igen ingen startklar opgave. Opgave 5 (kunderapporter) kræver svar på spørgsmål 1, og opgaverne 6 og 7 kræver de endnu udevtede workers fra spørgsmål 9. Den næste iteration skal derfor enten (a) hjælpe spørgsmål 9 fra den anden ende — en **verifikations- og kørselsguide til `wrangler deploy` for `worker-scan`/`worker-watch`**, skrevet i `docs/`, så den deploy, der låser fire opgaver og lukker en P0 i den gratis scanner, kan laves uden at en agent skal opfinde den — eller (b) lukke det eneste **Kendte lavprioritets-rest**, der ikke kræver Mads: `deskuptime/`-kopien er en forældet Lemon-Squeezy-kopi i EUComply-deploy-træet. **Bemærk:** kun *mærka* `deskuptime/` som legacy, slet ikke — det er linket fra bloggen, `llms.txt` og sitemap, så en sletning er 100+ opslag og en beslutning, ikke en oprydning. **Resten af de lavprioritets-rester er lukket i opgave 15** — den `cli/`-SSRF-præmis viste sig at være forkert, se resten nedenfor.
+- Næste opgave: **16 — Luk DOM-XSS'en i quick-check-widgeten på 28 sider** (`ceo/dom-xss-quickcheck`). Denne iteration fandt og bekræftede den, skrev en rettelse og en permanent gate, og **rullede begge tilbage** fordi rettelsen ikke kunne dækkes helt og efterprøves inden for iterationsbudgettet. Beviset, de præcise filer og de faldgruber står i afsnittet nedenfor — læs det først. Opgave 15 er lukket.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
@@ -383,6 +383,52 @@ CI-kørsel `36189565613` (`684fbd0`, alle tre jobs `success`) — første gang `
 - **De forventede forskelle i advarslerne er indtruffet.** `actions/setup-node@v4` står **ikke længere** i `Node.js 20 is deprecated`-advarslen, fordi den ikke længere kører på Node 20. Tilbage er `actions/checkout@v4`, `actions/setup-python@v5` og `cloudflare/wrangler-action@v3` — præcis de tre, opgave 12 tager sig af. Advarslen er altså mindre, ikke væk, og det er sagt i deploynoten.
 - `deploy til Cloudflare Pages` og `tjek produktion` er grønne, så de 12 interne stier svarer stadig 404 på origin med cache-buster. Som forventet rørte committen ingen `site/**`-fil, så sitets indhold er uændret.
 
+## Deploy-verificering 2026-09-25 23:50 UTC — opgave 15 lukket, OG et acceptkriterium var forkert
+
+CI-kørsel `36202114293` (`deploy-site`) og `36202122512` (`pages build and deployment`) er begge `success` på `7e8fb21`. Live verificeret med cache-buster mod `1d8299f`:
+
+- **Punkt 1 er dækket:** loggen viser `$ python3 tools/check_package_identity.py` → `OK`, `--selftest` → **`SELFTEST GRØN — alle 10 negative cases fanges`**, og `GATE GRØN — alle 9 steps bestået. Runtime-gaten logger stadig ubuntu-24.04 og Node 22.
+- **Punkt 2 er dækket:** `deploy` logger `✨ Success! Uploaded 0 files (322 already uploaded)` — præcis hvad noten forudså, fordi ingen `site/**`-fil blev rørt. `tjek produktion` er grøn, de 12 interne stier svarer 404 med cache-buster, plugin-zip'en er en zip.
+- **Punkt 4 er dækket:** `/cli/` svarer 200 (17 097 bytes) og den eneste `npm install`-linje er stadig `npm install eucomply-scanner` — altså motoren, som er den der *skal* have navnet.
+- **Punkt 3 kan ikke holde, og det er planens egen fejl.** Noten lovede at `https://eucomplypro.com/cli/package.json` svare 200 med `"name": "eucomply-scan-proxy"`. Den svarer **404**, og den vil blive ved med at gøre det. Præmissen var forkert: `build_public_tree.py` bygger det publicerede træ ud fra `site/`, og `site/cli/` indeholder kun `index.html`. Pakken ligger i repo-**roden** som `cli/package.json` og er derfor aldrig blevet publiceret. Det er ikke en regression — `--all` på den gamle udgivelse ville have svare 404 lige så vel.
+  - **Hvad der faktisk er sandt, og som er efterprøvet:** roden `cli/package.json` er `"name": "eucomply-scan-proxy"`, `"version": "0.0.0"`, `"private": true`, og `site/cli/index.html` beder om `eucomply-scanner`. Kollisionen er lukket i kilden, hvilket er hele pointen med `check_package_identity.py` — den læser repoet, ikke sitet.
+  - **Læring, der kan genbruges:** en acceptkriterium, der beskriver en URL, skal efterprøves mod den rigtige udgivelsesvej, ikke mod min forestilling om den. Jeg skrev punkt 3 uden at spørge, om `cli/` overhovedet er i deploy-træet, og den fejltype er den samme som opgave 14 fandt i testværktøjet: en påstand, der aldrig er kørt.
+
+## Opdagelse 26/9 — bekræftet DOM-XSS på 28 sider (`quick check`-værktøjet)
+
+**Dette er den vigtigste fund i planen lige nu, og det er bekræftet, ikke formodet.**
+
+Alle 28 HTML-sider med `deskuptime-quickcheck`-værktøjet skriver workerens svar ind i `innerHTML` uden escaping. Det kan køre script på **eucomplypro.com**, og det samme snippet er i `site/shared/live-check-widget.html`, som kunder kopierer ind på deres egne sider.
+
+**Skrivebevis, live og uden hypotese.** Workeren spejler den indtastede adresse urørt tilbage i `url`:
+
+```
+$ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://example.com/%3Cscript%3Ealert(1)%3C/script%3E'
+{ "url": "http://example.com/<script>alert(1)</script>", "status": 404, "finalUrl": "…", … }
+```
+
+`site/deskuptime/*/index.html` sætter `d.url` direkte i `innerHTML` (`'<span class="accent">' + d.url +`). Skriv `<img src=x onerror=…>` i feltet, og payload'en lander i DOM'en. Blog-siderne har den samme klasse huller via `d.statusText`, `d.responseMs` og `d.finalUrl` — `finalUrl` følger redirects, så den er kontrolleret af den side man må kontrollere.
+
+**Omfang:** 28 filer — `site/shared/live-check-widget.html`, 16 `site/blog/*/index.html` og 11 `site/deskuptime/**/index.html`. `site/llms-full.txt` indeholder også blokken, men er en tekstfil og ikke en eksekverbar side.
+
+**To blokvarianter, og det er derfor en naiv rettelse ikke holder.** Blog-siderne og widgeten bruger `res.innerHTML` med `du-url`/`du-result`; DeskUptime-siderne bruger `dataDiv.innerHTML` med `live-result`/`live-data` og interpolation af `d.url`, `d.statusText`, `d.responseMs`, `d.finalUrl` og `d.headers.server`. Seks blog-sider har desuden en indrykning, der skiller dem fra de ti.
+
+**Hvad denne iteration nåede, og hvorfor den blev rullet tilbage.** Jeg skrev en rettelse (`esc()` rundt om hver dynamisk værdi, plus `textContent` til de tre rene tekstlinjer) og en permanent gate, `tools/check_dom_xss.py`, med selftest og mutationer. Rettelsen dækkede 24 af 28 filer; 13 filer havde stadig fund, og en bredere eftersøgning fandt yderligere 104 fund i 21 andre filer (`site/regex/`, `site/gdpr-scanner-free/` m.fl.). **Jeg rullede hele diffen tilbage.** En delvis rettelse af en sikkerhedsfejl, der ikke kan efterprøves i samme iteration, er værd dyrere end at lade den ligge uændret og gøre den ordentlig næste gang — en halv rettelse giver falsk tryghed og spoler tiden på at finde ud af, om den virker.
+
+**De tre faldgruber, den næste iteration skal kende.** (1) En gate, der kun dækker den kendte blok, skal *sige det* — en global regel med 104 åbne fund kan ikke gå grøn, og en blok-specifik regel må ikke fremstilles som global. (2) `esc()` skal findes i hver fil selv: widgeten er et kopier-og-sæt-stykke, der ikke må afhænge af `/assets/site.js` (som dog allerede har præcis denne escaper på linje 33 — brug den som mønster). (3) Scriptede rettelser skal efterprøves pr. fil, ikke i alt: 24 filer rettet uden at læse en eneste diff er præcis den falske grøn, opgave 14 dokumenterede.
+
+### 16. Luk DOM-XSS'en i quick-check-widgeten på 28 sider
+
+- Status: `I GANG` — start på `ceo/dom-xss-quickcheck`.
+- Begrundelse: bekræftet DOM-XSS på vores eget domæne, i et værktøj kunder indlejrer på deres egne sider. Rang 1 i "hvad der tæller": en fejl der rammer brugere. Beviset står ovenfor.
+- Scope: `esc()` rundt om hver dynamisk værdi i begge blokvarianter; `textContent` til de rene tekstlinjer; permanent gate med selftest, som efterprøver **pr. fil** at de 28 filer escape `url`, `statusText`, `responseMs`, `finalUrl`, `headers.server` og `error`; hver rettet fil læses i diffen.
+- Accept:
+  - `curl` mod workeren med `<script>` i `url` returnerer stadig det uændrede echo (beviset skal bestå), og **renderingen af det svar indeholder ingen ubeskyttet `<`** — efterprøves i en test, der kører blokkens renderer mod et fjendtligt svar, ikke ved at læse koden.
+  - Gate grøn med negative selftests, mutation prøvet mod **repoets egne** 28 filer: at fjerne én `esc()` giver et fund, der nævner præcis filen.
+  - `GATE GRØN`, og `php -l`/JS-syntaks/SEO/publiceret-træ uændret grøn.
+  - Deploy verificeret på indhold: `/deskuptime/`, én blog-side og `/shared/live-check-widget.html` svarer 200, og widget-snippetet på sitet indeholder `esc(`.
+- **Ikke i denne opgave:** de 104 fund i `site/regex/`, `site/gdpr-scanner-free/` og de øvrige 19 filer. De er reelle og bliver opgave 17; de må ikke trækkes ind som "mens vi er i gang", fordi så bliver ingen af dem ordentlig testet.
+
 ## ❓ Til Mads
 
 1. **Hosted Pro og plugin-Pro:** skal den nuværende `eucomply-pro`-nøgle eksplicit give både plugin-dokumenter og hosted-funktioner, eller skal plugin-dokumenterne være en del af et senere samlet Pro? Indtil dette er afklaret, sælger vi kun plugin-dokumenterne.
@@ -412,7 +458,7 @@ CI-kørsel `36189565613` (`684fbd0`, alle tre jobs `success`) — første gang `
 
 ## Deploy-log
 
-- `VERIFICÉR DEPLOY: npm-identitetskollisionen (opgave 15) 1d8299f / merge `9a643e9` 2026-09-25 23:43 UTC` — rører `cli/package.json`, `cli/README.md`, `cli/bin/eucomply-scan.js`, `tools/check_package_identity.py`, `tools/quality_gate.sh` og denne plan. **Ingen `site/**`-fil**, så sitets indhold skal være uændret. `cli/` er dog i den offentlige positivliste, så `cli/package.json` med sit nye navn og `private: true` bliver publiceret — det er ærligt og skal ikke rettes. Verificér efter næste deploy-vindue: (1) `kvalitetsgate` logger de to nye `check_package_identity`-steps grønt og `SELFTEST GRØN — alle 10 negative cases fanges`; (2) `deploy` og `tjek produktion` er grønne, de 12 interne stier svarer 404 med cache-buster, og plugin-zip'en er en zip; (3) `https://eucomplypro.com/cli/package.json` svare 200 med `"name": "eucomply-scan-proxy"` og `"private": true` — altså at den publicerede pakke ikke længere konkurrerer om scannerens navn; (4) `/cli/` er uændret og peger stadig på `npm install eucomply-scanner`.
+- `DEPLOY OK 2026-09-26 00:00 UTC` + lukket: se afsnittet "Deploy-verificering 2026-09-25 23:50 UTC". Merge `9a643e9` 2026-09-25 23:43 UTC rørte `cli/package.json`, `cli/README.md`, `cli/bin/eucomply-scan.js`, `tools/check_package_identity.py`, `tools/quality_gate.sh` og denne plan. **Ingen `site/**`-fil** rørt. Punkt 3 i noten var en forkert præmis (`/cli/package.json` er ikke i deploy-træet og kan ikke være det) og er rettet i afsnittet.
 - `DEPLOY OK 2026-09-25 23:16 UTC` + `VERIFICÉR DEPLOY: fastsat runner-image ubuntu-24.04 (opgave 14) 9200289 / merge `d2fe1e1` 2026-09-26 ca. 08:20 CEST` — rører **kun** `.github/workflows/verify.yml`, `.github/workflows/deploy-site.yml`, `tools/check_runtime.py` og denne plan. **Ingen `site/**`-fil**, ingen plugin- og ingen scannerændring, så det publicerede træ er uændret, og intet på sitet skal ændre sig ved denne deploy — bekræftet af `Uploaded 0 files (322 already uploaded)`. CI-kørsel `36200263395`: alle tre jobs `success`, annotationen om Ubuntu 26 er væk (`grep -c` = 0), gaten kører alle ni steps på `ubuntu-24.04` med `node-version: 22` og `SELFTEST GRØN — alle 28 negative cases fanges`, de 12 interne stier svarer 404 med cache-buster, de 13 nøglesider 200 med reelle bytestørrelser, og plugin-zip'en er en zip. Det er første kørsel nogensinde på et fastsat image, så de tre tidsmæssigt uafærdige acceptkriterier i opgave 14 er nu lukket.
 - `DEPLOY OK 2026-09-25 22:33 UTC` + `VERIFICÉR DEPLOY: hærdet runtime-gate (opgave 13) 77ab795 2026-09-25 22:30 UTC` — rører **kun** `tools/check_runtime.py` og `IMPLEMENTATION_PLAN.md`. Verificeret i CI, se afsnittet nedenfor. `tools/**` er i `deploy-site`'s `paths`-filter, så diffen udløste en kørsel — godt, fordi det er første gang den nye kontrol efterprøves af CI og ikke kun lokalt. **Ingen `site/**`-fil**, ingen plugin- og ingen workflow-ændring, så det publicerede træ er uændret.
 - 2026-09-25: Research-plan oprettet på commit `fba1971`; endnu ingen `site/**`-ændring og derfor ingen forventet deploy fra denne iteration.
