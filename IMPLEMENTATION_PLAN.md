@@ -283,7 +283,7 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 12. Opgradér GitHub Actions til Node-24-generationen
 
-- Status: `TODO`
+- Status: `I GANG` på `ceo/node24-actions`. Hver major er sin egen commit, så den kan rulles tilbage præcist. `cloudflare/wrangler-action` er bevidst **sidst**, fordi den rører selve deployet.
 - Fejl: 0/2
 - Fund fra opgave 11, hentet fra CI's egne logs (kørsel `36184172086`): runneren logger `Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4`. Kontrætværdigt nok er de altså *allerede* kørt på Node 24, mens `engines` erklærede `>=18` — altså testede workflowen en runtime, ingen havde erklæret.
 - Seneste stabile majors, verificeret via GitHub API 2026-09-25: `actions/checkout@v7.0.1`, `actions/setup-node@v7.0.0`, `actions/setup-python@v7.0.0`, `actions/upload-artifact@v7.0.1`, `cloudflare/wrangler-action@v4.1.3`. Det er tre majors op ad for de fire første, så det er ikke en copy-paste.
