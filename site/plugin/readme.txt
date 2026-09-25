@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.2 (2026-09-25) =
+
+* **Fixed**: A "device limit reached" (HTTP 409) response no longer locks your license. The key is valid; only this website's slot is taken, and the settings screen now says so and offers to free it.
+* **New**: "Release this device" on the settings screen frees the slot, so you can move your license to another website. Changing the license key releases the old one, and deleting the plugin releases the slot too.
+* **Fixed**: A license-server error (network problem, 402, 429, 5xx) keeps your verified Pro status for 7 days instead of being treated as a bad key.
+* **Changed**: The Pro report counts warnings separately from passes instead of reporting them as plain passes, so the score cannot overstate compliance.
 
 = 1.3.1 (2026-09-25) =
 

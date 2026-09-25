@@ -110,7 +110,7 @@ li{margin-bottom:6px}</style>
 </ul>
 <p><strong>When you use the open monitoring beta:</strong></p>
 <ul>
-<li>The email address and normalized URL you submit are stored in Cloudflare KV for the monitoring record. The current beta status endpoint is public, so do not submit a confidential URL.</li>
+<li>The email address and normalized URL you submit are stored in Cloudflare KV for the monitoring record, together with an unguessable owner token issued at registration. The token stays in your browser's local storage and is required to read the record, change the alert address or delete it, so nobody else can do that on your behalf.</li>
 <li>The beta keeps an aggregate score and up to 30 days of daily score history. It does not store the full response body from your site.</li>
 <li>If alert delivery is configured, the monitoring worker sends the email address, URL and score change to Resend for delivery.</li>
 </ul>

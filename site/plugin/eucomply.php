@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.1
+ * Version:           1.3.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.1' );
+define( 'EUCOMPLY_VERSION', '1.3.2' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -730,17 +730,21 @@ class EUComply {
      * Render settings page.
      */
     public function render_settings() {
-        $saved = false;
+        $saved   = false;
+        $notice  = '';
         if ( ! empty( $_POST ) && check_admin_referer( 'eucomply_settings' ) ) {
             if ( isset( $_POST['eucomply_pro_key'] ) ) {
                 $new_key = self::normalise_key( sanitize_text_field( wp_unslash( $_POST['eucomply_pro_key'] ) ) );
-                if ( get_option( 'eucomply_pro_key', '' ) !== $new_key ) {
+                $old_key = self::normalise_key( get_option( 'eucomply_pro_key', '' ) );
+                if ( $old_key !== $new_key ) {
+                    if ( '' !== $old_key ) {
+                        // Pro is priced per website, so the old key's slot on this
+                        // hostname must be freed when the site switches keys.
+                        $this->release_device( $old_key );
+                    }
                     // A new key is verified from scratch.
                     update_option( 'eucomply_pro_key', $new_key );
-                    delete_option( 'eucomply_pro_verified' );
-                    delete_option( 'eucomply_pro_verified_at' );
-                    delete_option( 'eucomply_pro_last_ok_at' );
-                    delete_transient( 'eucomply_license_retry' );
+                    $this->clear_license_cache();
                 }
                 $saved = true;
             }
@@ -748,14 +752,25 @@ class EUComply {
                 update_option( 'eucomply_agency_name', sanitize_text_field( wp_unslash( $_POST['eucomply_agency_name'] ) ) );
             }
         }
+        if ( ! empty( $_POST ) && isset( $_POST['eucomply_release'] ) ) {
+            check_admin_referer( 'eucomply_release' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_die( -1 );
+            }
+            $notice = $this->release_device();
+        }
         $pro_key      = get_option( 'eucomply_pro_key', '' );
         $agency_name  = get_option( 'eucomply_agency_name', get_bloginfo( 'name' ) );
         $is_pro       = $this->is_pro();
+        $state        = get_option( 'eucomply_pro_state', '' );
         ?>
         <div class="wrap eucomply-wrap">
             <h1>EUComply Settings</h1>
             <?php if ( $saved ) : ?>
                 <div class="notice notice-success is-dismissible"><p>Settings saved.</p></div>
+            <?php endif; ?>
+            <?php if ( '' !== $notice ) : ?>
+                <div class="notice notice-info is-dismissible"><p><?php echo esc_html( $notice ); ?></p></div>
             <?php endif; ?>
             <form method="post" class="eucomply-settings">
                 <?php wp_nonce_field( 'eucomply_settings' ); ?>
@@ -764,6 +779,8 @@ class EUComply {
                 <p class="desc">Enter the license key from your purchase email to unlock Pro on this website. <a href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>" target="_blank" rel="noopener noreferrer">Buy Pro ($79 per website per year) →</a></p>
                 <?php if ( $is_pro ) : ?>
                     <p style="color:#1a7a44;font-weight:600;margin-top:4px">✓ Pro license active</p>
+                <?php elseif ( 'device_limit' === $state ) : ?>
+                    <p style="color:#b85a0a;font-weight:600;margin-top:4px">This key is valid, but every device in your plan is already in use, so it is not active on this website. Free a slot below, or use it on a site that has a slot free.</p>
                 <?php elseif ( '' !== $pro_key ) : ?>
                     <p style="color:#c03030;font-weight:600;margin-top:4px">License key not accepted. Check that all 32 characters are copied, or reply to your purchase email for help.</p>
                 <?php endif; ?>
@@ -774,6 +791,16 @@ class EUComply {
 
                 <p style="margin-top:20px"><button class="eucomply-btn" type="submit">Save Settings</button></p>
             </form>
+            <?php if ( '' !== $pro_key ) : ?>
+                <hr>
+                <h2>Move this license to another website</h2>
+                <p class="desc" style="max-width:60em">Pro covers one website per paid slot. Releasing this device frees the slot so the same key can be activated on your new site. Do this before you delete or move this site, otherwise the slot stays taken.</p>
+                <form method="post">
+                    <?php wp_nonce_field( 'eucomply_release' ); ?>
+                    <input type="hidden" name="eucomply_release" value="1">
+                    <p style="margin-top:10px"><button class="eucomply-btn" type="submit">Release this device</button></p>
+                </form>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -940,15 +967,22 @@ class EUComply {
         echo '<p>Summary of the latest automated compliance scan (' . esc_html( get_option( 'eucomply_last_scan', '' ) ) . ').</p>';
         echo '<table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>';
         foreach ( $results as $key => $r ) {
-            echo '<tr><td>' . esc_html( $r['label'] ) . '</td><td>' . ( ! empty( $r['pass'] ) ? 'PASS' : 'FAIL' ) . ( ! empty( $r['warn'] ) ? ' (warning)' : '' ) . '</td><td>' . esc_html( $r['detail'] ) . '</td></tr>';
+            $status = ! empty( $r['pass'] ) ? 'PASS' : ( ! empty( $r['warn'] ) ? 'WARN' : 'FAIL' );
+            echo '<tr><td>' . esc_html( $r['label'] ) . '</td><td>' . $status . '</td><td>' . esc_html( $r['detail'] ) . '</td></tr>';
         }
         echo '</table>';
         if ( empty( $results ) ) {
             echo '<p>No scan has been run yet. Run a scan from the EUComply dashboard and re-generate this report.</p>';
         } else {
-            $fails = 0;
+            $passed = 0;
+            $warned = 0;
+            $fails  = 0;
             foreach ( $results as $r ) {
-                if ( empty( $r['pass'] ) ) {
+                if ( ! empty( $r['pass'] ) ) {
+                    $passed++;
+                } elseif ( ! empty( $r['warn'] ) ) {
+                    $warned++;
+                } else {
                     $fails++;
                 }
             }
@@ -958,7 +992,17 @@ class EUComply {
                     echo '<li>' . esc_html( $r['label'] ) . ': ' . esc_html( $r['fix'] ) . '</li>';
                 }
             }
-            echo '</ul><p>' . sprintf( '%d of %d checks passed.', count( $results ) - $fails, count( $results ) ) . '</p>';
+            echo '</ul>';
+            $summary = sprintf( '%d of %d checks passed', $passed, count( $results ) );
+            if ( $warned ) {
+                $summary .= sprintf( ', %d with warnings', $warned );
+            }
+            if ( $fails ) {
+                $summary .= sprintf( ', %d failed', $fails );
+            }
+            // A warning is a partial result, not a pass. It is counted and named
+            // separately so the headline number cannot overstate compliance.
+            echo '<p>' . esc_html( $summary ) . '. Warnings are not counted as passed.</p>';
         }
         return ob_get_clean();
     }
@@ -971,6 +1015,11 @@ class EUComply {
      * server cannot be reached (network error or 5xx), the last successful
      * verification is trusted for EUCOMPLY_LICENSE_GRACE (7 days), so an
      * outage never locks a paying customer out.
+     *
+     * A 409 (device limit) is not a bad key: this website simply has no free
+     * slot. It is recorded in `eucomply_pro_state` for the settings screen and
+     * is deliberately not cached as a negative verdict, so freeing a slot
+     * restores Pro on the next check.
      */
     private function is_pro() {
         $key = self::normalise_key( get_option( 'eucomply_pro_key', '' ) );
@@ -992,6 +1041,16 @@ class EUComply {
             return $verified && ( time() - $last_ok ) < EUCOMPLY_LICENSE_GRACE;
         }
         delete_transient( 'eucomply_license_retry' );
+        if ( 'device_limit' === $ok ) {
+            // Short backoff instead of a 24h negative cache: the slot can be
+            // freed at any moment, and then this site must recover on its own.
+            set_transient( 'eucomply_license_retry', 1, 10 * MINUTE_IN_SECONDS );
+            update_option( 'eucomply_pro_state', 'device_limit' );
+            delete_option( 'eucomply_pro_verified' );
+            delete_option( 'eucomply_pro_verified_at' );
+            return false;
+        }
+        delete_option( 'eucomply_pro_state' );
         update_option( 'eucomply_pro_verified', $ok ? '1' : '0' );
         update_option( 'eucomply_pro_verified_at', time() );
         if ( $ok ) {
@@ -1048,8 +1107,10 @@ class EUComply {
      * The first check activates this site (device_id = hostname); later checks
      * validate, so daily re-checks do not use up activations.
      *
-     * @return bool|null True/False on a definitive answer, null when the server
-     *                   is unreachable or answers with a temporary error.
+     * @return bool|string|null True/false on a definitive answer, the string
+     *                          'device_limit' when the plan's device slots are
+     *                          all used (409), and null when the server is
+     *                          unreachable or answers with a temporary error.
      */
     private function verify_license_remote( $key ) {
         $device = self::device_id();
@@ -1084,12 +1145,63 @@ class EUComply {
     }
 
     /**
-     * Map a license API response to true/false/null.
+     * Release this website's license device slot.
      *
-     * 200 with ok + the expected flag is a pass. 400 (bad format), 403 (expired,
-     * revoked or another product), 404 (unknown key) and 409 (device limit
-     * reached) are definitive refusals. Anything else (network errors, 5xx,
-     * rate limits, unreadable bodies) is temporary and returns null.
+     * Pro is priced per website, so a slot must be freed when the site is
+     * replaced or the plugin is removed. Without this the customer can never
+     * move their license, because the server keeps the device occupied.
+     *
+     * @param string $key License key to release; defaults to the stored one.
+     * @return string Short result message for the settings screen.
+     */
+    private function release_device( $key = '' ) {
+        $key = self::normalise_key( $key ? $key : get_option( 'eucomply_pro_key', '' ) );
+        if ( '' === $key ) {
+            return 'No Pro key is stored on this website, so there is no device to release.';
+        }
+        $res = $this->license_request(
+            'deactivate',
+            array(
+                'license_key' => $key,
+                'device_id'   => self::device_id(),
+            )
+        );
+        $this->clear_license_cache();
+        if ( is_array( $res ) && 200 === $res['code'] && ! empty( $res['data']['ok'] ) ) {
+            return 'Device released. This website no longer uses a Pro slot, so it can be used again on another site.';
+        }
+        $code = is_array( $res ) ? $res['code'] : 0;
+        return 'The license server could not be reached (HTTP ' . (int) $code . '), so the slot was not released. Try again when you are online. Your Pro status on this website is unchanged.';
+    }
+
+    /**
+     * Drop every cached license verdict so the next check runs from scratch.
+     *
+     * Keeps the stored key. Removes the negative cache as well, so a customer
+     * who frees a device slot gets Pro back without waiting out a TTL.
+     */
+    private function clear_license_cache() {
+        delete_option( 'eucomply_pro_verified' );
+        delete_option( 'eucomply_pro_verified_at' );
+        delete_option( 'eucomply_pro_state' );
+        delete_option( 'eucomply_license_activation' );
+        delete_transient( 'eucomply_license_retry' );
+    }
+
+    /**
+     * Map a license API response to a verdict.
+     *
+     * true            — the key is valid and active for this device.
+     * false           — definitive refusal, locks Pro on this site: 400 (bad
+     *                    format), 403 (expired, revoked or another product),
+     *                    404 (unknown key).
+     * 'device_limit'  — HTTP 409. The key is fine, this website's device slot
+     *                    is not. It must never lock the key, and it is reported
+     *                    separately so the customer can free a device.
+     * null            — temporary: network error, 402, 429, any 5xx, or a 200
+     *                    body we cannot read. The cached Pro status is then
+     *                    used for the grace period, so a license-server
+     *                    problem can never lock out a paying customer.
      */
     private function license_verdict( $res, $flag ) {
         if ( null === $res ) {
@@ -1102,7 +1214,10 @@ class EUComply {
             }
             return ! empty( $data[ $flag ] );
         }
-        if ( in_array( $res['code'], array( 400, 403, 404, 409 ), true ) ) {
+        if ( 409 === $res['code'] ) {
+            return 'device_limit';
+        }
+        if ( in_array( $res['code'], array( 400, 403, 404 ), true ) ) {
             return false;
         }
         return null;

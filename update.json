@@ -1,15 +1,15 @@
 {
   "name": "EUComply",
   "slug": "eucomply",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "homepage": "https://eucomplypro.com",
-  "download_url": "https://eucomplypro.com/assets/eucomply-1.3.1.zip",
+  "download_url": "https://eucomplypro.com/assets/eucomply-1.3.2.zip",
   "requires": "5.8",
   "tested": "6.8",
   "requires_php": "7.4",
   "last_updated": "2026-09-25",
   "sections": {
     "description": "Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, forms, backups, plugin health, legal pages. Pro ($79/year per website) unlocks editable HTML DPA, NIS2/DORA and EAA starters plus an HTML report from the latest scan.",
-    "changelog": "= 1.3.1 =\n* Pro copy now describes the actual HTML report instead of a PDF report.\n* Pro users can download the HTML report directly from the scan results.\n* The update package and manifest point to version 1.3.1.\n\n= 1.3.0 =\n* Pro licenses are sold through Stripe and checked against the Mahope license server (mahope.tools); keys are 32 hex characters.\n* First check activates the site, daily checks validate it.\n* A verified Pro status is kept for 7 days if the license server is unreachable.\n\n= 1.2.0 =\n* Activation guard for PHP/WordPress versions.\n* URL fixes, ZIP rebuilt with correct plugin header.\n\n= 1.1.0 =\n* License API (former Lemon Squeezy) integration with caching and refund detection.\n* Auto-update checker via update.json manifest.\n* Improved license validation UX in settings.\n\n= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
+    "changelog": "= 1.3.2 =\n* A device-limit response (HTTP 409) no longer locks your license; the settings screen explains it and can free the slot.\n* New \"Release this device\" action, so a Pro license can be moved to another website.\n* License-server errors (402, 429, 5xx, network) keep a verified Pro status for 7 days.\n* The Pro report names warnings separately instead of counting them as plain passes.\n\n= 1.3.1 =\n* Pro copy now describes the actual HTML report instead of a PDF report.\n* Pro users can download the HTML report directly from the scan results.\n* The update package and manifest point to version 1.3.1.\n\n= 1.3.0 =\n* Pro licenses are sold through Stripe and checked against the Mahope license server (mahope.tools); keys are 32 hex characters.\n* First check activates the site, daily checks validate it.\n* A verified Pro status is kept for 7 days if the license server is unreachable.\n\n= 1.2.0 =\n* Activation guard for PHP/WordPress versions.\n* URL fixes, ZIP rebuilt with correct plugin header.\n\n= 1.1.0 =\n* License API (former Lemon Squeezy) integration with caching and refund detection.\n* Auto-update checker via update.json manifest.\n* Improved license validation UX in settings.\n\n= 1.0.0 =\n* Initial release.\n* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.\n* Weekly automated re-scan via WP-Cron.\n* AJAX scan from admin dashboard.\n* Pro license system with document generation."
   }
 }

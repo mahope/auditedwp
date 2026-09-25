@@ -13,6 +13,32 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     exit;
 }
 
+// ── Release the Pro device slot ──────────────────────────────────────────────
+// Pro is sold per website, so deleting the plugin must free this site's slot —
+// otherwise the customer cannot activate the same key on their new site. This
+// is best-effort: a failure here must not block the uninstall.
+$eucomply_key = strtolower( trim( (string) get_option( 'eucomply_pro_key', '' ) ) );
+if ( '' !== $eucomply_key ) {
+    $eucomply_host = wp_parse_url( home_url(), PHP_URL_HOST );
+    $eucomply_res  = wp_remote_post(
+        'https://mahope.tools/api/license/deactivate',
+        array(
+            'timeout' => 10,
+            'headers' => array(
+                'Content-Type' => 'application/json',
+                'Accept'       => 'application/json',
+            ),
+            'body'    => wp_json_encode(
+                array(
+                    'license_key' => $eucomply_key,
+                    'device_id'   => substr( $eucomply_host ? strtolower( $eucomply_host ) : 'eucomply', 0, 128 ),
+                )
+            ),
+        )
+    );
+    unset( $eucomply_res, $eucomply_host, $eucomply_key );
+}
+
 // ── Options to remove ────────────────────────────────────────────────────────
 $options = array(
     'eucomply_scan_results',
@@ -21,6 +47,7 @@ $options = array(
     'eucomply_pro_verified',
     'eucomply_pro_verified_at',
     'eucomply_pro_last_ok_at',
+    'eucomply_pro_state',
     'eucomply_license_activation',
     'eucomply_ls_instance_id',
     'eucomply_agency_name',
