@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: færdig — 409-semantik, `deactivate`, 7-dages grace og privatlivstekst rettet på `ceo/license-409-deactivate`
-Baseline: `main` commit `e9f1e09` efter `git pull --ff-only` 2026-09-25 17:03 UTC
+Sidste iteration: færdig — per-check-historik og pass-til-fail-alarms i `worker-watch` på `ceo/watch-per-check-history`
+Baseline: `main` commit `e0275ec` efter `git pull --ff-only` 2026-09-25 17:03 UTC
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -11,7 +11,8 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG`: **2 — Skriv spec for den hosted Pro-værdi** på `ceo/hosted-pro-spec`; `docs/eucomply-pro-spec.md` findes nu.
 - `FÆRDIG` (del 1 af 2): **3a — SSRF/DOM-XSS + overvågningsejerskab** på `ceo/ssrf-monitor-ownership`, commit `28795c3`.
 - `FÆRDIG` (del 2 af 2): **3b — licens-entitlement, 409-semantik, `deactivate`, `warn` i summen, privatlivstekst** på `ceo/license-409-deactivate`, commit `e9f1e09`.
-- Næste opgave: **4 — Byg ægte historik og pass-til-fail-alerts** (afhænger af Mads' svar på spørgsmål 1, hvis licens-gating skal med; ellers kan historikken bygges på den eksisterende owner-token-registrering).
+- `FÆRDIG` (kode + tests grøn, **ikke live** — kræver worker-deploy): **4 — Byg ægte historik og pass-til-fail-alerts** på `ceo/watch-per-check-history`, commit `1785766`.
+- Næste opgave: **5 — Implementér kundespecifik rapporter**, hvis den ikke forudsætter svar på spørgsmål 1; ellers **8 — Stop offentlig udgivelse af interne og betalte filer**, som er uafhængig af alle svar.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
@@ -19,7 +20,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 | Område | Det virker i dag | Det er ikke implementeret eller kan ikke sælges endnu |
 |---|---|---|
 | Gratis webscanner | Ni universelle URL-tjek, forslag til rettelser og en delbar gen-kørselse-link via `shared/scan-engine.js` og `worker-scan/index.js`. | Ingen sammenkoblet Pro-entitlement. |
-| Hosted monitoring beta | `worker-watch/index.js` har cron kl. 06:00 UTC, 30 dages samlet score-historik og score-fald-mail. | Registreringen er åben og ikke knyttet til køb eller licens. `/status` er offentligt. Der gemmes kun samlet score, så pass-til-fail pr. check kan ikke implementeres ud fra historikken. |
+| Hosted monitoring beta | `worker-watch/index.js` har cron kl. 06:00 UTC, 30 dages per-check-historik (pass/warn/fail pr. tjek) og **én mail pr. ny regression** med checknavn, gammel status, tidspunkt og fix. Uændrede scans og gentagne fejl sender intet. | Registreringen er åben og ikke knyttet til køb eller licens. Det er bygget og testet i repoet, men **endnu ikke deployet** — workerne deployes ikke af CI, så produktionen kører 1.1.0 med score-fald-mail. |
 | Gratis WordPress-plugin | seks site-/WordPress-tjek og en ugentlig planlagt scan i `plugin/eucomply.php`. | Ingen historik, ikke dagligt. |
 | WordPress-plugin Pro 1.3.1 | Licensen validerer mod Mahope og låser DPA-, NIS2/DORA- og EAA-starthtml samt en rapport fra seneste scan. | Dokumenterne er redigerbare HTML, ikke PDF. Der er ingen hosted konto, historik, live badge, mailflow eller flere sites. |
 | Hosted Pro-dashboard | `/pro/dashboard/` er en offentlig konceptdemo med fast, illustrativ data. | Ikke kundedata, ikke autentificeret og uden tilføj/slet/cancel. Den henter ikke live kundedata og bruger ikke længere `Math.random()`. |
@@ -137,16 +138,26 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 4. Byg ægte historik og pass-til-fail-alerts
 
-- Status: `I GANG` (udpeget som næste opgave 2026-09-25 efter at opgave 3 blev færdig)
-- Fejl: 0/2
+- Status: `FÆRDIG` i kode og tests på `ceo/watch-per-check-history`, commit `1785766`. **Ikke live**: `worker-watch/` deployes ikke af CI, så dette er først sandt i produktion efter et manuelt `wrangler deploy` (spørgsmål 9). Sitecopy er derfor bevidst **ikke** ændret til "included".
+- Fejl: 1/2 (første kørsel af de nye tests faldt over tre reelle fund, rettet i samme iteration)
+- 2026-09-25: **Historien er nu per-check, ikke kun score.** Hver dag gemmes `{date, score, passed, total, checks: {key: "pass"|"warn"|"fail"}}` for alle ni tjek, 30 dages loft. `/status` returnerer desuden `checks` (seneste snapshot) uden email, owner-token eller andres data.
+- 2026-09-25: **Alarmerne er nu per-check og deduplikerede.** En mail pr. scan der ændrer noget, med checknavn, gammel status, tidspunkt, fund og konkret `fix`. Uændrede scans sender intet; et brud der holder dag to sender intet; en cron-retry samme dag sender intet. Det erstatter den gamle score-fald-mail, som sagde "89 % → 44 %" uden at nævne hvad der var bruddet.
+- 2026-09-25 — **fund 1:** den første kørsel af `buildAlert` viste "Score: 0 % (previous 0 %)". `applyScan` skriver dagens score i recordet *før* alarmen bygges, så `record.lastScore` var den nye score. Rettet ved at give `buildAlert` baselinens score som parameter — den skal testes direkte, fordi den er umulig at se ved at læse koden.
+- 2026-09-25 — **fund 2:** cron-retry samme dag diffede mod **dagen før** igen og sendte den samme mail igen. Rettet ved at baselinen er dagens gemte snapshot, når den findes, ellers sidste anden dag. Dette er dedupe-kravet i acceptkriteriet og var ikke dækket af min første test.
+- 2026-09-25 — **fund 3:** fixture-testen forventede præcis `legal/ssl/trackers`, men `BROKEN_PAGE` mister også privacy-linket, som `forms` kræver, så fire tjek regresserer korrekt. Testen kræver nu de tre centrale tjek og at ét uændret tjek (`dora`) *ikke* rapporteres.
+- 2026-09-25 — **afvigelse fra planens første skridt:** retention er et loft på 30 dage i stedet for KV-TTL 40 dage. En `expirationTtl` på site-recordet ville slette registreringen selv, og cron-skrivningen nulstiller TTL'en dagligt, så den kunne aldrig udløbe en aktiv site.
+- 2026-09-25 — **deploydagen ville have sendt en mail-bomb:** records fra før per-check-historikken har ingen baseline, så alle deres eksisterende fejl ville være rapporteret som "nye". Den første sådane dag sender nu kun den ærlige score-fald-mail, og næste dags diff er ægte.
+- 2026-09-25 — **recovery sender ingen mail.** En check der bliver grøn nævnes i mailen, hvis der ellers er noget at sige, men en ren genopretningsdag sender intet. Det er bevidst: to modsatte dage i træk er præcis den spam, overvågning skal fjerne. Notér hvis Mads vil have en separat "fixed"-mail.
+- Gate: `38 security checks passed` i `tools/test_worker_security.mjs` (11 nye, op fra 27); `44 license checks passed`; `112 self-tests passed`, `0 unexpected EUComply Pro claims`; `php -l` grøn på `plugin/` og `site/plugin/` (ingen PHP ændret); `node --check` grøn på begge ændrede filer; `npm pack --dry-run` grøn (9 filer); root-SEO `216 pages checked, 0 findings`. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres: workspace-permissions nægter adgang, så missionskravet kan ikke dokumenteres; gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+- **Ingen `site/**`-fil rørt**, så deploy-workflowet trigges ikke af denne commit, og ingen live-verificering er nødvendig for den. Det er dog **ikke** nok: workerne deployes manuelt.
 - Begrundelse: Bureauer skal kunne dokumentere regressioner og få besked om den konkrete check, ikke få tilfældig samlet score.
 - Første skridt i iterationen: skriv per-check-lagringen i `worker-watch/index.js` (daglig `{date, checks: {key: pass|warn|fail}}`, TTL 40 dage) og kør den gennem `tools/test_worker_security.mjs`-mønstret. `warn` skal her være tri-state uafhængigt af den samlede score, jf. beslutningen i opgave 3 del B.
 - Scope: gem seneste og 30 dages per-check-resultater; diff gamle mod nye checks; én mail pr. ny fejl; deduplicér gentagne cron-fejl; link til kundens private resultatside.
 - Accept:
-  - Identiske scans sender ingen mail; en check, der skifter pass→fail, sender én mail med checknavn, gammel status, tidspunkt og handlingsforslag.
-  - 30 dage og 50 samt 100 på hinanden følgende daglige scans er dækket af automatiske tests.
-  - Ingen kundedata eller emailadresse havner i klientlog eller offentligt endpoint.
-  - Copy først skrives som inkluderet, når denne gate er grøn.
+  - ~~Identiske scans sender ingen mail; en check, der skifter pass→fail, sender én mail med checknavn, gammel status, tidspunkt og handlingsforslag.~~ **Dækket.** Testene bruger rigtige `runScan`-resultater fra to sider (en god, en efter et dårligt deploy) og den rigtige cron-handler med Resend-kald fanget, ikke håndlavede fixtures.
+  - ~~30 dage og 50 samt 100 på hinanden følgende daglige scans er dækket af automatiske tests.~~ **Dækket**: 35 dage med cap på 30 og korrekt ældste dato, samt 50 og 100 scans med assertions på record-størrelse og KV-round-trip.
+  - ~~Ingen kundedata eller emailadresse havner i klientlog eller offentligt endpoint.~~ **Dækket**: `/status` dumpes og må ikke indeholde email eller owner-token; `/health` må ikke afsløre overvågede sites; mailteksten må ikke ekko adressen.
+  - ~~Copy først skrives som inkluderet, når denne gate er grøn.~~ **Dækket**: ingen sitecopy er ændret, fordi gaten er grøn *i repoet* mens produktionen kører den gamle worker. Copy bliver først "included" efter worker-deployet er bekræftet — spørgsmål 9.
 
 ### 5. Implementér kundespecifik rapporter
 
@@ -244,7 +255,7 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 6. **Alarm-tilstand:** er `ALERT_KEY` sat i produktion for `eucomply-watch`? Uden nøglen sender overvågningen ingen mail (`worker-watch/index.js:22`), så enten skal den sættes eller overvågning som produkt skal væk fra siden. Det er ikke opdageligt i repoet.
 7. **Kvotevisning:** findes der en deterministisk måde at få det købte antal websites ud af licensserveren? `devices_in_use` plus `409` er ikke nok til en ærlig kvotebjælke i dashboardet (spec afsnit 5.1).
 8. **Device-idempotens:** er `activate` med et allerede aktiveret `device_id` idempotent uden at optage en ekstra enhed? Det afgør, om et site med både plugin og hosted tæller som ét website.
-9. **Worker-deploy:** `shared/scan-engine.js` og `worker-scan/`/`worker-watch/` deployes ikke af CI. Skal de nye workers deployes nu, og hvem gør det — Mads eller en agent med `wrangler`-adgang? Uden det ligger rettelsen i repoet, men produktionen kører den gamle kode.
+9. **Worker-deploy:** `shared/scan-engine.js` og `worker-scan/`/`worker-watch/` deployes ikke af CI. Skal de nye workers deployes nu, og hvem gør det — Mads eller en agent med `wrangler`-adgang? Uden det ligger rettelsen i repoet, men produktionen kører den gamle kode. **Tre runder er nu ophoblet bag denne ene beslutning:** SSRF-guarden + ejerskabstokens (`28795c3`), per-check-historik og regression-alarms (`1785766`) og 409-semantiken med `deactivate` i pluginen. Jo længere den venter, desto større er hullet mellem det, repoet lover, og det kunderne oplever.
 10. **Ubeskyttet widget:** `site/shared/live-check-widget.html:33,37,39,42` renderer scanningstjek fra et kundesite i `innerHTML` uden escaping og kalder DeskUptime-workeren. Den ligger i EUComply-deploy-træet, men uden for EUComply-gaten. Skal den rettes her eller i DeskUptime-repoet?
 
 ## Kendte lavprioritets-rester
@@ -263,3 +274,4 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 - `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — **DEPLOY OK 2026-09-25 18:15 CEST.** Verificeret på indhold, ikke kun status: `/pro/` viser "Pro includes today" med kun de tre dokumentfunktioner og en separat, tydeligt mærket "Planned features, not included today"-blok; `/pricing/` har nul nutidige claims om daglig re-scan, PDF eller badge; `/da/pro/`, `/de/pro/`, `/fr/pro/` og alle fire pricing-ruter svarer 200; plugin-downloadet på `/assets/eucomply-1.3.1.zip` svarer 200 med `application/zip`, 20569 bytes.
 - `VERIFICÉR DEPLOY: SSRF-guard + overvægtningsejerskab 28795c3 2026-09-25 16:32 UTC` — ændrer `site/**/scan/index.html` (token-håndtering) og rører ikke andre publicfiler. Verificér efter næste deploy-vindue at `/scan/` stadig kan registrere og afmelde, og at de fire locale-siders script ikke har mistet en sætning. Bemærk: **workerne deployes ikke af denne workflow** — `shared/scan-engine.js`, `worker-scan/` og `worker-watch/` kræver et manuelt `wrangler deploy`, hvilket agenten ikke gør. Indtil det sker, er live-scanneren stadig den gamle, sårbare kode, og det gamle `GET /status?url=` svarer stadig 200 indtil worker-deployet.
 - `VERIFICÉR DEPLOY: licens-409 + frigiv-enhed + privacy 1.3.2 e9f1e09 2026-09-25 17:40 UTC` — ændrer `site/plugin/index.html` (downloadlink), `site/privacy/index.html`, `site/update.json` og tilføjer `site/assets/eucomply-1.3.2.zip` (1.3.1-zip'en er fjernet fra deploy-træet). Verificér på indhold efter næste vindue: at `/assets/eucomply-1.3.2.zip` svarer 200 med `application/zip` og at den gamde 1.3.1-zip **ikke** længere findes, at downloadknappen på `/plugin/` peger på 1.3.2, og at privatlivssiden ikke længere siger at status-endpointet er offentligt. Sidste deployment er manuel, så plugin-1.3.2-ændringerne når kun kunder ved at de opdaterer fra wp-admin.
+- `VERIFICÉR DEPLOY: per-check-historik + regression-alarms 1785766 2026-09-25 18:05 UTC` — **kræver manuel worker-deploy, ikke sitets.** Ændrer kun `worker-watch/index.js` og `tools/test_worker_security.mjs`; ingen `site/**`-fil, så intet af CI'en deployer. Efter `wrangler deploy` i `worker-watch/` skal følgende verificeres på den rigtige worker: `GET /health` svarer `version: "1.2.0"`; `POST /register` returnerer `history[0].checks` med ni nøgler; `POST /status` med owner-token returnerer `checks` og ingen email; cron kl. 06:00 UTC på en registreret testside med en tydelig regression sender **én** mail med checknavn og fix, og ingen mail dagen efter uden ændring. Kræver `ALERT_KEY` i produktion (spørgsmål 6), ellers er der ingen mail at verificere.
