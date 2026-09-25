@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * eucomply-scan — CLI wrapper for the EUComply universal compliance scanner.
+ * eucomply-scan — DEPRECATED proxy for the EUComply universal compliance scanner.
+ *
+ * This file is not the scanner. It forwards each URL to the hosted worker at
+ * API below and prints what comes back, so every result depends on that worker
+ * being deployed and healthy. Prefer the `eucomply-scanner` package, which
+ * scans the page itself: no network hop, no rate limit, no dependency on our
+ * production being up.
  *
  * Usage:
  *   eucomply example.com
@@ -151,6 +157,13 @@ Exit code: 0 if all URLs have score >= 50, 1 otherwise.
     console.error('Error: provide at least one URL or pipe URLs via stdin.');
     console.error('Usage: eucomply example.com');
     process.exit(1);
+  }
+
+  if (!opts.quiet) {
+    console.log(yellow('This command is deprecated and is not published to npm.'));
+    console.log(dim('It forwards every scan to our hosted worker, so it only works while that worker is up. For a scanner with no network dependency, use:'));
+    console.log(dim('  ') + cyan('npx github:mahope/eucomply-scanner <url>'));
+    console.log();
   }
 
   // Scan each URL sequentially (respects rate limit — 20/10min)
