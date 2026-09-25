@@ -34,6 +34,6 @@
   },
   "homepage": "https://github.com/mahope/eucomply-scanner",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   }
 }

@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: færdig — kvalitetsgaten er permanent i CI, og den fandt en P0 i den publicerede scanner
-Baseline: `main` commit `dbd1487` efter `git pull --ff-only` 2026-09-25
+Sidste iteration: færdig — opgave 11. Runtime-kravet er erklæret og kan ikke længere glide fra CI, `.nvmrc` og `engines`
+Baseline: `main` commit `fd9f851` efter `git pull --ff-only` 2026-09-25
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -15,7 +15,8 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG` (kode + CI grøn, live-verificering afventer næste deploy-vindue): **8 — Stop offentlig udgivelse af interne og betalte filer** på `ceo/deploy-hygiene`, commit `317e382`.
 - `FÆRDIG`: **9 — Gør kvalitetsgaten permanent i CI** på `ceo/ci-kvalitetsgate`. Undervejs fandt den en P0: den publicerede scanner-CLI fejlede på *alle* scans, fordi `UA` ikke var erklæret i `eucomply-scanner/engine/index.js`.
 - `FÆRDIG`: **10 — Forbedr konvertering efter ærlig baseline** på `ceo/cta-baseline`. `/checklist/` og `/badge/` havde ingen købsvej; `tools/check_cta.py` gør købsrejsens acceptkriterier prøvbare, og baseline står som dokumenteret 0.
-- Næste opgave: **11 — Opgrader og erklær kun relevante runtimes**. Opgave 5 (kunderapporter) kræver svar på spørgsmål 1 og må derfor ikke begyndes; opgaverne 6 og 7 kræver de endnu udevtede workers fra spørgsmål 9.
+- `FÆRDIG`: **11 — Opgrader og erklær kun relevante runtimes** på `ceo/node-runtime-22`. `engines` hævedes fra `>=18` til `>=22` i begge pakker, `.nvmrc` oprettedes, CI flyttes fra Node 20 til 22, og `tools/check_runtime.py` gør de tre tal uladeligt ens.
+- Næste opgave: **12 — Opgradér GitHub Actions til Node-24-generationen**. Opgave 5 (kunderapporter) kræver svar på spørgsmål 1 og må derfor ikke begyndes; opgaverne 6 og 7 kræver de endnu udevtede workers fra spørgsmål 9.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
@@ -48,7 +49,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 Gate-definitionen er låst her, før første implementeringsiteration:
 
 1. **PHP syntax:** `php -l` på hver ændret `.php`-fil. Ved plugin-ændringer skal både `plugin/` og deploy-kopien `site/plugin/` være byte-identiske.
-2. **Repo-tests:** repoet har ingen root-test-suite eller PHP-testkonfiguration. Den regressionstest for påstande, der tilføjes i opgave 1, bliver den nye obligatoriske test. Hvis scannerkoden ændres, køres desuden scannerens smoke-test og `npm pack --dry-run` i `eucomply-scanner/`. Siden opgave 10 gælder desuden `tools/check_cta.py` (købsvejens kontrakt) **og** `tools/check_cta.py --selftest` (beviser at gaten kan fejle).
+2. **Repo-tests:** repoet har ingen root-test-suite eller PHP-testkonfiguration. Den regressionstest for påstande, der tilføjes i opgave 1, bliver den nye obligatoriske test. Hvis scannerkoden ændres, køres desuden scannerens smoke-test og `npm pack --dry-run` i `eucomply-scanner/`. Siden opgave 10 gælder desuden `tools/check_cta.py` (købsvejens kontrakt) **og** `tools/check_cta.py --selftest` (beviser at gaten kan fejle), og siden opgave 11 `tools/check_runtime.py` **og** `tools/check_runtime.py --selftest` (beviser at `engines`, `.nvmrc` og CI ikke kan glide fra hinanden).
 3. **Obligatorisk site-build + SEO:** fra sibling-repoet `../hermes-passiv` med `AUDITEDWP_DIR` sat til denne repo-root:
    - `python3 build_sites.py --only eucomplypro.com`
    - `python3 tools/seo_check.py --only eucomplypro.com`
@@ -259,15 +260,58 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 11. Opgrader og erklær kun relevante runtimes
 
-- Status: `TODO`
+- Status: `FÆRDIG` på `ceo/node-runtime-22`
 - Fejl: 0/2
-- Begrundelse: Scanneren og CLI'en er centrale i gratisstrømmen og bruger endnu Node 18 som laveste understøttede version, mens CI bruger Node 20. Root-sitet har ingen runtime-manifest.
+- **fund undervejs: repoet erklærede tre forskellige runtimes for den sampe kode.** `engines` sagde `>=18` i begge pakker, `verify.yml` satte `node-version: '20'`, og maskinen kørte 22. Ingen af dem kontrollerede de andre, så de tre tal kunne drifte uden at nogen så det. Det er præcis den fejltype, der dræbte jordemoderstudy 23. august (Next.js installeret, serveren byggede med Node 18, fejlen viste sig først i produktion).
+- **Begge erklærede tal var døde.** Node 18 nåede EOL 2025-04-30, og Node 20 nåede EOL 2026-04-30 — altså den version kvalitetsgaten rent faktisk kørte på. Kilde for alle datoer: Node's officielle `schedule.json`, hentet 2026-09-25. Node 22 er understøttet til 2027-04-30, Node 24 til 2028-04-30. Floor'et blev sat til **22**, ikke 24: brugeren på den laveste understøttede version skal kunne regne med at blive dækket, og maskinen her kører 22, så det er den version gaten faktisk er testet på.
+- **Den nye kode krævede ingen ændring.** `AbortSignal.timeout` (stabilt siden 17.3) og global `fetch` er dækket af Node 22; ingen `Promise.withResolvers`, `Object.groupBy` eller andre nyere API'er er brugt. Rettelsen var derfor en erklæring, ikke en migrering.
+- **`tools/check_runtime.py` (ny) gør de tre tal uladeligt ens.** Den kræver, at begge pakker erklærer en Node-major der ikke er EOL (dokumenteret, dateret livscyklustabel — ingen netværkskald, så gaten er deterministisk), at `.nvmrc` i repo-roden er samme major, at ingen EUComply-workflow sætter en anden `node-version`, og at gaten selv kører på den erklærede runtime — ellers er et grønt resultat ubevis. Den har 8 negative selftests. Negativt testet mod virkelige filer: med `engines` sat tilbage til `>=18` giver den exit 1 med "Node 18 nåede EOL 2025-04-30". `build-devnotify.yml` er bevidst undtaget, fordi DevNotify er et søskeprodukt, der ifølge opgavens egen acceptkrav ikke blandes ind i denne commit.
+- **Der er intet at auditere, fordi der ikke er en afhængighed.** Hverken `eucomply-scanner/` eller `cli/` erklærer `dependencies`/`devDependencies`, så `npm audit` fejler med `ENOLOCK` — ikke fordi der er huller, men fordi der ikke findes noget at scanne. Gaten siger det eksplicit frem for at lade `npm audit` sejlende: en afhængighed uden `package-lock.json` er et fund, fordi så er den uauditeteret.
+- **De to øvrige Node-advarsler er ikke vores kode.** CI logger `punycode` (DEP0040) og `url.parse()` (DEP0169, sikkerhedsrelevante). Kun `deskuptime/src/` rører `url`, og det gør via `fileURLToPath`/`URL`, ikke `url.parse`; begge advarsler kommer derfor fra værktøjets egne afhængigheder. Søskeprodukt og uden for EUComply-gaten.
+- **De GitHub Actions er bevidst ikke opdateret i denne commit.** Runneren logger, at `actions/checkout@v4`, `setup-node@v4`, `setup-python@v5` og `upload-artifact@v4` er *tvunget* til at køre på Node 24. Det er en advarsel, ikke et fejl, og en sådan handling-major hører hjemme i sin egen commit med sin egen rollback. Se opgave 12.
+- **Frisk review før merge fandt to *falske grønne* i den nye gate — og det er præcis den fejltype opgave 9 handlede om.** (1) De to `engines`-blokke blev valideret uafhængigt, og `run()` tog `max()` af floorerne, så scanneren på `>=22` og CLI'en på `>=24` gav **exit 0**. Kommentaren i koden hævdede, at `max()` netop forhindrede drift; den skjulte den laveste. En npm-bruger kunne dermed få en runtime, ingen testede. (2) Kravet om at *nogen* workflow sætter `node-version` var et repo-globalt OR med ingen reference til hvilken fil, og kommentarer blev ikke strippet: slettede man setup-node-steget og skrev `# historisk node-version: 22` i en anden fil, blev gaten grøn, mens CI byggede på runnernes default. Desuden blev `lts/*` stille behandlet som "ingen mening", en minor i `>=22.11.0` blev kasseret så CI testede 11 minors under den erklærede floor, `check_workflows` ignorerede composite actions under `.github/actions/`, regex'en var case-sensitive selvom Actions-inputnavne ikke er det, `run()` læste begge `package.json` to gange uhændlet (ødelagt JSON gav traceback og mistede alle fund), og `eol < today` gav et grønt resultat **på** EOL-dagen. Alle otte er rettet og dækket af selftesten, som nu har **14 negative cases** mod de oprindelige otte; de tre mest alvorlige findes stadig i reproducerbar form i testen. Verificeret mod en kopi af den rigtige gate: pakker med hver sin runtime, `>=22.11.0` med `.nvmrc 22`, `lts/*` og `engines` som henholdsvis streng og tal giver nu alle fund — ikke tracebacks. Python 3.9 og 3.13 er begge verificeret grønne.
+- **En fejl af min egen, undervejs i denne iteration:** den kørende Node-version blev først hentet med `platform.node()`, som returnerer *værtsnavnet*, ikke Node-versionen. Scriptet køres jo af `python3`. Den rigtige vejs `subprocess.run(["node", "--version"])`, og kan den ikke læses, siger gaten det ærligt i stedet for at gætte.
+- Gate: `GATE GRØN — alle 9 steps bestået` (`tools/quality_gate.sh`, herunder de to nye runtime-steps); `Runtime-gate grøn` + `SELFTEST GRØN — alle 14 negative cases fanges`; `112 self-tests passed`, `0 unexpected EUComply Pro claims`; `38 security checks passed`; `19 engine parity checks passed`; `44 license checks passed`; `CTA-gate grøn` + 7 negative cases; `0 interne eller betalte filer i træet`, `0 døde interne referencer` på 322 filer / 226 sider; root-SEO `216 pages checked, 0 findings`; `php -l` grøn på `plugin/` og `site/plugin/` (byte-identiske, ingen PHP ændret); `npm pack --dry-run` grøn; Node-smoke `9 checks` fra den publicerede motor på Node 22. Sibling-kommandoen kørte igen med exit 0, men sibling-SEO rapporterer stadig `0 pages`, så gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+- Baseline målt først: gaten var grøn *inden* ændringen, så de grønne resultater ovenfor skyldes ikke tilfældigheder.
+- Begrundelse: Scanneren og CLI'en er den gratis tragt. At erklære en EOL-runtime som understøttet er ikke en kosmetisk fejl: den fortæller brugeren, at en Node uden sikkerhedsopdateringer siden april 2025 er i orden, og den får bygge-serveren til at vælge en anden version end den testede.
 - Scope: verificér Node supportpolicy; opgradér scanner/CLI's `engines` og tilføj `.nvmrc` i én runtime-commit; kør smoke, pack og scannerens eksisterende CI; auditér kun EUComply-afhængigheder.
 - Accept:
-  - Ny understøttet Node-major fremgår tydeligt i `engines` og `.nvmrc`.
-  - Smoke-test, `npm pack --dry-run`, PHP-lint og SEO-gate er grønne.
-  - Planen noterer gammel→ny version og eventuelle kodeændringer.
-  - Ingen DeskUptime/DevNotify-major opgraderes i samme commit.
+  - ~~Ny understøttet Node-major fremgår tydeligt i `engines` og `.nvmrc`.~~ **Dækket**: `>=22` i `eucomply-scanner/package.json` og `cli/package.json`, `.nvmrc` = `22` i repo-roden, og `verify.yml` kører på 22.
+  - ~~Smoke-test, `npm pack --dry-run`, PHP-lint og SEO-gate er grønne.~~ **Dækket** — alle grønne i gaten ovenfor; røgtesten kørte faktisk på den erklærede Node 22, ikke på en tilfældig lokal.
+  - ~~Planen noterer gammel→ny version og eventuelle kodeændringer.~~ **Dækket**: 18→22 og 20→22 med EOL-datoer og kilde; ingen kodeændring var nødvendig, og det er sagt hvorfor.
+  - ~~Ingen DeskUptime/DevNotify-major opgraderes i samme commit.~~ **Dækket**: hverken `deskuptime/`, `devnotify/` eller deres workflows er rørt; `build-devnotify.yml` står eksplicit i undtagelseslisten i `tools/check_runtime.py`.
+
+### 12. Opgradér GitHub Actions til Node-24-generationen
+
+- Status: `TODO`
+- Fejl: 0/2
+- Fund fra opgave 11, hentet fra CI's egne logs (kørsel `36184172086`): runneren logger `Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4`. Kontrætværdigt nok er de altså *allerede* kørt på Node 24, mens `engines` erklærede `>=18` — altså testede workflowen en runtime, ingen havde erklæret.
+- Seneste stabile majors, verificeret via GitHub API 2026-09-25: `actions/checkout@v7.0.1`, `actions/setup-node@v7.0.0`, `actions/setup-python@v7.0.0`, `actions/upload-artifact@v7.0.1`, `cloudflare/wrangler-action@v4.1.3`. Det er tre majors op ad for de fire første, så det er ikke en copy-paste.
+- Begrundelse: Advarslen er støjende, men den peger på en reel afhængighed af en Node-version, ingen har testet på, og den forsvinder først når handlingerne er på en Node-24-native major. GitHub siger den samme omkring frafald uden tidsplan; en advarsel, der altid er der, bliver ignoreret — også den næste.
+- Scope: læs migrationsnoterne for hver handling; opgradér **én ad gangen med grøn gate efter hver** (se reglen om én major pr. commit); samme for `wrangler-action@v4`, som rører selve deployet og derfor kræver den mest varsomhed; fjern `build-devnotify.yml` fra undtagelseslisten i `tools/check_runtime.py` når DevNotify's egen workflow er opdateret, så gaten dækker den.
+- Accept:
+  - CI-loggen har ingen `Node.js 20 is deprecated`-advarsel mere.
+  - `deploy-site`-kørslen er grøn på alle tre jobs, og `/IMPLEMENTATION_PLAN.md` svarer stadig 404 på origin efter deployen.
+  - Hver major er sin egen commit, så den kan rulles tilbage præcist.
+  - `verify.yml` og `deploy-site.yml` er de eneste workflows rørt; DevNotify er ikke blandet ind.
+
+### 13. Hærd `tools/check_runtime.py` yderligere — resten af reviewfundene
+
+- Status: `TODO`
+- Fejl: 0/2
+- **De to falske grønne og de seks relaterede fejl er allerede rettet i opgave 11.** Det her er kun de fund, der bevidst er lagt til side med en begrundelse, så de ikke går tabt.
+- Fund der kræver en beslutning eller en ny måling:
+  - **Livscyklustabellen bliver forældet.** `NODE_MAJOR_EOL` går kun til Node 25, mens Node 26 lander omkring oktober 2026. Den første, der erklærer `>=26`, får et rødt resultat med beskeden *"findes ikke i NODE_MAJOR_EOL i dette script"*, og det er korrekt — men løsningen er at opdatere tabellen, ikke repoet, og det er nu sagt i beskeden.
+  - **Ingen advarsel før tid.** Den 1. maj 2027 bliver gaten rød for floor 22 uden at nogen har rørt repoet, fordi Node 22 så er EOL. Det er rigtigt, men en måned før (når en major er 90 dage fra EOL) ville en advarsel være bedre end et overraskende rødt resultat. Kræver et beslutningspunkt om, hvor tæt opgaven skal advare.
+  - **`check_dependencies` er vacuous her.** Begge pakker erklærer 0 afhængigheder, så udsagnet "ingen uauditeterede afhængigheder" er sandt uden at være prøvet. Det bliver først et rigtigt fund, den dag en afhængighed tilføjes — hvilket er præcis når gaten skal sige noget.
+  - **`.nvmrc` er strengere end nvm.** Gaten kræver en ren major/minor og afviser `lts/hydrogen` og patch-numre, som nvm gerne indlæser. Det er en bevidst rød med en begrundelse, ikke en fejl, men beskeden bør sige at nvm godt kan mere, så en udvikler ikke tror filen er beskadiget.
+- Fund der er billige at rette, når de laves sammen med en anden ændring i filen: ingen af fundene fra reviewet kræver dog længere kode — de otte alvorligste er dækket af de 14 selftest-cases.
+- Begrundelse: Et værktøj, der bliver støjende eller rødt uden forklaring, bliver enten slået fra eller gjort til noget, ingen læser. Det er dyrere end den oprindelige fejl.
+- Scope: advarselsvindue før EOL; opdater livscyklustabellen ved næste Node-major; præcisér `.nvmrc`-beskeden; overvej at slå `check_dependencies` fra, hvis den forbliver vacuous.
+- Accept:
+  - En major 90 dage fra EOL giver en advarsel, ikke et rødt resultal.
+  - `NODE_MAJOR_EOL` dækker den nyeste Node-major, og kilden er stadig angivet.
+  - Selftesten dækker hvert nyt fund, som den dækker de otte nuværende.
 
 ### Deploy-verificering 2026-09-25 20:35 CEST
 
@@ -324,3 +368,4 @@ CI-kørsel `36173925589` (`deploy-site`, success på 31 s) byggede og verificere
 - `DEPLOY OK 2026-09-25 22:12 CEST` + `VERIFICÉR DEPLOY: købsvej + CTA-gate (opgave 10) 571753a 2026-09-25 20:10 UTC` — ændrer `site/checklist/index.html` (ny Pro-CTA i fix-listen), `site/badge/index.html` (ny sektion "What the badge does not do" + Pro-CTA), `site/terms/index.html` (fjernet refund-løftet), `tools/check_cta.py` (ny), `tools/quality_gate.sh` (to nye steps) og denne plan. Efter næste deploy-vindue skal indhold verificeres på fire punkter: (1) `/checklist/` har præcis én knap til `buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03` og scannerens `#result`-blok har mistet intet; (2) `/badge/` viser afsnittet "What the badge does not do" og badge-embed-koderne er uændrede; (3) `/terms/` afsnit 4 ikke længere siger at refusionstermer gives ved checkout; (4) CI's `verify`-job kører de to nye `check_cta`-steps grønt. Hvis nogen af de fire ikke holder, er årsagen formodentlig `apply_shell.py`, der kan have renset klassenavne på de indsatte `p.actions`-blokke.
 
 - **Verificeret på indhold efter `deploy-site`-kørsel `36184172086` (success, 1m5s):** `/checklist/` har præcis **én** `<a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Buy Pro — 79 USD per website per year</a>`; `/badge/` viser det nye afsnit "What the badge does not do" med teksten "carries no score, no timestamp and nothing an auditor can verify — so it is not proof of compliance and should not be used as one. A live badge backed by a real scan record is planned, not shipped."; `/terms/` har mistet "refund terms are provided at checkout" og har nu "refund terms on top of them, and no refund promise is made here that the payment process does not already provide". CI's `deploy-site`-kørsel kørte de to nye `check_cta`-steps grønt, hvilket er første gang `tools/check_cta.py` har kørt i CI. CI's advarsel om `build-devnotify` (Electron-artefakter) er ikke en del af EUComply-gaten.
+- `VERIFICÉR DEPLOY: erklæret Node-runtime + runtime-gate (opgave 11) 2026-09-25 21:05 UTC` — ændrer `eucomply-scanner/package.json` og `cli/package.json` (`engines` `>=18`→`>=22`), tilføjer `.nvmrc` og `tools/check_runtime.py`, retter `tools/quality_gate.sh` (to nye steps) og `.github/workflows/verify.yml` (`node-version` `'20'`→`'22'`). **Ingen `site/**`-fil rørt, så det publicerede træ er uændret** — deployen er en gentagelse af de 322 filer, der allerede ligger live, og intet på sitet skal ændre sig. Det der faktisk skal verificeres er CI: (1) `kvalitetsgate`-jobbet kører de to nye `check_runtime`-steps grønt; (2) advarslen `Node.js 20 is deprecated` må **ikke** længere nævne `actions/setup-node` — den kan stadig stå for `checkout`/`setup-python`/`upload-artifact`, jf. opgave 12; (3) `deploy` og `tjek produktion` er grønne, og de 12 interne stier svarer stadig 404 med cache-buster.
