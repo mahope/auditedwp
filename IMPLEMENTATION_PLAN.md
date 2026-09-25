@@ -1,14 +1,15 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-25
-Sidste iteration: færdig — salgsløfter, plugin-pakker og produkttruth er rettet og grønt gennemgået
-Baseline: `main` commit `5e244dc` efter `git pull --ff-only`
+Sidste iteration: færdig — `docs/eucomply-pro-spec.md` skrevet, gennemgået i frisk kontekst og rettet
+Baseline: `main` commit `19f1aa5` efter `git pull --ff-only` 2026-09-25 15:23 UTC
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
 
 - `FÆRDIG`: **1 — Ret salgsløfterne til det der virker nu** på `ceo/ret-pro-lofter`.
-- Næste opgave efter denne: **2 — Skriv spec for den hosted Pro-værdi**; en ny åben `VERIFICÉR DEPLOY`-note skal dog verificeres, når næste deploy-vindue er passeret.
+- `FÆRDIG`: **2 — Skriv spec for den hosted Pro-værdi** på `ceo/hosted-pro-spec`; `docs/eucomply-pro-spec.md` findes nu.
+- Næste opgave: **3 — Luk SSRF/DOM-XSS og gør hosted monitoring entitlement-sikker**. Den åbne `VERIFICÉR DEPLOY`-note fra opgave 1 skal først verificeres, når næste deploy-vindue er passeret.
 - En opgave må markeres `I GANG`, før der laves kode. Efter to mislykkede iterationer markeres den `BLOCKED: <årsag>`, hvorefter næste opgave tages.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
@@ -84,8 +85,12 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 
 ### 2. Skriv spec for den hosted Pro-værdi
 
-- Status: `TODO`
-- Fejl: 0/2
+- Status: `FÆRDIG` — `docs/eucomply-pro-spec.md` (18 afsnit) på `ceo/hosted-pro-spec`
+- 2026-09-25: Specen definerer de tre overflader uden overlap, købsrejse, `device_id` pr. website, multi-site med `activate`/`deactivate`, 30 dages per-check-historik med tri-state, fire alarmtyper med dedupe, PDF som rapportformat, opt-in badge med offentligt `site_id`, dashboard uden mockdata, retention, sletning, privacy-datamappe, trusler, belastningstestmatrix, migrering i seks faser, bygge- og fejlrækkefølge og definition of done.
+- 2026-09-25: Kun det eksisterende Stripe-link og `eucomply-pro` bruges. Specen opretter ingen nye produkter, priser eller nøgler, og den sætter **default** til plugin-only, indtil Mads svarer på spørgsmål 1.
+- Fund fra frisk review før commit: (a) `warn` tælles i den eksisterende score som fejlslag, ikke som bestået, fordi de tjek, der sætter `warn`, også sætter `pass:false` — rettet i specen og noteret som opgave 3-arbejde; (b) scannerens egen side escaper HSTS-headeren korrekt, mens `site/shared/live-check-widget.html:33,37,39,42` renderer ubeskyttet — den widget kalder DeskUptime-workeren og ligger uden for EUComply-gaten, så den er skrevet under `❓ Til Mads`; (c) licensverdicts-tabellen manglede `200 ok:false`, `402` og `429` som midlertidige, hvilket ville have låst betalende kunder — rettet; (d) email-bekræftelse, due-kø, `Retry-After` og `license_calls` var underpecificerede — rettet.
+- Gate: `112 self-tests passed`, `0 unexpected EUComply Pro claims`; root-SEO `216 pages checked, 0 findings`. Ingen PHP- eller scannerændringer, så PHP-lint og scanner-smoke er ikke betingede. Sibling-kommandoen i `../hermes-passiv` kunne **ikke** køres: workspace-permissions nægter adgang til det sibling-repo, så missionens krav kan ikke dokumenteres i denne iteration. Gyldig SEO-evidence er derfor root-fallbacken, jf. gate-baseline.
+- Fejl: 1/2 (første review fandt blokierende fejl, rettet i samme iteration)
 - Begrundelse: Kontraktet kræver spec før større Pro-funktioner. Uden fælles data-, adgangs- og fejlmodel bliver dashboard, alerts, rapport og badge hinanden uforenlige.
 - Scope: ny `docs/eucomply-pro-spec.md` med skillet mellem gratis scanner, WordPress-plugin Pro og hosted Pro; købsflow; licens/device binding; multi-site-regel; 30 dages historik; pass-til-fail-diff; rapportformat; badge-identitet; mail; dashboard; retention; sletning; 7-dages offline grace; privacy og trusler.
 - Accept:
@@ -100,7 +105,7 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 - Status: `TODO`
 - Fejl: 0/2
 - Begrundelse: Den offentlige scanner følger redirects uden at validere hvert hop og kan hente private mål; rå HSTS-responseheadere renderes desuden i `innerHTML`. Monitoring-registreringen kan samtidig skifte en andens email, og `/status` er offentligt. Det er P0/P1-brugerrisiko, privacy-fejl og spam-/SSRF-mulighed.
-- Scope: følg redirects manuelt og valider destinationen ved hvert hop; escape eller render tekstfelter med `textContent`; valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow.
+- Scope: følg redirects manuelt og valider destinationen ved hvert hop; escape eller render tekstfelter med `textContent`; valider licens før registrering; tilføj uforfalskeligt site-/owner-token; gør status privat; forhindr overskrivning af en andres email; håndtér redirect- og DNS-cases samt body-størrelse; opret reelt sletningsflow; opret public privacy-tekst ud fra faktisk dataflow. Derudover fra specen: skeln `409` fra definitive fejl i pluginen, tilføj `deactivate`/frigiv enhed, vurdér om `warn` skal tælles som fejl i summen, og udsted engangs-owner-token til eksisterende ubetalte beta-records.
 - Accept:
   - Uden gyldig `eucomply-pro`-licens kan `/register` ikke oprette eller ændre en site.
   - Forkert nøgle, forkert product og nået enheds-/site-grænse giver deterministiske fejl.
@@ -216,6 +221,10 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 3. **Eksponerede templates:** de eksisterende betalte kilder/PDF'er har været offentlige. De bør regnes som kompromitterede; eventuelle nye eller forbedrede versioner skal udvikles i et privat repo og leveres fra CF KV. Skal de gamle produkter trækkes fra salg, eller kræver de en ny privat v1?
 4. **DevNotify:** `devnotify/src-tauri/src/lib.rs` bruger fortsat Lemon Squeezy og har intet Stripeprodukt. Kræver den et nyt produkt/key før migrering?
 5. **Refund-/skattecopy:** hvilken helt konkrete refund- og invoice-/OSS-proces skal de fire prissider beskrive? Stripe er ikke Merchant of Record, så den nuværende tekst skal fjernes, indtil en dokumenteret proces findes.
+6. **Alarm-tilstand:** er `ALERT_KEY` sat i produktion for `eucomply-watch`? Uden nøglen sender overvågningen ingen mail (`worker-watch/index.js:22`), så enten skal den sættes eller overvågning som produkt skal væk fra siden. Det er ikke opdageligt i repoet.
+7. **Kvotevisning:** findes der en deterministisk måde at få det købte antal websites ud af licensserveren? `devices_in_use` plus `409` er ikke nok til en ærlig kvotebjælke i dashboardet (spec afsnit 5.1).
+8. **Device-idempotens:** er `activate` med et allerede aktiveret `device_id` idempotent uden at optage en ekstra enhed? Det afgør, om et site med både plugin og hosted tæller som ét website.
+9. **Ubeskyttet widget:** `site/shared/live-check-widget.html:33,37,39,42` renderer scanningstjek fra et kundesite i `innerHTML` uden escaping og kalder DeskUptime-workeren. Den ligger i EUComply-deploy-træet, men uden for EUComply-gaten. Skal den rettes her eller i DeskUptime-repoet?
 
 ## Kendte lavprioritets-rester
 
@@ -227,5 +236,6 @@ Gate-definitionen er låst her, før første implementeringsiteration:
 ## Deploy-log
 
 - 2026-09-25: Research-plan oprettet på commit `fba1971`; endnu ingen `site/**`-ændring og derfor ingen forventet deploy fra denne iteration.
+- 2026-09-25: Opgave 2 (hosted Pro-spec) ændrede kun `IMPLEMENTATION_PLAN.md` og `docs/`, som begge ligger uden for `site/**`. Deploy-workflowet trigges derfor ikke, og der skyldes ingen ny `VERIFICÉR DEPLOY`-note fra denne iteration.
 - `VERIFICÉR DEPLOY: IMPLEMENTATION_PLAN research + prioritering b7b54ac 2026-09-24 23:19 UTC` — ingen deploy forventes, fordi workflowet kun trigges på `site/**` eller workflow-filen.
 - `VERIFICÉR DEPLOY: EUComply Pro-salgstuth + plugin 1.3.1 + extension 1.0.1 767ac6e 2026-09-25 13:57 UTC` — verificér efter næste deploy-vindue indholdet på `/pro/`, `/da/pro/`, `/de/pro/`, `/fr/pro/`, fire pricing-ruter og plugin-`1.3.1`-downloadet; HTTP 200 alene er ikke bevis.
