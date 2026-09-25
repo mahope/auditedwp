@@ -19,7 +19,13 @@ permissions:
 jobs:
   gate:
     name: quality gate
-    runs-on: ubuntu-latest
+    # Fastsat på et konkret image, ikke ubuntu-latest: GitHub har lagt en
+    # annotation på alle jobs om at `ubuntu-latest` migrerer til Ubuntu 26
+    # 19. oktober 2026. Et flydende label ændrer den miljø, gaten er skrevet
+    # imod (php -l, node, python3.13, wrangler) uden at nogen rører repoet.
+    # Efterprøves af check_runner_pins i tools/check_runtime.py, så pin'en kan
+    # ikke glide tilbage til ubuntu-latest uden at gaten bliver rød.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
