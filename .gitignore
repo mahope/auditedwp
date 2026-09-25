@@ -6,3 +6,9 @@ venv/
 transmute/repo/
 __pycache__/
 shots/
+
+# Betalt indhold hører til i det private repo mahope/paid-products — commit det aldrig her
+deliverables/
+site/deliverables/
+gumroad/products/
+*.paid.*

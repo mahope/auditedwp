@@ -11,7 +11,7 @@ Custom domain (pending): auditedwp.com
 - `sample/index.html` — sample audit trail preview
 - `template/index.html` — free NIS2 vendor-clause template
 - `store/index.html` — compliance document store (side project)
-- `deliverables/` — downloadable document templates (DPA, NDA, etc.)
+- Betalte skabeloner ligger i det private repo `mahope/paid-products` og leveres via Stripe.
 - `onboarding-manual.md` — operational manual for first client
 
 ## Deploy
