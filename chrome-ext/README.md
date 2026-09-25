@@ -5,10 +5,10 @@ One-click EU compliance scanning in your browser toolbar.
 ## Features
 
 - Click the extension icon → auto-fills current tab's domain
-- Calls the same free scanning API as eucomply.pages.dev
-- Shows score + detailed results (HTTPS, cookies, forms, legal, headers)
+- Calls the same free scanning API as eucomplypro.com
+- Shows score + detailed results for nine technical URL signals
 - Badge icon shows the last scan score
-- Links to Pro version for auditor-ready PDF reports
+- Links to the current WordPress Pro document tools
 
 ## How to install (unpacked)
 

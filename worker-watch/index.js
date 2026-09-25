@@ -1,4 +1,4 @@
-// EUComply Watch — daily compliance monitoring (Pro feature).
+// EUComply Watch — open daily monitoring beta (not a current Pro entitlement).
 // Universal: works on any URL, any CMS. No platform dependencies.
 //
 // Imports the shared scan engine so daily scans use the same logic.
@@ -8,8 +8,8 @@
 //   GET  /status?url=example.com     -> latest result + 30-day history
 //   POST /unregister { url, email }     -> remove a site (email must match)
 //   GET  /health
-// Cron: daily 06:00 UTC — re-scans every registered site, stores history,
-//       emails alerts on score drops (via Resend if ALERT_KEY is set).
+// Cron: daily 06:00 UTC — re-scans every registered beta site, stores history,
+//       emails score-drop alerts (via Resend if ALERT_KEY is set).
 
 import { runScan, normalizeUrl, json, CORS } from '../shared/scan-engine.js';
 
@@ -137,7 +137,7 @@ export default {
         if (prev !== null && scan.score.pct < prev) {
           await sendAlert(env, rec.email,
             `EUComply alert: your compliance score dropped (${prev}% → ${scan.score.pct}%)`,
-            `Your site ${rec.url} scored ${scan.score.pct}% in today's compliance check (previous: ${prev}%).\n\nView history: https://auditedwp.pages.dev/pro/\n\nAutomated technical checks only — not legal advice.`);
+             `Your site ${rec.url} scored ${scan.score.pct}% in today's compliance check (previous: ${prev}%).\n\nRun a new scan: https://eucomplypro.com/scan/\n\nAutomated technical checks only — not legal advice.`);
         }
       })());
     }

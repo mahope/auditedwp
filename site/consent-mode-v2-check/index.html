@@ -153,7 +153,7 @@ h2{font-size:21px}}</style>
     </div>
     <div class="cards" id="cards"></div>
     <div class="pro-cta">
-      <a class="btn" href="/pro/">Monitor this automatically with EUComply Pro — $79/year →</a>
+      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">See current Pro tools — $79/year per website →</a>
     </div>
   </div>
 </div>
@@ -161,17 +161,18 @@ h2{font-size:21px}}</style>
 <section>
   <div class="wrap">
     <h2>What the check looks at</h2>
-    <p>The scan analyses your live page HTML for the technical markers regulators and Google look for:</p>
+    <p>The scan analyses your live page HTML for static markers associated with Consent Mode v2:</p>
     <div class="tbl"><table>
-      <tr><th>Signal</th><th>Why it matters</th></tr>
-      <tr><td>Consent default state</td><td>Consent Mode v2 must fire a <code>default</code> consent state (granted or denied) for <code>ad_storage</code> and <code>analytics_storage</code> before any tags load.</td></tr>
-      <tr><td>Consent update mechanism</td><td>Your CMP must push an <code>update</code> when the visitor chooses — otherwise Google never learns consent was given.</td></tr>
-      <tr><td>ad_user_data &amp; ad_personalization</td><td>The two v2-only parameters. Without them, EEA ad personalisation and audience building stop working.</td></tr>
-      <tr><td>URL passthrough</td><td><code>url_passthrough</code> and ads data redaction preserve measurement accuracy when consent is denied.</td></tr>
-      <tr><td>Trackers before consent</td><td>Even perfect Consent Mode code doesn't help if analytics or ad scripts still fire before the visitor consents — the exact pattern behind the SHEIN €150M decision.</td></tr>
+      <tr><th>Static signal</th><th>Why it matters</th></tr>
+      <tr><td>Consent default-state markers</td><td>Look for <code>default</code> consent settings associated with <code>ad_storage</code> and <code>analytics_storage</code>.</td></tr>
+      <tr><td>Consent update markers</td><td>Look for an <code>update</code> mechanism that should run when a visitor chooses.</td></tr>
+      <tr><td>ad_user_data &amp; ad_personalization markers</td><td>Detect the two v2-only parameter names in the served source.</td></tr>
+      <tr><td>URL passthrough markers</td><td>Detect <code>url_passthrough</code> and ads-data-redaction references.</td></tr>
+      <tr><td>Tracker and consent-platform markers</td><td>Compare known tracker strings with consent-platform signatures in the same HTML.</td></tr>
     </table></div>
+    <p><strong>Important:</strong> source markers do not prove tag order, network blocking, consent choices or runtime data handling. Test those behaviours separately in browser developer tools.</p>
     <div class="box">
-      <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Tag managers change, scripts get added, CMP settings drift. <a href="/pro/">Pro ($79/year)</a> re-scans daily and alerts you before Google's signals silently break.
+      <strong>Fair warning:</strong> passing today doesn't mean passing tomorrow. Tag managers change, scripts get added, CMP settings drift. The free scanner supports manual rechecking; hosted daily monitoring and pass-to-fail email alerts are planned, not included in Pro.
     </div>
   </div>
 </section>

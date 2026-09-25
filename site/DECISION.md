@@ -1,5 +1,7 @@
 # DECISION
 
+**Historisk snapshot — 2026-08-23. Det aktuelle produkt- og betalingsgrundlag står i `../IMPLEMENTATION_PLAN.md`.**
+
 **Dato:** 2026-08-23 (iteration 38 — nyt mandat: kun pengekriteriet gælder)
 **Status:** Holder. Fortsætter byg. EUComply er bedste vej til penge under nyt mandat.
 
@@ -29,7 +31,7 @@ Alternativer screenet under nyt mandat:
 - **ComplianceDocs alene** ($19-149/stk): lavere pr. salg, one-time (ikke recurring). Stadig kræver Gumroad. Fungerer som supplement, ikke erstatning.
 - **WP security scanner** ($9-499/scan): overfyldt marked. Skal bygges fra bunden. Kræver server-ressourcer.
 - **Notion/spreadsheet templates** ($9-29/stk): lav pris, kæmpe konkurrence. Skal bygges.
-- **Ny, mere original idé**: byggetid = uger. Under "tjen penge"-mandatet er en færdig $79/yr recurring-plugin = bedre end en original idé om 3 uger.
+- **Ny, mere original idé**: byggetid = uger. Under "tjen penge"-mandatet er en færdig $79/år-pr. website-plugin = bedre end en original idé om 3 uger.
 
 Ingen af dem slår en færdig plugin med recurring revenue.
 

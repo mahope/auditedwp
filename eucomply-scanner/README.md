@@ -17,7 +17,7 @@ Most compliance scanners are tied to WordPress or require installing a plugin on
 - CI/CD pipeline compliance gates
 - GDPR/DSA/ePrivacy audit preparation
 
-> **Professional monitoring?** Get automated weekly re-scans, PDF auditor-ready reports, DPA documents, and multi-page site audits for $79/year.
+> **Need WordPress document tools?** EUComply Pro provides editable DPA, NIS2/DORA and EAA starters plus an HTML report from the latest WordPress scan for $79/year per website. Hosted monitoring and runtime PDF reports are not included today.
 > [EUComply Pro →](https://eucomplypro.com/pro/)
 
 ## Quick start
@@ -56,7 +56,7 @@ console.log(`Platform: ${report.platform}`);
 | **Forms** | Form markup + privacy policy link | GDPR Art. 13 — privacy notice at point of data collection |
 | **Legal** | Privacy policy, imprint, terms, etc. links | GDPR, DSA, EAA — required legal pages |
 | **Security headers** | CSP, X-Content-Type-Options, Referrer-Policy | OWASP security best practices |
-| **DORA** | Resilience signals (email auth, failover) | DORA Art. 5-7 for financial entities |
+| **DORA-related page markers** | Static page-text references to failover, incident response and continuity | Informational only; no DNS lookup or DORA assessment |
 | **Platform** | CMS/platform fingerprint (informational) | Know what you're dealing with |
 
 ## CLI usage
@@ -67,9 +67,6 @@ eucomply-scanner https://example.com
 
 # JSON output for scripting
 eucomply-scanner --json https://example.com
-
-# Custom timeout (default: 12s)
-eucomply-scanner --timeout 20000 https://slow-site.com
 ```
 
 ### Example output
@@ -93,13 +90,12 @@ eucomply-scanner --timeout 20000 https://slow-site.com
 
 ## API
 
-### `runScan(url, options?)`
+### `runScan(url)`
 
-Scans a public URL and returns a compliance report.
+Scans a public URL and returns a compliance report. The built-in request timeout is 12 seconds.
 
 **Parameters:**
 - `url` (string, required) — The URL to scan. Scheme defaults to `https://` if omitted.
-- `options.timeout` (number, optional) — Request timeout in ms. Default: `12000`.
 
 **Returns:** A promise resolving to a report object with:
 - `url` — The final URL (after redirects)
@@ -127,13 +123,14 @@ CORS-enabled for browser use. Rate-limited to 10 requests/minute/IP.
 
 ## Pro version
 
-Need more? The Pro version adds:
-- **PDF reports** — downloadable compliance reports
-- **Continuous monitoring** — weekly automated rescans
-- **Multi-page scans** — scan entire sites, not just one URL
-- **Priority support** — compliance expert assistance
+The current Pro license is for the WordPress plugin and adds:
+- **Editable HTML starters** for a DPA, NIS2/DORA vendor clauses and an EAA statement
+- **HTML report** generated from the latest WordPress scan
+- **Agency or business name** used in generated documents
 
-**[EUComply Pro — $79/year](https://eucomplypro.com/pro/)**
+Hosted daily monitoring, runtime PDF reports, multi-site management and priority support are not included today.
+
+**[EUComply Pro — $79/year per website](https://eucomplypro.com/pro/)**
 
 ## License
 

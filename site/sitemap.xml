@@ -272,6 +272,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pricing/"/>
   </url>
   <url>
+    <loc>https://eucomplypro.com/da/pro/</loc>
+    <lastmod>2026-09-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/pro/"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/pro/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pro/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pro/"/>
+  </url>
+  <url>
     <loc>https://eucomplypro.com/da/scan/</loc>
     <lastmod>2026-09-07</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/scan/"/>
@@ -326,6 +335,15 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pricing/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pricing/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pricing/"/>
+  </url>
+  <url>
+    <loc>https://eucomplypro.com/de/pro/</loc>
+    <lastmod>2026-09-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/pro/"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/pro/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pro/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pro/"/>
   </url>
   <url>
     <loc>https://eucomplypro.com/de/scan/</loc>
@@ -687,6 +705,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pricing/"/>
   </url>
   <url>
+    <loc>https://eucomplypro.com/fr/pro/</loc>
+    <lastmod>2026-09-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/pro/"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/pro/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pro/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pro/"/>
+  </url>
+  <url>
     <loc>https://eucomplypro.com/fr/scan/</loc>
     <lastmod>2026-09-07</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/scan/"/>
@@ -766,8 +793,13 @@
     <lastmod>2026-08-25</lastmod>
   </url>
   <url>
-    <loc>https://eucomplypro.com/pro/dashboard/</loc>
-    <lastmod>2026-08-25</lastmod>
+    <loc>https://eucomplypro.com/pro/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eucomplypro.com/pro/"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/pro/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/pro/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/pro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/pro/"/>
   </url>
   <url>
     <loc>https://eucomplypro.com/pro/sample-report/</loc>

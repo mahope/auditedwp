@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
- * Description:       Scans your WordPress site for GDPR, NIS2, DORA, and EAA compliance gaps. Free checks: SSL, cookies, backups, forms, plugin health. Pro ($79/yr): auto-generates DPA, NIS2 clauses, EAA statements and quarterly audit reports.
- * Version:           1.3.0
+ * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
+ * Version:           1.3.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.0' );
+define( 'EUCOMPLY_VERSION', '1.3.1' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -608,7 +608,7 @@ class EUComply {
                 <?php if ( $is_pro ) : ?>
                     <span style="color:#1a7a44">Pro ✓</span> — Document generation is active.
                 <?php else : ?>
-                    Free version — <a href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Upgrade to Pro ($79/yr)</a> for auto-generated DPA, NIS2 clauses, EAA statements and quarterly PDF reports.
+                    Free version — <a href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Upgrade to Pro ($79/year per website)</a> for editable HTML DPA, NIS2/DORA and EAA starters plus an HTML report from the latest scan.
                 <?php endif; ?>
             </p>
 
@@ -628,11 +628,16 @@ class EUComply {
             <div id="eucomply-results">
                 <?php if ( $results ) : ?>
                     <?php $this->render_results( $results ); ?>
-                    <div style="margin-top:20px">
-                        <a class="eucomply-btn" href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">↓ Download compliance report (Pro)</a>
-                    </div>
                 <?php else : ?>
                     <p style="color:#4a5a6a;margin-top:20px;font-size:14px">Click "Run scan now" to check your site against 6 EU compliance criteria.</p>
+                <?php endif; ?>
+            </div>
+
+            <div id="eucomply-report-action" style="margin-top:20px"<?php echo $results ? '' : ' hidden'; ?>>
+                <?php if ( $is_pro ) : ?>
+                    <a class="eucomply-btn" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>">↓ Download HTML compliance report</a>
+                <?php else : ?>
+                    <a class="eucomply-btn" href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Unlock the HTML compliance report</a>
                 <?php endif; ?>
             </div>
 
@@ -644,7 +649,7 @@ class EUComply {
                     <tr><td>GDPR Data Processing Agreement</td><td><?php echo esc_html( get_option( 'eucomply_pro_dpa_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=dpa' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                     <tr><td>NIS2 / DORA Vendor Clause Set</td><td><?php echo esc_html( get_option( 'eucomply_pro_nis2_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=nis2' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                     <tr><td>EAA Accessibility Statement</td><td><?php echo esc_html( get_option( 'eucomply_pro_eaa_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=eaa' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
-                    <tr><td>Quarterly Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>HTML Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                 </table>
             </div>
             <?php endif; ?>
@@ -655,6 +660,7 @@ class EUComply {
             var btn = document.getElementById('eucomply-scan-btn');
             var res = document.getElementById('eucomply-results');
             var lst = document.getElementById('eucomply-last');
+            var reportAction = document.getElementById('eucomply-report-action');
             if (!btn) return;
             btn.addEventListener('click', function(){
                 btn.disabled = true;
@@ -667,6 +673,7 @@ class EUComply {
                     btn.textContent = '🔄 Run scan now';
                     if (j.success && j.data.html) {
                         res.innerHTML = j.data.html;
+                        if (reportAction) reportAction.hidden = false;
                         if (lst) lst.textContent = 'Last scan: ' + (j.data.time || 'just now');
                     } else {
                         res.innerHTML = '<p style="color:#c03030">Scan failed: ' + (j.data || 'unknown error') + '</p>';
@@ -689,7 +696,7 @@ class EUComply {
     private function render_results( $results ) {
         $checks = array(
             'ssl'     => array( 'label' => '🔒 SSL &amp; HTTPS', 'desc' => 'Certificate, HSTS, mixed content' ),
-            'cookies' => array( 'label' => '🍪 Cookie Consent', 'desc' => 'Banner, WP Consent API, script blocking' ),
+            'cookies' => array( 'label' => '🍪 Cookie Consent', 'desc' => 'Banner, WP Consent API' ),
             'forms'   => array( 'label' => '📋 GDPR Forms', 'desc' => 'Privacy notice, consent checkbox' ),
             'backups' => array( 'label' => '💾 Backup Status', 'desc' => 'Schedule, storage, age' ),
             'plugins' => array( 'label' => '⚠️ Plugin &amp; Core Health', 'desc' => 'Updates, CVEs, unmaintained' ),
@@ -797,6 +804,12 @@ class EUComply {
      * Cron: automated weekly scan.
      */
     public function run_scan_cron() {
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+        if ( ! function_exists( 'get_core_updates' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/update.php';
+        }
         $this->run_checks();
     }
 
@@ -804,8 +817,9 @@ class EUComply {
      * Pro: generate and download a compliance document.
      *
      * Hooked on admin_init. Downloads a .html document (opens in Word /
-     * prints to PDF) built from the latest scan + site info. No external
-     * services, no data leaves the site.
+     * prints to PDF) built from the latest scan + site info. The document
+     * generation method does not call external services; Pro license validation
+     * separately sends the license key, hostname and product to mahope.tools.
      */
     public function maybe_generate_doc() {
         if ( empty( $_GET['eucomply_doc'] ) || ! is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified below
@@ -824,7 +838,7 @@ class EUComply {
             'dpa'    => 'Data Processing Agreement',
             'nis2'   => 'NIS2 / DORA Vendor Clause Set',
             'eaa'    => 'Accessibility Statement (EAA)',
-            'report' => 'Quarterly Compliance Report',
+            'report' => 'HTML Compliance Report',
         );
 
         $body = call_user_func( array( $this, 'build_' . str_replace( '-', '_', $doc ) ) );
@@ -964,12 +978,9 @@ class EUComply {
             return false;
         }
         $verified = '1' === get_option( 'eucomply_pro_verified', '' );
-        if ( $verified ) {
-            // Re-verify at most once a day so refunds/expiries take effect.
-            $checked_at = (int) get_option( 'eucomply_pro_verified_at', 0 );
-            if ( time() - $checked_at < EUCOMPLY_LICENSE_CACHE_TTL ) {
-                return true;
-            }
+        $checked_at = (int) get_option( 'eucomply_pro_verified_at', 0 );
+        if ( $checked_at && ( time() - $checked_at ) < EUCOMPLY_LICENSE_CACHE_TTL ) {
+            return $verified;
         }
         // After a failed attempt, wait before calling the server again so an
         // outage does not add a 10-second timeout to every admin page load.

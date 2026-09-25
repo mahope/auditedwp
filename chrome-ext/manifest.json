@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "EUComply — Website Compliance Checker",
-  "version": "1.0.0",
-  "description": "One-click EU compliance scan for any website. Check HTTPS, cookie consent, privacy links, forms and security headers.",
+  "version": "1.0.1",
+  "description": "One-click scan for nine technical website signals: HTTPS, consent markers, trackers, legal links and security headers.",
   "author": "EUComply",
   "homepage_url": "https://eucomplypro.com",
   "permissions": [

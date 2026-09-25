@@ -16,7 +16,7 @@ Or clone and run locally:
 ```bash
 git clone https://github.com/mahope/eucomply-scanner
 cd eucomply-scanner/cli && npm install
-node bin/eucomply-scan.js example.com
+node eucomply.js example.com
 ```
 
 > An npm registry release (`npm install -g eucomply-scanner`) is planned — pending publish access. The GitHub command above always runs the latest version.
@@ -62,9 +62,9 @@ Useful for CI/CD pipelines: add a scan of your own site to your pre-deploy check
 
 ## API
 
-This CLI wraps the free [EUComply](https://auditedwp.pages.dev) public scan API.
-Need auditor-ready PDF reports, DPA generators, NIS2 vendor clause kits?
-→ **Pro: $79/year** at https://auditedwp.pages.dev/#pricing
+This CLI wraps the free [EUComply](https://eucomplypro.com) public scan API.
+Need editable WordPress DPA, NIS2/DORA and EAA starters plus an HTML report from the latest scan?
+→ [EUComply Pro — $79/year per website](https://eucomplypro.com/pro/)
 
 ## License
 

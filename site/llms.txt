@@ -1,6 +1,6 @@
 # EUComply
 
-> A free technical compliance scan for websites with visitors in the EU. Enter a URL and get nine checks against what GDPR, ePrivacy, NIS2, DORA and the European Accessibility Act expect of a website, with a suggested fix for each finding. No account, nothing stored. Built and maintained by Mads Holst Jensen (mahoje.dk), Odense, Denmark.
+> A free technical compliance scan for websites with visitors in the EU. Enter a URL and get nine checks against what GDPR, ePrivacy, NIS2, DORA and the European Accessibility Act expect of a website, with a suggested fix for each finding. No account; the worker keeps a scan counter and hostname-level aggregate statistics, not the full URL or scan results. Built and maintained by Mads Holst Jensen (mahoje.dk), Odense, Denmark.
 
 EUComply is technical guidance, not legal advice. The scanner reads the public HTML and HTTP headers of one page and reports what it can see; it does not audit contracts, data flows or internal processes.
 
@@ -21,7 +21,7 @@ The nine checks: HTTPS and HSTS; a known cookie-consent platform; trackers (Goog
 
 ## Pricing
 
-- [Pricing](https://eucomplypro.com/pricing/): the scanner, the guide and the checklists are free. A Pro tier (daily re-scans, alerts, PDF reports, footer badge; 79 USD per website per year) and document templates (from 29 USD) are planned and cannot be bought yet.
+- [Pricing](https://eucomplypro.com/pricing/): the scanner, the guide and the checklists are free. The current Pro license costs 79 USD per website per year and unlocks editable HTML document starters plus an HTML report from the latest WordPress scan. Full document templates are sold separately from 29 USD. Hosted daily monitoring is planned, not included today.
 
 ## Sister products by mahoje.dk
 

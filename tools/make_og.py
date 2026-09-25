@@ -5,12 +5,13 @@ meta description, so the images stay in sync with the copy.
 
     python tools/make_og.py
 """
+import argparse
 import html as htmlmod
 import re
 import shutil
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -31,11 +32,18 @@ PAGES = ["/", "/da/", "/de/", "/fr/",
          "/cookie-banner-check/", "/gdpr-compliance-check/", "/consent-mode-v2-check/",
          "/check-eu-compliance/", "/how-it-works/", "/compare/", "/cmp-comparison/", "/extension/", "/cli/", "/plugin/"]
 
-FONT_DIRS = [Path("C:/Windows/Fonts"), Path("/usr/share/fonts"), Path("/System/Library/Fonts")]
+FONT_DIRS = [
+    Path("C:/Windows/Fonts"),
+    Path("/usr/share/fonts"),
+    Path("/System/Library/Fonts"),
+    Path("/System/Library/Fonts/Supplemental"),
+    Path("/Library/Fonts"),
+    Path.home() / "Library/Fonts",
+]
 
 
 def font(bold: bool, size: int) -> ImageFont.FreeTypeFont:
-    names = ["segoeuib.ttf", "arialbd.ttf", "DejaVuSans-Bold.ttf"] if bold else ["segoeui.ttf", "arial.ttf", "DejaVuSans.ttf"]
+    names = ["segoeuib.ttf", "arialbd.ttf", "Arial Bold.ttf", "DejaVuSans-Bold.ttf"] if bold else ["segoeui.ttf", "arial.ttf", "Arial.ttf", "DejaVuSans.ttf"]
     for d in FONT_DIRS:
         for n in names:
             p = d / n
@@ -135,6 +143,13 @@ def render(title: str, desc: str, brand: str) -> Image.Image:
     return img
 
 
+def save_image(img: Image.Image, path: Path, title: str, desc: str) -> None:
+    metadata = PngImagePlugin.PngInfo()
+    metadata.add_itxt("Title", title)
+    metadata.add_itxt("Description", desc)
+    img.save(path, pnginfo=metadata, optimize=True)
+
+
 def slug(url: str) -> str:
     s = url.strip("/")
     return s.replace("/", "-") if s else "home"
@@ -148,23 +163,31 @@ def brand_for(url: str) -> str:
     return "EUComply"
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("urls", nargs="*")
+    args = parser.parse_args(argv)
+    urls = args.urls or PAGES
+    unknown = [url for url in urls if url not in PAGES]
+    if unknown:
+        parser.error("unknown page URLs: " + ", ".join(unknown))
     OUT.mkdir(parents=True, exist_ok=True)
     n = 0
-    for url in PAGES:
+    for url in urls:
         t = page_text(url)
         if not t:
             continue
         title, desc = t
         img = render(title, desc, brand_for(url))
-        img.save(OUT / f"{slug(url)}.png", optimize=True)
+        save_image(img, OUT / f"{slug(url)}.png", title, desc)
         n += 1
-    for lang in ("da", "de", "fr"):
-        src = OUT / f"{lang}.png"
-        if not src.exists():
-            shutil.copy(OUT / "home.png", src)
-    shutil.copy(OUT / "home.png", OUT / "en.png")
-    shutil.copy(OUT / "home.png", SITE / "images" / "eucomply-og.png")
+    if not args.urls:
+        for lang in ("da", "de", "fr"):
+            src = OUT / f"{lang}.png"
+            if not src.exists():
+                shutil.copy(OUT / "home.png", src)
+        shutil.copy(OUT / "home.png", OUT / "en.png")
+        shutil.copy(OUT / "home.png", SITE / "images" / "eucomply-og.png")
     print(f"og images: {n}")
 
 

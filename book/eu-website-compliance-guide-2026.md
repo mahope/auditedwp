@@ -57,7 +57,7 @@ This book is designed as a workbook. Read it cover to cover once, then return to
 - A **common mistake** to avoid
 - A **free tool** reference to verify your work
 
-Where you see references to the EUComply scanner (https://auditedwp.pages.dev/scan/), these are genuinely free tools that check the technical requirements described in that chapter — you can verify your progress without signing up or paying anything.
+Where you see references to the EUComply scanner (https://eucomplypro.com/scan/), these are genuinely free tools that check the technical requirements described in that chapter — you can verify your progress without signing up or paying anything.
 
 Let's begin.
 
@@ -205,11 +205,11 @@ Article 13 of the GDPR specifies exactly what information your privacy policy mu
 
 ## Free privacy policy generators
 
-- EUComply Privacy Policy Generator: https://auditedwp.pages.dev/privacy-policy-generator/
+- EUComply Privacy Policy Generator: https://eucomplypro.com/privacy-policy-generator/
 - TermsFeed: privacy policy + terms of service
 - Iubenda: comprehensive legal generator
 
-**Important:** A generated policy is a starting point. You must review it and customise it to match your actual data processing. Run a scan on your site (https://auditedwp.pages.dev/scan/) to verify your privacy policy link is properly placed and accessible.
+**Important:** A generated policy is a starting point. You must review it and customise it to match your actual data processing. Run a scan on your site (https://eucomplypro.com/scan/) to verify your privacy policy link is properly placed and accessible.
 
 **Chapter 4 checklist:**
 - [ ] All 12 Art. 13 items present in privacy policy
@@ -286,7 +286,7 @@ Required by DORA and increasingly enforced by mail providers:
 
 ## How to verify
 
-Run your site through the free EUComply scanner at https://auditedwp.pages.dev/scan/ — it checks all security headers and email authentication records.
+Run your site through the free EUComply scanner at https://eucomplypro.com/scan/ — it checks all security headers and email authentication records.
 
 **Chapter 6 checklist:**
 - [ ] HTTPS enabled (SSL certificate valid)
@@ -580,7 +580,7 @@ Compliance is not a one-time project. Regulations change, your site changes, and
 
 ## Monthly tasks (15 minutes)
 
-- [ ] Run a compliance scan (https://auditedwp.pages.dev/scan/)
+- [ ] Run a compliance scan (https://eucomplypro.com/scan/)
 - [ ] Check SSL certificate expiry
 - [ ] Review and remove unused tracking scripts
 - [ ] Test cookie consent banner in incognito mode
@@ -603,14 +603,14 @@ Compliance is not a one-time project. Regulations change, your site changes, and
 - [ ] Review incident response plan
 - [ ] Penetration test or vulnerability scan
 
-**For automated monthly scanning**, consider EUComply Pro (https://auditedwp.pages.dev/pro/) which runs daily checks and alerts you when something changes.
+**For a free point-in-time check**, use the EUComply scanner (https://eucomplypro.com/scan/). The current Pro license is for WordPress document tools at https://eucomplypro.com/pro/; hosted daily monitoring is not included.
 
 ---
 
 # 13. Tools and Resources
 
 ## Free compliance scanners
-- **EUComply Scanner** (free, no signup): https://auditedwp.pages.dev/scan/
+- **EUComply Scanner** (free, no signup): https://eucomplypro.com/scan/
 - **SSL Labs**: https://www.ssllabs.com/ssltest/
 - **Security Headers**: https://securityheaders.com/
 - **DMARC Analyzer**: https://www.dmarcanalyzer.com/
@@ -633,7 +633,7 @@ Compliance is not a one-time project. Regulations change, your site changes, and
 - **EAA text**: https://eur-lex.europa.eu/eli/dir/2019/882
 
 ## Document generators (free)
-- **EUComply generators**: https://auditedwp.pages.dev/tools/
+- **EUComply generators**: https://eucomplypro.com/tools/
 - **TermsFeed**: https://www.termsfeed.com/
 - **Iubenda**: https://www.iubenda.com/
 
@@ -653,9 +653,9 @@ Compliance is not a one-time project. Regulations change, your site changes, and
 
 *This guide was written in August 2026 by EUComply. Laws and regulations may have changed since publication. Always verify current requirements with your legal advisor.*
 
-*For a free compliance scan of your website, visit https://auditedwp.pages.dev/scan/*
+*For a free point-in-time compliance scan of your website, visit https://eucomplypro.com/scan/*
 
-*For automated daily monitoring with alerts and PDF reports, visit https://auditedwp.pages.dev/pro/*
+*For the current WordPress Pro document tools, visit https://eucomplypro.com/pro/*. Hosted daily monitoring and runtime PDF reports are not included today.*
 
 ---
 

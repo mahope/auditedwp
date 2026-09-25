@@ -174,7 +174,7 @@ LANG_LABEL = {"en": "EN", "da": "DA", "de": "DE", "fr": "FR", "es": "ES"}
 OG_LOCALE = {"en": "en_GB", "da": "da_DK", "de": "de_DE", "fr": "fr_FR", "es": "es_ES"}
 
 # Pages whose localised versions live under /<lang>/ when they exist.
-CORE = {"", "scan/", "pricing/", "book/", "search/"}
+CORE = {"", "scan/", "pricing/", "pro/", "book/", "search/"}
 
 GENERATORS = ["impressum-generator", "privacy-policy-generator", "terms-of-service-generator",
               "refund-policy-generator", "cookie-policy-generator", "tools"]
@@ -182,7 +182,7 @@ GENERATORS = ["impressum-generator", "privacy-policy-generator", "terms-of-servi
 SKIP_FILES = {"shared/live-check-widget.html"}
 
 # Pages whose content duplicates another page: canonical points there, and they stay out of the sitemap.
-CANONICAL_OVERRIDES = {"/pro/": "/pricing/"}
+CANONICAL_OVERRIDES = {}
 
 # Hand-written titles where the automatic shortening would cut a sentence in half.
 TITLE_OVERRIDES = {
@@ -191,6 +191,10 @@ TITLE_OVERRIDES = {
     "/de/": "EUComply — kostenloser Compliance-Scan für Websites",
     "/fr/": "EUComply — scan de conformité gratuit pour sites web",
     "/fr/scan/": "Scanner un site web : lacunes de conformité européenne",
+    "/pro/": "EUComply Pro — WordPress compliance document tools",
+    "/da/pro/": "EUComply Pro — dokumentværktøjer til WordPress",
+    "/de/pro/": "EUComply Pro — Dokumentwerkzeuge für WordPress",
+    "/fr/pro/": "EUComply Pro — outils documentaires WordPress",
     "/blog/dora-for-ecommerce-2026/": "DORA for E-Commerce: Does It Apply to Online Stores?",
     "/blog/hsts-preload-guide/": "HSTS Preload Guide 2026: Enable HSTS the Right Way",
     "/blog/meta-pixel-gdpr-consent/": "Meta Pixel and GDPR: When the Pixel Is Illegal in the EU",
@@ -228,7 +232,7 @@ SEG_LABELS = {
     "blog": {"en": "Blog", "da": "Blog", "de": "Blog", "fr": "Blog"},
     "guides": {"en": "Guides", "da": "Guides", "de": "Leitfäden", "fr": "Guides"},
     "vs": {"en": "Comparisons", "da": "Sammenligninger", "de": "Vergleiche", "fr": "Comparatifs"},
-    "pro": {"en": "Pro"}, "store": {"en": "Templates"}, "deskuptime": {"en": "DeskUptime"},
+    "pro": {"en": "Pro", "da": "Pro", "de": "Pro", "fr": "Pro"}, "store": {"en": "Templates"}, "deskuptime": {"en": "DeskUptime"},
     "devnotify": {"en": "DevNotify"}, "transmute": {"en": "Transmute"}, "regex": {"en": "Regex"},
     "checklist": {"en": "Checklists", "da": "Tjeklister", "de": "Checklisten", "fr": "Check-lists"},
     "tools": {"en": "Tools"}, "book": {"en": "Guide", "da": "Guide", "de": "Leitfaden", "fr": "Guide"},

@@ -97,35 +97,45 @@ li{margin-bottom:6px}</style>
 <h2 id="2-what-we-collect">2. What we collect</h2>
 <p><strong>When you scan a URL:</strong></p>
 <ul>
-<li>The URL you submit (stored temporarily for the scan, then discarded)</li>
-<li>The public HTML content of the scanned URL (fetched and processed once, not stored)</li>
-<li>Scan results are sent to your browser only — we do not store them</li>
+<li>The URL you submit is reduced to its hostname for aggregate scan statistics; the full path and query are not stored by the scan worker</li>
+<li>The public HTML content of the scanned URL is fetched and processed for that request, not stored</li>
+<li>Your IP address is used as part of a temporary Cloudflare KV rate-limit key that expires after up to 2 minutes</li>
+<li>Scan results are returned to your browser and are not stored by the worker. A total scan counter and hostname-level aggregate counters are kept in Cloudflare KV for up to 365 days</li>
+<li>The scan page stores your six most recent hostnames, scores and timestamps in your browser's local storage so you can re-run or clear them. This history stays in your browser unless you clear it or your browser removes site data</li>
 </ul>
 <p><strong>When you visit the website:</strong></p>
 <ul>
 <li>Standard web server logs (IP address, browser user-agent, page requested, timestamp) are retained by Cloudflare Pages for up to 30 days</li>
 <li>We set no cookies ourselves. Cloudflare may set strictly functional cookies for CDN operation</li>
 </ul>
-<p><strong>When you subscribe to a waitlist or purchase a product:</strong></p>
+<p><strong>When you use the open monitoring beta:</strong></p>
 <ul>
-<li>Email address (only if you voluntarily provide it via a waitlist form)</li>
-<li>Card details are handled entirely by our payment processor (Stripe) and never reach us. From Stripe we receive your name, email address, country and what you bought, so we can issue your license key or download link</li>
-<li>License keys are stored on our license server (mahope.tools) together with your email address. The EUComply WordPress plugin sends the license key and your site's hostname to it once a day to check the license</li>
+<li>The email address and normalized URL you submit are stored in Cloudflare KV for the monitoring record. The current beta status endpoint is public, so do not submit a confidential URL.</li>
+<li>The beta keeps an aggregate score and up to 30 days of daily score history. It does not store the full response body from your site.</li>
+<li>If alert delivery is configured, the monitoring worker sends the email address, URL and score change to Resend for delivery.</li>
+</ul>
+<p><strong>When you purchase a product:</strong></p>
+<ul>
+<li>Card details are handled entirely by Stripe and never reach us. From Stripe we receive your name, email address, country and order details so we can provide the license key or download link.</li>
+<li>License keys are stored on the Mahope license server with your email address, product and device or site hostname. The WordPress plugin sends the key, hostname and product identifier when it checks Pro status, at most once every 24 hours when the Pro admin view is used.</li>
+<li>The plugin also checks the public update manifest at <code>eucomplypro.com/update.json</code>.</li>
 </ul>
 
 <h2 id="3-how-we-use-your-data">3. How we use your data</h2>
 <ul>
-<li>To provide the compliance scanning service</li>
-<li>To send waitlist updates (only if you opted in)</li>
-<li>To improve the service (aggregated, anonymised data only)</li>
-<li>We do <strong>not</strong> sell, rent, or share personal data with third parties</li>
+<li>To provide the compliance scanning service and, where you opt in, the open monitoring beta</li>
+<li>To send waitlist updates when you opted in</li>
+<li>To deliver a purchased license or download and answer support requests</li>
+<li>We do not sell or rent personal data. Service providers listed below process data only for the purposes described here.</li>
 </ul>
 
 <h2 id="4-data-retention">4. Data retention</h2>
 <ul>
-<li>Scan URLs: Not stored beyond the HTTP request-response cycle</li>
-<li>Email addresses: Retained until you unsubscribe or request deletion</li>
-<li>Server logs: 30 days (Cloudflare standard)</li>
+<li>One-off scan URLs and fetched public HTML: not retained by the worker; temporary IP-based rate-limit keys expire after up to 2 minutes, while total and hostname-level aggregate counters expire after up to 365 days</li>
+<li>Browser-local recent scans: up to six hostnames, scores and timestamps until you clear them or the browser removes site data</li>
+<li>Open monitoring records: retained until you unregister; aggregate score history is limited to 30 days</li>
+<li>Email addresses: retained while the relevant service or license is active, or until you request deletion where applicable</li>
+<li>Server logs: retained according to the relevant hosting provider's configuration, currently stated as 30 days for Cloudflare Pages</li>
 </ul>
 
 <h2 id="5-your-rights-gdpr">5. Your rights (GDPR)</h2>
@@ -136,15 +146,18 @@ li{margin-bottom:6px}</style>
 <li>Withdraw consent at any time</li>
 <li>Lodge a complaint with your national data protection authority</li>
 </ul>
-<p>To exercise these rights, contact the site operator. This website (EUComply) processes no user databases beyond aggregate, anonymous scan and waitlist data handled by our workers — see the sections above.</p>
+<p>To exercise these rights, contact the site operator. Monitoring registrations, license records, Stripe records, support reports and any local browser preference data are described in the sections above; they are not limited to anonymous scan data.</p>
 
 <h2 id="6-third-party-services">6. Third-party services</h2>
 <p>We use:</p>
 <ul>
-<li><strong>Cloudflare</strong> — CDN and hosting (privacy policy: cloudflare.com/privacypolicy)</li>
-<li><strong>Stripe</strong> — Payment processing (privacy policy: stripe.com/privacy)</li>
+<li><strong>Cloudflare</strong> — CDN, hosting and KV storage for the open monitoring beta (privacy policy: cloudflare.com/privacypolicy)</li>
+<li><strong>Stripe</strong> — payment processing (privacy policy: stripe.com/privacy)</li>
+<li><strong>Mahope tools</strong> — license validation and bug reports</li>
+<li><strong>jsDelivr</strong> — serves the BugBottle feedback script</li>
+<li><strong>Resend</strong> — delivers open-monitoring alerts when configured</li>
 </ul>
-<p>No other third-party scripts, analytics, or tracking services are loaded on this website.</p>
+<p>BugBottle is loaded by the site shell. If you use the report-a-bug control, the report is sent to the Mahope BugBottle endpoint. The site's JavaScript stores your light or dark theme preference in browser local storage; it does not use advertising or analytics cookies.</p>
 
 <h2 id="7-affiliate-links">7. Affiliate links</h2>
 <p>Some pages on this site (such as our <a href="/cmp-comparison/">CMP comparison page</a>) contain affiliate links to third-party services. If you click an affiliate link and make a purchase, we may earn a commission at no extra cost to you. This does not affect our recommendations — we only recommend platforms we've tested and verified independently. Affiliate relationships are disclosed on each page where they appear.</p>

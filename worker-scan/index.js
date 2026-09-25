@@ -102,7 +102,7 @@ export default {
     // Simple usage stats
     if (request.method === "GET" && path === "") {
       if (env?.RATE) {
-        env.RATE.put("stats:scans", String(parseInt((await env.RATE.get("stats:scans")) || "0", 10) + 1), { expirationTtl: undefined }).catch(() => {});
+        env.RATE.put("stats:scans", String(parseInt((await env.RATE.get("stats:scans")) || "0", 10) + 1), { expirationTtl: 31_536_000 }).catch(() => {});
       }
       return json({ service: "eucomply-universal-scan", version: "1.0.0", usage: "GET /scan?url=example.com | POST /subscribe" });
     }
@@ -143,7 +143,7 @@ export default {
         const host = new URL(url).host;
         const map = JSON.parse((await env.RATE.get("stats:domains")) || "{}");
         map[host] = (map[host] || 0) + 1;
-        await env.RATE.put("stats:domains", JSON.stringify(map));
+        await env.RATE.put("stats:domains", JSON.stringify(map), { expirationTtl: 31_536_000 });
       } catch { /* non-fatal */ }
     }
 

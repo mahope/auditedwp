@@ -126,7 +126,7 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 
 <div class="tldr">
 <strong>TL;DR — Our pick</strong>
-For a <strong>free, unlimited, no-sign-up scan</strong> that checks 9 compliance categories on any platform (WordPress, Shopify, Webflow, Squarespace, or custom HTML), <a href="/scan/">EUComply</a> is the best choice. It's the only free scanner that also checks Consent Mode v2, IAB TCF, and pre-consent tracker firing. For deeper cookie-specific analysis, combine it with Cookiebot's free cookie audit.
+For a <strong>free, point-in-time, no-sign-up scan</strong> that checks 9 compliance categories on any platform (WordPress, Shopify, Webflow, Squarespace, or custom HTML), <a href="/scan/">EUComply</a> is the best choice. It's the only free scanner that also checks Consent Mode v2, IAB TCF, and pre-consent tracker firing. For deeper cookie-specific analysis, combine it with Cookiebot's free cookie audit.
 </div>
 
 <h2 id="why-you-need-a-compliance-scanner">Why you need a compliance scanner</h2>
@@ -243,7 +243,7 @@ For a <strong>free, unlimited, no-sign-up scan</strong> that checks 9 compliance
 
 <h3 id="1-eucomply-best-all-round-free-scanner">1. EUComply — Best all-round free scanner</h3>
 <div class="card">
-  <div class="price">Free — unlimited scans</div>
+  <div class="price">Free point-in-time scans; 10 requests/minute per IP address</div>
   <p>EUComply checks 9 compliance categories on any URL: HTTPS/HSTS, cookie consent (15+ platforms detected), Google Consent Mode v2, IAB TCF, legal page links (privacy policy, imprint, EAA statement), form privacy-link audit, security headers (CSP, XFO, HSTS), pre-consent tracker detection, and platform fingerprinting.</p>
   <p>Key differentiator: it's the only free scanner that detects <strong>trackers loading before consent is given</strong> — the exact pattern CNIL's automated enforcement looks for. It also runs on any platform: WordPress, Shopify, Webflow, Squarespace, Wix, Next.js, or static HTML.</p>
   <a class="btn" href="/scan/">Run a free scan →</a>
@@ -253,14 +253,14 @@ For a <strong>free, unlimited, no-sign-up scan</strong> that checks 9 compliance
     <h4>Pros</h4>
     • 9 checks — most comprehensive free scanner<br>
     • Works on any website (no platform lock)<br>
-    • No sign-up, no email, unlimited<br>
+    • No sign-up, no email; 10 requests/minute per IP address<br>
     • Pre-consent tracker detection<br>
     • Consent Mode v2 + IAB TCF detection<br>
-    • Immediately shareable results
+    • Link that re-runs the scan; temporary IP rate-limit data expires within 2 minutes, while hostname-level aggregate counters expire within 365 days
   </div>
   <div class="con">
     <h4>Cons</h4>
-    • No PDF report in free tier (Pro $79/yr)<br>
+    • Free tier has no runtime PDF output; the current Pro license covers WordPress document tools<br>
     • Cannot verify cookie banner interaction (no real browser)<br>
     • Does not check legal text of privacy policy
   </div>
@@ -361,7 +361,7 @@ For a <strong>free, unlimited, no-sign-up scan</strong> that checks 9 compliance
 
 <h2 id="which-scanner-should-you-use">Which scanner should you use?</h2>
 
-<p><strong>For a quick, comprehensive free scan:</strong> Use <a href="/scan/">EUComply</a>. It checks the most categories (9) of any free scanner, works on any platform, and requires no sign-up. Results are instantly shareable. If you need a PDF report for your records, the Pro upgrade ($79/yr) includes auditor-ready documentation.</p>
+<p><strong>For a quick, comprehensive free scan:</strong> Use <a href="/scan/">EUComply</a>. It checks the most categories (9) of any free scanner, works on any platform, and requires no sign-up. Results are instantly shareable. If you need WordPress document tools, the current Pro license provides editable HTML starters and an HTML report from the latest scan.</p>
 
 <p><strong>For deep cookie analysis:</strong> Combine EUComply with Cookiebot's free scanner. EUComply gives you the broad picture (security, legal, trackers, consent mode); Cookiebot drills into cookie categories.</p>
 
@@ -373,7 +373,7 @@ For a <strong>free, unlimited, no-sign-up scan</strong> that checks 9 compliance
 
 <div class="tldr">
 <strong>Bottom line</strong>
-If you run one free scan, make it <a href="/scan/">EUComply</a> — it covers the widest range of checks with no sign-up, no platform lock, and no upsell pressure. The scanner is free, unlimited, and takes 10 seconds. <a href="/scan/">Run your scan now →</a>
+If you run one free scan, make it <a href="/scan/">EUComply</a> — it covers the widest range of checks with no sign-up, no platform lock, and no upsell pressure. The scanner is free, point-in-time and rate-limited to 10 requests per minute per IP address, and takes 10 seconds. <a href="/scan/">Run your scan now →</a>
 </div>
 
 <h2 id="what-a-free-scanner-cannot-do">What a free scanner cannot do</h2>
@@ -392,10 +392,10 @@ If you run one free scan, make it <a href="/scan/">EUComply</a> — it covers th
 <p>Yes — several tools offer free scans without requiring payment or sign-up. <a href="/scan/">EUComply</a> is the most comprehensive, with 9 checks run on any URL. TrustScan and Cookiebot also offer free tiers. As of 2026, 2GDPR is the only major tool that moved from free to paid-only.</p>
 
 <h3 id="do-free-scanners-store-my-data">Do free scanners store my data?</h3>
-<p>EUComply does not store scanned URLs, results, or IPs — everything is processed in memory and discarded. Always check each tool's privacy policy before scanning sensitive domains.</p>
+<p>EUComply does not store fetched page HTML or scan results in its worker. It keeps a temporary IP-based rate-limit key for up to 2 minutes and total/hostname-level aggregate counters for up to 365 days. Your browser stores up to six recent scans locally until you clear them. Always check each tool's privacy policy before scanning sensitive domains.</p>
 
 <h3 id="what-s-the-difference-between-a-free-scanner-and-a-paid-one">What's the difference between a free scanner and a paid one?</h3>
-<p>Free scanners give you a point-in-time snapshot. Paid tools (like <a href="/pro/">EUComply Pro</a>, $79/yr) add continuous monitoring, PDF reports, DPA generators, NIS2 clause kits, EAA accessibility statements, and email alerts — useful for agencies, SaaS companies, and anyone who needs documented proof of compliance.</p>
+<p>Free scanners give you a point-in-time snapshot. The current <a href="/pro/">EUComply Pro</a> license ($79/year per website) adds editable HTML document starters and an HTML report from the latest WordPress scan. Hosted monitoring, runtime PDF reports, email alerts and a live badge are planned, not included today.</p>
 
 <h3 id="can-i-scan-my-competitors-websites">Can I scan my competitors' websites?</h3>
 <p>Technically yes — free scanners work on any public URL. However, scanning a website you do not own may violate the scanner's terms of service. Always check terms before scanning third-party domains.</p>
@@ -406,7 +406,7 @@ If you run one free scan, make it <a href="/scan/">EUComply</a> — it covers th
 <hr>
 
 <p style="text-align:center;margin:32px 0"><a class="btn" href="/scan/">Try EUComply — free scan →</a></p>
-<p style="text-align:center;color:var(--muted);font-size:14px">No sign-up. No limits. Works on any website.</p>
+<p style="text-align:center;color:var(--muted);font-size:14px">No sign-up; 10 requests/minute per IP address. Works on any website.</p>
 
 </div>
 

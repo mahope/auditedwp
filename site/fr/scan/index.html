@@ -96,7 +96,7 @@
 <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/fr/">Accueil</a></li><li><span aria-current="page">Scanner</span></li></ol></nav><!--/shell:crumbs-->
   <section class="pg hero">
     <h1>Scannez un site web pour les bases de la conformité européenne.</h1>
-    <p class="lede">Neuf vérifications sur la page d’accueil de n’importe quel site : sécurité du transport, consentement, traceurs, liens de confidentialité, pages légales et en-têtes. Gratuit, sans compte, et le résultat n’est conservé nulle part.</p>
+    <p class="lede">Neuf vérifications sur la page d’accueil de n’importe quel site : sécurité du transport, consentement, traceurs, liens de confidentialité, pages légales et en-têtes. Gratuit, sans compte, avec une limite de 10 scans par minute et par adresse IP. Le worker conserve uniquement des compteurs de scan et des statistiques au niveau du nom d’hôte, pas l’URL complète ni les résultats.</p>
     <form class="scanform" id="scan-form" data-keep>
       <input type="text" id="url-input" name="url" placeholder="votredomaine.com" aria-label="Adresse du site web à analyser" required autocomplete="url" inputmode="url">
       <button class="btn" type="submit" id="scan-btn">Lancer le scan</button>
@@ -119,7 +119,7 @@
 
     <div class="monitor">
       <h3>Revérifier ce site chaque matin</h3>
-      <p class="scan-hint">Enregistrez <strong id="mon-host"></strong> et vous recevrez un e-mail lorsqu’une vérification passe de réussi à échec. Gratuit tant que le service de surveillance est en phase de test ; votre adresse ne sert qu’à cela.</p>
+      <p class="scan-hint">Enregistrez <strong id="mon-host"></strong> et vous recevrez un e-mail lorsque le score global baisse. Gratuit tant que le service de surveillance est en phase de test ; votre adresse ne sert qu’à cela.</p>
       <form id="mon-form" data-keep>
         <input type="email" id="mon-email" placeholder="vous@entreprise.com" required aria-label="Adresse e-mail" autocomplete="email">
         <button class="btn" type="submit" id="mon-btn">Démarrer les vérifications quotidiennes</button>

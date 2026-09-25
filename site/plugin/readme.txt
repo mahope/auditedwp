@@ -5,28 +5,28 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Know your WordPress site's EU compliance status in 30 seconds — from your admin dashboard. Six checks: SSL, cookies, forms, backups, plugins, legal pages. Free. Pro ($79/yr) generates DPA documents, NIS2 vendor clauses, and EAA statements.
+Know your WordPress site's EU compliance status in 30 seconds — from your admin dashboard. Six checks: SSL, cookies, forms, backups, plugins, legal pages. Free. Pro ($79/year per website) unlocks editable HTML document starters and an HTML report from the latest WordPress scan.
 
 == Description ==
 
-EUComply scans your WordPress installation against **six EU compliance criteria** in a single click. No external services — all checks run server-side on your own WordPress.
+EUComply scans your WordPress installation against **six EU compliance criteria** in a single click. The core checks run server-side on your WordPress; the plugin also checks the update manifest and Pro license status as described below.
 
 = What it checks =
 
-1. **🔒 SSL & HTTPS** — Valid certificate? HSTS header? Mixed content warnings?
-2. **🍪 Cookie Consent** — Cookie banner active? WP Consent API registered? GDPR-compliant script blocking?
-3. **📋 GDPR Forms** — Form plugins detected? Privacy Policy linked? Consent checkbox required?
-4. **💾 Backup Status** — Backup plugin active? Last backup age? Off-server storage configured?
-5. **⚠️ Plugin & Core Health** — Outdated plugins? WordPress version current? Unmaintained extensions?
-6. **📄 Legal Pages** — Privacy Policy assigned? Imprint/Impressum present? EAA Accessibility Statement published?
+1. **🔒 SSL & HTTPS** — Is the site served over HTTPS, and is the HSTS response header present?
+2. **🍪 Cookie Consent** — Is a known consent plugin or the WP Consent API active?
+3. **📋 GDPR Forms** — Is a known form plugin active, and is a Privacy Policy page configured?
+4. **💾 Backup Status** — Is a known backup plugin active? If UpdraftPlus exposes its last-backup time, how old is it?
+5. **⚠️ Plugin & Core Health** — Are WordPress core or installed plugins reported as outdated?
+6. **📄 Legal Pages** — Is a Privacy Policy assigned, and are common Imprint, Terms and EAA statement pages found?
 
 = How it works =
 
-1. Install the plugin from wp.org or upload the zip.
+1. Upload the plugin ZIP and activate the `eucomply` folder.
 2. Activate it. The admin menu now shows "EUComply".
 3. Click "Run scan now" — results appear in seconds.
 4. Review pass/fail status with fix guidance for each check.
@@ -34,7 +34,7 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 
 = Free vs Pro =
 
-| Feature | Free | Pro ($79/yr) |
+| Feature | Free | Pro ($79/year per website) |
 |---|---|---|
 | Compliance scan dashboard (6 checks) | ✓ | ✓ |
 | Pass/fail with fix guidance | ✓ | ✓ |
@@ -42,26 +42,26 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 | GDPR Data Processing Agreement (Art. 28) | — | ✓ |
 | NIS2/DORA vendor clause set (5 clauses) | — | ✓ |
 | EAA Accessibility Statement | — | ✓ |
-| Quarterly compliance report | — | ✓ |
+| HTML report from the latest WordPress scan | — | ✓ |
 | Agency name branding in reports | — | ✓ |
-| Daily license check, 7-day grace if the license server is down | — | ✓ |
+| License revalidation at most once every 24 hours when the Pro admin view is used, with a 7-day offline grace after a temporary license-server failure | — | ✓ |
 
 = Why another compliance plugin? =
 
-Cookie banners and backup plugins solve one problem each. EUComply is different: it's a **central compliance monitor** that checks six dimensions and **generates the documents you need** — DPA agreements, NIS2 clauses, and accessibility statements.
+Cookie banners and backup plugins solve one problem each. EUComply is a local WordPress compliance checker that scans six dimensions and generates editable HTML document starters plus an HTML report from the latest scan — DPA agreements, NIS2 clauses, and accessibility statements.
 
-**No data leaves your site.** Other compliance plugins phone home. EUComply runs everything locally. The only external call is Pro license validation (key check, zero site data).
+Scan data and generated reports stay on your site. The plugin checks your own WordPress installation locally, checks the EUComply update manifest at eucomplypro.com/update.json, and when Pro is used sends the license key, site hostname and product identifier to the Mahope license server at mahope.tools.
 
 = Who is this for? =
 
-- **Agency owners** managing 5–50+ client sites. Know every site's compliance status without logging into each one individually.
-- **Freelancers** who need GDPR-compliant forms and legal pages for client projects.
+- **Agency owners** who need a WordPress site checked and document starters generated on the site they manage.
+- **Freelancers** who need configuration hints for forms and legal pages on client projects.
 - **EU-based businesses** that must comply with NIS2, DORA, the European Accessibility Act, and GDPR — often simultaneously.
-- **WordPress site owners** who want a quick compliance audit without hiring a consultant.
+- **WordPress site owners** who want a quick technical check without hiring a consultant.
 
 == Installation ==
 
-1. Upload the `eucomply` folder to `/wp-content/plugins/` via FTP, or go to Plugins → Add New and search for "EUComply".
+1. Upload the `eucomply` folder to `/wp-content/plugins/` via FTP, or use **Plugins → Add New → Upload Plugin** and select the ZIP.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to EUComply in your admin menu and click "Run scan now".
 
@@ -71,7 +71,7 @@ That's it. No configuration required for the free scan. Pro users enter their li
 
 = Does the plugin send data to external servers? =
 
-No. Every compliance check runs entirely inside your WordPress installation. No telemetry, no analytics, no site data is transmitted. The **only** external call is the Pro license validation, which sends the license key, the site's hostname and the product name (no site content) to the Mahope license server at mahope.tools.
+No telemetry or analytics is sent by the plugin. The core compliance checks run inside WordPress and inspect the installation. The plugin also checks the EUComply update manifest at `https://eucomplypro.com/update.json`; when Pro is used, it sends the license key, the site's hostname and the product name (no site content) to the Mahope license server at `mahope.tools`.
 
 = How do I buy Pro? =
 
@@ -79,23 +79,23 @@ Buy EUComply Pro at https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03 — $79 per w
 
 = How is this different from Complianz, CookieYes or WP Activity Log? =
 
-Those plugins solve one compliance problem (cookies or audit logs). EUComply combines **six compliance dimensions** in one plugin, plus **document generation** — DPA agreements, NIS2 vendor clause sets, and EAA accessibility statements. It's a compliance monitor that also produces the paperwork.
+Those plugins solve one compliance problem (cookies or audit logs). EUComply combines **six compliance dimensions** in one local plugin, plus **editable HTML document generation** — DPA agreements, NIS2/DORA vendor clause sets, and EAA accessibility statements. It also generates an HTML report from the latest WordPress scan.
 
 = Can I white-label reports for my clients? =
 
-Yes. Pro users set their agency/business name in Settings, and generated reports carry that name. A white-label upgrade without the "Generated by EUComply" footer is available for agencies managing 10+ sites.
+Pro users can set their agency or business name in Settings, and the generated HTML report uses that name. A separate white-label product is not currently available.
 
 = Is the generated DPA legally binding? =
 
-The DPA follows the standard GDPR Article 28 structure used across the EU — it's the same template law firms and compliance consultants use. We recommend having a lawyer review the filled-in agreement for high-value contracts. The plugin gives you a correct starting point, not a substitute for legal advice.
+The DPA follows a common GDPR Article 28 structure. We recommend having a lawyer review the completed agreement for high-value contracts. The plugin provides a starting point, not legal advice or a substitute for legal review.
 
 = What happens if I cancel my Pro subscription? =
 
-The plugin continues in Free mode. Dashboard scans and weekly re-scans remain active. Document generation and quarterly reports stop. No data is deleted — your license key simply reverts to free functionality.
+The plugin continues in Free mode if the license is no longer valid. The current purchase does not create a hosted account, and renewal or cancellation terms are shown by the payment provider and applicable product terms.
 
 = My site is in Germany. Does this help with the Telemediengesetz (TMG)? =
 
-Yes. The "Legal Pages" check verifies you have an Imprint/Impressum page as required under TMG §5. The Pro EAA statement covers the Barrierefreiheitsstärkungsgesetz (BFSG) effective June 2025.
+The "Legal Pages" check looks for an Imprint/Impressum page and the Pro EAA starter provides a structured accessibility-statement template. Neither determines whether your site meets German or EU legal requirements.
 
 = Does this work on multisite? =
 
@@ -109,9 +109,15 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 1. EUComply admin dashboard showing six compliance checks with pass/fail status.
 2. Settings page with Pro license key input and agency name.
-3. Pro document generation table — DPA, NIS2, EAA, and quarterly report.
+3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.1 (2026-09-25) =
+
+* **Fixed**: Pro marketing and plugin copy now describe the actual HTML report.
+* **Fixed**: Pro users can download the HTML report directly from the scan results.
+* **Changed**: The update package and manifest now point to version 1.3.1.
 
 = 1.3.0 (2026-09-24) =
 
@@ -131,10 +137,10 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 * **New**: Lemon Squeezy license API integration with daily verification and refund detection.
 * **New**: Auto-update checker via update.json manifest (works before wp.org listing).
-* **New**: Pro document generation — DPA, NIS2/DORA clause set, EAA statement, quarterly report.
-* **New**: Agency name setting for white-label report branding.
+* **New**: Pro document generation — DPA, NIS2/DORA clause set, EAA statement, and HTML report from the latest scan.
+* **New**: Agency name setting for report branding.
 * **Improved**: License validation UX showing activation status in settings.
-* **Fixed**: All URLs now point to the official GitHub Pages site.
+* **Fixed**: All URLs now point to the official EUComply site.
 
 = 1.0.0 (2026-08-20) =
 
@@ -142,9 +148,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.
 * Weekly automated re-scan via WP-Cron.
 * AJAX-powered scan from admin dashboard (no page reload).
-* Pro license system with product ID placeholder for future Lemon Squeezy integration.
+* Pro license system with document generation.
 
 == Upgrade Notice ==
+
+= 1.3.1 =
+Corrects Pro product wording and adds a direct HTML report download for licensed sites. Update from Plugins → Installed Plugins or download the latest zip.
 
 = 1.3.0 =
 Required for Pro: licenses now come from Stripe and are checked against mahope.tools. Enter the new 32-character key from your purchase email in EUComply → Settings.
@@ -153,4 +162,4 @@ Required for Pro: licenses now come from Stripe and are checked against mahope.t
 Upgrade for the automatic cleanup (uninstall.php), activation guard (no silent failures on old PHP/WP), and a polished readme.txt for wp.org listing. Update from Plugins → Installed Plugins or download the latest zip.
 
 = 1.1.0 =
-Upgrade to 1.1.0 for Lemon Squeezy license API integration with refund detection, auto-update checker from the official manifest, and full Pro document generation (DPA, NIS2, EAA, quarterly reports). The plugin checks for updates automatically — update from Plugins → Installed Plugins or download the latest zip.
+Upgrade to 1.1.0 for Lemon Squeezy license API integration with refund detection, auto-update checker from the official manifest, and full Pro document generation (DPA, NIS2, EAA, and HTML reports). The plugin checks for updates automatically — update from Plugins → Installed Plugins or download the latest zip.

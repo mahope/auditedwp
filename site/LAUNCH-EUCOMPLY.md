@@ -21,7 +21,7 @@ The scanning core is open source (Node.js, MIT): https://github.com/mahope/eucom
 
 What it checks today: SSL/HSTS, cookie-consent platform detection, third-party trackers without consent signals, Google Consent Mode v2, IAB TCF, form/privacy-link hygiene, security headers, DORA email/DNS redundancy signals.
 
-The paid tier ($79/yr) adds continuous monitoring, PDF reports you can hand to a client or auditor, and report white-labeling — aimed at agencies that run these checks for customers.
+The current paid tier ($79/year per website) is a WordPress license. It unlocks editable DPA, NIS2/DORA and EAA HTML starters plus an HTML report from the latest WordPress scan. Full templates are sold separately.
 
 Happy to answer questions about the detection heuristics or the false-positive trade-offs of header-only scanning.
 
@@ -35,10 +35,10 @@ Happy to answer questions about the detection heuristics or the false-positive t
 Website compliance scans for GDPR, DSA & EAA — any CMS
 
 **Description:**
-EUComply scans any website for compliance gaps regulators actually fine for: missing consent before tracking, absent Consent Mode v2 / TCF signals, weak security headers, missing legal pages. Works on every platform because it reads what browsers read — no plugins, no server access. Free instant scan; $79/yr Pro adds monitoring, branded PDF reports and an API.
+EUComply scans any public website for technical compliance signals: missing consent before tracking, absent Consent Mode v2 / TCF signals, weak security headers and missing legal pages. The free scanner works on every platform because it reads what browsers read — no plugin or server access. The current $79/year-per-website Pro license is for WordPress document tools; hosted monitoring and runtime PDF reports are not included today.
 
 **First comment (maker's):**
-We built this for agencies and small teams who get asked "are we compliant?" and currently answer with a spreadsheet. Paste a URL, get a prioritized report in seconds. The core is open source (MIT), so you can self-host the scanner — Pro is for people who want it running continuously with client-ready PDFs. Ask us anything about what the scanner can and can't see.
+We built the scanner for agencies and small teams that get asked "are we compliant?" and currently answer with a spreadsheet. Paste a URL and get a prioritised technical result in seconds. The core is open source (MIT), so you can self-host the scanner. The current Pro license is for editable WordPress document starters and an HTML report from the latest WordPress scan — not continuous hosted monitoring or client-ready PDFs.
 
 **Topics:** compliance, gdpr, web, developer tools, saas
 
