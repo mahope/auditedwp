@@ -327,6 +327,15 @@ CI-kørsel `36173925589` (`deploy-site`, success på 31 s) byggede og verificere
 1. **CI's produktionskontrol brugte et falsk kanin-hul.** Den testede `/IMPLEMENTATION_PLAN.md`, som *aldrig* har ligget i `site/`, så den var 404 før og efter og beviser intet. Den skal testes mod en sti, der faktisk var eksponeret — f.eks. `/AGENTS.md`.
 2. **En del af de interne filer er stadig tilgængelige via Cloudflares edge-cache.** Uden cache-buster svarede `/AGENTS.md` stadig 200 med `age: 10724` og `cache-control: public, s-maxage=604800` — altså op til syv dages cached 200 på de præcis de URLs, der var læst tidligere. Origin er renset, men en klient med et gammelt cache-entry kan hente det gamle indhold. Det kræver en cache-purge hos Cloudflare, som agenten ikke har adgang til. **Det er spørgsmål 12.** Mærkeligt nok gav mit eget `curl` ovenfor både 200 og 404 for den samme URL i samme minutt — kanten er inkonsistent.
 
+## Deploy-verificering 2026-09-25 21:12 CEST
+
+CI-kørsel `36189565613` (`684fbd0`, alle tre jobs `success`) — første gang `tools/check_runtime.py` kører i CI. Verificeret på loggen, ikke på exit code:
+
+- `kvalitetsgate` kørte `python3 tools/check_runtime.py` → `Runtime-gate grøn: … gaten kører på den erklærede runtime` og `--selftest` → `OK`. Loggen viser `node-version: 22`, så gaten testede den erklærede runtime og ikke en tilfældig.
+- **De tre falske grønne er rettet og holdt grønne af CI.** Mutanterne findes i loggen som selftest-cases: "uoplæselig node-version som lts/* fanget" og "kommentar som eneste node-version fanget".
+- **De forventede forskelle i advarslerne er indtruffet.** `actions/setup-node@v4` står **ikke længere** i `Node.js 20 is deprecated`-advarslen, fordi den ikke længere kører på Node 20. Tilbage er `actions/checkout@v4`, `actions/setup-python@v5` og `cloudflare/wrangler-action@v3` — præcis de tre, opgave 12 tager sig af. Advarslen er altså mindre, ikke væk, og det er sagt i deploynoten.
+- `deploy til Cloudflare Pages` og `tjek produktion` er grønne, så de 12 interne stier svarer stadig 404 på origin med cache-buster. Som forventet rørte committen ingen `site/**`-fil, så sitets indhold er uændret.
+
 ## ❓ Til Mads
 
 1. **Hosted Pro og plugin-Pro:** skal den nuværende `eucomply-pro`-nøgle eksplicit give både plugin-dokumenter og hosted-funktioner, eller skal plugin-dokumenterne være en del af et senere samlet Pro? Indtil dette er afklaret, sælger vi kun plugin-dokumenterne.
