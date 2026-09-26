@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 ORIGIN = "https://eucomplypro.com"
 PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
-PLUGIN_VERSION = "1.3.17"
+PLUGIN_VERSION = "1.3.18"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",

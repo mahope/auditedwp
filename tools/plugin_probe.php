@@ -72,6 +72,7 @@ $EMPTY_STATE = array(
     'head_error'    => '',
     'active'        => array(),
     'pages'         => array(),
+    'titles'        => array(),
     'options'       => array(),
     'core_updates'  => array(),
     'plugin_updates' => array(),
@@ -214,11 +215,51 @@ class EUComplyProbeWPDB {
     public $posts = 'wp_posts';
     public $queries = array();
     public function prepare( $sql, $arg = null ) {
-        return 'PREPARED(' . $arg . ')';
+        // The operator travels with the argument, because `get_var()` only ever
+        // sees what `prepare()` handed back. A stub that kept the operator to
+        // itself cannot tell `post_title = %s` from `post_title LIKE %s`, and
+        // then it has to guess — which is how "Imprint" and "Impressum" stopped
+        // being findable in the English fixture while the plugin was unchanged.
+        $op = preg_match( '/post_title\s+LIKE\s+%s/i', (string) $sql ) ? 'LIKE' : '=';
+        return 'PREPARED(' . $op . ':' . $arg . ')';
     }
     public function get_var( $sql ) {
         $this->queries[] = $sql;
-        return $GLOBALS['eucomply_probe_state']['wpdb_hits'];
+        $state = $GLOBALS['eucomply_probe_state'];
+        $titles = isset( $state['titles'] ) ? (array) $state['titles'] : array();
+        if ( ! $titles ) {
+            return $state['wpdb_hits'];
+        }
+        // A fixture that lists titles gets them resolved for real, so "which
+        // name did this LIKE match?" is a question the harness can answer. The
+        // old fixed answer could not: every get_var() returned the same id, so a
+        // port measuring language coverage through the title search was measuring
+        // its own fixture, not the plugin.
+        if ( ! preg_match( '/^PREPARED\((=|LIKE):(.*)\)$/s', (string) $sql, $m ) ) {
+            return null;
+        }
+        $like   = ( '=' !== $m[1] );
+        $needle = $m[2];
+        // A LIKE with a bare name is still an exact match in SQL, and the stub
+        // says so. What a LIKE cannot do is be inferred from the needle: the
+        // first version decided with `0 !== strpos( $needle, '%' )`, which is
+        // true for every string without a per cent sign, because a missing
+        // substring is `false` and `0 !== false`.
+        foreach ( $titles as $entry ) {
+            $entry = (array) $entry;
+            $title = isset( $entry['title'] ) ? (string) $entry['title'] : '';
+            $hit   = $like
+                ? (bool) preg_match( '/^' . str_replace( '%', '.*', preg_quote( $needle, '/' ) ) . '$/iu', $title )
+                : ( $title === $needle );
+            if ( ! $hit ) {
+                continue;
+            }
+            if ( isset( $entry['status'] ) && 'publish' !== $entry['status'] ) {
+                continue;
+            }
+            return isset( $entry['id'] ) ? $entry['id'] : null;
+        }
+        return null;
     }
 }
 $GLOBALS['wpdb']       = new EUComplyProbeWPDB();
