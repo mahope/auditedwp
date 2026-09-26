@@ -601,6 +601,70 @@ def check_dead_internal_hrefs() -> list[str]:
     return findings
 
 
+# Et køb, der ikke kan gennemføres. Regex-siden havde en disabled-knap med
+# "Payment opening soon" og en statuslinje om at checkout "will be available
+# once payment processing is configured" — altså en pris og en knap, men ingen
+# vej at betale.MISSIONENS regel er eksplicit: ingen tekster om at checkout
+# kommer. Mønstret kræver derfor begge dele i SAMME kontrolelement: et købsord
+# (buy/køb/kaufen/acheter/checkout/betal) og en "snart"-markør. En artikel der
+# skriver at en kundes side var "coming soon" er redaktionelt indhold og
+# rammes ikke, fordi den ikke er en kontrol.
+UNBUYABLE_CTA = re.compile(
+    r"<(?:button|span|a)\b[^>]*\bclass=\"[^\"]*\bbtn\b[^\"]*\"[^>]*>(?:(?!</(?:button|span|a)>).)*?"
+    r"\b(?:buy|checkout|pay|rent|køb|købs|kauf|bezahlen|acheter|achat|pagar|betal|betalning)\w*"
+    r"(?:(?!</(?:button|span|a)>).)*?"
+    r"\b(?:soon|coming|opening|available|kommt|kommende|underwegs|bientôt|prochain|próxim|kommer)\w*"
+    r"(?:(?!</(?:button|span|a)>).)*?</(?:button|span|a)>"
+    r"|<(?:button|span|a)\b[^>]*\bclass=\"[^\"]*\bbtn\b[^\"]*\"[^>]*>(?:(?!</(?:button|span|a)>).)*?"
+    r"\b(?:soon|coming|opening|underwegs|bientôt|prochain)\w*"
+    r"(?:(?!</(?:button|span|a)>).)*?"
+    r"\b(?:buy|checkout|pay|rent|køb|kauf|bezahlen|acheter|achat|pagar|betal)\w*"
+    r"(?:(?!</(?:button|span|a)>).)*?</(?:button|span|a)>",
+    re.I | re.S,
+)
+# Samme fejl i en anden form: en disabled-knap ved siden af en pris. Ordene
+# "coming soon" mangler, men knappen kan stadig ikke betales, og det er den
+# egentlige fejl — ikke formuleringen af den.
+#
+# Attributten skal være whitespace-afgrænset. Første udgave brugte `\bdisabled\b`,
+# som også matcher inde i en href: DevNotify's indholdsfortegnelpe har 46 links
+# med `#1-web-notifications-are-disabled-in-your-github-settings`, og gatten
+# erklærede en artikel om *netop* det emne som et rødt fund. Fundet ved
+# mutation mod repoets egen fil, ikke ved at læse koden.
+DISABLED_PAY_CTL = re.compile(
+    r"<(?:button|span|a)\b[^>]*?\sdisabled(?=[\s/>])[^>]*>", re.I
+)
+
+
+def check_unbuyable_cta() -> list[str]:
+    """Ingen side må vise en købsknap, der ikke kan gennemføres.
+
+    Hele EUComply-træet, ikke kun købsrejsen: de to fejl denne kontrol
+    fandt sad på søskeprodukterne `/transmute/` og `/regex/`, som ligger i
+    deploy-træet og linkedes fra bloggen, men ikke i købsrejsens sæt.
+
+    Derfor læses det PUBLICEREDE træ og ikke EUComply-sættet. Det var den
+    første mutation, der slap forbi: `site/transmute/` er et søskeproduct,
+    så `eucocomply_pages()` beskæftiger sig aldrig med den — og netop der
+    lå den skjulte checkout. Fejlen skal kunne sidde hvor som helst i det,
+    der publiceres. `_partials/` og `shared/` er inkluderede fragmenter, ikke
+    sider, så de springes over.
+    """
+    findings = []
+    if not PUBLISHED.is_dir():
+        return findings
+    for path in sorted(PUBLISHED.rglob("*.html")):
+        rel = path.relative_to(PUBLISHED).as_posix()
+        if rel.startswith(FRAGMENT_PREFIXES):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if UNBUYABLE_CTA.search(text):
+            findings.append(f"{rel}: købsknap der ikke kan gennemføres (krøver 'coming soon')")
+        if DISABLED_PAY_CTL.search(text):
+            findings.append(f"{rel}: deaktiveret betalingsknap (kan ikke gennemføres)")
+    return findings
+
+
 def check_forbidden_claims() -> list[str]:
     """Købsrejsens sider må ikke love noget, ingen kode dækker.
 
@@ -640,6 +704,7 @@ def run(root: Path) -> list[str]:
         check_canonicals,
         check_dead_internal_hrefs,
         check_forbidden_claims,
+        check_unbuyable_cta,
     ):
         found.extend(check())
     return found
@@ -763,6 +828,16 @@ def selftest() -> int:
             ("NIS2-checkliste uden sit produkt", "mangler det kontraktfikserede Pro-link",
              lambda t: t.replace("4gM4gydvd92OapwgN9bMQ06", "/store/"),
              "nis2-checklist/index.html"),
+            # Opgave 32: en købsknap, der ikke kan gennemføres. Uden disse to
+            # cases kunne `check_unbuyable_cta` være grøn af den forkerte grund —
+            # mutation M2 mod repoets egen `/transmute/` slap først forbi, fordi
+            # kontrollen læste EUComply-sættet, der slet ikke rummer søskeproduktet.
+            ("købsknap der kræver 'coming soon'", "købsknap der ikke kan gennemføres",
+             lambda t: t.replace("</body>",
+                                 '<span class="btn">Buy — $19 (coming soon)</span></body>')),
+            ("deaktiveret betalingsknap", "deaktiveret betalingsknap",
+             lambda t: t.replace("</body>",
+                                 '<button class="btn" disabled>Buy — $19</button></body>')),
         ]
         for label, needle, mutate, *target_rel in cases:
             if not expect(label, needle, mutate, *(target_rel or ["pro/index.html"])):
