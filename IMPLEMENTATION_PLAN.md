@@ -13,6 +13,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 
 ## Iterationsstatus
 
+- `FÆRDIG`: **36 — De otte Pro-sider solgte tre funktioner, mens koden leverer otte** på `ceo/pro-underlover`. Ny permanent gate `under_claim_findings()` og tre fund i min egen gate. Se afsnittet nedenfor.
 - `FÆRDIG`: **35 — Gaten fra opgave 34 døde i CI, og sitet var fastlåst.** PDF'en efterprøves nu på indhold med stdlib, så gaten kan køre uden reportlab. Se afsnittet nedenfor.
 - `FÆRDIG`: **34 — Prøverapporten dækker nu de ni tjek motoren kører** på `ceo/proeverapport-9-tjek`. ét datasæt, to artefakter, ny permanent gate. Se afsnittet nedenfor.
 - `FÆRDIG`: **33 — En gate, der ikke kunne fejle: inline-JS-kontrollen** på `ceo/gate-inline-js`, commit `372a186`, merge `6155c26`. Se afsnittet nedenfor.
