@@ -202,8 +202,31 @@ const PRIVACY_LINK_SIGNATURE =
 
 const LEGAL_PATTERNS = [
   { re: PRIVACY_LINK_SIGNATURE, name: "Privacy / GDPR" },
-  { re: /impressum|imprint|legal[_-]?notice|legal[_-]?disclosure|about[_-]?the[_-]?company/i, name: "Imprint / Legal notice" },
-  { re: /accessibility[_-]?statement|a11y|accessibility[_-]?declaration|eaa[_-]?statement|barrierefreiheit/i, name: "Accessibility statement" },
+    // Opgave 54 målte de otte øvrige mønstre gennem `legal` i begge motorer: **0 af 24**
+  // (mønster, sprog) blev fundet i nogen af dem. Følgen er en score, en kunde
+  // kan se: en dansk butik med *Om os*, *Retur- og forbrugerrettigheder* og
+  // *Fragt og levering* får **null** juridiske sider, fordi listen kun kendte
+  // engelsk og tysk.
+  //
+  // Samme to regler som privatliv, cookie og vilkår:
+  //
+  // 1. **En stængel er et helt ord fra sit sprog**, aldrig et fragment der
+  //    også er et ord i et andet. Derfor er imprint på dansk
+  //    `virksomhedsoplysninger` og ikke bare `om os`, der er almindelig prosa
+  //    ("læs mere om os").
+  // 2. **Separatoren er nødvendig, og den er ikke altid samme.** `om[-_]?os`
+  //    matcher stien `/om-os/` men **aldrig** "om os" med mellemrum i en sætning.
+  //    Det er samme måleme som opgave 52 fandt med `[_-]?` vs `[ _-]?`.
+  //
+  // To stængler er bevidst **uden** det hele ord, fordi porten har en fixture der
+  // måler den fejltagelse: DA `returbetingelser` (prosa om retur i en sætning er
+  // almindelig, sidenavnet er *Retur- og forbrugerrettigheder*) og SV
+  // `returvillkor`, som ligger i *returvillkoren* på en ganske normal svensk
+  // butiksside. Begge ville være falske fund på den betalte rapport.
+  //
+  // Port: `tools/check_legal_langs.mjs`. Spec: `docs/eucomply-juridiske-sprog.md`.
+{ re: /impressum|imprint|legal[_-]?notice|legal[_-]?disclosure|about[_-]?the[_-]?company|om[-_]?os|virksomhedsoplysninger|om[-_]?oss|bolagsuppgifter|colofon|bedrijfsgegevens|kvk[ _-]?nummer/i, name: "Imprint / Legal notice" },
+  { re: /accessibility[_-]?statement|a11y|accessibility[_-]?declaration|eaa[_-]?statement|barrierefreiheit|tilg[æa]ngelighedserkl[æa]ring|tilg[æa]ngelighedspolitik|tillg[äa]nglighetsredog[öo]relse|toegankelijkheidsverklaring|toegankelijkheidsbeleid/i, name: "Accessibility statement" },
   // Samme sprogregel som privatlivsmønsteret: en stængel er et helt ord fra sit
   // sprog, aldrig et fragment der også er et ord i et andet. `cookiepolitik` (DA),
   // `cookiesbeleid` (NL) og `kakpolicy` (SV) er de navne en butiks footer
@@ -221,18 +244,18 @@ const LEGAL_PATTERNS = [
   // Spec: `docs/eucomply-juridiske-sprog.md`.
   { re: /cookie[_-]?policy|cookie[_-]?declaration|cookie[_-]?settings|cookie[_-]?preferences|cookiepolitik|cookies?beleid|kakpolicy/i, name: "Cookie policy" },
   { re: /terms[ _-]?(?:of[ _-]?use|of[ _-]?services?|and[ _-]?conditions|&\s*(?:amp;)?\s*conditions|conditions)|handelsbetingelser|vilk[aå]?r[ _-]?(?:og[ _-]?)?(?:betingelser|for[ _-]?(?:brug|anvendelse|køb))|allm[aä]nna[ _-]?villkor|anv[äa]ndningsvillkor|algemene[ _-]?(?:leverings)?voorwaarden/i, name: "Terms & Conditions" },
-  { re: /legal[_-]?notice|legal[_-]?info|impressum|disclaimer|legal[_-]?mention/i, name: "Legal / Imprint" },
-  { re: /returns[_-]?policy|refund[_-]?policy|cancellation[_-]?policy|widerrufsrecht/i, name: "Returns / Refund policy" },
-  { re: /shipping[_-]?policy|delivery[_-]?information|versand/i, name: "Shipping policy" },
-  { re: /data[_-]?processing[_-]?agreement|dpa|data[_-]?processor|auftragsverarbeitung/i, name: "Data processing agreement" },
-  { re: /acceptable[_-]?use[_-]?policy|aup|fair[_-]?use[_-]?policy/i, name: "Acceptable use / Fair use" },
+  { re: /legal[_-]?notice|legal[_-]?info|impressum|disclaimer|legal[_-]?mention|juridisk[ _-]?information|juridische[ _-]?informatie/i, name: "Legal / Imprint" },
+  { re: /returns[_-]?policy|refund[_-]?policy|cancellation[_-]?policy|widerrufsrecht|retur[ _-]?(?:og[ _-]?)?(?:forbrugerrettigheder|fortrydelsesret|politik)|fortrydelsesret|retur[ _-]?och[ _-]?[åa]ngerr[aä]tt|retourbeleid|retour[ _-]?voorwaarden|retourtermijn/i, name: "Returns / Refund policy" },
+  { re: /shipping[_-]?policy|delivery[_-]?information|versand|fragt[ _-]?(?:og|&amp;?)?[ _-]?(?:levering|leverans|vilk[aå]r)|leveringsvilk[aå]r|forsendelsesvilk[aå]r|frakt[ _-]?(?:och|&amp;?)?[ _-]?leverans|leverans(?:villkor|information)|verzend[ _-]?(?:beleid|voorwaarden)|bezorg(?:informatie|beleid)/i, name: "Shipping policy" },
+  { re: /data[_-]?processing[_-]?agreement|dpa|data[_-]?processor|auftragsverarbeitung|databehandleraftale|personuppgiftsbitr[aä]desavtal|bitr[aä]desavtal[ _-]?f[öo]r[ _-]?personuppgifter|verwerkersovereenkomst|verwerkersav[aä]nk|verwerkersbeding/i, name: "Data processing agreement" },
+  { re: /acceptable[_-]?use[_-]?policy|aup|fair[_-]?use[_-]?policy|acceptabel[ _-]?brug|rimlig[ _-]?anv[aä]ndning|redelijk[ _-]?gebruik/i, name: "Acceptable use / Fair use" },
   { re: /subprocessor|sub[_-]-?processor|subprocessors/i, name: "Sub-processor list" },
   { re: /code[_-]?of[_-]?conduct|coc|ethik/i, name: "Code of conduct" },
   { re: /sla[_-]?service[_-]?level|service[_-]?level[_-]?agreement|garantie/i, name: "SLA / Warranty" },
   { re: /complaints[_-]?policy|complaint[_-]?procedure|beschwerde/i, name: "Complaints procedure" },
   { re: /modern[_-]?slavery|slavery[_-]?act[_-]?statement|human[_-]?trafficking/i, name: "Modern slavery statement" },
   { re: /whistleblower|whistle[_-]?blowing|hinweisgeber/i, name: "Whistleblower / Hinweisgeber" },
-  { re: /environmental[_-]?policy|sustainability[_-]?policy|umwelt/i, name: "Environmental / Sustainability policy" },
+  { re: /environmental[_-]?policy|sustainability[_-]?policy|umwelt|b[æa]redygtighedspolitik|milj[øo]politik|h[åa]llbarhetspolicy|duurzaamheids?(?:beleid|verklaring)/i, name: "Environmental / Sustainability policy" },
   { re: /gdpr[_-]?contact|dpo[_-]?contact|data[_-]?protection[_-]?officer|datenschutzbeauftragte/i, name: "DPO / Data protection officer" },
   { re: /info@|contact@|hello@|mail@|support@|sales@/i, name: "General contact address" },
 ];
