@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.8
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,8 +114,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.9 (2026-09-26) =
+* Pro: the compliance report now states the interval the site is actually scheduled for, so the document a client reads says how often it was checked instead of leaving them to ask.
+* The line follows WP-Cron, not the licence: a released, expired or out-of-slots licence puts it back to saying once a week.
+* The 1.3.8 entry now says in plain words that Pro scans your site every day, on your own WordPress server. The wording avoided the word until now because the product-truth check could not tell a local cadence from a hosted one; it can now, and only because the code schedules the run.
+
 = 1.3.8 (2026-09-26) =
-* Pro: the scheduled job now runs once a day instead of once a week. The six checks are local, so the extra runs cost the site nothing and need no external service.
+* Pro: EUComply Pro scans your site every day, on your own WordPress server, instead of once a week. The six checks are local, so the extra runs cost the site nothing and need no external service.
 * The free version keeps its weekly run. The interval follows the licence, including when a licence is released, expires or loses its device slot — then it goes back to weekly.
 * The dashboard states the interval the site is actually scheduled for, so it cannot promise more than the cron array holds.
 * A changed interval re-schedules from now, so the first run after activating a licence happens at the next WP-Cron tick instead of a day later.

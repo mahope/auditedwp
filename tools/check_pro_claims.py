@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 ORIGIN = "https://eucomplypro.com"
 PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
-PLUGIN_VERSION = "1.3.8"
+PLUGIN_VERSION = "1.3.9"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",
@@ -115,6 +115,11 @@ PLUGIN_TRUTH_PAGES = {
     "plugin/readme.txt",
     "site/plugin/readme.txt",
 }
+# The files that ship the plugin itself. A daily cadence may be described in
+# them, because the plugin is the thing that runs it — but only when the code
+# really schedules one, and only when the sentence says where it runs. A
+# hosted monitor claim is a different product and stays red everywhere.
+PLUGIN_LOCAL_FILES = set(PLUGIN_TRUTH_PAGES)
 COMPARISON_TRUTH_PAGES = {
     "site/compare/index.html",
     "site/pro/vs-cookiebot/index.html",
@@ -406,6 +411,20 @@ SHARED_NEGATIVE = re.compile(
     r"\b(?:er|sind)\s+nicht\s+(?:enthalten|verfügbar)\b|"
     r"\ber\s+ikke\s+(?:inkluderet|tilgængelig)\b|"
     r"\best\s+(?:non\s+inclus\w*|n[’']est\s+pas)\b",
+    re.I,
+)
+# Where a cadence runs. "Every day" is a local fact only when the sentence says
+# the checks happen on the customer's own installation; a hosted monitor never
+# can, which is exactly the difference the daily-rescan grab cannot see on its
+# own. WP-Cron counts, because it is definitionally local.
+LOCAL_CADENCE_SCOPE = re.compile(
+    r"\b(?:on|in|inside|within|at)\s+(?:your|the|this|each|its)\s+(?:own\s+)?(?:"
+    r"site|website|web\s?site|server|wordpress|install(?:ation)?|host|instance|machine|box)\b|"
+    r"\b(?:locally|on\s+your\s+own\s+wordpress(?:\s+install(?:ation)?)?|in\s+your\s+own\s+wordpress|"
+    r"inside\s+your\s+own\s+wordpress|from\s+your\s+own\s+server)\b|"
+    r"\bwp-?cron\b|"
+    r"\bpå\s+(?:din|den\s+ne|deres|eget?)\b|\bvor\s+ort\b|\blokal\w*|\bvindues\w*\b|"
+    r"\blocalement\b|\bsur\s+(?:votre|le\s+site|ce\s+site|votre\s+site)\b|\bdans\s+(?:votre\s+)?wordpress\b",
     re.I,
 )
 
@@ -716,7 +735,72 @@ def claim_applies(relative: str, label: str, text: str) -> bool:
     return False
 
 
-def claim_exempt(segment: str, match: re.Match) -> bool:
+def php_method_body(text: str, name: str) -> str:
+    """The body of a PHP method, brace-matched, or '' when there is no such method."""
+    start = re.search(r"function\s+" + re.escape(name) + r"\s*\(", text)
+    if not start:
+        return ""
+    depth = 0
+    opened = False
+    for index in range(start.start(), len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+            opened = True
+        elif char == "}":
+            depth -= 1
+            if opened and depth == 0:
+                return text[start.start():index + 1]
+    return ""
+
+
+def plugin_schedules_daily_scan(text: Optional[str] = None) -> bool:
+    """Does the plugin put a daily interval on its own scan event?
+
+    This is what lets the plugin describe a local daily cadence: the words are
+    allowed because the code does it. So the answer is read from the code, by a
+    trace and not by a search for the word — the interval handed to
+    wp_schedule_event is followed back to the method that produced it, and only
+    a 'daily' coming out of that method counts. Drop the daily interval in a
+    later release and every sentence that leaned on this becomes a red claim
+    again, which is the point: the hole is the size of the feature.
+
+    $text lets the selftest hand in a plugin it broke on purpose, the same way
+    redirect_findings() takes a _redirects.
+    """
+    if text is None:
+        text = read_text(ROOT / "plugin/eucomply.php", "claims: plugin PHP", [])
+        if text is None:
+            return False
+    call = re.search(r"wp_schedule_event\(\s*[^,]+,\s*\$(\w+)\s*,\s*EUCOMPLY_SCAN_EVENT", text, re.S)
+    if not call:
+        return False
+    assigned = re.search(r"\$" + call.group(1) + r"\s*=\s*\$this->(\w+)\s*\(", text)
+    if not assigned:
+        return False
+    return "'daily'" in php_method_body(text, assigned.group(1))
+
+
+# A local cadence is a statement about one thing, so the statement has to be
+# readable as one. Without this the hole would cover a whole update.json
+# changelog, where the marker and the claim can sit in different releases — which
+# is how this exact check was caught red on a file nobody had looked at.
+LOCAL_CADENCE_MAX_CHARS = 400
+
+
+def local_cadence_claim(relative: str, segment: str, text: Optional[str] = None) -> bool:
+    """A daily cadence the site's own WordPress runs, in a file that schedules it."""
+    return (
+        relative in PLUGIN_LOCAL_FILES
+        and len(segment) <= LOCAL_CADENCE_MAX_CHARS
+        and bool(LOCAL_CADENCE_SCOPE.search(segment))
+        and plugin_schedules_daily_scan(text)
+    )
+
+
+def claim_exempt(segment: str, match: re.Match, relative: str = "", label: str = "") -> bool:
+    if label == "daily monitoring or rescans" and local_cadence_claim(relative, segment):
+        return True
     if re.search(r"\b(?:not|never|isn't|aren't|ikke|nicht|non)\b", match.group(0), re.I):
         return True
     start, end = match.span()
@@ -766,7 +850,7 @@ def claim_findings_for_blocks(relative: str, blocks: Sequence[TextBlock], force_
                         continue
                     if not inherited_context and not segment_context and not claim_applies(relative, label, segment):
                         continue
-                    if claim_exempt(segment, match):
+                    if claim_exempt(segment, match, relative, label):
                         continue
                     key = (block.line, label)
                     if key in seen:
@@ -1423,7 +1507,57 @@ def run_self_tests() -> Tuple[int, List[str]]:
         findings = product_truth_findings(relative, text)
         if not any(expected in finding for finding in findings):
             failures.append(f"self-test {name}: expected {expected}, got {findings}")
-    return checks, failures
+    failures.extend(local_cadence_self_tests())
+    return checks + LOCAL_CADENCE_CHECKS, failures
+
+
+# The one hole in the daily-rescan grab, and the properties that keep it narrow.
+# It exists because the plugin really does schedule a daily scan, so the plugin
+# is allowed to say so — but "says so" is three conditions, not one: the file is
+# the plugin, the sentence says the cadence is local, and the code schedules a
+# daily interval. Remove any one and the claim comes back. Two more hold it
+# still: the gate must actually reach the sentence, and the hole must not leak
+# sideways into the claims it has nothing to do with.
+LOCAL_CADENCE_CHECKS = 8
+LOCAL_DAILY = "EUComply Pro scans your site every day, on your own WordPress server."
+LOCAL_DAILY_HOSTED = "EUComply Pro monitors your website daily in the background, from our servers."
+
+
+def local_cadence_self_tests() -> List[str]:
+    failures: List[str] = []
+    real = read_text(ROOT / "plugin/eucomply.php", "self-test: plugin PHP", [])
+    if real is None:
+        return ["self-test local cadence: the plugin source could not be read"]
+    if not plugin_schedules_daily_scan(real):
+        # Without this, the first case below would be green for the wrong reason.
+        failures.append("self-test local cadence: the plugin does not schedule a daily scan, so the hole has nothing to justify it")
+    if text_findings("plugin/readme.txt", LOCAL_DAILY):
+        failures.append("self-test local cadence: a scheduled daily scan in the plugin was flagged")
+    if not any("daily monitoring or rescans" in finding for finding in text_findings("site/pro/index.html", LOCAL_DAILY)):
+        failures.append("self-test local cadence: the same sentence was allowed on a Pro page")
+    if not any("daily monitoring or rescans" in finding for finding in text_findings("plugin/readme.txt", LOCAL_DAILY_HOSTED)):
+        failures.append("self-test local cadence: a hosted daily monitor inside the plugin was allowed")
+    # Non-vacuity, and the property the first case rests on: the gate really does
+    # look inside the plugin files, so the sentence above is let through by the
+    # local marker and by nothing else.
+    if not any("daily monitoring or rescans" in finding for finding in
+               text_findings("plugin/readme.txt", "EUComply Pro scans your site every day, from our servers.")):
+        failures.append("self-test local cadence: a plugin sentence without the local marker was not reached, so the hole is untested")
+    # The hole is one label wide. A PDF claim that happens to sit in the same
+    # sentence in the same file is a different promise and must stay red.
+    if not any("runtime PDF reports" in finding for finding in
+               text_findings("plugin/readme.txt", "EUComply Pro saves a daily PDF report on your own WordPress server.")):
+        failures.append("self-test local cadence: the hole leaked into a claim it has nothing to do with")
+    without_daily = real.replace("? 'daily' : 'weekly'", "? 'hourly' : 'weekly'")
+    if plugin_schedules_daily_scan(without_daily) or local_cadence_claim("plugin/readme.txt", LOCAL_DAILY, without_daily):
+        failures.append("self-test local cadence: the local sentence survived a plugin that no longer scans daily")
+    if plugin_schedules_daily_scan(real.replace("$want", "'weekly'")):
+        failures.append("self-test local cadence: a hardcoded interval was read as a decided one")
+    # A changelog is not a sentence. A whole update.json blob carries the marker
+    # in one release and the claim in another, so the hole must not reach it.
+    if local_cadence_claim("plugin/readme.txt", "on your own WordPress server. " + "Earlier release text. " * 40 + LOCAL_DAILY):
+        failures.append("self-test local cadence: a wall of text was accepted as one local statement")
+    return failures
 
 
 def minimal_test_png(metadata: Dict[str, str]) -> bytes:
