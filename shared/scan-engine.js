@@ -136,8 +136,64 @@ const PLATFORM_SIGNATURES = [
 // sprog, aldrig et fragment der også er et ord i et andet. Spec:
 // `docs/eucomply-privatlivsprog.md`. Samme sæt i `eucomply-scanner/engine/`
 // og i `plugin/eucomply.php` — et tjek med samme navn skal betyde det samme.
+//
+// **Mønsteret matcher et ord, og det er ikke nok.** Det må først tælle når
+// ordet står i et **link** — se `linkAnchors` og `linkedLegalNames` ovenfor.
+// Opgave 56 målte 22 falske fund på fire rene prosa-sider, fordi mønsterne
+// læste hele HTML'en. Spec: `docs/eucomply-juridiske-links.md`.
 const PRIVACY_LINK_SIGNATURE =
   /privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales/i;
+
+/**
+ * Hver `<a>`-element på siden, som browseren ville læse det: åbnings-tagget med
+ * `href` **og** den synlige tekst indeni.
+ *
+ * Et juridisk dokument skal være et **link**. Før dette læste mønstrene hele
+ * HTML'en, så en side der *beskriver* at den behandler persondata fik en
+ * privatlivsside den ikke har — og en side med otte af slags ord i en
+ * almindelig indledning fik `legal` **bestået** med nul links i foden. Det er
+ * en falsk beståelse i en betalt rapport, som er værre end en falsk advarsel,
+ * fordi den er usynlig for kunden.
+ *
+ * Negativt lookahead frem for `\s\S]*?`: scanningen fra hvert `<a` stopper ved
+ * den næste `</a>`, så en `<a` tæller højst ét elements indhold. Det er
+ * lineært i praksis — mange `<a` betyder mange korte scans — og der er ingen
+ * indlejrede lændekøringer, en `<a`-fri side kan lokke os ind i.
+ *
+ * @param {string} html
+ * @returns {string[]}
+ */
+function linkAnchors(html) {
+  return (html || "").match(/<a\b[^>]*>(?:(?!<\/a>)[\s\S])*/gi) || [];
+}
+
+/**
+ * Navnene på de juridiske dokumenter siden faktisk **linker**, i mønsternes
+ * rækkefølge. Samme navne som før — de er den tekst kunden læser i rapporten.
+ *
+ * @param {string} html
+ * @returns {string[]}
+ */
+function linkedLegalNames(html) {
+  const anchors = linkAnchors(html);
+  const names = [];
+  for (const sig of LEGAL_PATTERNS) {
+    if (anchors.some((a) => sig.re.test(a))) names.push(sig.name);
+  }
+  return names;
+}
+
+/**
+ * Linker siden et dokument med `sig`s mønster? Samme regel som
+ * `linkedLegalNames`, for ét mønster.
+ *
+ * @param {string} html
+ * @param {{ re: RegExp, name: string }} sig
+ * @returns {boolean}
+ */
+function linksLegal(html, sig) {
+  return linkAnchors(html).some((a) => sig.re.test(a));
+}
 
 const LEGAL_PATTERNS = [
   { re: PRIVACY_LINK_SIGNATURE, name: "Privacy / GDPR" },
@@ -641,7 +697,7 @@ export async function runScan(url) {
   }
   const hasFormAction = /<form[^>]*action\s*=\s*["'](?:[^"']+:)?\/\/[^"']*["']/i.test(html);
   const hasLocalForm = /<form[^>]*>[\s\S]*?<\/form>/i.test(html);
-  const hasPrivLink = LEGAL_PATTERNS[0].re.test(html);
+  const hasPrivLink = linksLegal(html, LEGAL_PATTERNS[0]);
   checks.forms = {
     pass: !(hasLocalForm && !hasPrivLink),
     warn: hasLocalForm && !hasPrivLink,
@@ -670,12 +726,9 @@ export async function runScan(url) {
       'Add a link to your privacy policy (e.g. <a href="/privacy/">Privacy Policy</a>) next to each form submit button.';
   }
 
-  // 4. Legal pages (privacy, imprint, terms, accessibility, cookie policy)
-  const foundLegal = [];
-  for (const sig of LEGAL_PATTERNS) {
-    if (sig.re.test(html)) foundLegal.push(sig.name);
-  }
-  const uniqueLegal = [...new Set(foundLegal)];
+  // 4. Legal pages (privacy, imprint, terms, accessibility, cookie policy).
+  //    Kun links tæller — en sætning i løbende tekst er ikke en juridisk side.
+  const uniqueLegal = linkedLegalNames(html);
   checks.legal = {
     pass: uniqueLegal.length >= 2,
     warn: uniqueLegal.length === 1,

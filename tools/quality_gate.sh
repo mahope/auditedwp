@@ -420,6 +420,23 @@ hdr "den betalte jurid.side-tjek læser dansk, svensk og nederlandsk"
 run "tools/check_legal_pages_langs.php" php tools/check_legal_pages_langs.php
 run "tools/check_legal_pages_langs.php --selftest" php tools/check_legal_pages_langs.php --selftest
 
+# ------------------------ 23. Tæller et juridisk dokument kun, når det linkes?
+# Trin 21 målte *sprog*. Ingen af portene målte *formen*, og det viste sig at være
+# den større fejl: `LEGAL_PATTERNS` læste hele HTML'en, så en sætning i løbende
+# prosa var et juridisk link. Målt: **22 falske fund på fire rene prosa-sider** —
+# en dansk indledning gav seks, en svensk otte. Det er ikke en manglende etiket,
+# det er en **falsk beståelse**: `legal` kræver to dokumenter, så prosa med seks
+# ord bestod rækken med nul links i foden. Og i `forms` var det værre — en
+# formularside der *beskriver* sin behandling fik "privacy-policy link
+# **detected**" og `pass = true`. Fem regler: prosa i tre sprog giver nul fund,
+# de samme dokumenter som **links** er stadig fundet (ingen tabt dækning fra
+# opgave 51-55), de to motorer er ens, pluginen gør det samme, og `forms` følger
+# samme regel. Selftesten muterer repoets egne filer — begge motorer *og*
+# pluginen — så porten kan blive rød på den uændrede fejl.
+hdr "et juridisk dokument tæller kun, når siden linker det"
+run "tools/check_legal_links.mjs" node tools/check_legal_links.mjs
+run "tools/check_legal_links.mjs --selftest" node tools/check_legal_links.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

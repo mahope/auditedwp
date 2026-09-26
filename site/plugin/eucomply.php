@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.18
+ * Version:           1.3.19
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.18' );
+define( 'EUCOMPLY_VERSION', '1.3.19' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -864,6 +864,35 @@ class EUComply {
     }
 
     /**
+     * Does the page actually *link* a privacy notice?
+     *
+     * The signature is the engine's PRIVACY_LINK_SIGNATURE, verbatim — a check
+     * with the same name has to mean the same thing in both products. What
+     * changed in 1.3.19 is the container, not the words: the pattern is only
+     * tried against the page's `<a>` elements, so the opening tag with its
+     * `href` *and* the visible link text are evidence, while a sentence in
+     * running prose is not.
+     *
+     * The negative lookahead stops the scan at the first `</a>`, so one `<a`
+     * can only ever account for its own contents. That keeps the cost linear
+     * in practice and leaves no nested quantifier a crafted page can use.
+     *
+     * @param string $html Served HTML.
+     * @return bool
+     */
+    private static function html_links_privacy( $html ) {
+        if ( '' === $html || ! preg_match_all( '~<a\b[^>]*>(?:(?!</a>)[\s\S])*~i', $html, $m ) ) {
+            return false;
+        }
+        foreach ( $m[0] as $anchor ) {
+            if ( preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales~i', $anchor ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * The result every front-page check returns when the page cannot be read.
      *
      * A check that could not run must not be a pass. Reporting "no trackers
@@ -1237,7 +1266,15 @@ class EUComply {
         // English: a Danish, Swedish or Dutch site that links its privacy
         // policy next to the form was failing this row for doing the right
         // thing. Spec: docs/eucomply-privatlivsprog.md
-        $privacy_link = '' !== $html && preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales~i', $html );
+        //
+        // **The word alone is not a notice — a link is.** This used to match
+        // anywhere in the HTML, so a form page that merely *described* its data
+        // processing ("we process personal data in this form") was handed a
+        // green "privacy-policy link detected". A false pass in a paid report
+        // is worse than a false warning, because the customer cannot see it.
+        // Same rule as `linkAnchors()` in the engines.
+        // Spec: docs/eucomply-juridiske-links.md
+        $privacy_link = '' !== $html && self::html_links_privacy( $html );
 
         $markup_plugins = self::matched_signatures( 'forms', $html );
         $results['forms'] = array_values( array_unique( array_merge( $installed, $markup_plugins ) ) );
