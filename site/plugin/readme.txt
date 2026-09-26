@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.14
+Stable tag: 1.3.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,18 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.15 (2026-09-26) =
+* Fix: a green row could carry a label that described a lack. The tracker check said \"No third-party trackers detected\" on a site with none, and the forms check said \"No form plugin detected\" on a site with no form plugin - both correct, and both written as findings. The label is where the verdict goes, so it now states the result first: \"Third-party trackers: 0 found\" and \"Nothing for this check to review\". The detail below each label still says exactly what was not found.
+* The tracker row now uses the same wording as the free universal scanner, so the plugin and the website cannot drift apart in the sentence a customer reads.
+* Warning rows are deliberately left alone: \"HTTPS OK, no HSTS\" is meant to say both things at once.
+* All eleven checks are now measured for this, in the plugin and in both scanner engines at once, so a label that stops matching its verdict fails the build instead of reaching a report.
+
+= 1.3.15 (2026-09-26) =
+* Fix: a green row could carry a label that described a lack. The tracker check said "No third-party trackers detected" on a site with none, and the forms check said "No form plugin detected" on a site with no form plugin - both true, and both written as findings. The label is where the verdict goes, so it now states the result first: "Third-party trackers: 0 found" and "Nothing for this check to review". The detail under each label still says exactly what was not found.
+* The tracker row now uses the same wording as the free universal scanner, so the plugin and the website cannot drift apart in the sentence a customer reads.
+* Warning rows are deliberately left as they are: "HTTPS OK, no HSTS" is meant to say both things at once.
+* All eleven checks are now measured for this, in the plugin and in both scanner engines at once, so a label that stops matching its verdict fails the build instead of reaching a report.
 
 = 1.3.14 (2026-09-26) =
 * Fix: the SSL/HSTS check sent its own HEAD request instead of reading the front page the other ten checks had already fetched, so a scan made two local requests where one is enough. On a server that answers HEAD with a 403 or a timeout - some firewalls and managed hosts do - the check reported \"HTTPS unreachable\" next to ten green checks that had just read the same site successfully.
