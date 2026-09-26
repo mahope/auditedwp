@@ -297,6 +297,20 @@ else
   run "tools/check_published_engine.mjs" node tools/check_published_engine.mjs
 fi
 
+# ------------------------- 15. Kan pluginen og motoren være uenige om én hjemmeside?
+# Opgave 43 portede fem tjek fra motoren ind i pluginen. Porten blev linted og
+# paritetstestet på kilde/zip — begge læser koden, ingen af dem kørte et tjek.
+# Første kørsel af denne gate fandt en P0 i pluginens egen kode: signatur-tabellen
+# er [navn, regex], matcheren læste $sig['re'], og fire tjek (Consent Mode v2,
+# TCF, trackere, DORA) kunne ikke finde noget på noget site. En betalende kunde
+# fik "ingen trackere fundet" på en side med Google Analytics i markup'en.
+# Derfor måles motorerne adfærdsmæssigt, på de samme fixtures, i stedet for at
+# tro på at en kode-diff er nok. Rød i begge retninger er ikke meningen: her skal
+# de to produkter være ENS, så enhver afvigelse er et fund.
+hdr "Pluginens forside-tjek mod den universelle motor"
+run "tools/test_plugin_engine_parity.mjs" node tools/test_plugin_engine_parity.mjs
+run "tools/test_plugin_engine_parity.mjs --selftest" node tools/test_plugin_engine_parity.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
