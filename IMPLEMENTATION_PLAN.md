@@ -25,7 +25,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 
 ## Iterationsstatus
 
-- `I GANG` (del 2 af 2): **48 — samme egenskab for hele varedybden.** Del 1 (`forms` i begge motorer) er færdig. Del 2 er **opgave 49** og er færdig i samme diff: den permanente port (trin 19) lukker de to acceptkriterier her.
+- `FÆRDIG` (del 1 + 2): **48 — samme egenskab for hele varedybden.** Del 1 (`forms` i begge motorer) på `ceo/forms-fejl-etiket`; del 2 er **opgave 49** nedenfor, som lukker de to åbne acceptkriterier med den permanente port (trin 19). **Ingen `I GANG` står i køen** — næste iteration tager opgave 50.
 - `FÆRDIG`: **49 — En grøn række må ikke bære en etiket, der beskriver en mangel** på `ceo/etiket-der-beskriver-mangel`. Plugin **1.3.15**, ny port trin 19 der læser alle tre motorer, **og en tredje fejl i samme familie som ingen port havde set**: en rød `ssl`-række der sagde *"HTTPS + HSTS OK"*. Se afsnittet nederst.
 - `FÆRDIG`: **47 — `tjek produktion` kan nu skelne en race fra en manglende udgivelse** på `ceo/poller-update-json`. Nyt værktøj `tools/wait_for_deploy.py` (25 selftest-cases) + gate trin 18, og workflowen poller i stedet for at slå fast ved første læsning. Se afsnittet nederst.
 - `FÆRDIG`: **46 — `check_ssl()` læser den forside, der allerede er hentet** på `ceo/ssl-en-hentning`. Plugin **1.3.14**, én hentning pr. scanning, og et tjek der ikke kørte siger det. Se afsnittet nederst.
