@@ -20,7 +20,7 @@ import {
   isPublicHostname, isPublicIPv4, isPublicIPv6, expandIPv6,
   normalizeUrl, assertPublicTarget, safeFetch, runScan, readCappedText,
 } from "../shared/scan-engine.js";
-import watch, { checkStates, previousEntry, diffChecks, applyScan } from "../worker-watch/index.js";
+import watch, { checkStates, previousEntry, diffChecks, applyScan, publicBadge } from "../worker-watch/index.js";
 
 let passed = 0;
 const failures = [];
@@ -631,6 +631,187 @@ await test("customer data never reaches the public surface", async () => {
     const health = await (await watch.fetch(new Request("https://watch.test/health"), env)).json();
     assert.ok(!JSON.stringify(health).includes("watch.example"), "/health exposes monitored sites");
     assert.ok(status.checks && Object.keys(status.checks).length > 0, "the owner cannot see per-check state");
+  } finally { s.restore(); }
+});
+
+/* ------------------------------------------------------------------- badge */
+
+const getBadge = (id, env = watchEnvFresh) =>
+  watch.fetch(new Request(`https://watch.test/badge/${id}.json`, { headers: { "cf-connecting-ip": "198.51.100.77" } }), env);
+
+const enableBadge = async (env, reg, enabled = true, url = "watch.example") => {
+  const r = await watchFetch("/badge", { url, ownerToken: reg.ownerToken, enabled }, "198.51.100.41", env);
+  return { status: r.status, body: await r.json() };
+};
+
+await test("the badge is opt-in: no id exists before the owner asks for one", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const status = await (await watchFetch("/status", { url: "watch.example", ownerToken: reg.ownerToken }, "198.51.100.41", env)).json();
+    assert.deepEqual(status.badge, { enabled: false }, "a registered site starts with a badge it never asked for");
+    // The record must not carry a site id before opt-in, so a scan of the KV
+    // namespace cannot enumerate badge ids.
+    const stored = JSON.parse(env.WATCH.map.get("site:https://watch.example"));
+    assert.equal(stored.siteId, undefined, "a public id was issued without opt-in");
+    assert.equal(stored.badge, undefined, "badge state exists before opt-in");
+  } finally { s.restore(); }
+});
+
+await test("opting in issues a 32-hex id and serves the real stored score", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const on = await enableBadge(env, reg);
+    assert.equal(on.status, 200);
+    assert.match(on.body.site_id, /^[a-f0-9]{32}$/, "the public id is not 32 hex characters");
+
+    const r = await getBadge(on.body.site_id, env);
+    assert.equal(r.status, 200);
+    const body = await r.json();
+    assert.equal(body.site_id, on.body.site_id);
+    assert.equal(body.host, "watch.example");
+    const stored = JSON.parse(env.WATCH.map.get("site:https://watch.example"));
+    assert.equal(body.score.pct, stored.lastScore, "the badge does not show the stored score");
+    assert.equal(body.last_scan_at, stored.lastScan, "the badge has no scan timestamp");
+    assert.ok(body.checks && Object.keys(body.checks).length > 0, "the badge carries no check states");
+    assert.match(body.disclaimer, /not legal advice/);
+    assert.equal(body.verify_url, `https://eucomplypro.com/verify/${on.body.site_id}/`);
+    assert.equal(r.headers.get("cache-control"), "no-store", "a score claim must never be served from a cache");
+  } finally { s.restore(); }
+});
+
+await test("the public badge never carries customer data", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example/admin/secret?token=1", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const on = await enableBadge(env, reg, true, "watch.example/admin/secret");
+    assert.equal(on.status, 200, `opting in for a path URL failed: ${JSON.stringify(on.body)}`);
+    const r = await getBadge(on.body.site_id, env);
+    assert.equal(r.status, 200);
+    const dump = JSON.stringify(await r.json());
+    assert.ok(!dump.includes("private@shop.example"), "the alert address leaked into the badge");
+    assert.ok(!dump.includes(reg.ownerToken), "the owner token leaked into the badge");
+    assert.ok(!dump.includes("admin/secret"), "the URL path leaked into the badge");
+    assert.ok(!dump.includes("token=1"), "the query string leaked into the badge");
+    assert.ok(!dump.includes("history"), "the 30-day history leaked into the badge");
+    const body = JSON.parse(dump);
+    assert.deepEqual(Object.keys(body).sort(), ["checks", "disclaimer", "host", "last_scan_at", "score", "site_id", "verify_url"]);
+  } finally { s.restore(); }
+});
+
+await test("check states are limited to the three the engine can produce", async () => {
+  // The record is data in KV, so a value that is not pass/warn/fail must be
+  // dropped rather than handed to a widget that renders it on a customer page.
+  const id = "a".repeat(32);
+  assert.equal(publicBadge({ url: "https://a.example", lastScore: 50 }, id), null, "a record with no badge state is served");
+  const rec = { url: "https://a.example", badge: { enabled: true, siteId: id }, lastScore: 50, lastChecks: { legal: "<img src=x onerror=alert(1)>", ssl: "pass", "bad key!": "fail" } };
+  const p = publicBadge(rec, id);
+  assert.deepEqual(p.checks, { ssl: "pass" }, "an unexpected check state or key reached the public payload");
+  assert.deepEqual(publicBadge({ ...rec, badge: { enabled: false, siteId: id } }, id), null, "a disabled badge is still served");
+  assert.deepEqual(publicBadge(rec, "c".repeat(32)), null, "a mismatched id is still served");
+  assert.deepEqual(publicBadge({ ...rec, url: "not a url" }, id), null, "an unparseable url is still served");
+});
+
+await test("an unknown, malformed or disabled id is answered identically", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const on = await enableBadge(env, reg);
+    const disabled = await enableBadge(env, reg, false);
+    assert.equal(disabled.body.site_id, null, "disabling did not return the id as null");
+
+    const bodies = [];
+    for (const id of [on.body.site_id, "0".repeat(32), "not-hex", "Z".repeat(32), "short", `${on.body.site_id}x`]) {
+      const r = await getBadge(id, env);
+      assert.equal(r.status, 404, `${id} did not 404`);
+      bodies.push(await r.text());
+    }
+    assert.equal(new Set(bodies).size, 1, "a malformed id is answered differently from an unknown one");
+    assert.match(bodies[0], /badge_disabled/);
+  } finally { s.restore(); }
+});
+
+await test("re-enabling keeps the same id, and unregistering kills it", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const first = (await enableBadge(env, reg)).body.site_id;
+    await enableBadge(env, reg, false);
+    const again = (await enableBadge(env, reg)).body.site_id;
+    assert.equal(again, first, "switching the badge off and on again invalidated an embedded snippet");
+
+    const del = await watchFetch("/unregister", { url: "watch.example", ownerToken: reg.ownerToken }, "198.51.100.41", env);
+    assert.equal(del.status, 200);
+    const r = await getBadge(again, env);
+    assert.equal(r.status, 404, "the badge of a deleted site still resolves");
+    assert.equal(env.WATCH.map.has(`badge:${again}`), false, "unregister left the public index entry behind");
+  } finally { s.restore(); }
+});
+
+await test("a stranger cannot switch a badge on or off", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    for (const token of ["", "deadbeef".repeat(4), reg.ownerToken.toUpperCase().slice(0, -1), reg.ownerToken + "0"]) {
+      const r = await watchFetch("/badge", { url: "watch.example", ownerToken: token, enabled: true }, "198.51.100.90", env);
+      assert.equal(r.status, 403, `token "${token.slice(0, 8)}" was accepted`);
+    }
+    const status = await (await watchFetch("/status", { url: "watch.example", ownerToken: reg.ownerToken }, "198.51.100.41", env)).json();
+    assert.deepEqual(status.badge, { enabled: false }, "a rejected opt-in still enabled the badge");
+  } finally { s.restore(); }
+});
+
+await test("the badge score follows the daily scan, not the opt-in moment", async () => {
+  const env = resetWatch();
+  let page = GOOD_PAGE;
+  const s = stubFetch({ "https://watch.example/": (url) => new Response(page, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    await runCron(env);
+    const id = (await enableBadge(env, reg)).body.site_id;
+    const before = await (await getBadge(id, env)).json();
+
+    page = BROKEN_PAGE;
+    await runCron(env);
+    const after = await (await getBadge(id, env)).json();
+    const stored = JSON.parse(env.WATCH.map.get("site:https://watch.example"));
+    assert.equal(after.score.pct, stored.lastScore, "the badge kept a frozen score after a regression");
+    assert.notEqual(after.score.pct, before.score.pct, "the regression did not change the badge");
+    assert.equal(after.checks.legal, "fail", "per-check state did not follow the scan");
+  } finally { s.restore(); }
+});
+
+await test("a badge read is not throttled by the write budget, and is throttled on its own", async () => {
+  const env = resetWatch();
+  const s = stubFetch({ "https://watch.example/": new Response(GOOD_PAGE, { status: 200, headers: { "Content-Type": "text/html", ...HSTS } }) });
+  try {
+    const reg = await (await watchFetch("/register", { url: "watch.example", email: "private@shop.example" }, "198.51.100.41", env)).json();
+    const id = (await enableBadge(env, reg)).body.site_id;
+    for (let i = 0; i < 8; i++) {
+      const r = await getBadge(id, env);
+      assert.equal(r.status, 200, `badge read ${i} was throttled by the 5-per-minute write budget`);
+    }
+    let limited = null;
+    for (let i = 0; i < 70; i++) {
+      const r = await getBadge(id, env);
+      if (r.status === 429) { limited = r; break; }
+    }
+    assert.ok(limited, "a badge endpoint with no ceiling of its own is an open KV read");
+    assert.equal(limited.headers.get("retry-after"), "60", "429 without Retry-After");
+    assert.ok(env.RATE.map.has("badgerl:198.51.100.77"), "the badge limit is not kept on its own namespace");
+    assert.equal(env.RATE.map.has("watchrl:198.51.100.77"), false, "badge reads consumed the write budget");
   } finally { s.restore(); }
 });
 

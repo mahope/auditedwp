@@ -12,6 +12,8 @@
 //   POST /register  { url, email }              -> { ok, ownerToken, ... }
 //   POST /status    { url, ownerToken }         -> latest result + 30-day history
 //   POST /unregister{ url, ownerToken|email }   -> remove a site
+//   POST /badge     { url, ownerToken, enabled } -> opt in/out of the public badge
+//   GET  /badge/{site_id}.json                  -> public, no key: score + time only
 //   GET  /health
 // Cron: daily 06:00 UTC — re-scans every registered beta site, stores per-check
 //       history, and emails one alert per new regression (via Resend if
@@ -48,16 +50,16 @@ function tokenMatches(a, b) {
   return diff === 0;
 }
 
-async function rateLimited(env, ip) {
+async function rateLimited(env, ip, max = RATE_MAX, ns = "watchrl") {
   if (!env.RATE || !ip || ip === "unknown") return false;
   try {
-    const key = `watchrl:${ip}`;
+    const key = `${ns}:${ip}`;
     const now = Date.now();
     const raw = await env.RATE.get(key);
     const win = raw ? JSON.parse(raw) : { start: now, n: 0 };
     if (now - win.start > RATE_WINDOW_MS) { win.start = now; win.n = 0; }
     win.n++;
-    if (win.n > RATE_MAX) return true;
+    if (win.n > max) return true;
     await env.RATE.put(key, JSON.stringify(win), { expirationTtl: 120 });
   } catch { /* fail open if KV unavailable */ }
   return false;
@@ -202,6 +204,86 @@ export function applyScan(rec, scan, date = todayKey()) {
   return { record, entry, alert: buildAlert(record, diffChecks(prevChecks, entry.checks), scan, prevEntry.score) };
 }
 
+/* ------------------------------------------------------------------ badge */
+
+const SITE_ID_BYTES = 16;
+const BADGE_RATE_MAX = 60;
+const VERIFY_BASE = "https://eucomplypro.com/verify/";
+
+const validSiteId = (s) => typeof s === "string" && /^[a-f0-9]{32}$/.test(s);
+
+function newSiteId() {
+  const b = new Uint8Array(SITE_ID_BYTES);
+  crypto.getRandomValues(b);
+  return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+const badgeKey = (id) => `badge:${id}`;
+
+/**
+ * The public badge payload, and nothing else.
+ *
+ * This is the only shape a stranger can read about a monitored site, so it is
+ * built by picking fields rather than by deleting fields: a future field added
+ * to the record cannot leak by default. In particular it never carries the full
+ * URL (only the host — no path, no query, no credentials), the alert address,
+ * the owner token, the history, or any check label/detail/fix text.
+ *
+ * Returns null when the badge may not be served at all, so a disabled badge and
+ * an unknown id are answered identically and the endpoint reveals neither
+ * whether a site is monitored nor whether it is a customer.
+ */
+export function publicBadge(rec, siteId) {
+  if (!rec || rec.badge?.enabled !== true) return null;
+  if (rec.badge.siteId !== siteId) return null;
+
+  let host = "";
+  try { host = new URL(rec.url).hostname.toLowerCase(); } catch { return null; }
+  if (!host) return null;
+
+  const entry = (rec.history || []).filter(Boolean).slice(-1)[0] || null;
+  const pct = Number.isFinite(rec.lastScore) ? rec.lastScore : null;
+  const passed = Number.isFinite(entry?.passed) ? entry.passed : null;
+  const total = Number.isFinite(entry?.total) ? entry.total : null;
+
+  // Only the three states checkStates() can produce. A record is data in KV, so
+  // a value that is not one of them is dropped rather than passed on to a widget
+  // that renders it into somebody else's page.
+  const checks = {};
+  for (const [k, v] of Object.entries(rec.lastChecks || {})) {
+    if (typeof k === "string" && /^[a-z0-9_]{1,24}$/.test(k) && (v === "pass" || v === "warn" || v === "fail")) checks[k] = v;
+  }
+
+  return {
+    site_id: siteId,
+    host,
+    score: { passed, total, pct },
+    last_scan_at: typeof rec.lastScan === "string" ? rec.lastScan : null,
+    checks,
+    disclaimer: "Automated technical checks only — not legal advice.",
+    verify_url: `${VERIFY_BASE}${siteId}/`,
+  };
+}
+
+/**
+ * Badge responses are never cached.
+ *
+ * The score is a claim about a specific moment, so a cached 200 would let a
+ * badge keep showing a stale score as if it were current — and would keep
+ * serving a site whose badge was switched off or whose site was deleted.
+ */
+function badgeJson(data, status = 200, extra = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      ...CORS,
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      ...extra,
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -210,7 +292,30 @@ export default {
 
     if (request.method === "GET" && (path === "" || path === "/health")) {
       const count = parseInt((await env.WATCH.get("meta:sitecount")) || "0", 10);
-      return json({ service: "eucomply-watch", version: "1.2.0", sites: count, endpoints: ["POST /register {url,email}", "POST /status {url,ownerToken}", "POST /unregister {url,ownerToken}"] });
+      return json({ service: "eucomply-watch", version: "1.3.0", sites: count, endpoints: ["POST /register {url,email}", "POST /status {url,ownerToken}", "POST /unregister {url,ownerToken}", "POST /badge {url,ownerToken,enabled}", "GET /badge/{site_id}.json"] });
+    }
+
+    // Public badge read. Deliberately before the write rate limit and on its own
+    // namespace: a badge is fetched on every page view, so the 5-per-minute
+    // write budget would blank a busy visitor's badge within seconds.
+    const badgeRead = path.match(/^\/badge\/([^/]+)\.json$/);
+    if (request.method === "GET" && badgeRead) {
+      const siteId = String(badgeRead[1] || "").trim().toLowerCase();
+      // A malformed id and an unknown id get the same answer, so the response
+      // never tells a prober which shape of id is valid.
+      const notFound = () => badgeJson({ error: "badge_disabled", message: "No public badge for that id." }, 404);
+      if (!validSiteId(siteId)) return notFound();
+      if (await rateLimited(env, ip, BADGE_RATE_MAX, "badgerl")) {
+        return badgeJson({ error: "rate_limited" }, 429, { "Retry-After": "60" });
+      }
+      const indexed = JSON.parse((await env.WATCH.get(badgeKey(siteId))) || "null");
+      if (!indexed?.url) return notFound();
+      // The index is a pointer, never a copy: a copy would freeze the score at
+      // opt-in time, because the daily cron rewrites `site:` and not this key.
+      const rec = JSON.parse((await env.WATCH.get(`site:${indexed.url}`)) || "null");
+      const payload = publicBadge(rec, siteId);
+      if (!payload) return notFound();
+      return badgeJson(payload);
     }
 
     if (await rateLimited(env, ip)) {
@@ -297,7 +402,61 @@ export default {
         // which check moved — never the alert address, the owner token, or
         // anything belonging to another site.
         checks: rec.lastChecks || null,
+        // The owner sees their own badge state; nobody else can, because the
+        // public id only resolves while it is enabled.
+        badge: rec.badge?.enabled
+          ? { enabled: true, site_id: rec.badge.siteId, verify_url: `${VERIFY_BASE}${rec.badge.siteId}/` }
+          : { enabled: false },
         disclaimer: "Automated technical checks only — not legal advice.",
+      });
+    }
+
+    // POST /badge — opt in or out of the public badge. The owner token is the
+    // only credential, because publishing a site's score to the world is a
+    // bigger decision than changing an alert address.
+    if (request.method === "POST" && path === "/badge") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
+      const url = normalizeUrl(body.url);
+      const token = String(body.ownerToken || "").trim().toLowerCase();
+      if (!url) return json({ error: "Provide the URL you registered." }, 400);
+      const key = `site:${url}`;
+      const raw = await env.WATCH.get(key);
+      if (!raw) return json({ error: "Site not registered yet. Use POST /register {url, email} to start monitoring." }, 404);
+      const rec = JSON.parse(raw);
+      if (!rec.ownerToken || !tokenMatches(token, rec.ownerToken)) {
+        return json({ error: "Wrong owner token for this site." }, 403);
+      }
+
+      if (body.enabled === false) {
+        // Turning it off must stop the public id immediately and destroy the
+        // index entry, so a badge URL that is already embedded — or cached in
+        // someone's HTML — stops resolving on the next load. The id itself is
+        // kept on the record so switching it back on does not break a snippet
+        // the customer has already published.
+        const old = rec.badge?.siteId;
+        rec.badge = validSiteId(old) ? { enabled: false, siteId: old } : null;
+        rec.updated = new Date().toISOString();
+        await env.WATCH.put(key, JSON.stringify(rec));
+        if (validSiteId(old)) await env.WATCH.delete(badgeKey(old));
+        return json({ ok: true, site_id: null, message: "Public badge switched off. The embed will show no score." });
+      }
+
+      // Re-enabling keeps the same id, so switching the badge off and on again
+      // does not silently break the snippet the customer already published.
+      const siteId = validSiteId(rec.badge?.siteId) ? rec.badge.siteId : newSiteId();
+      rec.badge = { enabled: true, siteId, enabledAt: rec.badge?.enabledAt || new Date().toISOString() };
+      rec.updated = new Date().toISOString();
+      await env.WATCH.put(key, JSON.stringify(rec));
+      // The index holds the url, not a copy of the record, so it can never go
+      // stale relative to the site it points at.
+      await env.WATCH.put(badgeKey(siteId), JSON.stringify({ url: rec.url }));
+      return json({
+        ok: true,
+        site_id: siteId,
+        host: new URL(rec.url).hostname,
+        verify_url: `${VERIFY_BASE}${siteId}/`,
+        message: "Public badge switched on. The score comes from the daily scan, never from a value a visitor sends.",
       });
     }
 
@@ -318,7 +477,11 @@ export default {
       if (!byToken && !byEmail) {
         return json({ error: "That is not the owner token or address for this site." }, 403);
       }
+      const badgeId = rec.badge?.siteId;
       await env.WATCH.delete(`site:${url}`);
+      // Deleting the site has to take the public id with it, or a badge for a
+      // removed site would keep resolving from the index alone.
+      if (validSiteId(badgeId)) await env.WATCH.delete(badgeKey(badgeId));
       const count = parseInt((await env.WATCH.get("meta:sitecount")) || "0", 10);
       if (count > 0) await env.WATCH.put("meta:sitecount", String(count - 1));
       return json({ ok: true, message: `${url} has been removed from daily monitoring.` });
