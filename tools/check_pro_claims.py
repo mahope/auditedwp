@@ -1174,6 +1174,139 @@ def under_claim_findings(relative: str, blocks: Sequence[TextBlock], text: Optio
     return findings
 
 
+# ---------------------------------------------------------------------------
+# How many checks a Pro scan records: a number read from the code, not typed in.
+#
+# The Pro scan IS the plugin's run_checks(), and that method writes six checks:
+# ssl, cookies, forms, backups, plugins and legal. Two of those six exist in no
+# other product we ship -- "backups" and "plugins" are WordPress facts -- and
+# five of the universal scanner's nine (consent_mode_v2, tcf, trackers, headers,
+# dora) are not in it at all. So the two products genuinely disagree about what
+# a check is, and site/plugin/index.html says so honestly.
+#
+# All four /pro/ pages did not. The scan-history ledger row described the paid
+# history as recording "the state of each of the nine checks", which is the
+# universal scanner's number, in the one sentence that describes what a paying
+# customer gets in wp-admin. They get six. Nothing in the repo compared the two,
+# because every other count in this file is a *name* pattern read off the plugin
+# source: a number has no name to match, so it had no gate at all.
+#
+# The number is therefore parsed out of run_checks() here, and a sentence that
+# counts checks has to agree with it. Both directions are the same comparison --
+# a page cannot be wrong about a number by being too small either.
+# ---------------------------------------------------------------------------
+
+RESULT_ASSIGNMENT = re.compile(r"\$results\[\s*'([a-z0-9_]+)'\s*\]\s*=")
+
+
+def plugin_check_keys(text: Optional[str] = None) -> List[str]:
+    """The check keys run_checks() writes, in source order, duplicates dropped.
+
+    Read from the assignments rather than from the report template, so a check
+    that is computed but never reported does not count and a report row without
+    a check behind it cannot. An empty list means the method could not be read
+    at all, and every caller treats that as a finding rather than as "no claim
+    to check" -- a count gate that measures nothing must not be green.
+    """
+    source = _plugin_text(text)
+    if source is None:
+        return []
+    body = strip_php_comments(php_method_body(source, "run_checks"))
+    if not body:
+        return []
+    keys: List[str] = []
+    for key in RESULT_ASSIGNMENT.findall(body):
+        if key not in keys:
+            keys.append(key)
+    return keys
+
+
+# The numbers four locales actually write. A word outside this table is not
+# guessed at: an unreadable numeral leaves the sentence alone and the check says
+# so in its report, because a gate that invents a count invents a finding too.
+NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    "en": 1, "to": 2, "tre": 3, "fire": 4, "fem": 5, "seks": 6, "syv": 7,
+    "otte": 8, "ni": 9, "ti": 10, "elleve": 11, "tolv": 12,
+    "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6,
+    "sieben": 7, "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12,
+    "un": 1, "deux": 2, "trois": 3, "quatre": 4, "cinq": 5, "six": 6,
+    "sept": 7, "huit": 8, "neuf": 9, "dix": 10, "onze": 11, "douze": 12,
+}
+
+# A number that is immediately followed by the word for a check. That adjacency
+# is the whole reason this can read a page: "the most recent 12" and "52 weeks
+# of history" are numbers too, and neither says anything about how many checks
+# exist.
+COUNTED_CHECKS = re.compile(
+    r"\b(\d{1,2}|" + "|".join(sorted(NUMBER_WORDS, key=len, reverse=True)) + r")[\s\-‐-―]+"
+    r"([Ww]ord[Pp]ress[\s\-]?)?(checks?|tjek|prüfungen|contrôles?|kontroller|kontrollen)\b",
+    re.I,
+)
+
+# A sentence counts the *plugin's* checks when it is about the plugin's own scan.
+# Two bindings, because either alone is too wide or too narrow: a history row
+# that says "nine checks" is the real defect, and a Pro row that says the plugin
+# runs nine checks is the same defect wearing different words. A sentence about
+# the universal scanner's nine checks carries neither, so /scan/ and /index/ stay
+# green -- they are describing a different product and they are right to.
+PLUGIN_SCAN_SUBJECT = re.compile(
+    r"\b(?:plugin|WordPress|wp-admin)\b", re.I,
+)
+
+# The unit this gate reads is a ledger row, not a text block. The Pro pages write
+# a row as <li><b>title</b><p>sentence</p></li>, and the parser splits that into
+# two blocks -- so a first version that required the feature name and the number
+# in the same block was green on all four pages, and its own selftest was the
+# only reason that was found. The name and the number have to be read in the row
+# that contains both, which is also the unit a buyer reads.
+LEDGER_ROW = re.compile(r"<li\b[^>]*>(.*?)</li>|<tr\b[^>]*>(.*?)</tr>", re.I | re.S)
+TAG = re.compile(r"<[^>]+>")
+
+
+def ledger_rows(text: str) -> List[str]:
+    """One stripped text string per list item and per table row."""
+    rows: List[str] = []
+    for match in LEDGER_ROW.finditer(text):
+        row = normalize(TAG.sub(" ", match.group(1) or match.group(2) or ""))
+        if row:
+            rows.append(row)
+    return rows
+
+
+def plugin_check_count_findings(
+    relative: str, page: str, text: Optional[str] = None
+) -> List[str]:
+    """Counted checks on a Pro page that disagree with the code.
+
+    Both directions are the same comparison: too many and too few are the same
+    gate pointed both ways, and under-selling a paid feature is as wrong as
+    over-selling it -- that is the mistake opgave 36 had to walk back.
+    """
+    keys = plugin_check_keys(text)
+    if not keys:
+        return [
+            f"{relative}: run_checks() in the plugin could not be read, so no "
+            "check count on a Pro page can be verified"
+        ]
+    real = len(keys)
+    history_name = {feature.key: feature for feature in _shipped_pro_features()}["history"].name
+    findings: List[str] = []
+    for row in ledger_rows(page):
+        if not history_name.search(row) and not PLUGIN_SCAN_SUBJECT.search(row):
+            continue
+        for match in COUNTED_CHECKS.finditer(row):
+            word = match.group(1).lower()
+            stated = int(word) if word.isdigit() else NUMBER_WORDS.get(word, 0)
+            if stated and stated != real:
+                findings.append(
+                    f"{relative}: this page says the Pro scan covers {stated} checks, "
+                    f"but the plugin's run_checks() writes {real} ({', '.join(keys)})"
+                )
+    return findings
+
+
 def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
     """Pages that deny a Pro feature the plugin still ships.
 
@@ -1946,6 +2079,8 @@ def run_self_tests() -> Tuple[int, List[str]]:
     checks += UNDER_CLAIM_CHECKS
     failures.extend(under_claim_self_tests())
     checks += UNDER_CLAIM_CHECKS
+    checks += CHECK_COUNT_CHECKS
+    failures.extend(check_count_self_tests())
     failures.extend(denial_self_tests())
     return checks, failures
 
@@ -2185,6 +2320,96 @@ def denial_self_tests() -> List[str]:
     return failures
 
 
+# The counted-checks gate. Every case below is a sentence the product either
+# requires or forbids, written as the four locales actually write it -- the
+# reason a vocabulary gap survives is a selftest written after the pattern.
+CHECK_COUNT_CHECKS = 13
+
+# The published history rows, with the count they must be allowed to state.
+CHECK_COUNT_SAMPLE = {
+    "site/pro/index.html": "<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the six WordPress checks.</p></li>",
+    "site/da/pro/index.html": "<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de seks WordPress-tjek.</p></li>",
+    "site/de/pro/index.html": "<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der sechs WordPress-Prüfungen.</p></li>",
+    "site/fr/pro/index.html": "<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des six contrôles WordPress.</p></li>",
+    "site/pricing/index.html": "<tr><td>Scan history: one snapshot per day, per check</td><td>—</td><td>Yes, in the plugin</td></tr>",
+}
+
+
+def check_count_self_tests() -> List[str]:
+    """Both directions of the count, the real pages behind them, and the read.
+
+    The number in the product is six, and it is read from run_checks() rather
+    than written here, so these cases do not depend on a constant staying put.
+    """
+    failures: List[str] = []
+    real = read_text(ROOT / "plugin/eucomply.php", "self-test: plugin PHP", [])
+    if real is None:
+        return ["self-test check count: the plugin source could not be read"]
+    keys = plugin_check_keys(real)
+    if len(keys) != 6:
+        failures.append(
+            f"self-test check count: run_checks() reads as {len(keys)} checks {keys}, "
+            "so every case below would be testing a number that is not the product's"
+        )
+    for expected in ("ssl", "cookies", "forms", "backups", "plugins", "legal"):
+        if expected not in keys:
+            failures.append(f"self-test check count: run_checks() no longer writes {expected}")
+    # Both directions on the same number: too high is the bug that shipped, too
+    # low is the same gate pointed the other way, and under-selling a paid
+    # feature is the mistake opgave 36 had to walk back.
+    for name, relative, text in (
+        ("EN", "site/pro/index.html", "<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the nine checks.</p></li>"),
+        ("DA", "site/da/pro/index.html", "<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de ni tjek.</p></li>"),
+        ("DE", "site/de/pro/index.html", "<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der neun Prüfungen.</p></li>"),
+        ("FR", "site/fr/pro/index.html", "<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des neuf contrôles.</p></li>"),
+    ):
+        found = plugin_check_count_findings(relative, text, real)
+        if not any("run_checks() writes 6" in finding for finding in found):
+            failures.append(f"self-test check count {name}: a wrong count on a history row was allowed: {found}")
+    for relative, text in CHECK_COUNT_SAMPLE.items():
+        found = plugin_check_count_findings(relative, text, real)
+        if found:
+            failures.append(f"self-test check count required {relative}: {found}")
+    # The universal scanner's nine checks are a different product, and the pages
+    # that say so are right. A gate that flagged these would push the site into
+    # denying a scan that really does run nine checks.
+    for name, relative, text in (
+        ("scan EN", "site/scan/index.html", '<p class="status">The nine checks above are the technical basics; Pro adds the documents that go with them.</p>'),
+        ("home EN", "site/index.html", "<li><b>It runs nine checks</b><p>Each check looks for concrete evidence.</p></li>"),
+        ("vs EN", "site/pro/vs-cookiebot/index.html", "<p>Run our free scan on your own URL &mdash; nine checks, no signup, results in seconds.</p>"),
+    ):
+        found = plugin_check_count_findings(relative, text, real)
+        if found:
+            failures.append(f"self-test check count {name}: the universal scanner's nine checks were read as the plugin's: {found}")
+    # The gate must be able to say that it read nothing, or "no claim to check"
+    # and "no claim" look identical.
+    if not plugin_check_count_findings("site/pro/index.html", "", "<?php class X { function other() {} }"):
+        failures.append("self-test check count unreadable: an unreadable run_checks() was not reported")
+    # An unreadable numeral is not guessed at.
+    odd = "<li><b>Scan history</b><p>Every Pro scan records the state of each of the sixteen-ish checks.</p></li>"
+    if plugin_check_count_findings("site/pro/index.html", odd, real):
+        failures.append("self-test check count unknown word: a numeral outside the table was turned into a finding")
+    # Numbers that are not check counts stay untouched: a history length and a
+    # price are the same digits as a count and a different promise.
+    for name, text in (
+        ("history length", "<li><b>Scan history</b><p>The report shows the most recent 12 and says how many are on record, up to 52.</p></li>"),
+        ("price", "<li><b>Scan history</b><p>Pro costs 79 USD per website per year.</p></li>"),
+    ):
+        found = plugin_check_count_findings("site/pro/index.html", text, real)
+        if found:
+            failures.append(f"self-test check count {name}: a number that is not a check count was flagged: {found}")
+    # The read follows the code. A plugin that drops a check moves the number
+    # the pages have to state, so the gate cannot be satisfied by editing four
+    # locales until they agree with each other.
+    fewer = real.replace("        $results['backups'] = $this->check_backups();\n", "")
+    if len(plugin_check_keys(fewer)) != 5:
+        failures.append("self-test check count read: removing a check from run_checks() did not move the count")
+    six = "<li><b>Scan history</b><p>Every Pro scan records the state of each of the six checks.</p></li>"
+    if not plugin_check_count_findings("site/pro/index.html", six, fewer):
+        failures.append("self-test check count read: a count that matched the old plugin was accepted after a check was removed")
+    return failures
+
+
 def minimal_test_png(metadata: Dict[str, str]) -> bytes:
     def chunk(kind: bytes, payload: bytes) -> bytes:
         return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind + payload) & 0xFFFFFFFF)
@@ -2239,6 +2464,9 @@ def main() -> int:
             # The other direction, on the pages a buyer compares plans on: a
             # shipped feature nobody names is a feature nobody pays extra for.
             findings.extend(under_claim_findings(relative, parse_html(text).claim_blocks(relative)))
+            # And a number on those same pages, which no name pattern can see:
+            # how many checks the Pro scan covers is parsed out of run_checks().
+            findings.extend(plugin_check_count_findings(relative, text))
     expected_buying_pages = set(BUYING_PAGES)
     if buying_pages_checked != expected_buying_pages:
         missing = sorted(expected_buying_pages - buying_pages_checked)
