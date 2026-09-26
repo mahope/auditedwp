@@ -1,0 +1,95 @@
+{
+  "_readme": "Repos som stadig nævner en død betalingsudbyder, og hvorfor det er tilladt. Læses af tools/check_dead_providers.py. Hver linje SKAL have en begrundelse: en post uden 'reason' gør gaten rød. Tilføj kun en post, hvis du har tjekket at den ikke kan nå en kunde — og skriv hvorfor.",
+  "entries": [
+    {
+      "path": "store/",
+      "reason": "Forældet rodmappe med én fil, index.html, der stadig har en canonical pegende på den lukkede Gumrock-butik (compliancedocs.gumroad.com). Publiceret er site/store/, som er rent og bruger Stripe. Rodmappen er ikke publiceret, men ligner den rigtige side nok til at nogen deployer den ved et uheld.",
+      "owner": "ceo-loop",
+      "remove_when": "Rodmappen er slettet; den publicerede side er site/store/."
+    },
+    {
+      "path": "deskuptime/",
+      "reason": "Forældet kopi af DeskUptime. Dens licensklient (src/license.js) kalder api.lemonsqueezy.com, som er lukket. Den rigtige app ligger i repoet `deskuptime`, hvor licensen går mod mahope.tools/api/license. Mærket som legacy i deskuptime/LEGACY.md. Skal fjernes fra dette repo — ikke publiceret, men en fremtidig kopiering ville bygge en betalt vare mod en død udbyder.",
+      "owner": "ceo-loop",
+      "remove_when": "Kopien er slettet fra auditedwp, eller porteret til mahope.tools som den i `deskuptime`."
+    },
+    {
+      "path": "devnotify/src-tauri/src/lib.rs",
+      "reason": "DevNotify har intet Stripeprodukt endnu, så det har heller ikke en mahope.tools-nøgle at omstille til. Spørgsmål 4 i IMPLEMENTATION_PLAN.md. DevNotify er et søskeproduct og uden for EUComply-gaten.",
+      "owner": "Mads",
+      "remove_when": "DevNotify har et Stripeprodukt (spørgsmål 4 besvaret)."
+    },
+    {
+      "path": "plugin/readme.txt",
+      "reason": "Changelog. Udgaven 1.1.0 dokumenterer at licensen dengang var Lemon Squeezy, og 1.3.0 at den nu er Stripe. Det er historie, kunden skal kunne læse, og der står ingen levende adresse på linjerne — porten klassificerer dem som prose, ikke kode. Bemærk: allowlisten er kun nødvendig fordi filerne ligger i plugin/, som porten regner som publiceret.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — changelog-historik, som kunder har ret til at læse"
+    },
+    {
+      "path": "site/plugin/readme.txt",
+      "reason": "Kopi af pluginens readme, som publiceres. Samme changelog som plugin/readme.txt.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — changelog-historik"
+    },
+    {
+      "path": "site/update.json",
+      "reason": "Auto-update-manifestet kunden henter. Changelog-feltet nævner Lemon Squeezy i 1.1.0 som den udbyder, der blev forladt. Prose, ingen levende adresse.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — changelog-historik"
+    },
+    {
+      "path": "BUILD.md",
+      "reason": "Historisk byggeinstruktion fra før udbyderskiftet. Ikke publiceret, kun læst af mennesker i et gammelt arbejdsflow.",
+      "owner": "ceo-loop",
+      "remove_when": "filen er arkiveret"
+    },
+    {
+      "path": "IMPLEMENTATION_PLAN.md",
+      "reason": "Planen dokumenterer udbyderskiftet og de fund, der opdagede det. Historik, ikke kode.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — historisk dokumentation"
+    },
+    {
+      "path": "ceo.log",
+      "reason": "Kørselog fra tidligere iterationer. Historik, ikke kode.",
+      "owner": "ceo-loop",
+      "remove_when": "loggen roteres væk"
+    },
+    {
+      "path": "RAPPORT-2026-08-26.md",
+      "reason": "Skriftlig rapport fra august, som nævner Lemon Squeezy som det udbyder, der blev forladt. Historik, ikke kode.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — historisk dokumentation"
+    },
+    {
+      "path": "MONETIZATION-RESEARCH.md",
+      "reason": "Researchnotat der sammenligner betalingsudbydere. Historik, ikke kode.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — historisk dokumentation"
+    },
+    {
+      "path": "repo-patches/",
+      "reason": "Arkiverede patches fra et tidligere repo. Læses aldrig af en build.",
+      "owner": "ceo-loop",
+      "remove_when": "arkivet ryddes"
+    },
+    {
+      "path": "tools/check_pro_claims.py",
+      "reason": "Gaten fra opgave 32 og 37 rumler de døde udbydere som negativer i sine egne selftests, så den kan fange en tilbageført købsvej. Uden dem ville selftesten ikke have en fejl at finde.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — det er gaten selv"
+    },
+    {
+      "path": "tools/check_dead_providers.py",
+      "reason": "Denne gates egne selftest-fixtures skal indeholde en død udbyder, ellers kan de ikke bevise at de fanger en.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — det er gaten selv"
+    },
+    {
+      "path": "tools/dead_provider_allowlist.json",
+      "reason": "Allowlisten selv nævner de udbydere den tillader.",
+      "owner": "ceo-loop",
+      "remove_when": "aldrig — det er datasættet"
+    }
+  ]
+}
