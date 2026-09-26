@@ -576,7 +576,7 @@ export async function runScan(url) {
     pass: trackerMatches.length === 0 || hasConsentPlatform,
     warn: trackerMatches.length > 0 && hasConsentPlatform && !/consent[_-]?mode|__tcfapi/i.test(html),
     label: trackerMatches.length === 0
-      ? "No third-party trackers detected"
+      ? `Third-party trackers: ${trackerMatches.length} found`
       : hasConsentPlatform
         ? `${trackerMatches.length} tracker(s) detected, consent platform present`
         : `${trackerMatches.length} tracker(s) with NO consent platform`,
@@ -646,16 +646,25 @@ export async function runScan(url) {
   checks.forms = {
     pass: !(hasLocalForm && !hasPrivLink),
     warn: hasLocalForm && !hasPrivLink,
+    // The pass path and the warn path are different sentences, not one shared
+    // one. A site with plain form markup AND a privacy link passes this check,
+    // and it used to be handed the *failing* sentence for both label and
+    // detail — a green row whose entire text said the opposite. A customer
+    // reading the report could not tell the two verdicts apart.
     label: formMatches.length > 0
       ? `${formMatches[0]} detected`
-      : hasLocalForm
-        ? "Form(s) found, no consent link"
-        : "No forms found",
+      : hasLocalForm && !hasPrivLink
+        ? "Form(s) found, no privacy-policy link"
+        : hasLocalForm
+          ? `Form(s) found, privacy-policy link detected`
+          : "No form markup and no form plugin",
     detail: formMatches.length > 0
       ? `Form plugins detected: ${formMatches.join(", ")}. Ensure privacy link is visible near each form.`
-      : hasLocalForm
+      : hasLocalForm && !hasPrivLink
         ? "Form markup found, but no privacy-policy link detected in page HTML. EU law requires a privacy notice at the point of data collection."
-        : "No HTML forms detected on this page. If forms exist, ensure they link to a privacy policy.",
+        : hasLocalForm
+          ? "Form markup found and a privacy-policy link was detected in the page HTML."
+          : "No HTML forms detected on this page. If forms exist, ensure they link to a privacy policy.",
   };
   if (hasLocalForm && !hasPrivLink) {
     checks.forms.fix =
