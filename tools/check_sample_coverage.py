@@ -433,10 +433,12 @@ def self_test_cases():
         failures.append("self-test revert: repoet er ikke grønt igen efter mutationerne")
 
     # 11. Gaten skal køre i det miljø den døde i. Se _without_reportlab_cases.
-    if reportlab_missing():
-        failures.append("self-test miljø: reportlab mangler lokalt, så case 11 er ikke prøvet her")
-    else:
-        failures.extend(_without_reportlab_cases())
+    # Køres ALTID og uden betingelse: subprocessen blokerer importen selv, så
+    # casen er meningsfuld både med og uden reportlab på maskininen. En tidligere
+    # version gjorde "reportlab mangler" til en FEJL, hvilket gjorde gaten
+    # kræve præcis den afhængighed den skulle tåle — den var grøn på min maskine
+    # og rød i CI, altså præcis fejlen den skulle forhindre.
+    failures.extend(_without_reportlab_cases())
     return failures
 
 
