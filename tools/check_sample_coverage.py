@@ -22,11 +22,23 @@ Derfor er tallene heller ikke længere håndlavede. Scoren, antallet af beståed
 antallet af fund, datoerne, rapport-id'et og historiklængden står ikke i
 HTML'en og ikke i PDF-scriptet — de er afledt af datasættet, og de to
 artefakter skrives af samme kode, så de kan ikke komme i uoverensstemmelse.
+
+PDF'en efterprøves på **indhold**, ikke på bytes, og det er ikke en
+småting: `reportlab` bruges til at GENERERE PDF'en, men CI har ingen
+pip-afhængigheder, så en gate der kræver reportlab for at læse sit eget
+artefakt døde med en traceback og gjorde `main` rød på `deploy-site` 26/9.
+Indholdet læses derfor med standardbiblioteket (`builder.pdf_text`), hvilket
+også gør resultatet uafhængigt af reportlab-versionen. Byte-sammenligningen
+med en regenereret PDF kører stadig, men kun hvor reportlab findes, og siger
+det tydeligt når den springes over. Selftesten kører gaten i en subprocess hvor
+importen er blokeret, så "den kan køre i CI" er en egenskab der efterprøves
+og ikke en antagelse.
 """
 import datetime as dt
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 
@@ -47,6 +59,75 @@ PASSED = re.compile(r'<span class="value">(\d+)/(\d+)</span>\s*<span class="labe
 ISSUES = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Items needing attention</span>')
 DAYS = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Days of history</span>')
 BARS = re.compile(r'title="([A-Z][a-z]{2} \d+): (\d+)%"')
+BANDS = re.compile(r"\b(PASS|WARN|FAIL)\b")
+BAND_WORD = {"pass": "PASS", "warn": "WARN", "fail": "FAIL"}
+
+# Ting der IKKE skal være fund, men skal siges. `reportlab` bruges kun til at
+# GENERERE PDF'en; gaten læser den committede med stdlib, så den kører overalt.
+NOTICES = []
+
+
+def reportlab_missing():
+    try:
+        import reportlab  # noqa: F401
+    except ImportError:
+        return True
+    return False
+
+
+def pdf_findings(data, summary):
+    """Den PDF købere henter skal sige præcis det datasættet siger.
+
+    Indhold, ikke bytes. Det er den kontrol der kan køre i CI: byte-sammenligning
+    afhænger af reportlab-versionen, og to maskiner med hver sin version ville
+    give en rød, der intet siger om produktet. Alt hvad der er afledt — scoren,
+    beståede/total, fund, dage, prosaen, rapport-id'et, datoen, de ni titler og
+    statusserne i rækkefølge — skal kunne *læses* i den fil der ligger i træet.
+    """
+    if not os.path.exists(PDF):
+        return ["site/downloads/eucomply-sample-report.pdf mangler"]
+    try:
+        text = builder.pdf_text(PDF)
+    except (ValueError, OSError) as error:
+        # Ulæselig er et FUND, ikke et spring. En kontrol der ikke kan læse
+        # sit artefakt må ikke blive grøn ved at tie om det.
+        return ["site/downloads/eucomply-sample-report.pdf kunne ikke læses: {0}".format(error)]
+    if not text.strip():
+        return ["site/downloads/eucomply-sample-report.pdf indeholder ingen tekst"]
+
+    findings = []
+    _, stamp, report_id = builder.generated_stamp(data)
+    rows = builder.history_rows(data, summary["score"])
+    noun = "item" if summary["issues"] == 1 else "items"
+    # reportlab bryder en lang linje i én `(…)`-streng pr. visuel linje, så et
+    # 150-tegns fix-embleme står i PDF'en som fire strenge med linjeskift
+    # imellem. Uden denne sammenligning ville de to længste fund se ud til at
+    # mangle i en PDF der faktisk indeholder dem — en grå mine, fordi
+    # "Rapporten mangler en anbefaling" er aldrig den besked man vil sende.
+    flat = re.sub(r"\s+", " ", text)
+
+    def need(needle, label):
+        if re.sub(r"\s+", " ", needle) not in flat:
+            findings.append("PDF'en viser ikke {0} ('{1}')".format(label, needle))
+
+    need("{0} — the same checks the scanner runs".format(summary["total"]), "hvor mange tjek rapporten har")
+    need("{0}%".format(summary["score"]), "scoren")
+    need("{0}/{1}".format(summary["passed"], summary["total"]), "beståede/total")
+    need("{0} {1}".format(summary["issues"], noun), "antallet af fund")
+    need("{0} days".format(len(rows)), "historiklængden")
+    need(summary["headline"], "prosaen over scoren")
+    need(report_id, "rapport-id'et")
+    need(stamp, "datoen rapporten blev genereret")
+    need(data["disclaimer"], "disclaimeren")
+    for entry in data["checks"]:
+        need(entry["title"], "tjekket '{0}'".format(entry["key"]))
+    for entry in builder.recommended_fixes(data):
+        need(entry["fix"], "fixen for '{0}'".format(entry["key"]))
+    bands = BANDS.findall(text)
+    expected = [BAND_WORD[entry["status"]] for entry in data["checks"]]
+    if bands != expected:
+        findings.append("PDF'ens statusser er {0}, datasættet siger {1}".format(bands, expected))
+    return findings
 
 
 def page_findings(keys, summary):
@@ -111,22 +192,40 @@ def published_findings(keys):
     return []
 
 
-def run_checks():
+def run_checks(verify_bytes=True):
+    """`verify_bytes=False` er den sti CI går ad, hvor reportlab mangler.
+
+    Selftesten bruger den med vilje: ellers ville de negative cases for
+    PDF-ens *indhold* blive fanget af byte-sammenligningen, fordi en udvikler-
+    maskine tilfældigvis har reportlab, og så ville de cases være grønne af en
+    fejl. Det er præcis det fund denne iteration lukker.
+    """
+    del NOTICES[:]
     findings = []
     data = builder.load_data()
     keys = builder.engine_check_keys()
     findings.extend(builder.coverage_findings(data))
+    summary = builder.summarize(data)
     if not findings:
-        findings.extend(page_findings(keys, builder.summarize(data)))
+        findings.extend(page_findings(keys, summary))
     findings.extend(published_findings(keys))
-    # Genérér i en midlertidig mappe og sammenlign byte for byte. Uden
-    # `invariant=1` i reportlab ville hver kørsel give et andet fil-id, og så
-    # ville denne kontrol være grøn af en fejl.
-    with tempfile.TemporaryDirectory() as folder:
-        fresh = builder.build_pdf(data, os.path.join(folder, "sample.pdf"))
-        with open(fresh, "rb") as new, open(PDF, "rb") as committed:
-            if new.read() != committed.read():
-                findings.append("site/downloads/eucomply-sample-report.pdf afviger fra datasættet")
+    # Indholdschecket kører ALTID, med eller uden reportlab. Det er den
+    # invariant CI kan holde, og det er den der fanger "datasættet blev ændret
+    # men PDF'en ikke regenereret".
+    findings.extend(pdf_findings(data, summary))
+    # Byte-sammenligningen er en ekstra, kun hvor reportlab findes. Uden
+    # `invariant=1` ville hver kørsel give et andet fil-id, og så ville den være
+    # grøn af en fejl; og den afhænger af reportlab-versionen, så to maskiner
+    # ville give forskellige svar om det samme produkt.
+    if not verify_bytes or reportlab_missing():
+        NOTICES.append("PDF-teksten er læst og efterprøvet; byte-sammenligning med en "
+                       "regenereret PDF er sprunget over, fordi reportlab ikke er installeret")
+    else:
+        with tempfile.TemporaryDirectory() as folder:
+            fresh = builder.build_pdf(data, os.path.join(folder, "sample.pdf"))
+            with open(fresh, "rb") as new, open(PDF, "rb") as committed:
+                if new.read() != committed.read():
+                    findings.append("site/downloads/eucomply-sample-report.pdf afviger fra datasættet")
     expected = builder.report_block(data)
     with open(PAGE, encoding="utf-8") as handle:
         page = handle.read()
@@ -136,6 +235,70 @@ def run_checks():
         if head + builder.START + "\n" + expected + builder.END + tail != page:
             findings.append("site/pro/sample-report/index.html afviger fra datasættet")
     return findings
+
+
+def _block_reportlab(folder):
+    """En mappe hvor `import reportlab` fejler — som i CI, der har ingen pip-afhængigheder."""
+    package = os.path.join(folder, "reportlab")
+    os.makedirs(package, exist_ok=True)
+    with open(os.path.join(package, "__init__.py"), "w", encoding="utf-8") as handle:
+        handle.write("raise ImportError('reportlab er ikke installeret (simuleret)')\n")
+
+
+def _gate_subprocess(shim):
+    env = dict(os.environ)
+    if shim:
+        env["PYTHONPATH"] = shim + os.pathsep + env.get("PYTHONPATH", "")
+    return subprocess.run(
+        [sys.executable, os.path.join(ROOT, "tools", "check_sample_coverage.py")],
+        cwd=ROOT, env=env, capture_output=True, text=True,
+    )
+
+
+def _without_reportlab_cases():
+    """Selftesten skal køre gaten i det miljø, den døde i.
+
+    Fundet bag denne iteration: `check_sample_coverage.py` blev skrevet og
+    deklareret grøn på en maskine med reportlab, og **aldrig kørt i CI** — hvor
+    `from reportlab.lib import colors` kastede ModuleNotFoundError. Gaten døde
+    med en traceback, `main` nåede aldrig `return 1`, og `deploy-site` blev rød
+    på en merge der ellers var korrekt. En selftest der kun kører hvor
+    afhængigheden findes, kan ikke fange præcis den fejl.
+
+    Derfor køres her to rigtige subprocess-kørser med importen blokeret:
+    rent repo skal være **grønt** (og sige at byte-sammenligningen blev sprunget
+    over, så vi ved at den virkelig gik den vej), og et muteret datasæt skal være
+    **rødt** — altså at PDF'en stadig efterprøves uden reportlab.
+    """
+    failures = []
+    with open(DATA, encoding="utf-8") as handle:
+        original_data = handle.read()
+    with tempfile.TemporaryDirectory() as folder:
+        _block_reportlab(folder)
+        clean = _gate_subprocess(folder)
+        if clean.returncode != 0:
+            failures.append("self-test uden reportlab: det rene repo gav exit {0}: {1}".format(
+                clean.returncode, (clean.stdout + clean.stderr).strip()[-400:]))
+        elif "sprunget over" not in clean.stdout:
+            failures.append("self-test uden reportlab: rapportlab-blokeringen virkede ikke, "
+                            "byte-sammenligningen kørte alligevel — så casen prøvede ingenting")
+
+        stale = json.loads(original_data)
+        stale["checks"][0]["status"] = "fail"
+        with open(DATA, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(stale, ensure_ascii=False, indent=2))
+        try:
+            dirty = _gate_subprocess(folder)
+        finally:
+            with open(DATA, "w", encoding="utf-8") as handle:
+                handle.write(original_data)
+        if dirty.returncode == 0:
+            failures.append("self-test uden reportlab: et datasæt der ikke matcher PDF'en "
+                            "gav exit 0 — altså blev PDF'en slet ikke efterprøvet")
+        elif "prøverapport-fund" not in dirty.stdout:
+            failures.append("self-test uden reportlab: den røde kørsel skyldtes ikke prøverapporten: {0}".format(
+                (dirty.stdout + dirty.stderr).strip()[-400:]))
+    return failures
 
 
 def self_test_cases():
@@ -222,6 +385,9 @@ def self_test_cases():
 
     # 10. Den rigtige kørsel er grøn, og mutationer mod repoets egne filer er røde.
     expect_clean(run_checks(), "clean run")
+    # Samme kørsel uden byte-sammenligning: den skal være grøn, fordi den er
+    # den sti CI går ad.
+    expect_clean(run_checks(verify_bytes=False), "clean run without reportlab")
     with open(PAGE, encoding="utf-8", ) as handle:
         page = handle.read()
     mutated = page.replace('data-check="trackers"', 'data-check="tracker"', 1)
@@ -235,17 +401,42 @@ def self_test_cases():
         finally:
             with open(PAGE, "w", encoding="utf-8") as handle:
                 handle.write(page)
+    # 10b. Datasættet ændret, PDF'en ikke regenereret. Det er den mutation der
+    # fanger "en ændret kunne ikke huske at bygge PDF'en", og den skal være rød
+    # UDEN reportlab — ellers er CI's eneste PDF-kontrol en illusion.
+    with open(DATA, encoding="utf-8") as handle:
+        original_data = handle.read()
+    stale = json.loads(original_data)
+    stale["checks"][0]["status"] = "fail"
+    with open(DATA, "w", encoding="utf-8") as handle:
+        handle.write(json.dumps(stale, ensure_ascii=False, indent=2))
+    try:
+        # Naalen er "PDF'en viser ikke" og ikke filnavnet: kun `pdf_findings`
+        # siger det, så casen kan ikke blive grøn af HTML-kontrollen.
+        expect(run_checks(verify_bytes=False), "PDF'en viser ikke",
+               "dataset changed, pdf not rebuilt (content path only)")
+    finally:
+        with open(DATA, "w", encoding="utf-8") as handle:
+            handle.write(original_data)
+    # 10c. En PDF der ikke kan læses er et fund, ikke et spring.
     with open(PDF, "rb") as handle:
         pdf = handle.read()
     with open(PDF, "wb") as handle:
-        handle.write(pdf[:-40] + b"0" * 40)
+        handle.write(pdf[: len(pdf) // 2])
     try:
-        expect(run_checks(), "sample-report.pdf", "pdf changed")
+        expect(run_checks(verify_bytes=False), "kunne ikke læses",
+               "pdf truncated (content path only)")
     finally:
         with open(PDF, "wb") as handle:
             handle.write(pdf)
     if run_checks():
         failures.append("self-test revert: repoet er ikke grønt igen efter mutationerne")
+
+    # 11. Gaten skal køre i det miljø den døde i. Se _without_reportlab_cases.
+    if reportlab_missing():
+        failures.append("self-test miljø: reportlab mangler lokalt, så case 11 er ikke prøvet her")
+    else:
+        failures.extend(_without_reportlab_cases())
     return failures
 
 
@@ -260,6 +451,8 @@ def main() -> int:
         print("SELFTEST GRØN — alle negative cases fanges")
         return 0
     findings = run_checks()
+    for notice in NOTICES:
+        print(f"INFO  {notice}")
     for finding in findings:
         print(f"ERROR {finding}")
     if findings:
