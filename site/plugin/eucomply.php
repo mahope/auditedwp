@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.15
+ * Version:           1.3.16
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.15' );
+define( 'EUCOMPLY_VERSION', '1.3.16' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -818,6 +818,16 @@ class EUComply {
                 array( 'name' => 'Quantcast Choice', 're' => '~quantcast[_-]?choice~i' ),
                 array( 'name' => 'Analytify/CAOS', 're' => '~analytics[_-]?cat~i' ),
             ),
+            // Form plugins named in the markup, for `check_forms()`. These are
+            // the engine's FORM_PLUGIN_SIGNATURES, in its order, so a form the
+            // free scanner names is named here too. They are evidence for the
+            // report, not the verdict: what decides the verdict is form markup
+            // in the same bytes, because a signature in a comment is not a form
+            // a visitor can fill in.
+            'forms'    => array(
+                array( 'name' => 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor', 're' => '~contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]~i' ),
+                array( 'name' => 'Typeform / Formspree / Jotform', 're' => '~\btypeform\b|\bformspree\b|\bjotform\b|cognito[_-]?forms\b|\bformsort\b~i' ),
+            ),
             // DORA-adjacent page signals. Static text markers only: this is not
             // a DORA assessment and the fix text says so.
             'dora'     => array(
@@ -1152,17 +1162,51 @@ class EUComply {
 
     /**
      * Check forms for GDPR compliance (privacy notice + consent checkbox).
+     *
+     * Two sources, unioned. WordPress state — which form plugins are installed,
+     * whether a Privacy Policy page is assigned — is what this check used to
+     * read, and it is all it read. The free universal scanner reads the served
+     * markup instead, so a contact form written by hand in the theme, or
+     * rendered by a shortcode in a widget, was invisible here: the same website
+     * failed `forms` in the free scanner and passed `forms` in the report an
+     * agency pays $79 to send its client. A check the customer buys may not be
+     * the smaller of two checks with the same name, so both sources are read and
+     * a form cannot slip between them.
+     *
+     * The two sources are not equal, and the verdict says which one it used. A
+     * Privacy Policy page assigned in Settings is not the same fact as a
+     * privacy-policy link on the page that carries the form: GDPR Art. 13 and
+     * the ePrivacy rules ask for the notice at the point of collection, so a
+     * page that shows a form and does not link a notice fails even when the site
+     * has a privacy page somewhere else. Only WordPress can see that page, so
+     * only WordPress can soften the finding for a form it cannot see.
+     *
+     * Where the plugin is stricter than the engine — a form posting to an
+     * external service, an unclosed `<form action="…">` — the direction is
+     * deliberate and one-way: the plugin may fail something the engine passes
+     * when it has a source for it, and may never pass something the engine
+     * fails. `tools/check_forms_parity.mjs` holds both directions, so a fix that
+     * only satisfies one of them is red. The reasoning is in
+     * `docs/eucomply-forms-paritet.md`.
      */
     private function check_forms() {
         $results = array(
             'pass'     => true,
-            'label'    => 'Forms reviewed',
+            'label'    => 'Nothing for this check to review',
             'detail'   => '',
             'forms'    => array(),
             'warnings' => array(),
         );
 
-        // Detect known form plugins.
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            // The markup is one of the two sources, so a page that could not be
+            // read is a check that did not run — not a site without forms.
+            return $this->unreadable( 'Forms', $page['error'] );
+        }
+        $html = $page['html'];
+
+        // Source 1 — known form plugins, installed. Unchanged from before.
         $form_plugins = array(
             'contact-form-7/wp-contact-form-7.php'    => 'Contact Form 7',
             'wpforms-lite/wpforms.php'                  => 'WPForms',
@@ -1173,40 +1217,70 @@ class EUComply {
             'fluentform/fluentform.php'                  => 'Fluent Forms',
         );
 
+        $installed = array();
         foreach ( $form_plugins as $path => $name ) {
             if ( is_plugin_active( $path ) ) {
-                $results['forms'][] = $name;
+                $installed[] = $name;
             }
         }
 
-        if ( empty( $results['forms'] ) ) {
+        // Source 2 — the page the visitor's browser actually gets. The two form
+        // patterns are the free scanner's, in the scanner's order, so the two
+        // products read the same bytes for the same reason.
+        $has_local_form = '' !== $html && preg_match( '~<form[^>]*>[\s\S]*?</form>~i', $html );
+        $has_remote_form = '' !== $html && preg_match( '~<form[^>]*action\s*=\s*["\'](?:[^"\']+:)?//[^"\']*["\']~i', $html );
+        $page_form      = (bool) ( $has_local_form || $has_remote_form );
+
+        // The privacy notice, as the page presents it. This is the engine's
+        // LEGAL_PATTERNS[0], verbatim — a check with the same name has to mean
+        // the same thing in both products.
+        $privacy_link = '' !== $html && preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection~i', $html );
+
+        $markup_plugins = self::matched_signatures( 'forms', $html );
+        $results['forms'] = array_values( array_unique( array_merge( $installed, $markup_plugins ) ) );
+
+        if ( empty( $results['forms'] ) && ! $page_form ) {
             $results['pass']   = true;
             // Ikke "No form plugin detected": en grøn række skal ikke åbne med
             // en mangel, fordi den så læses som et fund. `detail` siger det
             // samme sande uden at bære dommen.
             $results['label']  = 'Nothing for this check to review';
-            $results['detail'] = 'No major form plugin found. If you use custom forms, review them manually for GDPR compliance.';
+            $results['detail'] = 'No form markup on the front page and no form plugin installed. If you use custom forms on other pages, review them manually for GDPR compliance.';
             return $results;
         }
 
-        // Check if theme or known plugin includes privacy checkbox hooks.
-        // This is a best-effort check; we can't parse every form's configuration.
-        $has_privacy_link = false;
-        $privacy_page     = get_option( 'wp_page_for_privacy_policy' );
-        if ( $privacy_page ) {
-            $has_privacy_link = true;
+        // Source 3 — the Privacy Policy page WordPress knows about. Only
+        // WordPress can see this, and only a form this check cannot see is
+        // satisfied by it.
+        $privacy_page = get_option( 'wp_page_for_privacy_policy' );
+
+        if ( $page_form && ! $privacy_link ) {
+            $results['pass']   = false;
+            $results['label']  = 'Form(s) on the page, no privacy-policy link';
+            $results['detail'] = $privacy_page
+                ? 'Form markup is on the front page and the page does not link a privacy policy. A Privacy Policy page is assigned in Settings → Privacy, but the page that collects personal data does not point to it — EU law asks for the notice at the point of collection.'
+                : 'Form markup is on the front page and the page does not link a privacy policy, and no Privacy Policy page is assigned in Settings → Privacy.';
+            $results['warnings'][] = 'A page that collects personal data has to link a privacy notice.';
+            $results['fix']        = 'Add a link to your privacy policy next to the form (e.g. <a href="/privacy/">Privacy Policy</a>), and assign a Privacy Policy page in Settings → Privacy. Include a consent checkbox where the law requires it.';
+            return $results;
         }
 
-        if ( ! $has_privacy_link ) {
+        if ( ! $privacy_link && ! $privacy_page ) {
             $results['pass']       = false;
             $results['label']      = 'Form plugins found, no Privacy Policy page';
             $results['warnings'][] = 'No Privacy Policy page set in Settings → Privacy. Create one and link it from forms.';
             $results['detail']     = 'Forms detected (' . implode( ', ', $results['forms'] ) . '), but no Privacy Policy page configured.';
             $results['fix']        = 'Go to Settings → Privacy and create/assign a Privacy Policy page. Ensure forms link to it and include a consent checkbox where required.';
-        } else {
-            $results['label']  = 'Form plugins found, Privacy Policy page set';
-            $results['detail'] = 'Forms detected: ' . implode( ', ', $results['forms'] ) . '. Privacy Policy page exists.';
+            return $results;
         }
+
+        $results['pass']   = true;
+        $results['label']  = $page_form
+            ? 'Form(s) on the page, privacy-policy link found'
+            : 'Form plugins found, Privacy Policy page set';
+        $results['detail'] = $page_form
+            ? 'Form markup is on the front page and a privacy-policy link was found in the page HTML.'
+            : 'Forms detected: ' . implode( ', ', $results['forms'] ) . '. Privacy Policy page exists.';
 
         return $results;
     }

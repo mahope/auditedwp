@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.15
+Stable tag: 1.3.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,11 +114,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
-= 1.3.15 (2026-09-26) =
-* Fix: a green row could carry a label that described a lack. The tracker check said \"No third-party trackers detected\" on a site with none, and the forms check said \"No form plugin detected\" on a site with no form plugin - both correct, and both written as findings. The label is where the verdict goes, so it now states the result first: \"Third-party trackers: 0 found\" and \"Nothing for this check to review\". The detail below each label still says exactly what was not found.
-* The tracker row now uses the same wording as the free universal scanner, so the plugin and the website cannot drift apart in the sentence a customer reads.
-* Warning rows are deliberately left alone: \"HTTPS OK, no HSTS\" is meant to say both things at once.
-* All eleven checks are now measured for this, in the plugin and in both scanner engines at once, so a label that stops matching its verdict fails the build instead of reaching a report.
+= 1.3.16 (2026-09-26) =
+* Fix: the forms check answered a smaller question than the free scanner does about the same website. It only looked at installed WordPress plugins and at the Privacy Policy page assigned in Settings, so a contact form written by hand in the theme, or rendered by a shortcode in a widget, was invisible: the same page failed "forms" in the free scanner and passed "forms" in the report an agency pays to send its client.
+* It now reads the served markup as well, using the free scanner's own patterns, and unions the two sources. A page that shows a form and does not link a privacy notice now fails here too - including when a Privacy Policy page does exist in WordPress, because the notice has to be given at the point of collection.
+* A form that posts to an external service counts as a form here, even when the markup is unclosed. That is the one place the plugin is stricter than the scanner, and it is deliberate.
+* A front page that cannot be read is now reported as "did not run", never as a pass: the markup is one of the two sources, so a site with unreadable markup has an unknown forms result, not a clean one.
+* The forms row is measured against the free scanner on the same fixtures, in both directions: the plugin may never pass what the scanner fails, and it may fail more only with a reason the fixture shows.
 
 = 1.3.15 (2026-09-26) =
 * Fix: a green row could carry a label that described a lack. The tracker check said "No third-party trackers detected" on a site with none, and the forms check said "No form plugin detected" on a site with no form plugin - both true, and both written as findings. The label is where the verdict goes, so it now states the result first: "Third-party trackers: 0 found" and "Nothing for this check to review". The detail under each label still says exactly what was not found.
