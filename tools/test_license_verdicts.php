@@ -28,6 +28,27 @@ function add_filter() {}
 function register_activation_hook() {}
 function register_deactivation_hook() {}
 
+// The license verdict and the scheduled interval are the same decision read
+// twice, so is_pro() re-syncs the schedule. These stubs keep that out of this
+// file's way: the interval logic is covered by tools/test_pro_documents.php.
+$GLOBALS['eucomply_test_cron'] = array();
+function wp_schedule_event( $timestamp, $schedule, $hook ) {
+    $GLOBALS['eucomply_test_cron'][] = array( 'timestamp' => (int) $timestamp, 'schedule' => $schedule, 'hook' => $hook );
+    return true;
+}
+function wp_get_scheduled_event( $hook ) {
+    foreach ( $GLOBALS['eucomply_test_cron'] as $event ) {
+        if ( $event['hook'] === $hook ) {
+            return (object) $event;
+        }
+    }
+    return false;
+}
+function wp_clear_scheduled_hook( $hook ) {
+    $GLOBALS['eucomply_test_cron'] = array();
+    return true;
+}
+
 function get_option( $name, $default = false ) {
     return array_key_exists( $name, $GLOBALS['eucomply_test_options'] ) ? $GLOBALS['eucomply_test_options'][ $name ] : $default;
 }

@@ -27,6 +27,7 @@ define( 'ABSPATH', __DIR__ );
 define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
+define( 'WEEK_IN_SECONDS', 604800 );
 
 $GLOBALS['eucomply_test_options'] = array();
 $GLOBALS['eucomply_test_transients'] = array();
@@ -110,6 +111,52 @@ function wp_kses_post( $s ) {
     return (string) $s;
 }
 
+// ── WP-Cron stubs ─────────────────────────────────────────────────────────────
+// A real $wp_cron array: one entry per (timestamp, hook, schedule key), which
+// is what makes wp_get_scheduled_event() and wp_clear_scheduled_hook() behave
+// the way the plugin's scheduling logic assumes.
+$GLOBALS['eucomply_test_cron'] = array();
+
+function wp_schedule_event( $timestamp, $schedule, $hook ) {
+    $GLOBALS['eucomply_test_cron'][] = array(
+        'timestamp' => (int) $timestamp,
+        'schedule'  => $schedule,
+        'hook'      => $hook,
+    );
+    return true;
+}
+function wp_next_scheduled( $hook ) {
+    foreach ( $GLOBALS['eucomply_test_cron'] as $event ) {
+        if ( $event['hook'] === $hook ) {
+            return $event['timestamp'];
+        }
+    }
+    return false;
+}
+function wp_get_scheduled_event( $hook ) {
+    foreach ( $GLOBALS['eucomply_test_cron'] as $event ) {
+        if ( $event['hook'] === $hook ) {
+            return (object) $event;
+        }
+    }
+    return false;
+}
+function wp_clear_scheduled_hook( $hook ) {
+    $before         = count( $GLOBALS['eucomply_test_cron'] );
+    $GLOBALS['eucomply_test_cron'] = array_values(
+        array_filter(
+            $GLOBALS['eucomply_test_cron'],
+            function ( $event ) use ( $hook ) {
+                return $event['hook'] !== $hook;
+            }
+        )
+    );
+    return $before - count( $GLOBALS['eucomply_test_cron'] );
+}
+function wp_unschedule_event( $timestamp, $hook ) {
+    return wp_clear_scheduled_hook( $hook );
+}
+
 require_once __DIR__ . '/../plugin/eucomply.php';
 
 // ── Tiny test harness ─────────────────────────────────────────────────────────
@@ -129,6 +176,7 @@ function ok( $label, $condition ) {
 function fresh_instance() {
     $GLOBALS['eucomply_test_options'] = array();
     $GLOBALS['eucomply_test_transients'] = array();
+    $GLOBALS['eucomply_test_cron']    = array();
     $GLOBALS['ref']                  = new ReflectionClass( 'EUComply' );
     $GLOBALS['g']                    = $GLOBALS['ref']->newInstanceWithoutConstructor();
     return $GLOBALS['g'];
@@ -140,6 +188,7 @@ function pro_instance( $passed = 4, $warned = 1, $failed = 1 ) {
     update_option( 'eucomply_pro_key', str_repeat( 'a1b2', 8 ) );
     update_option( 'eucomply_pro_verified', '1' );
     update_option( 'eucomply_pro_verified_at', time() );
+    update_option( 'eucomply_pro_last_ok_at', time() );
     update_option( 'eucomply_last_scan', '2026-09-26 02:00:00' );
     update_option( 'eucomply_scan_results', scan_results( $passed, $warned, $failed ) );
     update_option( 'eucomply_agency_name', 'Agency Client ApS' );
@@ -400,6 +449,59 @@ if ( in_array( '--selftest', $argv, true ) ) {
     $cases['a second rendering of the report is flagged'] = ( $old_rendering !== $export_body ) && ( false === strpos( $old_rendering, 'Scan history' ) ) && ( false !== strpos( $export_body, 'Scan history' ) );
     $cases['an attached file claiming a link expires is flagged'] = ( false !== strpos( $old_rendering . '<p>This link stops working on 2026-10-26.</p>', 'stops working on' ) ) && ( false === strpos( $export_body, 'stops working on' ) );
     $cases['a capability weaker than the settings page is flagged'] = ( 'manage_options' !== 'read' ) && ( 0 === preg_match( "/current_user_can\(\s*'read'\s*\)/", file_get_contents( __DIR__ . '/../plugin/eucomply.php' ) ) );
+
+    // (k) The scheduled interval. The wrong behaviour is written out next to
+    // the property: a cadence that only ratchets up, one that follows a stale
+    // verdict, one that asks the license server on every page view.
+    pro_instance();
+    $sync_calls = 0;
+    $cases['a sync that re-schedules every request is flagged'] = ( function () use ( &$sync_calls ) {
+        $g = fresh_instance();
+        priv( 'sync_scan_schedule' );
+        $first = wp_next_scheduled( EUCOMPLY_SCAN_EVENT );
+        // A sync that always clears and re-schedules pushes the next run a
+        // whole interval further away on every single request, so a Pro site
+        // is never scanned again.
+        wp_clear_scheduled_hook( EUCOMPLY_SCAN_EVENT );
+        wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', EUCOMPLY_SCAN_EVENT );
+        $moved = wp_next_scheduled( EUCOMPLY_SCAN_EVENT );
+        return $moved !== $first;
+    } )();
+    $cases['an untouched schedule keeps its timestamp'] = ( function () {
+        fresh_instance();
+        priv( 'sync_scan_schedule' );
+        $t = wp_next_scheduled( EUCOMPLY_SCAN_EVENT );
+        priv( 'sync_scan_schedule' );
+        return $t === wp_next_scheduled( EUCOMPLY_SCAN_EVENT );
+    } )();
+    $cases['a cadence that ignores an expired verdict is flagged'] = ( function () {
+        pro_instance();
+        update_option( 'eucomply_pro_last_ok_at', time() - ( 30 * DAY_IN_SECONDS ) );
+        return 'daily' !== scheduled_interval();
+    } )();
+    $cases['a cadence that ignores a missing key is flagged'] = ( function () {
+        pro_instance();
+        delete_option( 'eucomply_pro_key' );
+        return 'daily' !== scheduled_interval();
+    } )();
+    $cases['a cadence granted by a device-limit 409 is flagged'] = ( function () {
+        pro_instance();
+        update_option( 'eucomply_pro_state', 'device_limit' );
+        return 'daily' !== scheduled_interval();
+    } )();
+    // The scheduling block runs on every request, so the one thing it must not
+    // do is reach the network. is_pro() is the only path to the license server,
+    // so the property is: the block decides from stored options alone. There is
+    // deliberately no wp_remote_* stub in this file, so a call would fatal.
+    $src = file_get_contents( __DIR__ . '/../plugin/eucomply.php' );
+    $scheduling_block = '';
+    if ( preg_match( '/private function pro_cadence_active\(\).*?\n    \}/s', $src, $blk ) ) {
+        $scheduling_block = $blk[0];
+    }
+    $cases['the scheduling block is found, so the check is not vacuous'] = ( '' !== $scheduling_block );
+    $cases['the scheduling block never calls the license server'] = ( '' !== $scheduling_block ) && ( 0 === preg_match( '/\$this->is_pro\s*\(/', $scheduling_block ) ) && ( false === strpos( $scheduling_block, 'wp_remote_' ) );
+
+    $cases['a stale event name is flagged'] = ( 'eucomply_weekly_scan' !== 'eucomply_daily_scan' ) && ( 'eucomply_weekly_scan' === EUCOMPLY_SCAN_EVENT );
 
     $bad = 0;
     foreach ( $cases as $label => $fired ) {
@@ -823,6 +925,120 @@ preg_match_all( '/current_user_can\(\s*([^)]*?)\s*\)/', $source, $caps );
 ok( 'every capability check uses the one declared capability', array( 'EUCOMPLY_ADMIN_CAP' ) === array_values( array_unique( array_map( 'trim', $caps[1] ) ) ) );
 ok( 'both menu pages are registered on the same capability', 2 === preg_match_all( '/^\s+EUCOMPLY_ADMIN_CAP,$/m', $source ) && 2 === preg_match_all( '/add_(?:sub)?menu_page\(/', $source ) );
 ok( 'the export and the link handler are both on admin_init', 2 === preg_match_all( "/add_action\(\s*'admin_init'/", $source ) );
+
+// ── 7. The scheduled interval follows the licence ─────────────────────────────
+// The free version scans once a week; Pro scans once a day. That is the first
+// thing on the Pro list the plugin can deliver on its own, because the six
+// checks are local — so nothing about it needs a hosted service to exist first.
+//
+// What is tested here is not "a string is returned" but the three properties
+// that make the difference worth money and worth trusting:
+//   1. A Pro licence produces a daily event, a free one a weekly event.
+//   2. The interval follows the licence both ways — activating, releasing,
+//      expiring and losing a device slot all move it back to weekly. A cadence
+//      that only ever ratchets up is a discount a refunded customer keeps.
+//   3. Deciding the interval never calls the license server. It runs on every
+//      request, so if it phoned home the site would pay a round trip per page
+//      view, and the test suite has no stub for that call at all: a single
+//      remote call would fatal, which is the loudest possible assertion.
+
+/** The interval currently on the cron array for the plugin's event. */
+function scheduled_interval() {
+    $event = wp_get_scheduled_event( EUCOMPLY_SCAN_EVENT );
+    return $event && ! empty( $event->schedule ) ? $event->schedule : '';
+}
+
+fresh_instance();
+priv( 'sync_scan_schedule' );
+ok( 'a site with no licence is scheduled weekly', 'weekly' === scheduled_interval() );
+ok( 'a site with no licence is scheduled exactly once', 1 === count( $GLOBALS['eucomply_test_cron'] ) );
+
+// Syncing again must not touch the event. If it re-scheduled on every request,
+// the next run would be pushed a full interval further away each time, and a
+// Pro site would silently stop being scanned altogether.
+$first_run = wp_next_scheduled( EUCOMPLY_SCAN_EVENT );
+priv( 'sync_scan_schedule' );
+priv( 'sync_scan_schedule' );
+ok( 'syncing twice does not re-schedule', $first_run === wp_next_scheduled( EUCOMPLY_SCAN_EVENT ) );
+ok( 'syncing twice does not add a second event', 1 === count( $GLOBALS['eucomply_test_cron'] ) );
+
+// Pro.
+pro_instance();
+priv( 'sync_scan_schedule' );
+ok( 'a Pro licence is scheduled daily', 'daily' === scheduled_interval() );
+ok( 'a Pro licence still has exactly one event', 1 === count( $GLOBALS['eucomply_test_cron'] ) );
+ok( 'the daily event is the plugin scan event', EUCOMPLY_SCAN_EVENT === $GLOBALS['eucomply_test_cron'][0]['hook'] );
+ok( 'the first Pro run is at the next cron tick, not a day later', wp_next_scheduled( EUCOMPLY_SCAN_EVENT ) <= time() + 1 );
+ok( 'the dashboard states the daily cadence', false !== strpos( priv( 'cadence_phrase' ), 'every 24 hours' ) );
+
+// Back to free, the way a customer actually arrives there: the licence is gone.
+delete_option( 'eucomply_pro_key' );
+priv( 'sync_scan_schedule' );
+ok( 'a removed licence goes back to weekly', 'weekly' === scheduled_interval() );
+ok( 'a removed licence leaves one event, not two', 1 === count( $GLOBALS['eucomply_test_cron'] ) );
+
+// A verified verdict that has aged out of the 7-day grace is not a licence any
+// more. The cadence must follow the same grace is_pro() uses, or an outage at
+// the license server would quietly turn a paid site into a free one.
+pro_instance();
+update_option( 'eucomply_pro_last_ok_at', time() - ( 8 * DAY_IN_SECONDS ) );
+priv( 'sync_scan_schedule' );
+ok( 'a verdict older than the grace is not a daily cadence', 'weekly' === scheduled_interval() );
+ok( 'the grace is the same 7 days is_pro() uses', 7 * DAY_IN_SECONDS === EUCOMPLY_LICENSE_GRACE );
+
+pro_instance();
+update_option( 'eucomply_pro_last_ok_at', time() - ( 6 * DAY_IN_SECONDS ) );
+priv( 'sync_scan_schedule' );
+ok( 'a verdict inside the grace keeps the daily cadence', 'daily' === scheduled_interval() );
+
+// A 409 is a valid key on a website with no free slot, so it is not entitled to
+// the daily cadence — the same answer is_pro() gives.
+pro_instance();
+update_option( 'eucomply_pro_state', 'device_limit' );
+priv( 'sync_scan_schedule' );
+ok( 'a key with no free device slot is not a daily cadence', 'weekly' === scheduled_interval() );
+
+// A key that was never verified must not buy a cadence.
+fresh_instance();
+update_option( 'eucomply_pro_key', str_repeat( 'a1b2', 8 ) );
+priv( 'sync_scan_schedule' );
+ok( 'an unverified key is not a daily cadence', 'weekly' === scheduled_interval() );
+delete_option( 'eucomply_pro_key' );
+update_option( 'eucomply_pro_verified', '1' );
+update_option( 'eucomply_pro_last_ok_at', time() );
+priv( 'sync_scan_schedule' );
+ok( 'a verified verdict without a key is not a daily cadence', 'weekly' === scheduled_interval() );
+
+// The dashboard quotes the cron array, not the licence, so the two cannot
+// disagree while an event is being re-scheduled.
+pro_instance();
+priv( 'sync_scan_schedule' );
+$GLOBALS['eucomply_test_cron'][0]['schedule'] = 'weekly';
+ok( 'the stated cadence follows a weekly event on a Pro site', false !== strpos( priv( 'cadence_phrase' ), 'once a week' ) );
+$GLOBALS['eucomply_test_cron'] = array();
+ok( 'with no event at all the statement falls back to the licence', false !== strpos( priv( 'cadence_phrase' ), 'every 24 hours' ) );
+
+// A cached "1" with no timestamp behind it is not evidence of anything: it is
+// what a hand-edited or half-restored options table looks like, and it must not
+// be enough to hand out a paid cadence.
+pro_instance();
+delete_option( 'eucomply_pro_last_ok_at' );
+priv( 'sync_scan_schedule' );
+ok( 'a verified verdict with no timestamp is not a daily cadence', 'weekly' === scheduled_interval() );
+
+// Deactivation has to leave nothing behind, and with an interval that changes
+// there can be more than one entry to clear.
+pro_instance();
+wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', EUCOMPLY_SCAN_EVENT );
+wp_schedule_event( time() + WEEK_IN_SECONDS, 'weekly', EUCOMPLY_SCAN_EVENT );
+ok( 'the test starts with two events to clear', 2 === count( $GLOBALS['eucomply_test_cron'] ) );
+EUComply::deactivate();
+ok( 'deactivation clears every copy of the event', 0 === count( $GLOBALS['eucomply_test_cron'] ) );
+
+// The event name is historical, and renaming it is a trap: the string below is
+// the one every existing install already has in its cron array.
+ok( 'the scan event keeps its historical name', 'eucomply_weekly_scan' === EUCOMPLY_SCAN_EVENT );
+ok( 'the constructor does not schedule an event of its own', false === strpos( file_get_contents( __DIR__ . '/../plugin/eucomply.php' ), "wp_schedule_event( time(), 'weekly'" ) );
 
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";
