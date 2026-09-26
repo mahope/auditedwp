@@ -1,11 +1,11 @@
 {
   "_readme": "Registrering af afstanden mellem repoet og produktion for de to Cloudflare Workers. Læses og håndhæves af tools/check_production_drift.py, som kører i kvalitetsgaten. `floor` er den version der senest er-set køre i produktion — et GULV, ikke et mål, så et rollback giver rødt. `behind` er en forskud afstand der er accepteret, og `reason` må ikke være tom. Opdatér begge dele i den samme diff som den der ændrer dem. Sænker du `floor`, skal begrundelsen med, fordi det fjernet den kontrol der fanger et rollback.",
-  "measured": "2026-09-26 05:26 UTC, målt fra main efter merge 0f331d9",
+  "measured": "2026-09-26 08:20 UTC, målt fra main efter merge 7b54b7f",
   "workers": {
     "eucomply-scan": {
       "floor": "1.0.0",
       "behind": {
-        "reason": "Produktion har INGEN rod-endpoint: GET / returnerer 404 med teksten 'Not found. Use GET /scan?url=example.com'. Versionsfeltet findes derfor ikke at læse, og floor 1.0.0 er dermed UVERIFICERET — den følger af at worker-scan/index.js erklærer 1.0.0, ikke af en måling. Scannet virker (GET /scan?url= svarer 200 med ni tjek), så det er kun informations-endpointet der mangler. Da 1.0.0-udgaven af filen slet ikke havde rod-endpointet, er det her en mangel i koden og ikke en afvigelse. Løses ved at deploye workeren — spørgsmål 9."
+        "reason": "MALET ADFAERDSMÆSSIGT 2026-09-26 (tools/check_live_hardening.py): produktion svarer 400 paa alle otte intervaller som isPublicIPv4() kendte da den blev deployet (6422adc, 24. august, 'begge workers deployet og verificeret live'), og FORSØGTE at hente de to der først kom med i 28795c3 (opgave 3a): 192.0.2/24 TEST-NET-1 og 198.18/15 benchmarking svarer 502, altsaa blev de ikke afvist ved kanten. Kortet mod de to kilder er praecist — ingen regel mangler, ingen er tilfojet — saa den motor der koerer i produktion er 24-august-koden. Det er foerste gang scan-workerens version er fastslaget af bevis frem for antagelse: check_production_drift.py kunde ikke laese den, fordi rod-endpointet svarer 404 uden versionsfelt. HVAD DET KOSTER: de to intervaller er uroutbare, saa intet laekker, men en besoegende kan faa vores worker til at forsoege en udaagende hentning til en adresse den burde afvise — og det er praecis samme adfaerd en rigtig intern adresse ville give, hvis den blev angivet som vaertsnavn; den fanges foerst af assertPublicTarget() i 28795c3. HVAD DET IKKE ER: en fejlretning. Koden her er korrekt og testet; kun deployen mangler. Rettelsen er `wrangler deploy` i worker-scan/ — spoergsmaal 9. Naar den er sket, svarer begge 400, og de to linjer kan slettes fra KNOWN_LAG i tools/check_live_hardening.py."
       }
     },
     "eucomply-watch": {

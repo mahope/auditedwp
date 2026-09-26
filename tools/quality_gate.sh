@@ -263,6 +263,20 @@ else
   run "tools/check_production_drift.py" python3 tools/check_production_drift.py
 fi
 
+# ------------------------------- 12. er SSRF-guarden live, og har den lukket scanneren?
+# worker-scan/ deployes ikke af CI (spørgsmål 9), så guarden på det endpoint alle
+# besøgende rammer kan forsvinde uden at nogen opdager det. Denne gate måler den
+# adfærdsmæssigt i stedet for at tro på et versionsfelt, der ikke findes i
+# produktion. Grøn i dag: 12 reserverede intervaller afvises ved kanten, og en
+# offentlig adresse giver stadig alle ni tjek.
+hdr "Live-hærdning af den gratis scanner"
+run "tools/check_live_hardening.py --selftest" python3 tools/check_live_hardening.py --selftest
+if [ "$NETWORK" -eq 0 ]; then
+  run "tools/check_live_hardening.py --offline" python3 tools/check_live_hardening.py --offline
+else
+  run "tools/check_live_hardening.py" python3 tools/check_live_hardening.py
+fi
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
