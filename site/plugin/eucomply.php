@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.4
+ * Version:           1.3.5
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.4' );
+define( 'EUCOMPLY_VERSION', '1.3.5' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -39,6 +39,7 @@ define( 'EUCOMPLY_LICENSE_PRODUCT', 'eucomply-pro' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 define( 'EUCOMPLY_LICENSE_GRACE', 7 * DAY_IN_SECONDS ); // keep a verified Pro status this long while the license server is unreachable
 define( 'EUCOMPLY_HISTORY_LIMIT', 52 ); // ~1 year of weekly snapshots, the window an auditor or a renewal asks about
+define( 'EUCOMPLY_CLIENT_LINK_DAYS', 30 ); // how long a client report link stays valid; a report is a point-in-time claim, not a permanent one
 
 /**
  * Activation guard — prevent activation on unsupported PHP or WordPress.
@@ -96,6 +97,8 @@ class EUComply {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
         add_action( 'admin_init', array( $this, 'maybe_generate_doc' ) );
+        add_action( 'admin_init', array( $this, 'maybe_manage_client_link' ) );
+        add_action( 'template_redirect', array( $this, 'maybe_render_client_report' ) );
         add_action( 'wp_ajax_eucomply_run_scan', array( $this, 'ajax_run_scan' ) );
 
         // Schedule weekly scan.
@@ -739,6 +742,7 @@ class EUComply {
                     <tr><td>HTML Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                 </table>
             </div>
+            <?php $this->render_client_link_box(); ?>
             <?php endif; ?>
         </div>
 
@@ -1218,6 +1222,242 @@ class EUComply {
             }
         }
         return ob_get_clean();
+    }
+
+    // ── Client report link ────────────────────────────────────────────────────
+    //
+    // The report and the history now exist, but they live in wp-admin. An agency
+    // therefore has to either hand over an admin login or paste a screenshot —
+    // and neither is something you can invoice for. This is the missing half:
+    // a link the agency can send to its client, which shows that one site's
+    // report and nothing else, changes nothing, expires, and can be revoked.
+    //
+    // Three rules the rest of this block exists to keep:
+    //   1. Only a hash is stored. The token is shown once, at creation. A dump
+    //      of the options table must not hand out a working client link.
+    //   2. Every way of failing looks identical from outside. A malformed
+    //      token, an unknown token, a revoked one and an expired one all get the
+    //      same 404 body, so the page cannot be used to probe which exist.
+    //   3. Reading the report never calls the license server. The link is
+    //      checked against the stored hash and the expiry only, so a client
+    //      never sees a blank page because our API had a bad minute.
+
+    /** The stored client-link record, or an empty array. */
+    private function client_link_record() {
+        $rec = get_option( 'eucomply_client_link', array() );
+        return is_array( $rec ) ? $rec : array();
+    }
+
+    /**
+     * State of the client link: 'none', 'active' or 'expired'.
+     *
+     * @return string
+     */
+    private function client_link_state() {
+        $rec = $this->client_link_record();
+        if ( empty( $rec['hash'] ) || empty( $rec['expires'] ) ) {
+            return 'none';
+        }
+        return ( (int) $rec['expires'] > time() ) ? 'active' : 'expired';
+    }
+
+    /**
+     * Issue a new client link and return its URL.
+     *
+     * Only the hash is kept, so the URL is shown once and cannot be recovered
+     * later — an operator who loses it creates a new link, which retires the
+     * old one. That is the trade we make for never storing a working secret.
+     *
+     * @return string The URL, or '' when Pro is not active.
+     */
+    private function create_client_link() {
+        if ( ! $this->is_pro() ) {
+            return '';
+        }
+        $token = bin2hex( random_bytes( 16 ) );
+        update_option(
+            'eucomply_client_link',
+            array(
+                'hash'    => hash( 'sha256', $token ),
+                'created' => time(),
+                'expires' => time() + ( EUCOMPLY_CLIENT_LINK_DAYS * DAY_IN_SECONDS ),
+            )
+        );
+        delete_transient( 'eucomply_client_link_new' );
+        return add_query_arg( 'eucomply_report', $token, home_url( '/' ) );
+    }
+
+    /** Retire the client link. There is no way back: the token is gone. */
+    private function revoke_client_link() {
+        delete_option( 'eucomply_client_link' );
+        delete_transient( 'eucomply_client_link_new' );
+    }
+
+    /**
+     * Does this token entitle its holder to read the report?
+     *
+     * Hash comparison is constant-time, and the format check runs first so a
+     * token of the wrong shape is rejected without touching the stored hash.
+     *
+     * @param string $token Raw value from the query string.
+     * @return bool
+     */
+    private function client_link_allows( $token ) {
+        if ( ! is_string( $token ) || ! preg_match( '/^[a-f0-9]{32}$/', $token ) ) {
+            return false;
+        }
+        $rec = $this->client_link_record();
+        if ( empty( $rec['hash'] ) || empty( $rec['expires'] ) ) {
+            return false;
+        }
+        if ( (int) $rec['expires'] <= time() ) {
+            return false;
+        }
+        return hash_equals( (string) $rec['hash'], hash( 'sha256', $token ) );
+    }
+
+    /**
+     * Build the response for a client report request.
+     *
+     * Separated from the HTTP plumbing so the properties that matter — what a
+     * valid request shows, and that every invalid one is indistinguishable —
+     * can be tested without a web server.
+     *
+     * @param string $raw_token Raw value from the query string.
+     * @return array{0:int,1:string} HTTP status and body.
+     */
+    private function client_report_response( $raw_token ) {
+        $token = is_string( $raw_token ) ? strtolower( trim( $raw_token ) ) : '';
+        if ( ! $this->client_link_allows( $token ) ) {
+            // Deliberately the same body for a malformed token, an unknown one,
+            // a revoked one and an expired one. Anything else turns this page
+            // into an oracle for which tokens exist.
+            return array( 404, '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><p>No compliance report is available at this address.</p></body></html>' );
+        }
+        $rec  = $this->client_link_record();
+        $body = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+            . '<meta name="robots" content="noindex, nofollow">'
+            . '<title>Compliance report — ' . esc_html( get_bloginfo( 'name' ) ) . '</title>'
+            . '<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;line-height:1.6;color:#111}'
+            . 'h1{font-size:22px;border-bottom:2px solid #111;padding-bottom:8px}h2{font-size:16px;margin-top:28px}'
+            . 'table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #999;padding:6px 10px;font-size:13px;text-align:left}'
+            . 'footer{margin-top:48px;font-size:11px;color:#666;border-top:1px solid #ccc;padding-top:8px}</style>'
+            . '</head><body>';
+        $body .= '<h1>Compliance report</h1>';
+        $body .= '<p>Site: <strong>' . esc_html( get_bloginfo( 'name' ) ) . '</strong> (' . esc_html( home_url() ) . ')<br>';
+        $body .= 'Last scan: ' . esc_html( (string) get_option( 'eucomply_last_scan', '' ) ) . '<br>';
+        $body .= 'This link stops working on ' . esc_html( gmdate( 'Y-m-d', (int) $rec['expires'] ) ) . '.</p>';
+        $body .= $this->build_report(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in build_report()
+        $body .= '<footer>Read-only. This page cannot change anything on the website. '
+            . 'Produced by EUComply Pro from the site&#39;s own scheduled scans. '
+            . 'A compliance aid, not legal advice.</footer></body></html>';
+        return array( 200, $body );
+    }
+
+    /**
+     * Serve the client report. Hooked on template_redirect.
+     *
+     * The token is the only query parameter this reads. Everything else on the
+     * request is ignored, so the page cannot be turned into an action.
+     */
+    public function maybe_render_client_report() {
+        if ( ! isset( $_GET['eucomply_report'] ) || is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability-free, read-only link, verified by hash below
+            return;
+        }
+        $raw = $_GET['eucomply_report']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $raw = is_string( $raw ) ? wp_unslash( $raw ) : '';
+        list( $status, $body ) = $this->client_report_response( $raw );
+
+        status_header( $status );
+        nocache_headers();
+        header( 'X-Robots-Tag: noindex, nofollow', true );
+        header( 'Referrer-Policy: no-referrer', true );
+        header( 'Content-Type: text/html; charset=utf-8' );
+        echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled escaped above
+        exit;
+    }
+
+    /**
+     * Create or revoke the client link. Hooked on admin_init.
+     *
+     * The freshly created URL is handed to the dashboard through a 60-second
+     * transient instead of a query parameter, so it never reaches the browser
+     * history, the referrer chain or a proxy log on its way to the screen that
+     * shows it once.
+     */
+    public function maybe_manage_client_link() {
+        if ( empty( $_GET['eucomply_link'] ) || ! is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified below
+            return;
+        }
+        if ( ! check_admin_referer( 'eucomply_link' ) || ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Not allowed' );
+        }
+        if ( ! $this->is_pro() ) {
+            wp_die( 'Pro license required.' );
+        }
+        $action = sanitize_key( wp_unslash( $_GET['eucomply_link'] ) );
+        if ( 'revoke' === $action ) {
+            $this->revoke_client_link();
+        } elseif ( 'create' === $action ) {
+            set_transient( 'eucomply_client_link_new', $this->create_client_link(), MINUTE_IN_SECONDS );
+        } else {
+            wp_die( 'Unknown action.' );
+        }
+        wp_safe_redirect( admin_url( 'admin.php?page=eucomply' ) );
+        exit;
+    }
+
+    /**
+     * The dashboard row that hands a client their own report.
+     */
+    private function render_client_link_box() {
+        $state  = $this->client_link_state();
+        $record = $this->client_link_record();
+        $fresh  = get_transient( 'eucomply_client_link_new' );
+        if ( $fresh ) {
+            delete_transient( 'eucomply_client_link_new' );
+        }
+        $create = wp_nonce_url( admin_url( 'admin.php?page=eucomply&eucomply_link=create' ), 'eucomply_link' );
+        $revoke = wp_nonce_url( admin_url( 'admin.php?page=eucomply&eucomply_link=revoke' ), 'eucomply_link' );
+        ?>
+        <div style="margin-top:28px;border:1px solid #d0d8e0;border-radius:10px;padding:20px;background:#fff">
+            <h2 style="font-size:16px;margin:0 0 8px">🔗 Pro: Client report link</h2>
+            <?php if ( $fresh ) : ?>
+                <div style="border:2px solid #1a7a44;background:#f2fbf5;padding:12px 16px;border-radius:8px;margin:12px 0">
+                    <strong>Copy this now — it is not shown again.</strong>
+                    <p style="margin:8px 0 0;word-break:break-all;font-family:monospace;font-size:12.5px"><?php echo esc_html( $fresh ); ?></p>
+                </div>
+            <?php endif; ?>
+            <?php if ( 'active' === $state ) : ?>
+                <p style="font-size:13.5px;margin:0 0 8px">
+                    A link is active. It shows this site's report and scan history to whoever holds it,
+                    changes nothing, and stops working on
+                    <strong><?php echo esc_html( gmdate( 'Y-m-d', (int) $record['expires'] ) ); ?></strong>.
+                </p>
+                <p style="font-size:12.5px;color:#4a5a6a;margin:0 0 12px">
+                    Created <?php echo esc_html( gmdate( 'Y-m-d', (int) $record['created'] ) ); ?>.
+                    The link itself is not stored, so it cannot be shown again — create a new one if it is lost, and the old one stops working.
+                </p>
+            <?php elseif ( 'expired' === $state ) : ?>
+                <p style="font-size:13.5px;margin:0 0 12px">
+                    The last link expired on <strong><?php echo esc_html( gmdate( 'Y-m-d', (int) $record['expires'] ) ); ?></strong> and no longer works.
+                </p>
+            <?php else : ?>
+                <p style="font-size:13.5px;margin:0 0 12px">
+                    No link yet. Create one to send your client their own report — they read it in a browser, without a WordPress login.
+                </p>
+            <?php endif; ?>
+            <a class="eucomply-btn ghost" style="padding:8px 16px;font-size:13px" href="<?php echo esc_url( $create ); ?>">
+                <?php echo 'active' === $state ? 'Create a new link (retires the old one)' : ( 'expired' === $state ? 'Create a new link' : 'Create client link' ); ?>
+            </a>
+            <?php if ( 'active' === $state ) : ?>
+                <a class="eucomply-btn ghost" style="padding:8px 16px;font-size:13px" href="<?php echo esc_url( $revoke ); ?>">Revoke now</a>
+            <?php endif; ?>
+            <p style="font-size:12.5px;color:#4a5a6a;margin:12px 0 0">
+                The link is a secret: anyone who has it can read the report. Send it to the client, not into a shared inbox or a ticket.
+            </p>
+        </div>
+        <?php
     }
 
     /**

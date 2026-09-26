@@ -57,6 +57,7 @@ $options = array(
     'eucomply_pro_nis2_date',
     'eucomply_pro_eaa_date',
     'eucomply_pro_report_date',
+    'eucomply_client_link',
 );
 
 foreach ( $options as $option ) {

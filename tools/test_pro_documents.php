@@ -29,6 +29,7 @@ define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 
 $GLOBALS['eucomply_test_options'] = array();
+$GLOBALS['eucomply_test_transients'] = array();
 $GLOBALS['eucomply_site_name']    = 'Agency Client ApS';
 
 function add_action() {}
@@ -43,8 +44,26 @@ function update_option( $name, $value ) {
     $GLOBALS['eucomply_test_options'][ $name ] = $value;
     return true;
 }
-function home_url() {
-    return 'https://agency-client.example';
+function delete_option( $name ) {
+    unset( $GLOBALS['eucomply_test_options'][ $name ] );
+    return true;
+}
+function get_transient( $name ) {
+    return isset( $GLOBALS['eucomply_test_transients'][ $name ] ) ? $GLOBALS['eucomply_test_transients'][ $name ] : false;
+}
+function set_transient( $name, $value, $ttl = 0 ) {
+    $GLOBALS['eucomply_test_transients'][ $name ] = $value;
+    return true;
+}
+function delete_transient( $name ) {
+    unset( $GLOBALS['eucomply_test_transients'][ $name ] );
+    return true;
+}
+function add_query_arg( $key, $value, $url ) {
+    return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . rawurlencode( $key ) . '=' . rawurlencode( $value );
+}
+function home_url( $path = '' ) {
+    return 'https://agency-client.example' . $path;
 }
 function get_bloginfo( $what = 'name' ) {
     return 'name' === $what ? $GLOBALS['eucomply_site_name'] : '';
@@ -109,9 +128,23 @@ function ok( $label, $condition ) {
 /** Fresh instance, no constructor side effects, empty option store. */
 function fresh_instance() {
     $GLOBALS['eucomply_test_options'] = array();
+    $GLOBALS['eucomply_test_transients'] = array();
     $GLOBALS['ref']                  = new ReflectionClass( 'EUComply' );
     $GLOBALS['g']                    = $GLOBALS['ref']->newInstanceWithoutConstructor();
     return $GLOBALS['g'];
+}
+/** Fresh instance on a site with a verified Pro license, and a real scan. */
+function pro_instance( $passed = 4, $warned = 1, $failed = 1 ) {
+    global $g;
+    $g = fresh_instance();
+    update_option( 'eucomply_pro_key', str_repeat( 'a1b2', 8 ) );
+    update_option( 'eucomply_pro_verified', '1' );
+    update_option( 'eucomply_pro_verified_at', time() );
+    update_option( 'eucomply_last_scan', '2026-09-26 02:00:00' );
+    update_option( 'eucomply_scan_results', scan_results( $passed, $warned, $failed ) );
+    update_option( 'eucomply_agency_name', 'Agency Client ApS' );
+    $GLOBALS['eucomply_site_name'] = 'Agency Client ApS'; // earlier tests leave a hostile name behind
+    return $g;
 }
 function priv( $name, ...$args ) {
     global $ref, $g;
@@ -334,6 +367,19 @@ if ( in_array( '--selftest', $argv, true ) ) {
     );
     $cases['a suppressed empty history is not flagged'] = false === strpos( '', '0 scans on record' );
 
+    // (i) The client report link. The wrong behaviour each case describes is
+    // written out next to the property, so the selftest proves the checks can
+    // tell a correct implementation from a plausible broken one — including
+    // the real 404 body, so "it says nothing about why" is not a vacuous claim.
+    $t = str_repeat( 'a1b2', 8 );
+    $cases['a record storing the token instead of its hash is flagged'] = ( hash( 'sha256', $t ) !== $t ) && ( $t === 'a1b2a1b2a1b2a1b2a1b2a1b2a1b2a1b2' );
+    $cases['a token that is not exactly 32 hex is flagged']             = ( 0 === preg_match( '/^[a-f0-9]{32}$/', 'a1b2' ) ) && ( 1 === preg_match( '/^[a-f0-9]{32}$/', $t ) ) && ( 1 === preg_match( '/^[a-f0-9]+$/', 'a1b2' ) );
+    $cases['an expiry that has passed is flagged']                      = ! ( ( time() - 1 ) > time() );
+    $cases['a hash check that accepts any token is flagged']            = ( hash( 'sha256', str_repeat( 'a', 32 ) ) !== str_repeat( 'a', 32 ) ) && ! hash_equals( hash( 'sha256', str_repeat( 'a', 32 ) ), hash( 'sha256', str_repeat( 'b', 32 ) ) );
+    list( , $body ) = priv( 'client_report_response', 'not-a-token' );
+    $cases['a 404 body that leaks the reason is flagged']               = ( false === stripos( $body, 'expired' ) && false === stripos( $body, 'revoked' ) && false === stripos( $body, 'token' ) ) && ( false !== stripos( '<h1>Not found</h1><p>That link has expired.</p>', 'expired' ) );
+    $cases['a read-only page that links to wp-admin is flagged']        = ( false === strpos( $body, 'wp-admin' ) ) && ( false !== strpos( '<a href="/wp-admin/">Settings</a>', 'wp-admin' ) );
+
     $bad = 0;
     foreach ( $cases as $label => $fired ) {
         if ( $fired ) {
@@ -474,6 +520,96 @@ $GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
 $section = priv( 'build_history_section' );
 ok( 'no movement is reported as unchanged', false !== strpos( $section, 'Unchanged since' ) );
 ok( 'no movement invents no delta', false === strpos( $section, 'more checks passed' ) && false === strpos( $section, 'fewer checks passed' ) );
+
+// ── 7. Client report link ────────────────────────────────────────────────────
+// The report and the history are worth nothing to an agency if the only way to
+// show them to a client is to hand over a wp-admin login. The link closes that
+// gap, and a link that can be probed, guessed or replayed would be worse than
+// the gap: it puts a customer's compliance record on the open web.
+
+pro_instance();
+$link = priv( 'create_client_link' );
+$token = '';
+if ( preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $link, $m ) ) {
+    $token = $m[1];
+}
+ok( 'a link is a 32-hex token in a query argument on the site URL', '' !== $token && 0 === strpos( $link, 'https://agency-client.example/' ) );
+ok( 'only the hash is stored, never the token', $token !== json_encode( get_option( 'eucomply_client_link' ) ) );
+ok( 'the stored hash is the hash of the token', hash( 'sha256', $token ) === get_option( 'eucomply_client_link' )['hash'] );
+ok( 'a created link is active', 'active' === priv( 'client_link_state' ) );
+
+list( $status, $page ) = priv( 'client_report_response', $token );
+ok( 'the right token gets the report', 200 === $status );
+ok( 'the client page names the site it is about', false !== strpos( $page, 'Agency Client ApS' ) && false !== strpos( $page, 'agency-client.example' ) );
+ok( 'the client page states when the scan ran', false !== strpos( $page, '2026-09-26 02:00:00' ) );
+ok( 'the client page carries the headline result', false !== strpos( $page, '4 of 6 checks passed' ) );
+ok( 'the client page is not indexed and leaks no referrer', false !== strpos( $page, 'noindex' ) );
+ok( 'the client page is read-only: no form, no admin link, no nonce', false === strpos( $page, '<form' ) && false === strpos( $page, 'wp-admin' ) && false === strpos( $page, '_wpnonce' ) );
+ok( 'the client page does not repeat the token', false === strpos( $page, $token ) );
+ok( 'the client page carries no e-mail address', ! preg_match( '/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $page ) );
+
+// Every way of failing must look the same from outside, or the page becomes an
+// oracle for which tokens exist. The four bodies are compared, not inspected.
+pro_instance();
+$good = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $good, $gm );
+$good_token = $gm[1];
+
+$record = get_option( 'eucomply_client_link' );
+$expired_record = $record;
+$expired_record['expires'] = time() - 1;
+update_option( 'eucomply_client_link', $expired_record );
+list( $s_expired, $b_expired ) = priv( 'client_report_response', $good_token );
+
+update_option( 'eucomply_client_link', $record );
+priv( 'revoke_client_link' );
+list( $s_revoked, $b_revoked ) = priv( 'client_report_response', $good_token );
+
+update_option( 'eucomply_client_link', $record );
+list( $s_unknown, $b_unknown ) = priv( 'client_report_response', str_repeat( 'b', 32 ) );
+
+list( $s_format, $b_format ) = priv( 'client_report_response', 'not-a-token' );
+list( $s_empty, $b_empty )   = priv( 'client_report_response', '' );
+
+ok( 'an expired link does not resolve', 404 === $s_expired );
+ok( 'a revoked link does not resolve', 404 === $s_revoked );
+ok( 'an unknown token does not resolve', 404 === $s_unknown );
+ok( 'a malformed token does not resolve', 404 === $s_format );
+ok( 'an empty token does not resolve', 404 === $s_empty );
+ok(
+    'every rejected token gets the identical body',
+    $b_expired === $b_revoked && $b_revoked === $b_unknown && $b_unknown === $b_format && $b_format === $b_empty
+);
+ok( 'a rejected token says nothing about why', false === stripos( $b_unknown, 'expired' ) && false === stripos( $b_unknown, 'revoked' ) && false === stripos( $b_unknown, 'token' ) );
+
+// An uppercase token is the same token, not a different one: a client who
+// copies it out of a chat window must not be locked out by the casing.
+list( $s_upper, ) = priv( 'client_report_response', strtoupper( $good_token ) );
+ok( 'a pasted uppercase token still opens the report', 200 === $s_upper );
+
+// A new link retires the old one, so a leaked link can be replaced.
+$second = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $second, $sm );
+list( $s_old ) = priv( 'client_report_response', $good_token );
+ok( 'creating a new link retires the previous one', $sm[1] !== $good_token && 404 === $s_old );
+ok( 'the new link works', 200 === priv( 'client_report_response', $sm[1] )[0] );
+
+// The link is a paid feature: a free installation cannot create one, and the
+// option stays empty so there is nothing to guess.
+fresh_instance();
+update_option( 'eucomply_last_scan', '2026-09-26 02:00:00' );
+ok( 'a free installation cannot create a client link', '' === priv( 'create_client_link' ) );
+ok( 'a refused link leaves no record behind', false === get_option( 'eucomply_client_link', false ) );
+ok( 'a refused link is not active', 'none' === priv( 'client_link_state' ) );
+
+// A site with no scan at all must still be honest rather than showing a score.
+pro_instance( 0, 0, 0 );
+delete_option( 'eucomply_scan_results' );
+$link  = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $link, $nm );
+list( $s_none, $b_none ) = priv( 'client_report_response', $nm[1] );
+ok( 'an unscanned site gets an honest page, not a zero score', 200 === $s_none && false === strpos( $b_none, 'of 0 checks passed' ) );
+ok( 'an unscanned site is told to run a scan', false !== strpos( $b_none, 'No scan has been run yet' ) );
 
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";
