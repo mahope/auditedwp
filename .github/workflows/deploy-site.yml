@@ -80,6 +80,36 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      # 26/9: plugin-versionen var hardkodet til 1.3.2 i kontrolen nedenfor, så
+      # den blev rød netop fordi den rettede version blev udgivet. Jobbet checkout'ede
+      # ikke, så den vidste ikke hvilken version den skulle tjekke.
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Læs plugin-versionen fra update.json — aldrig hardkode den
+        id: plugin
+        run: |
+          ver=$(python3 -c "import json;print(json.load(open('site/update.json'))['version'])")
+          dl=$(python3 -c "import json;print(json.load(open('site/update.json'))['download_url'])")
+          asset="/assets/eucomply-$ver.zip"
+          # Hvert historisk redirect skal pege på den version, der ligger i træet.
+          # Ellers får en installation på en ældre version en 301 → 404 ved opdatering,
+          # præcis fejlen der blev fundet i 1.3.1 → 1.3.2.
+          bad=$(grep -o '/assets/eucomply-[0-9.]*\.zip' site/_redirects | sort -u | grep -v "^$asset$" || true)
+          if [ -n "$bad" ]; then
+            echo "FEJL: _redirects peger på andre versioner end $asset:"
+            echo "$bad"
+            exit 1
+          fi
+          if [ ! -f "site$asset" ]; then
+            echo "FEJL: $asset findes ikke i deploy-træet"
+            exit 1
+          fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "asset=$asset" >> "$GITHUB_OUTPUT"
+          echo "download_url=$dl" >> "$GITHUB_OUTPUT"
+          echo "Plugin-version $ver, alle redirects peger på $asset"
       - name: Tjek indhold, ikke kun status
         run: |
           # 25/9: den gamle kontrol testede /IMPLEMENTATION_PLAN.md, som aldrig har
@@ -135,12 +165,23 @@ jobs:
             fi
           done
 
-          # Plugin-downloadet skal være den version, zip'en der _redirects peger på.
-          code=$(curl -sS -o plug.zip -w '%{http_code}' "$url/assets/eucomply-1.3.2.zip?cb=$GITHUB_RUN_ID" || echo 000)
+          # Plugin-downloadet tjekkes på den URL, update.json selv peger på — det er
+          # den adresse en kundes auto-update henter. Versionen kommer fra repoet.
+          asset="${{ steps.plugin.outputs.asset }}"
+          code=$(curl -sS -o plug.zip -w '%{http_code}' "$url$asset?cb=$GITHUB_RUN_ID" || echo 000)
           if [ "$code" = "200" ] && [ "$(head -c 2 plug.zip)" = "PK" ]; then
-            echo "OK: /assets/eucomply-1.3.2.zip er 200 og en zip-fil"
+            echo "OK: $asset er 200 og en zip-fil"
           else
-            echo "FEJL: /assets/eucomply-1.3.2.zip svarer $code"
+            echo "FEJL: $asset svarer $code"
+            fail=1
+          fi
+
+          # Og manifestet skal pege på præcis den fil, der lige blev hentet.
+          manifest=$(curl -sS "$url/update.json?cb=$GITHUB_RUN_ID" | python3 -c "import json,sys;print(json.load(sys.stdin)['download_url'])" 2>/dev/null || echo '')
+          if [ "$manifest" = "$url$asset" ]; then
+            echo "OK: /update.json peger på $asset"
+          else
+            echo "FEJL: /update.json peger på '$manifest', forventede '$url$asset'"
             fail=1
           fi
 
