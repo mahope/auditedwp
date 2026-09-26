@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 ORIGIN = "https://eucomplypro.com"
 PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
-PLUGIN_VERSION = "1.3.10"
+PLUGIN_VERSION = "1.3.11"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",
@@ -2326,47 +2326,92 @@ def denial_self_tests() -> List[str]:
 CHECK_COUNT_CHECKS = 13
 
 # The published history rows, with the count they must be allowed to state.
-CHECK_COUNT_SAMPLE = {
-    "site/pro/index.html": "<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the six WordPress checks.</p></li>",
-    "site/da/pro/index.html": "<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de seks WordPress-tjek.</p></li>",
-    "site/de/pro/index.html": "<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der sechs WordPress-Prüfungen.</p></li>",
-    "site/fr/pro/index.html": "<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des six contrôles WordPress.</p></li>",
-    "site/pricing/index.html": "<tr><td>Scan history: one snapshot per day, per check</td><td>—</td><td>Yes, in the plugin</td></tr>",
+# The number a history row has to state, in each language, built from the code
+# rather than written here. A fixture that says "six" stops testing anything the
+# day a seventh check ships -- which is exactly what happened when 1.3.11 went
+# out, so the fixture is now derived and cannot rot.
+_NUMBER_WORDS_BY_LANG = {
+    "en": "zero one two three four five six seven eight nine ten eleven twelve".split(),
+    "da": "nul en to tre fire fem seks syv otte ni ti elleve tolv".split(),
+    "de": "null eins zwei drei vier fünf sechs sieben acht neun zehn elf zwölf".split(),
+    "fr": "zéro un deux trois quatre cinq six sept huit neuf dix onze douze".split(),
 }
+
+
+def number_word(value: int, lang: str = "en") -> str:
+    """The word NUMBER_WORDS parses back, for the same number.
+
+    Round-trips through the table the gate actually uses, so a fixture written
+    with this cannot disagree with the parser it is testing.
+    """
+    words = _NUMBER_WORDS_BY_LANG.get(lang, _NUMBER_WORDS_BY_LANG["en"])
+    if value < 0 or value >= len(words):
+        raise ValueError(f"no word for {value} in {lang}")
+    word = words[value]
+    if NUMBER_WORDS.get(word) != value:
+        raise ValueError(f"{word!r} does not round-trip to {value} in {lang}")
+    return word
+
+
+def plugin_check_count() -> int:
+    """How many checks run_checks() writes right now.
+
+    One reader for every count claim in this file, so the self-test and the gate
+    cannot end up with two different ideas of the product's size.
+    """
+    return len(plugin_check_keys())
+
+
+def check_count_sample() -> Dict[str, str]:
+    """The rows the Pro/pricing pages have to state, with the real number."""
+    en, da, de, fr = (number_word(plugin_check_count(), lang) for lang in ("en", "da", "de", "fr"))
+    return {
+        "site/pro/index.html": f"<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the {en} checks the plugin runs.</p></li>",
+        "site/da/pro/index.html": f"<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de {da} tjek pluginen kører.</p></li>",
+        "site/de/pro/index.html": f"<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der {de} Prüfungen, die das Plugin ausführt.</p></li>",
+        "site/fr/pro/index.html": f"<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des {fr} contrôles exécutés par le plugin.</p></li>",
+        "site/pricing/index.html": "<tr><td>Scan history: one snapshot per day, per check</td><td>—</td><td>Yes, in the plugin</td></tr>",
+    }
 
 
 def check_count_self_tests() -> List[str]:
     """Both directions of the count, the real pages behind them, and the read.
 
-    The number in the product is six, and it is read from run_checks() rather
-    than written here, so these cases do not depend on a constant staying put.
+    The number in the product is read from run_checks() rather than written here,
+    and every fixture below is built from that number. A self-test with a
+    hardcoded count silently stops testing the day the count changes -- which is
+    not hypothetical: when 1.3.11 took the plugin from six checks to eleven, the
+    old fixtures asked for "run_checks() writes 6", every case failed, and the
+    only thing that was actually wrong was the test.
     """
     failures: List[str] = []
     real = read_text(ROOT / "plugin/eucomply.php", "self-test: plugin PHP", [])
     if real is None:
         return ["self-test check count: the plugin source could not be read"]
     keys = plugin_check_keys(real)
-    if len(keys) != 6:
+    count = len(keys)
+    if count < 2:
         failures.append(
-            f"self-test check count: run_checks() reads as {len(keys)} checks {keys}, "
-            "so every case below would be testing a number that is not the product's"
+            f"self-test check count: run_checks() reads as {count} checks {keys}, "
+            "so the fixtures below would be testing a product that does not exist"
         )
     for expected in ("ssl", "cookies", "forms", "backups", "plugins", "legal"):
         if expected not in keys:
             failures.append(f"self-test check count: run_checks() no longer writes {expected}")
     # Both directions on the same number: too high is the bug that shipped, too
     # low is the same gate pointed the other way, and under-selling a paid
-    # feature is the mistake opgave 36 had to walk back.
+    # feature is the mistake opgave 36 had to walk back. Both wrong numbers are
+    # derived, so neither can become the real one by accident.
     for name, relative, text in (
-        ("EN", "site/pro/index.html", "<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the nine checks.</p></li>"),
-        ("DA", "site/da/pro/index.html", "<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de ni tjek.</p></li>"),
-        ("DE", "site/de/pro/index.html", "<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der neun Prüfungen.</p></li>"),
-        ("FR", "site/fr/pro/index.html", "<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des neuf contrôles.</p></li>"),
+        ("EN", "site/pro/index.html", f"<li><b>Scan history</b><p>Every Pro scan records one snapshot per day with the state of each of the {number_word(count + 1)} checks.</p></li>"),
+        ("DA", "site/da/pro/index.html", f"<li><b>Scanningshistorik</b><p>Hver Pro-scanning registrerer ét snapshot om dagen med tilstanden for hvert af de {number_word(count - 1, 'da')} tjek.</p></li>"),
+        ("DE", "site/de/pro/index.html", f"<li><b>Scan-Verlauf</b><p>Jeder Pro-Scan schreibt einen Eintrag je Tag mit dem Zustand jeder der {number_word(count + 1, 'de')} Prüfungen.</p></li>"),
+        ("FR", "site/fr/pro/index.html", f"<li><b>Historique de scan</b><p>Chaque scan Pro enregistre une entrée par jour avec l’état de chacun des {number_word(count - 1, 'fr')} contrôles.</p></li>"),
     ):
         found = plugin_check_count_findings(relative, text, real)
-        if not any("run_checks() writes 6" in finding for finding in found):
+        if not any(f"run_checks() writes {count}" in finding for finding in found):
             failures.append(f"self-test check count {name}: a wrong count on a history row was allowed: {found}")
-    for relative, text in CHECK_COUNT_SAMPLE.items():
+    for relative, text in check_count_sample().items():
         found = plugin_check_count_findings(relative, text, real)
         if found:
             failures.append(f"self-test check count required {relative}: {found}")
@@ -2401,12 +2446,16 @@ def check_count_self_tests() -> List[str]:
     # The read follows the code. A plugin that drops a check moves the number
     # the pages have to state, so the gate cannot be satisfied by editing four
     # locales until they agree with each other.
-    fewer = real.replace("        $results['backups'] = $this->check_backups();\n", "")
-    if len(plugin_check_keys(fewer)) != 5:
-        failures.append("self-test check count read: removing a check from run_checks() did not move the count")
-    six = "<li><b>Scan history</b><p>Every Pro scan records the state of each of the six checks.</p></li>"
-    if not plugin_check_count_findings("site/pro/index.html", six, fewer):
-        failures.append("self-test check count read: a count that matched the old plugin was accepted after a check was removed")
+    line = next((ln for ln in real.splitlines() if "$results['backups']" in ln), "")
+    if not line:
+        failures.append("self-test check count read: the backups assignment is gone, so the read cannot be tested")
+    else:
+        fewer = real.replace(line + "\n", "")
+        if len(plugin_check_keys(fewer)) != count - 1:
+            failures.append("self-test check count read: removing a check from run_checks() did not move the count")
+        stale = f"<li><b>Scan history</b><p>Every Pro scan records the state of each of the {number_word(count)} checks.</p></li>"
+        if not plugin_check_count_findings("site/pro/index.html", stale, fewer):
+            failures.append("self-test check count read: a count that matched the old plugin was accepted after a check was removed")
     return failures
 
 
