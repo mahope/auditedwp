@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.12
+ * Version:           1.3.13
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.12' );
+define( 'EUCOMPLY_VERSION', '1.3.13' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1175,10 +1175,12 @@ class EUComply {
 
         if ( ! $has_privacy_link ) {
             $results['pass']       = false;
+            $results['label']      = 'Form plugins found, no Privacy Policy page';
             $results['warnings'][] = 'No Privacy Policy page set in Settings → Privacy. Create one and link it from forms.';
             $results['detail']     = 'Forms detected (' . implode( ', ', $results['forms'] ) . '), but no Privacy Policy page configured.';
             $results['fix']        = 'Go to Settings → Privacy and create/assign a Privacy Policy page. Ensure forms link to it and include a consent checkbox where required.';
         } else {
+            $results['label']  = 'Form plugins found, Privacy Policy page set';
             $results['detail'] = 'Forms detected: ' . implode( ', ', $results['forms'] ) . '. Privacy Policy page exists.';
         }
 
@@ -1282,14 +1284,11 @@ class EUComply {
         // Check last updated on wp.org for each plugin (best-effort).
         // We don't call external API on every page load — too slow.
         // Instead, flag plugins with no updates in 2+ years from local data.
-        $all_plugins = get_plugins();
-        foreach ( $all_plugins as $file => $data ) {
-            if ( empty( $data['Version'] ) ) {
-                continue;
-            }
-            // If a plugin hasn't been updated by the user in 2 years (local knowledge only).
-            // This is a rough heuristic; we skip for now.
-        }
+        // Nothing is read from get_plugins() yet: an earlier version of this
+        // check looped over every installed plugin and then discarded the list,
+        // which cost a full plugin read on every scan and could not change the
+        // verdict. The two checks above are the whole of this check, and saying
+        // so is better than a loop that looks like a third.
 
         if ( empty( $warnings ) ) {
             return array(
@@ -1319,6 +1318,12 @@ class EUComply {
             'warnings'  => array(),
         );
 
+        // What is missing, by name. The warnings say what to do about it; this
+        // says what was not found, so the label can name the outcome instead of
+        // the act of looking. A row reading "Legal pages checked" next to a red
+        // FAIL tells the reader the opposite of what the check found.
+        $missing = array();
+
         // Privacy Policy.
         $privacy_id = get_option( 'wp_page_for_privacy_policy' );
         if ( $privacy_id ) {
@@ -1326,9 +1331,11 @@ class EUComply {
             if ( $page && 'publish' === $page->post_status ) {
                 $results['pages']['privacy'] = 'Exists: ' . esc_html( $page->post_title );
             } else {
+                $missing[]                   = 'Privacy Policy (assigned but not published)';
                 $results['warnings'][] = 'Privacy Policy page assigned but not published.';
             }
         } else {
+            $missing[]              = 'Privacy Policy';
             $results['warnings'][] = 'No Privacy Policy page assigned (Settings → Privacy).';
         }
 
@@ -1362,6 +1369,7 @@ class EUComply {
         if ( $imprint_page ) {
             $results['pages']['imprint'] = 'Exists: ' . esc_html( $imprint_page->post_title );
         } else {
+            $missing[]              = 'Imprint / Impressum';
             $results['warnings'][] = 'No Imprint/Impressum page found. Required in DE, AT, CH under Telemediengesetz (TMG).';
         }
 
@@ -1386,14 +1394,17 @@ class EUComply {
         if ( $eaa_page ) {
             $results['pages']['eaa'] = 'Exists: ' . esc_html( $eaa_page->post_title );
         } else {
+            $missing[]              = 'Accessibility Statement';
             $results['warnings'][] = 'No Accessibility Statement found. Required under the European Accessibility Act (EAA).';
         }
 
-        if ( ! empty( $results['warnings'] ) ) {
+        if ( ! empty( $missing ) ) {
             $results['pass']    = false;
-            $results['detail']  = count( $results['warnings'] ) . ' legal page(s) missing.';
+            $results['label']   = count( $missing ) . ' of 3 legal pages missing';
+            $results['detail']  = 'Not found: ' . implode( '; ', $missing ) . '.';
             $results['fix']     = 'Create the missing pages: Privacy Policy (Settings → Privacy), Imprint, Accessibility Statement.';
         } else {
+            $results['label']  = 'Privacy, imprint and accessibility pages found';
             $results['detail'] = 'Privacy Policy ✓' . ( isset( $results['pages']['imprint'] ) ? ', Imprint ✓' : '' ) . ( isset( $results['pages']['eaa'] ) ? ', Accessibility ✓' : '' );
         }
 

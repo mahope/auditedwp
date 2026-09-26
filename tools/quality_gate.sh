@@ -326,6 +326,21 @@ hdr "DORA-markørtjekket er det, siderne siger det er"
 run "tools/check_dora_claims.py --selftest" python3 tools/check_dora_claims.py --selftest
 run "tools/check_dora_claims.py" python3 tools/check_dora_claims.py
 
+# ------------------------- 17. Kør de elleve tjek — også de seks ingen kørte
+# Trin 15 stoppede ved de fem tjek, der deler en motor med den gratis scanner.
+# `ssl`, `cookies`, `forms`, `backups`, `plugins` og `legal` var kun linted, og
+# opgave 44 viste at netop det er når et tjek er dødt: `php -l` læser ikke kode,
+# og kilde/zip-pariteten kan kun se forskel mellem kopier, ikke en fejl der er
+# identisk i alle tre. Denne port kører alle elleve og kræver fem egenskaber:
+# at listen er læst ud af run_checks() og ikke skrevet her, at hvert tjek kan nå
+# både bestået og fejlet, at et tjek der ikke kunne køre aldrig er bestået, at
+# et fejlet tjek ikke bærer en etiket der siger at det lykkedes, og at hentinger
+# tælles for sig. Den fandt den første fejl i denne iteration: "Legal pages
+# checked" og "Forms reviewed" stod på de røde rækker i den betalte rapport.
+hdr "Alle elleve plugin-tjek kørt adfærdsmæssigt"
+run "tools/test_plugin_checks.php" php tools/test_plugin_checks.php
+run "tools/test_plugin_checks.php --selftest" php tools/test_plugin_checks.php --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

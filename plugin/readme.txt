@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.12
+Stable tag: 1.3.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,7 +114,7 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
-= 1.3.12 (2026-09-26) =
+= 1.3.13 (2026-09-26) =\n* Fix: two checks reported a label that said they had succeeded on the row that said they failed. The legal-pages check read "Legal pages checked" and the forms check read "Forms reviewed" next to a red FAIL, in the dashboard, in the downloadable report an agency sends to a client, and in the regression mail. Both now name the outcome: "3 of 3 legal pages missing" and "Form plugins found, no Privacy Policy page", and the legal check lists what it did not find instead of only counting it.\n* The plugin- and core-health check no longer reads the list of installed plugins and throws it away. It did that on every scan and could not change the verdict.\n* All eleven checks are now measured by running them, not by reading them. The six WordPress-state checks had only ever been syntax-checked, which is how four other checks stayed dead in 1.3.11.\n\n= 1.3.12 (2026-09-26) =
 * Fix: the five front-page checks introduced in 1.3.11 never matched anything. The signature list is an array of [name, pattern] pairs, and the matcher read them as if they were named keys, so every pattern was empty and the plugin reported "no trackers detected" on a page with Google Analytics and Meta Pixel in its markup. A WordPress site could pass the tracker check in the dashboard and fail the same check on the free scanner, and a Pro report sent to a client would say so.
 * Affected checks: Google Consent Mode v2, IAB TCF, third-party trackers, and DORA page signals. The security-header check was not affected.
 * The five checks are now measured against the same fixtures the free scanner runs, so the two products cannot quietly disagree about the same website again.

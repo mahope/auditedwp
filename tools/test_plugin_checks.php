@@ -1,0 +1,357 @@
+<?php
+/**
+ * Alle elleve tjek kørt adfærdsmæssigt — også de seks, ingen test nogensinde kørte.
+ *
+ *   php tools/test_plugin_checks.php
+ *   php tools/test_plugin_checks.php --selftest   (beviser at den kan fejle)
+ *
+ * Opgave 44 viste, at dokument-gates ikke kan se en fejl, der er identisk i alle
+ * kopier: `php -l` læser ikke kode, og kilde/zip-pariteten kan kun se forskel.
+ * Den viste også, at de fem nye tjek var døde i 1.3.11, fordi ingen port nogensinde
+ * havde *kørt* et tjek. Da den fejl var rettet, var de seks øvrige tjek i
+ * `run_checks()` — `ssl`, `cookies`, `forms`, `backups`, `plugins`, `legal` —
+ * stadig kun linted. Denne fil er deres måling.
+ *
+ * Den gennemfører fem kontrakter, og alle fem er egenskaber ved adfærden, ikke
+ * lister over strenge:
+ *
+ *   1. Proben kører præcis de checks `run_checks()` skriver — listen læses i
+ *      koden, så den kan ikke komme bagefter produktet.
+ *   2. Hvert af de seks tjek kan nå **både** bestået og fejlet. Et tjek der kun
+ *      kan finde det ene er dødt, og det så opgave 44 som en skrivefejl.
+ *   3. Et tjek der ikke kunne køre er aldrig et bestået tjek.
+ *   4. Et tjek der fejler, må ikke have samme etiket som det samme tjek da det
+ *      bestod. Det er den kontrakt, der fandt den eneste fejl i denne iteration.
+ *   5. Én GET pr. scanning, og HEAD tælles **for sig** — målt, ikke antaget.
+ *
+ * Filen bruger `tools/plugin_probe.php` som sin eneste harness, så der kun er én
+ * sandhed om hvad WordPress gør i en test.
+ *
+ * @package EUComply
+ */
+
+ini_set( 'display_errors', 'stderr' );
+
+$PROBE = __DIR__ . '/plugin_probe.php';
+
+/** Same value the plugin uses, named here so this file needs no WordPress. */
+define( 'EUCOMPLY_TEST_DAY', 86400 );
+
+// ── Tiny test harness ─────────────────────────────────────────────────────────
+
+$passed = 0;
+$failed = 0;
+function ok( $label, $condition ) {
+    global $passed, $failed;
+    if ( $condition ) {
+        $passed++;
+        return;
+    }
+    $failed++;
+    echo "FAIL: $label\n";
+}
+
+// ── Kør proben på én fixture ──────────────────────────────────────────────────
+
+function probe( array $fixture ) {
+    global $PROBE;
+    $file = tempnam( sys_get_temp_dir(), 'eucomply-fixture-' ) . '.json';
+    file_put_contents( $file, json_encode( $fixture ) );
+    $out  = array();
+    $code = 0;
+    exec( 'php ' . escapeshellarg( $PROBE ) . ' ' . escapeshellarg( $file ) . ' 2>&1', $out, $code );
+    $json = is_array( $out ) ? implode( "\n", $out ) : '';
+    unlink( $file );
+    if ( 0 !== $code ) {
+        return array( '_error' => trim( $json ) );
+    }
+    $decoded = json_decode( trim( $json ), true );
+    return is_array( $decoded ) ? $decoded : array( '_error' => 'probe output is not JSON: ' . substr( trim( $json ), 0, 200 ) );
+}
+
+/** En publiceret WordPress-side: alle plugins, alle sider, alt opdateret. */
+function healthy_site( $overrides = array() ) {
+    return array_merge(
+        array(
+            'html'          => '<html><head><title>Butik</title></head><body><p>Velkommen</p></body></html>',
+            'headers'       => array(
+                'content-security-policy'   => "default-src 'self'",
+                'x-content-type-options'    => 'nosniff',
+                'referrer-policy'           => 'strict-origin-when-cross-origin',
+                'x-frame-options'           => 'SAMEORIGIN',
+            ),
+            'head_headers'  => array( 'strict-transport-security' => 'max-age=31536000' ),
+            'active'        => array(
+                'complianz-gdpr/cmp-functions.php',
+                'wpforms-lite/wpforms.php',
+                'updraftplus/updraftplus.php',
+            ),
+            'pages'         => array(
+                12 => array( 'post_title' => 'Privatlivspolitik', 'post_status' => 'publish' ),
+                'imprint' => array( 'post_title' => 'Impressum', 'post_status' => 'publish' ),
+                'accessibility-statement' => array( 'post_title' => 'Tilgængelighed', 'post_status' => 'publish' ),
+            ),
+            'options'       => array( 'wp_page_for_privacy_policy' => 12 ),
+            'updraft'       => time() - 2 * EUCOMPLY_TEST_DAY,
+        ),
+        $overrides
+    );
+}
+
+// get_post() returns objects in WordPress and arrays in JSON, so the fixture is
+// normalised to objects once, here, rather than in five places in the checks.
+function to_objects( $site ) {
+    if ( isset( $site['pages'] ) && is_array( $site['pages'] ) ) {
+        foreach ( $site['pages'] as $key => $page ) {
+            if ( is_array( $page ) ) {
+                $site['pages'][ $key ] = (object) $page;
+            }
+        }
+    }
+    if ( isset( $site['core_updates'] ) ) {
+        foreach ( $site['core_updates'] as $i => $core ) {
+            if ( is_array( $core ) ) {
+                $site['core_updates'][ $i ] = (object) $core;
+            }
+        }
+    }
+    if ( isset( $site['plugin_updates'] ) ) {
+        foreach ( $site['plugin_updates'] as $file => $data ) {
+            $data['update'] = (object) $data['update'];
+            $site['plugin_updates'][ $file ] = (object) $data;
+        }
+    }
+    return $site;
+}
+
+$HEALTHY = to_objects( healthy_site() );
+
+// ── Kontrakt 1: proben kører præcis dem run_checks() skriver ──────────────────
+
+$first = probe( $HEALTHY );
+ok( 'proben returnerede et resultat', empty( $first['_error'] ) );
+if ( ! empty( $first['_error'] ) ) {
+    fwrite( STDERR, "probe: {$first['_error']}\n" );
+    exit( 1 );
+}
+$RUN_CHECKS_KEYS = $first['_keys'];
+ok( 'run_checks() skriver elleve checks', 11 === count( $RUN_CHECKS_KEYS ) );
+$SHARED = array( 'consent_mode_v2', 'tcf', 'trackers', 'headers', 'dora' );
+$missing_shared = array_values( array_diff( $SHARED, $RUN_CHECKS_KEYS ) );
+ok(
+    'de fem delte checks er blandt dem run_checks() skriver',
+    array() === $missing_shared,
+);
+if ( $missing_shared ) {
+    fwrite( STDERR, 'mangler i run_checks(): ' . implode( ', ', $missing_shared ) . "\n" );
+}
+
+// ── Kontrakt 2 og 4: hvert tjek kan nå begge domme, med en anden etiket ───────
+//
+// Fixtures der hver især danner en fejlklasse. `ssl` nås gennem HEAD-svaret,
+// de øvrige gennem WordPress-tilstanden.
+
+$FAILURES = array(
+    'ingen HSTS' => array( 'head_headers' => array() ),
+    'HEAD fejler' => array( 'head_error' => 'cURL error 28: Operation timed out' ),
+    'ingen consent-plugin' => array( 'active' => array( 'wpforms-lite/wpforms.php', 'updraftplus/updraftplus.php' ) ),
+    'form-plugin uden privatlivsside' => array(
+        'active'  => array( 'complianz-gdpr/cmp-functions.php', 'updraftplus/updraftplus.php' ),
+        'options' => array(),
+    ),
+    'ingen backup-plugin' => array( 'active' => array( 'complianz-gdpr/cmp-functions.php', 'wpforms-lite/wpforms.php' ) ),
+    'backup 60 dage gammel' => array( 'updraft' => time() - 60 * EUCOMPLY_TEST_DAY ),
+    'core ude af date' => array(
+        'core_updates' => array( array( 'response' => 'upgrade', 'current' => '6.9' ) ),
+        'updraft'      => null,
+    ),
+    'to plugins ude af date' => array(
+        'plugin_updates' => array(
+            'wpforms-lite/wpforms.php'    => array( 'Name' => 'WPForms', 'Version' => '2.0', 'update' => array( 'new_version' => '2.1' ) ),
+            'complianz-gdpr/cmp-functions.php' => array( 'Name' => 'Complianz', 'Version' => '6.5', 'update' => array( 'new_version' => '7.0' ) ),
+        ),
+        'updraft' => null,
+    ),
+    'ingen juridiske sider' => array( 'pages' => array(), 'options' => array() ),
+    'privatlivsside ikke publiceret' => array(
+        'pages'   => array( 12 => array( 'post_title' => 'Udkast', 'post_status' => 'draft' ) ),
+        'options' => array( 'wp_page_for_privacy_policy' => 12 ),
+    ),
+    'ingen front-page-headere' => array( 'headers' => array() ),
+    'ingen trackere, consent eller DORA-tekst' => array( 'html' => '<html><body><p>Velkommen</p></body></html>' ),
+    // De fire signatur-baserede tjek læser forsidens tekst, så de nås med HTML,
+    // ikke med WordPress-tilstand. Samme fem klasser som paritetsporten bruger,
+    // her brugt til det den ikke stiller: kan de overhovedet nå begge domme.
+    'alt consent, TCF, CMP og DORA' => array( 'html' => '<html><body class="google_consent_mode">'
+        . '<script>gtag(\'consent\', \'default\', { ad_storage: \'denied\' }); window.dataLayer = window.dataLayer || [];'
+        . ' gtag(\'js\', new Date()); gtag(\'config\', \'G-1\', { consent_mode: \'granted\' });</script>'
+        . '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-1" async></script>'
+        . '<script>window.__tcfapi(\'addEventListener\', 2);</script>'
+        . '<script>gdprApplies = true; tcfapi_v2 = "2.2"; IABConsent_String = "CPabc"; IABTCF_Session = "x";</script>'
+        . '<script src="https://cdn.cookiebot.com/uc.js" async></script>'
+        // Skrevet efter signaturerne, ikke efter forventningen: de fire af ni
+        // DORA-markører kræver en bindestreg eller underscore i løbet (se opgave 45),
+        // så 'SPF record' med et mellemrum matcher ikke `spf[_-]?record`.
+        . '<p>SPF-record, DKIM signing, DMARC-record, incident-response plan, business-continuity and a status-page are published.</p>'
+        . '</body></html>' ),
+    'trackere uden consent-platform' => array( 'html' => '<html><body>'
+        . '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-1"></script>'
+        . '<script>fbq(\'init\', \'123\')</script><script src="https://static.hotjar.com/x.js"></script>'
+        . '</body></html>' ),
+);
+
+$runs = array( ' sund site' => $HEALTHY );
+foreach ( $FAILURES as $name => $override ) {
+    $runs[ $name ] = to_objects( healthy_site( $override ) );
+}
+
+$pass_labels = array();
+$fail_labels = array();
+$states      = array();
+foreach ( $runs as $name => $site ) {
+    $verdicts = probe( $site );
+    if ( ! empty( $verdicts['_error'] ) ) {
+        ok( "proben svarede på «$name»", false );
+        continue;
+    }
+    foreach ( $RUN_CHECKS_KEYS as $key ) {
+        if ( ! isset( $verdicts[ $key ] ) || ! is_array( $verdicts[ $key ] ) ) {
+            ok( "$key findes i resultatet for «$name»", false );
+            continue;
+        }
+        $label = (string) $verdicts[ $key ]['label'];
+        if ( ! empty( $verdicts[ $key ]['pass'] ) ) {
+            $pass_labels[ $key ][ $label ] = true;
+            $states[ $key ]['pass']       = true;
+        } else {
+            $fail_labels[ $key ][ $label ] = true;
+            $states[ $key ]['fail']       = true;
+        }
+    }
+}
+
+// Kontrakt 2 — det døde-tjek.
+foreach ( $RUN_CHECKS_KEYS as $key ) {
+    ok(
+        "$key kan både bestå og fejle (aldrig et dødt tjek)",
+        ! empty( $states[ $key ]['pass'] ) && ! empty( $states[ $key ]['fail'] )
+    );
+}
+
+// Kontrakt 4 — etiketten skal fortælle hvilken dom. Det er den, der fandt
+// "Legal pages checked" og "Forms reviewed" stående på en rød række.
+foreach ( $RUN_CHECKS_KEYS as $key ) {
+    // array_merge, ikke +: begge lister er numeriske, så + er et union og
+    // ville tage den korte liste og lade den længere ligge.
+    $both = array_merge( array_keys( $pass_labels[ $key ] ?? array() ), array_keys( $fail_labels[ $key ] ?? array() ) );
+    ok(
+        "$key har forskellige etiketter på bestået og fejlet",
+        count( $both ) >= 2
+    );
+}
+
+// Den konkrete fejl, målt på den rækkefølge kunden ser den: et fejlet tjek må
+// ikke bære en etiket, der siger at tjekket lykkes.
+foreach ( $fail_labels as $key => $labels ) {
+    foreach ( array_keys( $labels ) as $label ) {
+        ok(
+            "$key fejler uden en etiket der påstår at det lykkes (\"$label\")",
+            ! preg_match( '~^(legal pages checked|forms reviewed|all up to date|.*\b(checked|reviewed|verified)\b)~i', $label )
+        );
+    }
+}
+
+// ── Kontrakt 3: et tjek der ikke kunne køre er aldrig et bestået tjek ─────────
+
+$unreadable = probe( to_objects( healthy_site( array( 'error' => 'cURL error 28: Operation timed out' ) ) ) );
+ok( 'en ulæselig forside gav et resultat', empty( $unreadable['_error'] ) );
+if ( empty( $unreadable['_error'] ) ) {
+    foreach ( $SHARED as $key ) {
+        ok( "$key er ikke bestået på en ulæselig forside", empty( $unreadable[ $key ]['pass'] ) );
+        ok( "$key siger at det ikke kørte", ! empty( $unreadable[ $key ]['warn'] ) );
+    }
+    // Og de fem delte tjek skal alle sige det samme, så de ikke kan være lige
+    // heldige: ét af dem, der læser videre på en fejl, ville være en ny død
+    // etiket.
+    $say_could_not = 0;
+    foreach ( $SHARED as $key ) {
+        if ( false !== stripos( (string) $unreadable[ $key ]['label'], 'could not read' ) ) {
+            $say_could_not++;
+        }
+    }
+    ok( "alle fem delte tjek siger at de ikke kørte ($say_could_not/5)", 5 === $say_could_not );
+}
+
+// ── Kontrakt 5: én GET pr. scanning, og HEAD tælles for sig ──────────────────
+//
+// Målt, fordi påstanden "én hentning pr. scan" ellers kun gælder de fem statiske
+// tjek: `check_ssl()` sender sin egen HEAD. Det er ikke en fejl, men det er en
+// undtagelse, og en undtagelse der ikke måles er en undtagelse ingen kender.
+
+ok(
+    'de elleve tjek henter forsiden én gang',
+    1 === ( $first['_fetches'] ?? -1 ),
+);
+ok( 'check_ssl() sender sin egen HEAD — målt, ikke antaget', 1 === ( $first['_heads'] ?? -1 ) );
+ok(
+    'to hentninger i alt pr. scanning på en læsbar side',
+    2 === ( ( $first['_fetches'] ?? -1 ) + ( $first['_heads'] ?? -1 ) ),
+);
+
+$unreadable_fetches = $unreadable['_fetches'] ?? -1;
+$unreadable_heads   = $unreadable['_heads'] ?? -1;
+ok( 'en ulæselig forside hentes heller ikke seks gange', 1 === $unreadable_fetches );
+
+// ── Selftest: bevis at kontrakterne kan fejle ──────────────────────────────────
+
+if ( in_array( '--selftest', $argv, true ) ) {
+    // 1. En nøgle der forsvinder fra run_checks() skal give færre checks.
+    $read_keys = eucomply_selftest_keys();
+    ok( 'selftest: run_checks() skriver elleve checks', 11 === count( $read_keys ) );
+    ok(
+        'selftest: en nøgle der forsvinder fra run_checks() giver færre checks',
+        10 === count( preg_grep( '~^backups$~', $read_keys, PREG_GREP_INVERT ) )
+    );
+
+    // 2. Samme etiket på begge domme skal være rød.
+    $same = 'a fixture where the label is the same either way';
+    ok( 'selftest: en delt etiket mellem bestået og fejlet er rød', contract_label_catches( 'Legal pages checked' ) );
+    ok( 'selftest: en forskellig etiket er grøn', ! contract_label_catches( '2 of 3 legal pages missing' ) );
+
+    // 3. Et tjek der kun kan finde det ene domme skal være rød.
+    ok( 'selftest: et tjek med kun ét dom er rød', ! contract_reaches_both_dommes( array( 'pass' => true ) ) );
+    ok( 'selftest: et tjek med begge domme er grøn', contract_reaches_both_dommes( array( 'pass' => true, 'fail' => true ) ) );
+
+    // 4. En ulæselig forside der tælles som bestået skal være rød.
+    ok( 'selftest: et bestået tjek på en ulæselig forside er rød', ! contract_unreadable_is_never_a_pass( array( 'pass' => true ) ) );
+    ok( 'selftest: et ikke-bestået tjek på en ulæselig forside er grøn', contract_unreadable_is_never_a_pass( array( 'pass' => false, 'warn' => true ) ) );
+}
+
+/**
+ * Selftestens hjælpere. De er bevidst skrevet som *de samme betingelser* som
+ * kontrakterne ovenfor, så en case der forventer rødt og en port der ikke kan
+ * blive rød, ikke kan være sande på én gang.
+ */
+function eucomply_selftest_keys() {
+    $source = file_get_contents( __DIR__ . '/../plugin/eucomply.php' );
+    preg_match( '/public function run_checks\(\).*?\n    \}/s', $source, $block );
+    preg_match_all( '/\$results\[\s*[\'"]([a-z0-9_]+)[\'"]\s*\]\s*=\s*\$this->([a-z0-9_]+)\s*\(/i', $block[0], $hits );
+    return $hits[1];
+}
+function contract_label_catches( $label ) {
+    return (bool) preg_match( '~^(legal pages checked|forms reviewed|all up to date|.*\b(checked|reviewed|verified)\b)~i', $label );
+}
+function contract_reaches_both_dommes( array $states ) {
+    return ! empty( $states['pass'] ) && ! empty( $states['fail'] );
+}
+function contract_unreadable_is_never_a_pass( array $verdict ) {
+    return empty( $verdict['pass'] ) && ! empty( $verdict['warn'] );
+}
+
+// ── Optælling ────────────────────────────────────────────────────────────────
+
+if ( $failed ) {
+    echo "\n$failed af de $passed checks fejlede\n";
+    exit( 1 );
+}
+echo "\n$passed plugin-check adfærdsmæssigt bestået — " . count( $RUN_CHECKS_KEYS ) . " checks, " . count( $runs ) . " fixtures\n";
