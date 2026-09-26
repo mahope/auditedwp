@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.7 (2026-09-26) =
+* Pro: the compliance report can be downloaded from wp-admin without creating a client link, so an agency that attaches it every month no longer has to issue a new 30-day link each time.
+* The download is the same document as the one a client link serves — same report, same scan history, same filename — and it is now the only rendering of the report in the plugin.
+* The download requires the same account permission, nonce and active Pro licence as every other screen in wp-admin, and a refused download returns no document and no filename.
+* Every screen and export in the plugin is gated on one declared capability, so a download can never be reached more loosely than the settings page.
 
 = 1.3.6 (2026-09-26) =
 * Pro: the client report can be downloaded as a file. Next to a freshly created link there is now a "Download report (HTML)" button, so an agency can attach the report to an e-mail or hand it to an auditor instead of only sending a URL.
