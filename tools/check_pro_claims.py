@@ -424,6 +424,11 @@ LOCAL_CADENCE_SCOPE = re.compile(
     r"\b(?:locally|on\s+your\s+own\s+wordpress(?:\s+install(?:ation)?)?|in\s+your\s+own\s+wordpress|"
     r"inside\s+your\s+own\s+wordpress|from\s+your\s+own\s+server)\b|"
     r"\bwp-?cron\b|"
+    # "i din egen WordPress" and "in Ihrer eigenen Installation" are what the DA
+    # and DE pages write; without these two branches a daily cadence in Danish
+    # or German was an over-claim the gate could not see, which is the same
+    # missing-word failure the name vocabularies above kept making.
+    r"\bi\s+din\s+egen\w*\b|\bin\s+(?:Ihrer|ihrer|der)\s+eigenen?\b|"
     r"\bpå\s+(?:din|den\s+ne|deres|eget?)\b|\bvor\s+ort\b|\blokal\w*|\bvindues\w*\b|"
     r"\blocalement\b|\bsur\s+(?:votre|le\s+site|ce\s+site|votre\s+site)\b|\bdans\s+(?:votre\s+)?wordpress\b",
     re.I,
@@ -696,6 +701,12 @@ def target_header(value: str, relative: str) -> bool:
     buying = context_relative(relative) in BUYING_PAGES
     if buying and (text == "pro" or re.match(r"^pro(?:\s|[-])", text)):
         return True
+    # "Extension Pro", "Pro-Plugin", "Pro plugin": a translated header can lead
+    # with the product name. The French one did not match, so the whole French
+    # comparison column had never been read by a table claim -- neither by the
+    # over-claim rules nor by the new under-claim one.
+    if buying and re.search(r"(?:^|\s)pro$", text):
+        return True
     return False
 
 
@@ -790,9 +801,20 @@ LOCAL_CADENCE_MAX_CHARS = 400
 
 
 def local_cadence_claim(relative: str, segment: str, text: Optional[str] = None) -> bool:
-    """A daily cadence the site's own WordPress runs, in a file that schedules it."""
+    """A daily cadence the site's own WordPress runs, in a file that schedules it.
+
+    Two ways in, and the second one is new. A page *about* the plugin is allowed
+    the sentence. A sales page has to earn it: the cadence is a plugin feature, so
+    the sentence itself has to say where it runs ("in your own WordPress"). The
+    old rule allowed neither on /pro/ and /pricing/, which is why the pricing
+    table could tell a buyer that Pro scans on the same weekly schedule as the
+    free plugin -- the one comparison on the site where the Pro column was
+    identical to the Free column, and nobody read it as a bug because the rule
+    that would have flagged it was a page list.
+    """
+    scoped = relative in PLUGIN_LOCAL_FILES or bool(LOCAL_CADENCE_SCOPE.search(segment))
     return (
-        relative in PLUGIN_LOCAL_FILES
+        scoped
         and len(segment) <= LOCAL_CADENCE_MAX_CHARS
         and bool(LOCAL_CADENCE_SCOPE.search(segment))
         and plugin_schedules_daily_scan(text)
@@ -937,6 +959,10 @@ DENIAL = (
     r"ne\s+(?:sont|est)\s+pas|aucun\w*|hors\s+de)"
 )
 
+# One compiled copy, so the two directions of the truth gate cannot disagree
+# about what a denial is.
+DENIED_VERB = re.compile(DENIAL, re.I)
+
 # PRO_CONTEXT is English-shaped, and that is deliberate: it guards the
 # over-claim direction, where being conservative means missing a claim rather
 # than inventing one. The denial direction has the opposite risk — reading no
@@ -962,6 +988,7 @@ PRO_PAGE_CONTEXT = re.compile(
 class ShippedFeature:
     """A Pro feature the code still ships, and the words that deny it."""
 
+    key: str
     label: str
     shipped: Callable[[], bool]
     name: Pattern[str]
@@ -1010,57 +1037,141 @@ def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
     """
     return (
         ShippedFeature(
-            "shipped Pro feature denied on a sales page",
-            plugin_ships_history,
+            label="shipped Pro feature denied on a sales page",
+            key="history",
+            shipped=plugin_ships_history,
             # Every name the four locales actually use. "Historie" was missing on
             # the first run and the German pages went unread for the same reason
             # the French ones did — one word of vocabulary, one silent language.
-            re.compile(
+            name=re.compile(
                 r"\b(?:scan\s+history|scanning\s+history|scanhistorik|scanningshistorik|"
                 r"scan-verlauf|scanverlauf|verlauf|historie|scangeschichte|"
                 r"historik|history|historique)\b",
                 re.I,
             ),
-            re.compile(DENIAL, re.I),
+            denial=re.compile(DENIAL, re.I),
         ),
         ShippedFeature(
-            "shipped Pro feature denied on a sales page",
-            plugin_ships_client_link,
-            re.compile(
+            label="shipped Pro feature denied on a sales page",
+            key="client link",
+            shipped=plugin_ships_client_link,
+            # "rapportlink", "Berichtslink" and "lien de rapport" are what the
+            # DA/DE/FR pages write; before they were here the check read EN and
+            # DA only, which is the same missing-word failure as above.
+            name=re.compile(
                 r"\b(?:client\s+(?:report\s+)?link|report\s+link|clientlink|"
-                r"kundenlink|kundelink|klientlink|"
-                r"client-lien|lien\s+(?:client|rapport))\b",
+                r"kundenlink|kundelink|klientlink|rapportlink|berichtslink|"
+                r"read-?only\s+report\s+link|skrivebeskyttet\s+\w*link|"
+                r"client-lien|lien\s+(?:de\s+)?(?:client|rapport))\b",
                 re.I,
             ),
-            re.compile(DENIAL, re.I),
+            denial=re.compile(DENIAL, re.I),
         ),
         ShippedFeature(
-            "shipped Pro feature denied on a sales page",
-            plugin_ships_report_file,
-            re.compile(
+            label="shipped Pro feature denied on a sales page",
+            key="report file",
+            shipped=plugin_ships_report_file,
+            name=re.compile(
                 r"\b(?:download\w*\s+(?:the\s+|your\s+)?report|report\s+file|"
                 r"bericht\s+herunterladen\w*|rapport\s+t[ée]l[ée]charg\w*)\b",
                 re.I,
             ),
-            re.compile(DENIAL, re.I),
+            denial=re.compile(DENIAL, re.I),
         ),
         ShippedFeature(
-            "shipped Pro feature denied on a sales page",
-            plugin_ships_alert,
+            label="shipped Pro feature denied on a sales page",
+            key="alert",
+            shipped=plugin_ships_alert,
             # Not a bare "e-mail": the site sends ordinary mail about plenty of
             # things. Each name is a change-notification in the language the
             # page actually writes it in, because a word of missing vocabulary is
             # how the German and French pages went unread in the first place.
-            re.compile(
+            name=re.compile(
                 r"\b(?:e-?mail\s+alerts?|alerts?\s+by\s+e-?mail|regression\s+alerts?|"
                 r"e-?mail-alarmer?\b|e-?mail\s+ved\s+overgang|mail-?alarm\w*\b|"
                 r"E-Mail-Meldung\w*|E-Mail-Benachrichtigung\w*|E-Mail\s+bei\s+Wechsel|"
-                r"alertes?\s+par\s+e-?mail|e-?mail\s+lors\s+du\s+passage)\b",
+                r"alertes?\s+(?:par\s+)?e-?mail|e-?mail\s+lors\s+du\s+passage)\b",
                 re.I,
             ),
-            re.compile(DENIAL, re.I),
+            denial=re.compile(DENIAL, re.I),
         ),
     )
+
+
+# The eight pages that decide what a buyer believes Pro is. Not every page that
+# mentions Pro, and not the vendor comparisons: this is the canonical truth
+# surface, in the four languages, and a feature the code ships has to be sold
+# somewhere a buyer actually compares plans.
+PRO_TRUTH_SURFACES = {
+    "site/pro/index.html",
+    "site/da/pro/index.html",
+    "site/de/pro/index.html",
+    "site/fr/pro/index.html",
+    "site/pricing/index.html",
+    "site/da/pricing/index.html",
+    "site/de/pricing/index.html",
+    "site/fr/pricing/index.html",
+}
+
+# A cadence is not a noun, so it gets its own names. Each language writes its
+# own adverb, and the roadmap line on every /pro/ page contains the same word in
+# a sentence that is about the hosted service -- which is exactly the collision
+# the check has to survive, so the pattern is deliberately the bare adverb.
+DAILY_CADENCE_NAME = re.compile(
+    r"\b(?:daily|once\s+a\s+day|every\s+day|"
+    r"daglig\w*|t\xe4glich\w*|t\xe4gliche\w*|quotidien\w*|chaque\s+jour)\b",
+    re.I,
+)
+
+
+def _under_claim_features() -> Tuple[Tuple[str, Callable[[], bool], Pattern[str]], ...]:
+    """The shipped Pro features a canonical sales page has to name.
+
+    The name patterns are the *same objects* the denial direction uses, so the
+    two directions cannot drift apart into two vocabularies -- the failure mode
+    of every hand-kept list in this file so far.
+    """
+    by_key = {feature.key: feature for feature in _shipped_pro_features()}
+    return (
+        ("a scan history", plugin_ships_history, by_key["history"].name),
+        ("a client report link", plugin_ships_client_link, by_key["client link"].name),
+        ("an e-mail alert", plugin_ships_alert, by_key["alert"].name),
+        ("daily re-scans", plugin_schedules_daily_scan, DAILY_CADENCE_NAME),
+    )
+
+
+def under_claim_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
+    """Pages that sell Pro while sitting on a Pro feature the plugin ships.
+
+    The denial check above is the mirror image of this one, and neither is
+    optional. A page that denies history is a promise the product breaks; a page
+    that never mentions it is money left on the table, and it is how all eight
+    truth pages read on 26/9: 1.3.4 through 1.3.10 shipped history, a client
+    link, a report file, a daily cadence and pass-to-fail alerts, and /pro/ still
+    listed three features and put the rest under "planned".
+
+    A name only counts as *sold* when it is not scoped to the future or to the
+    hosted service. The product requires both of those denials, so a check that
+    could not tell them apart would push the site into over-claiming -- the same
+    trade the denial check makes in the other direction.
+    """
+    findings: List[str] = []
+    for label, shipped, name in _under_claim_features():
+        if not shipped():
+            continue
+        if any(
+            name.search(block.text)
+            and not ROADMAP.search(block.text)
+            and not ROADMAP_DISCLAIMER.search(block.text)
+            and not DENIED_VERB.search(block.text)
+            for block in blocks
+        ):
+            continue
+        findings.append(
+            f"{relative}: the plugin ships {label} behind the Pro licence, "
+            "but no line on this page sells it"
+        )
+    return findings
 
 
 def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
@@ -1832,6 +1943,9 @@ def run_self_tests() -> Tuple[int, List[str]]:
     failures.extend(local_cadence_self_tests())
     checks += LOCAL_CADENCE_CHECKS
     checks += DENIAL_CHECKS
+    checks += UNDER_CLAIM_CHECKS
+    failures.extend(under_claim_self_tests())
+    checks += UNDER_CLAIM_CHECKS
     failures.extend(denial_self_tests())
     return checks, failures
 
@@ -1843,7 +1957,7 @@ def run_self_tests() -> Tuple[int, List[str]]:
 # daily interval. Remove any one and the claim comes back. Two more hold it
 # still: the gate must actually reach the sentence, and the hole must not leak
 # sideways into the claims it has nothing to do with.
-LOCAL_CADENCE_CHECKS = 8
+LOCAL_CADENCE_CHECKS = 9
 LOCAL_DAILY = "EUComply Pro scans your site every day, on your own WordPress server."
 LOCAL_DAILY_HOSTED = "EUComply Pro monitors your website daily in the background, from our servers."
 
@@ -1858,8 +1972,14 @@ def local_cadence_self_tests() -> List[str]:
         failures.append("self-test local cadence: the plugin does not schedule a daily scan, so the hole has nothing to justify it")
     if text_findings("plugin/readme.txt", LOCAL_DAILY):
         failures.append("self-test local cadence: a scheduled daily scan in the plugin was flagged")
-    if not any("daily monitoring or rescans" in finding for finding in text_findings("site/pro/index.html", LOCAL_DAILY)):
-        failures.append("self-test local cadence: the same sentence was allowed on a Pro page")
+    # A sales page earns the daily cadence by naming where it runs. The sentence
+    # the plugin readme is allowed, the same words without the local marker are
+    # not, and that pair is the property -- not a page list.
+    if text_findings("site/pro/index.html", LOCAL_DAILY):
+        failures.append("self-test local cadence sales page: a daily scan scoped to your own WordPress was flagged on the Pro page")
+    if not any("daily monitoring or rescans" in finding for finding in
+               text_findings("site/pro/index.html", LOCAL_DAILY_HOSTED)):
+        failures.append("self-test local cadence sales page: a hosted daily monitor was allowed on the Pro page")
     if not any("daily monitoring or rescans" in finding for finding in text_findings("plugin/readme.txt", LOCAL_DAILY_HOSTED)):
         failures.append("self-test local cadence: a hosted daily monitor inside the plugin was allowed")
     # Non-vacuity, and the property the first case rests on: the gate really does
@@ -1890,6 +2010,85 @@ def local_cadence_self_tests() -> List[str]:
 # product REQUIRES — a hosted-only disclaimer, a roadmap box, a competitor
 # comparison — so a gate that simply forbade them would push the site into
 # over-claiming instead, which is the other half of the same problem.
+UNDER_CLAIM_CHECKS = 8
+
+# The eight truths the four published pages must reach. Written as the pages
+# actually read, because a selftest written after the pattern is the reason a
+# vocabulary gap survives: the EN/DE/FR words here were each absent from a name
+# pattern on the first run, which is how a whole language goes unread and green.
+UNDER_CLAIM_SAMPLE = {
+    "site/pro/index.html": (
+        "<li><b>Daily automatic re-scans</b><p>A Pro site is scanned once a day.</p></li>"
+        "<li><b>Scan history: one snapshot per day, per check</b><p>52 days of history.</p></li>"
+        "<li><b>Email alert when a check breaks</b><p>The plugin emails the owner.</p></li>"
+        "<li><b>A read-only report link for your client</b><p>The client opens it without a login.</p></li>"
+    ),
+    "site/da/pro/index.html": (
+        "<li><b>Daglige automatiske scanninger</b><p>Scannes én gang om dagen.</p></li>"
+        "<li><b>Scanningshistorik: ét snapshot om dagen</b><p>52 dages historik.</p></li>"
+        "<li><b>Mailalarm, når et tjek bryder</b><p>Pluginen sender en mail.</p></li>"
+        "<li><b>Et skrivebeskyttet rapportlink til din kunde</b><p>Kunden åbner det uden login.</p></li>"
+    ),
+    "site/de/pro/index.html": (
+        "<li><b>Tägliche automatische Scans</b><p>Wird einmal täglich gescannt.</p></li>"
+        "<li><b>Scan-Verlauf: täglich ein Eintrag</b><p>52 Einträge Verlauf.</p></li>"
+        "<li><b>E-Mail-Alarm, wenn eine Prüfung ausfällt</b><p>Das Plugin verschickt eine E-Mail.</p></li>"
+        "<li><b>Ein schreibgeschützter Berichtslink für Ihren Kunden</b><p>Ohne Anmeldung.</p></li>"
+    ),
+    "site/fr/pro/index.html": (
+        "<li><b>Scans automatiques quotidiens</b><p>Scanné une fois par jour.</p></li>"
+        "<li><b>Historique de scan : une entrée par jour</b><p>52 relevés.</p></li>"
+        "<li><b>Alerte e-mail quand un contrôle échoue</b><p>L\'extension envoie un e-mail.</p></li>"
+        "<li><b>Un lien de rapport en lecture seule pour votre client</b><p>Sans connexion.</p></li>"
+    ),
+    "site/pricing/index.html": (
+        "<tr><td>Daily scheduled WordPress scan</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
+        "<tr><td>Scan history: one snapshot per day, per check</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
+        "<tr><td>Email alert when a check passes and later fails</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
+        "<tr><td>Read-only report link for a client</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
+    ),
+}
+
+
+def under_claim_self_tests() -> List[str]:
+    """Both directions of the new check, and the real pages behind them.
+
+    The positive half is the part that matters: it reads the eight *published*
+    pages, so a vocabulary gap in a language is red here rather than a page that
+    ships three features and calls the rest planned.
+    """
+    failures: List[str] = []
+    for relative, markup in UNDER_CLAIM_SAMPLE.items():
+        for feature in ("a scan history", "a client report link", "an e-mail alert", "daily re-scans"):
+            if under_claim_findings(relative, parse_html(markup).claim_blocks(relative)):
+                failures.append(f"self-test under-claim {relative}: a complete Pro page was flagged")
+    # The page as it read on 26/9: three features, the rest under "planned".
+    bare = "<ul><li><b>Pro license in WordPress</b><p>Validated in the plugin.</p></li></ul>"
+    findings = under_claim_findings("site/pro/index.html", parse_html(bare).claim_blocks("site/pro/index.html"))
+    for feature in ("a scan history", "an e-mail alert", "daily re-scans"):
+        if not any(feature in finding for finding in findings):
+            failures.append(f"self-test under-claim silent: a page that never mentions {feature} passed")
+    # A hosted roadmap line names the same words and sells nothing: it must not
+    # be able to satisfy the check, or the site could stay exactly as it is.
+    hosted = (
+        "<p class=\"status\">Planned features, not included today: hosted daily re-scans, "
+        "a scan history in the hosted service, runtime PDF reports and a live badge.</p>"
+    )
+    findings = under_claim_findings("site/pro/index.html", [TextBlock(re.sub(r"<[^>]+>", " ", hosted), 1)])
+    if len(findings) < 3:
+        failures.append("self-test under-claim roadmap: a hosted roadmap line was able to pass as a sale")
+    for relative in sorted(PRO_TRUTH_SURFACES):
+        path = ROOT / relative
+        if not path.exists():
+            continue
+        text = read_text(path, f"self-test under-claim: {relative}", [])
+        if text is None:
+            continue
+        if under_claim_findings(relative, parse_html(text).claim_blocks(relative)):
+            failures.append(f"self-test under-claim real page {relative}: the published page does not sell everything the plugin ships")
+    return failures
+
+
 DENIAL_CHECKS = 24
 DENIED_LOCAL = "Hosted re-scans, scan history, PDF reports and a live badge are not part of it."
 DENIED_LOCAL_DA = "Hosted re-scans, historik, PDF og det live badge er ikke en del af det."
@@ -2036,6 +2235,10 @@ def main() -> int:
             # licence unlocks. This direction is otherwise unwatched: the gate
             # stays green, the page stays published, the feature stays unsold.
             findings.extend(denial_findings(relative, parse_html(text).claim_blocks(relative)))
+        if relative in PRO_TRUTH_SURFACES:
+            # The other direction, on the pages a buyer compares plans on: a
+            # shipped feature nobody names is a feature nobody pays extra for.
+            findings.extend(under_claim_findings(relative, parse_html(text).claim_blocks(relative)))
     expected_buying_pages = set(BUYING_PAGES)
     if buying_pages_checked != expected_buying_pages:
         missing = sorted(expected_buying_pages - buying_pages_checked)
