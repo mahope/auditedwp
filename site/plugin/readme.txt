@@ -42,8 +42,9 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 | GDPR Data Processing Agreement (Art. 28) | — | ✓ |
 | NIS2/DORA vendor clause set (5 clauses) | — | ✓ |
 | EAA Accessibility Statement | — | ✓ |
-| HTML report from the latest WordPress scan | — | ✓ |
+| HTML report from the latest WordPress scan, with 52 weeks of scan history | — | ✓ |
 | Agency name branding in reports | — | ✓ |
+| Read-only client report link, valid 30 days and revocable | — | ✓ |
 | License revalidation at most once every 24 hours when the Pro admin view is used, with a 7-day offline grace after a temporary license-server failure | — | ✓ |
 
 = Why another compliance plugin? =
@@ -112,6 +113,14 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.5 (2026-09-26) =
+* Pro: a client report link. Create one in the dashboard and send it to your client; they read this site's report and scan history in a browser, without a WordPress login.
+* The link is read-only, expires after 30 days, and can be revoked at any time. Creating a new one retires the old one.
+* Only a hash of the link is stored, so it cannot be shown a second time. If you lose it, create a new one.
+* Every rejected link returns the same "not found" page, so the address cannot be used to find out which links exist.
+* Reading a report never contacts our license server, so a client is never shown a broken page because our API was slow.
+* The link is a secret: anyone who has it can read the report. It is deleted when you uninstall the plugin.
 
 = 1.3.4 (2026-09-26) =
 * Pro: the compliance report now carries a scan history, so you can show a client that the site is still compliant and what changed since the first recorded scan.
