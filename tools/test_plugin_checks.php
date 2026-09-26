@@ -53,13 +53,17 @@ function ok( $label, $condition ) {
 
 // ── Kør proben på én fixture ──────────────────────────────────────────────────
 
-function probe( array $fixture ) {
+function probe( array $fixture, $only = '' ) {
     global $PROBE;
     $file = tempnam( sys_get_temp_dir(), 'eucomply-fixture-' ) . '.json';
     file_put_contents( $file, json_encode( $fixture ) );
     $out  = array();
     $code = 0;
-    exec( 'php ' . escapeshellarg( $PROBE ) . ' ' . escapeshellarg( $file ) . ' 2>&1', $out, $code );
+    $cmd  = 'php ' . escapeshellarg( $PROBE ) . ' ' . escapeshellarg( $file );
+    if ( '' !== $only ) {
+        $cmd .= ' ' . escapeshellarg( $only );
+    }
+    exec( $cmd . ' 2>&1', $out, $code );
     $json = is_array( $out ) ? implode( "\n", $out ) : '';
     unlink( $file );
     if ( 0 !== $code ) {
@@ -79,8 +83,12 @@ function healthy_site( $overrides = array() ) {
                 'x-content-type-options'    => 'nosniff',
                 'referrer-policy'           => 'strict-origin-when-cross-origin',
                 'x-frame-options'           => 'SAMEORIGIN',
+                // HSTS is read from this same response, so the healthy site
+                // carries it here — the front page is the only request a scan
+                // makes, and a header nothing reads is a header nothing proves.
+                'strict-transport-security' => 'max-age=31536000',
             ),
-            'head_headers'  => array( 'strict-transport-security' => 'max-age=31536000' ),
+            'home'          => 'https://agency-client.example',
             'active'        => array(
                 'complianz-gdpr/cmp-functions.php',
                 'wpforms-lite/wpforms.php',
@@ -148,12 +156,13 @@ if ( $missing_shared ) {
 
 // ── Kontrakt 2 og 4: hvert tjek kan nå begge domme, med en anden etiket ───────
 //
-// Fixtures der hver især danner en fejlklasse. `ssl` nås gennem HEAD-svaret,
-// de øvrige gennem WordPress-tilstanden.
+// Fixtures der hver især danner en fejlklasse. `ssl` nås gennem forsidens
+// headere — dem `front_page()` hentede — og gennem skemeen i site-adressen, de
+// øvrige gennem WordPress-tilstanden.
 
 $FAILURES = array(
-    'ingen HSTS' => array( 'head_headers' => array() ),
-    'HEAD fejler' => array( 'head_error' => 'cURL error 28: Operation timed out' ),
+    'site over http' => array( 'home' => 'http://agency-client.example' ),
+    'ingen HSTS' => array( 'headers' => array( 'x-frame-options' => 'SAMEORIGIN' ) ),
     'ingen consent-plugin' => array( 'active' => array( 'wpforms-lite/wpforms.php', 'updraftplus/updraftplus.php' ) ),
     'form-plugin uden privatlivsside' => array(
         'active'  => array( 'complianz-gdpr/cmp-functions.php', 'updraftplus/updraftplus.php' ),
@@ -262,45 +271,71 @@ foreach ( $fail_labels as $key => $labels ) {
 }
 
 // ── Kontrakt 3: et tjek der ikke kunne køre er aldrig et bestået tjek ─────────
+//
+// `ssl` er her fordi den læser forsiden igennem `front_page()` lige så vel som
+// de fem. Den nåede tidligere udenom den og svarede fra sin egen HEAD, så en
+// forside der ikke kunne læses gav ti "kunne ikke læse" og et grønt `ssl` —
+// samme rapport, modsigelse i sig selv.
 
 $unreadable = probe( to_objects( healthy_site( array( 'error' => 'cURL error 28: Operation timed out' ) ) ) );
 ok( 'en ulæselig forside gav et resultat', empty( $unreadable['_error'] ) );
 if ( empty( $unreadable['_error'] ) ) {
-    foreach ( $SHARED as $key ) {
+    $NEEDS_FRONT_PAGE = array_merge( $SHARED, array( 'ssl' ) );
+    foreach ( $NEEDS_FRONT_PAGE as $key ) {
         ok( "$key er ikke bestået på en ulæselig forside", empty( $unreadable[ $key ]['pass'] ) );
         ok( "$key siger at det ikke kørte", ! empty( $unreadable[ $key ]['warn'] ) );
     }
-    // Og de fem delte tjek skal alle sige det samme, så de ikke kan være lige
-    // heldige: ét af dem, der læser videre på en fejl, ville være en ny død
-    // etiket.
+    // Og de seks tjek der læser forsiden skal alle sige det samme, så de ikke kan
+    // være lige heldige: ét af dem, der læser videre på en fejl, ville være en
+    // ny død etiket.
     $say_could_not = 0;
-    foreach ( $SHARED as $key ) {
+    foreach ( $NEEDS_FRONT_PAGE as $key ) {
         if ( false !== stripos( (string) $unreadable[ $key ]['label'], 'could not read' ) ) {
             $say_could_not++;
         }
     }
-    ok( "alle fem delte tjek siger at de ikke kørte ($say_could_not/5)", 5 === $say_could_not );
+    ok( "alle seks tjek der læser forsiden siger at de ikke kørte ($say_could_not/6)", 6 === $say_could_not );
 }
 
-// ── Kontrakt 5: én GET pr. scanning, og HEAD tælles for sig ──────────────────
+// ── Kontrakt 5: én hentning pr. scanning, og ingen anden slags ────────────────
 //
-// Målt, fordi påstanden "én hentning pr. scan" ellers kun gælder de fem statiske
-// tjek: `check_ssl()` sender sin egen HEAD. Det er ikke en fejl, men det er en
-// undtagelse, og en undtagelse der ikke måles er en undtagelse ingen kender.
+// Målt, fordi påstanden "én hentning pr. scan" ellers kun gældt de fem statiske
+// tjek: `check_ssl()` sendte sin egen HEAD oveni. Det er ikke en optimering — på
+// en server der blokerer HEAD fik kunden "HTTPS unreachable" ved siden af ti
+// grønne tjek der netop havde læst den samme forside, og en ulæselig forside gav
+// et grønt `ssl`. Nu læser den HSTS fra det svar de andre læser.
 
 ok(
     'de elleve tjek henter forsiden én gang',
     1 === ( $first['_fetches'] ?? -1 ),
 );
-ok( 'check_ssl() sender sin egen HEAD — målt, ikke antaget', 1 === ( $first['_heads'] ?? -1 ) );
 ok(
-    'to hentninger i alt pr. scanning på en læsbar side',
-    2 === ( ( $first['_fetches'] ?? -1 ) + ( $first['_heads'] ?? -1 ) ),
+    'hele scanningen laver én hentning i alt, ingen HEAD',
+    array( 1, 0 ) === array( $first['_fetches'] ?? -1, $first['_heads'] ?? -1 ),
 );
 
 $unreadable_fetches = $unreadable['_fetches'] ?? -1;
 $unreadable_heads   = $unreadable['_heads'] ?? -1;
 ok( 'en ulæselig forside hentes heller ikke seks gange', 1 === $unreadable_fetches );
+ok( 'en ulæselig forside sender heller ingen HEAD', 0 === $unreadable_heads );
+
+// Én check ad gangen, fordi ellers kan tællen ikke tilskrives: elleve tjek der
+// deler en tæller kan hver især have en hentning, og tallet siger intet om
+// hvilken af dem der har den.
+$ssl_only = probe( $HEALTHY, 'ssl' );
+ok( 'check_ssl() alene henter forsiden én gang', 1 === ( $ssl_only['_fetches'] ?? -1 ) );
+ok( 'check_ssl() alene sender ingen HEAD', 0 === ( $ssl_only['_heads'] ?? -1 ) );
+ok( 'check_ssl() alene er nok til at vide om HSTS er der', ! empty( $ssl_only['ssl']['pass'] ) );
+
+$ssl_http = probe( to_objects( healthy_site( array( 'home' => 'http://agency-client.example' ) ) ), 'ssl' );
+ok( 'en http://-adresse siger "Not HTTPS"', 'Not HTTPS' === ( $ssl_http['ssl']['label'] ?? '' ) );
+ok( 'en http://-adresse hentes ikke overhovedet', 0 === ( $ssl_http['_fetches'] ?? -1 ) );
+ok( 'en http://-adresse sender ingen HEAD', 0 === ( $ssl_http['_heads'] ?? -1 ) );
+
+// Kildekravet ved siden af tællen: en `wp_remote_head()` der ligger i koden uden
+// at nogen fixture rammer den ville være usynlig i adfærdstællen, og den er
+// præcis den regression der lige blev fjernet.
+ok( 'plugin-koden kalder ikke wp_remote_head()', contract_head_free( eucomply_code_lines() ) );
 
 // ── Selftest: bevis at kontrakterne kan fejle ──────────────────────────────────
 
@@ -325,6 +360,23 @@ if ( in_array( '--selftest', $argv, true ) ) {
     // 4. En ulæselig forside der tælles som bestået skal være rød.
     ok( 'selftest: et bestået tjek på en ulæselig forside er rød', ! contract_unreadable_is_never_a_pass( array( 'pass' => true ) ) );
     ok( 'selftest: et ikke-bestået tjek på en ulæselig forside er grøn', contract_unreadable_is_never_a_pass( array( 'pass' => false, 'warn' => true ) ) );
+
+    // 5. To hentninger pr. scanning — præcis det opgave 46 fjernede — skal være
+    // røde, ellers er porten grøn af en fejl.
+    ok( 'selftest: to GET i en scanning er rød', ! contract_one_request( array( '_fetches' => 2, '_heads' => 0 ) ) );
+    ok( 'selftest: én GET og én HEAD i en scanning er rød', ! contract_one_request( array( '_fetches' => 1, '_heads' => 1 ) ) );
+    ok( 'selftest: to HEAD i en scanning er rød', ! contract_one_request( array( '_fetches' => 0, '_heads' => 2 ) ) );
+    ok( 'selftest: én hentning i alt er grøn', contract_one_request( array( '_fetches' => 1, '_heads' => 0 ) ) );
+
+    // 6. En `wp_remote_head()` i koden skal være rød, også når den ligger i en
+    // kommentar — fordi så er den død kode, der lige så vel kan genoplives.
+    ok( 'selftest: en wp_remote_head() i koden er rød', ! contract_head_free( eucomply_filter_code( array( "        \$r = wp_remote_head( \$home );" ) ) ) );
+    ok( 'selftest: en kommentar om wp_remote_head() er grøn', contract_head_free( eucomply_filter_code( array( ' * It used to send its own wp_remote_head(), which cost a second request.' ) ) ) );
+
+    // 7. Et check-navn `run_checks()` ikke skriver må ikke give en fuld kørsel.
+    //    Ellers svarer porten om alle elleve og er grøn om det forkerte spørgsmål.
+    ok( 'selftest: et check-navn der ikke findes er rødt', ! empty( probe( $HEALTHY, 'no-such-check' )['_error'] ) );
+    ok( 'selftest: en enkelt check kører kun den check', ! empty( $ssl_only['ssl'] ) && empty( $ssl_only['headers'] ) );
 }
 
 /**
@@ -346,6 +398,29 @@ function contract_reaches_both_dommes( array $states ) {
 }
 function contract_unreadable_is_never_a_pass( array $verdict ) {
     return empty( $verdict['pass'] ) && ! empty( $verdict['warn'] );
+}
+/** Én hentning pr. scanning, og ingen af dem en HEAD. */
+function contract_one_request( array $run ) {
+    return 1 === ( $run['_fetches'] ?? -1 ) && 0 === ( $run['_heads'] ?? -1 );
+}
+/** Kildelinjer uden kommentarer, så et krav om "ingen wp_remote_head" ikke kan
+ *  slås i overkøbet af den kommentar der beskriver hvorfor den forsvandt. */
+function eucomply_code_lines() {
+    return eucomply_filter_code( preg_split( '/\R/', (string) file_get_contents( __DIR__ . '/../plugin/eucomply.php' ) ) );
+}
+function eucomply_filter_code( array $lines ) {
+    $out = array();
+    foreach ( $lines as $line ) {
+        $trimmed = ltrim( (string) $line );
+        if ( '' === $trimmed || '/' === $trimmed[0] || '#' === $trimmed[0] || '*' === $trimmed[0] ) {
+            continue;
+        }
+        $out[] = $line;
+    }
+    return $out;
+}
+function contract_head_free( array $code_lines ) {
+    return 0 === (int) preg_match_all( '~wp_remote_head\s*\(~', implode( "\n", $code_lines ) );
 }
 
 // ── Optælling ────────────────────────────────────────────────────────────────

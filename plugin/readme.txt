@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.13
+Stable tag: 1.3.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,7 +114,14 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
-= 1.3.13 (2026-09-26) =\n* Fix: two checks reported a label that said they had succeeded on the row that said they failed. The legal-pages check read "Legal pages checked" and the forms check read "Forms reviewed" next to a red FAIL, in the dashboard, in the downloadable report an agency sends to a client, and in the regression mail. Both now name the outcome: "3 of 3 legal pages missing" and "Form plugins found, no Privacy Policy page", and the legal check lists what it did not find instead of only counting it.\n* The plugin- and core-health check no longer reads the list of installed plugins and throws it away. It did that on every scan and could not change the verdict.\n* All eleven checks are now measured by running them, not by reading them. The six WordPress-state checks had only ever been syntax-checked, which is how four other checks stayed dead in 1.3.11.\n\n= 1.3.12 (2026-09-26) =
+= 1.3.14 (2026-09-26) =
+* Fix: the SSL/HSTS check sent its own HEAD request instead of reading the front page the other ten checks had already fetched, so a scan made two local requests where one is enough. On a server that answers HEAD with a 403 or a timeout - some firewalls and managed hosts do - the check reported \"HTTPS unreachable\" next to ten green checks that had just read the same site successfully.
+* It also disagreed with itself: a front page that could not be read produced ten \"could not read the site\" results and a green SSL check, because the HEAD had happened to work. A check that could not run is now reported as one that did not run, never as a pass.
+* HSTS is now read from the same response the visitor's browser receives, and a scan makes exactly one request. A site whose WordPress Address is not https:// still reports \"Not HTTPS\" without making a request at all.
+* The eleven checks are now measured against a plugin that contains no HEAD request anywhere, so this cannot come back unnoticed.
+
+= 1.3.13 (2026-09-26) =
+* Fix: two checks reported a label that said they had succeeded on the row that said they failed. The legal-pages check read "Legal pages checked" and the forms check read "Forms reviewed" next to a red FAIL, in the dashboard, in the downloadable report an agency sends to a client, and in the regression mail. Both now name the outcome: "3 of 3 legal pages missing" and "Form plugins found, no Privacy Policy page", and the legal check lists what it did not find instead of only counting it.\n* The plugin- and core-health check no longer reads the list of installed plugins and throws it away. It did that on every scan and could not change the verdict.\n* All eleven checks are now measured by running them, not by reading them. The six WordPress-state checks had only ever been syntax-checked, which is how four other checks stayed dead in 1.3.11.\n\n= 1.3.12 (2026-09-26) =
 * Fix: the five front-page checks introduced in 1.3.11 never matched anything. The signature list is an array of [name, pattern] pairs, and the matcher read them as if they were named keys, so every pattern was empty and the plugin reported "no trackers detected" on a page with Google Analytics and Meta Pixel in its markup. A WordPress site could pass the tracker check in the dashboard and fail the same check on the free scanner, and a Pro report sent to a client would say so.
 * Affected checks: Google Consent Mode v2, IAB TCF, third-party trackers, and DORA page signals. The security-header check was not affected.
 * The five checks are now measured against the same fixtures the free scanner runs, so the two products cannot quietly disagree about the same website again.

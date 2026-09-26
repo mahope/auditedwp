@@ -56,8 +56,15 @@ function delete_transient( $name ) {
 function add_query_arg( $key, $value, $url ) {
     return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . rawurlencode( $key ) . '=' . rawurlencode( $value );
 }
+/**
+ * The site's own address. A harness can move it with the `eucomply_test_home`
+ * global — one place, because `check_ssl()` reads the scheme from it and
+ * `front_page()` fetches from it, and two ways to spell the same site is how a
+ * harness ends up testing a combination no real site has.
+ */
 function home_url( $path = '' ) {
-    return 'https://agency-client.example' . $path;
+    $home = isset( $GLOBALS['eucomply_test_home'] ) ? $GLOBALS['eucomply_test_home'] : 'https://agency-client.example';
+    return $home . $path;
 }
 function get_bloginfo( $what = 'name' ) {
     return 'name' === $what ? $GLOBALS['eucomply_site_name'] : '';

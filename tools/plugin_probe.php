@@ -2,11 +2,17 @@
 /**
  * Probe: what every one of the plugin's checks says about one fixture.
  *
- *   php tools/plugin_probe.php <fixture.json>
+ *   php tools/plugin_probe.php <fixture.json> [check-key]
  *
  * The fixture is one JSON object. Output is
  * `{ "<check key>": { "pass": bool, "warn": bool, "label": "…", "detail": "…" },
  *    "_fetches": n, "_heads": n, "_keys": [...] }` on stdout, and nothing else.
+ *
+ * The optional second argument runs **one** check instead of all of them, which
+ * is how "how many requests does this check on its own make?" becomes a
+ * measurable claim. It is a separate run rather than a flag on the same run
+ * because a fetch counter that eleven checks share cannot attribute a request
+ * to the check that made it.
  *
  * Why this exists as a separate program: opgave 43 ported five check signatures
  * from `eucomply-scanner/engine/index.js` into the plugin so a WordPress customer
@@ -72,6 +78,7 @@ $EMPTY_STATE = array(
     'updraft'       => null,
     'wpdb_hits'     => null,
     'wp_version'    => '6.5',
+    'home'          => 'https://agency-client.example',
 );
 $GLOBALS['eucomply_probe_state'] = $EMPTY_STATE;
 $GLOBALS['eucomply_probe_fetches'] = 0;
@@ -132,10 +139,11 @@ function wp_remote_get( $url, $args = array() ) {
     );
 }
 /**
- * `check_ssl()` sends its own HEAD request instead of reading the front page it
- * already fetched. That is measured, not assumed: the probe counts the two
- * separately, because "one fetch per scan" is only a true statement about the
- * five static checks.
+ * The HEAD request is still stubbed, and still counted, because the whole point
+ * of the counter is that it is zero. `check_ssl()` used to send one of these of
+ * its own on top of the GET the other ten checks read; it now reads HSTS from
+ * that response. A stub that was deleted with the call would have made the
+ * regression uncatchable, and an uncatchable regression is one that comes back.
  */
 function wp_remote_head( $url, $args = array() ) {
     $GLOBALS['eucomply_probe_heads']++;
@@ -232,6 +240,7 @@ if ( ! is_array( $raw ) ) {
 }
 $GLOBALS['eucomply_probe_state'] = eucomply_probe_state( $raw );
 $GLOBALS['eucomply_test_options'] = (array) $GLOBALS['eucomply_probe_state']['options'];
+$GLOBALS['eucomply_test_home']    = (string) $GLOBALS['eucomply_probe_state']['home'];
 
 // ── Which checks run_checks() actually writes ─────────────────────────────────
 
@@ -274,8 +283,21 @@ if ( ! $CHECKS ) {
 $ref = new ReflectionClass( 'EUComply' );
 $obj = $ref->newInstanceWithoutConstructor();
 
+// A named check runs alone, so the fetch counter measures that check and not the
+// ten others. An unknown name is an error rather than a silent full run: a probe
+// asked for a check that does not exist and quietly answered with all of them
+// would be green about the wrong thing.
+$ONLY = isset( $argv[2] ) ? (string) $argv[2] : '';
+if ( '' !== $ONLY && ! isset( $CHECKS[ $ONLY ] ) ) {
+    fwrite( STDERR, "run_checks() does not write the check '$ONLY'\n" );
+    exit( 2 );
+}
+
 $out = array();
 foreach ( $CHECKS as $key => $method ) {
+    if ( '' !== $ONLY && $ONLY !== $key ) {
+        continue;
+    }
     if ( ! $ref->hasMethod( $method ) ) {
         fwrite( STDERR, "run_checks() writes $key but the plugin has no method $method\n" );
         exit( 2 );
