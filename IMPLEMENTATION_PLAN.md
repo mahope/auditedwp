@@ -24,6 +24,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 
 ## Iterationsstatus
 
+- `I GANG` (del 1 af 2): **48 — Et **bestået** tjek bar etiketten og detaljen fra den fejlende sti.** `forms` i begge motorer. Del 2 (samme egenskab i pluginens elleve tjek + permanent port) ligger i køen som opgave 49.
 - `FÆRDIG`: **47 — `tjek produktion` kan nu skelne en race fra en manglende udgivelse** på `ceo/poller-update-json`. Nyt værktøj `tools/wait_for_deploy.py` (25 selftest-cases) + gate trin 18, og workflowen poller i stedet for at slå fast ved første læsning. Se afsnittet nederst.
 - `FÆRDIG`: **46 — `check_ssl()` læser den forside, der allerede er hentet** på `ceo/ssl-en-hentning`. Plugin **1.3.14**, én hentning pr. scanning, og et tjek der ikke kørte siger det. Se afsnittet nederst.
 - `FÆRDIG`: **45b — De seks checks, ingen nogensinde kørte, målt adfærdsmæssigt** på `ceo/seks-tjek-adfaerd`. Plugin **1.3.13**, ny permanent gate trin 17 `tools/test_plugin_checks.php` (53 checks + 8 selftest-cases), og en reproducerbar pakkebygging `tools/build_plugin_zip.py`. Se afsnittet nedenfor.
@@ -1624,3 +1625,36 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - ~~Pakkebyggingen skal kunne gentages.~~ **Dækket.** `tools/build_plugin_zip.py`, versionskrydsjek på tre steder.
   - ~~Fixet skal nå kunderne.~~ **Dækket.** 1.3.13, ny zip, `update.json`, fjorten redirects. Deploy-noten åben.
   - ~~Ingen `check_ssl()`-ændring i samme diff.~~ **Dækket med vilje.** Målt og skrevet som opgave 46.
+### 48. Et bestået form-tjek bar etiketten fra den fejlende sti
+
+- Status: `I GANG` (del 1 af 2) på `ceo/forms-fejl-etiket`, kodecommit `99bb231`. **Ingen `site/**`-fil, ingen plugin-version, ingen ny zip, ingen worker-deploy** — de to motorer deployes ikke af CI, så intet på sitet ændrer sig ved denne diff, og intet skal genverificeres live.
+- **Fejlen, målt ikke læst.** Fixture: `<a href="/privacy">Privacy</a><form action="/c"><input></form>` — altså en side med en **almindelig form-build** (ingen form-plugin) **og** et privatlivslink. `checks.forms` svarede `pass: true, warn: false` og skrev:
+  - `label: "Form(s) found, no consent link"`
+  - `detail: "Form markup found, but no privacy-policy link detected in page HTML…"`
+
+  Begge dele er **modsatte dommet**. Privacy-linket er netop *grunden til* at tjekket består, og beskeden siger at det ikke blev fundet. Det er en grøn række, hvis hele tekst siger det modsatte — i det frie værktøj, i det resultat en kunde læser.
+- **Årsagen er en ternary med to udgange og tre sande tilstande.** `formMatches.length > 0 ? A : hasLocalForm ? B : C` — `hasLocalForm` er sand både når privatlivslinket **er** og **ikke** er fundet, så beståelses- og advarselsstien delte **ét** uttryk. Den bestående sti havde aldrig sin egen sætning: den var ubevidst død kode, præcis som `matched_signatures()` i opgave 44. Det er **tredje gang** denne fejlklasse dukker op i en betalt vare eller dens tragt: en forgrening der ligner som to veje og er én.
+- **Samme gennemgang af de ni motortjek fandt ét mere af samme art, som ikke er rettet her.** På **beståelses**-stien bærer to tjek en etiket, der *beskriver en mangel* i stedet for det gode resultat: `trackers` → `"No third-party trackers detected"` og `dora`-teksten på samme form. Det er ikke en lighed sådan som opgave 45b's (`"Legal pages checked"` på en fejlende sti), men det er den spejlede fejl: en grøn række der læses som et fund. Det er **opgave 49** og ikke denne diff, fordi rettelsen kræver en permanent port, ellers er det en ny skrivefejl i stedet for en rettelse. Den farligere halvdel — pluginens `backups`, hvis bestående etiket er `"No backup plugin"` — ligger samme sted.
+- **Rettelsen:** beståelses- og advarselsstien har nu hver deres sætning, og `detail` følger samme opdeling. Målt på tre fixtures efter rettelsen: form + privatlivslink → `pass=true`, *"Form(s) found, privacy-policy link detected"*; form uden privatlivslink → `warn=true`, *"Form(s) found, no privacy-policy link"*; ingen form → `pass=true`, *"No form markup and no form plugin"*.
+- **Ingen ny afhængighed, ingen nøgler, ingen købsvej, ingen ny Pro-påstand.** Kun to `.js`-filer i `shared/` og `eucomply-scanner/engine/`.
+- Accept:
+  - ~~Et bestående tjek må ikke bære den fejlende sti's sætning.~~ **Dækket** for `forms` i begge motorer, målt på tre fixtures.
+  - ~~Advarselsstien skal stadig sige det den siger.~~ **Dækket** — samme fixture giver `warn=true` med den advarselssætning.
+  - ~~Porten skal kunne skelne de to domme på etiketten alene.~~ **Dækket** — de to sætninger er nu forskellige, så rækken kan læses uden ticket.
+  - ~~Ingen `site/**`-fil, ingen plugin-version, ingen ny zip.~~ **Dækket.** Kun to motorfiler.
+  - ~~Den permanente port.~~ **ÅBEN — opgave 49.** Ikke bygget i denne iteration; det er den, der gør rettelsen permanent.
+  - Efter merge verificeres på indhold. **Ikke relevant** — ingen publiceret fil er rørt.
+
+### 49. Et bestået tjek må ikke bære en etiket, der beskriver en mangel
+
+- Status: `TODO` — højeste prioritet i køen.
+- Begrundelse: opgave 48 fandt én forgrening med død beståelses-sti og **to** bestående etiketter, der beskriver en mangel (`trackers`, `dora`), i de ni motortjek. Samme gennemgang af pluginens **elleve** tjek er ikke gjort, og `backups`' bestående etiket er `"No backup plugin"` — i den rapport et bureau sender til sin kunde. Det er opgave 45b's fejl spejlet, og ingen port dækker den retning: trin 17 kræver at et **fejlet** tjek ikke må have en etiket der påstår at det lykkes, ikke at et **bestået** tjek må have en etiket der påstår at noget mangler.
+- Scope:
+  - Ny permanent port (trin 19) der kører **alle ni** motortjek og **alle elleve** plugin-tjek på fixtures og kræver: en bestående etiket må ikke starte med `No`/`Not`/`None`, og en fejlende må ikke påstå at det lykkes. Begge motorer, fordi de ellers kan glide fra hinanden i denne retning.
+  - Rett alle fund i **begge** motorer **og** pluginen — sidstnævnte kræver version bump, ny zip, `update.json` og redirects, så det er én opgave, ikke to.
+  - Selftest med negativ case pr. retning, plus en mutation mod repoets egne filer.
+- Accept:
+  - En port, ikke to: samme kode læser begge motorer og pluginen.
+  - `trackers`, `dora` og `backups` bestående etiketter er rettet, og de fejlende stier er urørte.
+  - Mutationen der genskaber død beståelses-sti i `forms` er rød med præcis nøglenavn.
+  - Plugin-fixet når kunderne (ny version + zip + `update.json` + redirects), eller det er skrevet som en udtrykkelig undtagelse under `❓ Til Mads`.
