@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.19
+Stable tag: 1.3.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,21 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.20 (2026-09-26) =
+* Fix: the words of a tool counted as the tool. Every signature - trackers, consent platforms, form plugins - was tried against the whole page HTML, so a paragraph that merely *writes* "we use Matomo" produced a red tracker row and a fix instructing the customer to install a consent platform they already do not need, and a blog post naming Typeform produced "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy page configured".
+* Measured before the fix: 12 false findings per language across Danish, Swedish, Dutch and English, in this plugin, the free scanner and the published CLI engine - 48 in total, none of them true.
+* Evidence is now code - an inline script, a src or href on an external asset, the noscript pixel fallback - and element attributes, because Contact Form 7 ships as <div class="wpcf7"> in markup rather than as a script. Prose is not evidence for either.
+* The patterns themselves are unchanged, so nothing that was really detected stopped being detected: the same pages with a real script, a real pixel or a real wpcf7 class give the same rows as before. Measured in both directions.
+* The DORA signals are deliberately left reading the whole page. Their markers - SPF record, business continuity plan, status page - are claims about the organisation rather than about code running, and a company that writes "we have a business continuity plan" on its security page has said exactly what that row asks about.
+* If you scanned your site between 1.3.19 and now, treat the trackers, cookie-consent and forms rows as unknown rather than as clean: a row passed on a sentence may now be reported as a finding. Run a new scan.
+
+= 1.3.20 (2026-09-26) =
+* Fix: the words of a tool counted as the tool. Every signature - trackers, consent platforms, form plugins - was tried against the whole page HTML, so a paragraph that merely *writes* "we use Matomo" produced a red tracker row and a fix instructing the customer to install a consent platform they did not need, and a blog post naming Typeform produced "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy page configured".
+* Measured before the fix: 12 false findings per language across Danish, Swedish, Dutch and English, in this plugin, the free scanner and the published CLI engine - 48 in total, none of them true.
+* Evidence is now code - an inline script, a src or href on an external asset, the noscript pixel fallback - and element attributes, because Contact Form 7 ships as <div class="wpcf7"> in markup rather than as a script. Prose is not evidence for either.
+* The patterns themselves are unchanged, so nothing that was really detected stopped being detected: the same pages with a real script, a real pixel or a real wpcf7 class give the same rows as before. Measured in both directions.
+* The DORA signals are deliberately left reading the whole page. Their markers - SPF record, business continuity plan, status page - are claims about the organisation rather than about code running, and a company that writes "we have a business continuity plan" on its security page has said exactly what that row asks about.
+* If you scanned your site between 1.3.19 and now, treat the trackers, cookie-consent and forms rows as unknown rather than as clean: a row passed on a sentence may now be reported as a finding. Run a new scan.
 = 1.3.19 (2026-09-26) =
 * Fix: the words of a legal document counted as a legal document. The privacy pattern was tried against the whole page HTML, so a sentence in running text was read as a link - "we process personal data in this form", or a Dutch page whose sub-processor notice mentions "persoonsgegevens" without linking anything.
 * Measured before the fix: 22 false legal pages across four plain-text pages, in Danish, Swedish, Dutch and English. One Swedish paragraph named eight of the documents and the row came back green with no links in the footer at all. A green row a customer cannot check is worse than a red one, because the false pass is invisible.

@@ -256,6 +256,59 @@ function linksLegal(html, sig) {
   return linkAnchors(html).some((a) => sig.re.test(a));
 }
 
+/**
+ * Det `<script>`, `<style>`, `<noscript>` og `<template>`-indhold, der findes i
+ * HTML'en, ordret. Én regex, brugt både til at finde blokkene og til at fjerne
+ * dem — to lister der ligner hinanden er præcis den fejlklasse denne opgave
+ * lukker.
+ */
+const CODE_BLOCK = /(?:script|style|noscript|template)\b[^>]*>[\s\S]*?(?:<\/(?:script|style|noscript|template)\s*>|$)/gi;
+
+/**
+ * Den **synlige tekst** i et HTML-fragment.
+ *
+ * Tekstnoderne er alt mellem `>` og `<`. Både en `<p>` med en hel sætning og
+ * en `<a>`-linktekst forsvinder, og det er hele pointen.
+ *
+ * @param {string} fragment
+ * @returns {string}
+ */
+function visibleText(fragment) {
+  return fragment.replace(/>[^<]*</g, "><");
+}
+
+/**
+ * Den del af HTML'en hvor **et værktøj faktisk kører** — altså alt andet end
+ * synlig tekst. Opgave 57s måling: `TRACKER_SIGNATURES`, `CONSENT_SIGNATURES`
+ * og `FORM_PLUGIN_SIGNATURES` læste hele HTML'en, så en side der *skriver*
+ * "vi bruger Matomo" fik **en rød række** i alle tre produkter, og en side der
+ * skriver "Typeform" fik *"Typeform / Formspree / Jotform detected"* — på den
+ * betalte `forms`-række. Målt i 12 fund pr. sprog i fire sprog, i begge motorer
+ * og i pluginen. 48 fund i alt, ingen af dem ærlige.
+ *
+ * Bevis er to ting: **kode** — inline `<script>`, `src`/`href` på et eksternt
+ * arkiv, og `<noscript>`-pixel-fallbacken — og **attributter** på elementerne,
+ * fordi Contact Form 7 lever som `<div class="wpcf7">` i markupen, ikke som et
+ * script. Kun de to ville fundet `FORM_PLUGIN_SIGNATURES` uden at miste en eneste
+ * ægte detektion; det er R2 i porten trin 24, der beviser det.
+ *
+ * Ordene i signaturerne er **uændrede**, så opgave 51-55s sprogdækning og
+ * opgave 56s juridiske links er bevaret. Det er beholderen der ændrer sig,
+ * præcis som i opgave 56.
+ *
+ * @param {string} html
+ * @returns {string}
+ */
+export function codeAndAttributes(html) {
+  if (!html) return "";
+  // `<script src="…">` uden en afsluttende `</script>` er almindeligt på
+  // afkortede sider. Regex'en tager da resten af dokumentet med, så
+  // kodebevis ikke forsvinder bare fordi et tag ikke blev lukket.
+  const kode = html.match(CODE_BLOCK);
+  if (!kode) return visibleText(html);
+  return visibleText(html.replace(CODE_BLOCK, "\u0000")) + "\n" + kode.join("\n");
+}
+
 const LEGAL_PATTERNS = [
   { re: PRIVACY_LINK_SIGNATURE, name: "Privacy / GDPR" },
     // Opgave 54 målte de otte øvrige mønstre gennem `legal` i begge motorer: **0 af 24**
@@ -671,11 +724,14 @@ export async function runScan(url) {
   }
 
   // 0b. Trackers without consent (GDPR/ePrivacy — the classic enforcement target)
+  // Signaturerne læser `teknisk`, altså kode og attributter — se `codeAndAttributes`.
+  // Opgave 57 målte 12 falske fund pr. sprog, fordi hele HTML'en blev læst.
+  const teknisk = codeAndAttributes(html);
   const trackerMatches = [];
   for (const sig of TRACKER_SIGNATURES) {
-    if (sig.re.test(html)) trackerMatches.push(sig.name);
+    if (sig.re.test(teknisk)) trackerMatches.push(sig.name);
   }
-  const hasConsentPlatform = CONSENT_SIGNATURES.some(s => s.re.test(html));
+  const hasConsentPlatform = CONSENT_SIGNATURES.some(s => s.re.test(teknisk));
   checks.trackers = {
     pass: trackerMatches.length === 0 || hasConsentPlatform,
     warn: trackerMatches.length > 0 && hasConsentPlatform && !/consent[_-]?mode|__tcfapi/i.test(html),
@@ -725,7 +781,7 @@ export async function runScan(url) {
   // 2. Cookie consent detection
   const consentMatches = [];
   for (const sig of CONSENT_SIGNATURES) {
-    if (sig.re.test(html)) consentMatches.push(sig.name);
+    if (sig.re.test(teknisk)) consentMatches.push(sig.name);
   }
   checks.cookies = {
     pass: consentMatches.length > 0,
@@ -745,7 +801,7 @@ export async function runScan(url) {
   // 3. Form detection + privacy link
   const formMatches = [];
   for (const sig of FORM_PLUGIN_SIGNATURES) {
-    if (sig.re.test(html)) formMatches.push(sig.name);
+    if (sig.re.test(teknisk)) formMatches.push(sig.name);
   }
   const hasFormAction = /<form[^>]*action\s*=\s*["'](?:[^"']+:)?\/\/[^"']*["']/i.test(html);
   const hasLocalForm = /<form[^>]*>[\s\S]*?<\/form>/i.test(html);

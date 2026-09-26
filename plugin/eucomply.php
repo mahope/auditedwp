@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.19
+ * Version:           1.3.20
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.19' );
+define( 'EUCOMPLY_VERSION', '1.3.20' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -749,6 +749,13 @@ class EUComply {
     }
 
     /**
+     * The `<script>`, `<style>`, `<noscript>` and `<template>` blocks in a
+     * document. One pattern, used both to collect the blocks and to remove them
+     * — see `code_and_attributes()`.
+     */
+    const CODE_BLOCK_RE = '~(?:script|style|noscript|template)\b[^>]*>[\s\S]*?(?:</(?:script|style|noscript|template)\s*>|$)~i';
+
+    /**
      * The signatures the free universal scanner uses, in the order it uses them.
      *
      * They are ported, not invented, and deliberately not "improved": a plugin
@@ -847,7 +854,71 @@ class EUComply {
     }
 
     /**
+     * The part of the HTML where a tool actually *runs* — code and attributes,
+     * but not visible prose.
+     *
+     * This is the engine's `codeAndAttributes`, verbatim, for the same reason
+     * `html_links_privacy()` is the engine's `PRIVACY_LINK_SIGNATURE` verbatim:
+     * a check with the same name has to mean the same thing in both products.
+     *
+     * What changed in 1.3.20 is the container, not the words. The measurement
+     * behind it: `trackers`, `consent` and `forms` read the **whole** HTML, so
+     * a page that *writes* "we use Matomo" in an About paragraph got a **red**
+     * tracker row plus a fix instructing the customer to install a CMP, and a
+     * page that writes "Typeform" in a blog post got
+     * "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy
+     * page configured". Measured at 12 false findings per language across four
+     * languages, in both engines and here — 48 in total, none of them true.
+     *
+     * Evidence is two things: **code** — inline `<script>`, a `src`/`href` on
+     * an external asset, and the `<noscript>` pixel fallback — and
+     * **attributes** on elements, because Contact Form 7 ships as
+     * `<div class="wpcf7">` in markup rather than as a script. Prose is not
+     * evidence for either.
+     *
+     * `<script src="…">` with no closing tag is ordinary on truncated pages.
+     * The pattern takes the rest of the document in that case, so code
+     * evidence never disappears because a tag was left open.
+     *
+     * The `<script>`/`<style>`/`<noscript>`/`<template>` pattern is written out
+     * once, below, and used both to collect the blocks and to remove them —
+     * two lists that look alike are exactly the failure this closes.
+     *
+     * @param string $html Served HTML.
+     * @return string
+     */
+    private static function code_and_attributes( $html ) {
+        if ( '' === $html ) {
+            return '';
+        }
+        $blokke = self::code_blocks( $html );
+        // Visible text is everything between a tag's ">" and the next "<".
+        // Both a whole sentence in a <p> and a link's text disappear, which is
+        // the entire point.
+        $resten = $blokke ? preg_replace( self::CODE_BLOCK_RE, "\x00", $html ) : $html;
+        $resten = preg_replace( '/>[^<]*</', '><', $resten );
+        return $resten . "\n" . $blokke;
+    }
+
+    /** The code blocks in a document, in document order. @param string $html @return string */
+    private static function code_blocks( $html ) {
+        if ( ! preg_match_all( self::CODE_BLOCK_RE, $html, $m ) ) {
+            return '';
+        }
+        return implode( "\n", $m[0] );
+    }
+
+    /**
      * Which signatures in a group the served HTML contains.
+     *
+     * `dora` is the one group that is deliberately **not** filtered through
+     * `code_and_attributes()`. Its patterns are not claims that code runs on
+     * the page — "SPF record", "business continuity plan", "status page" are
+     * claims about the *organisation*, and a company that writes "we have a
+     * business continuity plan" on its security page has said exactly what
+     * this check asks about. Prose is legitimate evidence there and filtering
+     * it would delete a true signal from a paid report. Every other group
+     * asserts that something is *running*, and for those prose is not evidence.
      *
      * @param string $group Signature group name.
      * @param string $html  Served HTML.
@@ -855,8 +926,9 @@ class EUComply {
      */
     private static function matched_signatures( $group, $html ) {
         $found = array();
+        $haystack = ( 'dora' === $group ) ? $html : self::code_and_attributes( $html );
         foreach ( self::signatures( $group ) as $sig ) {
-            if ( '' !== $html && preg_match( $sig['re'], $html, $m ) ) {
+            if ( '' !== $haystack && preg_match( $sig['re'], $haystack, $m ) ) {
                 $found[] = $sig['name'];
             }
         }
