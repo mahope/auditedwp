@@ -906,8 +906,12 @@ LIST_SEPARATOR = re.compile(
     r"[,;:]|\b(?:and|or|und|oder|sowie|et|ou|og)\b|[.!?]|\n",
     re.I,
 )
+# "hostet" is the Danish indefinite and does not start "hostede", which is the
+# definite form the Danish pages actually use ("den hostede tjeneste"). The old
+# branch matched this file's selftest wording and not the site's, so the one real
+# Danish sentence was the one the qualifier could not see.
 HOSTED_QUALIFIER = re.compile(
-    r"\b(?:hosted|hostet\w*|cloud|cloud-hosted|cloudbaseret\w*|remote|remotely|fjernt\w*|"
+    r"\b(?:hosted|hoste\w*|cloud|cloud-hosted|cloudbaseret\w*|remote|remotely|fjernt\w*|"
     r"our servers?|from our servers?|external|third-party|"
     r"gehostet\w*|extern\w*|ferngesteuert\w*|"
     r"h[ée]berg[ée]\w*|distants?|notre\w*\s+serveurs?)\b",
@@ -925,8 +929,11 @@ DENIAL = (
     r"er\s+ikke|er\s+ikke\s+med)"
     r"|(?:nicht\s+(?:enthalten|inkludiert|dabei|Teil\s+von\s+Pro)|"
     r"ist\s+nicht|sind\s+nicht|kein\w*)"
+    # "ne sont pas incluses" is the plural French denial; the branch below only
+    # had the verb+pas forms, so a French page could deny a shipped feature in
+    # the one wording the check could not read.
     r"|(?:n['']?(?:en)?\s+(?:contient|contiennent|font|comprend|fait|couvre|inclut|g\xe8re)\w*\s+pas|"
-    r"aucun\w*|hors\s+de)"
+    r"ne\s+(?:sont|est)\s+pas|aucun\w*|hors\s+de)"
 )
 
 # PRO_CONTEXT is English-shaped, and that is deliberate: it guards the
@@ -972,6 +979,27 @@ class ShippedFeature:
 DENIAL_WINDOW = 80
 
 
+def plugin_ships_alert(text: Optional[str] = None) -> bool:
+    """Does the plugin mail the owner when a check changes, and only for Pro?
+
+    Traced, the same three legs every other predicate here uses, because a
+    feature that exists but is unreachable is not something a page may deny in
+    one direction and promise in the other: the mail has to be sent
+    (`wp_mail(`), it has to be a Pro decision (`is_pro()`), and it has to be
+    wired into the scan that runs on its own — `maybe_send_alert(` called from
+    `run_checks()`, not merely defined. 1.3.10 shipped the alerts; without this
+    predicate a sales page could have kept listing them as planned, which is
+    exactly what all four /pro/ pages did on the day it shipped.
+    """
+    source = _plugin_text(text)
+    if source is None:
+        return False
+    alert = php_method_body(source, "maybe_send_alert")
+    if "wp_mail(" not in alert or "is_pro()" not in alert:
+        return False
+    return "maybe_send_alert(" in strip_php_comments(php_method_body(source, "run_checks"))
+
+
 def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
     """The features a page may not deny, each with its own code predicate.
 
@@ -1015,6 +1043,22 @@ def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
             ),
             re.compile(DENIAL, re.I),
         ),
+        ShippedFeature(
+            "shipped Pro feature denied on a sales page",
+            plugin_ships_alert,
+            # Not a bare "e-mail": the site sends ordinary mail about plenty of
+            # things. Each name is a change-notification in the language the
+            # page actually writes it in, because a word of missing vocabulary is
+            # how the German and French pages went unread in the first place.
+            re.compile(
+                r"\b(?:e-?mail\s+alerts?|alerts?\s+by\s+e-?mail|regression\s+alerts?|"
+                r"e-?mail-alarmer?\b|e-?mail\s+ved\s+overgang|mail-?alarm\w*\b|"
+                r"E-Mail-Meldung\w*|E-Mail-Benachrichtigung\w*|E-Mail\s+bei\s+Wechsel|"
+                r"alertes?\s+par\s+e-?mail|e-?mail\s+lors\s+du\s+passage)\b",
+                re.I,
+            ),
+            re.compile(DENIAL, re.I),
+        ),
     )
 
 
@@ -1028,19 +1072,26 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
     * the code still ships the feature, read by predicate, not from a list;
     * a name and a denial sit in the same clause — and the clause is not scoped
       to the hosted version, which is the one denial the product requires;
-    * the block is neither a roadmap list nor a paragraph about other vendors.
+    * the block is not a paragraph about other vendors.
 
-    That last one is the honest limit of a text check, so it is worth being
-    explicit about what it costs. ROADMAP and OTHER_PRODUCTS are read on the
-    **block**, not the clause, because both false positives this check found on
-    its first run were one-clause denials inside a longer paragraph: a Danish
-    roadmap box reading "Planlagte funktioner (ikke inkluderet i dag): … 30
-    dages historik pr. tjek …", and a competitor comparison reading "TrustScan's
-    free scan does not include a downloadable report". Both are required
-    honesty, and neither is about our licence. The price is that a block which
-    mentions a competitor or a roadmap word is not examined at all — so this
-    check is a floor, not a proof. The over-claim gate is what covers roadmap
-    boxes, and it already reads the same two patterns.
+    That last one is a limit of a text check, so it is worth being explicit about
+    what it costs. OTHER_PRODUCTS is read on the **block**, because a competitor
+    comparison is a promise about somebody else's product: "TrustScan's free scan
+    does not include a downloadable report" is not a claim about our licence and
+    flagging it would only teach the next edit to leave the comparison out.
+
+    ROADMAP used to sit next to it, on the same reasoning — a roadmap box is the
+    same promise in a different frame. That was correct when the check was
+    written and it stopped being correct the moment the plugin shipped two of the
+    things its roadmap said were absent: 1.3.4 put 52 weeks of per-check history
+    behind is_pro(), and 1.3.10 put the pass-to-fail mail there. The Danish box
+    kept saying "30 dages historik pr. tjek" and "e-mail ved overgang fra
+    bestået til fejlet" were not included — a false statement in the buy flow, in
+    all four languages, on the page that sells the 79 USD product. So a roadmap
+    item now stands or falls on the same test as every other item: it is exempt
+    when it is scoped to the hosted version, and red when it denies a shipped
+    feature flatly. The over-claim gate still reads ROADMAP, so a roadmap box can
+    still not over-promise.
     """
     findings: List[str] = []
     for feature in _shipped_pro_features():
@@ -1049,7 +1100,7 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
         for block in blocks:
             if block.kind == "image-metadata":
                 continue
-            if ROADMAP.search(block.text) or OTHER_PRODUCTS.search(block.text):
+            if OTHER_PRODUCTS.search(block.text):
                 continue
             for name in feature.name.finditer(block.text):
                 start = max(0, name.start() - feature.window)
@@ -1838,7 +1889,7 @@ def local_cadence_self_tests() -> List[str]:
 # product REQUIRES — a hosted-only disclaimer, a roadmap box, a competitor
 # comparison — so a gate that simply forbade them would push the site into
 # over-claiming instead, which is the other half of the same problem.
-DENIAL_CHECKS = 15
+DENIAL_CHECKS = 24
 DENIED_LOCAL = "Hosted re-scans, scan history, PDF reports and a live badge are not part of it."
 DENIED_LOCAL_DA = "Hosted re-scans, historik, PDF og det live badge er ikke en del af det."
 DENIED_LOCAL_DE = "Hostete Re-Scans, Historie, PDF und das Live-Badge sind nicht enthalten."
@@ -1854,6 +1905,8 @@ def denial_self_tests() -> List[str]:
         # Without this the cases below would be green for the wrong reason: the
         # check has nothing to enforce, so it enforces nothing and looks calm.
         failures.append("self-test denial: the plugin ships no Pro-gated history, so the check has nothing to justify it")
+    if not plugin_ships_alert(real):
+        failures.append("self-test denial alert: the plugin ships no Pro-gated alert, so the check has nothing to justify it")
 
     def denied(text: str, relative: str = "site/plugin/index.html") -> List[str]:
         return denial_findings(relative, [TextBlock(text, 1)])
@@ -1888,10 +1941,14 @@ def denial_self_tests() -> List[str]:
     ):
         if denied(text):
             failures.append(f"self-test denial {name}: a hosted-only disclaimer was flagged, so the site is pushed into over-claiming")
-    # A roadmap box is the same promise in a different frame, and is already the
-    # over-claim gate's business.
-    if denied("Planlagte funktioner (ikke inkluderet i dag): 30 dages historik pr. tjek."):
-        failures.append("self-test denial roadmap: a roadmap list was flagged as a flat denial")
+    # A roadmap box is the same promise in a different frame — but only while
+    # each item is scoped. This case used to be green unconditionally, written
+    # when the plugin shipped no history; 1.3.4 and 1.3.10 made it false, and all
+    # four /pro/ pages kept denying two shipped features until this flip.
+    if not denied("Planlagte funktioner (ikke inkluderet i dag): 30 dages historik pr. tjek."):
+        failures.append("self-test denial roadmap: a roadmap item denying shipped history flatly was allowed")
+    if denied("Planlagte funktioner (ikke inkluderet i dag): scanningshistorik i den hostede tjeneste, som du kan læse uden WordPress."):
+        failures.append("self-test denial roadmap hosted: a hosted-scoped roadmap item was flagged, so the site is pushed into over-claiming")
     # Somebody else's product is not our licence.
     if denied("Cookiebot and CookieYes are consent platforms. TrustScan's free scan does not include a downloadable report."):
         failures.append("self-test denial competitor: a competitor comparison was flagged")
@@ -1907,6 +1964,24 @@ def denial_self_tests() -> List[str]:
         failures.append("self-test denial guard: the export's $pro parameter passed as a Pro gate that was deleted")
     if not plugin_ships_history(real):
         failures.append("self-test denial trace: the untouched plugin no longer reads as shipping a Pro history")
+    # The alert cases, once per language, plus the three mutations that would
+    # each leave the pages above free to deny a feature that is no longer sent.
+    for name, text in (
+        ("alert EN", "Pass-to-fail email alerts are planned and are not included in the current Pro license."),
+        ("alert DA", "E-mail-alarmer er planlagt og ikke inkluderet i den nuværende Pro-licens."),
+        ("alert DE", "E-Mail-Meldungen beim Wechsel von bestanden zu fehlgeschlagen sind nicht enthalten."),
+        ("alert FR", "Les alertes par e-mail lors du passage d'un contrôle à un échec ne sont pas incluses."),
+    ):
+        if not denied(text):
+            failures.append(f"self-test denial {name}: a page denying the Pro mail alert was allowed")
+    if denied("Hosted email alerts are not included in your Pro license."):
+        failures.append("self-test denial alert hosted: a hosted-only alert disclaimer was flagged")
+    if plugin_ships_alert(real.replace("$this->maybe_send_alert( $results );", "// gone;")):
+        failures.append("self-test denial alert wire: an alert that run_checks() no longer sends read as shipped")
+    if plugin_ships_alert(real.replace("if ( ! $this->is_pro() ) {\n            return false; // Rule 2.", "if ( false ) {\n            return false;")):
+        failures.append("self-test denial alert guard: a free-tier alert passed as a Pro-gated one")
+    if plugin_ships_alert(real.replace("wp_mail(", "/* no mail */ not_mail(")):
+        failures.append("self-test denial alert send: an alert that never mails read as shipped")
     return failures
 
 
