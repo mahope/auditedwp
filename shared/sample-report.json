@@ -1,0 +1,71 @@
+{
+  "_readme": "Illustrative data for /pro/sample-report/ and the downloadable sample PDF. This is ONE dataset on purpose: the HTML page, the PDF and tools/check_sample_coverage.py all read it, so they cannot disagree. The nine `key` values are not free text — they are the check keys the engine runs, and the gate fails if this file and shared/scan-engine.js ever differ. No score, no counts, no dates and no history length live here: they are all derived from `checks` and `history`.",
+  "disclaimer": "Illustrative data. Not generated from a customer scan.",
+  "meta": {
+    "url": "https://shopify.com",
+    "platform": "Shopify",
+    "generated_iso": "2026-01-15",
+    "generated_time": "06:02"
+  },
+  "checks": [
+    {
+      "key": "consent_mode_v2",
+      "title": "Google Consent Mode v2",
+      "status": "pass",
+      "detail": "Consent Mode v2 default state found (ad_storage and analytics_storage)."
+    },
+    {
+      "key": "tcf",
+      "title": "IAB TCF",
+      "status": "warn",
+      "detail": "One TCF signal found: __tcfapi. No IAB consent string is stored, so ad-tech partners cannot read the visitor's consent.",
+      "fix": "Store an IAB consent string through your CMP and expose it on __tcfapi. See https://iabeurope.eu/tcf/."
+    },
+    {
+      "key": "trackers",
+      "title": "Third-party trackers",
+      "status": "fail",
+      "detail": "Trackers found in the served markup: Google Analytics, Meta Pixel. No consent platform is loaded before them, so they fire before consent.",
+      "fix": "Block non-essential tags until the visitor consents (GDPR Art. 6 and ePrivacy require consent BEFORE the tracker loads, not a banner afterwards)."
+    },
+    {
+      "key": "ssl",
+      "title": "HTTPS & HSTS",
+      "status": "pass",
+      "detail": "TLS 1.3 active, valid certificate (Let's Encrypt), HSTS max-age=31536000."
+    },
+    {
+      "key": "cookies",
+      "title": "Cookie consent",
+      "status": "pass",
+      "detail": "Consent banner detected and cookie categories are declared (GDPR Art. 13)."
+    },
+    {
+      "key": "forms",
+      "title": "Forms & privacy link",
+      "status": "pass",
+      "detail": "5 forms detected, privacy policy linked in the footer."
+    },
+    {
+      "key": "legal",
+      "title": "Legal pages",
+      "status": "pass",
+      "detail": "Privacy policy and terms of service found on common paths."
+    },
+    {
+      "key": "headers",
+      "title": "Security headers",
+      "status": "warn",
+      "detail": "No Content-Security-Policy and no X-Frame-Options. NIS2 Art. 21 expects basic technical measures, and CSP is the one auditors ask for first.",
+      "fix": "Add Content-Security-Policy: default-src 'self'. Start in report-only mode and tighten from the violations it reports."
+    },
+    {
+      "key": "dora",
+      "title": "DORA resilience signals",
+      "status": "pass",
+      "detail": "HTTPS and a valid certificate are positive technical signals. This is not a DORA compliance assessment."
+    }
+  ],
+  "history": [67, 67, 67, 67, 61, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 61, 67, 67, 67, 67, 67],
+  "_history_readme": "One illustrative score per day, oldest first; the last value is the current score. The number of days shown, the dates, the bar heights and the dip annotation are all derived from this list — a hand-written \"30 days of history\" is exactly the kind of constant that stops matching the report above it."
+}
