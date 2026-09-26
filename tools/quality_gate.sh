@@ -143,6 +143,7 @@ run "tools/check_dom_xss.py" python3 tools/check_dom_xss.py
 run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftest
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
 run "tools/test_quickcheck_render.mjs --selftest" node tools/test_quickcheck_render.mjs --selftest
+run "tools/check_production_drift.py --selftest" python3 tools/check_production_drift.py --selftest
 
 # --------------------------------------------- 6. publiceret træ (kontrol)
 # Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
@@ -235,6 +236,19 @@ else
     # påstand uden dækning i det øjeblik, den blev skrevet.
     ok "live røgtest ($smoke_checks tjek fra den lokale motor)"
   fi
+fi
+
+# ------------------------------------------------- 11. drift mellem repo og produktion
+# worker-scan/ og worker-watch/ deployes IKKE af CI (spørgsmål 9), så de kan glide
+# fra site/ uden at nogen opdager det. Da denne gate blev skrevet, svarede
+# eucomply-watch 1.0.0 mens koden erklærede 1.3.0 — en forskel der blandt andet
+# betød at ejerskabstokens, SSRF-guarden og badge-endpointet ikke var live, og
+# ingen af de ti steps ovenfor så det. Gate-definitionen udvides derfor med elleve.
+hdr "Drift mellem repo og produktion"
+if [ "$NETWORK" -eq 0 ]; then
+  run "tools/check_production_drift.py --offline" python3 tools/check_production_drift.py --offline
+else
+  run "tools/check_production_drift.py" python3 tools/check_production_drift.py
 fi
 
 # ------------------------------------------------------------------ udfald

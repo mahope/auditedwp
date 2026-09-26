@@ -1,0 +1,18 @@
+{
+  "_readme": "Registrering af afstanden mellem repoet og produktion for de to Cloudflare Workers. Læses og håndhæves af tools/check_production_drift.py, som kører i kvalitetsgaten. `floor` er den version der senest er-set køre i produktion — et GULV, ikke et mål, så et rollback giver rødt. `behind` er en forskud afstand der er accepteret, og `reason` må ikke være tom. Opdatér begge dele i den samme diff som den der ændrer dem. Sænker du `floor`, skal begrundelsen med, fordi det fjernet den kontrol der fanger et rollback.",
+  "measured": "2026-09-26 05:26 UTC, målt fra main efter merge 0f331d9",
+  "workers": {
+    "eucomply-scan": {
+      "floor": "1.0.0",
+      "behind": {
+        "reason": "Produktion har INGEN rod-endpoint: GET / returnerer 404 med teksten 'Not found. Use GET /scan?url=example.com'. Versionsfeltet findes derfor ikke at læse, og floor 1.0.0 er dermed UVERIFICERET — den følger af at worker-scan/index.js erklærer 1.0.0, ikke af en måling. Scannet virker (GET /scan?url= svarer 200 med ni tjek), så det er kun informations-endpointet der mangler. Da 1.0.0-udgaven af filen slet ikke havde rod-endpointet, er det her en mangel i koden og ikke en afvigelse. Løses ved at deploye workeren — spørgsmål 9."
+      }
+    },
+    "eucomply-watch": {
+      "floor": "1.0.0",
+      "behind": {
+        "reason": "MALET: produktion svarer version 1.0.0, worker-watch/index.js erklærer 1.3.0. Forskellen er ikke kosmetisk — den er SSRF-guarden og ejerskabstokens (opgave 3a, 28795c3), per-check-historik og pass-til-fail-alarmer (opgave 4, 1785766) og det offentlige badge-endpoint (opgave 6 del 1, 20b6cb2). KONKRETE SKADE lige nu: produktion svarer stadig `GET /status?url=…` UDEN et ownerToken, så hvilken som helst besøgende kan læse overvågningsstatus for en registreret adresse, og det badge-endpoint koden tilbyder, findes ikke. Copyen på /scan/ er dog stadig ærlig — den lover kun 'an email when the overall score drops', som er præcis hvad 1.0.0 gør. Blokeret af spørgsmål 9: der er ingen wrangler-adgang, så deployen kan ikke ske fra en agent. Den bliver grøn i det øjeblik workeren deployes og denne `behind` fjernes."
+      }
+    }
+  }
+}
