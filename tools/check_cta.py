@@ -27,6 +27,7 @@ Brug:
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import sys
@@ -54,20 +55,52 @@ PUBLISHED = ROOT / "site-dist"
 
 CANONICAL_ORIGIN = "https://eucomplypro.com"
 
-# Kilde: business-kontrakten 24/9-2026. Ingen nye produkter, priser eller links
-# oprettes; en side der linker noget uden for denne liste er en fejl, fordi den
-# peger på en checkout der ikke findes.
-PRO_CHECKOUT = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
-TEMPLATE_CHECKOUTS = {
-    "https://buy.stripe.com/bJe7sK8aT4My7dk7czbMQ05",  # eucomply-dpa
-    "https://buy.stripe.com/4gM4gydvd92OapwgN9bMQ06",  # eucomply-nis2-clauses
-    "https://buy.stripe.com/3cI7sK2Qz3IugNUgN9bMQ08",  # eucomply-eaa-statement
-    "https://buy.stripe.com/aFafZg1Mv92OdBI8gDbMQ07",  # eucomply-nda-clauses
-    "https://buy.stripe.com/00wdR8bn5a6S0OWeF1bMQ09",  # eucomply-report-kit
-    "https://buy.stripe.com/eVqaEW0Iren855c68vbMQ0a",  # eucomply-template-bundle
-}
-DONATION = "https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c"
-ALLOWED_CHECKOUTS = TEMPLATE_CHECKOUTS | {PRO_CHECKOUT, DONATION}
+# Kilde: business-kontrakten 24/9-2026, kopieret maskinlæsbart i
+# `tools/stripe_products.json`. Ingen nye produkter, priser eller links oprettes;
+# en side der linker noget uden for denne liste er en fejl, fordi den peger på en
+# checkout der ikke findes.
+#
+# Opgave 37: før dette var tillidslisten her **håndskrevet** — otte links, seks af
+# dem skabeloner — altså en delmængde af kontraktens tretten. Det gav tre huller,
+# alle fundet ved at måle træet i hånden: (1) `eu-compliance-ebook-bundle` er et
+# EUComply-produkt i kontrakten, men det stod i ingen konstant, så en side der
+# lagde det **ærlige** link ind ville være rød som "ikke i kontrakten"; (2) de fire
+# søskeprodukter stod slet ikke, så intet i repoet vidste hvilke produkter der
+# overhovedet var; (3) ingen pris stod nogen steds maskinlæsbart, så en knap der
+# lovede en anden pris end Stripe tog var umulig at opdage. Nu er listen **afledt**
+# af datasættet, og det samme datasæt bruges til at tjekke priser og til at
+# rapportere produkter uden side.
+CONTRACT_PATH = ROOT / "tools" / "stripe_products.json"
+CONTRACT = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+PRODUCTS: tuple[dict, ...] = tuple(CONTRACT["products"])
+PRODUCT_BY_URL: dict[str, dict] = {p["url"]: p for p in PRODUCTS}
+if len(PRODUCT_BY_URL) != len(PRODUCTS):
+    raise SystemExit(f"FEJL {CONTRACT_PATH.name}: to produkter deler samme payment link")
+
+
+def _product(url: str) -> dict | None:
+    return PRODUCT_BY_URL.get(url)
+
+
+def price_of(url: str) -> int | None:
+    """Kontraktprisen i USD, eller None for donation og ukendte links."""
+    product = _product(url)
+    return product["price_usd"] if product else None
+
+
+def label_of(url: str) -> str:
+    product = _product(url)
+    return product["label"] if product else url
+
+
+PRO_CHECKOUT = next(p["url"] for p in PRODUCTS if p["product_key"] == "eucomply-pro")
+DONATION = next(p["url"] for p in PRODUCTS if p["product_key"] == "support-mahope-oss")
+# Sorteret, fordi to steder i gaten bruger "et eksempel på et skabelonprodukt",
+# og en Python-set rækker ikke rækkefølger stabilt mellem processer.
+TEMPLATE_CHECKOUT_LIST: tuple[str, ...] = tuple(
+    sorted(p["url"] for p in PRODUCTS if p["template"]))
+TEMPLATE_CHECKOUTS = frozenset(TEMPLATE_CHECKOUT_LIST)
+ALLOWED_CHECKOUTS = frozenset(PRODUCT_BY_URL)
 
 # Søskeprodukter på samne domæne. Hver har sit eget Stripeprodukt og sit eget
 # repo, så deres checkout-links er ikke vores at begrænse her. Se spørgsmål 11.
@@ -358,6 +391,9 @@ FORBIDDEN_CLAIMS = (
 )
 
 STRIPE_RE = re.compile(r"https://(?:buy|donate)\.stripe\.com/[A-Za-z0-9]+")
+# Belob der staar med valuta-tegn foran eller bagved, saa bade "$59" og "19 $"
+# laeses. Kun USD: "$" og "USD" er de to former kontrakten og knapperne bruger.
+USD_AMOUNT_RE = re.compile(r"(?:\$\s*([0-9][0-9,]*)|([0-9][0-9,]*)\s*(?:USD|US\$|\$))", re.I)
 CANONICAL_RE = re.compile(r'<link[^>]+rel="canonical"[^>]*>', re.I)
 HREF_RE = re.compile(r'href="([^"]+)"')
 
@@ -408,6 +444,69 @@ def check_checkout_contract() -> list[str]:
                 rel = path.relative_to(SITE).as_posix()
                 findings.append(f"{rel}: Stripe-link ikke i kontrakten: {link}")
     return findings
+
+
+def check_price_claims() -> list[str]:
+    """En købsknap skal love den pris kontrakten siger.
+
+    Opgave 37. `check_checkout_contract` svarer på "pegede den på et rigtigt
+    produkt?", men ikke på "lovede den det rigtige?" — og det er det sidste en
+    køber kan lide sig for. To fejl lå i det samme klik: en knap der siger
+    "$29" på et produkt der koster $59, og en knap der er flyttet til et andet
+    produkts link, så man betaler $29 for noget der står som $59. Begge er
+    uskyldige at rette på den rigtige side (Stripedata, ikke markup) og begge er
+    umulige at opdage uden et datasæt at sammenligne imod — derfor dette.
+
+    KUN beløb i selve købsankeren tjekkes. Ikke `class="price"`: den bruges også
+    på sammenligningssider til at citere konkurrenters priser ($350+/mo,
+    €179/year, "Gratis"), så en sådan regel ville være rød på ærlige sider.
+    KUN USD-beløb: kontrakten viser også DKK og EUR, og omregningen af dem er
+    Stripes, ikke vores — at gætte på den ville give røde fund uden sandhed.
+    """
+    findings: list[str] = []
+    for path in eucocomply_pages():
+        rel = path.relative_to(SITE).as_posix()
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for match in re.finditer(
+            r'<a\b[^>]*href="(https://(?:buy|donate)\.stripe\.com/[^"]+)"[^>]*>(.*?)</a>',
+            text, re.S):
+            url, inner = match.group(1), match.group(2)
+            contract_price = price_of(url)
+            if contract_price is None:
+                continue
+            label = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", inner)).strip()
+            for amount in sorted({int(n) for n in [a or b for a, b in USD_AMOUNT_RE.findall(label)]}):
+                if amount != contract_price:
+                    findings.append(
+                        f"{rel}: købsknappen lover {amount} USD for "
+                        f"{label_of(url)}, som koster {contract_price} USD i "
+                        f"kontrakten: \"{label}\"")
+    return findings
+
+
+def unsold_products(base: Path | None = None) -> list[tuple[str, str]]:
+    """Kontraktprodukter til EUComply-domænet uden én eneste side.
+
+    **Rapport, ikke fund.** Et produkt uden side tjener 0 kroner, så det er
+    præcis den slags der bliver glemt — men en permanent rød gate ville stoppe
+    hvert merge og dermed hele sitets deploy (opgave 35). Derfor står det her som
+    en linje på hver kørsel, så det ikke kan blive glemt uden at nogen ser det.
+
+    Målt 26/9 (opgave 37): `eu-compliance-ebook-bundle` ($29) har nul forekomster
+    i det publicerede træ. Det er et live Stripeprodukt uden salgsside, og der
+    står intet i repoet om hvad køberen modtager — så der er ingen side at skrive
+    uden at opfinde løftet. Se spørgsmål 20 i planen.
+    """
+    root = base or PUBLISHED
+    corpus: list[str] = []
+    for path in all_eucocomply_pages(root):
+        corpus.append(path.read_text(encoding="utf-8", errors="replace"))
+    blob = "\n".join(corpus)
+    return [
+        (p["product_key"], p["label"])
+        for p in PRODUCTS
+        if p["scope"] == "eucomply" and p["url"] not in blob
+    ]
 
 
 def check_classification() -> list[str]:
@@ -699,6 +798,7 @@ def run(root: Path) -> list[str]:
         check_publish_alignment,
         check_classification,
         check_checkout_contract,
+        check_price_claims,
         check_sales_cta,
         check_locale_parity,
         check_canonicals,
@@ -723,14 +823,14 @@ def _minimal_page(rel: str) -> str:
     kind = rule.kind if rule else "pro"
     body = ""
     if kind == "pro":
-        checkout, label = PRO_CHECKOUT, "Buy Pro — 79 USD per website per year"
-        body = f'<a class="btn" href="{checkout}">{label}</a>'
+        checkout = PRO_CHECKOUT
+        body = f'<a class="btn" href="{checkout}">Buy Pro — {price_of(checkout)} USD per website per year</a>'
     elif kind == "template":
         checkout = TEMPLATE_CTA_PAGES[rel]
-        body = f'<a class="btn" href="{checkout}">Buy the template — $39</a>'
+        body = f'<a class="btn" href="{checkout}">Buy the template — ${price_of(checkout)}</a>'
     elif kind == "own":
-        checkout = next(iter(TEMPLATE_CHECKOUTS))
-        body = f'<a class="btn" href="{checkout}">Buy this document — $59</a>'
+        checkout = TEMPLATE_CHECKOUT_LIST[0]
+        body = f'<a class="btn" href="{checkout}">Buy this document — ${price_of(checkout)}</a>'
     return (
         f'<html><head><link rel="canonical" href="{CANONICAL_ORIGIN}/{tail}"></head>'
         f"<body>{body}</body></html>"
@@ -835,9 +935,32 @@ def selftest() -> int:
             ("købsknap der kræver 'coming soon'", "købsknap der ikke kan gennemføres",
              lambda t: t.replace("</body>",
                                  '<span class="btn">Buy — $19 (coming soon)</span></body>')),
-            ("deaktiveret betalingsknap", "deaktiveret betalingsknap",
-             lambda t: t.replace("</body>",
-                                 '<button class="btn" disabled>Buy — $19</button></body>')),
+             ("deaktiveret betalingsknap", "deaktiveret betalingsknap",
+              lambda t: t.replace("</body>",
+                                  '<button class="btn" disabled>Buy — $19</button></body>')),
+             # Opgave 37: det beløb købsknappen lover. Uden disse cases kunne
+             # `check_price_claims` være grøn af den forkerte grund — en knap der
+             # siger en anden pris end kontrakten er præcis det køberen mærker
+             # først, og ingen anden kontrol i gaten kan se det.
+             ("forkert pris i købsknappen", "lover",
+              lambda t: t.replace(f"${price_of(TEMPLATE_CHECKOUT_LIST[0])}", "$9"),
+              "store/dpa/index.html"),
+             # Beløb skrevet BAGVED tegnet. Den danske og tyske skabelon skriver
+             # "19 $", så kun beløb med tegn foran ville være grøn på et forkert
+             # beløb i netop den form. (At den rigtige værdi i den form IKKE er
+             # et fund, er prøvet af det rene fixture-træ ovenfor.)
+             ("beløb skrevet bagved tegnet", "lover",
+              lambda t: t.replace(f"${price_of(TEMPLATE_CHECKOUT_LIST[0])}", "9 $"),
+              "store/dpa/index.html"),
+             # Forkert produkt i stedet for forkert pris: knappen siger $69, men
+             # href'en er et $29-produkt. Kunden betaler for den billige.
+             ("knap med et andet produkts link", "lover",
+              lambda t: t.replace(TEMPLATE_CHECKOUT_LIST[0],
+                                  "https://buy.stripe.com/aFafZg1Mv92OdBI8gDbMQ07"),
+              "store/dpa/index.html"),
+             ("pris i pro-knappen", "lover",
+              lambda t: t.replace(f"{price_of(PRO_CHECKOUT)} USD", "29 USD"),
+              "pricing/index.html"),
         ]
         for label, needle, mutate, *target_rel in cases:
             if not expect(label, needle, mutate, *(target_rel or ["pro/index.html"])):
@@ -969,6 +1092,58 @@ def selftest() -> int:
         print("selftest: manglende publiceret træ fanget")
         blocks += 1
 
+        # ------------------------------------------------------------------
+        # Opgave 37: rapporten over produkter uden side, i begge retninger.
+        # ------------------------------------------------------------------
+        publish(base)
+        baseline = run(base)
+        orphan = next((p for p in PRODUCTS if p["product_key"] == "eu-compliance-ebook-bundle"), None)
+        if orphan is None:
+            print("SELFTEST FEJLED: e-bog-bundlen står ikke i stripe_products.json")
+            return 1
+        listed = [key for key, _ in unsold_products(base / "site-dist")]
+        if orphan["product_key"] not in listed:
+            print("SELFTEST FEJLED: et produkt uden side blev ikke rapporteret — "
+                  "rapporten er vakuær")
+            return 1
+        print(f"selftest: produkt uden side rapporteret ({orphan['product_key']})")
+        blocks += 1
+
+        # Den anden retning: en side med det **ærlige** link skal give nul fund
+        # og fjerne produktet fra rapporten. Før denne opgave var det umuligt:
+        # tillidslisten var en delmængde af kontrakten, så præcis dette link blev
+        # rødt som "ikke i kontrakten" — kontrakten forbyder salget af et
+        # produkt den selv opfører.
+        blog = base / "site" / "blog" / "dora-for-ecommerce-2026" / "index.html"
+        original_blog = blog.read_text(encoding="utf-8")
+        blog.write_text(
+            original_blog.replace(
+                "</body>",
+                f'<a class="btn" href="{orphan["url"]}">Buy the bundle — '
+                f'${orphan["price_usd"]}</a></body>'),
+            encoding="utf-8")
+        publish(base)
+        # Ikke "nul fund": en tidligere case har slettet den franske prisside, så
+        # dens fund er med i baseline. Kravet er at mutationen ikke tilføjer
+        # noget — det er den egenskab der testes, ikke træets tilstand.
+        after = run(base)
+        if after != baseline:
+            print("SELFTEST FEJLED: en side med et kontraktprodukt-link ændrede fundene:")
+            for f in after:
+                if f not in baseline:
+                    print(f"  + {f}")
+            for f in baseline:
+                if f not in after:
+                    print(f"  - {f}")
+            return 1
+        if orphan["product_key"] in [key for key, _ in unsold_products(base / "site-dist")]:
+            print("SELFTEST FEJLED: produktet stod stadig i rapporten med en side")
+            return 1
+        print("selftest: samme link på en side er lovligt og fjerner fundet")
+        blocks += 1
+        blog.write_text(original_blog, encoding="utf-8")
+        publish(base)
+
     print(f"SELFTEST GRØN — alle {len(cases) + blocks} negative cases fanges")
     return 0
 
@@ -986,9 +1161,16 @@ def main() -> int:
     groups, _ = classify_tree(PUBLISHED)
     counts = " ".join(f"{len(v)} {k}" for k, v in sorted(groups.items()))
     print(f"CTA-gate grøn: {counts} — klassificeret i det publicerede træ, som "
-          "er identisk med kilden. Kun kontraktfikserede checkout-links, én "
-          "købsknap pr. salgsside, korrekte canonicals, symmetriske lokaler, 0 "
-          "døde interne referencer, 0 uunderstøttede løfter.")
+          "er identisk med kilden. Kun kontraktfikserede checkout-links, "
+          "købsknapper til kontraktprisen, én købsknap pr. salgsside, korrekte "
+          "canonicals, symmetriske lokaler, 0 døde interne referencer, 0 "
+          "uunderstøttede løfter.")
+    unsold = unsold_products()
+    if unsold:
+        print("RAPPORT: kontraktprodukt uden side (tjener 0 kr, se spørgsmål 20 "
+              "i planen — ikke et fund, fordi det ville stoppe deploy):")
+        for key, label in unsold:
+            print(f"  - {key} — {label}")
     return 0
 
 

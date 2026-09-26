@@ -1,0 +1,130 @@
+{
+  "_source": "business/planer Stripe-kontrakt 24/9-2026 ( Mahope.dk ). Kopieret maskinlæsbart, så ét datasæt kan læses af både tillidslisten og priskontrollen. Ingen nye produkter, priser eller links oprettes her.",
+  "_fields": {
+    "product_key": "Stripe product_key fra kontrakten",
+    "url": "payment link",
+    "price_usd": "pris i USD; null for donation",
+    "scope": "eucomply = sælges på dette domæne, sibling = eget domæne/repo",
+    "template": "tæller som skabelonprodukt i købsgaten",
+    "billing": "annual eller one_time"
+  },
+  "products": [
+    {
+      "product_key": "clean-copy-pro",
+      "label": "Clean Copy Pro",
+      "url": "https://buy.stripe.com/6oU4gy76PgvgdBIdAXbMQ00",
+      "price_usd": 19,
+      "scope": "sibling",
+      "billing": "annual",
+      "template": false
+    },
+    {
+      "product_key": "deskuptime-pro",
+      "label": "DeskUptime Pro",
+      "url": "https://buy.stripe.com/7sY9AS9eX3Iu418fJ5bMQ01",
+      "price_usd": 19,
+      "scope": "sibling",
+      "billing": "one_time",
+      "template": false
+    },
+    {
+      "product_key": "transmute-desktop",
+      "label": "Transmute Desktop",
+      "url": "https://buy.stripe.com/eVqbJ0dvdbaW55cgN9bMQ02",
+      "price_usd": 19,
+      "scope": "sibling",
+      "billing": "one_time",
+      "template": false
+    },
+    {
+      "product_key": "eucomply-pro",
+      "label": "EUComply Pro",
+      "url": "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03",
+      "price_usd": 79,
+      "scope": "eucomply",
+      "billing": "annual",
+      "template": false
+    },
+    {
+      "product_key": "page-profile-pro",
+      "label": "Page Profile Pro",
+      "url": "https://buy.stripe.com/9B6eVcgHp7YK69ggN9bMQ04",
+      "price_usd": 19,
+      "scope": "sibling",
+      "billing": "annual",
+      "template": false
+    },
+    {
+      "product_key": "eucomply-dpa",
+      "label": "GDPR DPA template",
+      "url": "https://buy.stripe.com/bJe7sK8aT4My7dk7czbMQ05",
+      "price_usd": 59,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eucomply-nis2-clauses",
+      "label": "NIS2 / DORA Vendor Clause Set",
+      "url": "https://buy.stripe.com/4gM4gydvd92OapwgN9bMQ06",
+      "price_usd": 49,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eucomply-nda-clauses",
+      "label": "Mutual NDA Clause Set",
+      "url": "https://buy.stripe.com/aFafZg1Mv92OdBI8gDbMQ07",
+      "price_usd": 29,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eucomply-eaa-statement",
+      "label": "EAA Accessibility Statement",
+      "url": "https://buy.stripe.com/3cI7sK2Qz3IugNUgN9bMQ08",
+      "price_usd": 39,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eucomply-report-kit",
+      "label": "Client Compliance Report Kit",
+      "url": "https://buy.stripe.com/00wdR8bn5a6S0OWeF1bMQ09",
+      "price_usd": 69,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eucomply-template-bundle",
+      "label": "EUComply Complete Template Bundle",
+      "url": "https://buy.stripe.com/eVqaEW0Iren855c68vbMQ0a",
+      "price_usd": 149,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": true
+    },
+    {
+      "product_key": "eu-compliance-ebook-bundle",
+      "label": "EU Compliance E-book Bundle",
+      "url": "https://buy.stripe.com/fZu9AScr9a6SbtA68vbMQ0b",
+      "price_usd": 29,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": false
+    },
+    {
+      "product_key": "support-mahope-oss",
+      "label": "Støt open source (donation)",
+      "url": "https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c",
+      "price_usd": null,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": false
+    }
+  ]
+}
