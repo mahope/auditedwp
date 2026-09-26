@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.3 (2026-09-26) =
+* The accessibility statement now includes the "known limitations" and enforcement-body elements that Article 13(2) of Directive (EU) 2019/882 asks for.
+* The statement no longer ships a broken contact link: set an accessibility contact email in Settings and the statement publishes it, or the document shows a field to complete.
+* Every generated document now lists the fields you must complete, read from the document itself, so nothing is missed.
+* An invalid or mangled contact address is reported instead of being published.
 
 = 1.3.2 (2026-09-25) =
 

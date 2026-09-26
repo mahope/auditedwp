@@ -51,6 +51,7 @@ $options = array(
     'eucomply_license_activation',
     'eucomply_ls_instance_id',
     'eucomply_agency_name',
+    'eucomply_contact_email',
     'eucomply_pro_dpa_date',
     'eucomply_pro_nis2_date',
     'eucomply_pro_eaa_date',
