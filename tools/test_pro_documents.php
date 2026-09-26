@@ -380,6 +380,27 @@ if ( in_array( '--selftest', $argv, true ) ) {
     $cases['a 404 body that leaks the reason is flagged']               = ( false === stripos( $body, 'expired' ) && false === stripos( $body, 'revoked' ) && false === stripos( $body, 'token' ) ) && ( false !== stripos( '<h1>Not found</h1><p>That link has expired.</p>', 'expired' ) );
     $cases['a read-only page that links to wp-admin is flagged']        = ( false === strpos( $body, 'wp-admin' ) ) && ( false !== strpos( '<a href="/wp-admin/">Settings</a>', 'wp-admin' ) );
 
+    // (j) The wp-admin export. Each case states the exact wrong shape and shows
+    // the check the main run uses tells it apart from the right one. The old
+    // download is included verbatim in shape — different header, no history —
+    // because that is the defect this change removes, and a property that cannot
+    // tell those two apart is not testing anything.
+    $refused = priv( 'report_export_response', false, true, true );
+    $guardless = array( 200, 'a report', 'eucomply-report-2026-09-26.html' );
+    $cases['an export that skips the capability check is flagged'] = ( 403 === $refused[0] ) && ( '' === $refused[1] ) && ( 403 !== $guardless[0] );
+    $cases['an export that skips the nonce check is flagged']      = ( 403 === priv( 'report_export_response', true, false, true )[0] ) && ( '' === priv( 'report_export_response', true, false, true )[2] );
+    $cases['an export that skips the Pro check is flagged']         = ( 403 === priv( 'report_export_response', true, true, false )[0] ) && ( 403 !== priv( 'report_export_response', true, true, true )[0] );
+    $cases['a refusal carrying a filename is flagged']              = ( '' === $refused[2] ) && ( '' !== $guardless[2] );
+    $old_rendering = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>HTML Compliance Report</title></head><body>'
+        . '<h1>HTML Compliance Report</h1><p>Site: <strong>Agency Client ApS</strong> (https://agency-client.example)<br>'
+        . 'Generated: September 26, 2026 &middot; By: Agency Client ApS</p><p>Summary of the latest automated compliance scan (2026-09-26 02:00:00).</p>';
+    pro_instance();
+    $GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array( '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 5, 'warned' => 1, 'checks' => array( 'a' => 'pass' ) ) );
+    $export_body = priv( 'report_export_response', true, true, true )[1];
+    $cases['a second rendering of the report is flagged'] = ( $old_rendering !== $export_body ) && ( false === strpos( $old_rendering, 'Scan history' ) ) && ( false !== strpos( $export_body, 'Scan history' ) );
+    $cases['an attached file claiming a link expires is flagged'] = ( false !== strpos( $old_rendering . '<p>This link stops working on 2026-10-26.</p>', 'stops working on' ) ) && ( false === strpos( $export_body, 'stops working on' ) );
+    $cases['a capability weaker than the settings page is flagged'] = ( 'manage_options' !== 'read' ) && ( 0 === preg_match( "/current_user_can\(\s*'read'\s*\)/", file_get_contents( __DIR__ . '/../plugin/eucomply.php' ) ) );
+
     $bad = 0;
     foreach ( $cases as $label => $fired ) {
         if ( $fired ) {
@@ -710,6 +731,98 @@ preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $pl, $pm );
 $pl_token = $pm[1];
 priv( 'create_client_link' );
 ok( 'a new link retires the previous download too', 404 === priv( 'client_report_response', $pl_token, true )[0] );
+
+// ── 9. The report without a link ──────────────────────────────────────────────
+// The client link is what an agency sends. It is also what an agency attaches:
+// and attaching a report means creating a new link every month, each one
+// retiring the last, so a client who got the file on the 1st and again on the
+// 15th holds a link that died on the 15th. The wp-admin download has to be the
+// same document without any of that, and it has to be gated like everything else
+// in wp-admin rather than becoming a way around the Pro check.
+
+pro_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 5, 'warned' => 1, 'checks' => array( 'a' => 'pass', 'b' => 'warn' ) ),
+);
+$export_link = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $export_link, $xm );
+$export_token = $xm[1];
+list( , $client_page ) = priv( 'client_report_response', $export_token );
+list( $xs, $exported, $xname ) = priv( 'report_export_response', true, true, true );
+
+ok( 'an authorised operator gets the report', 200 === $xs );
+ok( 'the export is not indexed and leaks no referrer', false !== strpos( $exported, 'noindex' ) );
+ok( 'the export carries the scan history, not a cut-down version', false !== strpos( $exported, 'Scan history' ) && false !== strpos( $exported, '2026-09-01' ) );
+ok( 'the export carries the headline result', false !== strpos( $exported, '4 of 6 checks passed' ) );
+ok( 'the export has the same filename as the client download', 'eucomply-report-2026-09-26.html' === $xname );
+ok( 'that filename is accepted as a download header', false !== strpos( priv( 'client_report_disposition', $xname ), 'attachment; filename="' . $xname . '"' ) );
+ok( 'the export names no client and carries no link', false === strpos( $exported, $export_token ) && false === strpos( $exported, 'wp-admin' ) && false === strpos( $exported, '_wpnonce' ) );
+
+// Byte equality, not "both currently say the same thing". The two documents may
+// differ in exactly one paragraph — the notice that the link expires, which is a
+// property of the link and would be a false claim inside an attached file. Strip
+// that one paragraph and the rest has to match exactly, so any second rendering
+// of the report, in either direction, fails here.
+$stripped = preg_replace( '#<p class="eucomply-link-expiry">.*?</p>#s', '', $client_page );
+ok( 'the export is the client document, byte for byte', $stripped === $exported );
+ok( 'the export makes no claim about a link expiring', false === strpos( $exported, 'eucomply-link-expiry' ) && false === strpos( $exported, 'stops working on' ) );
+ok( 'the client document is the export plus the expiry notice', 1 === preg_match_all( '#<p class="eucomply-link-expiry">This link stops working on \d{4}-\d{2}-\d{2}\.</p>#', $client_page ) );
+ok( 'the same scan renders the same document twice', $exported === priv( 'report_document' ) && $exported === priv( 'report_export_response', true, true, true )[1] );
+$hostile_expiry = priv( 'report_document', "2026-09-26<script>alert(1)</script>" );
+ok( 'a hostile expiry date cannot inject markup', 0 === substr_count( $hostile_expiry, '<script>' ) && false !== strpos( $hostile_expiry, '&lt;script&gt;' ) );
+ok( 'an empty expiry adds no paragraph', false === strpos( priv( 'report_document', '' ), 'eucomply-link-expiry' ) );
+
+// The export is not a way around the Pro gate, and it is not a way around the
+// capability the settings page uses. All three refusals produce one answer: no
+// body, no filename, and therefore no Content-Disposition.
+$denied = array(
+    'no capability' => priv( 'report_export_response', false, true, true ),
+    'no nonce'      => priv( 'report_export_response', true, false, true ),
+    'no Pro'        => priv( 'report_export_response', true, true, false ),
+    'nothing at all' => priv( 'report_export_response', false, false, false ),
+);
+ok( 'an account that may not manage the site gets no report', 403 === $denied['no capability'][0] );
+ok( 'a request without a valid nonce gets no report', 403 === $denied['no nonce'][0] );
+ok( 'a free installation gets no report', 403 === $denied['no Pro'][0] );
+ok( 'a refused export carries no report body', '' === $denied['no capability'][1] && '' === $denied['no nonce'][1] && '' === $denied['no Pro'][1] );
+ok( 'a refused export carries no filename, so no Content-Disposition', '' === $denied['no capability'][2] && '' === $denied['no nonce'][2] && '' === $denied['no Pro'][2] && '' === priv( 'client_report_disposition', $denied['no Pro'][2] ) );
+ok( 'every refusal is the same answer', $denied['no capability'] === $denied['no nonce'] && $denied['no nonce'] === $denied['no Pro'] && $denied['no Pro'] === $denied['nothing at all'] );
+ok( 'a refused export is not a client link either', false === strpos( json_encode( $denied ), 'eucomply_report' ) );
+
+// The export requires no link at all: the whole point is that a monthly
+// attachment does not depend on a 30-day secret, and that the file keeps working
+// after the link that also delivers it has been retired.
+priv( 'revoke_client_link' );
+ok( 'a retired client link does not stop the export', 200 === priv( 'report_export_response', true, true, true )[0] );
+ok( 'the export does not require a client link record', false === get_option( 'eucomply_client_link', false ) );
+ok( 'the export does not create a client link either', 'none' === priv( 'client_link_state' ) );
+
+// The export must leave nothing behind. An agency that attaches a report twelve
+// times a year should not accumulate a record per export, and nothing about a
+// download — a who, a when, a counter — may end up stored on the site. The one
+// option this path does write, the "last generated" date the settings table has
+// always shown, already exists and is already removed on uninstall.
+$stored_before = $GLOBALS['eucomply_test_options'];
+$exported_again = priv( 'report_export_response', true, true, true );
+ok( 'rendering the export changes no stored option', $stored_before === $GLOBALS['eucomply_test_options'] );
+ok( 'a repeated export changes no stored option either', $exported_again[1] === $exported && $stored_before === $GLOBALS['eucomply_test_options'] );
+
+// Every screen and every export in this plugin is gated on one capability. If a
+// download can ever be reached with less than the settings page, it is a way
+// around the Pro check, and a reviewer reading six call sites will not see it.
+$source    = file_get_contents( __DIR__ . '/../plugin/eucomply.php' );
+$uninstall = file_get_contents( __DIR__ . '/../plugin/uninstall.php' );
+preg_match_all( "/(?:update|add)_option\(\s*'(eucomply_[a-z_]+)'/", $source, $written );
+$option_names = array_values( array_unique( $written[1] ) );
+ok( 'the plugin does write options, so the uninstall check is not vacuous', count( $option_names ) >= 10 );
+foreach ( $option_names as $option ) {
+    ok( "uninstall removes $option", false !== strpos( $uninstall, "'" . $option . "'" ) );
+}
+ok( 'that capability is manage_options', 1 === preg_match( "/define\(\s*'EUCOMPLY_ADMIN_CAP',\s*'([a-z_]+)'\s*\)/", $source, $cm ) && 'manage_options' === $cm[1] );
+preg_match_all( '/current_user_can\(\s*([^)]*?)\s*\)/', $source, $caps );
+ok( 'every capability check uses the one declared capability', array( 'EUCOMPLY_ADMIN_CAP' ) === array_values( array_unique( array_map( 'trim', $caps[1] ) ) ) );
+ok( 'both menu pages are registered on the same capability', 2 === preg_match_all( '/^\s+EUCOMPLY_ADMIN_CAP,$/m', $source ) && 2 === preg_match_all( '/add_(?:sub)?menu_page\(/', $source ) );
+ok( 'the export and the link handler are both on admin_init', 2 === preg_match_all( "/add_action\(\s*'admin_init'/", $source ) );
 
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";

@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.6
+ * Version:           1.3.7
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.6' );
+define( 'EUCOMPLY_VERSION', '1.3.7' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -40,6 +40,10 @@ define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 define( 'EUCOMPLY_LICENSE_GRACE', 7 * DAY_IN_SECONDS ); // keep a verified Pro status this long while the license server is unreachable
 define( 'EUCOMPLY_HISTORY_LIMIT', 52 ); // ~1 year of weekly snapshots, the window an auditor or a renewal asks about
 define( 'EUCOMPLY_CLIENT_LINK_DAYS', 30 ); // how long a client report link stays valid; a report is a point-in-time claim, not a permanent one
+// One capability for every screen and every export this plugin has. Declared once
+// so a download can never end up gated more loosely than the settings page it
+// sits next to — the tests check that no call site passes a capability of its own.
+define( 'EUCOMPLY_ADMIN_CAP', 'manage_options' );
 
 /**
  * Activation guard — prevent activation on unsupported PHP or WordPress.
@@ -128,7 +132,7 @@ class EUComply {
         add_menu_page(
             'EUComply Dashboard',
             'EUComply',
-            'manage_options',
+            EUCOMPLY_ADMIN_CAP,
             'eucomply',
             array( $this, 'render_dashboard' ),
             $icon,
@@ -138,7 +142,7 @@ class EUComply {
             'eucomply',
             'EUComply Settings',
             'Settings',
-            'manage_options',
+            EUCOMPLY_ADMIN_CAP,
             'eucomply-settings',
             array( $this, 'render_settings' )
         );
@@ -856,7 +860,7 @@ class EUComply {
         }
         if ( ! empty( $_POST ) && isset( $_POST['eucomply_release'] ) ) {
             check_admin_referer( 'eucomply_release' );
-            if ( ! current_user_can( 'manage_options' ) ) {
+            if ( ! current_user_can( EUCOMPLY_ADMIN_CAP ) ) {
                 wp_die( -1 );
             }
             $notice = $this->release_device();
@@ -920,7 +924,7 @@ class EUComply {
     public function ajax_run_scan() {
         check_ajax_referer( 'eucomply_scan' );
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( EUCOMPLY_ADMIN_CAP ) ) {
             wp_die( -1 );
         }
 
@@ -961,11 +965,42 @@ class EUComply {
         if ( empty( $_GET['eucomply_doc'] ) || ! is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified below
             return;
         }
-        if ( ! check_admin_referer( 'eucomply_doc' ) || ! current_user_can( 'manage_options' ) ) {
+        $doc = sanitize_key( wp_unslash( $_GET['eucomply_doc'] ) );
+
+        // The report is the one document that already exists, so it is handed
+        // over as it is: same rendering, same filename, same bytes as the link
+        // a client reads. It asks the three questions itself, because this is
+        // the one document whose bytes are also served to somebody holding no
+        // WordPress login at all — the export must not become the weak way in.
+        if ( 'report' === $doc ) {
+            $raw_nonce  = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified on the next line
+            $can_manage = current_user_can( EUCOMPLY_ADMIN_CAP );
+            $nonce_ok   = (bool) wp_verify_nonce( $raw_nonce, 'eucomply_doc' );
+            $export     = $this->report_export_response( $can_manage, $nonce_ok, $this->is_pro() );
+            if ( 200 !== $export[0] ) {
+                // The same two answers the other documents give, in the same
+                // order: an account that may not manage the site, or a request
+                // without a valid nonce, is told nothing about the licence.
+                wp_die( ( $can_manage && $nonce_ok ) ? 'Pro license required.' : 'Not allowed' );
+            }
+            nocache_headers();
+            header( 'Content-Type: text/html; charset=utf-8' );
+            $disposition = $this->client_report_disposition( $export[2] );
+            if ( '' !== $disposition ) {
+                header( 'Content-Disposition: ' . $disposition, true );
+            }
+            // The one thing the request records, and it is not new: the settings
+            // table has always shown when each document was last handed over.
+            // Nothing about who exported it, how often, or for whom is stored.
+            update_option( 'eucomply_pro_report_date', current_time( 'mysql' ) );
+            echo $export[1]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled escaped in report_document()
+            exit;
+        }
+
+        if ( ! check_admin_referer( 'eucomply_doc' ) || ! current_user_can( EUCOMPLY_ADMIN_CAP ) ) {
             wp_die( 'Not allowed' );
         }
-        $doc = sanitize_key( wp_unslash( $_GET['eucomply_doc'] ) );
-        $allowed = array( 'dpa', 'nis2', 'eaa', 'report' );
+        $allowed = array( 'dpa', 'nis2', 'eaa' );
         if ( ! in_array( $doc, $allowed, true ) || ! $this->is_pro() ) {
             wp_die( 'Pro license required.' );
         }
@@ -974,12 +1009,21 @@ class EUComply {
             'dpa'    => 'Data Processing Agreement',
             'nis2'   => 'NIS2 / DORA Vendor Clause Set',
             'eaa'    => 'Accessibility Statement (EAA)',
-            'report' => 'HTML Compliance Report',
+        );
+
+        // Written as literals, never assembled from the document key: a name
+        // built at runtime cannot be checked against uninstall.php, and an
+        // option that survives deleting the plugin is a small leak of a
+        // customer's compliance paperwork.
+        $date_options = array(
+            'dpa'  => 'eucomply_pro_dpa_date',
+            'nis2' => 'eucomply_pro_nis2_date',
+            'eaa'  => 'eucomply_pro_eaa_date',
         );
 
         $body = call_user_func( array( $this, 'build_' . str_replace( '-', '_', $doc ) ) );
 
-        update_option( 'eucomply_pro_' . $doc . '_date', current_time( 'mysql' ) );
+        update_option( $date_options[ $doc ], current_time( 'mysql' ) );
 
         nocache_headers();
         header( 'Content-Type: text/html; charset=utf-8' );
@@ -1335,6 +1379,49 @@ class EUComply {
     }
 
     /**
+     * The compliance report as a complete document.
+     *
+     * There is exactly one rendering of the report, and both ways out use it: the
+     * client link and the download in wp-admin. That is not tidiness. Before
+     * this, the wp-admin download had a second rendering of its own — different
+     * header, no history — so an agency could send a client one document in
+     * March and another in April, and the one its client was quoted on would be
+     * the one without the evidence. An agency cannot invoice a retainer on a
+     * document that changes shape when nobody is watching.
+     *
+     * The only thing $link_expires adds is the notice that the *link* dies on a
+     * date. That is a property of the link, not of the report, so it is absent
+     * from the exported file — an attached document that says when its own link
+     * expires would be claiming something about a link it does not carry. It
+     * keeps a class so a test can prove the two documents are otherwise
+     * identical byte for byte.
+     *
+     * @param string $link_expires Y-m-d, or '' when there is no link involved.
+     * @return string
+     */
+    private function report_document( $link_expires = '' ) {
+        $body  = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+            . '<meta name="robots" content="noindex, nofollow">'
+            . '<title>Compliance report — ' . esc_html( get_bloginfo( 'name' ) ) . '</title>'
+            . '<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;line-height:1.6;color:#111}'
+            . 'h1{font-size:22px;border-bottom:2px solid #111;padding-bottom:8px}h2{font-size:16px;margin-top:28px}'
+            . 'table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #999;padding:6px 10px;font-size:13px;text-align:left}'
+            . 'footer{margin-top:48px;font-size:11px;color:#666;border-top:1px solid #ccc;padding-top:8px}</style>'
+            . '</head><body>';
+        $body .= '<h1>Compliance report</h1>';
+        $body .= '<p>Site: <strong>' . esc_html( get_bloginfo( 'name' ) ) . '</strong> (' . esc_html( home_url() ) . ')<br>';
+        $body .= 'Last scan: ' . esc_html( (string) get_option( 'eucomply_last_scan', '' ) ) . '</p>';
+        if ( '' !== (string) $link_expires ) {
+            $body .= '<p class="eucomply-link-expiry">This link stops working on ' . esc_html( (string) $link_expires ) . '.</p>';
+        }
+        $body .= $this->build_report(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in build_report()
+        $body .= '<footer>Read-only. This page cannot change anything on the website. '
+            . 'Produced by EUComply Pro from the site&#39;s own scheduled scans. '
+            . 'A compliance aid, not legal advice.</footer></body></html>';
+        return $body;
+    }
+
+    /**
      * Build the response for a client report request.
      *
      * Separated from the HTTP plumbing so the properties that matter — what a
@@ -1359,24 +1446,33 @@ class EUComply {
             // a different observable from a 404 that arrives as a page.
             return array( 404, '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><p>No compliance report is available at this address.</p></body></html>', '' );
         }
-        $rec  = $this->client_link_record();
-        $body = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
-            . '<meta name="robots" content="noindex, nofollow">'
-            . '<title>Compliance report — ' . esc_html( get_bloginfo( 'name' ) ) . '</title>'
-            . '<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;line-height:1.6;color:#111}'
-            . 'h1{font-size:22px;border-bottom:2px solid #111;padding-bottom:8px}h2{font-size:16px;margin-top:28px}'
-            . 'table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #999;padding:6px 10px;font-size:13px;text-align:left}'
-            . 'footer{margin-top:48px;font-size:11px;color:#666;border-top:1px solid #ccc;padding-top:8px}</style>'
-            . '</head><body>';
-        $body .= '<h1>Compliance report</h1>';
-        $body .= '<p>Site: <strong>' . esc_html( get_bloginfo( 'name' ) ) . '</strong> (' . esc_html( home_url() ) . ')<br>';
-        $body .= 'Last scan: ' . esc_html( (string) get_option( 'eucomply_last_scan', '' ) ) . '<br>';
-        $body .= 'This link stops working on ' . esc_html( gmdate( 'Y-m-d', (int) $rec['expires'] ) ) . '.</p>';
-        $body .= $this->build_report(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in build_report()
-        $body .= '<footer>Read-only. This page cannot change anything on the website. '
-            . 'Produced by EUComply Pro from the site&#39;s own scheduled scans. '
-            . 'A compliance aid, not legal advice.</footer></body></html>';
-        return array( 200, $body, $as_file ? $this->client_report_filename() : '' );
+        $rec = $this->client_link_record();
+        return array( 200, $this->report_document( gmdate( 'Y-m-d', (int) $rec['expires'] ) ), $as_file ? $this->client_report_filename() : '' );
+    }
+
+    /**
+     * What a report export from wp-admin is allowed to hand over.
+     *
+     * The same three questions as everywhere else in wp-admin — may this account
+     * manage the site, is the request nonced, is Pro paid for — decided in one
+     * place, so the export cannot become a way around the Pro gate and cannot
+     * drift into a weaker capability than the settings page it sits under.
+     *
+     * Every refusal produces the same empty answer, with no filename: a refused
+     * export that still carried a Content-Disposition would be a file that exists
+     * for whoever the guard did not catch. Kept separate from the HTTP calls
+     * because those end in wp_die(), which no test can call.
+     *
+     * @param bool $can_manage current_user_can( EUCOMPLY_ADMIN_CAP ).
+     * @param bool $nonce_ok   Whether check_admin_referer() passed.
+     * @param bool $pro        Whether the Pro licence is active.
+     * @return array{0:int,1:string,2:string} Status, body, filename.
+     */
+    private function report_export_response( $can_manage, $nonce_ok, $pro ) {
+        if ( ! $can_manage || ! $nonce_ok || ! $pro ) {
+            return array( 403, '', '' );
+        }
+        return array( 200, $this->report_document(), $this->client_report_filename() );
     }
 
     /**
@@ -1445,7 +1541,7 @@ class EUComply {
         if ( empty( $_GET['eucomply_link'] ) || ! is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified below
             return;
         }
-        if ( ! check_admin_referer( 'eucomply_link' ) || ! current_user_can( 'manage_options' ) ) {
+        if ( ! check_admin_referer( 'eucomply_link' ) || ! current_user_can( EUCOMPLY_ADMIN_CAP ) ) {
             wp_die( 'Not allowed' );
         }
         if ( ! $this->is_pro() ) {
