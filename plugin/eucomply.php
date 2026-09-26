@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.17
+ * Version:           1.3.18
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.17' );
+define( 'EUCOMPLY_VERSION', '1.3.18' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1440,13 +1440,61 @@ class EUComply {
             $results['warnings'][] = 'No Privacy Policy page assigned (Settings → Privacy).';
         }
 
-        // Imprint / Impressum (common in DE/AT).
-        $imprint_page = get_page_by_path( 'imprint' );
-        if ( ! $imprint_page ) {
-            $imprint_page = get_page_by_path( 'impressum' );
+        // Imprint / Impressum (common in DE/AT), plus the page forms the same
+        // shops use in Danish, Swedish and Dutch.
+        //
+        // Opgave 53, målt og ikke antaget: a Danish shop with the pages "Om os",
+        // "Handelsbetingelser" and "Privatlivspolitik" was told "3 of 3 legal
+        // pages missing" — every one of the three — in the report a bureau pays
+        // $79 a year for. Same failure as opgave 50, one level further down:
+        // there the check read a different source than the engine, here it reads
+        // only English and German page names. The verdict is right about the
+        // shop and wrong about the language it is written in.
+        $imprint_paths = array(
+            'imprint',
+            'impressum',
+            // DA — the imprint/contact page a Danish shop is required to publish.
+            'om-os',
+            'om-oss',
+            'forretningsoplysninger',
+            'kontaktoplysninger',
+            // SV — bolagsinformation.
+            'foretagsoplysningar',
+            'foretagsinformation',
+            'foretagsuppgifter',
+            // NL — colofon / bedrijfsgegevens.
+            'over-ons',
+            'colofon',
+            'bedrijfsgegevens',
+        );
+        $imprint_page = null;
+        foreach ( $imprint_paths as $imprint_path ) {
+            $imprint_page = get_page_by_path( $imprint_path );
+            if ( $imprint_page ) {
+                break;
+            }
         }
         if ( ! $imprint_page ) {
-            // Search by title.
+            // Canonical page titles, matched exactly. Exactly, on purpose: the
+            // Danish imprint page is called "Om os", and a LIKE would also count
+            // "Om os i pressen" — a press page, not the imprint — as the imprint
+            // the report tells the customer they have.
+            $imprint_page = $this->find_page_by_title(
+                array(
+                    'Om os',
+                    'Om osv',
+                    'Om oss',
+                    'Företagsuppgifter',
+                    'Over ons',
+                    'Bedrijfsgegevens',
+                    'Colofon',
+                )
+            );
+        }
+        if ( ! $imprint_page ) {
+            // Search by title. The LIKE form is the older, looser fallback and
+            // is kept for the two English and German names, where "Imprint" and
+            // "Impressum" appear inside longer titles ("Imprint / Impressum").
             global $wpdb;
             $imprint_id = $wpdb->get_var(
                 $wpdb->prepare(
@@ -1475,9 +1523,34 @@ class EUComply {
         }
 
         // Accessibility statement (EAA).
-        $eaa_page = get_page_by_path( 'accessibility-statement' );
+        $eaa_paths = array(
+            'accessibility-statement',
+            'accessibility',
+            'barrierefreiheit-erklaerung',
+            'barrierefreiheit-erklaring',
+            // DA, SV, NL — the page name each market actually publishes.
+            'tilgaengelighedserklaering',
+            'tillganglighetsredogorelse',
+            'toegankelijkheidsverklaring',
+        );
+        $eaa_page = null;
+        foreach ( $eaa_paths as $eaa_path ) {
+            $eaa_page = get_page_by_path( $eaa_path );
+            if ( $eaa_page ) {
+                break;
+            }
+        }
         if ( ! $eaa_page ) {
-            $eaa_page = get_page_by_path( 'accessibility' );
+            $eaa_page = $this->find_page_by_title(
+                array(
+                    'Tilgængelighedserklæring',
+                    'Tilgængelighed',
+                    'Tillgänglighetsredogörelse',
+                    'Tillgänglighet',
+                    'Toegankelijkheidsverklaring',
+                    'Toegankelijkheid',
+                )
+            );
         }
         if ( ! $eaa_page ) {
             global $wpdb;
@@ -1510,6 +1583,39 @@ class EUComply {
         }
 
         return $results;
+    }
+
+    /**
+     * The first published page whose title is exactly one of $titles, or null.
+     *
+     * WordPress has no way to look a page up by title except SQL, and the SQL
+     * shape here is an equality test on purpose — see the call site for why a
+     * LIKE is the wrong tool for "Om os". One query per name, and the loop
+     * stops at the first hit, so a site pays for the name it has rather than
+     * for the whole list.
+     *
+     * @param array $titles Page titles, in the order they should be tried.
+     * @return WP_Post|null
+     */
+    private function find_page_by_title( array $titles ) {
+        global $wpdb;
+
+        foreach ( $titles as $title ) {
+            $id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT ID FROM {$wpdb->posts} WHERE post_title = %s AND post_type = 'page' AND post_status = 'publish' LIMIT 1",
+                    $title
+                )
+            );
+            if ( $id ) {
+                $page = get_post( $id );
+                if ( $page ) {
+                    return $page;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

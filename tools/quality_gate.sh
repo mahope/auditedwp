@@ -405,6 +405,21 @@ hdr "juridiske sider læser dansk, svensk og nederlandsk"
 run "tools/check_legal_langs.mjs" node tools/check_legal_langs.mjs
 run "tools/check_legal_langs.mjs --selftest" node tools/check_legal_langs.mjs --selftest
 
+# ------------------------ 22. Kan den betalte `legal` finde de danske sider?
+# Trin 21 dækker `legal` i de to JS-motorer. Det er ikke den samme kode: pluginens
+# `check_legal_pages()` slår **WordPress-sider** op efter sti og titel, og listen
+# var `imprint`, `impressum`, `accessibility-statement`, `accessibility` plus to
+# LIKE-opslag på `%Imprint%` og `%Impressum%` — kun engelsk og tysk. Målt: en dansk
+# butik med *Om os*, *Handelsbetingelser* og *Privatlivspolitik* fik "3 of 3 legal
+# pages missing" i den rapport et bureau betaler $79 om året for. Fem regler: de
+# tre sprog skal bestå, de skal give samme dom som engelsk, hver af de to
+# opslagsveje (WordPress-sti og sidetitel) skal finde siden *alene*, en butik uden
+# sider skal stadig fejle, og "Om os i pressen" må ikke tælles som imprint.
+# Selftesten muterer repoets egen pluginfil fire gange, så porten kan være rød.
+hdr "den betalte jurid.side-tjek læser dansk, svensk og nederlandsk"
+run "tools/check_legal_pages_langs.php" php tools/check_legal_pages_langs.php
+run "tools/check_legal_pages_langs.php --selftest" php tools/check_legal_pages_langs.php --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

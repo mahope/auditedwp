@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.17
+Stable tag: 1.3.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.18 (2026-09-26) =
+* Fix: the legal-pages check only knew English and German page names, so a Danish, Swedish or Dutch shop was told every legal page was missing. A shop with the pages "Om os", "Handelsbetingelser" and "Privatlivspolitik" - all three published, all three required - was reported as "3 of 3 legal pages missing" in the report an agency pays to send its client.
+* It now looks for the page forms each market actually uses: /om-os/, /om-oss/, /over-ons/, /colofon/, /bedrijfsgegevens/ and the matching accessibility slugs, and it also finds a page by its name, not only by its URL.
+* The name lookup matches the title exactly, on purpose. The Danish imprint page is called "Om os", and a substring match would also count "Om os i pressen" - a press page - as the imprint the report tells you have.
+* The same three documents now give the same verdict in Danish, Swedish, Dutch and English, and a site with none of them is still told so. Four mutations of this plugin turn the build red, so it cannot come back unnoticed.
 
 = 1.3.17 (2026-09-26) =
 * Fix: the privacy-link pattern only knew English and German, so a Danish, Swedish or Dutch site that linked its privacy policy next to its contact form failed the forms row for doing exactly what the row asks for. A shop with a hand-written form and a /privatlivspolitik/ link was told "no privacy-policy link" here and in the free scanner.
