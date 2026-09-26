@@ -152,6 +152,67 @@ const STEMS = {
     SV: "h[åa]llbarhetspolicy",
     NL: "duurzaamheids?(?:beleid|verklaring)",
   },
+
+  /*
+   * De syv sidste mønstre, opgave 55. Samme to regler, og de tre af dem er
+   * **målt** frem for hæftet, fordi hverken en dansk, svensk eller
+   * nederlandsk stængel fandtes: målingen gav **2 af 22** (mønster, sprog).
+   *
+   * Den tredje fejltagelse her er en, porten kun kan se ved at køre den:
+   *
+   * - **Et ord der også er prosa i et andet sprog.** Den tyske `garantie` er
+   *   målt til at tælle dansk *garanti* — "Du får 2 års garanti på alle
+   *   produkter" er prosa på enhver dansk butik. Derfor er den danske fixture
+   *   med garanti en **R3**-fixture, ikke bare en stem.
+   * - **Samme ord på to sprog er ærligt, ikke en fejl.** Dansk skriver
+   *   *whistleblower*, fordi der ikke er et indarbejdet dansk ord, og
+   *   `Legal / Imprint` har allerede DA == SV. Derfor er whistleblower-DA
+   *   stænglen det engelske ord — målt, at den ser den danske fixture.
+   */
+  "Sub-processor list": {
+    DA: "underbehandler(?:e)?[ _-]?(?:liste|list|oversigt)|liste[ _-]?over[ _-]?underbehandler",
+    SV: "bitr[äa]desf[öo]rteckning|underbitr[äa]deslista",
+    NL: "subverwerkers(?:lijst)?",
+  },
+  "Code of conduct": {
+    DA: "adf[æa]rdskodeks",
+    SV: "uppf[öo]randekodex",
+    NL: "gedragcode",
+  },
+  "SLA / Warranty": {
+    // EN er her, fordi opgave 55 fandt en fejl der **ikke** var et sprogproblem:
+    // motorens `service[_-]?level[_-]?agreement` kan ikke matche mellemrum, så
+    // en engelsk side med linkteksten "Service Level Agreement" blev kun
+    // fundet når CMS'en tilfældigvis lavede stien med bindestreger. Samme
+    // `[ _-]?`-fejl som opgave 52 fandt i `terms`.
+    EN: "service[ _-]?level[ _-]?(?:agreement|overeenkomst)",
+    DA: "serviceniveau",
+    // **Ikke** `serviceniv[åa]` alene: målt giver det et falsk fund på
+    // "Vi har en servicenivå på 99,9 procent", som står i svensk butiksprosa
+    // om oppetid. Derfor kræver den sit eget dokumentord.
+    SV: "serviceavtal|serviceniv[åa][ _-]?avtal",
+    NL: "servicelevelovereenkomst",
+  },
+  "Complaints procedure": {
+    DA: "klageprocedure|klage[ _-]?h[æa]ndtering",
+    SV: "klagf[öo]rfarande",
+    NL: "klachtprocedure|klachtenbeleid",
+  },
+  "Modern slavery statement": {
+    DA: "moderne[ _-]?slaveri",
+    SV: "modernt[ _-]?slaveri",
+    NL: "moderne[ _-]?slavernij",
+  },
+  "Whistleblower / Hinweisgeber": {
+    DA: "whistleblower",
+    SV: "visselbl[åa]sare",
+    NL: "klokkenluider",
+  },
+  "DPO / Data protection officer": {
+    DA: "databeskyttelsesr[åa]dgiver",
+    SV: "dataskyddsansvarig",
+    NL: "functionaris(?:[ _-]?voor)?[ _-]?gegevensbescherming",
+  },
 };
 
 /** (mønster, sprog) → fixture. R1 kræver, at hver af disse findes. */
@@ -197,12 +258,46 @@ const COVERAGE = [
   ["Environmental / Sustainability policy", "DA", "dansk side med Environmental / Sustainability policy"],
   ["Environmental / Sustainability policy", "SV", "svensk side med Environmental / Sustainability policy"],
   ["Environmental / Sustainability policy", "NL", "nederlandsk side med Environmental / Sustainability policy"],
+  //
+  // Opgave 55: de syv sidste mønstre. Samme målemetode som opgave 54 — hvert
+  // mønster får sin egen fixture i hvert af de tre sprog, genereret nedenfor af
+  // FLERE_MONSTRE, så en fixture og sin dækningsrække ikke kan glide fra
+  // hinanden.
+  ["Sub-processor list", "DA", "dansk side med Sub-processor list"],
+  ["Sub-processor list", "SV", "svensk side med Sub-processor list"],
+  ["Sub-processor list", "NL", "nederlandsk side med Sub-processor list"],
+  ["Code of conduct", "DA", "dansk side med Code of conduct"],
+  ["Code of conduct", "SV", "svensk side med Code of conduct"],
+  ["Code of conduct", "NL", "nederlandsk side med Code of conduct"],
+  ["SLA / Warranty", "DA", "dansk side med SLA / Warranty"],
+  ["SLA / Warranty", "SV", "svensk side med SLA / Warranty"],
+  ["SLA / Warranty", "NL", "nederlandsk side med SLA / Warranty"],
+  // Beviset på at `sla` havde en fejl der ikke var et sprogproblem: den
+  // engelske side med **mellemrum** i både sti og linktekst var usynlig før.
+  ["SLA / Warranty", "EN", "engelsk side med SLA / Warranty"],
+  ["Complaints procedure", "DA", "dansk side med Complaints procedure"],
+  ["Complaints procedure", "SV", "svensk side med Complaints procedure"],
+  ["Complaints procedure", "NL", "nederlandsk side med Complaints procedure"],
+  ["Modern slavery statement", "DA", "dansk side med Modern slavery statement"],
+  ["Modern slavery statement", "SV", "svensk side med Modern slavery statement"],
+  ["Modern slavery statement", "NL", "nederlandsk side med Modern slavery statement"],
+  ["Whistleblower / Hinweisgeber", "DA", "dansk side med Whistleblower / Hinweisgeber"],
+  ["Whistleblower / Hinweisgeber", "SV", "svensk side med Whistleblower / Hinweisgeber"],
+  ["Whistleblower / Hinweisgeber", "NL", "nederlandsk side med Whistleblower / Hinweisgeber"],
+  ["DPO / Data protection officer", "DA", "dansk side med DPO / Data protection officer"],
+  ["DPO / Data protection officer", "SV", "svensk side med DPO / Data protection officer"],
+  ["DPO / Data protection officer", "NL", "nederlandsk side med DPO / Data protection officer"],
 ];
 
 /** Sprog til det sprog navnet skriver. Kun til fejlbeskeder. */
 const SPROG = { DA: "dansk", SV: "svensk", NL: "nederlandsk", EN: "engelsk" };
-/** Samme i lowercase, fordi fixture-navne skriver «dansk side med …». */
-const SPROGNAVN = { DA: "dansk", SV: "svensk", NL: "nederlandsk" };
+/**
+ * Samme i lowercase, fordi fixture-navne skriver «dansk side med …». `EN` kom
+ * først med opgave 55s engelske SLA-fixture — uden den hed den genererede
+ * fixture `undefined side med SLA / Warranty`, og R1 gjorde porten rød med
+ * præcis den fejl, fordi den læser fixture **navne** og ikke indeks.
+ */
+const SPROGNAVN = { DA: "dansk", SV: "svensk", NL: "nederlandsk", EN: "engelsk" };
 
 const FIXTURES = [
   {
@@ -508,10 +603,29 @@ const FIXTURES = [
   },
   {
     name: "nederlandse zin met verzendkosten, geen juridische link",
-    // `verzendkosten` står i hver Nederlandsk butiksside. `verzendbeleid` må
+    // `verzendkosten` står i hver Nederlandsk butiksseite. `verzendbeleid` må
     // derfor kræve sit eget suffiks, ikke bare `verzend`.
     html: '<html><body><main><p>Verzendkosten worden berekend bij '
       + 'afrekenen, en levering duurt twee werkdagen.</p></main></body></html>',
+  },
+  /*
+   * R3 for opgave 55. To prosa-sætninger, der **blev** fundet af en stængel,
+   * målt i denne iteration og ikke antaget:
+   */
+  {
+    name: "dansk sætning med garanti på produkter, intet juridisk link",
+    // Den tyske `garantie` matcher dansk *garanti*, som står i hver dansk
+    // butiksprosa om varer. Uden denne fixture fik den betalte rapport et
+    // **falsk** juridisk link på en side uden et.
+    html: '<html><body><main><p>Du får 2 års garanti på alle produkter, og '
+      + 'garantien dækker reparation af fabrikationsfejl.</p></main></body></html>',
+  },
+  {
+    name: "svensk sætning med servicenivå i prosa, intet juridisk link",
+    // `servicenivå` alene er oppetid i svensk butiksprosa, ikke et dokument.
+    // Derfor kræver den svenske stængel sit eget dokumentord.
+    html: '<html><body><main><p>Vi har en servicenivå på 99,9 procent, och '
+      + 'servicenivån mäts varje timme.</p></main></body></html>',
   },
 ];
 
@@ -520,7 +634,7 @@ const FIXTURES = [
  * tabel, så en fixture og dens dækningsrække ikke kan glide fra hinanden: de
  * deler navnet, og R1 genkender en række uden fixture.
  */
-const FLERE_MONSTRE = [  ["Imprint / Legal notice", "DA", "/om-os/", "Om os", "Fri fragt over 499 kr."],  ["Imprint / Legal notice", "SV", "/om-oss/", "Om oss", "Fri frakt över 499 kr."],  ["Imprint / Legal notice", "NL", "/colofon/", "Colofon", "Gratis verzending boven 49 EUR."],  ["Accessibility statement", "DA", "/tilgaengelighedserklaering/", "Tilgængelighedserklæring", "Fri fragt over 499 kr."],  ["Accessibility statement", "SV", "/tillganglighetsredogorelse/", "Tillgänglighetsredogörelse", "Fri frakt över 499 kr."],  ["Accessibility statement", "NL", "/toegankelijkheidsverklaring/", "Toegankelijkheidsverklaring", "Gratis verzending boven 49 EUR."],  ["Legal / Imprint", "DA", "/juridisk-information/", "Juridisk information", "Fri fragt over 499 kr."],  ["Legal / Imprint", "SV", "/juridisk-information/", "Juridisk information", "Fri frakt över 499 kr."],  ["Legal / Imprint", "NL", "/juridische-informatie/", "Juridische informatie", "Gratis verzending boven 49 EUR."],  ["Returns / Refund policy", "DA", "/retur-og-forbrugerrettigheder/", "Retur- og forbrugerrettigheder", "Fri fragt over 499 kr."],  ["Returns / Refund policy", "SV", "/retur-och-angerratt/", "Retur och ångerrätt", "Fri frakt över 499 kr."],  ["Returns / Refund policy", "NL", "/retourbeleid/", "Retourbeleid", "Gratis verzending boven 49 EUR."],  ["Shipping policy", "DA", "/fragt-og-levering/", "Fragt og levering", "Fri fragt over 499 kr."],  ["Shipping policy", "SV", "/frakt-och-leverans/", "Frakt och leverans", "Fri frakt över 499 kr."],  ["Shipping policy", "NL", "/verzendbeleid/", "Verzendbeleid", "Gratis verzending boven 49 EUR."],  ["Data processing agreement", "DA", "/databehandleraftale/", "Databehandleraftale", "Fri fragt over 499 kr."],  ["Data processing agreement", "SV", "/personuppgiftsbitradesavtal/", "Personuppgiftsbiträdesavtal", "Fri frakt över 499 kr."],  ["Data processing agreement", "NL", "/verwerkersovereenkomst/", "Verwerkersovereenkomst", "Gratis verzending boven 49 EUR."],  ["Acceptable use / Fair use", "DA", "/acceptabel-brug/", "Acceptabel brug", "Fri fragt over 499 kr."],  ["Acceptable use / Fair use", "SV", "/rimlig-anvandning/", "Rimlig användning", "Fri frakt över 499 kr."],  ["Acceptable use / Fair use", "NL", "/redelijk-gebruik/", "Redelijk gebruik", "Gratis verzending boven 49 EUR."],  ["Environmental / Sustainability policy", "DA", "/baeredygtighedspolitik/", "Bæredygtighedspolitik", "Fri fragt over 499 kr."],  ["Environmental / Sustainability policy", "SV", "/hallbarhetspolicy/", "Hållbarhetspolicy", "Fri frakt över 499 kr."],  ["Environmental / Sustainability policy", "NL", "/duurzaamheidsbeleid/", "Duurzaamheidsbeleid", "Gratis verzending boven 49 EUR."],];
+const FLERE_MONSTRE = [  ["Imprint / Legal notice", "DA", "/om-os/", "Om os", "Fri fragt over 499 kr."],  ["Imprint / Legal notice", "SV", "/om-oss/", "Om oss", "Fri frakt över 499 kr."],  ["Imprint / Legal notice", "NL", "/colofon/", "Colofon", "Gratis verzending boven 49 EUR."],  ["Accessibility statement", "DA", "/tilgaengelighedserklaering/", "Tilgængelighedserklæring", "Fri fragt over 499 kr."],  ["Accessibility statement", "SV", "/tillganglighetsredogorelse/", "Tillgänglighetsredogörelse", "Fri frakt över 499 kr."],  ["Accessibility statement", "NL", "/toegankelijkheidsverklaring/", "Toegankelijkheidsverklaring", "Gratis verzending boven 49 EUR."],  ["Legal / Imprint", "DA", "/juridisk-information/", "Juridisk information", "Fri fragt over 499 kr."],  ["Legal / Imprint", "SV", "/juridisk-information/", "Juridisk information", "Fri frakt över 499 kr."],  ["Legal / Imprint", "NL", "/juridische-informatie/", "Juridische informatie", "Gratis verzending boven 49 EUR."],  ["Returns / Refund policy", "DA", "/retur-og-forbrugerrettigheder/", "Retur- og forbrugerrettigheder", "Fri fragt over 499 kr."],  ["Returns / Refund policy", "SV", "/retur-och-angerratt/", "Retur och ångerrätt", "Fri frakt över 499 kr."],  ["Returns / Refund policy", "NL", "/retourbeleid/", "Retourbeleid", "Gratis verzending boven 49 EUR."],  ["Shipping policy", "DA", "/fragt-og-levering/", "Fragt og levering", "Fri fragt over 499 kr."],  ["Shipping policy", "SV", "/frakt-och-leverans/", "Frakt och leverans", "Fri frakt över 499 kr."],  ["Shipping policy", "NL", "/verzendbeleid/", "Verzendbeleid", "Gratis verzending boven 49 EUR."],  ["Data processing agreement", "DA", "/databehandleraftale/", "Databehandleraftale", "Fri fragt over 499 kr."],  ["Data processing agreement", "SV", "/personuppgiftsbitradesavtal/", "Personuppgiftsbiträdesavtal", "Fri frakt över 499 kr."],  ["Data processing agreement", "NL", "/verwerkersovereenkomst/", "Verwerkersovereenkomst", "Gratis verzending boven 49 EUR."],  ["Acceptable use / Fair use", "DA", "/acceptabel-brug/", "Acceptabel brug", "Fri fragt over 499 kr."],  ["Acceptable use / Fair use", "SV", "/rimlig-anvandning/", "Rimlig användning", "Fri frakt över 499 kr."],  ["Acceptable use / Fair use", "NL", "/redelijk-gebruik/", "Redelijk gebruik", "Gratis verzending boven 49 EUR."],  ["Environmental / Sustainability policy", "DA", "/baeredygtighedspolitik/", "Bæredygtighedspolitik", "Fri fragt over 499 kr."],  ["Environmental / Sustainability policy", "SV", "/hallbarhetspolicy/", "Hållbarhetspolicy", "Fri frakt över 499 kr."],  ["Environmental / Sustainability policy", "NL", "/duurzaamheidsbeleid/", "Duurzaamheidsbeleid", "Gratis verzending boven 49 EUR."],  ["Sub-processor list", "DA", "/underbehandlerliste/", "Underbehandlerliste", "Fri fragt over 499 kr."],  ["Sub-processor list", "SV", "/bitradesforteckning/", "Biträdesförteckning", "Fri frakt över 499 kr."],  ["Sub-processor list", "NL", "/subverwerkers/", "Subverwerkers", "Gratis verzending boven 49 EUR."],  ["Code of conduct", "DA", "/adfaerdskodeks/", "Adfærdskodeks", "Fri fragt over 499 kr."],  ["Code of conduct", "SV", "/uppforandekodex/", "Uppförandekodex", "Fri frakt över 499 kr."],  ["Code of conduct", "NL", "/gedragcode/", "Gedragcode", "Gratis verzending boven 49 EUR."],  ["SLA / Warranty", "DA", "/serviceniveau/", "Serviceniveau", "Fri fragt over 499 kr."],  ["SLA / Warranty", "SV", "/serviceavtal/", "Serviceavtal", "Fri frakt över 499 kr."],  ["SLA / Warranty", "NL", "/servicelevelovereenkomst/", "Servicelevelovereenkomst", "Gratis verzending boven 49 EUR."],  ["SLA / Warranty", "EN", "/service level agreement/", "Service Level Agreement", "Free shipping over 49 EUR."],  ["Complaints procedure", "DA", "/klageprocedure/", "Klageprocedure", "Fri fragt over 499 kr."],  ["Complaints procedure", "SV", "/klagforfarande/", "Klagförfarande", "Fri frakt över 499 kr."],  ["Complaints procedure", "NL", "/klachtprocedure/", "Klachtprocedure", "Gratis verzending boven 49 EUR."],  ["Modern slavery statement", "DA", "/moderne-slaveri/", "Moderne slaveri", "Fri fragt over 499 kr."],  ["Modern slavery statement", "SV", "/modernt-slaveri/", "Modernt slaveri", "Fri frakt över 499 kr."],  ["Modern slavery statement", "NL", "/moderne-slavernij/", "Moderne slavernij", "Gratis verzending boven 49 EUR."],  ["Whistleblower / Hinweisgeber", "DA", "/whistleblower/", "Whistleblower", "Fri fragt over 499 kr."],  ["Whistleblower / Hinweisgeber", "SV", "/visselblasare/", "Visselblåsare", "Fri frakt över 499 kr."],  ["Whistleblower / Hinweisgeber", "NL", "/klokkenluider/", "Klokkenluider", "Gratis verzending boven 49 EUR."],  ["DPO / Data protection officer", "DA", "/databeskyttelsesradgiver/", "Databeskyttelsesrådgiver", "Fri fragt over 499 kr."],  ["DPO / Data protection officer", "SV", "/dataskyddsansvarig/", "Dataskyddsansvarig", "Fri frakt över 499 kr."],  ["DPO / Data protection officer", "NL", "/functionaris-voor-gegevensbescherming/", "Functionaris voor gegevensbescherming", "Gratis verzending boven 49 EUR."],];
 
 for (const [pat, lang, href, tekst, fyld] of FLERE_MONSTRE) {
   FIXTURES.push({
@@ -837,6 +951,62 @@ if (process.argv.includes("--selftest")) {
       fixture: "dansk side med Environmental / Sustainability policy",
       pattern: "Environmental / Sustainability policy",
     },
+    {
+      name: "subprocessor: de nye sprog forsvinder",
+      before: "|underbehandler(?:e)?[ _-]?(?:liste|list|oversigt)|liste[ _-]?over[ _-]?underbehandler|bitr[äa]desf[öo]rteckning|underbitr[äa]deslista|subverwerkers(?:lijst)?",
+      after: "",
+      fixture: "svensk side med Sub-processor list",
+      pattern: "Sub-processor list",
+    },
+    {
+      name: "code of conduct: de nye sprog forsvinder",
+      before: "|adf[æa]rdskodeks|uppf[öo]randekodex|gedragcode",
+      after: "",
+      fixture: "nederlandsk side med Code of conduct",
+      pattern: "Code of conduct",
+    },
+    {
+      name: "sla: de nye sprog forsvinder",
+      before: "|serviceniveau|serviceavtal|serviceniv[åa][ _-]?avtal",
+      after: "",
+      fixture: "dansk side med SLA / Warranty",
+      pattern: "SLA / Warranty",
+    },
+    {
+      name: "sla: mellemrum forsvinder i den engelske stængel",
+      before: "service[ _-]?level[ _-]?(?:agreement|overeenkomst)",
+      after: "service[_-]?level[_-]?agreement",
+      fixture: "engelsk side med SLA / Warranty",
+      pattern: "SLA / Warranty",
+    },
+    {
+      name: "complaints: de nye sprog forsvinder",
+      before: "|klageprocedure|klage[ _-]?h[æa]ndtering|klagf[öo]rfarande|klachtprocedure|klachtenbeleid|klachtenafhandeling",
+      after: "",
+      fixture: "svensk side med Complaints procedure",
+      pattern: "Complaints procedure",
+    },
+    {
+      name: "modern slavery: de nye sprog forsvinder",
+      before: "|moderne[ _-]?slaveri|modernt[ _-]?slaveri|moderne[ _-]?slavernij",
+      after: "",
+      fixture: "nederlandsk side med Modern slavery statement",
+      pattern: "Modern slavery statement",
+    },
+    {
+      name: "whistleblower: de nye sprog forsvinder",
+      before: "|visselbl[åa]sare|klokkenluider(?:sregeling)?",
+      after: "",
+      fixture: "svensk side med Whistleblower / Hinweisgeber",
+      pattern: "Whistleblower / Hinweisgeber",
+    },
+    {
+      name: "dpo: de nye sprog forsvinder",
+      before: "|databeskyttelsesr[åa]dgiver|dataskyddsansvarig|functionaris(?:[ _-]?voor)?[ _-]?gegevensbescherming",
+      after: "",
+      fixture: "nederlandsk side med DPO / Data protection officer",
+      pattern: "DPO / Data protection officer",
+    },
   ];
 
   for (const m of MUTATIONS) {
@@ -888,6 +1058,15 @@ if (process.argv.includes("--selftest")) {
   expectRed("R3 (nederlandsk verzendkosten)", contractR3, [
     ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: Shipping policy." }],
   ], fx("nederlandse zin met verzendkosten, geen juridische link"));
+  // 6c. Opgave 55: de to prosa-fejltagelser porten skal se, målt i denne
+  //     iteration. Uden dem ville en bredere `garantie` igen give den betalte
+  //     rapport et falsk juridisk link på dansk prosa.
+  expectRed("R3 (dansk garanti i prosa)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: SLA / Warranty." }],
+  ], fx("dansk sætning med garanti på produkter, intet juridisk link"));
+  expectRed("R3 (svensk servicenivå i prosa)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: SLA / Warranty." }],
+  ], fx("svensk sætning med servicenivå i prosa, intet juridisk link"));
 
   // 7. En (mønster, sprog)-række i tabellen uden fixture er rød. Den kalder
   //    portens egen kontrakt med den fixture fjernet, så den ikke kan være grøn
@@ -896,17 +1075,22 @@ if (process.argv.includes("--selftest")) {
   expectRed("R1 (tabellen kræver en fixture)", contractCoverage, COVERAGE, STEMS, mistet);
 
   // 8. Samme regel for en stængel, portens egen liste ikke har. Den peger på et
-  //    mønster, opgave 54 **ikke** rettede — `Whistleblower / Hinweisgeber` har
-  //    stadig ingen dansk stængel, fordi den ikke var i scopet. Det er den
-  //    ærlige række: en negativ case må ikke pege på en, der nu er dækket, for
-  //    så bliver den grøn og porten kan ikke se den fejl den er skrevet til at se.
-  //    Det skete her: casen pegede på `Shipping policy` DA, som opgave 54 netop
-  //    rettede, og selftesten blev rød med "gav en grøn port".
+  //    mønster, opgave 55 **ikke** rettede — `General contact address` er
+  //    email-adresser, der er **sprogneutrale** i alle fire sprog, så den har
+  //    ingen grund til en stængel pr. sprog. Det er den ærlige række: en
+  //    negativ case må ikke pege på en, der nu er dækket, for så bliver den grøn
+  //    og porten kan ikke se den fejl den er skrevet til at se.
+  //    Det skete **to** gange her: casen pegede først på `Shipping policy` DA,
+  //    som opgave 54 netop rettede, og siden på `Whistleblower / Hinweisgeber`
+  //    DA, som opgave 55 netop rettede. Selftesten blev rød med "gav en grøn
+  //    port" begge gange — hvilket er præcis det, den er skrevet til at fange.
   expectRed("R1 (tabellen kræver en stængel)", contractCoverage,
-    [...COVERAGE, ["Whistleblower / Hinweisgeber", "DA", "dansk side med kun ét juridisk link"]],
+    [...COVERAGE, ["General contact address", "DA", "dansk side med kun ét juridisk link"]],
     STEMS, FIXTURES);
 
-  const forventet = 10 + MUTATIONS.length * 4 + 2;
+  // 6 + 4 + 2 = de otte negative cases fra R1–R4 og de to dækningsregler, før
+  // mutationerne. Mutationerne tæller hver fire (to motorer × to forventninger).
+  const forventet = 12 + MUTATIONS.length * 4 + 2;
   if (caught.length !== forventet) {
     failures.push(`selftest: forventede ${forventet} negative cases fanget, fangede ${caught.length}`);
   } else {
