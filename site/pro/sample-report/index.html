@@ -117,25 +117,27 @@
 <div class="pg-legacy">
 <div class="report">
 
+<!--sample:report-->
+
 <div class="report-header">
   <h1>Illustrative EU compliance report</h1>
-  <p style="font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0">Static concept sample with illustrative data (generated January 2026). It is not generated from a customer scan.</p>
+  <p style="font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0">Static concept sample, generated January 15, 2026 – 06:02 UTC. Illustrative data. Not generated from a customer scan.</p>
   <p style="margin:10px 0 2px"><a href="/downloads/eucomply-sample-report.pdf" download style="display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px">Download the static sample PDF</a></p>
   <div class="meta">
     <strong>URL:</strong> https://shopify.com<br>
     <strong>Generated:</strong> January 15, 2026 – 06:02 UTC<br>
     <strong>Platform detected:</strong> Shopify<br>
     <strong>Report ID:</strong> EUC-2026-0115-0602<br>
-    <strong>Plan:</strong> Static concept sample — not generated from a customer scan
+    <strong>Checks in this report:</strong> 9 — the same checks the scanner runs
   </div>
 </div>
 
 <div class="score-section">
-  <div class="score-circle pass">71%</div>
+  <div class="score-circle fail">67%</div>
   <div class="score-details">
     <h2>Overall EU Compliance Score</h2>
-    <p>Your site passes most automated checks. Two items need attention — see findings below.</p>
-    <div class="status"> Pass — minor issues found</div>
+    <p>Three items need attention — see findings below.</p>
+    <div class="status"> Attention needed</div>
   </div>
 </div>
 
@@ -143,16 +145,16 @@
   <h3>Score Summary</h3>
   <div class="summary-grid">
     <div class="summary-item">
-      <span class="value">71%</span>
+      <span class="value">67%</span>
       <span class="label">Overall score</span>
     </div>
     <div class="summary-item">
-      <span class="value">5/7</span>
+      <span class="value">6/9</span>
       <span class="label">Checks passed</span>
     </div>
     <div class="summary-item">
-      <span class="value">2</span>
-      <span class="label">Issues found</span>
+      <span class="value">3</span>
+      <span class="label">Items needing attention</span>
     </div>
     <div class="summary-item">
       <span class="value">30</span>
@@ -164,88 +166,106 @@
 <div class="section">
   <h3>Detailed Check Results</h3>
   <ul class="check-list">
-    <li><span class="icon pass">✓</span>
-      <span class="label">HTTPS</span>
-      <span class="detail">TLS 1.3 active, valid certificate (Let's Encrypt), expires Mar 12, 2026</span>
-    </li>
-    <li><span class="icon warn"></span>
-      <span class="label">HSTS header</span>
-      <span class="detail">HTTPS works but Strict-Transport-Security header is missing
-        <span class="fix">→ Add: <code>Strict-Transport-Security: max-age=31536000; includeSubDomains</code> (improves security score for GDPR Art. 32)</span>
+    <li data-check="consent_mode_v2"><span class="icon pass">✓</span>
+      <span class="label">Google Consent Mode v2</span>
+      <span class="detail">Consent Mode v2 default state found (ad_storage and analytics_storage).
       </span>
     </li>
-    <li><span class="icon pass">✓</span>
+    <li data-check="tcf"><span class="icon warn">!</span>
+      <span class="label">IAB TCF</span>
+      <span class="detail">One TCF signal found: __tcfapi. No IAB consent string is stored, so ad-tech partners cannot read the visitor's consent.
+        <span class="fix">→ Store an IAB consent string through your CMP and expose it on __tcfapi. See https://iabeurope.eu/tcf/.</span>
+      </span>
+    </li>
+    <li data-check="trackers"><span class="icon fail">✕</span>
+      <span class="label">Third-party trackers</span>
+      <span class="detail">Trackers found in the served markup: Google Analytics, Meta Pixel. No consent platform is loaded before them, so they fire before consent.
+        <span class="fix">→ Block non-essential tags until the visitor consents (GDPR Art. 6 and ePrivacy require consent BEFORE the tracker loads, not a banner afterwards).</span>
+      </span>
+    </li>
+    <li data-check="ssl"><span class="icon pass">✓</span>
+      <span class="label">HTTPS &amp; HSTS</span>
+      <span class="detail">TLS 1.3 active, valid certificate (Let's Encrypt), HSTS max-age=31536000.
+      </span>
+    </li>
+    <li data-check="cookies"><span class="icon pass">✓</span>
       <span class="label">Cookie consent</span>
-      <span class="detail">Cookie consent banner detected (Shopify's default consent banner — verifies consent logic independently)</span>
-    </li>
-    <li><span class="icon pass">✓</span>
-      <span class="label">Forms &amp; privacy link</span>
-      <span class="detail">5 forms detected, privacy policy linked in footer</span>
-    </li>
-    <li><span class="icon pass">✓</span>
-      <span class="label">Legal pages</span>
-      <span class="detail">Privacy policy and terms of service found via common paths</span>
-    </li>
-    <li><span class="icon warn"></span>
-      <span class="label">CSP header</span>
-      <span class="detail">Content-Security-Policy header not set — risk of XSS and data exfiltration
-        <span class="fix">→ Implement CSP with <code>default-src 'self'</code> as baseline (NIS2 Art. 21 — basic security measures)</span>
+      <span class="detail">Consent banner detected and cookie categories are declared (GDPR Art. 13).
       </span>
     </li>
-    <li><span class="icon pass">✓</span>
-      <span class="label">DORA resilience</span>
-      <span class="detail">HTTPS and a valid certificate are positive technical signals; this is not a DORA compliance assessment</span>
+    <li data-check="forms"><span class="icon pass">✓</span>
+      <span class="label">Forms &amp; privacy link</span>
+      <span class="detail">5 forms detected, privacy policy linked in the footer.
+      </span>
+    </li>
+    <li data-check="legal"><span class="icon pass">✓</span>
+      <span class="label">Legal pages</span>
+      <span class="detail">Privacy policy and terms of service found on common paths.
+      </span>
+    </li>
+    <li data-check="headers"><span class="icon warn">!</span>
+      <span class="label">Security headers</span>
+      <span class="detail">No Content-Security-Policy and no X-Frame-Options. NIS2 Art. 21 expects basic technical measures, and CSP is the one auditors ask for first.
+        <span class="fix">→ Add Content-Security-Policy: default-src 'self'. Start in report-only mode and tighten from the violations it reports.</span>
+      </span>
+    </li>
+    <li data-check="dora"><span class="icon pass">✓</span>
+      <span class="label">DORA resilience signals</span>
+      <span class="detail">HTTPS and a valid certificate are positive technical signals. This is not a DORA compliance assessment.
+      </span>
     </li>
   </ul>
+  <p style="font-size:12px;color:var(--muted);margin-top:10px">This is the same set of checks the free scanner runs on every site, so nothing here is held back for Pro.</p>
 </div>
 
 <div class="section">
   <h3>Recommended Fixes (priority order)</h3>
   <ol style="font-size:14px;padding-left:20px">
-    <li style="margin-bottom:10px"><strong>Add HSTS header</strong> — protects against SSL stripping. Add <code>Strict-Transport-Security</code> to your server config or Shopify theme.liquid header.</li>
-    <li style="margin-bottom:10px"><strong>Add Content-Security-Policy header</strong> — limits which scripts can run on your site. Start with a restrictive policy and relax as needed.</li>
-    <li style="margin-bottom:6px"><strong>Review cookie categories</strong> — ensure analytics/tracking cookies are correctly categorized as "optional" in your consent manager.</li>
+    <li style="margin-bottom:10px"><strong>IAB TCF</strong> — Store an IAB consent string through your CMP and expose it on __tcfapi. See https://iabeurope.eu/tcf/.</li>
+    <li style="margin-bottom:10px"><strong>Third-party trackers</strong> — Block non-essential tags until the visitor consents (GDPR Art. 6 and ePrivacy require consent BEFORE the tracker loads, not a banner afterwards).</li>
+    <li style="margin-bottom:6px"><strong>Security headers</strong> — Add Content-Security-Policy: default-src 'self'. Start in report-only mode and tighten from the violations it reports.</li>
   </ol>
 </div>
 
 <div class="section">
   <h3>Illustrative 30-day history</h3>
   <p style="font-size:14px;color:var(--muted);margin-bottom:10px">Example score trend in this static sample:</p>
-  <div style="background:var(--soft);border-radius:6px;padding:14px;font-size:13px;overflow-x:auto;var(--panel)-space:nowrap">
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 18: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 19: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--warn);margin:0 1px;border-radius:2px" title="Dec 20: 57%"></span>
-    <span style="display:inline-block;width:14px;height:18px;background:var(--fail);margin:0 1px;border-radius:2px" title="Dec 21: 43%"></span>
-    <span style="display:inline-block;width:14px;height:18px;background:var(--fail);margin:0 1px;border-radius:2px" title="Dec 22: 43%"></span>
-    <span style="display:inline-block;width:14px;height:20px;background:var(--warn);margin:0 1px;border-radius:2px" title="Dec 23: 57%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 24: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 25: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 26: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 27: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 28: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 29: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 30: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 31: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 1: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 2: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 3: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 4: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 5: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 6: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 7: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 8: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 9: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 10: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 11: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 12: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 13: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 14: 71%"></span>
-    <span style="display:inline-block;width:14px;height:24px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 15: 71%"></span>
-    <br><span style="color:var(--muted);font-size:11px">Dec 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jan 15</span>
+  <div style="background:var(--soft);border-radius:6px;padding:14px;font-size:13px;overflow-x:auto">
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 17: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 18: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 19: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 20: 67%"></span>
+    <span style="display:inline-block;width:14px;height:18px;background:var(--warn);margin:0 1px;border-radius:2px" title="Dec 21: 61%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 22: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 23: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 24: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 25: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 26: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 27: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 28: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 29: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 30: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Dec 31: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 1: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 2: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 3: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 4: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 5: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 6: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 7: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 8: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 9: 67%"></span>
+    <span style="display:inline-block;width:14px;height:18px;background:var(--warn);margin:0 1px;border-radius:2px" title="Jan 10: 61%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 11: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 12: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 13: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 14: 67%"></span>
+    <span style="display:inline-block;width:14px;height:19px;background:var(--ok);margin:0 1px;border-radius:2px" title="Jan 15: 67%"></span>
+    <br><span style="color:var(--muted);font-size:11px">               Dec 17</span>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:8px"><strong>Dec 20–22:</strong> Illustrative score change in this static sample; no monitoring event occurred.</p>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px"><strong>Dec 21: illustrative score change in this static sample; no monitoring event occurred.</strong></p>
 </div>
-
+<!--/sample:report-->
 <div class="section">
   <h3>Attachments</h3>
   <p style="font-size:14px;color:var(--muted)">This static concept sample shows the following illustrative documents. They are not included with the current Pro license.</p>

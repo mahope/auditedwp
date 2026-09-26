@@ -150,6 +150,12 @@ run "scripts/check_inline_js.py --selftest" python3 scripts/check_inline_js.py -
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
 run "tools/test_quickcheck_render.mjs --selftest" node tools/test_quickcheck_render.mjs --selftest
 run "tools/check_production_drift.py --selftest" python3 tools/check_production_drift.py --selftest
+# Prøverapporten er den eneste Pro-overflade, der viser en køber hvad vedkommende
+# får, og den lå 5 tjek bag motorens 9 med tal i både HTML og PDF. Nu læger alle
+# tre det samme datasæt, og denne kontrol holder kæden motor → datasæt → HTML +
+# PDF. Den læser også site-dist, fordi det er den side der sælges.
+run "tools/check_sample_coverage.py" python3 tools/check_sample_coverage.py
+run "tools/check_sample_coverage.py --selftest" python3 tools/check_sample_coverage.py --selftest
 
 # --------------------------------------------- 6. publiceret træ (kontrol)
 # Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
