@@ -2,18 +2,6 @@
   "_readme": "Repos som stadig nævner en død betalingsudbyder, og hvorfor det er tilladt. Læses af tools/check_dead_providers.py. Hver linje SKAL have en begrundelse: en post uden 'reason' gør gaten rød. Tilføj kun en post, hvis du har tjekket at den ikke kan nå en kunde — og skriv hvorfor.",
   "entries": [
     {
-      "path": "store/",
-      "reason": "Forældet rodmappe med én fil, index.html, der stadig har en canonical pegende på den lukkede Gumrock-butik (compliancedocs.gumroad.com). Publiceret er site/store/, som er rent og bruger Stripe. Rodmappen er ikke publiceret, men ligner den rigtige side nok til at nogen deployer den ved et uheld.",
-      "owner": "ceo-loop",
-      "remove_when": "Rodmappen er slettet; den publicerede side er site/store/."
-    },
-    {
-      "path": "deskuptime/",
-      "reason": "Forældet kopi af DeskUptime. Dens licensklient (src/license.js) kalder api.lemonsqueezy.com, som er lukket. Den rigtige app ligger i repoet `deskuptime`, hvor licensen går mod mahope.tools/api/license. Mærket som legacy i deskuptime/LEGACY.md. Skal fjernes fra dette repo — ikke publiceret, men en fremtidig kopiering ville bygge en betalt vare mod en død udbyder.",
-      "owner": "ceo-loop",
-      "remove_when": "Kopien er slettet fra auditedwp, eller porteret til mahope.tools som den i `deskuptime`."
-    },
-    {
       "path": "devnotify/src-tauri/src/lib.rs",
       "reason": "DevNotify har intet Stripeprodukt endnu, så det har heller ikke en mahope.tools-nøgle at omstille til. Spørgsmål 4 i IMPLEMENTATION_PLAN.md. DevNotify er et søskeproduct og uden for EUComply-gaten.",
       "owner": "Mads",

@@ -10,7 +10,7 @@ Custom domain (pending): auditedwp.com
 - `de/index.html` — landing page DE (DACH market)
 - `sample/index.html` — sample audit trail preview
 - `template/index.html` — free NIS2 vendor-clause template
-- `store/index.html` — compliance document store (side project)
+- `site/store/index.html` — compliance document store (Stripe, betalte skabeloner)
 - `deliverables/` — downloadable document templates (DPA, NDA, etc.)
 - `onboarding-manual.md` — operational manual for first client
 
