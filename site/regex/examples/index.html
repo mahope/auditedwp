@@ -247,7 +247,7 @@ Rejects: abc (too short), user@name, a-very-long-username-here</pre>
   <div class="re">^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$</div>
   <p class="desc">Matches 3-digit and 6-digit hex color codes with <code>#</code> prefix. Case-insensitive for hex digits.</p>
   <p class="use">Use for: CSS color validation, color picker input.</p>
-  <a class="test-link" href="/regex/?re=^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" target="_blank">Test this pattern →</a>
+  <a class="test-link" href="/regex/?re=^%23([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" target="_blank">Test this pattern →</a>
 </div>
 <pre>Matches: #fff, #4361ee, #F0F, #aabbcc
 Rejects: #abcd (4 chars), fff (no #), #gggggg</pre>
@@ -362,13 +362,6 @@ Rejects: 123456789 (no hyphens), 12-345-6789 (wrong format), 123-45-678 (wrong l
 </div>
 <pre>In "  hello world   " matches: "  " at start, "   " at end
 After replacement: "hello world"</pre>
-
-<!-- === Pro CTA === -->
-<div class="pro-box">
-  <h3>Regex Tester Pro</h3>
-  <p>Save patterns, share with your team, use our AI regex explainer, and get syntax highlighting in every language. Just $2/month.</p>
-  <a class="btn" href="/regex/#pro">See Pro features →</a>
-</div>
 
 <h2>How to use these patterns</h2>
 
