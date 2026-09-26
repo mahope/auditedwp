@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,7 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 2. Activate it. The admin menu now shows "EUComply".
 3. Click "Run scan now" — results appear in seconds.
 4. Review pass/fail status with fix guidance for each check.
-5. Let the weekly automated cron re-scan your site. New results appear automatically.
+5. Let the automatic cron job do it. New results appear on their own — once a week on the free version, once a day on Pro.
 
 = Free vs Pro =
 
@@ -38,11 +38,11 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 |---|---|---|
 | Compliance scan dashboard (6 checks) | ✓ | ✓ |
 | Pass/fail with fix guidance | ✓ | ✓ |
-| Weekly automated re-scan | ✓ | ✓ |
+| Automated re-scan, run by WP-Cron on your own server | once a week | every day |
 | GDPR Data Processing Agreement (Art. 28) | — | ✓ |
 | NIS2/DORA vendor clause set (5 clauses) | — | ✓ |
 | EAA Accessibility Statement | — | ✓ |
-| HTML report from the latest WordPress scan, with 52 weeks of scan history | — | ✓ |
+| HTML report from the latest WordPress scan, with 52 recorded scan snapshots | — | ✓ |
 | Agency name branding in reports | — | ✓ |
 | Read-only client report link, valid 30 days and revocable | — | ✓ |
 | License revalidation at most once every 24 hours when the Pro admin view is used, with a 7-day offline grace after a temporary license-server failure | — | ✓ |
@@ -113,6 +113,14 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.8 (2026-09-26) =
+* Pro: the scheduled job now runs once a day instead of once a week. The six checks are local, so the extra runs cost the site nothing and need no external service.
+* The free version keeps its weekly run. The interval follows the licence, including when a licence is released, expires or loses its device slot — then it goes back to weekly.
+* The dashboard states the interval the site is actually scheduled for, so it cannot promise more than the cron array holds.
+* A changed interval re-schedules from now, so the first run after activating a licence happens at the next WP-Cron tick instead of a day later.
+* Deactivation now clears every copy of the scheduled event, not just the first one found.
+* The report's scan history now fills one row per day on Pro, so its twelve rows are twelve days of evidence instead of twelve weeks.
 
 = 1.3.7 (2026-09-26) =
 * Pro: the compliance report can be downloaded from wp-admin without creating a client link, so an agency that attaches it every month no longer has to issue a new 30-day link each time.

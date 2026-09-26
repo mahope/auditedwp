@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.7
+ * Version:           1.3.8
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.7' );
+define( 'EUCOMPLY_VERSION', '1.3.8' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -38,8 +38,13 @@ define( 'EUCOMPLY_LICENSE_API', 'https://mahope.tools/api/license/' );
 define( 'EUCOMPLY_LICENSE_PRODUCT', 'eucomply-pro' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 define( 'EUCOMPLY_LICENSE_GRACE', 7 * DAY_IN_SECONDS ); // keep a verified Pro status this long while the license server is unreachable
-define( 'EUCOMPLY_HISTORY_LIMIT', 52 ); // ~1 year of weekly snapshots, the window an auditor or a renewal asks about
+define( 'EUCOMPLY_HISTORY_LIMIT', 52 ); // 52 snapshots: about a year of weekly scans, about seven weeks of the daily Pro scans
 define( 'EUCOMPLY_CLIENT_LINK_DAYS', 30 ); // how long a client report link stays valid; a report is a point-in-time claim, not a permanent one
+// The scheduled-scan event. The name says "weekly" because that is what it was
+// when installs were given it; renaming it here would leave every existing
+// install with an orphaned weekly event still firing, so a second, invisible
+// scan would run forever. The interval is what carries the meaning, not the name.
+define( 'EUCOMPLY_SCAN_EVENT', 'eucomply_weekly_scan' );
 // One capability for every screen and every export this plugin has. Declared once
 // so a download can never end up gated more loosely than the settings page it
 // sits next to — the tests check that no call site passes a capability of its own.
@@ -105,21 +110,111 @@ class EUComply {
         add_action( 'template_redirect', array( $this, 'maybe_render_client_report' ) );
         add_action( 'wp_ajax_eucomply_run_scan', array( $this, 'ajax_run_scan' ) );
 
-        // Schedule weekly scan.
-        if ( ! wp_next_scheduled( 'eucomply_weekly_scan' ) ) {
-            wp_schedule_event( time(), 'weekly', 'eucomply_weekly_scan' );
-        }
-        add_action( 'eucomply_weekly_scan', array( $this, 'run_scan_cron' ) );
+        // Keep the scheduled scan in step with the licence. Cheap on every
+        // request: it reads two options and the cron array, and does nothing
+        // at all unless the interval is actually wrong.
+        $this->sync_scan_schedule();
+        add_action( EUCOMPLY_SCAN_EVENT, array( $this, 'run_scan_cron' ) );
     }
 
     /**
      * Deactivation: clear cron.
      */
     public static function deactivate() {
-        $t = wp_next_scheduled( 'eucomply_weekly_scan' );
-        if ( $t ) {
-            wp_unschedule_event( $t, 'eucomply_weekly_scan' );
+        // Every occurrence, not one timestamp: the event is now re-created
+        // whenever the licence changes, so a site that has been up and down a
+        // few times can hold more than one entry.
+        wp_clear_scheduled_hook( EUCOMPLY_SCAN_EVENT );
+    }
+
+    /**
+     * Is Pro active according to what we already know, without asking anyone?
+     *
+     * The scan interval is read on every request, so it must never be the
+     * thing that triggers a license call. This reads the cached verdict and
+     * applies the same 7-day grace is_pro() uses, so a site whose license
+     * server is briefly unreachable keeps its cadence instead of silently
+     * dropping back to a weekly scan.
+     *
+     * @return bool
+     */
+    private function pro_cadence_active() {
+        $key = self::normalise_key( get_option( 'eucomply_pro_key', '' ) );
+        if ( '' === $key || ! preg_match( '/^[a-f0-9]{32}$/', $key ) ) {
+            return false;
         }
+        // A key with no free slot is a valid key on a website that cannot use
+        // it, so it gets the free cadence — the same answer is_pro() gives.
+        if ( 'device_limit' === get_option( 'eucomply_pro_state', '' ) ) {
+            return false;
+        }
+        if ( '1' !== get_option( 'eucomply_pro_verified', '' ) ) {
+            return false;
+        }
+        $last_ok = (int) get_option( 'eucomply_pro_last_ok_at', 0 );
+        return $last_ok > 0 && ( time() - $last_ok ) < EUCOMPLY_LICENSE_GRACE;
+    }
+
+    /**
+     * The interval this licence entitles the site to.
+     *
+     * @return string WP-Cron interval name: 'daily' on Pro, 'weekly' otherwise.
+     */
+    private function scan_interval() {
+        return $this->pro_cadence_active() ? 'daily' : 'weekly';
+    }
+
+    /**
+     * Make the scheduled event match the licence.
+     *
+     * The interval is the first item on the Pro list the plugin can deliver on
+     * its own: the six checks are entirely local, so running them once every 24
+     * hours costs the site nothing and no external service, and it turns the
+     * report's history from twelve weekly points into twelve days of evidence.
+     *
+     * A mismatch re-schedules from `time()`, so the first run after a licence
+     * change happens at the next WP-Cron tick rather than a full interval later
+     * — a customer who has just paid should not wait a day to see it.
+     */
+    private function sync_scan_schedule() {
+        $want  = $this->scan_interval();
+        $event = function_exists( 'wp_get_scheduled_event' )
+            ? wp_get_scheduled_event( EUCOMPLY_SCAN_EVENT )
+            : false;
+        if ( $event && ! empty( $event->schedule ) && $want === $event->schedule ) {
+            return; // Already right. Re-scheduling on every request would push
+                     // the next scan further into the future for ever.
+        }
+        if ( $event ) {
+            wp_clear_scheduled_hook( EUCOMPLY_SCAN_EVENT );
+        }
+        wp_schedule_event( time(), $want, EUCOMPLY_SCAN_EVENT );
+    }
+
+    /**
+     * The interval that is actually scheduled right now.
+     *
+     * @return string 'daily' or 'weekly'.
+     */
+    private function active_scan_interval() {
+        $event = function_exists( 'wp_get_scheduled_event' )
+            ? wp_get_scheduled_event( EUCOMPLY_SCAN_EVENT )
+            : false;
+        if ( $event && ! empty( $event->schedule ) && in_array( $event->schedule, array( 'daily', 'weekly' ), true ) ) {
+            return $event->schedule;
+        }
+        return $this->scan_interval();
+    }
+
+    /**
+     * The same statement in words, for the dashboard.
+     *
+     * @return string
+     */
+    private function cadence_phrase() {
+        return 'daily' === $this->active_scan_interval()
+            ? 'every 24 hours'
+            : 'once a week';
     }
 
     /**
@@ -719,6 +814,17 @@ class EUComply {
                 <?php endif; ?>
             </p>
 
+            <?php
+            // Its own element on purpose: the dashboard script rewrites
+            // #eucomply-last after a manual run, and a cadence that vanishes on
+            // the next click is not a fact the customer can rely on. Quoted
+            // from the cron array, so it can only state what is really
+            // scheduled.
+            ?>
+            <p class="eucomply-last" id="eucomply-cadence">
+                Next automatic run: <?php echo esc_html( $this->cadence_phrase() ); ?><?php echo $is_pro ? ' (Pro)' : ''; ?>
+            </p>
+
             <div id="eucomply-results">
                 <?php if ( $results ) : ?>
                     <?php $this->render_results( $results ); ?>
@@ -941,7 +1047,8 @@ class EUComply {
     }
 
     /**
-     * Cron: automated weekly scan.
+     * Cron: automated scan. Weekly on the free version, every day on Pro —
+     * see sync_scan_schedule(), which is what decides.
      */
     public function run_scan_cron() {
         if ( ! function_exists( 'is_plugin_active' ) ) {
@@ -1224,7 +1331,7 @@ class EUComply {
         $first = reset( $history );
         $last  = end( $history );
         $dates = array_keys( $history );
-        $shown = array_slice( $history, -12, null, true ); // newest 12 weeks in the report; the option keeps 52
+        $shown = array_slice( $history, -12, null, true ); // newest 12 snapshots in the report; the option keeps 52
 
         ob_start();
         echo '<h2>Scan history</h2>';
@@ -1662,6 +1769,7 @@ class EUComply {
             update_option( 'eucomply_pro_state', 'device_limit' );
             delete_option( 'eucomply_pro_verified' );
             delete_option( 'eucomply_pro_verified_at' );
+            $this->sync_scan_schedule();
             return false;
         }
         delete_option( 'eucomply_pro_state' );
@@ -1670,6 +1778,10 @@ class EUComply {
         if ( $ok ) {
             update_option( 'eucomply_pro_last_ok_at', time() );
         }
+        // The verdict just changed, so the cadence the licence entitles this
+        // site to may have changed with it. Read from the option that was just
+        // written, so it cannot call the license server back.
+        $this->sync_scan_schedule();
         return $ok;
     }
 
