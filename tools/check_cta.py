@@ -85,7 +85,21 @@ PRO_SALES_PAGES = (
     "da/scan/index.html",
     "de/scan/index.html",
     "fr/scan/index.html",
+    # Pro-overfladen. `/plugin/` er den ENESTE side hvor Pro betales kan
+    # leveres — dokumentgenereringen ligger i pluginen — og den havde 0
+    # købsankere, kun donationen. Se opgave 21.
+    "plugin/index.html",
+    "pro/sample-report/index.html",
+    "gdpr-fine-calculator/index.html",
 )
+
+# Sider hvis emne *er* et betalt skabelonprodukt. De skal sælge det produkt,
+# ikke Pro: en EAA-checkliste der sælger en WordPress-licens er forkerte
+# koordinater. Hver side skal have præcis én købsanker til sit eget produkt.
+TEMPLATE_CTA_PAGES = {
+    "eaa-checklist/index.html": "https://buy.stripe.com/3cI7sK2Qz3IugNUgN9bMQ08",
+    "nis2-checklist/index.html": "https://buy.stripe.com/4gM4gydvd92OapwgN9bMQ06",
+}
 
 # Sider der med vilje ikke sælger. Udelad her, fordi gaten ellers ville kræve
 # en købsknap på en side der skal holde sig til at fortælle sandheden.
@@ -181,18 +195,19 @@ def check_checkout_contract() -> list[str]:
 def check_sales_cta() -> list[str]:
     """Hver afgrenset salgsside skal have prissiden — og kun den."""
     findings = []
-    for rel in PRO_SALES_PAGES:
+    for rel in PRO_SALES_PAGES + tuple(TEMPLATE_CTA_PAGES):
+        checkout = TEMPLATE_CTA_PAGES.get(rel, PRO_CHECKOUT)
         path = SITE / rel
         if not path.is_file():
             findings.append(f"{rel}: forventet salgsside mangler")
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
-        if PRO_CHECKOUT not in text:
-            findings.append(f"{rel}: mangler det kontraktfikserede Pro-link ({PRO_CHECKOUT})")
+        if checkout not in text:
+            findings.append(f"{rel}: mangler det kontraktfikserede Pro-link ({checkout})")
             continue
         # Én købsknap: to knapper til samme checkout er færdig-følelse, ikke
         # valg, og de gør det umuligt at måle hvilken der virker.
-        buy_anchors = len(re.findall(r'<a[^>]+href="' + re.escape(PRO_CHECKOUT) + r'"', text))
+        buy_anchors = len(re.findall(r'<a[^>]+href="' + re.escape(checkout) + r'"', text))
         if buy_anchors != 1:
             findings.append(f"{rel}: forventer præcis 1 købsanker til Pro-linket, fandt {buy_anchors}")
     return findings
@@ -308,11 +323,16 @@ def run(root: Path) -> list[str]:
 
 
 def _minimal_page(rel: str) -> str:
-    """En minimal, helt korrekt salgside for den givne sti."""
+    """En minimal, helt korrekt salgsside for den givne sti."""
     tail = "" if rel == "index.html" else rel.replace("index.html", "")
+    checkout = TEMPLATE_CTA_PAGES.get(rel)
+    if checkout:
+        label = "Buy the template — $39"
+    else:
+        checkout, label = PRO_CHECKOUT, "Buy Pro — 79 USD per website per year"
     return (
         f'<html><head><link rel="canonical" href="{CANONICAL_ORIGIN}/{tail}"></head>'
-        f'<body><a class="btn" href="{PRO_CHECKOUT}">Buy Pro — 79 USD per website per year</a>'
+        f'<body><a class="btn" href="{checkout}">{label}</a>'
         "</body></html>"
     )
 
@@ -324,6 +344,7 @@ def selftest() -> int:
         (base / "site").mkdir(parents=True)
         required = {f"{loc}/{rel}" for loc in LOCALES for rel in LOCALE_SALES_PATHS}
         required.update(PRO_SALES_PAGES)
+        required.update(TEMPLATE_CTA_PAGES)
         required.update(NO_SALES_PAGES)
         for rel in sorted(required):
             path = base / "site" / rel
@@ -370,6 +391,15 @@ def selftest() -> int:
              lambda t: t.replace(PRO_CHECKOUT, "/pricing/"), "scan/index.html"),
             ("fransk scanner uden købsknap", "mangler det kontraktfikserede Pro-link",
              lambda t: t.replace(PRO_CHECKOUT, "/pricing/"), "fr/scan/index.html"),
+            # Skabelonsiden skal sælge sit eget produkt. Hvis denne case
+            # mangler, kunne de to checklister stå i kontrakten uden at være
+            # dækket — præcis som da scanneren manglede helt.
+            ("EAA-checkliste uden sit produkt", "mangler det kontraktfikserede Pro-link",
+             lambda t: t.replace("3cI7sK2Qz3IugNUgN9bMQ08", "/store/"),
+             "eaa-checklist/index.html"),
+            ("NIS2-checkliste uden sit produkt", "mangler det kontraktfikserede Pro-link",
+             lambda t: t.replace("4gM4gydvd92OapwgN9bMQ06", "/store/"),
+             "nis2-checklist/index.html"),
         ]
         for label, needle, mutate, *target_rel in cases:
             if not expect(label, needle, mutate, *(target_rel or ["pro/index.html"])):
