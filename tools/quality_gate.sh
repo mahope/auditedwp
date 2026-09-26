@@ -115,7 +115,15 @@ else
   ok "JS-syntaks ($js_count filer)"
 fi
 
-# ----------------------------------------------------------- 4. repoets tests
+# ------------------------------------------- 4. publiceret træ (build først)
+# `check_cta.py` klassificerer det træ, der uploades, ikke kilde-træet — så
+# bygningen skal ske FØR repo-tests. Ellers ville gaten enten være grøn på en
+# kildetre, der aldrig bliver uploadet, eller kræve et publiceret træ, der
+# ingen har lavet endnu. Samme rækkefølge som i deploy-workflowen.
+hdr "Publiceret træ (build)"
+run "tools/build_public_tree.py" python3 tools/build_public_tree.py --quiet
+
+# ----------------------------------------------------------- 5. repoets tests
 hdr "Repo-tests"
 run "tools/test_worker_security.mjs" node tools/test_worker_security.mjs
 run "tools/test_engine_parity.mjs" node tools/test_engine_parity.mjs
@@ -136,12 +144,13 @@ run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftes
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
 run "tools/test_quickcheck_render.mjs --selftest" node tools/test_quickcheck_render.mjs --selftest
 
-# ------------------------------------------------- 5. publiceret træ (deploy)
-hdr "Publiceret træ"
-run "tools/build_public_tree.py" python3 tools/build_public_tree.py --quiet
+# --------------------------------------------- 6. publiceret træ (kontrol)
+# Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
+# kontrolleres det: ingen interne eller betalte filer, ingen døde referencer.
+hdr "Publiceret træ (kontrol)"
 run "tools/check_public_tree.py" python3 tools/check_public_tree.py
 
-# ------------------------------------------------------------------- 6. SEO
+# ------------------------------------------------------------------- 7. SEO
 hdr "SEO"
 seo_python="$(pick_python)" || seo_python=""
 if [ -z "$seo_python" ]; then
@@ -166,7 +175,7 @@ else
   fi
 fi
 
-# -------------------------------------------- 7. sibling-kontraktets egen gate
+# -------------------------------------------- 8. sibling-kontraktets egen gate
 hdr "Sibling-gate (../hermes-passiv)"
 SIBLING="$ROOT/../hermes-passiv"
 if [ -f "$SIBLING/build_sites.py" ] && [ -f "$SIBLING/tools/seo_check.py" ]; then
@@ -197,12 +206,12 @@ else
   ok "sibling-gate ikke tilgængelig (registreret, ikke fejlet)"
 fi
 
-# -------------------------------------------------------- 8. scanner-pakken
+# -------------------------------------------------------- 9. scanner-pakken
 hdr "Scanner-pakke"
 (cd eucomply-scanner && npm pack --dry-run >/dev/null 2>&1)
 if [ $? -eq 0 ]; then ok "npm pack --dry-run"; else bad "npm pack --dry-run" 1; fi
 
-# ------------------------------------------------------------- 9. live røgtest
+# ------------------------------------------------------------ 10. live røgtest
 hdr "Live røgtest"
 if [ "$NETWORK" -eq 0 ]; then
   skip "live røgtest (--no-network)"

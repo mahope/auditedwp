@@ -2,6 +2,9 @@
 """Gate for the købsvej: kun kontraktfikserede links, én købsknap pr. salgside,
 korrekte canonicals, symmetriske lokaler og ingen løfter uden dækning.
 
+Klassifikationen gælder det PUBLICEREDE træ (`site-dist/`), ikke kilde-træet.
+Se afsnittet om PUBLISHED nedenfor — det er hele opgave 23.
+
 Opgaver 10 i IMPLEMENTATION_PLAN.md har tre acceptkriterier, der alle var
 papirlove indtil dette script:
 
@@ -25,12 +28,29 @@ Brug:
 from __future__ import annotations
 
 import re
+import shutil
 import sys
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+
+# Det træ, der faktisk uploades, og dermed det en besøgende kan se.
+#
+# Opgave 22 gjorde klassifikationen afledt, men den kørte på `site/`. Det er den
+# forkerte mappe at klassificere: `build_public_tree.py` samler sitet ud fra en
+# POSITIVLISTE, så en side kan ligge i `site/` og være dækket af en regel med
+# præcis én købsanker, uden at nogen besøgende nogensinde ser den. Gaten var
+# grøn på en beskyttelse af en side, der ikke findes — samme fejltype som de tre
+# foregående opgaver fandt, bare et lag længere nede.
+#
+# Indholdet i de to træer er identiske, fordi publiceringen er en kopi. Derfor
+# skal INGEN indholdskontrol køre to gange: claims, canonicals, døde referencer
+# og checkout-kontrakt giver samme svar på begge. Det der KAN afvige er hvilke
+# sider der findes, og det er præcis her købsgaten lå det forkerte sted — så det
+# er her den nye kontrol `check_publish_alignment` bor.
+PUBLISHED = ROOT / "site-dist"
 
 CANONICAL_ORIGIN = "https://eucomplypro.com"
 
@@ -262,12 +282,12 @@ def classify(rel: str) -> "Rule | None":
     return None
 
 
-def classify_tree() -> tuple[dict[str, list[str]], list[str]]:
-    """Klassificér hele det publicerede træ → (sider pr. art, uklassificerede)."""
+def classify_tree(base: Path | None = None) -> tuple[dict[str, list[str]], list[str]]:
+    """Klassificér et træ → (sider pr. art, uklassificerede)."""
     groups: dict[str, list[str]] = {}
     unknown: list[str] = []
-    for path in all_eucocomply_pages():
-        rel = path.relative_to(SITE).as_posix()
+    for path in all_eucocomply_pages(base):
+        rel = path.relative_to(base or SITE).as_posix()
         rule = classify(rel)
         if rule is None:
             unknown.append(rel)
@@ -276,15 +296,16 @@ def classify_tree() -> tuple[dict[str, list[str]], list[str]]:
     return groups, unknown
 
 
-# Afledt, ikke skrevet: alle pro-sider i det publicerede træ. Før denne ændring
-# var det en liste på 31 stier, og de 15 øvrige pro-sider i træet var usynlige
-# for gaten — de havde tilfældigvis alle én købsanker, hvilket ingen vidste.
-def pro_sales_pages() -> tuple[str, ...]:
-    """Alle pro-sider i det *aktuelle* træ, fundet ved klassifikation."""
+# Afledt, ikke skrevet: alle pro-sider i et træ. Før denne ændring var det en
+# liste på 31 stier, og de 15 øvrige pro-sider i træet var usynlige for gaten —
+# de havde tilfældigvis alle én købsanker, hvilket ingen vidste.
+def pro_sales_pages(base: Path | None = None) -> tuple[str, ...]:
+    """Alle pro-sider i et træ, fundet ved klassifikation."""
+    root = base or SITE
     return tuple(
         rel
-        for path in sorted(SITE.rglob("*.html"))
-        if (rel := path.relative_to(SITE).as_posix())
+        for path in all_eucocomply_pages(root)
+        if (rel := path.relative_to(root).as_posix())
         and (rule := classify(rel))
         and rule.kind == "pro"
     )
@@ -341,17 +362,21 @@ CANONICAL_RE = re.compile(r'<link[^>]+rel="canonical"[^>]*>', re.I)
 HREF_RE = re.compile(r'href="([^"]+)"')
 
 
-def all_eucocomply_pages() -> list[Path]:
-    """Hele EUComply-træet: site/** undtagen søskeprodukter og fragmenter.
+def all_eucocomply_pages(base: Path | None = None) -> list[Path]:
+    """Hele EUComply-træet: undtagen søskeprodukter og fragmenter.
 
     Uden struktur-undtagelsen, så selv en side der er fri for canonical-
     kontrollen stadig skal klassificeres. Ellers så en død regel ud som død
     bare fordi dens side er undtaget fra et andet tjek — præcis den stumhed
     opgave 22 fjerner.
+
+    `base` vælger hvilket træ: `site/` (kilden) eller `site-dist/` (det der
+    publiceres). Klasseforskel: eksistens, ikke indhold.
     """
+    root = base or SITE
     pages = []
-    for path in sorted(SITE.rglob("*.html")):
-        rel = path.relative_to(SITE).as_posix()
+    for path in sorted(root.rglob("*.html")):
+        rel = path.relative_to(root).as_posix()
         if rel.startswith(FRAGMENT_PREFIXES):
             continue
         parts = rel.split("/")
@@ -416,13 +441,18 @@ def check_sales_cta() -> list[str]:
 
     Rækken kommer fra klassifikationen, ikke fra en liste: en ny pro-side er
     dækket i samme sekund den findes i træet.
+
+    Kører på det PUBLICEREDE træ. Det er ikke en småting: "forventet salgsside
+    mangler" er en eksistenspåstand, og det er præcis den påstand, der var
+    forkert — en pro-side i `site/` uden en publiceret udgave er en købsside,
+    ingen besøgende kan nå.
     """
     findings = []
-    for rel in pro_sales_pages() + tuple(TEMPLATE_CTA_PAGES):
+    for rel in pro_sales_pages(PUBLISHED) + tuple(TEMPLATE_CTA_PAGES):
         checkout = TEMPLATE_CTA_PAGES.get(rel, PRO_CHECKOUT)
-        path = SITE / rel
+        path = PUBLISHED / rel
         if not path.is_file():
-            findings.append(f"{rel}: forventet salgsside mangler")
+            findings.append(f"{rel}: forventet salgsside mangler i det publicerede træ")
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         if checkout not in text:
@@ -433,6 +463,70 @@ def check_sales_cta() -> list[str]:
         buy_anchors = len(re.findall(r'<a[^>]+href="' + re.escape(checkout) + r'"', text))
         if buy_anchors != 1:
             findings.append(f"{rel}: forventer præcis 1 købsanker til Pro-linket, fandt {buy_anchors}")
+    return findings
+
+
+def check_publish_alignment() -> list[str]:
+    """Det publicerede træ og kilde-træet skal være det samme for EUComply.
+
+    Opgave 22 gjorde klassifikationen afledt, så en ny side ikke kan undslippe.
+    Men den klassificerede `site/`, og det er ikke det træ, en besøgende ser:
+    `build_public_tree.py` samler sitet ud fra en positivliste. Siden da kunne
+    en salgsside ligge i kilden, være dækket af en regel med præcis én
+    købsanker, og alligevel aldrig blive publiceret — og ingen død regel ville
+    fortelle det, fordi siden findes i det træ gaten kiggede på.
+
+    Fire fund, fordi de fire ting der kan gå galt er fire forskellige:
+
+      1. Det publicerede træ mangler. Uden det er kontrol 2 og 3 vakuære, så
+         det er et fund og ikke en advarsel — ellers ville gaven være grøn på
+         en egenskab den aldrig har efterprøvet.
+      2. En side i kilden er ikke publiceret. Den mest alvorlige: den ligner
+         beskyttet og ingen kan nå den.
+      3. En publiceret side findes ikke i kilden. Umuligt for en kopi, så et
+         fund betyder at de to træer ikke er samme generation.
+      4. En publiceret side er uklassificeret, eller en regel er død *i det
+         publicerede træ*. Det er den egenskab, der gør resten meningsfulde:
+         også det en besøgende kan se skal være klassificeret.
+    """
+    if not PUBLISHED.is_dir():
+        return [
+            f"det publicerede træ {PUBLISHED.name}/ findes ikke — klassifikationen "
+            "kan da ikke efterprøves mod det, der uploades. Kør "
+            "`python3 tools/build_public_tree.py` først."
+        ]
+
+    source = {p.relative_to(SITE).as_posix() for p in all_eucocomply_pages(SITE)}
+    live = {p.relative_to(PUBLISHED).as_posix() for p in all_eucocomply_pages(PUBLISHED)}
+
+    findings: list[str] = []
+    for rel in sorted(source - live):
+        findings.append(
+            f"{rel}: findes i site/ men er ikke i det publicerede træ — "
+            "siden er dækket af en regel, men ingen besøgende kan nå den. "
+            "Tilføj mappen til PUBLIC_DIRS/PUBLIC_FILES i build_public_tree.py, "
+            "eller skriv den bevidst ud som intern undtagelse."
+        )
+    for rel in sorted(live - source):
+        findings.append(
+            f"{rel}: publiceret men findes ikke i site/ — de to træer er ikke "
+            "samme generation. Genbyg site-dist/."
+        )
+
+    groups, unknown = classify_tree(PUBLISHED)
+    for rel in unknown:
+        findings.append(
+            f"{rel}: publiceret men uklassificeret — ingen regel i PAGE_RULES "
+            "matcher. Skriv siden i en eksisterende regel, eller tilføj en ny "
+            "regel med begrundelse; ellers står den uden købsgates."
+        )
+    seen = {classify(rel) for group in groups.values() for rel in group}
+    for rule in PAGE_RULES:
+        if rule not in seen:
+            findings.append(
+                f"død regel i det publicerede træ — matcher ingen publiceret "
+                f"side: {rule.label()}"
+            )
     return findings
 
 
@@ -529,11 +623,16 @@ def check_forbidden_claims() -> list[str]:
 
 
 def run(root: Path) -> list[str]:
-    """Kør alle kontroller mod en given site-rod og samle fundene."""
-    global SITE
+    """Kør alle kontroller mod en given repo-rod og samle fundene."""
+    global SITE, PUBLISHED
     SITE = root / "site"
+    PUBLISHED = root / "site-dist"
     found: list[str] = []
     for check in (
+        # Først aligneringen: den forteller om de to træer overhovedet er det
+        # samme, og de øvrige eksistens- og klassifikationskontroller er kun
+        # meningsfulde når de er det.
+        check_publish_alignment,
         check_classification,
         check_checkout_contract,
         check_sales_cta,
@@ -573,8 +672,21 @@ def _minimal_page(rel: str) -> str:
     )
 
 
+def publish(base: Path) -> None:
+    """Spejl `build_public_tree.py`: site/ -> site-dist/.
+
+    Selftesten skal have BEGGE træer, ellers ville aligneringskontrollen være
+    vakuær: den ville enten finde intet at sammenligne, eller finde alt for meget
+    i en fixture der aldrig ligner den virkelige publicering, som er en kopi.
+    """
+    target = base / "site-dist"
+    if target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(base / "site", target)
+
+
 def selftest() -> int:
-    """Gaten skal kunne fejle. Vi indplanter fejl og kræver at de fanges."""
+    """Gaten skal kunne fejle. Vi indplanter fejl og kræv at de fanges."""
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp) / "repo"
         (base / "site").mkdir(parents=True)
@@ -593,6 +705,7 @@ def selftest() -> int:
             path = base / "site" / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(_minimal_page(rel), encoding="utf-8")
+        publish(base)
 
         clean = run(base)
         if clean:
@@ -600,14 +713,21 @@ def selftest() -> int:
             for f in clean:
                 print(f"  - {f}")
             return 1
-        print(f"selftest: rent træ ({len(required)} sider) giver 0 fund")
+        print(f"selftest: rent træ ({len(required)} sider, kilde + publiceret) "
+              "giver 0 fund")
 
         def expect(label: str, needle: str, mutate, rel: str = "pro/index.html") -> bool:
-            target = base / "site" / rel
-            original = target.read_text(encoding="utf-8")
-            target.write_text(mutate(original), encoding="utf-8")
+            # Begge træer muteres. `check_sales_cta` læser det publicerede,
+            # resten læser kilden, så en mutation i kun det ene træ ville teste
+            # den halve gade — præcis den falske grøn, den her skal fange.
+            originals = {}
+            for root in (base / "site", base / "site-dist"):
+                target = root / rel
+                originals[root] = target.read_text(encoding="utf-8")
+                target.write_text(mutate(originals[root]), encoding="utf-8")
             hit = [f for f in run(base) if needle in f]
-            target.write_text(original, encoding="utf-8")
+            for root, text in originals.items():
+                (root / rel).write_text(text, encoding="utf-8")
             if hit:
                 print(f"selftest: {label} fanget")
                 return True
@@ -655,11 +775,13 @@ def selftest() -> int:
             print("SELFTEST FEJLED: manglende fransk købsside blev ikke fanget")
             return 1
         print("selftest: manglende lokal købsside fanget")
+        blocks = 1
 
         # Opgave 22, del 1: en ny side skal vælge sin art, ellers er den et fund.
         # Uden denne case ville den afledte klassifikation være lige så stum som
         # den håndskrevne liste var — siden ville bare ligge uden for alle
-        # mønstre uden at nogen lægger mærke til det.
+        # mønstre uden at nogen lægger mærke til det. Skrives i begge træer, så
+        # denne case tester klassifikationen og ikke aligneringen ved siden af.
         stray = base / "site" / "ny-vaerktoej" / "index.html"
         stray.parent.mkdir(parents=True, exist_ok=True)
         stray.write_text(
@@ -668,11 +790,14 @@ def selftest() -> int:
             f'<body><a class="btn" href="{PRO_CHECKOUT}">Buy Pro</a></body></html>',
             encoding="utf-8",
         )
+        publish(base)
         if not [f for f in run(base) if "uklassificeret" in f]:
             print("SELFTEST FEJLED: uklassificeret side blev ikke fanget")
             return 1
         print("selftest: uklassificeret side fanget")
         stray.unlink()
+        publish(base)
+        blocks += 1
 
         # Opgave 22, del 2: en ny pro-side fanges af et mønster, ikke af en
         # liste. `pro/vs-acme/` står i ingen konstant nogen skrev ved hånd, så
@@ -685,11 +810,14 @@ def selftest() -> int:
             "<body>En ny Pro-sammenligning uden købsknap.</body></html>",
             encoding="utf-8",
         )
+        publish(base)
         if not [f for f in run(base) if "mangler det kontraktfikserede Pro-link" in f]:
             print("SELFTEST FEJLED: ny pro-side uden købsknap blev ikke fanget")
             return 1
         print("selftest: ny pro-side uden købsknap fanget (kun et mønster dækkede den)")
         derived.unlink()
+        publish(base)
+        blocks += 1
 
         # En regel der matcher ingen side ligner en beskyttelse men beskytter
         # intet. Den skal findes, ellers kan en død regel blive stående for evig.
@@ -701,8 +829,72 @@ def selftest() -> int:
             print("SELFTEST FEJLED: død regel blev ikke fanget")
             return 1
         print("selftest: død regel fanget")
+        # Siden sættes tilbage, så de fire cases nedenfor kun tester det
+        # publicerede træ og ikke arver denne mutation.
+        (base / "site" / "store" / "dpa" / "index.html").write_text(
+            _minimal_page("store/dpa/index.html"), encoding="utf-8")
+        publish(base)
+        blocks += 1
 
-    print(f"SELFTEST GRØN — alle {len(cases) + 4} negative cases fanges")
+        # ------------------------------------------------------------------
+        # Opgave 23: de fire fejl, der kun kan ske i det PUBLICEREDE træ.
+        #
+        # Før denne iteration klassificerede gaten `site/`. Det lyder som en
+        # detalje, men det er hele opgaven: en side kunne være dækket af en regel
+        # med præcis én købsanker i det træ gaten kiggede på, og alligevel aldrig
+        # blive publiceret — fordi `build_public_tree.py` samler sitet ud fra en
+        # positivliste. Uden de fire nederste cases ville den nye kontrol være en
+        # påstand om at den dækker det, præcis som de tre foregående opgaver.
+        # ------------------------------------------------------------------
+
+        # 1. En salgsside der ikke er publiceret. Det er det alvorligste fund:
+        #    siden ligner beskyttet, og ingen besøgende kan nå den.
+        (base / "site-dist" / "checklist" / "index.html").unlink()
+        if not [f for f in run(base) if "ikke i det publicerede træ" in f]:
+            print("SELFTEST FEJLED: upubliceret salgsside blev ikke fanget")
+            return 1
+        print("selftest: salgsside i kilden men ikke publiceret fanget")
+        publish(base)
+        blocks += 1
+
+        # 2. Samme fejl, set fra den anden side: en regel der er død for det
+        #    publicerede træ, men levende i kilden. Før denne kontrol ville
+        #    `check_classification` have sagt "alt i orden" om `store/*/`.
+        (base / "site-dist" / "store" / "dpa" / "index.html").unlink()
+        if not [f for f in run(base) if "død regel i det publicerede træ" in f]:
+            print("SELFTEST FEJLED: død regel i det publicerede træ blev ikke fanget")
+            return 1
+        print("selftest: død regel i det publicerede træ fanget")
+        publish(base)
+        blocks += 1
+
+        # 3. En side der er publiceret uden at være klassificeret. Kun det
+        #    publicerede træ skal klassificeres — det er det, en besøgende ser.
+        lone = base / "site-dist" / "ny-vaerktoej" / "index.html"
+        lone.parent.mkdir(parents=True, exist_ok=True)
+        lone.write_text(
+            f'<html><head><link rel="canonical" '
+            f'href="{CANONICAL_ORIGIN}/ny-vaerktoej/"></head>'
+            f"<body><a class=\"btn\" href=\"{PRO_CHECKOUT}\">Buy Pro</a></body></html>",
+            encoding="utf-8",
+        )
+        if not [f for f in run(base) if "publiceret men uklassificeret" in f]:
+            print("SELFTEST FEJLED: publiceret men uklassificeret side blev ikke fanget")
+            return 1
+        print("selftest: publiceret men uklassificeret side fanget")
+        lone.unlink()
+        blocks += 1
+
+        # 4. Intet publiceret træ. Uden dette fund ville kontrol 1-3 være
+        #    vakuære, og gaten grøn på en egenskab den aldrig har prøvet.
+        shutil.rmtree(base / "site-dist")
+        if not [f for f in run(base) if "kan da ikke efterprøves" in f]:
+            print("SELFTEST FEJLED: manglende publiceret træ blev ikke fanget")
+            return 1
+        print("selftest: manglende publiceret træ fanget")
+        blocks += 1
+
+    print(f"SELFTEST GRØN — alle {len(cases) + blocks} negative cases fanges")
     return 0
 
 
@@ -716,9 +908,10 @@ def main() -> int:
             print(f"  - {f}")
         print(f"\n{len(found)} fund. Ret dem, eller skriv bevidst om i PAGE_RULES.")
         return 1
-    groups, _ = classify_tree()
+    groups, _ = classify_tree(PUBLISHED)
     counts = " ".join(f"{len(v)} {k}" for k, v in sorted(groups.items()))
-    print(f"CTA-gate grøn: {counts}. Kun kontraktfikserede checkout-links, én "
+    print(f"CTA-gate grøn: {counts} — klassificeret i det publicerede træ, som "
+          "er identisk med kilden. Kun kontraktfikserede checkout-links, én "
           "købsknap pr. salgsside, korrekte canonicals, symmetriske lokaler, 0 "
           "døde interne referencer, 0 uunderstøttede løfter.")
     return 0
