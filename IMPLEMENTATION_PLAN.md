@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-26
-Sidste iteration: research + deploy-verificering. Opgave 15 er verificeret live — og **et af planens egne acceptkriterier var forkert**, se afsnittet nedenfor. Iterationen fandt samtidig en **bekræftet DOM-XSS på 28 sider** (skrivebevis medfølger), som blev til en ny opgave 16 i stedet for en halvfærdig rettelse.
-Baseline: `main` commit `7e8fb21` efter `git pull --ff-only` 2026-09-26; seneste CI-kørsel `36202123249` grøn på `7e8fb21`
+Sidste iteration: opgave 16 — DOM-XSS'en i quick-check-widgeten er lukket i 26 filer, og to permanente gates er bygget. **Gaten havde to falske grønne, som selftestene fangede** — detaljerne står under opgave 16, fordi fejltype nummer tre i dette værktøj er værd at læse.
+Baseline: `main` commit `054cd5a` efter `git pull --ff-only` 2026-09-26 00:08 UTC
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -20,7 +20,8 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG` (kode + selftest grøn, ingen `site/**`-fil rørt): **13 — Hærd `tools/check_runtime.py`**: `check_action_majors` med dokumenteret minimumsmajor pr. handling, advarselsvindue før EOL, præcis `.nvmrc`-besked, ærlig afhængighedssum. Selftesten går fra 14 til 23 negative cases.
 - `FÆRDIG` (kode + selftest grøn, ingen `site/**`-fil rørt): **14 — Pin `ubuntu-24.04` før `ubuntu-latest` bliver Ubuntu 26** på `ceo/pin-runner-ubuntu-2404`. Se afsnittet nedenfor.
 - `FÆRDIG` (kode + 10 selftests + 3 mutationer grøn, ingen `site/**`-fil rørt): **15 — Løs npm-identitetskollisionen mellem `cli/` og motoren** på `ceo/npm-identity-collision`. Se afsnittet nedenfor.
-- Næste opgave: **16 — Luk DOM-XSS'en i quick-check-widgeten på 28 sider** (`ceo/dom-xss-quickcheck`). Denne iteration fandt og bekræftede den, skrev en rettelse og en permanent gate, og **rullede begge tilbage** fordi rettelsen ikke kunne dækkes helt og efterprøves inden for iterationsbudgettet. Beviset, de præcise filer og de faldgruber står i afsnittet nedenfor — læs det først. Opgave 15 er lukket.
+- `FÆRDIG` (kode + 4 nye obligatoriske tests grøn, **ikke live** — kræver deploy-vindue): **16 — Luk DOM-XSS'en i quick-check-widgeten på 28 sider** på `ceo/dom-xss-quickcheck`. 26 filer rettet, `esc()` i hver fil. To permanente gates: statisk pr. fil (`check_dom_xss.py`) og adfærdsbaseret (`test_quickcheck_render.mjs`, der kører alle 28 blokke mod et fjendtligt svar). 7/7 mutationer mod repoets egne filer fanget med korrekt filnavn.
+- Næste opgave: **17 — Luk de 104 øvrige DOM-XSS-fund** i `site/regex/`, `site/gdpr-scanner-free/` og 17 andre filer. De ligger i vores eget deploy-træ. Spec og acceptkriterier står under opgave 17.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
 ## Verificeret produkttruth — 2026-09-25
@@ -419,15 +420,35 @@ $ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://exam
 
 ### 16. Luk DOM-XSS'en i quick-check-widgeten på 28 sider
 
-- Status: `I GANG` — start på `ceo/dom-xss-quickcheck`.
+- Status: `FÆRDIG` på `ceo/dom-xss-quickcheck` — rettelse + to permanente gates. Ikke live endnu; se `VERIFICÉR DEPLOY`.
+- **Resultat:** 26 filer rettet. `esc()` står nu i hver fil, fordi widgeten er et kopier-og-sæt-stykke, der ikke må afhænge af `/assets/site.js`. `ssl-expiry-monitor` skriver kun `textContent` og blev ikke rørt; `bulk-url-checker` havde allerede sin egen `esc()`.
+- **Der var 9 blokvarianter, ikke to.** Planen antog to. Kortlægningen fandt: 16 `du-form`-filer (15 blog + widget, byte-identisk blok), 7 `live-check-form`-filer (6 `vs/*` med `lc-*`-klasser + `deskuptime/index.html` med `warn`/`accent`/`ok`), og 4 enkeltstående værktøjer, der også kalder quickcheck-workeren. De to sidste vare en ** reel XSS, planen ikke havde nævnt: `response-time-monitor` skrev `d.statusText` råt ind, og `statusText` er HTTP-reason-phrasen fra det site, der blev tjekket — altså kontrolleret af ejeren af det site, man tjekker.**
+- Efterprøvningen pr. fil (faldgrube 3 i opdagede afsnittet) er gjort maskineligt, ikke ved at læse 26 diffs: alle 173 fjernede linjer er parret med deres modtagere, og resultatet er **17 linjer der kun ændrer indrykning, 156 der kun ændres ved `esc()`-indpakning, 0 reelle afvigelser**. Net +1 linje pr. fil = præcis én `esc()`-definition. `node --check` på alle 26 filers indlejrede scripts: 0 syntaxfejl.
+- **Gate 1 — `tools/check_dom_xss.py`** (statisk, pr. fil). Bevidst **ikke** global: den dækker kun de filer, der kalder `deskuptime-quickcheck`, og siger det i sin egen udskrift. De 104 øvrige fund er opgave 17. 28 filer, 28 blokke, 0 fund. Selftest: 12 negative cases.
+- **Gate 2 — `tools/test_quickcheck_render.mjs`** (adfærd, ikke læsning). Den *kører* alle 28 blokke i en `vm`-sandbox med en DOM-stub og et workersvar, hvor hvert felt er en payload, og kræver at ingen payload optræder råt. 27 filers renderer kørt i to gennemløb (fejlsvar + succes); 1 fil er `textContent`-only og meldes som sådan. Selftest: 2 negative + 2 positive cases.
+- **Gaten havde to falske grønne, som selftestene fangede — begge i selve testværktøjet.** (a) `check_dom_xss.py` søgte på `esc)` ved en parentesbalance-tælling; `esc)` findes aldrig i koden, så tællingen var altid "åben" og **enhver sink efter det første `esc()` på en linje blev springet over**. Gaten sagde "0 fund" på 28 filer, som den ikke ville have fundet en eneste reel mangel i. (b) `test_quickcheck_render.mjs`' DOM-stub returnerede den rå streng fra `innerHTML` i stedet for den serialiserede, så `esc()` var en no-op — testen ville have meldt alle 28 filer for lækkende, og man ville have "rettet" korrekt kode for at tilfredsstille en stub. Den havde også en no-op `addEventListener`, så den aldrig kørte rendereren og meldte "ingen fil skrev markup" som en succes. Dette er den tredje gang i planen, at et selvførende kontrolværktøj ligner grønt, fordi det ikke kører sit eget arbejde.
+- **Mutation mod repoets egne filer:** 5/5 fanget med korrekt filnavn (`check_dom_xss.py`), og 2/2 fanget med korrekt filnavn (`test_quickcheck_render.mjs`) efter at `esc(d.statusText)` i `deskuptime/vs/pingdom` og `esc(d.finalUrl)` i `blog/website-down-checker` var fjernet én ad gangen.
+- Gate: `GATE GRØN — alle 9 steps bestået` (nu 12 JS-filer i syntakssteppet og 4 nye steps i repo-tests: `check_dom_xss.py`, `--selftest`, `test_quickcheck_render.mjs`, `--selftest`). `216 sider, 0 findings`; publiceret træ 322 filer / 226 HTML-sider, 0 interne, 0 døde referencer; `npm pack --dry-run` grøn; live røgtest 9 tjek. Ingen PHP ændret, men PHP-lint kørte grønt på 4 filer.
+- Fejl: 1/2 (første kørsel af selftestene fandt de to falske grønne ovenfor, rettet i samme iteration)
 - Begrundelse: bekræftet DOM-XSS på vores eget domæne, i et værktøj kunder indlejrer på deres egne sider. Rang 1 i "hvad der tæller": en fejl der rammer brugere. Beviset står ovenfor.
 - Scope: `esc()` rundt om hver dynamisk værdi i begge blokvarianter; `textContent` til de rene tekstlinjer; permanent gate med selftest, som efterprøver **pr. fil** at de 28 filer escape `url`, `statusText`, `responseMs`, `finalUrl`, `headers.server` og `error`; hver rettet fil læses i diffen.
 - Accept:
-  - `curl` mod workeren med `<script>` i `url` returnerer stadig det uændrede echo (beviset skal bestå), og **renderingen af det svar indeholder ingen ubeskyttet `<`** — efterprøves i en test, der kører blokkens renderer mod et fjendtligt svar, ikke ved at læse koden.
-  - Gate grøn med negative selftests, mutation prøvet mod **repoets egne** 28 filer: at fjerne én `esc()` giver et fund, der nævner præcis filen.
-  - `GATE GRØN`, og `php -l`/JS-syntaks/SEO/publiceret-træ uændret grøn.
-  - Deploy verificeret på indhold: `/deskuptime/`, én blog-side og `/shared/live-check-widget.html` svarer 200, og widget-snippetet på sitet indeholder `esc(`.
+  - ~~`curl` mod workeren med `<script>` i `url` returnerer stadig det uændrede echo (beviset skal bestå), og **renderingen af det svar indeholder ingen ubeskyttet `<`** — efterprøves i en test, der kører blokkens renderer mod et fjendtligt svar, ikke ved at læse koden.~~ **Dækket.** Beviset består uændret (workerens echo er urørt), og `test_quickcheck_render.mjs` kører alle 28 blokke mod et svar, hvor hvert felt er en payload. 27 renderer kørt i to gennemløb, 0 læk; 1 fil dokumenteret som `textContent`-only.
+  - ~~Gate grøn med negative selftests, mutation prøvet mod **repoets egne** 28 filer: at fjerne én `esc()` giver et fund, der nævner præcis filen.~~ **Dækket.** 12 negative cases i `check_dom_xss.py` og 4 i render-testens selftest; 5/5 og 2/2 mutationer mod repoets egne filer fanget med korrekt filnavn.
+  - ~~`GATE GRØN`, og `php -l`/JS-syntaks/SEO/publiceret-træ uændret grøn.~~ **Dækket.** `GATE GRØN — alle 9 steps bestået`.
+  - Deploy verificeret på indhold: `/deskuptime/`, én blog-side og `/shared/live-check-widget.html` svarer 200, og widget-snippetet på sitet indeholder `esc(`. **ÅBEN** — afventer deploy-vindue.
 - **Ikke i denne opgave:** de 104 fund i `site/regex/`, `site/gdpr-scanner-free/` og de øvrige 19 filer. De er reelle og bliver opgave 17; de må ikke trækkes ind som "mens vi er i gang", fordi så bliver ingen af dem ordentlig testet.
+
+### 17. Luk de 104 øvrige DOM-XSS-fund
+
+- Status: `AFVENTER` — klar til at starte.
+- Begrundelse: samme fejltype som opgave 16, fundet af den bredere eftersøgning 26/9: `site/regex/`, `site/gdpr-scanner-free/` og 17 andre filer skriver dynamiske værdier i `innerHTML` uden escaping. De ligger i EUComplys eget deploy-træ, så de er live på vores domæne.
+- Scope: grupper filerne pr. mønster, kør de to gates fra opgave 16 på dem, og udvid `check_dom_xss.py`s filkreds fra "kalder quickcheck-workeren" til "indeholder en `<script>` med `.innerHTML` og en dynamisk værdi" — **men kun når antallet af fund er nul**, ellers kan gaten ikke gå grøn, og en bred regel med åbne fund må ikke fremstilles som grøn.
+- Accept:
+  - `check_dom_xss.py` dækker hele deploy-træet og er grøn, eller fundene er lukket ét filmønster ad gangen med hver gruppe testet.
+  - Render-testen dækker hver ny filgruppe, og selftesten kan stadig fejle.
+  - `GATE GRØN`, og `0 payload lækker` i render-testen for hele træet.
+
 
 ## ❓ Til Mads
 
@@ -458,6 +479,7 @@ $ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://exam
 
 ## Deploy-log
 
+- `VERIFICÉR DEPLOY: DOM-XSS-rettelsen i quick-check-widgeten + to nye gates (opgave 16) 2026-09-26 ca. 00:35 UTC` — rører **26 `site/**`-filer** (`site/shared/live-check-widget.html`, 15 `site/blog/*/index.html`, `site/deskuptime/index.html`, 6 `site/deskuptime/vs/*/index.html`, `site/deskuptime/change-monitor/`, `site/deskuptime/response-time-monitor/`) plus `tools/check_dom_xss.py`, `tools/test_quickcheck_render.mjs` og `tools/quality_gate.sh`. **Ingen** `site/deskuptime/bulk-url-checker/` eller `ssl-expiry-monitor/` rørt — de var allerede sikre. Efter næste deploy-vindue skal **indhold** verificeres på fire punkter: (1) `https://eucomplypro.com/shared/live-check-widget.html` svarer 200 og snippetet indeholder `esc(` — det er den fil kunder kopierer, så den er den vigtigste; (2) `/deskuptime/` og én `vs/*`-side svarer 200 og har `esc(` i den indlejrede blok; (3) `/blog/website-down-checker/` svarer 200 og har mistet intet af sit quick-check-formular; (4) widgeten skal stadig *virke* — indtast en adresse og kontrollér at status, SSL-dage og redirect-visning vises, for `esc()` må ikke have ændret markupen. Sidste punkt er det kun en browser kan give, og det er derfor det står der.
 - `DEPLOY OK 2026-09-26 00:00 UTC` + lukket: se afsnittet "Deploy-verificering 2026-09-25 23:50 UTC". Merge `9a643e9` 2026-09-25 23:43 UTC rørte `cli/package.json`, `cli/README.md`, `cli/bin/eucomply-scan.js`, `tools/check_package_identity.py`, `tools/quality_gate.sh` og denne plan. **Ingen `site/**`-fil** rørt. Punkt 3 i noten var en forkert præmis (`/cli/package.json` er ikke i deploy-træet og kan ikke være det) og er rettet i afsnittet.
 - `DEPLOY OK 2026-09-25 23:16 UTC` + `VERIFICÉR DEPLOY: fastsat runner-image ubuntu-24.04 (opgave 14) 9200289 / merge `d2fe1e1` 2026-09-26 ca. 08:20 CEST` — rører **kun** `.github/workflows/verify.yml`, `.github/workflows/deploy-site.yml`, `tools/check_runtime.py` og denne plan. **Ingen `site/**`-fil**, ingen plugin- og ingen scannerændring, så det publicerede træ er uændret, og intet på sitet skal ændre sig ved denne deploy — bekræftet af `Uploaded 0 files (322 already uploaded)`. CI-kørsel `36200263395`: alle tre jobs `success`, annotationen om Ubuntu 26 er væk (`grep -c` = 0), gaten kører alle ni steps på `ubuntu-24.04` med `node-version: 22` og `SELFTEST GRØN — alle 28 negative cases fanges`, de 12 interne stier svarer 404 med cache-buster, de 13 nøglesider 200 med reelle bytestørrelser, og plugin-zip'en er en zip. Det er første kørsel nogensinde på et fastsat image, så de tre tidsmæssigt uafærdige acceptkriterier i opgave 14 er nu lukket.
 - `DEPLOY OK 2026-09-25 22:33 UTC` + `VERIFICÉR DEPLOY: hærdet runtime-gate (opgave 13) 77ab795 2026-09-25 22:30 UTC` — rører **kun** `tools/check_runtime.py` og `IMPLEMENTATION_PLAN.md`. Verificeret i CI, se afsnittet nedenfor. `tools/**` er i `deploy-site`'s `paths`-filter, så diffen udløste en kørsel — godt, fordi det er første gang den nye kontrol efterprøves af CI og ikke kun lokalt. **Ingen `site/**`-fil**, ingen plugin- og ingen workflow-ændring, så det publicerede træ er uændret.
