@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.5
+ * Version:           1.3.6
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.5' );
+define( 'EUCOMPLY_VERSION', '1.3.6' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1317,22 +1317,47 @@ class EUComply {
     }
 
     /**
+     * The download filename for a client report.
+     *
+     * Deterministic, so the same scan always produces the same name, and it is
+     * built from the scan date rather than the token: a filename ends up in
+     * mail clients, chat windows and archive indexes, and none of those may
+     * carry the secret that opens the report. The date is re-validated
+     * because it comes from an option, and a header must never carry a value
+     * an option author chose.
+     *
+     * @return string
+     */
+    private function client_report_filename() {
+        $stamp = (string) get_option( 'eucomply_last_scan', '' );
+        $date  = preg_match( '/^(\d{4}-\d{2}-\d{2})/', $stamp, $m ) ? $m[1] : gmdate( 'Y-m-d' );
+        return 'eucomply-report-' . $date . '.html';
+    }
+
+    /**
      * Build the response for a client report request.
      *
      * Separated from the HTTP plumbing so the properties that matter — what a
      * valid request shows, and that every invalid one is indistinguishable —
      * can be tested without a web server.
      *
+     * The file variant is the same body, not a second rendering of it. An
+     * agency that attaches a PDF-style deliverable and a client that reads the
+     * page must never be able to disagree about what the scan found.
+     *
      * @param string $raw_token Raw value from the query string.
-     * @return array{0:int,1:string} HTTP status and body.
+     * @param bool   $as_file   Ask for the download instead of the page.
+     * @return array{0:int,1:string,2:string} HTTP status, body, filename ('' unless $as_file).
      */
-    private function client_report_response( $raw_token ) {
+    private function client_report_response( $raw_token, $as_file = false ) {
         $token = is_string( $raw_token ) ? strtolower( trim( $raw_token ) ) : '';
         if ( ! $this->client_link_allows( $token ) ) {
             // Deliberately the same body for a malformed token, an unknown one,
             // a revoked one and an expired one. Anything else turns this page
-            // into an oracle for which tokens exist.
-            return array( 404, '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><p>No compliance report is available at this address.</p></body></html>' );
+            // into an oracle for which tokens exist. A download request gets it
+            // too, and no Content-Disposition: a 404 that arrives as a file is
+            // a different observable from a 404 that arrives as a page.
+            return array( 404, '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><p>No compliance report is available at this address.</p></body></html>', '' );
         }
         $rec  = $this->client_link_record();
         $body = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
@@ -1351,28 +1376,59 @@ class EUComply {
         $body .= '<footer>Read-only. This page cannot change anything on the website. '
             . 'Produced by EUComply Pro from the site&#39;s own scheduled scans. '
             . 'A compliance aid, not legal advice.</footer></body></html>';
-        return array( 200, $body );
+        return array( 200, $body, $as_file ? $this->client_report_filename() : '' );
     }
 
     /**
-     * Serve the client report. Hooked on template_redirect.
+     * The Content-Disposition for a client report, or '' when there is nothing
+     * to hand over.
      *
-     * The token is the only query parameter this reads. Everything else on the
-     * request is ignored, so the page cannot be turned into an action.
+     * Only a real report ever gets one. A rejected token must not be able to
+     * differ from the page version in its headers, or the download address
+     * becomes a second, weaker lock on the same secret than the page is.
+     *
+     * @param mixed $filename Whatever client_report_response() returned.
+     * @return string
+     */
+    private function client_report_disposition( $filename ) {
+        // The shape is re-checked here, at the last point before the header,
+        // and not only in client_report_filename(). A filename that can carry
+        // a quote or a newline splits a response, and the check that matters is
+        // the one that is closest to the damage.
+        if ( ! is_string( $filename ) || ! preg_match( '/^eucomply-report-\d{4}-\d{2}-\d{2}\.html$/', $filename ) ) {
+            return '';
+        }
+        return 'attachment; filename="' . $filename . '"';
+    }
+
+    /**
+     * Serve the client report, as a page or as a file. Hooked on template_redirect.
+     *
+     * The token is the only thing this reads, and the file flag changes nothing
+     * but the download header. Everything else on the request is ignored, so the
+     * page cannot be turned into an action.
      */
     public function maybe_render_client_report() {
-        if ( ! isset( $_GET['eucomply_report'] ) || is_admin() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability-free, read-only link, verified by hash below
+        $wants_file = isset( $_GET['eucomply_report_file'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability-free, read-only link, verified by hash below
+        if ( ( ! isset( $_GET['eucomply_report'] ) && ! $wants_file ) || is_admin() ) {
             return;
         }
-        $raw = $_GET['eucomply_report']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $raw = isset( $_GET['eucomply_report'] ) ? $_GET['eucomply_report'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $raw = is_string( $raw ) ? wp_unslash( $raw ) : '';
-        list( $status, $body ) = $this->client_report_response( $raw );
+        list( $status, $body, $filename ) = $this->client_report_response( $raw, $wants_file );
 
         status_header( $status );
         nocache_headers();
         header( 'X-Robots-Tag: noindex, nofollow', true );
         header( 'Referrer-Policy: no-referrer', true );
         header( 'Content-Type: text/html; charset=utf-8' );
+        // Only ever on a real report. A rejected token must not be able to
+        // differ from the page version in its headers, or the two answers
+        // become distinguishable.
+        $disposition = $this->client_report_disposition( $filename );
+        if ( '' !== $disposition ) {
+            header( 'Content-Disposition: ' . $disposition, true );
+        }
         echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled escaped above
         exit;
     }
@@ -1426,6 +1482,15 @@ class EUComply {
                 <div style="border:2px solid #1a7a44;background:#f2fbf5;padding:12px 16px;border-radius:8px;margin:12px 0">
                     <strong>Copy this now — it is not shown again.</strong>
                     <p style="margin:8px 0 0;word-break:break-all;font-family:monospace;font-size:12.5px"><?php echo esc_html( $fresh ); ?></p>
+                    <p style="margin:10px 0 0">
+                        <a class="eucomply-btn" style="padding:8px 16px;font-size:13px"
+                           href="<?php echo esc_url( add_query_arg( 'eucomply_report_file', '1', $fresh ) ); ?>">↓ Download report (HTML)</a>
+                    </p>
+                    <p style="margin:10px 0 0;font-size:12.5px;color:#33503f">
+                        The download is the same report as the page, in a file you can attach to an
+                        e-mail or hand to an auditor. The link stops working on the date above, so
+                        copy both now.
+                    </p>
                 </div>
             <?php endif; ?>
             <?php if ( 'active' === $state ) : ?>

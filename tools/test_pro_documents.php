@@ -611,6 +611,106 @@ list( $s_none, $b_none ) = priv( 'client_report_response', $nm[1] );
 ok( 'an unscanned site gets an honest page, not a zero score', 200 === $s_none && false === strpos( $b_none, 'of 0 checks passed' ) );
 ok( 'an unscanned site is told to run a scan', false !== strpos( $b_none, 'No scan has been run yet' ) );
 
+// ── 8. The report as a file ───────────────────────────────────────────────────
+// An agency delivers a report as an attachment, not as a URL the client has to
+// remember to open. The download therefore has to be the same document, and it
+// has to be refused in exactly the same way — a download address that answers
+// differently from the page is a second, weaker lock on the same secret.
+
+pro_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 5, 'warned' => 1, 'checks' => array( 'a' => 'pass', 'b' => 'warn' ) ),
+);
+$file_link = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $file_link, $fm );
+$file_token = $fm[1];
+
+list( $fs, $fbody, $fname ) = priv( 'client_report_response', $file_token, true );
+list( $ps, $pbody, $pname ) = priv( 'client_report_response', $file_token );
+
+ok( 'a valid token downloads the report', 200 === $fs );
+ok( 'the file is the same bytes as the page', $fbody === $pbody );
+ok( 'the file carries the scan history, not a cut-down version', false !== strpos( $fbody, 'Scan history' ) && false !== strpos( $fbody, '2026-09-01' ) );
+ok( 'the page asks for no filename and the file asks for one', '' === $pname && '' !== $fname );
+ok( 'the filename is the scan date in a fixed shape', 'eucomply-report-2026-09-26.html' === $fname );
+ok( 'the filename carries no part of the token', false === strpos( $fname, substr( $file_token, 0, 8 ) ) && false === strpos( $fbody, $file_token ) );
+
+// The same scan must always produce the same name: an agency that attaches
+// last month's file and this month's file must be able to tell them apart by
+// name alone, and a name that changed for no reason would defeat that.
+ok( 'the filename is deterministic', $fname === priv( 'client_report_filename' ) );
+
+// A hostile option must not reach a response header. A scan date is written by
+// this plugin, but it is an option, and a header split by a newline is a
+// response-splitting bug, not a cosmetic one.
+$GLOBALS['eucomply_test_options']['eucomply_last_scan'] = "2026-09-26\r\nX-Injected: 1";
+ok( 'a hostile scan date cannot reach the filename', 1 === preg_match( '/^eucomply-report-\d{4}-\d{2}-\d{2}\.html$/', priv( 'client_report_filename' ) ) );
+
+// A site that has never been scanned has no date to name the file after, and
+// inventing one from an empty option would be a lie about when the scan ran.
+pro_instance( 0, 0, 0 );
+delete_option( 'eucomply_last_scan' );
+$nl = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $nl, $nm2 );
+list( $ns, $nbody, $nname ) = priv( 'client_report_response', $nm2[1], true );
+ok( 'an unscanned site still gets a well-formed filename', 1 === preg_match( '/^eucomply-report-\d{4}-\d{2}-\d{2}\.html$/', $nname ) );
+ok( 'an unscanned download says so rather than showing a score', false !== strpos( $nbody, 'No scan has been run yet' ) );
+
+// Every way of failing must look the same here too. The download is compared
+// against the page's own 404, byte for byte, and against the 404 the page
+// gives: three rejections, one answer.
+pro_instance();
+$dl = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $dl, $dm );
+$dl_token = $dm[1];
+$rec  = get_option( 'eucomply_client_link' );
+$old  = $rec;
+$old['expires'] = time() - 1;
+
+update_option( 'eucomply_client_link', $old );
+list( $d_exp, $b_exp, $n_exp ) = priv( 'client_report_response', $dl_token, true );
+update_option( 'eucomply_client_link', $rec );
+priv( 'revoke_client_link' );
+list( $d_rev, $b_rev, $n_rev ) = priv( 'client_report_response', $dl_token, true );
+update_option( 'eucomply_client_link', $rec );
+list( $d_unk, $b_unk, $n_unk ) = priv( 'client_report_response', str_repeat( 'b', 32 ), true );
+list( $d_fmt, $b_fmt, $n_fmt ) = priv( 'client_report_response', 'not-a-token', true );
+list( $p_404, $b_p404 ) = priv( 'client_report_response', 'not-a-token' );
+
+ok( 'an expired download does not resolve', 404 === $d_exp );
+ok( 'a revoked download does not resolve', 404 === $d_rev );
+ok( 'an unknown token downloads nothing', 404 === $d_unk );
+ok( 'a malformed token downloads nothing', 404 === $d_fmt );
+ok( 'a rejected download gets no filename, so no Content-Disposition', '' === $n_exp && '' === $n_rev && '' === $n_unk && '' === $n_fmt );
+
+// The header decision is separated from the HTTP call so it can be checked
+// without a web server. A mutation that attaches the file to every answer —
+// including the 404 — would otherwise be invisible to the whole test suite.
+ok( 'a real report asks to be downloaded', false !== strpos( priv( 'client_report_disposition', $fname ), 'attachment; filename="' . $fname . '"' ) );
+ok( 'a rejected report asks for no download', '' === priv( 'client_report_disposition', '' ) );
+ok( 'no filename of any shape produces a download header', '' === priv( 'client_report_disposition', null ) && '' === priv( 'client_report_disposition', array( 'x' ) ) && '' === priv( 'client_report_disposition', 0 ) );
+ok( 'a hostile filename cannot inject a second header', false === strpos( priv( 'client_report_disposition', "eucomply-report-x.html\"\r\nX-Injected: 1" ), "\r\n" ) );
+ok(
+    'every rejected download gets the identical body',
+    $b_exp === $b_rev && $b_rev === $b_unk && $b_unk === $b_fmt && $b_fmt === $b_exp
+);
+ok( 'a rejected download is byte-identical to the rejected page', $b_unk === $b_p404 );
+ok( 'a rejected download says nothing about why', false === stripos( $b_unk, 'expired' ) && false === stripos( $b_unk, 'revoked' ) && false === stripos( $b_unk, 'token' ) );
+
+// A request for the file with no token at all is still the same 404, not the
+// site's front page: an answer that differs from the others is a probe.
+list( $d_none, $b_none ) = priv( 'client_report_response', '', true );
+ok( 'a download with no token at all gets the same 404', 404 === $d_none && $b_none === $b_p404 );
+
+// A new link retires the download exactly as it retires the page: an agency
+// that replaces a leaked link must not leave the file behind.
+pro_instance();
+$pl = priv( 'create_client_link' );
+preg_match( '/[?&]eucomply_report=([a-f0-9]{32})/', $pl, $pm );
+$pl_token = $pm[1];
+priv( 'create_client_link' );
+ok( 'a new link retires the previous download too', 404 === priv( 'client_report_response', $pl_token, true )[0] );
+
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";
 if ( $failed ) {

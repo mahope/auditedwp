@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.4
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.6 (2026-09-26) =
+* Pro: the client report can be downloaded as a file. Next to a freshly created link there is now a "Download report (HTML)" button, so an agency can attach the report to an e-mail or hand it to an auditor instead of only sending a URL.
+* The file is the same report as the page, with the same scan history — not a second, shorter rendering that could disagree with it.
+* The filename is "eucomply-report-<date>.html" and contains no part of the link, because filenames end up in mail clients and archive indexes.
+* A download without a valid link returns the same "not found" page as the report, so the download address cannot be used to find out which links exist.
+* The download and the page stop working at the same moment, and a new link retires both.
 
 = 1.3.5 (2026-09-26) =
 * Pro: a client report link. Create one in the dashboard and send it to your client; they read this site's report and scan history in a browser, without a WordPress login.
