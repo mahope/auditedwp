@@ -141,6 +141,12 @@ run "tools/check_published_installs.py" python3 tools/check_published_installs.p
 run "tools/check_published_installs.py --selftest" python3 tools/check_published_installs.py --selftest
 run "tools/check_dom_xss.py" python3 tools/check_dom_xss.py
 run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftest
+# Inline <script> i de publicerede HTML-sider. Step 03 linted .js-filerne i
+# repoet, men ikke de 276 scripts der ligger INLINE i markup'et — og det er dem
+# en besøgende faktisk kører. Default-træet er site-dist, fordi opgave 23
+# lærte os at klassificere det publicerede træ og ikke kilden.
+run "scripts/check_inline_js.py" python3 scripts/check_inline_js.py
+run "scripts/check_inline_js.py --selftest" python3 scripts/check_inline_js.py --selftest
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
 run "tools/test_quickcheck_render.mjs --selftest" node tools/test_quickcheck_render.mjs --selftest
 run "tools/check_production_drift.py --selftest" python3 tools/check_production_drift.py --selftest
