@@ -341,6 +341,21 @@ hdr "Alle elleve plugin-tjek kørt adfærdsmæssigt"
 run "tools/test_plugin_checks.php" php tools/test_plugin_checks.php
 run "tools/test_plugin_checks.php --selftest" php tools/test_plugin_checks.php --selftest
 
+# ------------------------------- 18. Kan `tjek produktion` fejle på en rigtig udgivelse?
+# Opgave 47: CI `36250487311` var grøn i deploy og rød i verify med *"peger på
+# eucomply-1.3.12.zip, forventede eucomply-1.3.13.zip"*, og live-sitet svarede
+# 1.3.13 fyrre sekunder senere. Kontrollen læste /update.json ÉN gang og slog
+# fast ved første læsning. Nu polles der med et loft, og loftet er hele pointen:
+# en udgivelse der ALDRIG kommer ud skal stadig give rødt. Denne gate læser
+# deploy-site.yml og kræver at jobbet bruger værktøjet, at den gamle
+# øjeblikkelige sammenligning er væk, at jobbets timeout overstiger den værste
+# ventetid, og at de otte øvrige kontrolpunkter stadig er der — ellers ville
+# "urørt" være en påstand. Uden dette step kunne værktøjet være grønt i porten
+# og ubrugt i workflowen, præcis fejlen opgave 39 fandt i en anden kontrol.
+hdr "Deploy-verificeringen kan skelne racen fra en manglende udgivelse"
+run "tools/wait_for_deploy.py --selftest" python3 tools/wait_for_deploy.py --selftest
+run "tools/wait_for_deploy.py --check-workflow" python3 tools/wait_for_deploy.py --check-workflow
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
