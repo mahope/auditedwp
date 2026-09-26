@@ -282,6 +282,21 @@ hdr "Ingen død betalingsudbyder i koden der kan nå en kunde"
 run "tools/check_dead_providers.py --selftest" python3 tools/check_dead_providers.py --selftest
 run "tools/check_dead_providers.py" python3 tools/check_dead_providers.py
 
+# --------------------------- 14. Har den PUBLICEREDE motor et hul, motoren her ikke har?
+# site/cli/ fortæller brugere at installere @mahope/eucomply-scanner. Den pakke er
+# fra før hærdningen i 28795c3: den afviser IP-literaler men hverken løser DNS
+# eller validerer redirect-hop. Vi må ikke publisere, så afvigelsen er en RAPPORT
+# (jf. opgave 37/38 om hvorfor en permanent rød gate låser hele sitets deploy).
+# Håndhævet er den anden retning: motoren her i repoet må aldrig miste en af de
+# otte prøver, og må aldrig blive så stram at den lukker scanneren.
+hdr "SSRF-guarden i den publicerede motor mod motoren i repoet"
+run "tools/check_published_engine.mjs --selftest" node tools/check_published_engine.mjs --selftest
+if [ "$NETWORK" -eq 0 ]; then
+  run "tools/check_published_engine.mjs --offline" node tools/check_published_engine.mjs --offline
+else
+  run "tools/check_published_engine.mjs" node tools/check_published_engine.mjs
+fi
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

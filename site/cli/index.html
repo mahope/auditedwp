@@ -141,6 +141,12 @@ npx github:mahope/eucomply-scanner https://yourdomain.com
 git clone https://github.com/mahope/eucomply-scanner
 cd eucomply-scanner &amp;&amp; node cli/eucomply.js https://yourdomain.com</pre>
     <p class="lede">All three run the same scanner. It is MIT licensed and the source is on <a href="https://github.com/mahope/eucomply-scanner">GitHub</a>.</p>
+    <div class="box warn">
+      <h3>Read this before you run it against someone else's URL</h3>
+      <p>The published package is <strong>1.0.1</strong>, released before the network guard was finished. It refuses private IP addresses written as literals — <code>127.0.0.1</code>, <code>10.0.0.0/8</code>, <code>169.254.0.0/16</code> — but it does <strong>not</strong> look up DNS and it does <strong>not</strong> check where a redirect lands. So a hostname that resolves to a private address, or a public URL that redirects to one, is still fetched.</p>
+      <p>In CI that matters: a build that scans URLs from a ticket, a CMS field or a sitemap is fetching on behalf of whoever wrote that URL. The scanner here is the one to prefer if you can run it from source in this repository — it resolves DNS, refuses private targets, and validates every redirect hop. We are publishing the hardened engine as <code>1.1.0</code>; until then, source is the safe path.</p>
+      <p>Nothing about this changes the nine checks or their results. It is only about which network targets the scanner is allowed to reach.</p>
+    </div>
     <p class="lede">Example output (real scan of webflow.com):</p>
 <pre>$ eucomply-scanner https://webflow.com
  EUComply Scan Report — webflow.com
