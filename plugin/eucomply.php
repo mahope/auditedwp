@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.3
+ * Version:           1.3.4
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.3' );
+define( 'EUCOMPLY_VERSION', '1.3.4' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -38,6 +38,7 @@ define( 'EUCOMPLY_LICENSE_API', 'https://mahope.tools/api/license/' );
 define( 'EUCOMPLY_LICENSE_PRODUCT', 'eucomply-pro' );
 define( 'EUCOMPLY_LICENSE_CACHE_TTL', DAY_IN_SECONDS );
 define( 'EUCOMPLY_LICENSE_GRACE', 7 * DAY_IN_SECONDS ); // keep a verified Pro status this long while the license server is unreachable
+define( 'EUCOMPLY_HISTORY_LIMIT', 52 ); // ~1 year of weekly snapshots, the window an auditor or a renewal asks about
 
 /**
  * Activation guard — prevent activation on unsupported PHP or WordPress.
@@ -206,8 +207,94 @@ class EUComply {
         // Store results.
         update_option( 'eucomply_scan_results', $results );
         update_option( 'eucomply_last_scan', current_time( 'mysql' ) );
+        $this->record_history( $results );
 
         return $results;
+    }
+
+    /**
+     * Append one snapshot to the scan history (Pro).
+     *
+     * A report that only describes the scan you ran five minutes ago cannot
+     * answer the question a client actually asks: "are we still compliant, and
+     * what did you fix?" The plugin already scans weekly, so continuity costs
+     * nothing extra — it only has to be written down.
+     *
+     * Deliberately mirrors the hosted worker's per-check history: one entry per
+     * calendar day, per-check tri-state, capped. A scan run twice in one day
+     * overwrites that day rather than adding a second row, so a customer who
+     * clicks "Scan" five times does not get a history that claims five
+     * separate days of work.
+     *
+     * @param array $results Check results from run_checks().
+     */
+    private function record_history( $results ) {
+        if ( ! is_array( $results ) || empty( $results ) ) {
+            return;
+        }
+        $entry = array(
+            'date'   => gmdate( 'Y-m-d' ),
+            'checks' => array(),
+        );
+        $passed = 0;
+        $warned = 0;
+        $total  = 0;
+        foreach ( $results as $key => $r ) {
+            if ( ! is_array( $r ) ) {
+                continue;
+            }
+            $total++;
+            // Same tri-state as the score: a warning is a partial result and
+            // must never be recorded as a pass.
+            if ( ! empty( $r['pass'] ) ) {
+                $state          = 'pass';
+                $passed++;
+            } elseif ( ! empty( $r['warn'] ) ) {
+                $state = 'warn';
+                $warned++;
+            } else {
+                $state = 'fail';
+            }
+            $entry['checks'][ $key ] = $state;
+        }
+        if ( 0 === $total ) {
+            return;
+        }
+        $entry['total']  = $total;
+        $entry['passed'] = $passed;
+        $entry['warned'] = $warned;
+
+        $history = $this->history();
+        unset( $history[ $entry['date'] ] );
+        $history[ $entry['date'] ] = $entry;
+        // Oldest first, then capped. A weekly scan gives a little over a year,
+        // which is the window an auditor or a client renewal asks about.
+        ksort( $history );
+        if ( count( $history ) > EUCOMPLY_HISTORY_LIMIT ) {
+            $history = array_slice( $history, -EUCOMPLY_HISTORY_LIMIT, null, true );
+        }
+        update_option( 'eucomply_scan_history', $history );
+    }
+
+    /**
+     * Read the scan history, oldest first.
+     *
+     * The cap is applied on read as well as on write: an option that was
+     * truncated, hand-edited or restored from an old backup must not be able to
+     * render an unbounded table in the report.
+     *
+     * @return array<string, array> Snapshots keyed by Y-m-d.
+     */
+    private function history() {
+        $history = get_option( 'eucomply_scan_history', array() );
+        if ( ! is_array( $history ) ) {
+            return array();
+        }
+        if ( count( $history ) > EUCOMPLY_HISTORY_LIMIT ) {
+            $history = array_slice( $history, -EUCOMPLY_HISTORY_LIMIT, null, true );
+        }
+        ksort( $history );
+        return $history;
     }
 
     /**
@@ -1066,6 +1153,69 @@ class EUComply {
             // A warning is a partial result, not a pass. It is counted and named
             // separately so the headline number cannot overstate compliance.
             echo '<p>' . esc_html( $summary ) . '. Warnings are not counted as passed.</p>';
+        }
+        echo $this->build_history_section(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in build_history_section()
+        return ob_get_clean();
+    }
+
+    /**
+     * Build the "Scan history" part of the report.
+     *
+     * This is the part a client reads twice: the current table says where the
+     * site stands today, the history says whether it is being kept there. It
+     * reports what was actually recorded — no scan is invented, and a gap in
+     * the series is shown as a gap rather than smoothed over.
+     *
+     * @return string HTML.
+     */
+    private function build_history_section() {
+        $history = $this->history();
+        if ( empty( $history ) ) {
+            return '';
+        }
+        $first = reset( $history );
+        $last  = end( $history );
+        $dates = array_keys( $history );
+        $shown = array_slice( $history, -12, null, true ); // newest 12 weeks in the report; the option keeps 52
+
+        ob_start();
+        echo '<h2>Scan history</h2>';
+        echo '<p>Recorded automatically on every scan. ' . count( $history ) . ' scan' . ( 1 === count( $history ) ? '' : 's' ) . ' on record';
+        if ( count( $history ) > count( $shown ) ) {
+            echo ' (the most recent ' . count( $shown ) . ' shown below)';
+        }
+        echo '.</p>';
+        echo '<table><tr><th>Date</th><th>Result</th><th>Checks</th></tr>';
+        foreach ( $shown as $date => $entry ) {
+            $states = isset( $entry['checks'] ) && is_array( $entry['checks'] ) ? $entry['checks'] : array();
+            $p      = isset( $entry['passed'] ) ? (int) $entry['passed'] : 0;
+            $t      = isset( $entry['total'] ) ? (int) $entry['total'] : count( $states );
+            $w      = isset( $entry['warned'] ) ? (int) $entry['warned'] : 0;
+            $result = $p . ' of ' . $t . ' passed';
+            if ( $w ) {
+                $result .= ', ' . $w . ' with warnings';
+            }
+            $line = array();
+            foreach ( $states as $state ) {
+                $line[] = strtoupper( (string) $state );
+            }
+            echo '<tr><td>' . esc_html( $date ) . '</td><td>' . esc_html( $result ) . '</td><td>' . esc_html( $line ? implode( ', ', $line ) : '—' ) . '</td></tr>';
+        }
+        echo '</table>';
+
+        // The one line a client actually wants: are we better or worse than
+        // when we started? Computed from the recorded snapshots, never from a
+        // stored "improvement" figure that could drift from them.
+        if ( count( $history ) > 1 && isset( $first['passed'], $last['passed'], $first['total'], $last['total'] ) ) {
+            $delta = (int) $last['passed'] - (int) $first['passed'];
+            $from  = esc_html( $dates[0] );
+            if ( $delta > 0 ) {
+                echo '<p>Since ' . $from . ', ' . (int) $delta . ' more check' . ( 1 === $delta ? '' : 's' ) . ' passed (to ' . (int) $last['passed'] . ' of ' . (int) $last['total'] . ').</p>';
+            } elseif ( $delta < 0 ) {
+                echo '<p>Since ' . $from . ', ' . abs( $delta ) . ' fewer check' . ( 1 === abs( $delta ) ? '' : 's' ) . ' passed than at the first recorded scan (now ' . (int) $last['passed'] . ' of ' . (int) $last['total'] . '). This is a regression that needs attention.</p>';
+            } else {
+                echo '<p>Unchanged since ' . $from . ': ' . (int) $last['passed'] . ' of ' . (int) $last['total'] . ' checks passing.</p>';
+            }
         }
         return ob_get_clean();
     }

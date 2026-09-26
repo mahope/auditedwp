@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.4 (2026-09-26) =
+* Pro: the compliance report now carries a scan history, so you can show a client that the site is still compliant and what changed since the first recorded scan.
+* One snapshot per day, per check, kept for 52 weeks. A warning is still never counted as a pass.
+* Regressions are reported as regressions, not as progress.
+* The history holds no URLs, e-mail addresses or scan details, and is deleted when you uninstall the plugin.
+* You need at least one scan before a history exists; the report says so instead of showing an empty table.
 
 = 1.3.3 (2026-09-26) =
 * The accessibility statement now includes the "known limitations" and enforcement-body elements that Article 13(2) of Directive (EU) 2019/882 asks for.
