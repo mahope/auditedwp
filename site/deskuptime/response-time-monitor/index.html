@@ -278,6 +278,7 @@ deskuptime watch https://example.com --interval 60</pre>
 </section>
 
 <script>
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
 function cleanUrl(v){
   v=v.trim();
   if(!v)return'';
@@ -300,13 +301,13 @@ async function doCheck(){
     let ssl='';
     if(d.sslExpiresAt){
       const days=Math.round((new Date(d.sslExpiresAt)-new Date())/86400000);
-      ssl='<dt>SSL expires</dt><dd>'+d.sslExpiresAt+' ('+days+' days)</dd>';
+      ssl='<dt>SSL expires</dt><dd>'+esc(d.sslExpiresAt)+' ('+days+' days)</dd>';
     }
     box.className=ms<1000?'ok':'bad';
     box.innerHTML=u.hostname+'<dl>'+
-      '<dt>Status</dt><dd>'+d.status+' '+(d.statusText||'')+'</dd>'+
-      '<dt>Response time</dt><dd>'+ms+' ms — '+verdict+'</dd>'+
-      '<dt>Redirected</dt><dd>'+(d.redirected?('yes → '+d.finalUrl):'no')+'</dd>'+ssl+
+      '<dt>Status</dt><dd>'+esc(d.status)+' '+esc(d.statusText||'')+'</dd>'+
+      '<dt>Response time</dt><dd>'+esc(ms)+' ms — '+verdict+'</dd>'+
+      '<dt>Redirected</dt><dd>'+(d.redirected?('yes → '+esc(d.finalUrl)):'no')+'</dd>'+ssl+
       '</dl>';
   }catch(e){
     box.className='bad';box.textContent='Lookup failed: '+e.message;
