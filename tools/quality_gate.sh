@@ -311,6 +311,21 @@ hdr "Pluginens forside-tjek mod den universelle motor"
 run "tools/test_plugin_engine_parity.mjs" node tools/test_plugin_engine_parity.mjs
 run "tools/test_plugin_engine_parity.mjs --selftest" node tools/test_plugin_engine_parity.mjs --selftest
 
+# ------------------------- 16. Lover nogen side, at DORA-tjekket er noget andet?
+# Det niende tjek er en statisk markørtælling i sidens tekst — motoren siger det
+# selv ("This is not a DORA assessment"). Fire hovedsider sagde det modsatte:
+# at tjekket kun gælder finanssektoren og "springes stille over for alle andre",
+# hvilket hverken koden eller målingen bakker — det kører på alle sites og
+# trækker et point fra en almindelig sides score. Guidens markørtabel dokumenterede
+# desuden seks kategorier, hvoraf fire er uden for motorens ni signaturer.
+# Denne port binder den publicerede beskrivelse til koden: hver række i tabellen
+# skal kunne findes af en signatur, og ingen side må afgrænse tjekket til en
+# branche. R5 (en bred "DORA + kapabilitetsord"-regel) er bevidst ikke lavet;
+# se begrundelsen i tools/check_dora_claims.py.
+hdr "DORA-markørtjekket er det, siderne siger det er"
+run "tools/check_dora_claims.py --selftest" python3 tools/check_dora_claims.py --selftest
+run "tools/check_dora_claims.py" python3 tools/check_dora_claims.py
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

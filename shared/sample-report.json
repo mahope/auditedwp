@@ -61,9 +61,9 @@
     },
     {
       "key": "dora",
-      "title": "DORA resilience signals",
+      "title": "DORA page-signal markers",
       "status": "pass",
-      "detail": "HTTPS and a valid certificate are positive technical signals. This is not a DORA compliance assessment."
+      "detail": "Page-text markers found: Incident response / SOC reporting, Status page / uptime monitoring, SPF (email sender auth). This is not a DORA assessment."
     }
   ],
   "history": [67, 67, 67, 67, 61, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 61, 67, 67, 67, 67, 67],

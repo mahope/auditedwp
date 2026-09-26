@@ -10,7 +10,7 @@ EUComply is technical guidance, not legal advice. The scanner reads the public H
 - [How the scan works](https://eucomplypro.com/): what the nine checks look for and which rule each one maps to.
 - [Scanner source code](https://github.com/mahope/eucomply-scanner): the checks are open source.
 
-The nine checks: HTTPS and HSTS; a known cookie-consent platform; trackers (Google Analytics, Meta Pixel, TikTok, Hotjar and similar) loading before consent; Google Consent Mode v2; IAB TCF; a privacy-policy link near forms; legal pages (privacy, terms, imprint, accessibility statement); security headers (CSP, X-Content-Type-Options, Referrer-Policy, frame protection); DORA operational-resilience wording for financial-sector sites.
+The nine checks: HTTPS and HSTS; a known cookie-consent platform; trackers (Google Analytics, Meta Pixel, TikTok, Hotjar and similar) loading before consent; Google Consent Mode v2; IAB TCF; a privacy-policy link near forms; legal pages (privacy, terms, imprint, accessibility statement); security headers (CSP, X-Content-Type-Options, Referrer-Policy, frame protection); static page-text markers for resilience wording, a status page and SPF/DKIM/DMARC/MX — a text signal on every site, not a DORA assessment.
 
 ## Guides and checklists
 

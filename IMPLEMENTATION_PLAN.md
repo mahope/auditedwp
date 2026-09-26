@@ -21,6 +21,7 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 
 ## Iterationsstatus
 
+- `FÆRDIG`: **45 — Det niende tjek er en markørtælling, og fire hovedsider sagde det var en branche-vurdering** på `ceo/dora-markoer-ogning`. Ny permanent gate trin 16 `tools/check_dora_claims.py` (9 negative selftest-cases) + 30 publicerede filer rettet. Se afsnittet nedenfor.
 - `FÆRDIG`: **44 — Fire døde tjek fundet ved at køre motorerne, ikke ved at læse dem.** Nyt gate trin 15 `tools/test_plugin_engine_parity.mjs` + `tools/plugin_probe.php` + `tools/wp_stubs.php`, signatur-tabellerne associative, plugin **1.3.12**. Se afsnittet nedenfor.
 - `FÆRDIG`: **43 — Pluginen kører de ni universelle tjek plus sine to WordPress-fakta (elleve i alt)** på `ceo/plugin-elleve-tjek`. Plugin **1.3.11**, ny spec `docs/eucomply-plugin-eleven-checks.md`, copy i fire sprog, og selftesten af tællings-gaten gjort afledt af koden. Se afsnittet nedenfor.
 - `FÆRDIG`: **42 — De fire Pro-sider lovede ni tjek i en betalt funktion, der kører seks** på `ceo/plugin-tjekantal`. Ny permanent gate `plugin_check_count_findings()` (13 negative selftest-cases) + rettet copy i fire sprog. Se afsnittet nedenfor.
@@ -1244,6 +1245,35 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 22. **Chrome-extensionen mangler sit butikslink, og det er din udgivelse (26/9, opgave 42).** `/extension/` er det næste stykke fri værktøj efter scanneren, og den er **målt sund**: zip'en er byte-identisk med `chrome-ext/`, alle ti `getElementById` findes, `host_permissions` matcher den API-origin popup'en kalder, og live-workeren svarer præcis den form `render()` forventer. Den mangler altså ingenting i koden. Det den mangler er **butikslisten**: `chrome.google.com/webstore` står på siden som *"link will appear here"*, og det er en tekst, der lover en URL der ikke findes — samme slags død løfte som opgave 32 fjernede. **Agenten må ikke udgive til Chrome Web Store**, så det er din konto og dine OAuth-legitimationsoplysninger i Bitwarden. Når du har udgivet den, er det to ting i samme iteration: (a) læg den rigtige URL i stedet for "link will appear here" på `/extension/`, og (b) overvej at fjerne hele "Installation guide (once published)"-afsnittet, fordi siden **allerede** har en virksom Early Access-vej med zip-download — to installationsinstruktioner, hvor den første virker i dag, er selv en Forvirring. Sig det, når den er ude, så en agent kan rette linket uden at du skal røre HTML.
 
 ## Ny opgave i køen
+
+### 45. Side sagde "springes stille over" om et tjek der kører på alle sites
+
+- Status: `FÆRDIG` i copy, port og selftest på `ceo/dora-markoer-ogning`. **Ingen plugin-version, ingen ny zip, ingen worker** — 30 `site/**`-filer, `shared/sample-report.json` og den deraf genererede PDF.
+- Fejl: **3 fund — ét i produktet, ét i min egen nye copy, ét i min egen gate.**
+- **Resultat:** det niende tjek er en statisk tælling af ni markører i sidens tekst. Motoren siger det selv i sit eget resultat: *"This is not a DORA assessment."* Fire publicerede overflader sagde noget andet, og ingen af dem havde en port at se det:
+
+  | overflade | hvad den sagde | hvad koden gør |
+  |---|---|---|
+  | `site/{,da,de,fr}/index.html` | "For financial-sector and ICT-provider sites … **Skipped silently for everyone else**" | kører på **alle** sites og sætter en boolesk `pass` |
+  | `site/scan/index.html` | "Other sites get an **informational note only**" | samme: et bestået-flag, der trækker et point fra scoren |
+  | 8 `/vs/`- + 5 `/pro/vs/`-tabeller, `/compare/`, `/badge/` | "**DORA resilience signals**" som dækning; to tabeller havde en række *"DORA coverage (2025+): ICT risk management, failover, BCDR signals"* med konkurrenten sat til "Not covered" | ni sidetekstmarkører, ingen vurdering |
+  | `/blog/dora-compliance-guide/` | en **tabel over hvad tjekket kigger efter**: seks kategorier | fire af de seks kan koden slet ikke finde, og ingen af de syv markører den faktisk tæller stod i tabellen |
+
+- **Målingen.** Jeg kørte den lokale motor mod fem rigtige sites: `example.com`, `stripe.com`, `ikea.com`, `danfoss.com`, `eur-lex.europa.eu`. **0 af 5 består `dora`**, og scoren er `N/9` — altså taber enhver almindelig side et point på et tjek den ikke kan bestå. `danfoss.com` fik ét markør fra en "failover"-sætning på forsiden. Beviset er adfærd, ikke kilde-læsning.
+- **Fund 1 — den værste fejl lå i min egen nye tabel.** Jeg skrev først rækkerne som *"Text such as `incident response`"*. Signaturen er `incident[_-]?response`, som **ikke** matcher et mellemrum. Den nye port fandt det i første kørsel med præcis to fund, og det er samme fejltype som opgave 42 fund 2: fixture skrevet efter den forventning, ikke efter koden. Rækkerne bruger nu de former signaturerne faktisk matcher (`incident-response`, `SPF-record`, `multi-CZ`…). Sideløbende viser det hvor skrøbeligt tjekket er: fire af ni markører kræver en bindestreg eller underscore i løbet af en tekst, som et gennemsnitligt website sjældent har.
+- **Fund 2 — min egen femte regel var ubrugelig, og den blev fjernet med vilje.** En bred "DORA + kapabilitetsord"-regel gav **102 fund**, hvoraf langt de fleste var artikeltitler ("DORA Compliance: What Financial Websites Need to Know") og URL'er i `rel=prev`-tags. En negatør-vindue kan heller ikke se en afvisning, der står *efter* matchet ("DORA page-signal markers (not an assessment)"). Opgave 32 fandt for præcis den fejl i en bred regex, så reglen er **ikke** shippet, og begrundelsen står i portens docstring, så næste agent ikke genopbygger den. De fire skarpe regler (R1–R4) beholdes.
+- **Fund 3 — min egen selftest-case søgte på en besked, der ikke kan komme.** "Udokumenterede markører" var skrevet til at søge på tællingsbeskeden, men casen bygger en guide hvor *to* rækker byttes ud — antallet er stadig to, så tællingen ikke kan ændre sig. Søger den nu på navnebeskeden, og en ekstra case dækker den tabte række. Samme fejlklasse som opgave 42 fund 2, anden gang i samme port.
+- **R1 binder tabellen til koden, adfærdsmæssigt.** Hver rækkes egen beskrivelse føres gennem signaturerne selv; en række, ingen signatur kan finde, er rød. Det er præcis den egenskab, de fire gamle rækker ikke havde. **R2** kræver motorens disclaimer, fordi al publiceret afgrænsning hviler på den. **R3** forbyder afgrænsninger til finanssektoren i fire sprog. **R4** kræver at tjekket faktisk sætter en boolesk `pass` — uden den er R3's begrundelse ("det koster alle sites et point") forkerte, og den ærlige rettelse ville være den modsatte.
+- **Bevis, begge veje.** Mutationen der genskaber hovedsidens "Skipped silently for everyone else" giver **2 røde fund** med fil og sætning. Uden denne diff (git stash) er den gamle tabel **6 rækker mod motorens 9** med alle ni navne i beskeden. Revert grønt.
+- **Kæden holdt.** `shared/sample-report.json` er stadig det ene datasæt: titel → "DORA page-signal markers", detail → de tre markører rapporten fandt plus *"This is not a DORA assessment"*, og `scripts/build_sample_report.py` regenererede HTML **og** PDF. `check_sample_coverage.py` er grøn på indhold. `site/pro/dashboard/index.html` sagde "Example DORA resilience **headers** present" på en side der er beregnet til at sælge Pro — nu "Example DORA-related page signals: 3 found", hvilket er præcis motorens egen etiket. `site/search-index.json` var regenereret med `apply_shell.build_search_index()` (209 poster, kun de fire berørte entries ændret) — den var ellers stående med den gamle tekst.
+- Gate: `GATE GRØN — alle 16 steps bestået` (seksten, var femten); `SELFTEST GRØN — alle 9 negative cases fanges` (ny port); `177 self-tests passed` uændret; `0 unexpected EUComply Pro claims`; `236 document checks passed` uændret; `322 filer, 226 HTML-sider`; `php -l` grøn; plugin byte-identisk.
+- Accept:
+  - ~~Ingen side må afgrænse tjekket til finanssektoren.~~ **Dækket.** Fire hovedsider + `/scan/` + `llms.txt` + `llms-full.txt` rettet; R3 med fire sprog.
+  - ~~Den publicerede markørtabel skal være motorens tabel.~~ **Dækket.** R1, ni rækker, hver kørt gennem signaturerne; fire af de gamle seks kunne ikke findes.
+  - ~~Porten skal kunne fejle.~~ **Dækket.** 9 negative cases + 2 mutationer mod repoets egne filer.
+  - ~~Ingen bred regel med hundredvis af fund.~~ **Dækket med vilje.** R5 fjernet, begrundelsen dokumenteret i porten.
+  - ~~Prøverapporten skal følge datasættet.~~ **Dækket.** `check_sample_coverage.py` grøn; PDF regenereret fra samme kode.
+  - ~~Efter merge verificeres på indhold.~~ **ÅBEN** — `VERIFICÉR DEPLOY`-noten i deploy-loggen.
 
 ### 42. De fire Pro-sider lovede ni tjek i den betalte funktion, der kører seks
 
