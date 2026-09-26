@@ -5,15 +5,15 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.10
+Stable tag: 1.3.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Know your WordPress site's EU compliance status in 30 seconds — from your admin dashboard. Six checks: SSL, cookies, forms, backups, plugins, legal pages. Free. Pro ($79/year per website) unlocks editable HTML document starters and an HTML report from the latest WordPress scan.
+Know your WordPress site's EU compliance status in 30 seconds — from your admin dashboard. Eleven checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Free. Pro ($79/year per website) unlocks editable HTML document starters and an HTML report from the latest WordPress scan.
 
 == Description ==
 
-EUComply scans your WordPress installation against **six EU compliance criteria** in a single click. The core checks run server-side on your WordPress; the plugin also checks the update manifest and Pro license status as described below.
+EUComply scans your WordPress installation against **eleven EU compliance criteria** in a single click. The core checks run server-side on your WordPress; the plugin also checks the update manifest and Pro license status as described below.
 
 = What it checks =
 
@@ -49,7 +49,7 @@ EUComply scans your WordPress installation against **six EU compliance criteria*
 
 = Why another compliance plugin? =
 
-Cookie banners and backup plugins solve one problem each. EUComply is a local WordPress compliance checker that scans six dimensions and generates editable HTML document starters plus an HTML report from the latest scan — DPA agreements, NIS2 clauses, and accessibility statements.
+Cookie banners and backup plugins solve one problem each. EUComply is a local WordPress compliance checker that scans eleven dimensions and generates editable HTML document starters plus an HTML report from the latest scan — DPA agreements, NIS2 clauses, and accessibility statements.
 
 Scan data and generated reports stay on your site. The plugin checks your own WordPress installation locally, checks the EUComply update manifest at eucomplypro.com/update.json, and when Pro is used sends the license key, site hostname and product identifier to the Mahope license server at mahope.tools.
 
@@ -80,7 +80,7 @@ Buy EUComply Pro at https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03 — $79 per w
 
 = How is this different from Complianz, CookieYes or WP Activity Log? =
 
-Those plugins solve one compliance problem (cookies or audit logs). EUComply combines **six compliance dimensions** in one local plugin, plus **editable HTML document generation** — DPA agreements, NIS2/DORA vendor clause sets, and EAA accessibility statements. It also generates an HTML report from the latest WordPress scan.
+Those plugins solve one compliance problem (cookies or audit logs). EUComply combines **eleven compliance dimensions** in one local plugin, plus **editable HTML document generation** — DPA agreements, NIS2/DORA vendor clause sets, and EAA accessibility statements. It also generates an HTML report from the latest WordPress scan.
 
 = Can I white-label reports for my clients? =
 
@@ -108,11 +108,17 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Screenshots ==
 
-1. EUComply admin dashboard showing six compliance checks with pass/fail status.
+1. EUComply admin dashboard showing eleven compliance checks with pass/fail status.
 2. Settings page with Pro license key input and agency name.
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.11 (2026-09-26) =
+* Five more checks, taken from the free universal scanner: Google Consent Mode v2, IAB TCF, trackers loaded without a consent platform, the security headers the front page returns, and DORA page signals. The plugin now runs the same eleven checks the scanner shows you, plus the two WordPress facts only a plugin can see (backups, plugin/core health).
+* The five new checks read the site's own front page, fetched once per scan and capped in size, so a scan still makes one local request and no external service is contacted.
+* A front page that cannot be read is reported as "did not run" with the reason, never as a pass. A missing check is not a compliance result.
+* The check signatures are the scanner's, ported unchanged, so a check with the same name means the same thing in both products.
 
 = 1.3.10 (2026-09-26) =
 * Pro: set an address in Settings and the plugin mails you when a check changes — a check that passed starts failing, or a failing one passes again. Silence by default: with no address stored, nothing is ever sent.
@@ -129,7 +135,7 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * The 1.3.8 entry now says in plain words that Pro scans your site every day, on your own WordPress server. The wording avoided the word until now because the product-truth check could not tell a local cadence from a hosted one; it can now, and only because the code schedules the run.
 
 = 1.3.8 (2026-09-26) =
-* Pro: EUComply Pro scans your site every day, on your own WordPress server, instead of once a week. The six checks are local, so the extra runs cost the site nothing and need no external service.
+* Pro: EUComply Pro scans your site every day, on your own WordPress server, instead of once a week. The checks are local, so the extra runs cost the site nothing and need no external service.
 * The free version keeps its weekly run. The interval follows the licence, including when a licence is released, expires or loses its device slot — then it goes back to weekly.
 * The dashboard states the interval the site is actually scheduled for, so it cannot promise more than the cron array holds.
 * A changed interval re-schedules from now, so the first run after activating a licence happens at the next WP-Cron tick instead of a day later.
@@ -209,7 +215,7 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 = 1.0.0 (2026-08-20) =
 
 * **Initial public release.**
-* Six compliance checks: SSL, cookies, forms, backups, plugins, legal pages.
+* Eleven compliance checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Consent Mode v2, IAB TCF, trackers, security headers, DORA page signals.
 * Weekly automated re-scan via WP-Cron.
 * AJAX-powered scan from admin dashboard (no page reload).
 * Pro license system with document generation.

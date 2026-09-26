@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
- * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.10
+ * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
+ * Version:           1.3.11
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.10' );
+define( 'EUCOMPLY_VERSION', '1.3.11' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -88,6 +88,16 @@ register_activation_hook( __FILE__, 'eucomply_activation_check' );
 class EUComply {
 
     private static $instance = null;
+
+    /**
+     * The front page, fetched at most once per request.
+     *
+     * Five checks read the same response. Without this they would make five
+     * identical requests on every scan, including every daily Pro scan.
+     *
+     * @var array|null
+     */
+    private $front_page_cache = null;
 
     /**
      * Singleton.
@@ -168,7 +178,7 @@ class EUComply {
      * Make the scheduled event match the licence.
      *
      * The interval is the first item on the Pro list the plugin can deliver on
-     * its own: the six checks are entirely local, so running them once every 24
+     * its own: the eleven checks are entirely local, so running them once every 24
      * hours costs the site nothing and no external service, and it turns the
      * report's history from twelve weekly points into twelve days of evidence.
      *
@@ -305,6 +315,15 @@ class EUComply {
 
         // 6. Legal pages (EAA, Privacy Policy)
         $results['legal'] = $this->check_legal_pages();
+
+        // 7–11. The same five static checks the free universal scanner runs on a
+        // public URL, so a customer who scans eucomplypro.com and then installs
+        // the plugin is not told they have lost checks they were just shown.
+        $results['consent_mode_v2'] = $this->check_consent_mode_v2();
+        $results['tcf']            = $this->check_tcf();
+        $results['trackers']       = $this->check_trackers();
+        $results['headers']        = $this->check_security_headers();
+        $results['dora']           = $this->check_dora();
 
         // Store results.
         update_option( 'eucomply_scan_results', $results );
@@ -635,6 +654,366 @@ class EUComply {
         $lines[] = 'one and starts from the last recorded scan, so you will not get a first mail full of old news.';
 
         return array( $subject, implode( "\n", $lines ) );
+    }
+
+    /**
+     * The site's own front page, fetched once per scan.
+     *
+     * Five of the eleven checks are static analysis of exactly this: the served
+     * HTML and the response headers. The free universal scanner does the same
+     * thing to a URL it is given, so running them here keeps one product truth
+     * instead of two lists of "what a scan means".
+     *
+     * The target is not user input. It is `home_url()` from this site's own
+     * settings, so there is no address to be tricked into fetching and no
+     * SSRF decision to make — the one thing this plugin must never do is ask a
+     * visitor's browser to fetch something on their behalf, and it does not.
+     *
+     * The body is capped, because a scan that reads an unbounded response is
+     * how a plugin becomes a memory problem on the site it is supposed to
+     * protect. The headers are read from the same response, so the security
+     * headers are the ones the visitor's browser actually receives.
+     *
+     * @return array{ok:bool,html:string,headers:array,error:string}
+     */
+    private function front_page() {
+        if ( null !== $this->front_page_cache ) {
+            return $this->front_page_cache;
+        }
+
+        $url = get_home_url();
+        if ( empty( $url ) || ! is_string( $url ) ) {
+            $this->front_page_cache = array(
+                'ok'      => false,
+                'html'    => '',
+                'headers' => array(),
+                'error'   => 'the WordPress Address URL is empty or invalid',
+            );
+            return $this->front_page_cache;
+        }
+
+        $response = wp_remote_get(
+            $url,
+            array(
+                'timeout'             => 10,
+                'redirection'         => 3,
+                'limit_response_size' => 524288,
+                'sslverify'           => true,
+                'headers'             => array(
+                    'User-Agent' => 'EUComply/' . EUCOMPLY_VERSION . ' (+' . home_url( '/' ) . ')',
+                    'Accept'     => 'text/html,application/xhtml+xml',
+                ),
+            )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            $this->front_page_cache = array(
+                'ok'      => false,
+                'html'    => '',
+                'headers' => array(),
+                'error'   => $response->get_error_message(),
+            );
+            return $this->front_page_cache;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code( $response );
+        if ( $code < 200 || $code >= 400 ) {
+            $this->front_page_cache = array(
+                'ok'      => false,
+                'html'    => '',
+                'headers' => array(),
+                'error'   => 'the server answered HTTP ' . $code,
+            );
+            return $this->front_page_cache;
+        }
+
+        $headers = array();
+        $raw     = wp_remote_retrieve_headers( $response );
+        if ( is_object( $raw ) && method_exists( $raw, 'getAll' ) ) {
+            $raw = $raw->getAll();
+        }
+        if ( is_array( $raw ) ) {
+            foreach ( $raw as $name => $value ) {
+                $headers[ strtolower( (string) $name ) ] = is_array( $value ) ? implode( ', ', $value ) : (string) $value;
+            }
+        }
+
+        $this->front_page_cache = array(
+            'ok'      => true,
+            'html'    => (string) wp_remote_retrieve_body( $response ),
+            'headers' => $headers,
+            'error'   => '',
+        );
+
+        return $this->front_page_cache;
+    }
+
+    /**
+     * The signatures the free universal scanner uses, in the order it uses them.
+     *
+     * They are ported, not invented, and deliberately not "improved": a plugin
+     * check and a universal check with the same name must mean the same thing,
+     * or the two products start disagreeing about one website — which is the
+     * defect this whole change exists to remove.
+     *
+     * @param string $group One of cmv2, tcf, trackers, consent, dora, forms, legal.
+     * @return array<int,array{name:string,re:string}>
+     */
+    private static function signatures( $group ) {
+        $sets = array(
+            // Google Consent Mode v2.
+            'cmv2'     => array(
+                array( 'Google Consent Mode v2 class/attribute', '~google_consent_mode|consent_mode_v2|cmv2[\s_,]~i' ),
+                array( 'Google Consent Mode v2 (gtag)', '~gtag\([\'"]consent[\'"]|[\'"]consent[\'"],\s*[\'"]default[\'"]|consent.*default.*ad_storage|ad_storage.*consent~i' ),
+                array( 'Google Consent Mode v2 (dataLayer)', '~dataLayer[\s\S]{0,200}consent[\s\S]{0,200}(default|update)~i' ),
+                array( 'Consent signals for ad storage and personalization', '~granted|denied[\s\S]{0,40}ad_storage|ad_storage[\s\S]{0,40}(granted|denied)~i' ),
+                array( 'Google Ads consent integration', '~google_ads[\s\S]{0,100}consent|consent[\s\S]{0,100}google_ads~i' ),
+                array( 'Analytics storage consent signal', '~consent.*analytics_storage|analytics_storage.*consent~i' ),
+            ),
+            // IAB Transparency & Consent Framework.
+            'tcf'      => array(
+                array( 'IAB TCF API (__tcfapi)', '~__tcfapi|tcfapi~i' ),
+                array( 'IAB TCF cookies set', '~IABTCF_[a-z]~i' ),
+                array( 'GDPR applies / TCF GDPR signals', '~gdprApplies|tcf[_-]?gdpr~i' ),
+                array( 'IAB Consent String present', '~IAB[_-]?Consent[_-]?String|tcstring|consent[_-]?string[_-]?tcf~i' ),
+                array( 'TCF version indicator', '~tcf[_-]?v[12]|tcfapiv[12]~i' ),
+            ),
+            // Trackers that fire without consent being the classic EU case.
+            'trackers' => array(
+                array( 'Google Analytics / GTM', '~google-analytics\.com|googletagmanager\.com\/gtm\.js|gtag\(~i' ),
+                array( 'Meta (Facebook) Pixel', '~connect\.facebook\.net|fbq\([\'"]~i' ),
+                array( 'Hotjar', '~static\.hotjar\.com|hj\([\'"]~i' ),
+                array( 'Microsoft Clarity', '~clarity\.ms~i' ),
+                array( 'LinkedIn Insight Tag', '~snap\.licdn\.com|_linkedin_partner_id~i' ),
+                array( 'Snapchat Pixel', '~sc-static\.net|snaptr\([\'"]~i' ),
+                array( 'TikTok Pixel', '~static\.tiktok\.com|ttq\.~i' ),
+                array( 'Matomo / Piwik', '~matomo|piwik\.js~i' ),
+                array( 'Plausible', '~plausible\.io\/js~i' ),
+                array( 'Pinterest Tag', '~cdn\.pinterest\.com.*pin.*js|pintrk\(~i' ),
+                array( 'Google Ads remarketing', '~googleadservices\.com|google_conversion~i' ),
+                array( 'DoubleClick / AdSense', '~doubleclick\.net|googlesyndication~i' ),
+            ),
+            // Consent platforms, used by the trackers check to tell "tracker
+            // present" from "tracker present with consent in front of it".
+            'consent'  => array(
+                array( 'Cookiebot / OneTrust / Usercentrics / ConsentManager', '~cookiebot|consentmanager|onetrust|usercentrics~i' ),
+                array( 'CookieYes', '~cookieyes|cookie-yes~i' ),
+                array( 'TarteAuCitron / Klaro / Osano / CookieConsent', '~tarteaucitron|klaro|osano|cookieconsent~i' ),
+                array( 'Complianz GDPR', '~complianz|cmplz~i' ),
+                array( 'Generic cookie consent banner', '~cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie~i' ),
+                array( 'Axeptio', '~axeptio~i' ),
+                array( 'CookieScript', '~cookiescript~i' ),
+                array( 'CookieHub', '~cookiehub|cookie[_-]?hub~i' ),
+                array( 'iubenda', '~iubenda|cookie[_-]?solution~i' ),
+                array( 'JustUno / Privy / OptinMonster (popup detected)', '~justuno|privy|optinmonster~i' ),
+                array( 'CEE/PL consent plugin', '~shoper|shoprenter|idelo~i' ),
+                array( 'WP Consent API', '~wp-consent-api~i' ),
+                array( 'Borlabs / CookieNinja', '~borlabs|cookieninja~i' ),
+                array( 'Real Cookie Banner', '~real[_-]?cookie[_-]?banner~i' ),
+                array( 'Cookie Notice Lite', '~cookie[_-]?notice[_-]?lite~i' ),
+                array( 'GDPR Cookie Compliance', '~gdpr[_-]?cookie[_-]?compliance~i' ),
+                array( 'Moove GDPR', '~moove[_-]?gdpr~i' ),
+                array( 'PixelYourSite (GDPR)', '~pixel[_-]?your[_-]?site~i' ),
+                array( 'WebToffee GDPR', '~webtoffee|gdpr[_-]?cookie[_-]?consent~i' ),
+                array( 'Quantcast Choice', '~quantcast[_-]?choice~i' ),
+                array( 'Analytify/CAOS', '~analytics[_-]?cat~i' ),
+            ),
+            // DORA-adjacent page signals. Static text markers only: this is not
+            // a DORA assessment and the fix text says so.
+            'dora'     => array(
+                array( 'SPF (Email sender auth)', '~spf[_-]?record|v[_-]?=spf~i' ),
+                array( 'DKIM (Email signing)', '~dkim|[_-]?domainkey~i' ),
+                array( 'DMARC (Email policy)', '~dmarc_|dmarc[_-]?record|_dmarc\.~i' ),
+                array( 'MX (Mail exchange)', '~mx[_-]?record|mx [0-9]|mail[_-]?exchange~i' ),
+                array( 'Multi-server / failover signals', '~multiple[_-]?server|failover|redundan|multi[_-]?az[_-]?dns~i' ),
+                array( 'CDN failover / multi-CDN', '~cdn[_-]?failover|multi[_-]?cdn|backup[_-]?origin~i' ),
+                array( 'Incident response / SOC reporting', '~incident[_-]?response|soc[_-]?report|security[_-]?incident~i' ),
+                array( 'BC/DR planning reference', '~bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity~i' ),
+                array( 'Status page / uptime monitoring', '~status[_-]?page|uptime[_-]?monitor~i' ),
+            ),
+        );
+
+        return isset( $sets[ $group ] ) ? $sets[ $group ] : array();
+    }
+
+    /**
+     * Which signatures in a group the served HTML contains.
+     *
+     * @param string $group Signature group name.
+     * @param string $html  Served HTML.
+     * @return array<int,string> Matched names, in the order of the signature list.
+     */
+    private static function matched_signatures( $group, $html ) {
+        $found = array();
+        foreach ( self::signatures( $group ) as $sig ) {
+            if ( '' !== $html && preg_match( $sig['re'], $html, $m ) ) {
+                $found[] = $sig['name'];
+            }
+        }
+        return $found;
+    }
+
+    /**
+     * The result every front-page check returns when the page cannot be read.
+     *
+     * A check that could not run must not be a pass. Reporting "no trackers
+     * detected" because the fetch failed is the single worst thing a compliance
+     * tool can do, so this is a warning with the reason in it.
+     *
+     * @param string $label Short name of the check.
+     * @param string $error Why the page could not be read.
+     * @return array
+     */
+    private function unreadable( $label, $error ) {
+        return array(
+            'pass'   => false,
+            'warn'   => true,
+            'label'  => $label . ': could not read the site',
+            'detail' => 'The front page could not be read, so this check did not run — ' . $error . '. This is not a result, and it is not a pass.',
+            'fix'    => 'Make sure https://' . wp_parse_url( get_home_url(), PHP_URL_HOST ) . ' is reachable from this server (no firewall, no basic-auth on the front page), then run the scan again.',
+        );
+    }
+
+    /**
+     * Google Consent Mode v2 signatures in the served HTML.
+     *
+     * @return array
+     */
+    private function check_consent_mode_v2() {
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            return $this->unreadable( 'Consent Mode v2', $page['error'] );
+        }
+        $hits = self::matched_signatures( 'cmv2', $page['html'] );
+        $out  = array(
+            'pass'   => count( $hits ) >= 2,
+            'warn'   => 1 === count( $hits ),
+            'label'  => count( $hits ) >= 2 ? 'Google Consent Mode v2 detected' : ( $hits ? 'Partial Consent Mode v2 signals' : 'No Google Consent Mode v2 detected' ),
+            'detail' => $hits ? 'Consent Mode v2 signals: ' . implode( ', ', $hits ) . '.' : 'No Consent Mode v2 signals found. Since March 2024, Google requires Consent Mode v2 for ad personalization in the EEA. Without it, Google Ads conversion tracking may be restricted.',
+        );
+        if ( count( $hits ) < 2 ) {
+            $out['fix'] = 'Implement Google Consent Mode v2 with the default consent state for ad_storage and analytics_storage. See https://developers.google.com/tag-platform/security/guides/consent.';
+        }
+        return $out;
+    }
+
+    /**
+     * IAB TCF signals in the served HTML.
+     *
+     * @return array
+     */
+    private function check_tcf() {
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            return $this->unreadable( 'IAB TCF', $page['error'] );
+        }
+        $hits = self::matched_signatures( 'tcf', $page['html'] );
+        $out  = array(
+            'pass'   => count( $hits ) >= 2,
+            'warn'   => 1 === count( $hits ),
+            'label'  => count( $hits ) >= 2 ? 'IAB TCF detected' : ( $hits ? 'Partial IAB TCF signals' : 'No IAB TCF detected' ),
+            'detail' => $hits ? 'TCF signals: ' . implode( ', ', $hits ) . '.' : 'No IAB Transparency & Consent Framework signals found. TCF is used by ad-tech platforms and publishers for GDPR consent management in programmatic advertising.',
+        );
+        if ( count( $hits ) < 2 ) {
+            $out['fix'] = 1 === count( $hits )
+                ? 'Partial TCF implementation detected. Ensure __tcfapi is available and IAB consent strings are properly stored.'
+                : 'If you run programmatic ads in the EEA, implement IAB TCF through your CMP. See https://iabeurope.eu/tcf/.';
+        }
+        return $out;
+    }
+
+    /**
+     * Third-party trackers present without a consent platform in front of them.
+     *
+     * @return array
+     */
+    private function check_trackers() {
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            return $this->unreadable( 'Trackers without consent', $page['error'] );
+        }
+        $hits     = self::matched_signatures( 'trackers', $page['html'] );
+        $consents = self::matched_signatures( 'consent', $page['html'] );
+        $has_cmp  = ! empty( $consents );
+        $out      = array(
+            'pass'   => empty( $hits ) || $has_cmp,
+            'warn'   => ! empty( $hits ) && $has_cmp && ! preg_match( '~consent[_-]?mode|__tcfapi~i', $page['html'] ),
+            'label'  => empty( $hits ) ? 'No third-party trackers detected' : ( $has_cmp ? count( $hits ) . ' tracker(s) detected, consent platform present' : count( $hits ) . ' tracker(s) with NO consent platform' ),
+            'detail' => $hits ? 'Trackers found in page markup: ' . implode( ', ', $hits ) . '. ' . ( $has_cmp ? 'A consent platform was also detected (' . $consents[0] . ').' : 'No consent management platform was found — these trackers likely fire before consent.' ) : 'No third-party marketing/analytics trackers found in the served HTML.',
+        );
+        if ( ! empty( $hits ) && ! $has_cmp ) {
+            $out['fix'] = 'EU ePrivacy rules and GDPR Art. 6 require consent BEFORE loading non-essential trackers. Install a CMP that blocks Google Analytics/Meta Pixel etc. until the visitor consents.';
+        }
+        return $out;
+    }
+
+    /**
+     * The security headers the front page actually returns.
+     *
+     * @return array
+     */
+    private function check_security_headers() {
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            return $this->unreadable( 'Security headers', $page['error'] );
+        }
+        $h     = $page['headers'];
+        $csp   = isset( $h['content-security-policy'] ) ? $h['content-security-policy'] : ( isset( $h['content-security-policy-report-only'] ) ? $h['content-security-policy-report-only'] : '' );
+        $nosn  = isset( $h['x-content-type-options'] ) ? $h['x-content-type-options'] : '';
+        $refer = isset( $h['referrer-policy'] ) ? $h['referrer-policy'] : '';
+        $frame = isset( $h['x-frame-options'] ) ? $h['x-frame-options'] : '';
+
+        $issues = array();
+        if ( ! $csp ) {
+            $issues[] = 'Content-Security-Policy missing';
+        }
+        if ( ! $nosn ) {
+            $issues[] = 'X-Content-Type-Options: nosniff missing';
+        }
+        if ( ! $refer ) {
+            $issues[] = 'Referrer-Policy missing';
+        }
+        if ( ! $frame && false === strpos( $csp, 'frame-ancestors' ) ) {
+            $issues[] = 'X-Frame-Options or CSP frame-ancestors missing';
+        }
+
+        $out = array(
+            'pass'   => empty( $issues ),
+            'warn'   => ! empty( $issues ) && count( $issues ) <= 2,
+            'label'  => $issues ? count( $issues ) . ' security header' . ( 1 === count( $issues ) ? '' : 's' ) . ' missing' : 'All common security headers present',
+            'detail' => $issues ? 'Missing: ' . implode( '; ', $issues ) . '.' : 'CSP, HSTS (checked above), X-Content-Type-Options, Referrer-Policy, X-Frame-Options all set.',
+        );
+        if ( $issues ) {
+            $out['fix'] = 'Add security headers. See https://securityheaders.com for guidance on each.';
+        }
+        return $out;
+    }
+
+    /**
+     * DORA-adjacent page signals in the served HTML.
+     *
+     * Static text markers only. This is explicitly not a DORA assessment — the
+     * detail says so, because a page that mentions "incident response" is not a
+     * business that has one.
+     *
+     * @return array
+     */
+    private function check_dora() {
+        $page = $this->front_page();
+        if ( ! $page['ok'] ) {
+            return $this->unreadable( 'DORA page signals', $page['error'] );
+        }
+        $hits = self::matched_signatures( 'dora', $page['html'] );
+        $out  = array(
+            'pass'   => count( $hits ) >= 2,
+            'warn'   => 1 === count( $hits ),
+            'label'  => $hits ? 'DORA-related page signals: ' . count( $hits ) . ' found' : 'No DORA-related page signals detected',
+            'detail' => $hits ? 'Page-text markers found: ' . implode( ', ', $hits ) . '. This is not a DORA assessment.' : 'No page-text references to failover, incident response or continuity were found. This scan does not query DNS or assess DORA compliance.',
+        );
+        if ( count( $hits ) < 2 ) {
+            $out['fix'] = 'Review whether the site publishes useful failover, incident-response and business-continuity information. Verify DNS and regulatory controls separately.';
+        }
+        return $out;
     }
 
     /**
