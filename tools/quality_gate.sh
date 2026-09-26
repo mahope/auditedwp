@@ -120,6 +120,8 @@ hdr "Repo-tests"
 run "tools/test_worker_security.mjs" node tools/test_worker_security.mjs
 run "tools/test_engine_parity.mjs" node tools/test_engine_parity.mjs
 run "tools/test_license_verdicts.php" php tools/test_license_verdicts.php
+run "tools/test_pro_documents.php" php tools/test_pro_documents.php
+run "tools/test_pro_documents.php --selftest" php tools/test_pro_documents.php --selftest
 run "tools/check_pro_claims.py" python3 tools/check_pro_claims.py
 run "tools/check_cta.py" python3 tools/check_cta.py
 run "tools/check_cta.py --selftest" python3 tools/check_cta.py --selftest
