@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.8
+ * Version:           1.3.9
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.8' );
+define( 'EUCOMPLY_VERSION', '1.3.9' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1270,6 +1270,13 @@ class EUComply {
         $results = $this->scan_snapshot();
         ob_start();
         echo '<p>Summary of the latest automated compliance scan (' . esc_html( get_option( 'eucomply_last_scan', '' ) ) . ').</p>';
+        // How often it was looked at, in the document the client reads. A score
+        // without an interval is a number nobody can act on, and "how often is
+        // this checked" is the first question a client asks about it. Read from
+        // the cron array, not from the licence: it says what will happen, so a
+        // released or expired licence puts the sentence back on its weekly run
+        // instead of promising a daily one it will not deliver.
+        echo '<p>Scheduled on this WordPress server: ' . esc_html( $this->cadence_phrase() ) . '. The checks run on the site itself, so no external service is involved.</p>';
         echo '<table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>';
         foreach ( $results as $key => $r ) {
             $status = ! empty( $r['pass'] ) ? 'PASS' : ( ! empty( $r['warn'] ) ? 'WARN' : 'FAIL' );

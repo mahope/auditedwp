@@ -1040,6 +1040,61 @@ ok( 'deactivation clears every copy of the event', 0 === count( $GLOBALS['eucomp
 ok( 'the scan event keeps its historical name', 'eucomply_weekly_scan' === EUCOMPLY_SCAN_EVENT );
 ok( 'the constructor does not schedule an event of its own', false === strpos( file_get_contents( __DIR__ . '/../plugin/eucomply.php' ), "wp_schedule_event( time(), 'weekly'" ) );
 
+// ── 10. The report says how often the site was checked ────────────────────────
+//
+// A score arrives without an interval, and "how often is this looked at" is the
+// first question anyone asks about a compliance number. The report answers it —
+// and the answer has to come from the cron array, not from the licence, because
+// the document is the one place a client is asked to take a number on trust. A
+// sentence that read the licence would keep promising a daily check after a
+// refund, and the history table right below it would contradict it.
+
+// Pro, scheduled daily: the document says so.
+pro_instance();
+priv( 'sync_scan_schedule' );
+$daily_report = priv( 'build_report' );
+ok( 'a Pro report states the daily cadence', false !== strpos( $daily_report, 'every 24 hours' ) );
+ok( 'the report says the checks run on the site itself', false !== strpos( $daily_report, 'no external service is involved' ) );
+ok( 'a Pro report does not claim the weekly run', false === strpos( $daily_report, 'once a week' ) );
+
+// The licence is gone. The cron array now holds a weekly event, so the sentence
+// must follow it — otherwise a refunded customer keeps a document promising a
+// daily check the plugin will never perform.
+delete_option( 'eucomply_pro_key' );
+priv( 'sync_scan_schedule' );
+$weekly_report = priv( 'build_report' );
+ok( 'a report for a site back on the weekly run says once a week', false !== strpos( $weekly_report, 'once a week' ) );
+ok( 'a weekly report does not keep the daily claim', false === strpos( $weekly_report, 'every 24 hours' ) );
+
+// A Pro key that is scheduled daily but has a cron array that says otherwise:
+// the array wins, because that is what will actually run.
+pro_instance();
+priv( 'sync_scan_schedule' );
+wp_clear_scheduled_hook( EUCOMPLY_SCAN_EVENT );
+wp_schedule_event( time() + WEEK_IN_SECONDS, 'weekly', EUCOMPLY_SCAN_EVENT );
+ok( 'a stale cron array is believed over the licence', false !== strpos( priv( 'build_report' ), 'once a week' ) );
+
+// The line must be in the document the client actually receives, in both of its
+// forms, and it must not survive being the only thing that changed.
+pro_instance();
+priv( 'sync_scan_schedule' );
+$link_doc     = priv( 'report_document', '2026-10-26' );
+$export_doc   = priv( 'report_document' );
+$stripped     = str_replace( '<p class="eucomply-link-expiry">This link stops working on 2026-10-26.</p>', '', $link_doc );
+ok( 'the client link carries the cadence line', false !== strpos( $link_doc, 'every 24 hours' ) );
+ok( 'the wp-admin export carries the same line', false !== strpos( $export_doc, 'every 24 hours' ) );
+ok( 'the two documents still differ only by the link notice', $stripped === $export_doc );
+
+// The report is served to somebody holding no WordPress login, so it must not
+// reach the network to learn the interval. There is no wp_remote_* stub in this
+// file at all, so a call would fatal — the loudest possible assertion.
+$build_report_src = '';
+if ( preg_match( '/private function build_report\(\).*?\n    \}/s', file_get_contents( __DIR__ . '/../plugin/eucomply.php' ), $blk ) ) {
+    $build_report_src = $blk[0];
+}
+ok( 'the cadence line is really in build_report(), so the check is not vacuous', '' !== $build_report_src && false !== strpos( $build_report_src, 'cadence_phrase' ) );
+ok( 'build_report() does not call the license server', '' === $build_report_src || ( 0 === preg_match( '/\$this->is_pro\s*\(/', $build_report_src ) && false === strpos( $build_report_src, 'wp_remote_' ) ) );
+
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";
 if ( $failed ) {
