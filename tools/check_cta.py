@@ -78,6 +78,13 @@ PRO_SALES_PAGES = (
     "cli/index.html",
     "how-it-works/index.html",
     "compare/index.html",
+    # Den gratis scanner er tragten: den side hvor læseren lige har set sine
+    # egne fejl. Da den ikke stod her, havde den 0 købsankere i alle fire sprog,
+    # og gaten var grøn. Se opgave 19.
+    "scan/index.html",
+    "da/scan/index.html",
+    "de/scan/index.html",
+    "fr/scan/index.html",
 )
 
 # Sider der med vilje ikke sælger. Udelad her, fordi gaten ellers ville kræve
@@ -331,8 +338,8 @@ def selftest() -> int:
             return 1
         print(f"selftest: rent træ ({len(required)} sider) giver 0 fund")
 
-        def expect(label: str, needle: str, mutate) -> bool:
-            target = base / "site" / "pro" / "index.html"
+        def expect(label: str, needle: str, mutate, rel: str = "pro/index.html") -> bool:
+            target = base / "site" / rel
             original = target.read_text(encoding="utf-8")
             target.write_text(mutate(original), encoding="utf-8")
             hit = [f for f in run(base) if needle in f]
@@ -356,9 +363,16 @@ def selftest() -> int:
              lambda t: t.replace("</body>", "<p>No credit card required.</p></body>")),
             ("manglende købsknap", "mangler det kontraktfikserede Pro-link",
              lambda t: t.replace(PRO_CHECKOUT, "/pricing/")),
+            # Scanneren er den nye salgsside. Uden denne case kunne de fire nye
+            # stier stå i listen uden at være dækket, og en slåfe sti i listen
+            # ville se grøn ud præcis som da scanneren manglede helt.
+            ("scanner uden købsknap", "mangler det kontraktfikserede Pro-link",
+             lambda t: t.replace(PRO_CHECKOUT, "/pricing/"), "scan/index.html"),
+            ("fransk scanner uden købsknap", "mangler det kontraktfikserede Pro-link",
+             lambda t: t.replace(PRO_CHECKOUT, "/pricing/"), "fr/scan/index.html"),
         ]
-        for label, needle, mutate in cases:
-            if not expect(label, needle, mutate):
+        for label, needle, mutate, *target_rel in cases:
+            if not expect(label, needle, mutate, *(target_rel or ["pro/index.html"])):
                 return 1
 
         # en manglende lokal købsside
