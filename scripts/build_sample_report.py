@@ -18,12 +18,15 @@ viser syv af ni tjek får en køber til at tro at den betalte rapport er mindre
 end den gratis scanner, han lige har kørt.
 """
 import argparse
+import base64
+import binascii
 import datetime as dt
 import html
 import json
 import os
 import re
 import sys
+import zlib
 from xml.sax.saxutils import escape as xml_escape
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -189,6 +192,83 @@ def dip_note(rows):
 def recommended_fixes(data):
     """Fund med en 'fix' — i den rækkefølge tjekket står i."""
     return [entry for entry in data["checks"] if entry.get("fix")]
+
+
+# --- Læs den committede PDF uden reportlab ---------------------------------
+#
+# `build_pdf` skal bruge reportlab, og det er eneste grund til at den er en
+# *generator*. Men den committede PDF er et **artefakt købere hentede** — den
+# skal kunne efterprøves i det miljø, gaten kører i, og CI har ingen
+# pip-afhængigheder. Derfor læses filen her med standardbiblioteket: en
+# reportlab-PDF er ASCII85+Flate-komprimerede content-strømme med teksten i
+# bogstavelige `(…)`-strenge, og både ASCII85 og zlib ligger i stdlib.
+#
+# Uden dette var "PDF'en følger datasættet" en påstand med dækning kun på den
+# maskine hvor tilfældigvis står reportlab — og da opgave 34 skrev gaten, døde
+# den i CI med ModuleNotFoundError, fordi ingen havde kørt den dér.
+#
+# Bemærk at dette er et *indholds*-check, ikke et byte-check: det kræver den
+# aflede værdi, uanset reportlab-version. Byte-sammenligningen er der stadig,
+# men kun hvor reportlab findes — se `check_sample_coverage.py`.
+
+STREAM = re.compile(rb"(?<!end)stream\r?\n")
+KNOWN_FILTERS = (b"ASCII85Decode", b"FlateDecode", b"ASCIIHexDecode")
+LITERAL = re.compile(rb"\((?:\\.|[^()\\])*\)", re.S)
+ESCAPE = re.compile(rb"\\([0-7]{1,3}|[\s\S])", re.S)
+SIMPLE_ESCAPES = {b"n": b"\n", b"r": b"\r", b"t": b"\t", b"b": b"\b", b"f": b"\f"}
+
+
+def _unpdf(raw):
+    """Gør en bogstavelig PDF-streng til de bytes den står for."""
+    def replace(match):
+        group = match.group(1)
+        if group[:1].isdigit():
+            return bytes([int(group, 8) & 0xFF])
+        return SIMPLE_ESCAPES.get(group, group)
+    return ESCAPE.sub(replace, raw)
+
+
+def _inflate(stream, filters):
+    for name in filters:
+        if name == b"ASCII85Decode":
+            stream = base64.a85decode(stream.strip(), adobe=True)
+        elif name == b"FlateDecode":
+            stream = zlib.decompress(stream)
+        elif name == b"ASCIIHexDecode":
+            stream = binascii.unhexlify(stream.strip().rstrip(b">"))
+    return stream
+
+
+def pdf_text(path=PDF):
+    """Teksten i PDF'en, læst med stdlib. Kaster ValueError hvis den er ulæselig.
+
+    cp1252 ikke latin-1: reportlab koder em-dash, en-dash, middelpunkt og pil som
+    octal-escapes i det område, og de skal læses til de tegn kilden skrev — ellers
+    kunne " Checks in this report: 9 — …" aldrig findes i sin egen PDF.
+    """
+    with open(path, "rb") as handle:
+        raw = handle.read()
+    parts = []
+    for match in STREAM.finditer(raw):
+        # Dictionaries opslås fra den NÆRMESTE `<<` før `stream`. Et regulært
+        # udtryk som `<<(.*?)>>\s*stream` er ikke brugbart her: når `>>` ikke
+        # efterfølges af `stream`, backtracker regexen og sluger hele
+        # mellemobjekterne ind i `group(1)`.
+        opened = raw.rfind(b"<<", 0, match.start())
+        filters = [name for name in re.findall(rb"/(\w+Decode)", raw[opened:match.start()])
+                   if name in KNOWN_FILTERS]
+        end = raw.find(b"endstream", match.end())
+        if end < 0:
+            continue
+        try:
+            decoded = _inflate(raw[match.end():end], filters)
+        except Exception:
+            continue
+        for literal in LITERAL.findall(decoded):
+            parts.append(_unpdf(literal[1:-1]))
+    if not parts:
+        raise ValueError("ingen læsbare tekststrenge (filen er {0} bytes)".format(len(raw)))
+    return b"\n".join(parts).decode("cp1252", "replace")
 
 
 def report_block(data):
