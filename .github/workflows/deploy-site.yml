@@ -170,7 +170,7 @@ jobs:
           # Plugin-downloadet tjekkes på den URL, update.json selv peger på — det er
           # den adresse en kundes auto-update henter. Versionen kommer fra repoet.
           asset="${{ steps.plugin.outputs.asset }}"
-          code=$(curl -sS -o plug.zip -w '%{http_code}' "$url$asset?cb=$GITHUB_RUN_ID" || echo 000)
+          code=$(curl -sS -o plug.zip -w '%{http_code}' "${url%/}$asset?cb=$GITHUB_RUN_ID" || echo 000)
           if [ "$code" = "200" ] && [ "$(head -c 2 plug.zip)" = "PK" ]; then
             echo "OK: $asset er 200 og en zip-fil"
           else
@@ -180,10 +180,11 @@ jobs:
 
           # Og manifestet skal pege på præcis den fil, der lige blev hentet.
           manifest=$(curl -sS "$url/update.json?cb=$GITHUB_RUN_ID" | python3 -c "import json,sys;print(json.load(sys.stdin)['download_url'])" 2>/dev/null || echo '')
-          if [ "$manifest" = "$url$asset" ]; then
+          expected="${url%/}$asset"
+          if [ "$manifest" = "$expected" ]; then
             echo "OK: /update.json peger på $asset"
           else
-            echo "FEJL: /update.json peger på '$manifest', forventede '$url$asset'"
+            echo "FEJL: /update.json peger på '$manifest', forventede '$expected'"
             fail=1
           fi
 
