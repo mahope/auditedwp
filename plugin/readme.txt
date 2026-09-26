@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.16
+Stable tag: 1.3.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.17 (2026-09-26) =
+* Fix: the privacy-link pattern only knew English and German, so a Danish, Swedish or Dutch site that linked its privacy policy next to its contact form failed the forms row for doing exactly what the row asks for. A shop with a hand-written form and a /privatlivspolitik/ link was told "no privacy-policy link" here and in the free scanner.
+* The pattern is now language-neutral: Danish, Swedish, Dutch, French and Spanish wording joins English and German. The free universal scanner, the published CLI engine and this plugin all read the same signature, so a check with the same name means the same thing in all three products.
+* It still matches the word wherever it appears, not only inside an href, because a link whose text says "Privatlivspolitik" and whose URL says /juridisk/ is still the notice.
+* The forms row is now measured across all three engines in both directions: a privacy link the port can see must pass everywhere, and one it cannot see must fail everywhere - and a mutation that removes a language, or one that reads only href, turns the port red.
 = 1.3.16 (2026-09-26) =
 * Fix: the forms check answered a smaller question than the free scanner does about the same website. It only looked at installed WordPress plugins and at the Privacy Policy page assigned in Settings, so a contact form written by hand in the theme, or rendered by a shortcode in a widget, was invisible: the same page failed "forms" in the free scanner and passed "forms" in the report an agency pays to send its client.
 * It now reads the served markup as well, using the free scanner's own patterns, and unions the two sources. A page that shows a form and does not link a privacy notice now fails here too - including when a Privacy Policy page does exist in WordPress, because the notice has to be given at the point of collection.
