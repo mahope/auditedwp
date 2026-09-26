@@ -130,3 +130,54 @@ De tre første er samme fejlklasse som opgave 42 fund 2: en stængel skrevet eft
 det forventede ord i stedet for efter det ord, der står i koden. Den fjerde er
 opgave 30 fund 1, 32 fund 1 og 41 fund 1 for fjerde gang: en kontrol, der læser
 en mindre mængde end den skal dække.
+
+## Opgave 55 — de syv sidste mønstre
+
+Målt først, gennem `legal` i begge motorer: **2 af 22** (mønster, sprog) blev
+fundet. De to var `Whistleblower` DA — fordi dansk skriver det engelske ord — og
+`SLA` EN, som viste sig at have en anden fejl (nedenfor). Efter rettelsen
+**22 af 22**.
+
+| Mønster | DA | SV | NL |
+|---|---|---|---|
+| Sub-processor list | `underbehandlerliste`, `liste over underbehandler` | `biträdesförteckning`, `underbiträdeslista` | `subverwerkers` |
+| Code of conduct | `adfærdskodeks` | `uppförandekodex` | `gedragcode` |
+| SLA / Warranty | `serviceniveau` | `serviceavtal`, `servicenivå-avtal` | `servicelevelovereenkomst` |
+| Complaints procedure | `klageprocedure`, `klagehåndtering` | `klagförfarande` | `klachtprocedure`, `klachtenbeleid` |
+| Modern slavery statement | `moderne slaveri` | `modernt slaveri` | `moderne slavernij` |
+| Whistleblower / Hinweisgeber | *samme ord som engelsk* | `visselblåsare` | `klokkenluider` |
+| DPO / Data protection officer | `databeskyttelsesrådgiver` | `dataskyddsansvarig` | `functionaris voor gegevensbescherming` |
+
+### Den engelske fejl, der ikke var et sprogproblem
+
+`sla`-rækken havde `service[_-]?level[_-]?agreement` — samme `[ _-]?`-fejl som
+opgave 52 fandt i `terms`. Den matcher bindestreg og understreg, **aldrig et
+mellemrum**, så en engelsk side med linkteksten "Service Level Agreement" blev
+kun fundet når CMS'en tilfældigvis lavede stien med bindestreger. Det er målt,
+ikke antaget: den engelske fixture med mellemrum i både sti og tekst gav **intet
+fund** før rettelsen. Der er en egen mutation på den.
+
+### To stængler, der blev gjort smallere end planenlagde
+
+Planen foreslog `garanti` (DA) og `servicenivå` (SV). Begge blev **målt** til at
+give falske fund på den betalte rapport, så begge kræver nu sit eget dokumentord:
+
+- **Tysk `garantie` tællede dansk prosa.** "Du får 2 års garanti på alle
+  produkter" står på enhver dansk butik, og `garantie` matcher `garanti`. Det gav
+  et **falsk** juridisk link i den betalte rapport — et række-tal kunden har
+  ærlig grund til at tro på. Den tyske stængel kræver nu
+  `garantiebedingungen`/`garantieerklärung`/`gewährleistung`.
+  **Prisen er målt og accepteret:** en tysk side der hedder *bare* "Garantie"
+  findes ikke længere, fordi ordet ikke kan skelnes fra dansk prosa.
+- **`servicenivå` alene er oppetid, ikke et dokument.** "Vi har en servicenivå på
+  99,9 procent" er svensk butiksprosa. Stænglen kræver derfor `avtal`.
+
+Begge fejltagelser har en permanent R3-fixture, så en bredere stængel igen gør
+porten rød i stedet for at komme tilbage i den betalte rapport.
+
+### Hvad der stadig ikke er dækket
+
+`General contact address` (`info@`, `contact@`, …) er sprogneutral i alle fire
+sprog og har derfor ingen stængel pr. sprog. Det er den ene række i
+`LEGAL_PATTERNS` der bevidst står uden for dækningstabellen, og den negative
+case der kræver en stængel peger på den.

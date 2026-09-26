@@ -188,14 +188,21 @@ const LEGAL_PATTERNS = [
   { re: /shipping[_-]?policy|delivery[_-]?information|versand|fragt[ _-]?(?:og|&amp;?)?[ _-]?(?:levering|leverans|vilk[aå]r)|leveringsvilk[aå]r|forsendelsesvilk[aå]r|frakt[ _-]?(?:och|&amp;?)?[ _-]?leverans|leverans(?:villkor|information)|verzend[ _-]?(?:beleid|voorwaarden)|bezorg(?:informatie|beleid)/i, name: "Shipping policy" },
   { re: /data[_-]?processing[_-]?agreement|dpa|data[_-]?processor|auftragsverarbeitung|databehandleraftale|personuppgiftsbitr[aä]desavtal|bitr[aä]desavtal[ _-]?f[öo]r[ _-]?personuppgifter|verwerkersovereenkomst|verwerkersav[aä]nk|verwerkersbeding/i, name: "Data processing agreement" },
   { re: /acceptable[_-]?use[_-]?policy|aup|fair[_-]?use[_-]?policy|acceptabel[ _-]?brug|rimlig[ _-]?anv[aä]ndning|redelijk[ _-]?gebruik/i, name: "Acceptable use / Fair use" },
-  { re: /subprocessor|sub[_-]-?processor|subprocessors/i, name: "Sub-processor list" },
-  { re: /code[_-]?of[_-]?conduct|coc|ethik/i, name: "Code of conduct" },
-  { re: /sla[_-]?service[_-]?level|service[_-]?level[_-]?agreement|garantie/i, name: "SLA / Warranty" },
-  { re: /complaints[_-]?policy|complaint[_-]?procedure|beschwerde/i, name: "Complaints procedure" },
-  { re: /modern[_-]?slavery|slavery[_-]?act[_-]?statement|human[_-]?trafficking/i, name: "Modern slavery statement" },
-  { re: /whistleblower|whistle[_-]?blowing|hinweisgeber/i, name: "Whistleblower / Hinweisgeber" },
+  { re: /subprocessor|sub[_-]-?processor|subprocessors|underbehandler(?:e)?[ _-]?(?:liste|list|oversigt)|liste[ _-]?over[ _-]?underbehandler|bitr[äa]desf[öo]rteckning|underbitr[äa]deslista|subverwerkers(?:lijst)?/i, name: "Sub-processor list" },
+  { re: /code[_-]?of[_-]?conduct|coc|ethik|adf[æa]rdskodeks|uppf[öo]randekodex|gedragcode/i, name: "Code of conduct" },
+  // `garantie` var her alene, og den er **målt** til at give et falsk fund på
+  // dansk: "Du får 2 års garanti på alle produkter" er prosa på enhver dansk
+  // butik, og `garantie` matcher `garanti`. Det er et falsk juridisk link i
+  // den betalte rapport — et række-tal kunden har ærlig grund til at tro på.
+  // Derfor kræver den nu sit **egen** dokumentord. Prisen er målt og skrevet
+  // ned: en tysk side der hedder *bare* "Garantie" er ikke længere fundet, for
+  // den kan ikke skelnes fra dansk prosa på ordet alene.
+  { re: /sla[_-]?service[_-]?level|service[ _-]?level[ _-]?(?:agreement|overeenkomst)|garantie(?:bedingungen|erkl[äa]rung)|gew[äa]hrleistung|serviceniveau|serviceavtal|serviceniv[åa][ _-]?avtal/i, name: "SLA / Warranty" },
+  { re: /complaints[_-]?policy|complaint[_-]?procedure|beschwerde|klageprocedure|klage[ _-]?h[æa]ndtering|klagf[öo]rfarande|klachtprocedure|klachtenbeleid|klachtenafhandeling/i, name: "Complaints procedure" },
+  { re: /modern[_-]?slavery|slavery[_-]?act[_-]?statement|human[_-]?trafficking|moderne[ _-]?slaveri|modernt[ _-]?slaveri|moderne[ _-]?slavernij/i, name: "Modern slavery statement" },
+  { re: /whistleblower|whistle[_-]?blowing|hinweisgeber|visselbl[åa]sare|klokkenluider(?:sregeling)?/i, name: "Whistleblower / Hinweisgeber" },
   { re: /environmental[_-]?policy|sustainability[_-]?policy|umwelt|b[æa]redygtighedspolitik|milj[øo]politik|h[åa]llbarhetspolicy|duurzaamheids?(?:beleid|verklaring)/i, name: "Environmental / Sustainability policy" },
-  { re: /gdpr[_-]?contact|dpo[_-]?contact|data[_-]?protection[_-]?officer|datenschutzbeauftragte/i, name: "DPO / Data protection officer" },
+  { re: /gdpr[_-]?contact|dpo[_-]?contact|data[_-]?protection[_-]?officer|datenschutzbeauftragte|databeskyttelsesr[åa]dgiver|dataskyddsansvarig|functionaris(?:[ _-]?voor)?[ _-]?gegevensbescherming/i, name: "DPO / Data protection officer" },
   { re: /info@|contact@|hello@|mail@|support@|sales@/i, name: "General contact address" },
 ];
 
