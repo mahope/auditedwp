@@ -1,8 +1,8 @@
 # IMPLEMENTATION_PLAN — EUComply
 
 Opdateret: 2026-09-26
-Sidste iteration: opgave 21 — **`/plugin/` havde nul købsankere.** Det er den eneste flade hvor det betalte produkt faktisk leveres, fordi Pro-låsen sidder i pluginen, og siden nævnte Pro-fire gange uden at nogen sted kunne købes. Fire sider fik hver én købsknap målt ved at tælle links i hele det publicerede træ (401 sider, 182 med link til `/pro/` eller `/pricing/`, 165 med nul Stripe-links). De to compliance-checklister sælger deres **egne** skabelonprodukter, ikke Pro, og gaten blev delt i to arter så den ikke kan glide fra hinanden.
-Baseline: `main` commit `b58c4ee` efter `git pull --ff-only` 2026-09-26
+Sidste iteration: opgave 22 — **sideklassifikationen var håndskrevet.** `PRO_SALES_PAGES` var en liste på 31 stier, og `check_sales_cta` kørte kun den, så en ny EUComply-side stod uden købsgate uden at nogen vidste det. Målingen af træet fandt 130 sider gaten aldrig kiggede på, hvoraf **15 allerede havde præcis én købsanker** — de var uklassificerede, men tilfældigvis i orden, hvilket er den farligste slags fordi de lignede beskyttede. Nu klassificerer `PAGE_RULES` alle 136 publicerede sider deklarativt i seks arter, en side ingen regel matcher er et fund, og `pro`-siden voksede 31 → 43 uden én linje markup ændret. Selftesten gik fra 11 til 14 negative cases, og de nye beviser at dækningen er afledt: `pro/vs-acme/` fanges af et mønster, ikke af nogen liste.
+Baseline: `main` commit `2c6e801` efter `git pull --ff-only` 2026-09-26
 Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse uden at svække den gratis scanner.
 
 ## Iterationsstatus
@@ -26,7 +26,8 @@ Mission: sælge EUComply Pro ærligt og bygge den værdige betalte oplevelse ude
 - `FÆRDIG`: **19 — Giv den gratis scanner en købsvej** på `ceo/scan-side-pro-cta`. Se afsnittet nedenfor.
 - `FÆRDIG`: **20 — Ret 404'en i den gratis scanners installationsvej** på `ceo/install-path-404`. Se afsnittet nedenfor.
 - `FÆRDIG` (kode + gate grøn, live-verificering afventer næste deploy-vindue): **21 — Giv købsintents-siderne en købsknap** på `ceo/plugin-buy-path`. Se afsnittet nedenfor.
-- Opgave 21 merged på `main` 2026-09-26 som `5ad2390`. Næste opgave: **22 — gør sideklassifikationen afledt, så en ny side ikke kan undslippse købsgaten ved at være uklassificeret** (se afsnittet under opgave 21). Ingen af de to er blockeret af Mads.
+- `FÆRDIG` (kode + selftest grøn, ingen `site/**`-fil rørt): **22 — Gør sideklassifikationen afledt** på `ceo/afledt-sideklassifikation`. Se afsnittet nedenfor.
+- Opgave 22 er den sidste ren tekst-gate. Næste opgave: se afsnittet under opgave 22. Ingen af dem er blockeret af Mads.
 - **Motor-opgaven står åben og er beslutningskrævende, ikke afgrundet:** at få de to divergerende motorer synkroniseret kræver svar på spørgsmål 17 om hvilken pakke der skal publiceres. Den er bevidst ikke valgt i nogen af de nu fire iterationer i træk, der stødte på samme beslutning.
 - Oplysninger, beslutninger og deploy-noter skal fortsat skrives her, så næste iteration kan arbejde uden hukommelse.
 
@@ -577,6 +578,35 @@ $ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://exam
   - ~~Ingen ny checkout er opfundet.~~ **Dækket.** Alle tre links er kontraktets, og `check_checkout_contract` ville have været rød på et nyt.
   - ~~Live verificeres på indhold.~~ **Dækket.** Se `VERIFICÉR DEPLOY`.
 - **Næste opgave (22), fordi den er den egentlige læring her:** de fire sider er rettet, men de blev fundet fordi *jeg* målte træet i denne iteration. Den næste side behøver ikke vente på mig. `PRO_SALES_PAGES` er stadig en håndskrevet side-liste, så en ny EUComply-side er **uklassificeret og dermed usynlig** for gaten, indtil nogen husker den. Opgave 22 gør klassifikationen *afledt*: alle publicerede sider skal være salgsside, eksplicit no-sale, skabelonside eller dækket af et **deklarativt mappemønster med begrundelse** — og en ny side uden for de mønstre bliver rød. Beviset for at det er nødvendigt ligger i denne iterations måling: 165 sider med nul Stripe-links, af hvilke 130 er søskeprodukter og resten er frie værktøjer og juridisk tekst. De skal klassificeres med ærlig begrundelse, ikke med et blanket `**`-mønster, ellers er den nye gate ligeså stum som den gamle.
+
+### 22. Gør sideklassifikationen afledt
+
+- Status: `FÆRDIG` på `ceo/afledt-sideklassifikation`. Ingen `site/**`-fil rørt, så intet skal verificeres live; CI-loggen er den eneste evidens.
+- Fejl: 2/3 — første kørsel af den nye gate fandt **10 uklassificerede sider og 6 døde regler**, som alle viste reelle fejl i mine egne regler (se fundene nedenfor). Den anden kørsel fandt, at `*/*-generator/index.html` aldrig kunne matche `impressum-generator/index.html`, fordi generatorerne ligger i én mappe og ikke to.
+- Begrundelse: rang 2 i "hvad der tæller" — *konvertering*. Rang 1 (fejl i selve købsflowet) er dækket af opgave 19, 20 og 21. Det der stod tilbage var selve gaten: `PRO_SALES_PAGES` var en håndskrevet liste på 31 stier, og `check_sales_cta` kørte kun den. **En ny side stod uden for gaten uden at nogen vidste det** — præcis fejlen de to foregående opgaver fandt ved at måle træet i hånden, og den ville gentage sig ved hver ny side.
+- **Målingen der satte opgaven i søen:** de 130 EUComply-sider `check_sales_cta` aldrig kiggede på. Af dem havde 15 allerede præcis én købsanker — de var altså uklassificerede, men tilfældigvis i orden. Det er den farligste slags: de lignede beskyttede sider, fordi de gjorde det rigtige, uden at nogen vidste at de var beskyttede. **Den nye købsgate dækker dem nu, og de er grønne uden én linje markup ændret.**
+- **Den afledte klassifikation.** Hver publiceret side er nu klassificeret af en deklarativ regel i `PAGE_RULES` med seks arter: `pro` (præcis én købsanker til kontraktlinket), `template` (præcis én til sit eget produkt), `own` (butikken, eget produkt), `nosale`, `content`, `free`. Tre ting gør den ærlig frem for dekorativ:
+  - **Mønstre må kun bruges hvor familien virkelig er ens.** `blog/*/index.html` og `vs/*/index.html` er rette, fordi en blogartikel altid er en blogartikel. De to tyske artikler er derimod skrevet **eksplicit**, fordi de er en undtagelse fra reglen ovenfor — så en ny tysk artikel skal klassificeres med vilje. Og `*` krydser ikke `/`: `blog/*/index.html` dækker ikke `blog/a/b/index.html`, fordi `fnmatch` ellers ville gøre dækningen stum på præcis den måde, opgaven fjerner.
+  - **Hver regel bærer sin egen begrundelse og et `example`.** `example` er ikke kosmetik: selftestens fixture bygges af den, så en regel aldrig kan dø af sig selv, og `død regel`-kontrollen kan fange en hvis sider alligevel forsvinder.
+  - **En regel der matcher ingen side er et fund.** Den ligner en beskyttelse og beskytter intet.
+- **To fund, begge ærlige, begge rettet i klassifikationen frem for ved at slå kravet fra:**
+  - `pro/dashboard/index.html` var uklassificeret. Min første instinkt var en købsknap — men det ville være **at sælge en funktion der ikke findes**: siden er en konceptdemo for et roadmap-dashboard, så en knap dér læses som om dashboardet er en del af Pro i dag, og det dækker ingen kode. Den blev `nosale` med præcis den begrundelse. Købsvejen går i stedet videre til `pro/sample-report/`, som er en ægte Pro-overflade med sin egen købsknap. Det er opgave 1s egen regel, anvendt oveni opgave 22.
+  - `TEMPLATE_CTA_PAGES` blev gjort afledt af `PAGE_RULES`, så checkoutet for hver skabelonside ligger i samme regel som resten af klassifikationen. Før var der to lister, der kunne glide fra hinanden — præcis den fejltype opgave 21s todelte kontrakt blev skrevet til at fange.
+- **Selftesten gik fra 11 til 14 negative cases**, og de tre nye er beviset på at dækningen er afledt:
+  - `uklassificeret side fanget` — en ny side uden for alle mønstre er rød. Uden denne case ville den nye gate være lige så stum som den gamle.
+  - `ny pro-side uden købsknap fanget (kun et mønster dækkede den)` — `pro/vs-acme/` står i **ingen konstant nogen skrev ved hånd**; den fanges alene fordi `pro/vs-*/index.html` matcher. Det er forskellen på en håndskrevet kontrakt og en afledt.
+  - `død regel fanget` — `store/dpa/index.html` fjernes, så `store/*/index.html` dør, mens `store/index.html` overlever i sin egen regel. Findet skyldes altså den døde mønstregel og ikke bare et tomt træ.
+- Fixture'en blev samtidig gjort **artsbevidst**: `_minimal_page` giver en `pro`-side Pro-linket, en `template`-side sit eget produkt, en `own`-side butikkens checkout og en artikel ingen. Det var opgave 21s fixture-fejl (den hardcoded Pro-linket, så de to skabelonsider blev testet som om de solgte Pro) — nu kan den ikke ske igen, fordi købsankeren følger sidens art.
+- Gate: `GATE GRØN — alle 9 steps bestået`. `CTA-gate grøn: 52 content 15 free 18 nosale 6 own 43 pro 2 template` (**136 sider klassificeret, 43 pro — var 31**), `SELFTEST GRØN — alle 14 negative cases fanges` (var 11), rent træ 64 sider. `112 self-tests passed`, `0 unexpected EUComply Pro claims`, `38 security`, `19 engine parity`, `44 license`, `52 document`, `28/18/16/8/7 negative cases` i de øvrige selftests, `RENDER-TEST GRØN`, `322 filer / 226 HTML-sider, 0 interne, 0 døde referencer`, `216 sider, 0 findings`, `npm pack --dry-run` grøn, røgtest 9 tjek. Sibling-kommandoen kørte exit 0, men sibling-SEO scannerer stadig 0 sider, så gyldig SEO-evidence er root-fallbacken, jf. gate-baseline. Ingen PHP og ingen `site/**` ændret, så PHP-lint og deploy er ikke betingede.
+- **Mutation mod repoets egne filer:** `site/ny-side-test/index.html` med en korrekt canonical blev lagt ind, gaten kørte, og den svarede `uklassificeret` exit 1. Filen blev fjernet igen, gaten grøn. Beviset er lavet mod det rigtige træ, ikke kun mod selftestens fixture.
+- Diff: **kun `tools/check_cta.py` og denne plan.** 0 site-filer, 0 PHP-filer, ingen nye filer.
+- Accept:
+  - ~~Alle publicerede sider er klassificeret.~~ **Dækket.** 136 sider, 0 uklassificerede, 0 døde regler; `CTA-gate grøn` printer optællingen pr. art.
+  - ~~En ny side uden for mønstrene bliver rød.~~ **Dækket.** Selftest + mutation mod det rigtige træ.
+  - ~~Ingen blanket-`**`-dækning.~~ **Dækket.** `*` krydser ikke `/`; de to tyske artikler er eksplicitte.
+  - ~~De 15 tidligere ubeskyttede pro-sider er dækket.~~ **Dækket.** `pro`-siden voksede 31 → 43, alle grønne uden markupændring.
+  - ~~Skabelonernes checkout kan ikke glide fra klassifikationen.~~ **Dækket.** Én kilde: `TEMPLATE_CTA_PAGES` er afledt af `PAGE_RULES`.
+- **Næste opgave (23), og hvorfor den ikke er flere gate-byggeri:** `check_classification` dækker nu alle 136 sider, så købsgaten kan ikke vokse huller. To ting mangler stadig, og de er **ikke** flere klassifikationsregler. Den første er reel og målt: **`check_classification` kigger på `site/**`, ikke på det publicerede træ.** `build_public_tree.py` kan udelade en fil — det fjernede 1.3.2-zip'en — og da er der en side i sitet, ingen købsgate dækker, og ingen død regel forteller det. Det er samme fejltype som denne opgave, bare et lag længere nede. Den anden er, at `vs/`- og `pro/vs-`-siderne nu er dækket, men de er konkurrent-indhold med hver præcis én knap; det er korrekt, og det skal ikke ændres. **Skriv den næste opgave som instrumentering, ikke som flere regler.**
 
 ## ❓ Til Mads
 

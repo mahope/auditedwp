@@ -57,80 +57,261 @@ SIBLING_ROOTS = ("devnotify", "deskuptime", "transmute")
 # Fragmenter der indgår i andre sider. De er ikke sider og har ingen canonical.
 FRAGMENT_PREFIXES = ("_partials/", "shared/")
 
-# Salgssider der SKAL have prissiden. Listen er kontraktet, ikke en søgning:
-# en ny salgsside skal skrives her, ellers giver den ingen beskyttelse.
-PRO_SALES_PAGES = (
-    "index.html",
-    "pro/index.html",
-    "da/index.html",
-    "da/pro/index.html",
-    "de/index.html",
-    "de/pro/index.html",
-    "fr/index.html",
-    "fr/pro/index.html",
-    "checklist/index.html",
-    "badge/index.html",
-    "check-eu-compliance/index.html",
-    "cookie-banner-check/index.html",
-    "consent-mode-v2-check/index.html",
-    "gdpr-compliance-check/index.html",
-    "gdpr-scanner-free/index.html",
-    "cli/index.html",
-    "how-it-works/index.html",
-    "compare/index.html",
-    # Den gratis scanner er tragten: den side hvor læseren lige har set sine
-    # egne fejl. Da den ikke stod her, havde den 0 købsankere i alle fire sprog,
-    # og gaten var grøn. Se opgave 19.
-    "scan/index.html",
-    "da/scan/index.html",
-    "de/scan/index.html",
-    "fr/scan/index.html",
-    # Pro-overfladen. `/plugin/` er den ENESTE side hvor Pro betales kan
-    # leveres — dokumentgenereringen ligger i pluginen — og den havde 0
-    # købsankere, kun donationen. Se opgave 21.
-    "plugin/index.html",
-    "pro/sample-report/index.html",
-    "gdpr-fine-calculator/index.html",
+# ---------------------------------------------------------------------------
+# Sideklassifikationen er AFLEDT, ikke håndskrevet.
+# ---------------------------------------------------------------------------
+# Før denne regel var `PRO_SALES_PAGES` en håndskrevet liste af 31 stier, og
+# `check_sales_cta` kørte kun den. En ny side stod altså *uden for* gaten uden
+# at nogen vidste det — præcis fejlen de to foregående opgaver fandt ved at måle
+# træet i hånden. Nu er hver publiceret side klassificeret af en deklarativ
+# regel, og en side ingen regel matcher er et fund, ikke en stilhed.
+#
+# Arter:
+#   pro       — salgsside: præcis én købsanker til kontraktlinket
+#   template  — skabelonside: præcis én købsanker til sit eget produkt
+#   own       — butiksside: sælger sit eget produkt, dækket af checkout-kontrakten
+#   nosale    — med vilje uden køb (juridisk, efter køb, gratis indhold)
+#   content   — redaktionelt indhold om emnet, ikke et tilbud fra os
+#   free      — frit værktøj, der skal blive frit
+#
+# REGEL: et mønster må kun bruges hvor familien virkelig er ens. Et
+# blanket-`**`-mønster ville gøre den nye gate ligeså stum som den gamle, så
+# hver regel bærer sin egen begrundelse og et eksempel på en side den dækker.
+
+
+
+LOCALES = ("da", "de", "fr")
+
+
+def _glob_to_re(pattern: str) -> re.Pattern[str]:
+    """Glob -> regex hvor `*` KRYDSER IKKE `/`.
+
+    fnmatch's `*` matcher også skråstreger, så `blog/*/index.html` ville dække
+    `blog/a/b/index.html` med. Det er præcis den slags stum dækning, denne regel
+    skal fjerne, så skillet tegnes selv.
+    """
+    return re.compile("".join("[^/]*" if ch == "*" else re.escape(ch)
+                              for ch in pattern) + r"\Z")
+
+
+class Rule:
+    """Én klassifikationsregel: mønstre, art, begrundelse og et eksempel.
+
+    `example` er en konkret sti mønstrene dækker. Den bruges to steder:
+    selftesten bygger sit fixture-træ af den, så en regel der matcher ingenting
+    aldrig kan være død, og den gør reglen læsbar uden glob-syntaks.
+    """
+
+    __slots__ = ("kind", "patterns", "reason", "example", "checkout", "_regexes")
+
+    def __init__(self, kind: str, patterns: tuple[str, ...], reason: str,
+                 example: str, checkout: str = "") -> None:
+        self.kind = kind
+        self.patterns = patterns
+        self.reason = reason
+        self.example = example
+        # Kun skabelonsider har et eget produkt; pro-siders checkout er den
+        # kontraktfikserede, fordi de alle sælger det samme.
+        self.checkout = checkout
+        self._regexes = tuple(_glob_to_re(p) for p in patterns)
+
+    def matches(self, rel: str) -> bool:
+        return any(rx.match(rel) for rx in self._regexes)
+
+    def label(self) -> str:
+        head = self.patterns[0] if len(self.patterns) == 1 else f"{len(self.patterns)} mønstre"
+        return f"{self.kind}: {head} — {self.reason}"
+
+
+def _loc(pattern: str) -> tuple[str, ...]:
+    """Udbred en side til alle tre sprog: 'pro/index.html' -> da/de/fr."""
+    return tuple(f"{loc}/{pattern}" for loc in LOCALES)
+
+
+PAGE_RULES: tuple[Rule, ...] = (
+    # --- pro: salgssider, præcis én købsanker til kontraktlinket ------------
+    Rule("pro", ("index.html",) + _loc("index.html"),
+         "forsiden i alle fire sprog: her begynder købsrejsen", "index.html"),
+    Rule("pro", ("pro/index.html",) + _loc("pro/index.html"),
+         "Pro-siden i alle fire sprog", "pro/index.html"),
+    Rule("pro", ("pricing/index.html",) + _loc("pricing/index.html"),
+         "prissiden i alle fire sprog", "pricing/index.html"),
+    Rule("pro", ("scan/index.html",) + _loc("scan/index.html"),
+         "den gratis scanner er tragten: læseren har lige set sine egne fejl",
+         "scan/index.html"),
+    Rule("pro", ("plugin/index.html",),
+         "Pro leveres kun i pluginen, så dette er den eneste side hvor et køb kan "
+         "følges igennem til levering", "plugin/index.html"),
+    Rule("pro", ("pro/sample-report/index.html",),
+         "eksempelrapporten er en Pro-overflade", "pro/sample-report/index.html"),
+    Rule("pro", ("pro/vs-*/index.html",),
+         "Pro-sammenligninger: læseren står i selve valget mellem os og en "
+         "konkurrent", "pro/vs-cookiebot/index.html"),
+    Rule("pro", ("vs/*/index.html",),
+         "CMP-sammenligningerne sælger vores værktøj som alternativ til "
+         "konkurrentens, og har allerede hver præcis én købsanker",
+         "vs/cookiebot/index.html"),
+    Rule("pro", ("checklist/index.html", "badge/index.html", "cli/index.html",
+                 "compare/index.html", "how-it-works/index.html",
+                 "check-eu-compliance/index.html", "gdpr-fine-calculator/index.html",
+                 "gdpr-scanner-free/index.html", "gdpr-compliance-check/index.html",
+                 "cookie-banner-check/index.html", "consent-mode-v2-check/index.html")
+         + _loc("cookie-banner-check/index.html"),
+         "frie værktøjer med dokumenteret købsintents; den tyske udgave af "
+         "cookie-banner-check lå uden for den håndskrevne liste",
+         "checklist/index.html"),
+
+    # --- skabelonsider: de sælger deres eget produkt, ikke Pro --------------
+    # En EAA-checkliste der sælger en WordPress-licens er forkerte
+    # koordinater, så hver side skal have præcis ÉN købsanker til sit eget
+    # produkt. Checkoutet står i reglen, så der er én kilde til sandheden.
+    Rule("template", ("eaa-checklist/index.html",),
+         "sider emnet ER EAA-statementet, så den sælger det — ikke Pro",
+         "eaa-checklist/index.html",
+         "https://buy.stripe.com/3cI7sK2Qz3IugNUgN9bMQ08"),
+    Rule("template", ("nis2-checklist/index.html",),
+         "sider emnet ER NIS2/DORA-klausulpakken, så den sælger den — ikke Pro",
+         "nis2-checklist/index.html",
+         "https://buy.stripe.com/4gM4gydvd92OapwgN9bMQ06"),
+
+    # --- butikken: hver side sælger sit eget skabelonprodukt ----------------
+    Rule("own", ("store/index.html",),
+         "butiksoversigten sælger hele kataloget", "store/index.html"),
+    Rule("own", ("store/*/index.html",),
+         "butiksside med sit eget produkt; checkout-linket dækkes af "
+         "check_checkout_contract", "store/dpa/index.html"),
+
+    # --- med vilje uden køb -------------------------------------------------
+    Rule("nosale", ("404.html",),
+         "fejlsiden skal ikke sælge", "404.html"),
+    Rule("nosale", ("pro/thank-you/index.html",),
+         "kvitteringssiden kommer efter et køb", "pro/thank-you/index.html"),
+    Rule("nosale", ("terms/index.html", "privacy/index.html"),
+         "juridisk tekst skal fortælle sandheden, ikke sælge", "terms/index.html"),
+    Rule("nosale", ("sample/index.html",),
+         "arkiveret koncept, ikke et produkt", "sample/index.html"),
+    Rule("nosale", ("refund-policy-generator/index.html",),
+         "nedlagt side, ingen købsrejse", "refund-policy-generator/index.html"),
+    Rule("nosale", ("extension/index.html",),
+         "gratis Chrome-udvidelse: et Pro-tilbud dér ville være emnefremmedt",
+         "extension/index.html"),
+    Rule("nosale", ("cmp-comparison/index.html",),
+         "affiliate-sammenligning af CMP-leverandører: emnet er deres værktøj, "
+         "ikke vores", "cmp-comparison/index.html"),
+    Rule("nosale", ("search/index.html",) + _loc("search/index.html"),
+         "søgning er et værktøj, ikke en købsside", "search/index.html"),
+    Rule("nosale", ("book/index.html",) + _loc("book/index.html"),
+         "gratis PDF-guide i alle fire sprog", "book/index.html"),
+    Rule("nosale", ("template/index.html",),
+         "gratis NIS2/DORA-checkliste, ikke det betalte produkt", "template/index.html"),
+    Rule("nosale", ("pro/dashboard/index.html",),
+         "konceptdemo for en roadmap-funktion. En købsknap ville læses som om "
+         "dashboardet er en del af Pro i dag, og det dækker ingen kode — så "
+         "købsvejen går videre til sample-report, der er en ægte Pro-overflade",
+         "pro/dashboard/index.html"),
+
+    # --- redaktionelt indhold ----------------------------------------------
+    Rule("content", ("blog/*/index.html", "blog/index.html"),
+         "artikler er rådgivning til læseren om andres forpligtelser, ikke "
+         "løfter fra os; derfor er de også undtaget fra claims-gaten",
+         "blog/dora-for-ecommerce-2026/index.html"),
+    Rule("content", ("de/dsgvo-cookie-banner-bussgelder/index.html",
+                     "de/was-ist-ein-impressum/index.html"),
+         "lokaliserede artikler, skrevet eksplicit fordi de er undtagelse fra "
+         "reglen ovenfor: en ny tysk artikel skal klassificeres med vilje",
+         "de/was-ist-ein-impressum/index.html"),
+
+    # --- frie værktøjer -----------------------------------------------------
+    Rule("free", ("guides/*/index.html", "guides/index.html",
+                  "regex/*/index.html", "regex/index.html"),
+         "frie referenceværktøjer uden salg", "regex/index.html"),
+    Rule("free", ("tools/index.html",),
+         "frit værktøjsoversigt", "tools/index.html"),
+    Rule("free", ("*-generator/index.html",),
+         "gratis generatorer: de skal blive gratis for at være nyttige",
+         "impressum-generator/index.html"),
 )
 
-# Sider hvis emne *er* et betalt skabelonprodukt. De skal sælge det produkt,
-# ikke Pro: en EAA-checkliste der sælger en WordPress-licens er forkerte
-# koordinater. Hver side skal have præcis én købsanker til sit eget produkt.
-TEMPLATE_CTA_PAGES = {
-    "eaa-checklist/index.html": "https://buy.stripe.com/3cI7sK2Qz3IugNUgN9bMQ08",
-    "nis2-checklist/index.html": "https://buy.stripe.com/4gM4gydvd92OapwgN9bMQ06",
+# Sider undtaget fra strukturkontrollerne (canonical, døde referencer). Det er
+# ikke det samme som at være uklassificeret: de står stadig i PAGE_RULES, så
+# de kan ikke forsvinde fra kontrakten ved et uopdaget skred.
+STRUCTURE_EXEMPT = frozenset({
+    "404.html",
+    "pro/thank-you/index.html",
+    "terms/index.html",
+    "privacy/index.html",
+    "sample/index.html",
+    "refund-policy-generator/index.html",
+})
+
+
+# Sider der sælger deres eget skabelonprodukt. Afledt af PAGE_RULES, så en
+# skabelonside der tilføjes uden checkout ikke kan få en tom gate-kontrakt.
+TEMPLATE_CTA_PAGES: dict[str, str] = {
+    rel: rule.checkout
+    for rule in PAGE_RULES if rule.kind == "template"
+    for rel in rule.patterns
 }
 
-# Sider der med vilje ikke sælger. Udelad her, fordi gaten ellers ville kræve
-# en købsknap på en side der skal holde sig til at fortælle sandheden.
-NO_SALES_PAGES = {
-    "404.html",
-    "pro/thank-you/index.html",   # efter køb
-    "terms/index.html",            # juridisk
-    "privacy/index.html",          # juridisk
-    "sample/index.html",           # arkiveret koncept, ikke et produkt
-    "refund-policy-generator/index.html",  # nedlagt side
-}
+
+def classify(rel: str) -> "Rule | None":
+    """Første regel der matcher siden. None betyder uklassificeret."""
+    for rule in PAGE_RULES:
+        if rule.matches(rel):
+            return rule
+    return None
+
+
+def classify_tree() -> tuple[dict[str, list[str]], list[str]]:
+    """Klassificér hele det publicerede træ → (sider pr. art, uklassificerede)."""
+    groups: dict[str, list[str]] = {}
+    unknown: list[str] = []
+    for path in all_eucocomply_pages():
+        rel = path.relative_to(SITE).as_posix()
+        rule = classify(rel)
+        if rule is None:
+            unknown.append(rel)
+        else:
+            groups.setdefault(rule.kind, []).append(rel)
+    return groups, unknown
+
+
+# Afledt, ikke skrevet: alle pro-sider i det publicerede træ. Før denne ændring
+# var det en liste på 31 stier, og de 15 øvrige pro-sider i træet var usynlige
+# for gaten — de havde tilfældigvis alle én købsanker, hvilket ingen vidste.
+def pro_sales_pages() -> tuple[str, ...]:
+    """Alle pro-sider i det *aktuelle* træ, fundet ved klassifikation."""
+    return tuple(
+        rel
+        for path in sorted(SITE.rglob("*.html"))
+        if (rel := path.relative_to(SITE).as_posix())
+        and (rule := classify(rel))
+        and rule.kind == "pro"
+    )
+
+
+def purchase_journey_pages() -> set[str]:
+    """Købsrejsens sider for det aktuelle træ. Se kommentaren på konstanten."""
+    return set(pro_sales_pages()) | {
+        f"{loc}/{rel}" for loc in LOCALES for rel in LOCALE_SALES_PATHS
+    } | {
+        "terms/index.html",
+        "pro/thank-you/index.html",
+        "store/index.html",
+        "template/index.html",
+        "book/index.html",
+    }
 
 # Lokaliserede købssider der skal findes i alle tre sprog. Ens symmetri er
 # acceptkriterium 1: en dansk læser må ikke miste en købsknap, en tysk har.
 LOCALE_SALES_PATHS = ("index.html", "pro/index.html", "pricing/index.html")
-LOCALES = ("da", "de", "fr")
 
 # Købsrejsens sider: de steder, hvor et løfte om gratis prøveperiode, konto eller
 # refund faktisk skader, fordi det står ved købsknappen. Blogindlæg og guides er
 # redaktionelt indhold om andres forpligtelser — "a 14-day money-back guarantee
 # converts better" i en artikel er rådgivning til læseren, ikke et løfte fra os,
 # og en gate der rammer den ville gørede artiklen om emnet umulig at skrive.
-PURCHASE_JOURNEY_PAGES = set(PRO_SALES_PAGES) | {
-    f"{loc}/{rel}" for loc in LOCALES for rel in LOCALE_SALES_PATHS
-} | {
-    "terms/index.html",
-    "pro/thank-you/index.html",
-    "store/index.html",
-    "template/index.html",
-    "book/index.html",
-}
+# Sætten er afledt af klassifikationen: se purchase_journey_pages().
 
 # Løfter købsrejsen ikke kan holde, fordi intet i repoet dækker dem. Stripe er
 # ikke Merchant of Record, og der er hverken gratis prøveperiode eller konto.
@@ -160,13 +341,17 @@ CANONICAL_RE = re.compile(r'<link[^>]+rel="canonical"[^>]*>', re.I)
 HREF_RE = re.compile(r'href="([^"]+)"')
 
 
-def eucocomply_pages() -> list[Path]:
-    """Alle EUComply-sider: site/** undtagen søskeprodukter og fragmenter."""
+def all_eucocomply_pages() -> list[Path]:
+    """Hele EUComply-træet: site/** undtagen søskeprodukter og fragmenter.
+
+    Uden struktur-undtagelsen, så selv en side der er fri for canonical-
+    kontrollen stadig skal klassificeres. Ellers så en død regel ud som død
+    bare fordi dens side er undtaget fra et andet tjek — præcis den stumhed
+    opgave 22 fjerner.
+    """
     pages = []
     for path in sorted(SITE.rglob("*.html")):
         rel = path.relative_to(SITE).as_posix()
-        if rel in NO_SALES_PAGES:
-            continue
         if rel.startswith(FRAGMENT_PREFIXES):
             continue
         parts = rel.split("/")
@@ -174,6 +359,14 @@ def eucocomply_pages() -> list[Path]:
             continue
         pages.append(path)
     return pages
+
+
+def eucocomply_pages() -> list[Path]:
+    """EUComply-sider med strukturkrav (canonical, døde interne referencer)."""
+    return [
+        path for path in all_eucocomply_pages()
+        if path.relative_to(SITE).as_posix() not in STRUCTURE_EXEMPT
+    ]
 
 
 def check_checkout_contract() -> list[str]:
@@ -192,10 +385,40 @@ def check_checkout_contract() -> list[str]:
     return findings
 
 
+def check_classification() -> list[str]:
+    """Ingen publiceret side må være uklassificeret.
+
+    Det er hele pointen med opgave 22: før denne kontrol var gaten lige så stum
+    for en ny side som den altid havde været — den kørte kun på en håndskrevet
+    liste. Nu er en side, ingen regel matcher, et fund, fordi den ellers ville
+    stå uden købsgate helt i stilhed.
+    """
+    findings: list[str] = []
+    groups, unknown = classify_tree()
+    for rel in unknown:
+        findings.append(
+            f"{rel}: uklassificeret — ingen regel i PAGE_RULES matcher. Skriv "
+            "siden i en eksisterende regel, eller tilføj en ny regel med "
+            "begrundelse; ellers står den uden købsgates."
+        )
+    # En regel der matcher ingen side er død kontrakt: den ligner en
+    # beskyttelse, men beskytter intet. Selftestens fixture bygges af hver
+    # regels `example`, så den dør aldrig af sig selv.
+    seen = {classify(rel) for group in groups.values() for rel in group}
+    for rule in PAGE_RULES:
+        if rule not in seen:
+            findings.append(f"død regel — matcher ingen publiceret side: {rule.label()}")
+    return findings
+
+
 def check_sales_cta() -> list[str]:
-    """Hver afgrenset salgsside skal have prissiden — og kun den."""
+    """Hver afgrenset salgsside skal have prissiden — og kun den.
+
+    Rækken kommer fra klassifikationen, ikke fra en liste: en ny pro-side er
+    dækket i samme sekund den findes i træet.
+    """
     findings = []
-    for rel in PRO_SALES_PAGES + tuple(TEMPLATE_CTA_PAGES):
+    for rel in pro_sales_pages() + tuple(TEMPLATE_CTA_PAGES):
         checkout = TEMPLATE_CTA_PAGES.get(rel, PRO_CHECKOUT)
         path = SITE / rel
         if not path.is_file():
@@ -290,7 +513,7 @@ def check_forbidden_claims() -> list[str]:
     Kun købsrejsen, ikke hele sitet: se kommentaren på PURCHASE_JOURNEY_PAGES.
     """
     findings = []
-    for rel in sorted(PURCHASE_JOURNEY_PAGES):
+    for rel in sorted(purchase_journey_pages()):
         path = SITE / rel
         if not path.is_file():
             continue
@@ -311,6 +534,7 @@ def run(root: Path) -> list[str]:
     SITE = root / "site"
     found: list[str] = []
     for check in (
+        check_classification,
         check_checkout_contract,
         check_sales_cta,
         check_locale_parity,
@@ -323,17 +547,29 @@ def run(root: Path) -> list[str]:
 
 
 def _minimal_page(rel: str) -> str:
-    """En minimal, helt korrekt salgsside for den givne sti."""
+    """En minimal, helt korrekt side for den givne sti.
+
+    Købsankeren følger sidens *art*, ikke en håndskrevet undtagelse: en
+    butiksside får sit eget produkt, en artikelside ingen. Det var netop
+    fejlen opgave 21s selftest fangede, da fixture'en hardcoded Pro-linket og
+    de to skabelonsider så ville være testet som om de solgte Pro.
+    """
     tail = "" if rel == "index.html" else rel.replace("index.html", "")
-    checkout = TEMPLATE_CTA_PAGES.get(rel)
-    if checkout:
-        label = "Buy the template — $39"
-    else:
+    rule = classify(rel)
+    kind = rule.kind if rule else "pro"
+    body = ""
+    if kind == "pro":
         checkout, label = PRO_CHECKOUT, "Buy Pro — 79 USD per website per year"
+        body = f'<a class="btn" href="{checkout}">{label}</a>'
+    elif kind == "template":
+        checkout = TEMPLATE_CTA_PAGES[rel]
+        body = f'<a class="btn" href="{checkout}">Buy the template — $39</a>'
+    elif kind == "own":
+        checkout = next(iter(TEMPLATE_CHECKOUTS))
+        body = f'<a class="btn" href="{checkout}">Buy this document — $59</a>'
     return (
         f'<html><head><link rel="canonical" href="{CANONICAL_ORIGIN}/{tail}"></head>'
-        f'<body><a class="btn" href="{checkout}">{label}</a>'
-        "</body></html>"
+        f"<body>{body}</body></html>"
     )
 
 
@@ -342,10 +578,17 @@ def selftest() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp) / "repo"
         (base / "site").mkdir(parents=True)
-        required = {f"{loc}/{rel}" for loc in LOCALES for rel in LOCALE_SALES_PATHS}
-        required.update(PRO_SALES_PAGES)
-        required.update(TEMPLATE_CTA_PAGES)
-        required.update(NO_SALES_PAGES)
+        # Fixture-træet bygges af reglerne — ikke af en håndskrevet liste. Hvert
+        # mønster uden `*` bidrager med sig selv, så de lokaliserede sider
+        # (da/de/fr scan, pro, pricing, book, search) er med og hver især kan
+        # testes. Mønstre med `*` bidrager med regelens `example`. Så dækker
+        # selftesten præcis den klassifikation, der ligger i træet, og en regel
+        # kan ikke dø uden at selftesten bliver rød.
+        required = {rule.example for rule in PAGE_RULES}
+        required.update(
+            pattern for rule in PAGE_RULES for pattern in rule.patterns
+            if "*" not in pattern
+        )
         for rel in sorted(required):
             path = base / "site" / rel
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -413,7 +656,53 @@ def selftest() -> int:
             return 1
         print("selftest: manglende lokal købsside fanget")
 
-    print(f"SELFTEST GRØN — alle {len(cases) + 1} negative cases fanges")
+        # Opgave 22, del 1: en ny side skal vælge sin art, ellers er den et fund.
+        # Uden denne case ville den afledte klassifikation være lige så stum som
+        # den håndskrevne liste var — siden ville bare ligge uden for alle
+        # mønstre uden at nogen lægger mærke til det.
+        stray = base / "site" / "ny-vaerktoej" / "index.html"
+        stray.parent.mkdir(parents=True, exist_ok=True)
+        stray.write_text(
+            f'<html><head><link rel="canonical" '
+            f'href="{CANONICAL_ORIGIN}/ny-vaerktoej/"></head>'
+            f'<body><a class="btn" href="{PRO_CHECKOUT}">Buy Pro</a></body></html>',
+            encoding="utf-8",
+        )
+        if not [f for f in run(base) if "uklassificeret" in f]:
+            print("SELFTEST FEJLED: uklassificeret side blev ikke fanget")
+            return 1
+        print("selftest: uklassificeret side fanget")
+        stray.unlink()
+
+        # Opgave 22, del 2: en ny pro-side fanges af et mønster, ikke af en
+        # liste. `pro/vs-acme/` står i ingen konstant nogen skrev ved hånd, så
+        # denne case er beviset på at dækningen er afledt.
+        derived = base / "site" / "pro" / "vs-acme" / "index.html"
+        derived.parent.mkdir(parents=True, exist_ok=True)
+        derived.write_text(
+            f'<html><head><link rel="canonical" '
+            f'href="{CANONICAL_ORIGIN}/pro/vs-acme/"></head>'
+            "<body>En ny Pro-sammenligning uden købsknap.</body></html>",
+            encoding="utf-8",
+        )
+        if not [f for f in run(base) if "mangler det kontraktfikserede Pro-link" in f]:
+            print("SELFTEST FEJLED: ny pro-side uden købsknap blev ikke fanget")
+            return 1
+        print("selftest: ny pro-side uden købsknap fanget (kun et mønster dækkede den)")
+        derived.unlink()
+
+        # En regel der matcher ingen side ligner en beskyttelse men beskytter
+        # intet. Den skal findes, ellers kan en død regel blive stående for evig.
+        # `store/*/index.html` dør ved at fjerme dens eneste side; `store/`
+        # selv overlever i den anden regel, så fundet skyldes den døde mønstregel
+        # og ikke bare et manglende træ.
+        (base / "site" / "store" / "dpa" / "index.html").unlink()
+        if not [f for f in run(base) if "død regel" in f]:
+            print("SELFTEST FEJLED: død regel blev ikke fanget")
+            return 1
+        print("selftest: død regel fanget")
+
+    print(f"SELFTEST GRØN — alle {len(cases) + 4} negative cases fanges")
     return 0
 
 
@@ -425,10 +714,13 @@ def main() -> int:
         print("CTA-GATE RØD:")
         for f in found:
             print(f"  - {f}")
-        print(f"\n{len(found)} fund. Ret dem, eller skriv bevidst om i contract-kommentaren.")
+        print(f"\n{len(found)} fund. Ret dem, eller skriv bevidst om i PAGE_RULES.")
         return 1
-    print("CTA-gate grøn: kun kontraktfikserede checkout-links, én købsknap pr. salgsside, "
-          "korrekte canonicals, symmetriske lokaler, 0 døde interne referencer, 0 uunderstøttede løfter.")
+    groups, _ = classify_tree()
+    counts = " ".join(f"{len(v)} {k}" for k, v in sorted(groups.items()))
+    print(f"CTA-gate grøn: {counts}. Kun kontraktfikserede checkout-links, én "
+          "købsknap pr. salgsside, korrekte canonicals, symmetriske lokaler, 0 "
+          "døde interne referencer, 0 uunderstøttede løfter.")
     return 0
 
 
