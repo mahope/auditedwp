@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.18
+Stable tag: 1.3.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,15 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.19 (2026-09-26) =
+* Fix: the words of a legal document counted as a legal document. The privacy pattern was tried against the whole page HTML, so a sentence in running text was read as a link - "we process personal data in this form", or a Dutch page whose sub-processor notice mentions "persoonsgegevens" without linking anything.
+* Measured before the fix: 22 false legal pages across four plain-text pages, in Danish, Swedish, Dutch and English. One Swedish paragraph named eight of the documents and the row came back green with no links in the footer at all. A green row a customer cannot check is worse than a red one, because the false pass is invisible.
+* The forms row was the worse half. A contact page whose only privacy mention was a sentence telling the visitor it processes their data was reported as "Form(s) on the page, privacy-policy link detected" and passed - a site told it was compliant on the strength of a sentence.
+* A legal document is now counted only when the page links it. Both the href and the visible link text count, so a link reading "Privatlivspolitik" to /juridisk/ is still the notice. The wording of every pattern is unchanged, so the language coverage added in 1.3.17 is untouched: the same five links are still found, in all three products.
+* This reverses a decision 1.3.17 stated openly, and it was the wrong one. It was written as "it still matches the word wherever it appears, not only inside an href" - true, and the reason a sentence in a paragraph was enough. The requirement is a link, and 1.3.17 measured the link and not the requirement.
+* Now measured in all three products - this plugin, the free scanner and the published CLI engine - on plain text in three languages, in both directions: prose must find nothing, and the same documents as links must still be found. Three mutations of the source files turn the build red, so the whole-page reading cannot come back unnoticed.
+* If you scanned your site between 1.3.18 and now, treat the legal-pages and forms rows as unknown rather than as clean: a page that was passed on a sentence may now be reported as missing its link. Run a new scan.
 
 = 1.3.18 (2026-09-26) =
 * Fix: the legal-pages check only knew English and German page names, so a Danish, Swedish or Dutch shop was told every legal page was missing. A shop with the pages "Om os", "Handelsbetingelser" and "Privatlivspolitik" - all three published, all three required - was reported as "3 of 3 legal pages missing" in the report an agency pays to send its client.

@@ -656,32 +656,42 @@ if (process.argv.includes("--selftest")) {
   );
 
   /*
-   * De to mutationer i opgave 51. Begge rører privatlivsmønsteret i
-   * `check_forms()`, og begge er skrevet mod den lange linje, så de fejler med
-   * "fandt ikke den linje den erstatter" den dag et nyt sprog kommer til i stedet
-   * for at lade porten stå grøn på en mutation den ikke længere rammer.
+   * De to mutationer i opgave 51. Begge rører privatlivsmønsteret, og begge er
+   * skrevet mod den lange linje, så de fejler med "fandt ikke den linje den
+   * erstatter" den dag et nyt sprog kommer til, i stedet for at lade porten stå
+   * grøn på en mutation den ikke længere rammer.
+   *
+   * **Opgave 56 flyttede linjen.** Mønsteret ligger nu i `html_links_privacy()`,
+   * fordi et privatlivsord i prosa ikke længere er et link — så mutationerne
+   * skriver i stedet for `check_forms()`. Det er samme selvbeskyttelse som
+   * ovenfor: da opgave 56 flyttede koden, sagde disse to mutationer højt i stedet
+   * for at lade porten stå grøn på en mutation der ikke rammer noget. Det er
+   * præcis den fejl, de blev skrevet for at fange.
    */
   const PRIVACY_LINE =
-    "preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection"
+    "if ( preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection"
     + "|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter"
-    + "|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales~i', $html )";
+    + "|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales~i', $anchor ) ) {";
 
   // 8. Sprogene forsvinder — det er præcis fejlen opgave 51 retter, i pluginen.
   mutate(
     "mutation: de nye sprog forsvinder",
     PRIVACY_LINE,
-    "preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection~i', $html )",
+    "if ( preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection~i', $anchor ) ) {",
     fx("dansk formular med dansk privatlivslink"),
     contractR6,
     false
   );
 
   // 9. En "forbedring" der kun læser `href`. Den må ikke slå den side hvor
-  //    privatlivsordet kun står i den tekst, brugeren ser.
+  //    privatlivsordet kun står i den tekst, brugeren ser. Opgave 56 tilføjede
+  //    `html_links_privacy()` omkring mønsteret, så mutationen skal ramme
+  //    **inde i** anchoren — ellers læser den stadig hele anchoren og mutationen
+  //    er grøn af den forkerte grund.
   mutate(
     "mutation: kun href",
     PRIVACY_LINE,
-    String.raw`preg_match( '~href\s*=\s*["\'][^"\']*(?:privacy|privatliv|persondata)[^"\']*["\']~i', $html )`,
+    String.raw`if ( preg_match( '~<a\b[^>]*href\s*=\s*["\'][^"\']*(?:privacy|privatliv|persondata)[^"\']*["\'][^>]*>~i', $anchor ) ) {`,
     fx("dansk privatlivsord kun i linkteksten, ikke i href'en"),
     contractR6,
     false
