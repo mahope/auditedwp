@@ -33,10 +33,17 @@
  *       side med præcis samme dokumenter. Det er den asymmetri, opgaven
  *       begynder med, målt som en regel og ikke som en anecdote.
  *
- * Selftesten muterer repoets egne filer: for hvert af de to mønstre fjernes de
+ * Selftesten muterer repoets egne filer: for hvert af de ti mønstre fjernes de
  * nye sprog fra en kopi af hver motor, og porten skal blive rød på den fixture
  * der bærer sproget. Uden det er porten en påstand — samme fejlklasse som
  * opgave 45 fund 2 og opgave 50 fund 1.
+ *
+ * **Opgave 54** udvidte porten fra to mønstre til **ti**: de otte øvrige mønstre
+ * i `LEGAL_PATTERNS` var målt i opgave 52 som *uden* nogen dansk, svensk eller
+ * nederlandsk stængel, og målt gennem `legal` i begge motorer var de **0 af 24**
+ * (mønster, sprog) fundet — den samme fejlklasse som opgave 52, en niveau længere
+ * nede i listen. R1, R2, R3 og R4 kræver nu alle otte, og hvert mønster har sin
+ * egen mutation mod hver motor.
  *
  * Hvad porten **ikke** dækker, og hvorfor: `LEGAL_PATTERNS` læses kun af de to
  * JS-motorer (målt: ingen forekomst i `plugin/eucomply.php`). Pluginens `legal`
@@ -90,6 +97,61 @@ const STEMS = {
     SV: "allm[aä]nna[ _-]?villkor",
     NL: "algemene[ _-]?(?:leverings)?voorwaarden",
   },
+
+  /*
+   * De otte øvrige mønstre, opgave 54. Samme to regler som ovenfor, og de er
+   * begge målt, ikke antaget:
+   *
+   * - **Helt ord, aldrig fragment.** `returbetingelser` (DA) og `returvillkor` (SV)
+   *   ligger i helt almindelig prosa om retur, så de er **ikke** stængler her;
+   *   sidenavnene er *Retur- og forbrugerrettigheder* og *Retur och ångerrätt*.
+   *   Der er fixtures på præcis begge fejltagelser.
+   * - **Separatoren afgør, om det er en side eller en sætning.** `om[-_]?os`
+   *   matcher stien `/om-os/`, men "om os" med mellemrum er dansk prosa for
+   *   *about us*. Samme mønster som opgave 52s `[ _-]?` mod `[_-]?`.
+   */
+  "Imprint / Legal notice": {
+    DA: "om[-_]os|virksomhedsoplysninger",
+    SV: "om[-_]oss|bolagsuppgifter",
+    NL: "colofon|bedrijfsgegevens",
+  },
+  "Accessibility statement": {
+    DA: "tilg[æa]ngelighedserkl[æa]ring|tilg[æa]ngelighedspolitik",
+    SV: "tillg[äa]nglighetsredog[öo]relse",
+    NL: "toegankelijkheidsverklaring|toegankelijkheidsbeleid",
+  },
+  "Legal / Imprint": {
+    // Dansk og svensk er **samme ord** — det er derfor de to rækker er
+    // ens, og derfor er der to fixtures. Ét sprog, én regel.
+    DA: "juridisk[ _-]?information",
+    SV: "juridisk[ _-]?information",
+    NL: "juridische[ _-]?informatie",
+  },
+  "Returns / Refund policy": {
+    DA: "retur[ _-]?(?:og[ _-]?)?(?:forbrugerrettigheder|fortrydelsesret|politik)|fortrydelsesret",
+    SV: "retur[ _-]?och[ _-]?[åa]ngerr[aä]tt",
+    NL: "retourbeleid|retour[ _-]?voorwaarden|retourtermijn",
+  },
+  "Shipping policy": {
+    DA: "fragt[ _-]?(?:og|&amp;?)?[ _-]?(?:levering|leverans|vilk[aå]r)|leveringsvilk[aå]r|forsendelsesvilk[aå]r",
+    SV: "frakt[ _-]?(?:och|&amp;?)?[ _-]?leverans|leverans(?:villkor|information)",
+    NL: "verzend[ _-]?(?:beleid|voorwaarden)|bezorg(?:informatie|beleid)",
+  },
+  "Data processing agreement": {
+    DA: "databehandleraftale",
+    SV: "personuppgiftsbitr[aä]desavtal|bitr[aä]desavtal[ _-]?f[öo]r[ _-]?personuppgifter",
+    NL: "verwerkersovereenkomst|verwerkersav[aä]nk|verwerkersbeding",
+  },
+  "Acceptable use / Fair use": {
+    DA: "acceptabel[ _-]?brug",
+    SV: "rimlig[ _-]?anv[aä]ndning",
+    NL: "redelijk[ _-]?gebruik",
+  },
+  "Environmental / Sustainability policy": {
+    DA: "b[æa]redygtighedspolitik|milj[øo]politik",
+    SV: "h[åa]llbarhetspolicy",
+    NL: "duurzaamheids?(?:beleid|verklaring)",
+  },
 };
 
 /** (mønster, sprog) → fixture. R1 kræver, at hver af disse findes. */
@@ -105,10 +167,42 @@ const COVERAGE = [
   ["Terms & Conditions", "EN", "engelsk butiksfooter med privacy, terms og cookie policy"],
   ["Terms & Conditions", "EN", "engelsk side hvor kun linkteksten siger Terms of Service"],
   ["Terms & Conditions", "DA", "dansk side med Vilkaar for brug og privatliv"],
+  //
+  // Opgave 54: hvert af de otte øvrige mønstre får **sin egen** fixture i
+  // hvert af de tre sprog. R1 genkender en række uden fixture, så tabellen
+  // ikke kan vokse i det skjulte — det er forskellen på "målt" og "påstået".
+  // Fixtures genereres nedenfor af FLERE_MONSTRE, så de ikke kan glide fra
+  // COVERAGE: hver række her har præcis én fixture med præcis dette navn.
+  ["Imprint / Legal notice", "DA", "dansk side med Imprint / Legal notice"],
+  ["Imprint / Legal notice", "SV", "svensk side med Imprint / Legal notice"],
+  ["Imprint / Legal notice", "NL", "nederlandsk side med Imprint / Legal notice"],
+  ["Accessibility statement", "DA", "dansk side med Accessibility statement"],
+  ["Accessibility statement", "SV", "svensk side med Accessibility statement"],
+  ["Accessibility statement", "NL", "nederlandsk side med Accessibility statement"],
+  ["Legal / Imprint", "DA", "dansk side med Legal / Imprint"],
+  ["Legal / Imprint", "SV", "svensk side med Legal / Imprint"],
+  ["Legal / Imprint", "NL", "nederlandsk side med Legal / Imprint"],
+  ["Returns / Refund policy", "DA", "dansk side med Returns / Refund policy"],
+  ["Returns / Refund policy", "SV", "svensk side med Returns / Refund policy"],
+  ["Returns / Refund policy", "NL", "nederlandsk side med Returns / Refund policy"],
+  ["Shipping policy", "DA", "dansk side med Shipping policy"],
+  ["Shipping policy", "SV", "svensk side med Shipping policy"],
+  ["Shipping policy", "NL", "nederlandsk side med Shipping policy"],
+  ["Data processing agreement", "DA", "dansk side med Data processing agreement"],
+  ["Data processing agreement", "SV", "svensk side med Data processing agreement"],
+  ["Data processing agreement", "NL", "nederlandsk side med Data processing agreement"],
+  ["Acceptable use / Fair use", "DA", "dansk side med Acceptable use / Fair use"],
+  ["Acceptable use / Fair use", "SV", "svensk side med Acceptable use / Fair use"],
+  ["Acceptable use / Fair use", "NL", "nederlandsk side med Acceptable use / Fair use"],
+  ["Environmental / Sustainability policy", "DA", "dansk side med Environmental / Sustainability policy"],
+  ["Environmental / Sustainability policy", "SV", "svensk side med Environmental / Sustainability policy"],
+  ["Environmental / Sustainability policy", "NL", "nederlandsk side med Environmental / Sustainability policy"],
 ];
 
 /** Sprog til det sprog navnet skriver. Kun til fejlbeskeder. */
 const SPROG = { DA: "dansk", SV: "svensk", NL: "nederlandsk", EN: "engelsk" };
+/** Samme i lowercase, fordi fixture-navne skriver «dansk side med …». */
+const SPROGNAVN = { DA: "dansk", SV: "svensk", NL: "nederlandsk" };
 
 const FIXTURES = [
   {
@@ -192,7 +286,249 @@ const FIXTURES = [
     name: "dansk side uden nogen juridisk side",
     html: '<html><body><main><h1>Kontakt</h1><p>Ring til os på 12 34 56 78.</p></main></body></html>',
   },
+  {
+    name: "dansk side med Imprint / Legal notice",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/om-os/">Om os</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Imprint / Legal notice",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/om-oss/">Om oss</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Imprint / Legal notice",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/colofon/">Colofon</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Accessibility statement",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/tilgaengelighedserklaering/">Tilgængelighedserklæring</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Accessibility statement",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/tillganglighetsredogorelse/">Tillgänglighetsredogörelse</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Accessibility statement",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/toegankelijkheidsverklaring/">Toegankelijkheidsverklaring</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Legal / Imprint",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/juridisk-information/">Juridisk information</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Legal / Imprint",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/juridisk-information/">Juridisk information</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Legal / Imprint",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/juridische-informatie/">Juridische informatie</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Returns / Refund policy",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/retur-og-forbrugerrettigheder/">Retur- og forbrugerrettigheder</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Returns / Refund policy",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/retur-och-angerratt/">Retur och ångerrätt</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Returns / Refund policy",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/retourbeleid/">Retourbeleid</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Shipping policy",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/fragt-og-levering/">Fragt og levering</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Shipping policy",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/frakt-och-leverans/">Frakt och leverans</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Shipping policy",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/verzendbeleid/">Verzendbeleid</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Data processing agreement",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/databehandleraftale/">Databehandleraftale</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Data processing agreement",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/personuppgiftsbitradesavtal/">Personuppgiftsbiträdesavtal</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Data processing agreement",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/verwerkersovereenkomst/">Verwerkersovereenkomst</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Acceptable use / Fair use",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/acceptabel-brug/">Acceptabel brug</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Acceptable use / Fair use",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/rimlig-anvandning/">Rimlig användning</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Acceptable use / Fair use",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/redelijk-gebruik/">Redelijk gebruik</a></footer></body></html>',
+  },
+  {
+    name: "dansk side med Environmental / Sustainability policy",
+    // Ét juridisk link i dansk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri fragt over 499 kr.</p></main>'
+      + '<footer><a href="/baeredygtighedspolitik/">Bæredygtighedspolitik</a></footer></body></html>',
+  },
+  {
+    name: "svensk side med Environmental / Sustainability policy",
+    // Ét juridisk link i svensk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Fri frakt över 499 kr.</p></main>'
+      + '<footer><a href="/hallbarhetspolicy/">Hållbarhetspolicy</a></footer></body></html>',
+  },
+  {
+    name: "nederlandsk side med Environmental / Sustainability policy",
+    // Ét juridisk link i nederlandsk, præcis som en butiksfooter skriver det: stien er
+    // ASCII-formen, fordi det er den et CMS genererer, og den accentrede tekst
+    // står i linkteksten, fordi det er den læseren ser.
+    html: '<html><body><main><h1>Butik</h1><p>Gratis verzending boven 49 EUR.</p></main>'
+      + '<footer><a href="/duurzaamheidsbeleid/">Duurzaamheidsbeleid</a></footer></body></html>',
+  },
+  /*
+   * R3 for opgave 54. Fire prosa-sætninger, der **kunne** være fundet af en
+   * bredere stængel. De er de fire fejltagelser porten skal se, målt og ikke
+   * antaget:
+   */
+  {
+    name: "dansk side med Om os som overskrift og prosa, intet juridisk link",
+    // `om os` med **mellemrum** er dansk for *about us* og står i enhver
+    // dansk butiksom-side. Stænglen er derfor `om[-_]?os`: bindestreg og
+    // understreg, aldrig mellemrum.
+    html: '<html><body><main><h1>Om os</h1><p>Læs mere om os under '
+      + 'kontakt, eller ring til os på 12 34 56 78.</p></main></body></html>',
+  },
+  {
+    name: "dansk sætning med returbetingelser og returret, intet juridisk link",
+    // `returbetingelser` er helt almindelig prosa om retur. Havde stænglen være
+    // `returbetingelser`, ville denne side få et juridisk link den ikke har.
+    html: '<html><body><main><p>Du har 14 dages returret, og vores '
+      + 'returbetingelser gælder for alle køb.</p></main></body></html>',
+  },
+  {
+    name: "svensk sætning med returregler og returvillkoren, intet juridisk link",
+    // Samme fejl i svensk: `returvillkor` ligger i *returvillkoren*, som står på
+    // den svensk butiksside i opgave 52 allerede. Den nye fixture tilføjer
+    // `returregler`, fordi det er den anden stængel, en bred rettelse ville tage.
+    html: '<html><body><main><p>Du kan returnera inom 14 dagar enligt våra '
+      + 'returregler; returvillkoren framgår av orderbekräftelsen.</p></main></body></html>',
+  },
+  {
+    name: "nederlandse zin met verzendkosten, geen juridische link",
+    // `verzendkosten` står i hver Nederlandsk butiksside. `verzendbeleid` må
+    // derfor kræve sit eget suffiks, ikke bare `verzend`.
+    html: '<html><body><main><p>Verzendkosten worden berekend bij '
+      + 'afrekenen, en levering duurt twee werkdagen.</p></main></body></html>',
+  },
 ];
+
+/*
+ * Fixtures for de otte øvrige mønstre, opgave 54. De **genereres** af den ene
+ * tabel, så en fixture og dens dækningsrække ikke kan glide fra hinanden: de
+ * deler navnet, og R1 genkender en række uden fixture.
+ */
+const FLERE_MONSTRE = [  ["Imprint / Legal notice", "DA", "/om-os/", "Om os", "Fri fragt over 499 kr."],  ["Imprint / Legal notice", "SV", "/om-oss/", "Om oss", "Fri frakt över 499 kr."],  ["Imprint / Legal notice", "NL", "/colofon/", "Colofon", "Gratis verzending boven 49 EUR."],  ["Accessibility statement", "DA", "/tilgaengelighedserklaering/", "Tilgængelighedserklæring", "Fri fragt over 499 kr."],  ["Accessibility statement", "SV", "/tillganglighetsredogorelse/", "Tillgänglighetsredogörelse", "Fri frakt över 499 kr."],  ["Accessibility statement", "NL", "/toegankelijkheidsverklaring/", "Toegankelijkheidsverklaring", "Gratis verzending boven 49 EUR."],  ["Legal / Imprint", "DA", "/juridisk-information/", "Juridisk information", "Fri fragt over 499 kr."],  ["Legal / Imprint", "SV", "/juridisk-information/", "Juridisk information", "Fri frakt över 499 kr."],  ["Legal / Imprint", "NL", "/juridische-informatie/", "Juridische informatie", "Gratis verzending boven 49 EUR."],  ["Returns / Refund policy", "DA", "/retur-og-forbrugerrettigheder/", "Retur- og forbrugerrettigheder", "Fri fragt over 499 kr."],  ["Returns / Refund policy", "SV", "/retur-och-angerratt/", "Retur och ångerrätt", "Fri frakt över 499 kr."],  ["Returns / Refund policy", "NL", "/retourbeleid/", "Retourbeleid", "Gratis verzending boven 49 EUR."],  ["Shipping policy", "DA", "/fragt-og-levering/", "Fragt og levering", "Fri fragt over 499 kr."],  ["Shipping policy", "SV", "/frakt-och-leverans/", "Frakt och leverans", "Fri frakt över 499 kr."],  ["Shipping policy", "NL", "/verzendbeleid/", "Verzendbeleid", "Gratis verzending boven 49 EUR."],  ["Data processing agreement", "DA", "/databehandleraftale/", "Databehandleraftale", "Fri fragt over 499 kr."],  ["Data processing agreement", "SV", "/personuppgiftsbitradesavtal/", "Personuppgiftsbiträdesavtal", "Fri frakt över 499 kr."],  ["Data processing agreement", "NL", "/verwerkersovereenkomst/", "Verwerkersovereenkomst", "Gratis verzending boven 49 EUR."],  ["Acceptable use / Fair use", "DA", "/acceptabel-brug/", "Acceptabel brug", "Fri fragt over 499 kr."],  ["Acceptable use / Fair use", "SV", "/rimlig-anvandning/", "Rimlig användning", "Fri frakt över 499 kr."],  ["Acceptable use / Fair use", "NL", "/redelijk-gebruik/", "Redelijk gebruik", "Gratis verzending boven 49 EUR."],  ["Environmental / Sustainability policy", "DA", "/baeredygtighedspolitik/", "Bæredygtighedspolitik", "Fri fragt over 499 kr."],  ["Environmental / Sustainability policy", "SV", "/hallbarhetspolicy/", "Hållbarhetspolicy", "Fri frakt över 499 kr."],  ["Environmental / Sustainability policy", "NL", "/duurzaamheidsbeleid/", "Duurzaamheidsbeleid", "Gratis verzending boven 49 EUR."],];
+
+for (const [pat, lang, href, tekst, fyld] of FLERE_MONSTRE) {
+  FIXTURES.push({
+    name: `${SPROGNAVN[lang]} side med ${pat}`,
+    html: '<html><body><main><h1>Butik</h1><p>' + fyld + '</p></main>'
+      + `<footer><a href="${href}">${tekst}</a></footer></body></html>`,
+  });
+}
 
 /**
  * Hvilke mønstre en motor fandt. Læst ud af `detail` — den tekst kunden ser i
@@ -452,6 +788,55 @@ if (process.argv.includes("--selftest")) {
       fixture: "svensk butiksfooter med integritetsskydd, allmänna villkor och kakpolicy",
       pattern: "Terms & Conditions",
     },
+    {
+      name: "imprint: de nye sprog forsvinder",
+      before: "|om[-_]?os|virksomhedsoplysninger|om[-_]?oss|bolagsuppgifter|colofon|bedrijfsgegevens|kvk[ _-]?nummer",
+      after: "",
+      fixture: "dansk side med Imprint / Legal notice",
+      pattern: "Imprint / Legal notice",
+    },    {
+      name: "accessibility: de nye sprog forsvinder",
+      before: "|tilg[æa]ngelighedserkl[æa]ring|tilg[æa]ngelighedspolitik|tillg[äa]nglighetsredog[öo]relse|toegankelijkheidsverklaring|toegankelijkheidsbeleid",
+      after: "",
+      fixture: "nederlandsk side med Accessibility statement",
+      pattern: "Accessibility statement",
+    },    {
+      name: "legal info: de nye sprog forsvinder",
+      before: "|juridisk[ _-]?information|juridische[ _-]?informatie",
+      after: "",
+      fixture: "svensk side med Legal / Imprint",
+      pattern: "Legal / Imprint",
+    },    {
+      name: "returns: de nye sprog forsvinder",
+      before: "|retur[ _-]?(?:og[ _-]?)?(?:forbrugerrettigheder|fortrydelsesret|politik)|fortrydelsesret|retur[ _-]?och[ _-]?[åa]ngerr[aä]tt|retourbeleid|retour[ _-]?voorwaarden|retourtermijn",
+      after: "",
+      fixture: "dansk side med Returns / Refund policy",
+      pattern: "Returns / Refund policy",
+    },    {
+      name: "shipping: de nye sprog forsvinder",
+      before: "|fragt[ _-]?(?:og|&amp;?)?[ _-]?(?:levering|leverans|vilk[aå]r)|leveringsvilk[aå]r|forsendelsesvilk[aå]r|frakt[ _-]?(?:och|&amp;?)?[ _-]?leverans|leverans(?:villkor|information)|verzend[ _-]?(?:beleid|voorwaarden)|bezorg(?:informatie|beleid)",
+      after: "",
+      fixture: "nederlandsk side med Shipping policy",
+      pattern: "Shipping policy",
+    },    {
+      name: "dpa: de nye sprog forsvinder",
+      before: "|databehandleraftale|personuppgiftsbitr[aä]desavtal|bitr[aä]desavtal[ _-]?f[öo]r[ _-]?personuppgifter|verwerkersovereenkomst|verwerkersav[aä]nk|verwerkersbeding",
+      after: "",
+      fixture: "svensk side med Data processing agreement",
+      pattern: "Data processing agreement",
+    },    {
+      name: "acceptable use: de nye sprog forsvinder",
+      before: "|acceptabel[ _-]?brug|rimlig[ _-]?anv[aä]ndning|redelijk[ _-]?gebruik",
+      after: "",
+      fixture: "svensk side med Acceptable use / Fair use",
+      pattern: "Acceptable use / Fair use",
+    },    {
+      name: "environmental: de nye sprog forsvinder",
+      before: "|b[æa]redygtighedspolitik|milj[øo]politik|h[åa]llbarhetspolicy|duurzaamheids?(?:beleid|verklaring)",
+      after: "",
+      fixture: "dansk side med Environmental / Sustainability policy",
+      pattern: "Environmental / Sustainability policy",
+    },
   ];
 
   for (const m of MUTATIONS) {
@@ -488,18 +873,40 @@ if (process.argv.includes("--selftest")) {
     }
   }
 
+  // 6b. Opgave 54: de fire prosa-fejltagelser. Samme regel som 4 og 5, men på de
+  //     fixtures der bærer de nye stængler — ellers ville R3 kun være prøvet
+  //     mod de to mønstre fra opgave 52.
+  expectRed("R3 (dansk «om os» i prosa)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: Imprint / Legal notice." }],
+  ], fx("dansk side med Om os som overskrift og prosa, intet juridisk link"));
+  expectRed("R3 (dansk returbetingelser)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: Returns / Refund policy." }],
+  ], fx("dansk sætning med returbetingelser og returret, intet juridisk link"));
+  expectRed("R3 (svensk returregler)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: Returns / Refund policy." }],
+  ], fx("svensk sætning med returregler og returvillkoren, intet juridisk link"));
+  expectRed("R3 (nederlandsk verzendkosten)", contractR3, [
+    ["motoren i repoet", { pass: true, warn: false, label: "1 legal page linked", detail: "Found on page: Shipping policy." }],
+  ], fx("nederlandse zin met verzendkosten, geen juridische link"));
+
   // 7. En (mønster, sprog)-række i tabellen uden fixture er rød. Den kalder
   //    portens egen kontrakt med den fixture fjernet, så den ikke kan være grøn
   //    ved at kræve noget andet end det porten kræver.
   const mistet = FIXTURES.filter((f) => f.name !== COVERAGE[0][2]);
   expectRed("R1 (tabellen kræver en fixture)", contractCoverage, COVERAGE, STEMS, mistet);
 
-  // 8. Samme regel for en stængel, portens egen liste ikke har.
+  // 8. Samme regel for en stængel, portens egen liste ikke har. Den peger på et
+  //    mønster, opgave 54 **ikke** rettede — `Whistleblower / Hinweisgeber` har
+  //    stadig ingen dansk stængel, fordi den ikke var i scopet. Det er den
+  //    ærlige række: en negativ case må ikke pege på en, der nu er dækket, for
+  //    så bliver den grøn og porten kan ikke se den fejl den er skrevet til at se.
+  //    Det skete her: casen pegede på `Shipping policy` DA, som opgave 54 netop
+  //    rettede, og selftesten blev rød med "gav en grøn port".
   expectRed("R1 (tabellen kræver en stængel)", contractCoverage,
-    [...COVERAGE, ["Shipping policy", "DA", "dansk side med kun ét juridisk link"]],
+    [...COVERAGE, ["Whistleblower / Hinweisgeber", "DA", "dansk side med kun ét juridisk link"]],
     STEMS, FIXTURES);
 
-  const forventet = 6 + MUTATIONS.length * 4 + 2;
+  const forventet = 10 + MUTATIONS.length * 4 + 2;
   if (caught.length !== forventet) {
     failures.push(`selftest: forventede ${forventet} negative cases fanget, fangede ${caught.length}`);
   } else {
