@@ -277,6 +277,11 @@ else
   run "tools/check_live_hardening.py" python3 tools/check_live_hardening.py
 fi
 
+# ------------------------------------------------- 13. Døde betalingsudbydere
+hdr "Ingen død betalingsudbyder i koden der kan nå en kunde"
+run "tools/check_dead_providers.py --selftest" python3 tools/check_dead_providers.py --selftest
+run "tools/check_dead_providers.py" python3 tools/check_dead_providers.py
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
