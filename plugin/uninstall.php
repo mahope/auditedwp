@@ -42,6 +42,7 @@ if ( '' !== $eucomply_key ) {
 // ── Options to remove ────────────────────────────────────────────────────────
 $options = array(
     'eucomply_scan_results',
+    'eucomply_scan_history',
     'eucomply_last_scan',
     'eucomply_pro_key',
     'eucomply_pro_verified',

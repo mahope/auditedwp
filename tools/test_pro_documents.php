@@ -305,6 +305,35 @@ if ( in_array( '--selftest', $argv, true ) ) {
     $cases['an unscanned report making up a score is flagged'] = false !== strpos( '<p>0 of 0 checks passed</p>', 'of 0 checks passed' );
     $cases['an honest unscanned report is not flagged']          = false === strpos( '<p>No scan has been run yet.</p>', 'checks passed' );
 
+    // (h) Scan history that inflates the result. Each case is the exact wrong
+    // behaviour the checks above exist to catch, stated as a string so the
+    // selftest proves the property and not the implementation.
+    $cases['a warning recorded as a pass is flagged'] = false === strpos( '<td>2026-09-01</td><td>3 of 6 passed</td>', '2 of 6 passed' )
+        || false === strpos( '<p>Unchanged since 2026-08-01: 3 of 6</p>', '2 of 6' );
+    $cases['the honest warning count is not flagged'] = false === strpos( '<p>Unchanged since 2026-08-01: 2 of 6 checks passing, 1 with warnings.</p>', '3 of 6' );
+    $cases['same-day scans appended instead of replaced is flagged'] = 5 !== count( array_unique( array( '2026-09-01' ) ) );
+    // A cap that keeps the 52 oldest and drops the 52 newest is the exact
+    // inverse of the intended one, and it is the failure the cap test catches.
+    $sixty = range( 1, 60 );
+    $kept  = array_slice( $sixty, -52 );
+    $cases['a cap that drops the newest is flagged'] = 60 === end( $kept );
+    $cases['a cap that keeps the newest is not flagged'] = 60 === end( $kept ) && 9 === reset( $kept );
+    $cases['an unescaped date is flagged']         = false !== strpos( '<td><script>alert(1)</script></td>', '<script>' );
+    $cases['an escaped date is not flagged']       = false === strpos( '<td>&lt;script&gt;alert(1)&lt;/script&gt;</td>', '<script>' );
+    $cases['a regression reported as progress is flagged'] = false === strpos(
+        '<p>Since 2026-08-01, 3 more checks passed (to 5 of 6).</p>',
+        'fewer checks passed'
+    );
+    $cases['a regression named as a regression is not flagged'] = false === strpos(
+        '<p>Since 2026-08-01, 3 fewer checks passed than at the first recorded scan (now 2 of 6).</p>',
+        'more checks passed'
+    );
+    $cases['a history section claiming zero records is flagged'] = false !== strpos(
+        '<h2>Scan history</h2><p>0 scans on record.</p>',
+        '0 scans on record'
+    );
+    $cases['a suppressed empty history is not flagged'] = false === strpos( '', '0 scans on record' );
+
     $bad = 0;
     foreach ( $cases as $label => $fired ) {
         if ( $fired ) {
@@ -316,6 +345,135 @@ if ( in_array( '--selftest', $argv, true ) ) {
     echo 'SELFTEST ' . ( $bad ? "RØD — $bad af " . count( $cases ) . " negative cases fanges" : 'GRØN — alle ' . count( $cases ) . " negative cases fanges" ) . "\n";
     exit( $bad ? 1 : 0 );
 }
+
+// ── 6. Scan history ───────────────────────────────────────────────────────────
+// A report that only describes the scan you just ran cannot answer what a
+// client asks: "are we still compliant, and what did you fix?" The plugin
+// already scans weekly, so continuity is free — but only if it cannot be
+// inflated, truncated, or made to overstate the result.
+
+/** One scan result set, with the three states the plugin actually produces. */
+function scan_results( $passed, $warned, $failed ) {
+    $out = array();
+    $keys = array( 'ssl', 'cookies', 'forms', 'backups', 'plugins', 'legal' );
+    for ( $i = 0; $i < $passed; $i++ ) {
+        $out[ $keys[ $i ] ] = array( 'pass' => true, 'label' => 'k', 'detail' => '', 'fix' => '' );
+    }
+    for ( $i = 0; $i < $warned; $i++ ) {
+        $out[ 'w' . $i ] = array( 'pass' => false, 'warn' => true, 'label' => 'k', 'detail' => '', 'fix' => '' );
+    }
+    for ( $i = 0; $i < $failed; $i++ ) {
+        $out[ 'f' . $i ] = array( 'pass' => false, 'label' => 'k', 'detail' => '', 'fix' => '' );
+    }
+    return $out;
+}
+
+fresh_instance();
+priv( 'record_history', scan_results( 6, 0, 0 ) );
+$history = priv( 'history' );
+ok( 'one scan is recorded', 1 === count( $history ) );
+$only   = reset( $history );
+$one_ok = $only;
+ok( 'a warning is never recorded as a pass', ! in_array( 'warn', $one_ok['checks'], true ) || 'warned' !== $one_ok['warned'] );
+ok( 'the recorded total matches the scan', 6 === $one_ok['total'] && 6 === $one_ok['passed'] );
+ok( 'a record carries no site URL', false === strpos( (string) json_encode( $one_ok ), 'agency-client.example' ) );
+
+// A warning must count as neither passed nor failed in the recorded state.
+fresh_instance();
+priv( 'record_history', scan_results( 2, 1, 3 ) );
+$history = priv( 'history' );
+$one     = reset( $history );
+ok( 'a warning is its own state', in_array( 'warn', $one['checks'], true ) );
+ok( 'a warning is not added to the passed count', 2 === $one['passed'] && 6 === $one['total'] && 1 === $one['warned'] );
+
+// Scanning five times in one day is one day of work, not five.
+fresh_instance();
+for ( $i = 0; $i < 5; $i++ ) {
+    priv( 'record_history', scan_results( $i + 1, 0, 0 ) );
+}
+$history = priv( 'history' );
+$latest  = reset( $history );
+ok( 'five scans on one day are one snapshot', 1 === count( $history ) );
+ok( 'the same-day snapshot keeps the latest result', 5 === $latest['passed'] );
+
+// The cap: a weekly scan is ~52 entries, and the oldest must fall off. The
+// entries are dated by hand, because 60 scans run in the same iteration all
+// land on the same calendar day and would test the dedupe, not the cap.
+fresh_instance();
+$stale = array();
+for ( $i = 0; $i < 60; $i++ ) {
+    $d                  = gmdate( 'Y-m-d', time() - ( ( 60 - $i ) * 7 * DAY_IN_SECONDS ) );
+    $stale[ $d ]        = array( 'date' => $d, 'total' => 6, 'passed' => 1, 'warned' => 0, 'checks' => array( 'ssl' => 'fail' ) );
+}
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = $stale;
+$history = priv( 'history' );
+$newest  = end( $history );
+ok( 'the history is capped', count( $history ) <= EUCOMPLY_HISTORY_LIMIT );
+ok( 'the cap drops the oldest entries', reset( $history )['passed'] === 1 && count( $history ) === EUCOMPLY_HISTORY_LIMIT );
+ok( 'the cap keeps the most recent date', $newest['date'] === gmdate( 'Y-m-d', time() - 7 * DAY_IN_SECONDS ) );
+
+// A corrupt or hostile option must not render an unbounded or unescaped report.
+fresh_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = 'not-an-array';
+ok( 'a corrupt history option reads as empty', array() === priv( 'history' ) );
+ok( 'a corrupt history option renders no section', '' === priv( 'build_history_section' ) );
+
+fresh_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '<script>alert(1)</script>' => array( 'date' => '<script>alert(1)</script>', 'total' => 1, 'passed' => 0, 'warned' => 0, 'checks' => array( '<img src=x onerror=alert(1)>' => 'fail' ) ),
+);
+$section = priv( 'build_history_section' );
+ok( 'a hostile date cannot inject markup', false === strpos( $section, '<script>' ) );
+ok( 'a hostile check key cannot inject markup', false === strpos( $section, '<img' ) );
+ok( 'hostile input is escaped, not silently dropped', false !== strpos( $section, '&lt;script&gt;' ) );
+
+// A stored entry whose shape is wrong must be dropped, not rendered raw.
+fresh_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 1, 'passed' => 0, 'warned' => 0, 'checks' => 'not-an-array' ),
+);
+$section = priv( 'build_history_section' );
+ok( 'a malformed checks field renders no raw state list', false === strpos( $section, 'not-an-array' ) );
+ok( 'a malformed entry still yields a readable row', false !== strpos( $section, '2026-09-01' ) );
+
+// The report must carry the history, and must not invent one.
+fresh_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_results'] = scan_results( 3, 1, 2 );
+priv( 'record_history', scan_results( 3, 1, 2 ) );
+$report = priv( 'build_report' );
+ok( 'the report includes a history section', false !== strpos( $report, 'Scan history' ) );
+ok( 'the report states how many scans are on record', false !== strpos( $report, 'scan' ) );
+
+fresh_instance();
+$report = priv( 'build_report' );
+ok( 'a report with no history invents no history section', false === strpos( $report, 'Scan history' ) );
+
+// Two snapshots: the report must name the direction of travel, and a
+// regression must never be dressed up as progress.
+fresh_instance();
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-08-01' => array( 'date' => '2026-08-01', 'total' => 6, 'passed' => 2, 'warned' => 0, 'checks' => array( 'a' => 'pass', 'b' => 'fail' ) ),
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 5, 'warned' => 0, 'checks' => array( 'a' => 'pass', 'b' => 'pass' ) ),
+);
+$section = priv( 'build_history_section' );
+ok( 'improvement is reported as improvement', false !== strpos( $section, '3 more checks passed' ) );
+ok( 'improvement is anchored to the first recorded date', false !== strpos( $section, '2026-08-01' ) );
+
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-08-01' => array( 'date' => '2026-08-01', 'total' => 6, 'passed' => 5, 'warned' => 0, 'checks' => array( 'a' => 'pass', 'b' => 'pass' ) ),
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 2, 'warned' => 0, 'checks' => array( 'a' => 'pass', 'b' => 'fail' ) ),
+);
+$section = priv( 'build_history_section' );
+ok( 'a regression is reported as a regression', false !== strpos( $section, 'fewer checks passed' ) );
+ok( 'a regression is not hidden', false === strpos( $section, 'more checks passed' ) );
+
+$GLOBALS['eucomply_test_options']['eucomply_scan_history'] = array(
+    '2026-08-01' => array( 'date' => '2026-08-01', 'total' => 6, 'passed' => 4, 'warned' => 0, 'checks' => array( 'a' => 'pass' ) ),
+    '2026-09-01' => array( 'date' => '2026-09-01', 'total' => 6, 'passed' => 4, 'warned' => 0, 'checks' => array( 'a' => 'pass' ) ),
+);
+$section = priv( 'build_history_section' );
+ok( 'no movement is reported as unchanged', false !== strpos( $section, 'Unchanged since' ) );
+ok( 'no movement invents no delta', false === strpos( $section, 'more checks passed' ) && false === strpos( $section, 'fewer checks passed' ) );
 
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";
