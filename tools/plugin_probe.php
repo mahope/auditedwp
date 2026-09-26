@@ -224,7 +224,26 @@ class EUComplyProbeWPDB {
 $GLOBALS['wpdb']       = new EUComplyProbeWPDB();
 $GLOBALS['wp_version'] = $GLOBALS['eucomply_probe_state']['wp_version'];
 
-require_once __DIR__ . '/../plugin/eucomply.php';
+/**
+ * The plugin file this probe loads.
+ *
+ * `EUCOMPLY_PLUGIN_FILE` points it somewhere else, and that exists for one
+ * reason: a port that claims it can fail has to prove it by running the *real*
+ * product with a defect in it, not by asserting about a copy of the verdict. A
+ * mutated copy of `plugin/eucomply.php` in a temp directory is the honest way
+ * to do that — see `tools/check_forms_parity.mjs`. The check list is read from
+ * the same file, so a probe pointed at a plugin that has lost a check answers
+ * about that plugin.
+ */
+function eucomply_probe_plugin_file() {
+    $override = getenv( 'EUCOMPLY_PLUGIN_FILE' );
+    if ( is_string( $override ) && '' !== $override && is_readable( $override ) ) {
+        return $override;
+    }
+    return __DIR__ . '/../plugin/eucomply.php';
+}
+
+require_once eucomply_probe_plugin_file();
 
 // ── Read the fixture ──────────────────────────────────────────────────────────
 
@@ -254,7 +273,7 @@ $GLOBALS['eucomply_test_home']    = (string) $GLOBALS['eucomply_probe_state']['h
  * @return array<string,string> key => method name.
  */
 function eucomply_probe_check_map() {
-    $source = file_get_contents( __DIR__ . '/../plugin/eucomply.php' );
+    $source = file_get_contents( eucomply_probe_plugin_file() );
     if ( ! preg_match( '/public function run_checks\(\).*?\n    \}/s', $source, $block ) ) {
         return array();
     }

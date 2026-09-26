@@ -373,6 +373,21 @@ hdr "Etiketten har samme polaritet som dommet — i alle tre motorer"
 run "tools/check_verdict_labels.mjs --selftest" node tools/check_verdict_labels.mjs --selftest
 run "tools/check_verdict_labels.mjs" node tools/check_verdict_labels.mjs
 
+# ------------------------ 20. Er den betalte `forms` svagere end den gratis?
+# Opgave 49 fandt, at `check_forms()` læste kun WordPress-tilstanden, mens
+# motoren læser markup'en: en håndbygget formular fejlede i den gratis scanner
+# og bestod i den rapport et bureau betaler for. Trin 15 og 19 holdt de to
+# produkter sammen på de ni URL-tjek, men `forms` var ikke blandt dem.
+# Denne port kører `check_forms()` og motorens `forms` på de samme ni fixtures
+# og kræver tre regler: pluginen består aldrig noget motoren fejler (R1), en
+# `<form>` uden privatlivslink består aldrig uanset WordPress (R2), og en fejl
+# uden en kilde i fixturet er rød (R3) — ellers ville R1 alene være opfyldt af
+# en plugin der fejler alt. Selftesten muterer repoets egen `check_forms()` i begge
+# retninger, så porten kan ikke være grøn af en fejl, den ikke kan se.
+hdr "forms i den betalte vare mod forms i den gratis scanner"
+run "tools/check_forms_parity.mjs" node tools/check_forms_parity.mjs
+run "tools/check_forms_parity.mjs --selftest" node tools/check_forms_parity.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

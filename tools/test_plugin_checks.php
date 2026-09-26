@@ -169,6 +169,15 @@ $FAILURES = array(
         'active'  => array( 'complianz-gdpr/cmp-functions.php', 'updraftplus/updraftplus.php' ),
         'options' => array(),
     ),
+    // Opgave 50: en håndbygget formular er usynlig i WordPress-tilstanden, så
+    // den skal fejles med markup, ikke med plugins. Uden denne fixture nåede
+    // `forms` aldrig den røde dom — den ville have været et dødt tjek igen.
+    'formular i markup uden privatlivsside' => array(
+        'html'    => '<html><body><main><form action="#" method="post">'
+            . '<input name="email" type="email"></form></main></body></html>',
+        'active'  => array( 'complianz-gdpr/cmp-functions.php', 'updraftplus/updraftplus.php' ),
+        'options' => array(),
+    ),
     'ingen backup-plugin' => array( 'active' => array( 'complianz-gdpr/cmp-functions.php', 'wpforms-lite/wpforms.php' ) ),
     'backup 60 dage gammel' => array( 'updraft' => time() - 60 * EUCOMPLY_TEST_DAY ),
     'core ude af date' => array(
@@ -309,21 +318,21 @@ foreach ( $fail_labels as $key => $labels ) {
 $unreadable = probe( to_objects( healthy_site( array( 'error' => 'cURL error 28: Operation timed out' ) ) ) );
 ok( 'en ulæselig forside gav et resultat', empty( $unreadable['_error'] ) );
 if ( empty( $unreadable['_error'] ) ) {
-    $NEEDS_FRONT_PAGE = array_merge( $SHARED, array( 'ssl' ) );
+    $NEEDS_FRONT_PAGE = array_merge( $SHARED, array( 'ssl', 'forms' ) );
     foreach ( $NEEDS_FRONT_PAGE as $key ) {
         ok( "$key er ikke bestået på en ulæselig forside", empty( $unreadable[ $key ]['pass'] ) );
         ok( "$key siger at det ikke kørte", ! empty( $unreadable[ $key ]['warn'] ) );
     }
-    // Og de seks tjek der læser forsiden skal alle sige det samme, så de ikke kan
+    // Og de syv tjek der læser forsiden skal alle sige det samme, så de ikke kan
     // være lige heldige: ét af dem, der læser videre på en fejl, ville være en
-    // ny død etiket.
+    // ny død etiket. `forms` kom med i 1.3.16, fordi den læser markup'en nu.
     $say_could_not = 0;
     foreach ( $NEEDS_FRONT_PAGE as $key ) {
         if ( false !== stripos( (string) $unreadable[ $key ]['label'], 'could not read' ) ) {
             $say_could_not++;
         }
     }
-    ok( "alle seks tjek der læser forsiden siger at de ikke kørte ($say_could_not/6)", 6 === $say_could_not );
+    ok( "alle syv tjek der læser forsiden siger at de ikke kørte ($say_could_not/7)", 7 === $say_could_not );
 }
 
 // ── Kontrakt 5: én hentning pr. scanning, og ingen anden slags ────────────────
