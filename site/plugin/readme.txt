@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.11
+Stable tag: 1.3.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,18 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.12 (2026-09-26) =
+* Fix: the five front-page checks introduced in 1.3.11 never matched anything. The signature list is an array of [name, pattern] pairs, and the matcher read them as if they were named keys, so every pattern was empty and the plugin reported "no trackers detected" on a page with Google Analytics and Meta Pixel in its markup. A WordPress site could pass the tracker check in the dashboard and fail the same check on the free scanner, and a Pro report sent to a client would say so.
+* Affected checks: Google Consent Mode v2, IAB TCF, third-party trackers, and DORA page signals. The security-header check was not affected.
+* The five checks are now measured against the same fixtures the free scanner runs, so the two products cannot quietly disagree about the same website again.
+* If you scanned your site between 1.3.11 and now, treat those four results as unknown rather than as clean: run a new scan.
+
+= 1.3.12 (2026-09-26) =
+* Fix: the five front-page checks introduced in 1.3.11 never matched anything. The signature list is an array of [name, pattern] pairs, and the matcher read them as if they were named keys, so every pattern was empty and the plugin reported "no trackers detected" on a page with Google Analytics and Meta Pixel in its markup. A WordPress site could pass the tracker check in the dashboard and fail the same check on the free scanner, and a Pro report sent to a client would say so.
+* Affected checks: Google Consent Mode v2, IAB TCF, third-party trackers, and DORA page signals. The security-header check was not affected.
+* The five checks are now measured against the same fixtures the free scanner runs, so the two products cannot quietly disagree about the same website again.
+* If you scanned your site between 1.3.11 and now, treat those four results as unknown rather than as clean: run a new scan.
 
 = 1.3.11 (2026-09-26) =
 * Five more checks, taken from the free universal scanner: Google Consent Mode v2, IAB TCF, trackers loaded without a consent platform, the security headers the front page returns, and DORA page signals. The plugin now runs the same eleven checks the scanner shows you, plus the two WordPress facts only a plugin can see (backups, plugin/core health).
