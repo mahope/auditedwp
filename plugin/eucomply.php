@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.13
+ * Version:           1.3.14
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.13' );
+define( 'EUCOMPLY_VERSION', '1.3.14' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1018,6 +1018,17 @@ class EUComply {
 
     /**
      * Check SSL/HTTPS.
+     *
+     * HSTS is read from `front_page()` — the response the visitor's browser
+     * actually receives, and the one the other ten checks were measured on.
+     *
+     * It used to send its own `wp_remote_head()`, which cost a second request
+     * per scan and, on a server that answers HEAD with a 403 or a timeout, put
+     * "HTTPS unreachable" next to ten green checks that had just read the very
+     * same site successfully. It also had the two halves disagree: a front page
+     * that could not be read gave ten "could not read the site" results and a
+     * green `ssl` from a HEAD that happened to work. One request, one answer,
+     * and a check that did not run is never a pass — same as the other five.
      */
     private function check_ssl() {
         $home = get_home_url();
@@ -1044,19 +1055,23 @@ class EUComply {
             );
         }
 
-        // Check HSTS header.
-        $response = wp_remote_head( $home, array( 'timeout' => 5 ) );
-        if ( is_wp_error( $response ) ) {
-            return array(
-                'pass'    => false,
-                'label'   => 'HTTPS unreachable',
-                'detail'  => 'Could not verify HTTPS — ' . $response->get_error_message(),
-                'fix'     => 'Check server configuration.',
-            );
+        // Check HSTS header, from the front page response the other ten checks read.
+        $page = $this->front_page();
+        if ( empty( $page['ok'] ) ) {
+            return $this->unreadable( 'HTTPS', $page['error'] );
         }
 
-        $hsts = wp_remote_retrieve_header( $response, 'strict-transport-security' );
-        if ( empty( $hsts ) ) {
+        $hsts = '';
+        if ( isset( $page['headers'] ) && is_array( $page['headers'] ) ) {
+            foreach ( $page['headers'] as $name => $value ) {
+                if ( 'strict-transport-security' === strtolower( (string) $name ) ) {
+                    $hsts = trim( (string) $value );
+                    break;
+                }
+            }
+        }
+
+        if ( '' === $hsts ) {
             return array(
                 'pass'    => true,
                 'warn'    => true,
