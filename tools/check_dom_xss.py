@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
-"""tools/check_dom_xss.py — gate for DOM-XSS i quick-check-blokkene.
+"""tools/check_dom_xss.py — gate for DOM-XSS i sidernes renderingsblokke.
 
 HVAD DENNE GATE DÆKKER (og ikke mere)
 -------------------------------------
-Den dækker **kun** de filer, der indeholder et `<script>`-blok, som taler med
-`deskuptime-quickcheck.mahope-eeb.workers.dev`. Det er 28 filer i dag:
-`site/shared/live-check-widget.html`, 16 `site/blog/*/index.html` og
-`site/deskuptime/**/index.html`.
+To familier, hver med sin egen markør i kilden, så filkredsen er en *følge* af
+koden og ikke en håndlavet liste, der kan blive gammel:
 
-Den er bevidst **ikke** en global DOM-XSS-scanner. En bredere eftersøgning
-26/9 fandt yderligere 104 fund i 21 andre filer (`site/regex/`,
-`site/gdpr-scanner-free/` m.fl.). De er reelle, men de er opgave 17, og en
-regel der favner 104 åbne fund kan ikke gå grøn. At fremstille denne gate som
-global ville være den falske grøn, som opgave 14 dokumenterede i testværktøjet.
+1. `quickcheck` — filer med et `<script>` der taler med
+   `deskuptime-quickcheck.mahope-eeb.workers.dev`. 28 filer.
+2. `scancard` — filer der renderer et scan-resultat som kort
+   (`card.innerHTML` med `pillText(c)`). 5 filer.
+
+Den er bevidst **ikke** en global DOM-XSS-scanner, og det er ikke en tilfældighed.
+Eftersøgningen 26/9 meldte "104 fund i 21 andre filer". Opgave 17 gennemgik dem
+én for én, og resultatet var: **5 filer med en reel mangel** (de `scancard`-sider,
+som skrev `c.label` og `c.detail` råt, mens deres søskender på `/scan/` allerede
+escapede) — og resten var statiske strenge, `textContent` fra sidens egen DOM, eller
+alligeå kodede `esc()`. De 104 var en rå `.innerHTML`-optælling, ikke 104 fejl.
+At have gjort denne gate global på det tal ville have været den falske grøn fra
+opgave 14, bare tilfældigt argumenteret med et tal i stedet for et eksempel.
 
 HVORFOR IKKE BARE LÆSE KODEN
 ----------------------------
@@ -63,10 +69,17 @@ SINKS = [
     "url",
 ]
 
+# To escaper-former findes i repoet, og gaten skal genkende begge:
+#   a) DOM-baseret (quickcheck): sætter textContent og læser .innerHTML.
+#   b) Regex-baseret (scancard):    erstatter & < > " ' tegn for enhver.
+# Den oprindelige gaten kendte kun (a), fordi det var den eneste form, der fandtes
+# den dag den blev skrevet. En gate der kun genkender den ene escaper ville have
+# råbt "ingen esc()-definition" på de fem scancard-sider, selv om de var korrekte.
 ESC_DEF = re.compile(
-    r"function\s+esc\s*\(\s*\w+\s*\)\s*\{[^}]*"
-    r"\.textContent\s*=\s*[^;]{0,80};"
-    r"[^}]*return\s+\w+\.innerHTML",
+    r"function\s+esc\s*\(\s*\w+\s*\)\s*\{"
+    r"(?:[^}]*\.textContent\s*=\s*[^;]{0,80};"
+    r"[^}]*return\s+\w+\.innerHTML"
+    r"|[^}]*\.replace\(\s*/\[&<)",
     re.S,
 )
 
@@ -74,12 +87,33 @@ ESC_DEF = re.compile(
 INNER_HTML = re.compile(r"\.innerHTML\s*=(?!=)", re.S)
 
 
-def blocks(html: str) -> list[str]:
-    """Alle <script>-blokke i dokumentet, der taler med quickcheck-workeren."""
+# En familie: markør i kilden + de sinks, den må skrive i .innerHTML.
+#
+# quickcheck: markerer de JSON-felter, der kommer fra quickcheck-workeren.
+# scancard:   markerer de to felter, der kommer fra scan-resultatet. Nøglen `k`
+#             er ikke en sink — den er motoregens egen objektnøgle, ikke data
+#             fra det scannede site. Det står her, så ingen senere regner den med
+#             og opdager en mangel, der ikke er der.
+FAMILIES = [
+    {
+        "name": "quickcheck",
+        "marker": WORKER,
+        "sinks": SINKS,
+    },
+    {
+        "name": "scancard",
+        "marker": "pillText(c)",
+        "sinks": ["c.label", "c.detail", "c.fix"],
+    },
+]
+
+
+def blocks(html: str, marker: str = WORKER) -> list[str]:
+    """Alle <script>-blokke i dokumentet, der indeholder familiens markør."""
     out = []
     for m in re.finditer(r"<script[^>]*>(.*?)</script>", html, re.S):
         body = m.group(1)
-        if WORKER in body:
+        if marker in body:
             out.append(body)
     return out
 
@@ -192,7 +226,7 @@ def is_interpolation(rhs: str, start: int, end: int) -> bool:
     return True
 
 
-def find_sinks_in_block(block: str) -> list[tuple[str, str]]:
+def find_sinks_in_block(block: str, sinks: list[str] | None = None) -> list[tuple[str, str]]:
     """Returnér (sink, kontekst) for hver brug af en sink i en innerHTML-linje.
 
     Vi ser kun på den fysiske linje, hvor .innerHTML tildeles, PLUS de linjer
@@ -217,7 +251,7 @@ def find_sinks_in_block(block: str) -> list[tuple[str, str]]:
         # et fund for hver eneste fejlhåndtering. Det er den falske-fund-fejl
         # denne gate lærte under sin foerste korsel.
         rhs = strip_string_literals(strip_esc_calls(expr[assign.end():]))
-        for sink in SINKS:
+        for sink in (sinks if sinks is not None else SINKS):
             for m in re.finditer(r"(?<![\w.])" + re.escape(sink) + r"(?![\w])", rhs):
                 if not is_interpolation(rhs, m.start(), m.end()):
                     continue
@@ -226,45 +260,45 @@ def find_sinks_in_block(block: str) -> list[tuple[str, str]]:
     return hits
 
 
-def check_file(path: Path) -> list[str]:
+def check_file(path: Path, fam: dict) -> list[str]:
     """Returnér en liste af fund for én fil. Tom liste = grøn."""
     findings: list[str] = []
     html = path.read_text(encoding="utf-8")
-    qc_blocks = blocks(html)
-    if not qc_blocks:
+    fam_blocks = blocks(html, fam["marker"])
+    if not fam_blocks:
         return findings
 
-    # Renderer skriver til innerHTML i en quickcheck-blok, skal filen have esc?
-    writes_html = any(INNER_HTML.search(b) for b in qc_blocks)
+    # Renderer skriver til innerHTML i familiens blok, skal filen have esc?
+    writes_html = any(INNER_HTML.search(b) for b in fam_blocks)
     if writes_html and not ESC_DEF.search(html):
         findings.append(
-            f"{path}: quickcheck-blokken skriver til .innerHTML, men filen "
+            f"{path}: {fam['name']}-blokken skriver til .innerHTML, men filen "
             f"har ingen esc()-definition. Uden den kan intet escapes."
         )
     return findings
 
 
-def audit(paths: list[Path]) -> tuple[list[str], int, int]:
+def audit(paths: list[Path], fam: dict) -> tuple[list[str], int, int]:
     findings: list[str] = []
     checked = 0
     sinks_total = 0
     for p in paths:
         html = p.read_text(encoding="utf-8")
-        for block in blocks(html):
+        for block in blocks(html, fam["marker"]):
             checked += 1
-            for sink, ctx in find_sinks_in_block(block):
+            for sink, ctx in find_sinks_in_block(block, fam["sinks"]):
                 sinks_total += 1
                 findings.append(
                     f"{p}: {sink} skrives ind i .innerHTML uden esc() — {ctx}"
                 )
     for p in paths:
-        findings.extend(check_file(p))
+        findings.extend(check_file(p, fam))
     return findings, checked, sinks_total
 
 
-def quickcheck_files() -> list[Path]:
+def family_files(marker: str) -> list[Path]:
     return sorted(
-        p for p in (ROOT / "site").rglob("*.html") if WORKER in p.read_text(
+        p for p in (ROOT / "site").rglob("*.html") if marker in p.read_text(
             encoding="utf-8", errors="replace")
     )
 
@@ -328,15 +362,67 @@ def mutants() -> list[tuple[str, str, bool]]:
     ]
 
 
+ESC_DEF_RE = (
+    "  function esc(s) {\n"
+    "    return String(s).replace(/[&<>\u0022']/g, function (m) {\n"
+    "      return { \u0026': '\u0026amp;', '\u003c': '\u0026lt;', '\u003e': '\u0026gt;', "
+    "'\u0022': '\u0026quot;', \"'\": '\u0026#39;' }[m];\n"
+    "    });\n"
+    "  }\n"
+)
+
+# scancard-familiens syntaktiske eksempel: samme blok som de fem sider har,
+# med og uden esc(). Den bruges kun i selftesten — aldrig som erstatning for at
+# køre repoets egne filer.
+GOOD_CARD = (
+    '<script>\n'
+    '(function(){\n'
+    + ESC_DEF_RE
+    + "  function pillText(c){ return c.pass ? 'Pass' : 'Fix needed'; }\n"
+    "  Object.keys(d.checks).forEach(function(k){\n"
+    "    var c = d.checks[k];\n"
+    "    var card = document.createElement('div');\n"
+    "    card.innerHTML =\n"
+    "      '<span class=\"pill\">' + pillText(c) + '</span>' +\n"
+    "      '<b>' + esc(c.label || k) + '</b>' +\n"
+    "      '<p>' + esc(c.detail || '') + '</p>';\n"
+    "    cardsEl.appendChild(card);\n"
+    "  });\n"
+    "})();\n"
+    '</script>'
+)
+
+
+def card_mutants() -> list[tuple[str, str, bool]]:
+    """(navn, kildekode, forventes_at_fange) for scancard-familien."""
+    return [
+        ("scancard: c.label uden esc",
+         GOOD_CARD.replace("esc(c.label || k)", "(c.label || k)"), True),
+        ("scancard: c.detail uden esc",
+         GOOD_CARD.replace("esc(c.detail || '')", "(c.detail || '')"), True),
+        ("scancard: begge felter uden esc",
+         GOOD_CARD.replace("esc(c.label || k)", "(c.label || k)")
+                    .replace("esc(c.detail || '')", "(c.detail || '')"), True),
+        ("scancard: esc()-definitionen fjernet",
+         GOOD_CARD.replace(ESC_DEF_RE, ""), True),
+        ("scancard: hele blokken er grøn", GOOD_CARD, False),
+    ]
+
+
 def run_selftest() -> int:
     import tempfile
 
     failures = []
-    for name, src, should_fail in mutants():
+    all_cases: list[tuple[str, str, bool, str]] = [
+        (n, src, sh, "quickcheck") for n, src, sh in mutants()
+    ]
+    all_cases += [(n, src, sh, "scancard") for n, src, sh in card_mutants()]
+    for name, src, should_fail, fam_name in all_cases:
+        fam = next(f for f in FAMILIES if f["name"] == fam_name)
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "case.html"
             p.write_text(src, encoding="utf-8")
-            found, nblocks, _ = audit([p])
+            found, nblocks, _ = audit([p], fam)
         if nblocks == 0:
             print(f"  FEJL  selftest-fixture er ikke skannet ({name}) — "
                   f"audit() saa 0 blokke, saa mutanten er ikke beviset")
@@ -356,7 +442,7 @@ def run_selftest() -> int:
             for f in found:
                 print(f"    {f}")
         return 1
-    n = sum(1 for _, _, s in mutants() if s)
+    n = sum(1 for _, _, s, _ in all_cases if s)
     print(f"\nSELFTEST GRØN — alle {n} negative cases fanges")
     return 0
 
@@ -366,31 +452,39 @@ def main() -> int:
     if "--selftest" in args:
         return run_selftest()
     if "--list" in args:
-        for p in quickcheck_files():
-            print(p.relative_to(ROOT))
+        for fam in FAMILIES:
+            for p in family_files(fam["marker"]):
+                print(p.relative_to(ROOT))
         return 0
     if args:
         print(f"ukendt argument: {' '.join(args)}", file=sys.stderr)
         return 2
 
-    files = quickcheck_files()
-    if not files:
-        print("FEJL  ingen quickcheck-filer fundet under site/ — "
-              "har søgningen brudt? Gaten kan ikke bevise noget.", file=sys.stderr)
-        return 1
+    findings: list[str] = []
+    checked = 0
+    sinks_total = 0
+    for fam in FAMILIES:
+        files = family_files(fam["marker"])
+        if not files:
+            print(f"FEJL  ingen {fam['name']}-filer fundet under site/ — "
+                  f"har søgningen brudt? Gaten kan ikke bevise noget.", file=sys.stderr)
+            return 1
+        fam_findings, fam_blocks, fam_sinks = audit(files, fam)
+        checked += fam_blocks
+        sinks_total += fam_sinks
+        print(f"{fam['name']}-filer: {len(files)}  scriptblokke: {fam_blocks}  "
+              f"escapede vaerdier i .innerHTML: {fam_sinks}")
+        findings.extend(fam_findings)
 
-    findings, checked, sinks = audit(files)
-    print(f"quickcheck-filer: {len(files)}")
-    print(f"quickcheck-scriptblokke: {checked}")
-    print(f"escapede dynamiske vaerdier i .innerHTML: {sinks}")
     if findings:
         print(f"\n{len(findings)} fund:")
         for f in findings:
             print(f"  {f}")
         return 1
-    print("\nDOM-XSS-gate gron for quickcheck-blokkene.")
-    print("SCOPE: kun de filer der kalder deskuptime-quickcheck. "
-          "Ikke en global DOM-XSS-scanner — se docstring.")
+    print(f"\nDOM-XSS-gate gron for {len(FAMILIES)} familier "
+          f"({checked} scriptblokke, {sinks_total} escapede vaerdier).")
+    print("SCOPE: quickcheck-blokkene og scan-kortene. Ikke en global "
+          "DOM-XSS-scanner — se docstring for hvorfor.")
     return 0
 
 

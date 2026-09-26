@@ -219,6 +219,11 @@ h2{font-size:21px}}</style>
     });
   });
 
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
   function verdict(c) {
     if (c.warn) return 'warn';
     return c.pass ? 'pass' : 'fail';
@@ -267,8 +272,8 @@ h2{font-size:21px}}</style>
       card.className = 'card ' + v;
       card.innerHTML =
         '<span class="pill">' + pillText(c) + '</span>' +
-        '<b>' + (c.label || k) + '</b>' +
-        '<p>' + (c.detail || '') + '</p>';
+        '<b>' + esc(c.label || k) + '</b>' +
+        '<p>' + esc(c.detail || '') + '</p>';
       cardsEl.appendChild(card);
     });
     results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
