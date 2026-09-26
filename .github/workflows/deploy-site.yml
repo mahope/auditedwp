@@ -112,6 +112,25 @@ jobs:
           echo "asset=$asset" >> "$GITHUB_OUTPUT"
           echo "download_url=$dl" >> "$GITHUB_OUTPUT"
           echo "Plugin-version $ver, alle redirects peger på $asset"
+      - name: Vent på at Pages serverer den nye version
+        # 26/9: den gamle kontrol læste /update.json ÉN gang og slog fast ved
+        # første læsning. CI `36250487311` blev rød på en korrekt udgivelse,
+        # fordi Pages endnu ikke havde serveret den — live-sitet svarede den
+        # nye version 40 sekunder senere. Og fordi verify er et separat job fra
+        # uploaden, kostede racen hele kørslen rød for en udgivelse der var
+        # korrekt. Derfor polles der nu indtil den nye udgivelse ses.
+        #
+        # Loftet (12 × 10 s) er det, der gør porten rød, hvis en version ALDRIG
+        # kommer ud. En port der blot venter, kan ikke fejle — se opgave 47.
+        #
+        # Rækkefølgen er bevidst: kørslen ligger FØR de otte øvrige
+        # kontrolpunkter, så de læser den udgivelse de skal kontrollere.
+        # Efterlader de stod de og læste den gamle.
+        run: |
+          python3 tools/wait_for_deploy.py \
+            --base https://eucomplypro.com \
+            --asset "${{ steps.plugin.outputs.asset }}" \
+            --attempts 12 --wait 10
       - name: Tjek indhold, ikke kun status
         run: |
           # 25/9: den gamle kontrol testede /IMPLEMENTATION_PLAN.md, som aldrig har
@@ -178,14 +197,12 @@ jobs:
             fail=1
           fi
 
-          # Og manifestet skal pege på præcis den fil, der lige blev hentet.
-          manifest=$(curl -sS "$url/update.json?cb=$GITHUB_RUN_ID" | python3 -c "import json,sys;print(json.load(sys.stdin)['download_url'])" 2>/dev/null || echo '')
-          expected="${url%/}$asset"
-          if [ "$manifest" = "$expected" ]; then
-            echo "OK: /update.json peger på $asset"
-          else
-            echo "FEJL: /update.json peger på '$manifest', forventede '$expected'"
-            fail=1
-          fi
+          # Manifestet er ikke tjekket igen her. Det blev gjort tidligere med en
+          # øjeblikkelig genlæsning, og det var netop den der gjorde jobbet
+          # flakkende: selv efter at have ventet på den nye version kan en
+          # enkelt kantenode svare med det gamle, og så faldt kontrollen rød
+          # på en udgivelse der var korrekt. Én kontrol, ét krav: /update.json
+          # skal pege på den udgivne fil — kontrolleret ovenfor med et loft på
+          # hvor længe vi venter, og ikke uden.
 
           exit $fail
