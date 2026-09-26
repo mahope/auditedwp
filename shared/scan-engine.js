@@ -540,12 +540,17 @@ export async function runScan(url) {
   checks.ssl = {
     pass: finalIsHttps && hsts.length > 0,
     warn: finalIsHttps && hsts.length === 0,
-    label: hsts ? "HTTPS + HSTS OK" : finalIsHttps ? "HTTPS, no HSTS" : "Not HTTPS",
-    detail: hsts
-      ? `HSTS: ${hsts.replace(/;\s*/g, "; ")}`
-      : finalIsHttps
-        ? 'SSL active but Strict-Transport-Security header missing.'
-        : "Site is not served over HTTPS.",
+    // `finalIsHttps` tested FØRST, ikke `hsts`. En side der svarer over http
+    // men sender en HSTS-header gav en **rød** række med etiketten "HTTPS +
+    // HSTS OK" og detaljen "HSTS: max-age=…": et dom på den stærkeste mulige
+    // positive måde, på en række der siger nej. Rækkefølgen er hele fejlen —
+    // pass-betingelsen har altid testet `finalIsHttps` først.
+    label: !finalIsHttps ? "Not HTTPS" : hsts ? "HTTPS + HSTS OK" : "HTTPS, no HSTS",
+    detail: !finalIsHttps
+      ? "Site is not served over HTTPS."
+      : hsts
+        ? `HSTS: ${hsts.replace(/;\s*/g, "; ")}`
+        : "SSL active but Strict-Transport-Security header missing.",
   };
   if (!hsts && finalIsHttps) {
     checks.ssl.fix =
@@ -596,7 +601,7 @@ export async function runScan(url) {
         ? "Form(s) found, no privacy-policy link"
         : hasLocalForm
           ? `Form(s) found, privacy-policy link detected`
-          : "No form markup and no form plugin",
+          : "Page has neither form markup nor a form plugin",
     detail: formMatches.length > 0
       ? `Form plugins detected: ${formMatches.join(", ")}. Ensure privacy link is visible near each form.`
       : hasLocalForm && !hasPrivLink

@@ -356,6 +356,23 @@ hdr "Deploy-verificeringen kan skelne racen fra en manglende udgivelse"
 run "tools/wait_for_deploy.py --selftest" python3 tools/wait_for_deploy.py --selftest
 run "tools/wait_for_deploy.py --check-workflow" python3 tools/wait_for_deploy.py --check-workflow
 
+# ------------------------ 19. Kan en etiket modsige sit eget dom?
+# Opgave 45b fandt to checks, der skrev "Legal pages checked" på en RØD række.
+# Opgave 48 fandt spejlingen: en GRØN række hvis etiket beskriver en mangel
+# ("No third-party trackers detected" på en side uden trackere). Og denne gate
+# fandt en tredje, som ingen af de to foregående kunne se: en side der svarede
+# over http men sendte en HSTS-header fik i begge JS-motorer en rød `ssl`-række
+# med etiketten "HTTPS + HSTS OK" — ternaryen testede `hsts` før `finalIsHttps`.
+# Det er tre fejl i én familie, to af dem i en betalt vare eller dens tragt, og
+# ingen af dem var synlig for en port der læser kode: alle tre er etiketter, der
+# kun modsiger dommen når den ER modsagt.
+# Derfor kører porten alle tre motorer — site, npm og plugin — på fixtures og
+# kræver at hver etiket har samme polaritet som sit dom. Advarselsrækker er
+# undtaget med vilje: "HTTPS OK, no HSTS" skal kunne sige begge dele.
+hdr "Etiketten har samme polaritet som dommet — i alle tre motorer"
+run "tools/check_verdict_labels.mjs --selftest" node tools/check_verdict_labels.mjs --selftest
+run "tools/check_verdict_labels.mjs" node tools/check_verdict_labels.mjs
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

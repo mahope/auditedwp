@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.14
+ * Version:           1.3.15
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.14' );
+define( 'EUCOMPLY_VERSION', '1.3.15' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -938,7 +938,13 @@ class EUComply {
         $out      = array(
             'pass'   => empty( $hits ) || $has_cmp,
             'warn'   => ! empty( $hits ) && $has_cmp && ! preg_match( '~consent[_-]?mode|__tcfapi~i', $page['html'] ),
-            'label'  => empty( $hits ) ? 'No third-party trackers detected' : ( $has_cmp ? count( $hits ) . ' tracker(s) detected, consent platform present' : count( $hits ) . ' tracker(s) with NO consent platform' ),
+            // Samme sætning som den universelle motor bruger på samme dom, så de
+            // to produkter ikke kan glide fra hinanden i den retning. Den
+            // begynder ikke længere med "No": etiketten er dommens plads, ikke
+            // en fund-liste, så den skal sige resultatet, ikke en mangel — også
+            // når mangelen er det gode nyheder. `detail` siger stadig hvad der
+            // ikke blev fundet; det er der, den slags hører hjemme.
+            'label'  => empty( $hits ) ? 'Third-party trackers: 0 found' : ( $has_cmp ? count( $hits ) . ' tracker(s) detected, consent platform present' : count( $hits ) . ' tracker(s) with NO consent platform' ),
             'detail' => $hits ? 'Trackers found in page markup: ' . implode( ', ', $hits ) . '. ' . ( $has_cmp ? 'A consent platform was also detected (' . $consents[0] . ').' : 'No consent management platform was found — these trackers likely fire before consent.' ) : 'No third-party marketing/analytics trackers found in the served HTML.',
         );
         if ( ! empty( $hits ) && ! $has_cmp ) {
@@ -1175,7 +1181,10 @@ class EUComply {
 
         if ( empty( $results['forms'] ) ) {
             $results['pass']   = true;
-            $results['label']  = 'No form plugin detected';
+            // Ikke "No form plugin detected": en grøn række skal ikke åbne med
+            // en mangel, fordi den så læses som et fund. `detail` siger det
+            // samme sande uden at bære dommen.
+            $results['label']  = 'Nothing for this check to review';
             $results['detail'] = 'No major form plugin found. If you use custom forms, review them manually for GDPR compliance.';
             return $results;
         }

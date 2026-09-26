@@ -4,6 +4,7 @@
  *
  *   php tools/test_plugin_checks.php
  *   php tools/test_plugin_checks.php --selftest   (beviser at den kan fejle)
+ *   php tools/test_plugin_checks.php --dump       (etiketterne som JSON)
  *
  * Opgave 44 viste, at dokument-gates ikke kan se en fejl, der er identisk i alle
  * kopier: `php -l` læser ikke kode, og kilde/zip-pariteten kan kun se forskel.
@@ -217,6 +218,7 @@ foreach ( $FAILURES as $name => $override ) {
 $pass_labels = array();
 $fail_labels = array();
 $states      = array();
+$observations = array();
 foreach ( $runs as $name => $site ) {
     $verdicts = probe( $site );
     if ( ! empty( $verdicts['_error'] ) ) {
@@ -229,6 +231,16 @@ foreach ( $runs as $name => $site ) {
             continue;
         }
         $label = (string) $verdicts[ $key ]['label'];
+        // Hver (domme, etiket) er én observation. Det er den samme mængde
+        // trin 19 læser, så der er ét sæt fixtures for hele porten i stedet
+        // for to — se `tools/check_verdict_labels.mjs`.
+        $observations[] = array(
+            'fixture' => $name,
+            'key'     => $key,
+            'pass'    => ! empty( $verdicts[ $key ]['pass'] ),
+            'warn'    => ! empty( $verdicts[ $key ]['warn'] ),
+            'label'   => $label,
+        );
         if ( ! empty( $verdicts[ $key ]['pass'] ) ) {
             $pass_labels[ $key ][ $label ] = true;
             $states[ $key ]['pass']       = true;
@@ -237,6 +249,23 @@ foreach ( $runs as $name => $site ) {
             $states[ $key ]['fail']       = true;
         }
     }
+}
+
+// ─--dump: målingen som JSON, for den ene port der læser alle tre motorer ──────
+//
+// Ren måling: den udskriver og afslutter, før kontrakterne nederst køres, så en
+// rød kontrakt ikke kan gøre målingen usynlig. Ingen exit-kode-vurdering her —
+// det er porten der kalder denne, der afgør hvad fundene betyder.
+if ( in_array( '--dump', $argv, true ) ) {
+    echo json_encode(
+        array(
+            'engine'       => 'plugin',
+            'keys'         => $RUN_CHECKS_KEYS,
+            'observations' => $observations,
+        ),
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    );
+    exit( 0 );
 }
 
 // Kontrakt 2 — det døde-tjek.
