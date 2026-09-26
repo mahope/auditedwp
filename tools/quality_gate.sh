@@ -388,6 +388,23 @@ hdr "forms i den betalte vare mod forms i den gratis scanner"
 run "tools/check_forms_parity.mjs" node tools/check_forms_parity.mjs
 run "tools/check_forms_parity.mjs --selftest" node tools/check_forms_parity.mjs --selftest
 
+# ------------------------ 21. Kan de juridiske mønstre læse DA/SV/NL?
+# Opgave 52 målte LEGAL_PATTERNS med 22 rigtige footer-links: 0 af 22 blev
+# fundet. Følgen var ikke en etiket men en score — en dansk butik med
+# privatlivspolitik, handelsbetingelser og cookiepolitik fik `legal` = én side og
+# tabte et point, mens den samme side på engelsk bestod. Og selve `terms` havde
+# separatoren `[_-]?`, som aldrig matcher et mellemrum, så "Terms of Service" og
+# "Terms & Conditions" var usynlige på **alle** sprog. Trin 20 dækker `forms`;
+# dette dækker `legal`, som ingen port havde læst adfærdsmæssigt.
+# Fire regler: en (mønster, sprog)-række uden egen fixture er rød (dækket, ikke
+# antaget), de to motorer skal svare identisk, en sætning uden link er ikke en
+# juridisk side og ét link er stadig ét, og de samme tre dokumenter skal give
+# samme dom på fire sprog. Selftesten muterer repoets egne filer for hvert
+# mønster i begge motorer.
+hdr "juridiske sider læser dansk, svensk og nederlandsk"
+run "tools/check_legal_langs.mjs" node tools/check_legal_langs.mjs
+run "tools/check_legal_langs.mjs --selftest" node tools/check_legal_langs.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

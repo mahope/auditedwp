@@ -143,8 +143,23 @@ const LEGAL_PATTERNS = [
   { re: PRIVACY_LINK_SIGNATURE, name: "Privacy / GDPR" },
   { re: /impressum|imprint|legal[_-]?notice|legal[_-]?disclosure|about[_-]?the[_-]?company/i, name: "Imprint / Legal notice" },
   { re: /accessibility[_-]?statement|a11y|accessibility[_-]?declaration|eaa[_-]?statement|barrierefreiheit/i, name: "Accessibility statement" },
-  { re: /cookie[_-]?policy|cookie[_-]?declaration|cookie[_-]?settings|cookie[_-]?preferences/i, name: "Cookie policy" },
-  { re: /terms[_-]?of[_-]?service|terms[_-]?and[_-]?conditions|agb|terms[_-]?of[_-]?use/i, name: "Terms & Conditions" },
+  // Samme sprogregel som privatlivsmønsteret: en stængel er et helt ord fra sit
+  // sprog, aldrig et fragment der også er et ord i et andet. `cookiepolitik` (DA),
+  // `cookiesbeleid` (NL) og `kakpolicy` (SV) er de navne en butiks footer
+  // faktisk bruger.
+  //
+  // `terms` havde en fejl, der var større end sprog: separatoren var `[_-]?`, som
+  // matcher bindestreg OG understreg, men **aldrig et mellemrum**. Den fandt
+  // altså `terms-of-service` og `terms_of_service` og ingen af de former en side
+  // faktisk skriver: "Terms of Service", "Terms & Conditions", "Terms of Use".
+  // Målt før denne ændring, ikke antaget. Separatoren er derfor `[ _-]?`.
+  // Vilkårssiderne er de lange, entydige sidenavne — `vilka` alene er et
+  // almindeligt dansk og svensk ord ("vilka produkter vi har"), og `villkor`/
+  // `voorwaarden` alene rammer "Köpvillkoren" og "Onze voorwaarden", så porten
+  // har fixtures på præcis den fejltagelse. Port: `tools/check_legal_langs.mjs`.
+  // Spec: `docs/eucomply-juridiske-sprog.md`.
+  { re: /cookie[_-]?policy|cookie[_-]?declaration|cookie[_-]?settings|cookie[_-]?preferences|cookiepolitik|cookies?beleid|kakpolicy/i, name: "Cookie policy" },
+  { re: /terms[ _-]?(?:of[ _-]?use|of[ _-]?services?|and[ _-]?conditions|&\s*(?:amp;)?\s*conditions|conditions)|handelsbetingelser|vilk[aå]?r[ _-]?(?:og[ _-]?)?(?:betingelser|for[ _-]?(?:brug|anvendelse|køb))|allm[aä]nna[ _-]?villkor|anv[äa]ndningsvillkor|algemene[ _-]?(?:leverings)?voorwaarden/i, name: "Terms & Conditions" },
   { re: /legal[_-]?notice|legal[_-]?info|impressum|disclaimer|legal[_-]?mention/i, name: "Legal / Imprint" },
   { re: /returns[_-]?policy|refund[_-]?policy|cancellation[_-]?policy|widerrufsrecht/i, name: "Returns / Refund policy" },
   { re: /shipping[_-]?policy|delivery[_-]?information|versand/i, name: "Shipping policy" },
