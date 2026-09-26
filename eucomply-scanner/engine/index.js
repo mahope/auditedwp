@@ -190,8 +190,18 @@ const PLATFORM_SIGNATURES = [
   { re: /opencart|oc_[_-]?cart/i, name: "OpenCart" },
 ];
 
+// Sprogsneutralt, ikke engelsk. En tysk, fransk eller engelsk side ramte
+// privatlivsmønsteret før dette; en dansk, svensk eller nederlandsk side gjorde
+// det ikke, og fik derfor "no privacy-policy link" på en side der linker sin
+// privatlivspolitik lige ved formularen. Hver stængel er et helt ord fra sit
+// sprog, aldrig et fragment der også er et ord i et andet. Spec:
+// `docs/eucomply-privatlivsprog.md`. Samme sæt i `shared/scan-engine.js`
+// og i `plugin/eucomply.php` — et tjek med samme navn skal betyde det samme.
+const PRIVACY_LINK_SIGNATURE =
+  /privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales/i;
+
 const LEGAL_PATTERNS = [
-  { re: /privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection/i, name: "Privacy / GDPR" },
+  { re: PRIVACY_LINK_SIGNATURE, name: "Privacy / GDPR" },
   { re: /impressum|imprint|legal[_-]?notice|legal[_-]?disclosure|about[_-]?the[_-]?company/i, name: "Imprint / Legal notice" },
   { re: /accessibility[_-]?statement|a11y|accessibility[_-]?declaration|eaa[_-]?statement|barrierefreiheit/i, name: "Accessibility statement" },
   { re: /cookie[_-]?policy|cookie[_-]?declaration|cookie[_-]?settings|cookie[_-]?preferences/i, name: "Cookie policy" },

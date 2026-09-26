@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.16
+ * Version:           1.3.17
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.16' );
+define( 'EUCOMPLY_VERSION', '1.3.17' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1232,9 +1232,12 @@ class EUComply {
         $page_form      = (bool) ( $has_local_form || $has_remote_form );
 
         // The privacy notice, as the page presents it. This is the engine's
-        // LEGAL_PATTERNS[0], verbatim — a check with the same name has to mean
-        // the same thing in both products.
-        $privacy_link = '' !== $html && preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection~i', $html );
+        // PRIVACY_LINK_SIGNATURE, verbatim — a check with the same name has to
+        // mean the same thing in both products. It is language-neutral, not
+        // English: a Danish, Swedish or Dutch site that links its privacy
+        // policy next to the form was failing this row for doing the right
+        // thing. Spec: docs/eucomply-privatlivsprog.md
+        $privacy_link = '' !== $html && preg_match( '~privacy|privacy[_-]?policy|datenschutz|gdpr|privacypolicy|data[_-]?protection|privatliv|persondata|databeskyttelse|integritetsskydd|dataskydd|personuppgifter|persoonsgegevens|gegevensbescherming|confidentialit|privacidad|datos personales~i', $html );
 
         $markup_plugins = self::matched_signatures( 'forms', $html );
         $results['forms'] = array_values( array_unique( array_merge( $installed, $markup_plugins ) ) );
