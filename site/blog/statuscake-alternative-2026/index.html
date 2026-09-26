@@ -135,7 +135,8 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 </div>
 <script>
 (function(){
-  var f=document.getElementById('du-form');
+    function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
+    var f=document.getElementById('du-form');
   if(!f) return;
   f.addEventListener('submit',async function(e){
     e.preventDefault();
@@ -144,21 +145,21 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
     if(!raw) return;
     var url=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
     res.style.display='block';
-    res.innerHTML='⏳ Checking '+url+' …';
+    res.innerHTML='⏳ Checking '+esc(url)+' …';
     try{
       var r=await fetch('https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url='+encodeURIComponent(url));
       if(!r.ok) throw new Error('HTTP '+r.status);
       var d=await r.json();
-      if(d.error){res.innerHTML='❌ Error: '+d.error;return;}
+      if(d.error){res.innerHTML='❌ Error: '+esc(d.error);return;}
       var up=d.status>=200&&d.status<400;
       var days=d.sslDaysRemaining;
       res.innerHTML=
-        (up?'✅':'❌')+' <strong>'+d.status+' '+d.statusText+'</strong> · '+d.responseMs+'ms<br>'+
-        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+days+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
-        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+d.finalUrl):'')+
+        (up?'✅':'❌')+' <strong>'+esc(d.status)+' '+esc(d.statusText)+'</strong> · '+esc(d.responseMs)+'ms<br>'+
+        '🔒 SSL: '+(d.https?(days!=null?('valid, expires in <strong>'+esc(days)+' days</strong>'+(days<15?' ⚠️':'')):'active'):'not detected')+
+        (d.redirected&&d.finalUrl?('<br>↳ redirects to '+esc(d.finalUrl)):'')+
         (up&&days!=null&&days<15?'<br><span style="color:#b03030;font-weight:600">Your certificate expires within two weeks — renew it now.</span>':'');
     }catch(err){
-      res.innerHTML='❌ Network error: '+err.message;
+      res.innerHTML='❌ Network error: '+esc(err.message);
     }
   });
 })();

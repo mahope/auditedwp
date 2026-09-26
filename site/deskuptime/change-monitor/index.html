@@ -272,6 +272,7 @@ deskuptime start   # runs everything in ~/.deskuptime/config.toml</pre>
 </section>
 
 <script>
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
 function cleanUrl(v){
   v=v.trim();
   if(!v)return'';
@@ -290,8 +291,8 @@ async function doHash(){
     const d=await r.json();
     if(d.error||!r.ok){box.className='bad';box.textContent='Could not fetch the page: '+(d.error||('HTTP '+r.status));return;}
     box.className='ok';
-    box.innerHTML=u.hostname+' · '+d.contentBytes.toLocaleString()+' bytes · HTTP '+d.status+
-      '<br>SHA-256 fingerprint:<br><code>'+d.sha256+'</code>'+
+    box.innerHTML=u.hostname+' · '+d.contentBytes.toLocaleString()+' bytes · HTTP '+esc(d.status)+
+      '<br>SHA-256 fingerprint:<br><code>'+esc(d.sha256)+'</code>'+
       '<br>Save this value. Run the check again later — a different hash means the page changed.';
   }catch(e){
     box.className='bad';box.textContent='Lookup failed: '+e.message;

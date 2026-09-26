@@ -377,6 +377,7 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
 </section>
 
 <script>
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
 (function() {
 
   // Live quick check widget
@@ -399,7 +400,7 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
       loader.style.display = 'none';
 
       if (d.error) {
-        dataDiv.innerHTML = '❌ <span class="warn">Error:</span> ' + d.error;
+        dataDiv.innerHTML = '❌ <span class="warn">Error:</span> ' + esc(d.error);
         return;
       }
 
@@ -408,15 +409,15 @@ $ <span class="accent">npx github:mahope/deskuptime check</span> https://example
       var msColor = d.responseMs < 300 ? '#1a7a44' : d.responseMs < 1000 ? '#b85a0a' : '#b03030';
 
       dataDiv.innerHTML =
-        '<span class="accent">' + d.url + '</span><br>' +
-        '  ' + statusIcon + ' Status:   <span class="ok">' + d.status + ' ' + d.statusText + '</span><br>' +
-        '  Response: <span style="color:' + msColor + '">' + d.responseMs + 'ms</span><br>' +
+        '<span class="accent">' + esc(d.url) + '</span><br>' +
+        '  ' + statusIcon + ' Status:   <span class="ok">' + esc(d.status) + ' ' + esc(d.statusText) + '</span><br>' +
+        '  Response: <span style="color:' + msColor + '">' + esc(d.responseMs) + 'ms</span><br>' +
         '  ' + sslIcon + ' HTTPS:    ' + (d.https ? 'Active ✅' : 'Not detected ⚠️') + '<br>' +
-        (d.redirected ? '  ↳ Final URL: ' + d.finalUrl + '<br>' : '') +
-        '  — Server:    ' + (d.headers.server || 'unknown');
+        (d.redirected ? '  ↳ Final URL: ' + esc(d.finalUrl) + '<br>' : '') +
+        '  — Server:    ' + esc(d.headers.server || 'unknown');
     } catch (err) {
       loader.style.display = 'none';
-      dataDiv.innerHTML = '❌ <span class="warn">Network error:</span> ' + err.message;
+      dataDiv.innerHTML = '❌ <span class="warn">Network error:</span> ' + esc(err.message);
     }
   });
 })();

@@ -127,6 +127,8 @@ run "tools/check_runtime.py" python3 tools/check_runtime.py
 run "tools/check_runtime.py --selftest" python3 tools/check_runtime.py --selftest
 run "tools/check_package_identity.py" python3 tools/check_package_identity.py
 run "tools/check_package_identity.py --selftest" python3 tools/check_package_identity.py --selftest
+run "tools/check_dom_xss.py" python3 tools/check_dom_xss.py
+run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftest
 
 # ------------------------------------------------- 5. publiceret træ (deploy)
 hdr "Publiceret træ"
