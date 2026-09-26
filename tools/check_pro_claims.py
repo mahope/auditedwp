@@ -12,7 +12,7 @@ import zlib
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Pattern, Sequence, Set, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Pattern, Sequence, Set, Tuple
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -798,6 +798,276 @@ def local_cadence_claim(relative: str, segment: str, text: Optional[str] = None)
     )
 
 
+# ---------------------------------------------------------------------------
+# Denied features: the direction nobody watches.
+#
+# Every other rule in this file fires when a page says a feature IS there. This
+# one fires when a page says a feature the plugin already ships is NOT there.
+#
+# That direction is silent when it is wrong. An over-claim trips this gate, gets
+# fixed before merge and costs a diff. An under-claim trips nothing: the page
+# stays published, the gate stays green, and the feature nobody buys stays
+# unsold, for as long as the copy is wrong. It happened here for real —
+# site/plugin/index.html told buyers that "scan history" was not part of Pro, on
+# the one page selling exactly the Pro licence that unlocks it, for as long as
+# the history shipped (1.3.4) without anybody re-reading that sentence.
+#
+# So the feature list is not a copy of the marketing. Every entry carries the
+# predicate that proves the feature is still in the code, and a page may only
+# deny a feature the code still backs. Drop the feature from a later release and
+# the sentence denying it becomes true again — the hole is the size of the
+# feature, in both directions.
+# ---------------------------------------------------------------------------
+
+
+def _plugin_text(text: Optional[str] = None) -> Optional[str]:
+    if text is not None:
+        return text
+    return read_text(ROOT / "plugin/eucomply.php", "claims: plugin PHP", [])
+
+
+PHP_COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*|#[^\n]*", re.S)
+
+
+def strip_php_comments(text: str) -> str:
+    """Drop comments, so a `phpcs:ignore` note cannot stand in for the code.
+
+    Found by mutation: the first version of plugin_ships_history() looked for
+    "build_history_section()" inside build_report(), and the call sits on a line
+    whose trailing phpcs:ignore comment names the same method. Deleting the real
+    call left the comment, the string was still there, and the predicate still
+    said the history was rendered. A gate that a comment can satisfy is not a
+    gate, and this is the third time in this file's history that a text match was
+    quietly reading a comment instead of the code.
+    """
+    return PHP_COMMENT.sub(" ", text)
+
+
+def plugin_ships_history(text: Optional[str] = None) -> bool:
+    """Does the plugin keep a scan history, and can only a Pro key see it?
+
+    Traced, not searched: the history has to be written, actually rendered into
+    the report, and reachable only through a document that both entry points hand
+    out behind an is_pro() gate. A history that were written but never rendered,
+    or rendered on a page anyone could open, is not a Pro feature to advertise.
+
+    The export half tests for `! $pro` and not for `$pro`, because the parameter
+    is named $pro in the signature: the name is there whether or not the guard is
+    (also found by mutation).
+    """
+    source = _plugin_text(text)
+    if source is None:
+        return False
+    if "update_option( 'eucomply_scan_history'" not in php_method_body(source, "record_history"):
+        return False
+    if "build_history_section()" not in strip_php_comments(php_method_body(source, "build_report")):
+        return False
+    # Every caller of report_document() is a Pro decision: the client link only
+    # exists because create_client_link() refuses without a licence, and the
+    # wp-admin export refuses unless the caller passed a true verdict.
+    if "is_pro()" not in php_method_body(source, "create_client_link"):
+        return False
+    export = php_method_body(source, "report_export_response")
+    return "! $pro" in export and "report_document()" in export
+
+
+def plugin_ships_client_link(text: Optional[str] = None) -> bool:
+    """A read-only report link a bureau can send its client."""
+    source = _plugin_text(text)
+    if source is None:
+        return False
+    create = php_method_body(source, "create_client_link")
+    return "is_pro()" in create and "random_bytes" in create and "eucomply_client_link" in create
+
+
+def plugin_ships_report_file(text: Optional[str] = None) -> bool:
+    """The report as a file you can attach, not only a page you can link."""
+    source = _plugin_text(text)
+    if source is None:
+        return False
+    response = php_method_body(source, "client_report_response")
+    return "eucomply_report_file" in source and "client_report_filename()" in response
+
+
+# A denial is allowed to be about the *hosted* version of a feature, and it has
+# to be: the history ships in the customer's own WordPress, so "hosted scan
+# history is not included" is required honesty, not an under-claim.
+#
+# The qualifier has to govern the *same list item* as the name it qualifies. A
+# coordinated list carries one modifier per item, so in "Hosted re-scans, scan
+# history, PDF reports and a live badge are not part of it" the word "Hosted"
+# belongs to "re-scans" and says nothing about the history — and reading it as
+# if it did is exactly how the real under-claim on site/plugin/index.html stayed
+# green. So the search starts after the last separator before the name, and runs
+# to the end of the clause: a qualifier placed earlier in the same list is a
+# different item's, and a qualifier placed in the previous sentence qualifies
+# nothing at all.
+LIST_SEPARATOR = re.compile(
+    r"[,;:]|\b(?:and|or|und|oder|sowie|et|ou|og)\b|[.!?]|\n",
+    re.I,
+)
+HOSTED_QUALIFIER = re.compile(
+    r"\b(?:hosted|hostet\w*|cloud|cloud-hosted|cloudbaseret\w*|remote|remotely|fjernt\w*|"
+    r"our servers?|from our servers?|external|third-party|"
+    r"gehostet\w*|extern\w*|ferngesteuert\w*|"
+    r"h[ée]berg[ée]\w*|distants?|notre\w*\s+serveurs?)\b",
+    re.I,
+)
+
+# The denial verbs, in the four languages the Pro pages ship in. "does not
+# include" and "are not part of it" are the same promise in different words, and
+# a page can deny a feature in any of them.
+DENIAL = (
+    r"(?:not\s+(?:part|include|included|available|offered|covered|shipped|provided)|"
+    r"isn'?t|is\s+not|are\s+not|aren'?t|does\s+not|do\s+not|don'?t|"
+    r"no\s+such|lacks?|without|excluded)"
+    r"|(?:ikke\s+(?:en\s+del|del|inkluderet\w*|tilg[æa]ngelig\w*|medtaget\w*|dekket\w*)|"
+    r"er\s+ikke|er\s+ikke\s+med)"
+    r"|(?:nicht\s+(?:enthalten|inkludiert|dabei|Teil\s+von\s+Pro)|"
+    r"ist\s+nicht|sind\s+nicht|kein\w*)"
+    r"|(?:n['']?(?:en)?\s+(?:contient|contiennent|font|comprend|fait|couvre|inclut|g\xe8re)\w*\s+pas|"
+    r"aucun\w*|hors\s+de)"
+)
+
+# PRO_CONTEXT is English-shaped, and that is deliberate: it guards the
+# over-claim direction, where being conservative means missing a claim rather
+# than inventing one. The denial direction has the opposite risk — reading no
+# page at all — and a page only has to be one where a Pro licence is on the
+# table. Saying that takes four languages: "Pro license" (EN), "Pro-licens"
+# (DA), "Pro-Lizenz" (DE) and "licence Pro" (FR).
+#
+# The English pattern alone matched EN and DA and silently skipped DE and FR,
+# which is the third time this file has been caught green on a check that never
+# looked. So the denial gate gets its own page test, and there is a selftest
+# case per language that fails if the pattern stops matching it.
+PRO_PAGE_CONTEXT = re.compile(
+    r"\bEUComply\s+Pro\b"
+    r"|\bPro\b[^\n.!?;]{0,24}\b(?:licen[cs]e|licen[sz]s?|lizenz\w*|licen[cs]ei\w*)\b"
+    r"|\b(?:licen[cs]e|licen[sz]s?)\s+Pro\b"
+    r"|\bPro\s*(?:kaufen|acheter|k\xf6pa|abonn\w*|tar\w*)\b"
+    r"|\b(?:kaufen|acheter|k\xf6pa|buy)\b[^\n.!?;]{0,40}\bPro\b",
+    re.I,
+)
+
+
+@dataclass(frozen=True)
+class ShippedFeature:
+    """A Pro feature the code still ships, and the words that deny it."""
+
+    label: str
+    shipped: Callable[[], bool]
+    name: Pattern[str]
+    denial: Pattern[str]
+
+    @property
+    def window(self) -> int:
+        """How far apart the name and the denial may sit and still be one claim."""
+        return DENIAL_WINDOW
+
+
+# A name and a denial in the same sentence, or in the same clause either side of
+# it. Long enough for "scan history and PDF reports are not part of it", short
+# enough that two unrelated sentences about two products do not merge into one
+# invented claim.
+DENIAL_WINDOW = 80
+
+
+def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
+    """The features a page may not deny, each with its own code predicate.
+
+    Built per call rather than at import time so the selftest can hand in a
+    plugin it broke on purpose, exactly the way plugin_schedules_daily_scan()
+    takes $text. The predicates read plugin/eucomply.php, never a cached answer.
+    """
+    return (
+        ShippedFeature(
+            "shipped Pro feature denied on a sales page",
+            plugin_ships_history,
+            # Every name the four locales actually use. "Historie" was missing on
+            # the first run and the German pages went unread for the same reason
+            # the French ones did — one word of vocabulary, one silent language.
+            re.compile(
+                r"\b(?:scan\s+history|scanning\s+history|scanhistorik|scanningshistorik|"
+                r"scan-verlauf|scanverlauf|verlauf|historie|scangeschichte|"
+                r"historik|history|historique)\b",
+                re.I,
+            ),
+            re.compile(DENIAL, re.I),
+        ),
+        ShippedFeature(
+            "shipped Pro feature denied on a sales page",
+            plugin_ships_client_link,
+            re.compile(
+                r"\b(?:client\s+(?:report\s+)?link|report\s+link|clientlink|"
+                r"kundenlink|kundelink|klientlink|"
+                r"client-lien|lien\s+(?:client|rapport))\b",
+                re.I,
+            ),
+            re.compile(DENIAL, re.I),
+        ),
+        ShippedFeature(
+            "shipped Pro feature denied on a sales page",
+            plugin_ships_report_file,
+            re.compile(
+                r"\b(?:download\w*\s+(?:the\s+|your\s+)?report|report\s+file|"
+                r"bericht\s+herunterladen\w*|rapport\s+t[ée]l[ée]charg\w*)\b",
+                re.I,
+            ),
+            re.compile(DENIAL, re.I),
+        ),
+    )
+
+
+def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
+    """Pages that deny a Pro feature the plugin still ships.
+
+    Four things have to line up, and each one closes a hole the others leave
+    open — the same shape as local_cadence_claim():
+
+    * the page talks about the Pro licence at all (decided by the caller);
+    * the code still ships the feature, read by predicate, not from a list;
+    * a name and a denial sit in the same clause — and the clause is not scoped
+      to the hosted version, which is the one denial the product requires;
+    * the block is neither a roadmap list nor a paragraph about other vendors.
+
+    That last one is the honest limit of a text check, so it is worth being
+    explicit about what it costs. ROADMAP and OTHER_PRODUCTS are read on the
+    **block**, not the clause, because both false positives this check found on
+    its first run were one-clause denials inside a longer paragraph: a Danish
+    roadmap box reading "Planlagte funktioner (ikke inkluderet i dag): … 30
+    dages historik pr. tjek …", and a competitor comparison reading "TrustScan's
+    free scan does not include a downloadable report". Both are required
+    honesty, and neither is about our licence. The price is that a block which
+    mentions a competitor or a roadmap word is not examined at all — so this
+    check is a floor, not a proof. The over-claim gate is what covers roadmap
+    boxes, and it already reads the same two patterns.
+    """
+    findings: List[str] = []
+    for feature in _shipped_pro_features():
+        if not feature.shipped():
+            continue
+        for block in blocks:
+            if block.kind == "image-metadata":
+                continue
+            if ROADMAP.search(block.text) or OTHER_PRODUCTS.search(block.text):
+                continue
+            for name in feature.name.finditer(block.text):
+                start = max(0, name.start() - feature.window)
+                end = min(len(block.text), name.end() + feature.window)
+                clause = block.text[start:end]
+                if not feature.denial.search(clause):
+                    continue
+                # Only a qualifier in this item's own run of text qualifies it.
+                separators = list(LIST_SEPARATOR.finditer(clause, 0, name.start() - start))
+                item = clause[separators[-1].end():] if separators else clause
+                if HOSTED_QUALIFIER.search(item):
+                    continue
+                findings.append(
+                    f"{relative}:{block.line}: {feature.label}: {clause.strip()}"
+                )
+    return findings
+
+
 def claim_exempt(segment: str, match: re.Match, relative: str = "", label: str = "") -> bool:
     if label == "daily monitoring or rescans" and local_cadence_claim(relative, segment):
         return True
@@ -1508,7 +1778,10 @@ def run_self_tests() -> Tuple[int, List[str]]:
         if not any(expected in finding for finding in findings):
             failures.append(f"self-test {name}: expected {expected}, got {findings}")
     failures.extend(local_cadence_self_tests())
-    return checks + LOCAL_CADENCE_CHECKS, failures
+    checks += LOCAL_CADENCE_CHECKS
+    checks += DENIAL_CHECKS
+    failures.extend(denial_self_tests())
+    return checks, failures
 
 
 # The one hole in the daily-rescan grab, and the properties that keep it narrow.
@@ -1560,6 +1833,83 @@ def local_cadence_self_tests() -> List[str]:
     return failures
 
 
+# The denied-feature check, and the properties that keep it from being a blunt
+# "no negatives on sales pages" rule. Each negative case below is a sentence the
+# product REQUIRES — a hosted-only disclaimer, a roadmap box, a competitor
+# comparison — so a gate that simply forbade them would push the site into
+# over-claiming instead, which is the other half of the same problem.
+DENIAL_CHECKS = 15
+DENIED_LOCAL = "Hosted re-scans, scan history, PDF reports and a live badge are not part of it."
+DENIED_LOCAL_DA = "Hosted re-scans, historik, PDF og det live badge er ikke en del af det."
+DENIED_LOCAL_DE = "Hostete Re-Scans, Historie, PDF und das Live-Badge sind nicht enthalten."
+DENIED_LOCAL_FR = "Les re-scans hébergés, l’historique, le PDF et le badge en direct n’en font pas partie."
+
+
+def denial_self_tests() -> List[str]:
+    failures: List[str] = []
+    real = read_text(ROOT / "plugin/eucomply.php", "self-test: plugin PHP", [])
+    if real is None:
+        return ["self-test denial: the plugin source could not be read"]
+    if not plugin_ships_history(real):
+        # Without this the cases below would be green for the wrong reason: the
+        # check has nothing to enforce, so it enforces nothing and looks calm.
+        failures.append("self-test denial: the plugin ships no Pro-gated history, so the check has nothing to justify it")
+
+    def denied(text: str, relative: str = "site/plugin/index.html") -> List[str]:
+        return denial_findings(relative, [TextBlock(text, 1)])
+
+    # Caught, once per language. DE and FR are here for a reason: the first run
+    # of this check reported EN and DA and read neither, so nothing was red and
+    # nothing was tested.
+    for name, text in (
+        ("EN", DENIED_LOCAL),
+        ("DA", DENIED_LOCAL_DA),
+        ("DE", DENIED_LOCAL_DE),
+        ("FR", DENIED_LOCAL_FR),
+    ):
+        if not denied(text):
+            failures.append(f"self-test denial {name}: a page denying shipped Pro history was allowed")
+    # The page gate has to reach all four, or the cases above pass on two.
+    for name, text in (
+        ("EN", "Pro is a license key you paste into the plugin's settings screen."),
+        ("DA", "79 USD pr. websted pr. år er en Pro-licens."),
+        ("DE", "79 USD pro Website pro Jahr ist eine Pro-Lizenz."),
+        ("FR", "79 USD par site web et par an est une licence Pro."),
+    ):
+        if not PRO_PAGE_CONTEXT.search(text):
+            failures.append(f"self-test denial page gate {name}: the gate would never read a {name} page")
+    # Required honesty: a denial scoped to the hosted version is not an
+    # under-claim, because the history ships in the customer's own WordPress.
+    for name, text in (
+        ("hosted EN", "Hosted scan history is not included in your Pro license."),
+        ("hosted DA", "Hostet scanningshistorik er ikke inkluderet i din Pro-licens."),
+        ("hosted DE", "Gehosteter Scan-Verlauf ist nicht in Ihrer Pro-Lizenz enthalten."),
+        ("hosted FR", "L’historique hébergé n’est pas inclus dans votre licence Pro."),
+    ):
+        if denied(text):
+            failures.append(f"self-test denial {name}: a hosted-only disclaimer was flagged, so the site is pushed into over-claiming")
+    # A roadmap box is the same promise in a different frame, and is already the
+    # over-claim gate's business.
+    if denied("Planlagte funktioner (ikke inkluderet i dag): 30 dages historik pr. tjek."):
+        failures.append("self-test denial roadmap: a roadmap list was flagged as a flat denial")
+    # Somebody else's product is not our licence.
+    if denied("Cookiebot and CookieYes are consent platforms. TrustScan's free scan does not include a downloadable report."):
+        failures.append("self-test denial competitor: a competitor comparison was flagged")
+    # A claim, not a denial, is the over-claim gate's business and stays there.
+    if denied("EUComply Pro keeps a scan history of your latest scans."):
+        failures.append("self-test denial no-denial: a sentence that denies nothing was flagged")
+    # Two mutations that were green the first time round, so both are properties
+    # now: a comment must not stand in for the call it names, and the guard must
+    # be the denial and not the parameter that is called $pro.
+    if plugin_ships_history(real.replace("echo $this->build_history_section();", "// gone;")):
+        failures.append("self-test denial comment: a phpcs:ignore comment kept a deleted history render looking shipped")
+    if plugin_ships_history(real.replace("|| ! $pro )", "")):
+        failures.append("self-test denial guard: the export's $pro parameter passed as a Pro gate that was deleted")
+    if not plugin_ships_history(real):
+        failures.append("self-test denial trace: the untouched plugin no longer reads as shipping a Pro history")
+    return failures
+
+
 def minimal_test_png(metadata: Dict[str, str]) -> bytes:
     def chunk(kind: bytes, payload: bytes) -> bytes:
         return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind + payload) & 0xFFFFFFFF)
@@ -1605,6 +1955,11 @@ def main() -> int:
             findings.extend(text_findings(relative, text))
         else:
             findings.extend(raw_claim_findings(relative, text))
+        if path.suffix.lower() in {".html", ".htm"} and PRO_PAGE_CONTEXT.search(text):
+            # A page that talks about the Pro licence may not deny a feature that
+            # licence unlocks. This direction is otherwise unwatched: the gate
+            # stays green, the page stays published, the feature stays unsold.
+            findings.extend(denial_findings(relative, parse_html(text).claim_blocks(relative)))
     expected_buying_pages = set(BUYING_PAGES)
     if buying_pages_checked != expected_buying_pages:
         missing = sorted(expected_buying_pages - buying_pages_checked)
