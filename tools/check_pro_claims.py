@@ -1110,6 +1110,7 @@ def artifact_findings() -> List[str]:
     for archive in (SITE / "assets").glob("eucomply-*.zip"):
         if archive.name not in {plugin_zip.name, extension_zip.name}:
             findings.append(f"artifacts: stale plugin package {archive.name}")
+    findings.extend(redirect_findings())
     plugin_page_path = SITE / "plugin/index.html"
     plugin_page = read_text(plugin_page_path, "site/plugin/index.html", findings)
     if plugin_page is not None:
@@ -1136,6 +1137,59 @@ def artifact_findings() -> List[str]:
                 if forbidden.lower() in document_text.lower():
                     findings.append(f"book/eu-website-compliance-guide-2026.docx: contains stale text {forbidden}")
             findings.extend(text_findings("book/eu-website-compliance-guide-2026.docx", document_text))
+    return findings
+
+
+def plugin_manifest_versions() -> List[str]:
+    """Every version named in the update manifest, newest first."""
+    manifest = load_json(ROOT / "update.json", "update.json", [])
+    if manifest is None:
+        return []
+    sections = manifest.get("sections")
+    changelog = str(sections.get("changelog", "")) if isinstance(sections, dict) else ""
+    return re.findall(r"=\s*([0-9]+\.[0-9]+\.[0-9]+)\s*(?:\([^)]*\))?\s*=", changelog)
+
+
+def redirect_findings(redirects_text: Optional[str] = None) -> List[str]:
+    """The version a release replaces must keep redirecting to the new one.
+
+    Removing a plugin package from the tree without a redirect line sends every
+    installation still on that version to a 404 on its own download — and it has
+    now happened three times in this repo, because the deploy notes asked for the
+    line and nobody read _redirects. So it is a check, not a note.
+
+    The previous version is read from the manifest's own changelog rather than
+    from git, so the check needs no history and cannot be satisfied by a commit
+    that never existed. $redirects_text lets the selftest hand in a file it
+    broke on purpose instead of patching the reader under every other check.
+    """
+    findings: List[str] = []
+    if redirects_text is None:
+        redirects = read_text(SITE / "_redirects", "site/_redirects", findings)
+        if redirects is None:
+            return findings
+    else:
+        redirects = redirects_text
+    versions = plugin_manifest_versions()
+    if len(versions) < 2:
+        findings.append("update.json: changelog names fewer than two versions, so the replaced one cannot be checked")
+        return findings
+    previous = versions[1]
+    if previous == PLUGIN_VERSION:
+        findings.append(f"update.json: changelog does not mention a version before {PLUGIN_VERSION}")
+        return findings
+    current_zip = f"/assets/eucomply-{PLUGIN_VERSION}.zip"
+    previous_zip = f"/assets/eucomply-{previous}.zip"
+    for line in redirects.splitlines():
+        parts = line.split()
+        if len(parts) < 2 or parts[0].startswith("#"):
+            continue
+        if parts[0] == previous_zip:
+            if parts[1] != current_zip:
+                findings.append(f"site/_redirects: {previous_zip} must redirect to {current_zip}, not {parts[1]}")
+            break
+    else:
+        findings.append(f"site/_redirects: {previous_zip} has no redirect, so installs on {previous} get a 404")
     return findings
 
 
@@ -1301,6 +1355,23 @@ def run_self_tests() -> Tuple[int, List[str]]:
     metadata, width, height = png_text_metadata(png)
     if metadata or (width, height) != (1, 1):
         failures.append("self-test png metadata: minimal PNG parse failed")
+    # The replaced-version redirect, proved against a temp _redirects that has no
+    # line for the version this release replaced — the exact state that shipped a
+    # 404 to every install on 1.3.4, 1.3.5 and now 1.3.6.
+    real_redirects = (SITE / "_redirects").read_text(encoding="utf-8")
+    replaced = plugin_manifest_versions()[1]
+    checks += 1
+    if redirect_findings(real_redirects):
+        failures.append(f"self-test redirect: the real _redirects was rejected: {redirect_findings(real_redirects)}")
+    stripped = "\n".join(line for line in real_redirects.splitlines() if f"eucomply-{replaced}.zip" not in line)
+    checks += 1
+    if not any(replaced in finding for finding in redirect_findings(stripped)):
+        failures.append(f"self-test redirect: a missing {replaced} line was not flagged")
+    checks += 1
+    if not any("0.0.1" in finding for finding in redirect_findings(real_redirects.replace(
+            f"/assets/eucomply-{replaced}.zip /assets/eucomply-{PLUGIN_VERSION}.zip",
+            f"/assets/eucomply-{replaced}.zip /assets/eucomply-0.0.1.zip"))):
+        failures.append("self-test redirect: a redirect to the wrong package was not flagged")
     metadata, width, height = png_text_metadata(minimal_test_png({"Title": "Pro", "Description": "Current"}))
     checks += 1
     if metadata != {"Title": "Pro", "Description": "Current"} or (width, height) != (1, 1):
