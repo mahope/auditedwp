@@ -129,6 +129,8 @@ run "tools/check_runtime.py" python3 tools/check_runtime.py
 run "tools/check_runtime.py --selftest" python3 tools/check_runtime.py --selftest
 run "tools/check_package_identity.py" python3 tools/check_package_identity.py
 run "tools/check_package_identity.py --selftest" python3 tools/check_package_identity.py --selftest
+run "tools/check_published_installs.py" python3 tools/check_published_installs.py
+run "tools/check_published_installs.py --selftest" python3 tools/check_published_installs.py --selftest
 run "tools/check_dom_xss.py" python3 tools/check_dom_xss.py
 run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftest
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
@@ -217,7 +219,12 @@ else
     printf '%s\n' "$smoke_out" | tail -20
     bad "live røgtest fandt kun $smoke_checks tjek" 1
   else
-    ok "live røgtest ($smoke_checks tjek fra den publicerede motor)"
+    # Ikke "den publicerede motor": dette er den lokale kopi i
+    # eucomply-scanner/, som ingen kan installere. Den publicerede pakke er
+    # @mahope/eucomply-scanner i et andet repo, og de to er ikke ens — se
+    # spørgsmål 13 og 17 i planen. At kalde denne "publiceret" var en
+    # påstand uden dækning i det øjeblik, den blev skrevet.
+    ok "live røgtest ($smoke_checks tjek fra den lokale motor)"
   fi
 fi
 

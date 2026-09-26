@@ -10,14 +10,25 @@ hvert scan til den hosted worker — og den erklærede *samme* npm-navn,
 identitet kan ikke begge publiceres, og hvilken en bruger får ved
 `npm install eucomply-scanner` afhænger af, hvem der trykker publish først.
 
-Sitet fortæller brugerne at installere `eucomply-scanner`
-(`site/cli/index.html`), så det navn skal høre til den pakke, der er
-testet og som har de rettede guards. Det er derfor `eucomply-scanner/`,
-der har ret til navnet, og `cli/` der har mistet det.
+Denne gate fandt navnekollisionen, men den havde også en anden kontrol —
+"den dokumenterede pakke skal være en publicerbar lokal package.json" — som
+**er taget ud 26/9, fordi dens præmis viste sig at være forkert.**
 
-Identitetskollisionen alene er ikke nok at finde: den skal være umulig at
-føre tilbage. Derfor er den her en permanent del af kvalitetsgaten, ikke en
-engangsnotering i planen.
+Gaten krævede, at `site/cli/index.html` skulle navngive en pakke, der findes
+i *dette* repo. Den gjorde det: `eucomply-scanner/`. Men den pakke er aldrig
+publiceret, og den findes **ikke i npm-registret** — det gjorde kontrol 2
+grøn ved at slå en lokal fil op og aldrig spørge registret om noget. Sitet
+bad derfor brugeren køre `npm install eucomply-scanner`, som svarer
+`npm ERR! 404`.
+
+Egenskaben der skal beskyttes — "den dokumenterede installation kan løses" —
+er nu ejet af `tools/check_published_installs.py`, som kontrollerer den mod
+en verificeret registrering i stedet for mod en fil i repoet. To gates der
+begge påstår at beskytte det samme, ville blot give to steder, hvor den ene
+kan ligge. Det er samme fejltype som opgave 11s tre tal uden kontrol imellem.
+
+Identitetskollisionen alene er stadig umulig at føre tilbage: derfor er
+denne gate en permanent del af kvalitetsgaten og ikke en engangsnotering.
 
 Kør:
     python3 tools/check_package_identity.py
@@ -41,10 +52,6 @@ PACKAGE_FILES = [
 # Mapper der ikke er vores kode og derfor ikke må give fund.
 SKIP_DIR_PARTS = {"node_modules", ".git", "site-dist", "__pycache__"}
 
-# Navnet sitet beder brugeren installere. Denne pakke skal være publicerbar
-# og have et unikt navn, ellers peger dokumentationen på et vildledende
-# sted. Se site/cli/index.html.
-DOCUMENTED_PACKAGE = "eucomply-scanner"
 
 
 def _load(rel):
@@ -71,15 +78,13 @@ def _bin_names(data):
     return []
 
 
-def collect(base=None, extra=None, documented=None):
+def collect(base=None, extra=None):
     """Find alle fund.
 
-    `extra` er en liste af (rel, data) som lægges oven på de rigtige pakker,
-    og `documented` kan overskrives. Det er sådan selftesten kan udtrykke
-    "den dokumenterede pakke mangler" uden at røre disken.
+    `extra` er en liste af (rel, data) som lægges oven på de rigtige pakker.
+    Det er sådan selftesten kan udtrykke en kollision uden at røre disken.
     """
     base = base or ROOT
-    documented = documented or DOCUMENTED_PACKAGE
     findings = []
     loaded = []
 
@@ -120,28 +125,7 @@ def collect(base=None, extra=None, documented=None):
                 % (name, len(rels), ", ".join(sorted(rels)), name)
             )
 
-    # 2. Den dokumenterede pakke skal findes, være publicerbar og have et
-    #    unikt navn — ellers peger site/cli/index.html på det forkerte sted.
-    documented_pkgs = [(rel, d) for rel, d in loaded if d.get("name") == documented]
-    if not documented_pkgs:
-        findings.append(
-            "Ingen pakke erklærer navnet '%s', som sitet beder brugeren "
-            "installere (site/cli/index.html)." % documented
-        )
-    else:
-        rel, data = documented_pkgs[0]
-        if data.get("private") is True:
-            findings.append(
-                "%s er sat til private, men sitet beder brugerne installere "
-                "'%s'." % (rel, documented)
-            )
-        if len(documented_pkgs) > 1:
-            findings.append(
-                "'%s' er erklæret af %d pakker — se identitetskollisionen ovenfor."
-                % (documented, len(documented_pkgs))
-            )
-
-    # 3. En pakke med bin-navne skal have et navn, så `npx <navn>` er
+    # 2. En pakke med bin-navne skal have et navn, så `npx <navn>` er
     #    entydigt. Uden det er der ingen måde at se hvad bin'en installerer.
     for rel, data in loaded:
         bins = _bin_names(data)
@@ -159,9 +143,9 @@ def run(base=None):
             print("  FEJL  %s" % f)
         return findings
     print(
-        "Pakke-identitet grøn: hver pakke har sit eget npm-navn, og "
-        "'%s' — den sitet fortæller brugerne at installere — er den "
-        "publicerbare motor." % DOCUMENTED_PACKAGE
+        "Pakke-identitet grøn: hver pakke i repoet har sit eget npm-navn. "
+        "Om den installation sitet fortæller brugerne kan løses, kontrolleres "
+        "af tools/check_published_installs.py."
     )
     return []
 
@@ -199,16 +183,6 @@ def selftest():
     expect_red(
         "samme navn hvor den ene er privat",
         [("legacy/package.json", _fixture("eucomply-scanner", private=True))],
-    )
-
-    # Den dokumenterede pakke forsvinder.
-    expect_red("den dokumenterede pakke mangler", [], documented="eucomply-fandtes-ikke")
-
-    # Den dokumenterede pakke er privat, så sitet peger på noget der ikke
-    # kan installeres.
-    expect_red(
-        "den dokumenterede pakke er privat",
-        [("x/package.json", _fixture("eucomply-scanner", private=True))],
     )
 
     # Bin-navne uden pakke-navn: umuligt at se hvad npx vil installere.
