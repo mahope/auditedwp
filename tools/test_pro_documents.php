@@ -157,6 +157,27 @@ function wp_unschedule_event( $timestamp, $hook ) {
     return wp_clear_scheduled_hook( $hook );
 }
 
+// The regression alert is the one feature that hands a message to something
+// outside the request, so the mailer is recorded rather than stubbed to
+// nothing: "no mail was sent" has to be provable, not assumed. There is no
+// wp_remote_* stub in this file, so nothing here can reach the network either.
+function admin_url( $path = '' ) {
+    return 'https://agency-client.example/wp-admin/' . ltrim( (string) $path, '/' );
+}
+function wp_mail( $to, $subject, $message, $headers = array() ) {
+    $GLOBALS['eucomply_test_mail'][] = array(
+        'to'      => $to,
+        'subject' => $subject,
+        'message' => $message,
+        'headers' => $headers,
+    );
+    return empty( $GLOBALS['eucomply_test_mail_fails'] );
+}
+/** Every mail the plugin handed to WordPress so far. */
+function sent_mail() {
+    return isset( $GLOBALS['eucomply_test_mail'] ) ? $GLOBALS['eucomply_test_mail'] : array();
+}
+
 require_once __DIR__ . '/../plugin/eucomply.php';
 
 // ── Tiny test harness ─────────────────────────────────────────────────────────
@@ -177,6 +198,8 @@ function fresh_instance() {
     $GLOBALS['eucomply_test_options'] = array();
     $GLOBALS['eucomply_test_transients'] = array();
     $GLOBALS['eucomply_test_cron']    = array();
+    $GLOBALS['eucomply_test_mail']    = array();
+    unset( $GLOBALS['eucomply_test_mail_fails'] );
     $GLOBALS['ref']                  = new ReflectionClass( 'EUComply' );
     $GLOBALS['g']                    = $GLOBALS['ref']->newInstanceWithoutConstructor();
     return $GLOBALS['g'];
@@ -1094,6 +1117,182 @@ if ( preg_match( '/private function build_report\(\).*?\n    \}/s', file_get_con
 }
 ok( 'the cadence line is really in build_report(), so the check is not vacuous', '' !== $build_report_src && false !== strpos( $build_report_src, 'cadence_phrase' ) );
 ok( 'build_report() does not call the license server', '' === $build_report_src || ( 0 === preg_match( '/\$this->is_pro\s*\(/', $build_report_src ) && false === strpos( $build_report_src, 'wp_remote_' ) ) );
+
+// ── 15. Regression alert: mail the customer when a check changes ──────────────
+// A daily scan nobody hears about is a scan nobody acts on. Everything here is
+// about one property: exactly one mail per *change*, to an address the customer
+// typed in, on a Pro licence, and never a word that isn't backed by a state
+// change in the recorded history.
+
+/** A scan result set from an explicit key => pass|warn|fail map, with text. */
+function states_scan( $map ) {
+    $out = array();
+    foreach ( $map as $key => $state ) {
+        $out[ $key ] = array(
+            'pass'   => 'pass' === $state,
+            'warn'   => 'warn' === $state,
+            'label'  => ucfirst( $key ) . ' check',
+            'detail' => 'Detail for ' . $key . '.',
+            'fix'    => 'Fix the ' . $key . ' check.',
+        );
+    }
+    return $out;
+}
+
+/** Fresh instance, Pro licence, alert address, and a state the customer was told. */
+function alert_instance( $previous = array( 'ssl' => 'pass', 'cookies' => 'pass' ), $pro = true ) {
+    fresh_instance();
+    if ( $pro ) {
+        update_option( 'eucomply_pro_key', str_repeat( 'a1b2', 8 ) );
+        update_option( 'eucomply_pro_verified', '1' );
+        update_option( 'eucomply_pro_verified_at', time() );
+        update_option( 'eucomply_pro_last_ok_at', time() );
+    }
+    if ( null !== $previous ) {
+        update_option( 'eucomply_alert_state', $previous );
+    }
+    update_option( 'eucomply_alert_email', 'owner@agency-client.example' );
+    $GLOBALS['eucomply_site_name'] = 'Agency Client ApS';
+    return $GLOBALS['g'];
+}
+
+// 1. Silence by default. A regression with no address stored must send nothing
+//    at all — a plugin that mails a customer who never asked is a bug, not a
+//    feature, and the address being the opt-in is what makes that provable.
+alert_instance( null );
+ok( 'no stored state and no mailer stub is not the reason: an unconfigured site stays silent',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) && 0 === count( sent_mail() ) );
+alert_instance( array( 'ssl' => 'pass' ) );
+update_option( 'eucomply_alert_email', '' );
+ok( 'an empty alert address sends nothing, even for a real regression',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) && 0 === count( sent_mail() ) );
+
+// 2. A stored value that is not a usable address is no address at all.
+alert_instance( array( 'ssl' => 'pass' ) );
+update_option( 'eucomply_alert_email', 'owner(at)agency-client.example' );
+ok( 'a mistyped stored address is refused rather than sanitised into a wrong one',
+    '' === priv( 'alert_address' ) && 0 === count( sent_mail() ) );
+
+// 3. The alert follows the licence in both directions, like the cadence does.
+alert_instance( array( 'ssl' => 'pass' ), false );
+ok( 'a site without Pro is not mailed',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) && 0 === count( sent_mail() ) );
+alert_instance( array( 'ssl' => 'pass' ) );
+update_option( 'eucomply_pro_verified', '' );
+ok( 'a released licence stops the alert, it does not keep the last known state',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) && 0 === count( sent_mail() ) );
+
+// 4. Turning the address on must not produce a first mail listing every check
+//    as a change. It adopts the last recorded scan as the state the customer
+//    has not been told about yet.
+alert_instance( null );
+update_option(
+    'eucomply_scan_history',
+    array(
+        gmdate( 'Y-m-d', time() - 86400 ) => array(
+            'date'   => gmdate( 'Y-m-d', time() - 86400 ),
+            'checks' => array( 'ssl' => 'pass', 'cookies' => 'pass' ),
+        ),
+    )
+);
+ok( 'the first scan after an address is saved sends nothing',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'pass', 'cookies' => 'pass' ) ) ) && 0 === count( sent_mail() ) );
+$seeded = get_option( 'eucomply_alert_state', null );
+ok( 'it seeds the state from the last recorded day instead of from today',
+    is_array( $seeded ) && array( 'ssl' => 'pass', 'cookies' => 'pass' ) === $seeded );
+
+// 5. The regression itself: pass -> fail mails once, and says what broke.
+alert_instance();
+$sent = priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail', 'cookies' => 'pass' ) ) );
+$mails = sent_mail();
+ok( 'a check that passed and now fails sends exactly one mail', true === $sent && 1 === count( $mails ) );
+ok( 'it goes to the stored address', 1 === count( $mails ) && 'owner@agency-client.example' === $mails[0]['to'] );
+ok( 'the subject says the direction, in words',
+    1 === count( $mails ) && false !== strpos( $mails[0]['subject'], '1 check failing' ) && false !== strpos( $mails[0]['subject'], 'Agency Client ApS' ) );
+ok( 'the body names the check, its detail and its fix',
+    1 === count( $mails )
+    && false !== strpos( $mails[0]['message'], 'Ssl check' )
+    && false !== strpos( $mails[0]['message'], 'PASS -> FAIL' )
+    && false !== strpos( $mails[0]['message'], 'Detail for ssl.' )
+    && false !== strpos( $mails[0]['message'], 'Fix the ssl check.' ) );
+ok( 'the body points at the report in wp-admin',
+    1 === count( $mails ) && false !== strpos( $mails[0]['message'], 'https://agency-client.example/wp-admin/admin.php?page=eucomply' ) );
+ok( 'the body says how to stop it',
+    1 === count( $mails ) && false !== strpos( $mails[0]['message'], 'Clear that field to stop it' ) );
+
+// 6. The recovery mail, because an alert system that only says bad news gets muted.
+alert_instance( array( 'ssl' => 'fail', 'cookies' => 'pass' ) );
+$sent = priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'pass', 'cookies' => 'pass' ) ) );
+$mails = sent_mail();
+ok( 'a failing check that passes again is also a change worth one mail',
+    true === $sent && 1 === count( $mails ) && false !== strpos( $mails[0]['subject'], 'passing again' ) );
+ok( 'the recovery mail does not tell the customer to fix something',
+    1 === count( $mails ) && false === strpos( $mails[0]['message'], 'Fix the ssl check.' ) );
+
+// 7. A warning is a change, and it is never counted as a pass.
+alert_instance( array( 'ssl' => 'pass' ) );
+priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'warn' ) ) );
+ok( 'a check that drops from passing to warning is reported',
+    1 === count( sent_mail() ) && false !== strpos( sent_mail()[0]['message'], 'PASS -> WARN' ) );
+ok( 'a warning is never recorded as a pass in the alert state',
+    array( 'ssl' => 'warn' ) === get_option( 'eucomply_alert_state' ) );
+
+// 8. The anti-spam rule: a site that stays broken gets told once, not daily.
+alert_instance();
+priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) );
+priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) );
+priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) );
+ok( 'an unchanged regression is not mailed again',
+    1 === count( sent_mail() ) && false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) );
+
+// 9. A check seen for the first time is an observation, not a regression. We
+//    cannot claim it changed, and a plugin update that adds a check must not
+//    greet the customer with a mail full of "not previously recorded".
+alert_instance( array( 'ssl' => 'pass' ) );
+ok( 'a check that was never recorded before is not mailed as a change',
+    false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'pass', 'newcheck' => 'fail' ) ) ) && 0 === count( sent_mail() ) );
+
+// 10. A mailer that refuses must not eat the alert. The state only advances
+//     when the mail actually went out, so the next scan tries again.
+alert_instance();
+$GLOBALS['eucomply_test_mail_fails'] = true;
+ok( 'a failed send is not counted as a send', false === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) ) );
+ok( 'a failed send does not advance the state the customer was told',
+    array( 'ssl' => 'pass', 'cookies' => 'pass' ) === get_option( 'eucomply_alert_state' ) );
+unset( $GLOBALS['eucomply_test_mail_fails'] );
+ok( 'the next scan retries the same regression and then advances the state',
+    true === priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) )
+    && 2 === count( sent_mail() )
+    && array( 'ssl' => 'fail' ) === get_option( 'eucomply_alert_state' ) );
+
+// 11. No From header of our own: the site's mailer sets one that its SPF
+//     record matches, and a made-up From is how the one mail that must arrive
+//     ends up in spam.
+alert_instance();
+priv( 'maybe_send_alert', states_scan( array( 'ssl' => 'fail' ) ) );
+$headers = sent_mail()[0]['headers'];
+$flat    = is_array( $headers ) ? implode( ' ', $headers ) : (string) $headers;
+ok( 'the alert sets a content type and no From of its own',
+    false !== stripos( $flat, 'Content-Type' ) && false === stripos( $flat, 'From:' ) && false === stripos( $flat, 'Reply-To' ) );
+
+// 12. The report may only promise the alert when one is actually configured,
+//     and it reads the same stored state the sender does.
+pro_instance();
+$no_alert_doc = doc( 'report' );
+ok( 'a site with no alert address is not told it will be emailed', false === strpos( $no_alert_doc, 'emailed when a check changes' ) );
+update_option( 'eucomply_alert_email', 'owner@agency-client.example' );
+ok( 'a site with an alert address is told so, in the document the client reads',
+    false !== strpos( doc( 'report' ), 'emailed when a check changes' ) );
+
+// 13. The wiring itself. Every test above calls the private method directly, so
+//     without this one they would all stay green if run_checks() stopped
+//     calling it and the feature silently did nothing.
+$run_src = '';
+if ( preg_match( '/public function run_checks\(\).*?\n    \}/s', file_get_contents( __DIR__ . '/../plugin/eucomply.php' ), $blk ) ) {
+    $run_src = $blk[0];
+}
+ok( 'run_checks() really calls the alert, so the tests above are not vacuous',
+    '' !== $run_src && false !== strpos( $run_src, '$this->maybe_send_alert(' ) );
 
 // ── Result ───────────────────────────────────────────────────────────────────
 echo "$passed document checks passed\n";

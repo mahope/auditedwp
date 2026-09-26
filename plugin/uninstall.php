@@ -53,6 +53,8 @@ $options = array(
     'eucomply_ls_instance_id',
     'eucomply_agency_name',
     'eucomply_contact_email',
+    'eucomply_alert_email',
+    'eucomply_alert_state',
     'eucomply_pro_dpa_date',
     'eucomply_pro_nis2_date',
     'eucomply_pro_eaa_date',

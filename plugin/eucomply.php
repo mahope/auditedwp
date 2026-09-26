@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs six local WordPress checks for SSL, cookies, forms, backups, plugin/core health and legal pages. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.9
+ * Version:           1.3.10
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.9' );
+define( 'EUCOMPLY_VERSION', '1.3.10' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -310,6 +310,7 @@ class EUComply {
         update_option( 'eucomply_scan_results', $results );
         update_option( 'eucomply_last_scan', current_time( 'mysql' ) );
         $this->record_history( $results );
+        $this->maybe_send_alert( $results );
 
         return $results;
     }
@@ -397,6 +398,243 @@ class EUComply {
         }
         ksort( $history );
         return $history;
+    }
+
+    // ── Regression alerts (Pro) ───────────────────────────────────────────────
+    //
+    // A daily scan nobody hears about is a scan nobody acts on. The history
+    // says the site regressed; without this, the only way to find out is to log
+    // into wp-admin and hope to be looking on the right day. It is the last
+    // Pro value in the mission's list that needs no hosted service: the scan
+    // already runs on the customer's own server, and WordPress already has a
+    // mailer, so nothing here leaves the site except one message to an address
+    // the customer typed in.
+    //
+    // Four rules this block exists to keep:
+    //   1. Silence by default. No address stored means no mail is ever built,
+    //      let alone sent. A plugin must not mail a customer uninvited.
+    //   2. Alerts follow the licence like everything else, via is_pro(). A
+    //      released, expired or out-of-slots key stops the mail.
+    //   3. One mail per *change*, not one per scan. The state is remembered as
+    //      of the last mail that actually went out, so a check that stays broken
+    //      stays quiet after the first notice instead of arriving every morning
+    //      for a year.
+    //   4. A failed send does not advance that state, so a transient SMTP
+    //      outage delays the alert instead of silently swallowing it.
+
+    /**
+     * The address alerts go to, or '' when none is usable.
+     *
+     * Same form control as the accessibility contact: WordPress' sanitize_email()
+     * *strips* characters it does not allow, so a stored value that differs from
+     * the sanitized one is a mistyped address rather than a valid one.
+     *
+     * @return string
+     */
+    private function alert_address() {
+        $raw = trim( (string) get_option( 'eucomply_alert_email', '' ) );
+        if ( '' === $raw ) {
+            return '';
+        }
+        $clean = sanitize_email( $raw );
+        return ( is_email( $clean ) && $clean === $raw ) ? $clean : '';
+    }
+
+    /**
+     * The per-check states of one scan, in the same tri-state the history uses.
+     *
+     * @param array $results Check results from run_checks().
+     * @return array<string,string> key => pass|warn|fail.
+     */
+    private function check_states( $results ) {
+        $states = array();
+        if ( ! is_array( $results ) ) {
+            return $states;
+        }
+        foreach ( $results as $key => $r ) {
+            if ( ! is_array( $r ) ) {
+                continue;
+            }
+            if ( ! empty( $r['pass'] ) ) {
+                $states[ (string) $key ] = 'pass';
+            } elseif ( ! empty( $r['warn'] ) ) {
+                $states[ (string) $key ] = 'warn';
+            } else {
+                $states[ (string) $key ] = 'fail';
+            }
+        }
+        return $states;
+    }
+
+    /**
+     * The checks whose state differs from what the customer was last told.
+     *
+     * Only checks that were in the previous state can be a change. A check that
+     * was never recorded before is a new observation, not a regression: a
+     * plugin update that adds a check must not greet the customer with a mail
+     * full of "not previously recorded", and claiming something changed when
+     * there is nothing to compare against is exactly the kind of claim this
+     * plugin is not supposed to make.
+     *
+     * @param array $states   Current states, key => pass|warn|fail.
+     * @param array $previous States as of the last alert that was sent.
+     * @return array<string,array> key => array( 'from' => string, 'to' => string ).
+     */
+    private function state_transitions( $states, $previous ) {
+        $moves = array();
+        if ( ! is_array( $previous ) ) {
+            return $moves;
+        }
+        foreach ( $states as $key => $state ) {
+            if ( ! isset( $previous[ $key ] ) ) {
+                continue;
+            }
+            $before = (string) $previous[ $key ];
+            if ( $before === $state ) {
+                continue;
+            }
+            $moves[ $key ] = array( 'from' => $before, 'to' => (string) $state );
+        }
+        return $moves;
+    }
+
+    /**
+     * The most recent recorded snapshot that is not from today.
+     *
+     * Today is excluded because it is the scan the alert is *about*: seeding
+     * from the snapshot this very scan just wrote would make the new address
+     * start out already informed about the state that is being reported, and
+     * the change the customer is about to be told about would be the one change
+     * they are never told about. Yesterday's snapshot is the last state they
+     * could not have been told about either.
+     *
+     * @return array<string,string> key => pass|warn|fail, empty when there is none.
+     */
+    private function baseline_states() {
+        $history = $this->history();
+        unset( $history[ gmdate( 'Y-m-d' ) ] );
+        if ( empty( $history ) ) {
+            return array();
+        }
+        $last = end( $history );
+        return ( isset( $last['checks'] ) && is_array( $last['checks'] ) ) ? $last['checks'] : array();
+    }
+
+    /**
+     * Mail the customer when a check changed, if they asked for that.
+     *
+     * @param array $results Check results from run_checks().
+     * @return bool True when a mail was handed to WordPress, false otherwise.
+     */
+    private function maybe_send_alert( $results ) {
+        $to = $this->alert_address();
+        if ( '' === $to ) {
+            return false; // Rule 1: silence by default.
+        }
+        if ( ! $this->is_pro() ) {
+            return false; // Rule 2.
+        }
+        $states = $this->check_states( $results );
+        if ( empty( $states ) ) {
+            return false;
+        }
+
+        $previous = get_option( 'eucomply_alert_state', null );
+        if ( ! is_array( $previous ) ) {
+            // The address was just added. Adopt the last recorded scan as the
+            // state nobody has been told about yet, so enabling alerts does not
+            // produce a first mail listing every check as a change.
+            $baseline = $this->baseline_states();
+            if ( ! empty( $baseline ) ) {
+                update_option( 'eucomply_alert_state', $baseline );
+            }
+            return false;
+        }
+
+        $moves = $this->state_transitions( $states, $previous );
+        if ( empty( $moves ) ) {
+            return false; // Rule 3: nothing changed, nothing to say.
+        }
+
+        list( $subject, $body ) = $this->build_alert_mail( $moves, $results );
+        // No From header on purpose: the site's own mailer already sets one
+        // that its SPF record matches, and a From the plugin made up would make
+        // the alert fail spam filtering — the one mail that must arrive.
+        $sent = wp_mail( $to, $subject, $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
+        if ( $sent ) {
+            // Only now is the customer actually informed of these states.
+            update_option( 'eucomply_alert_state', $states );
+        }
+        // Rule 4: a false return means nothing went out, so the states are not
+        // advanced and the next scan tries again.
+        return (bool) $sent;
+    }
+
+    /**
+     * The alert mail itself.
+     *
+     * Plain text on purpose: it is read on a phone, and the words have to work
+     * without a stylesheet. The subject says which direction the site moved,
+     * because "a check changed" and "a check broke" call for different replies.
+     *
+     * @param array $moves   Transitions from state_transitions().
+     * @param array $results Check results, for the human labels and fixes.
+     * @return array array( string $subject, string $body ).
+     */
+    private function build_alert_mail( $moves, $results ) {
+        $site = get_bloginfo( 'name' );
+        $site = ( '' === $site ) ? get_home_url() : $site;
+
+        $broken = array();
+        $fixed  = array();
+        foreach ( $moves as $key => $move ) {
+            if ( 'fail' === $move['to'] ) {
+                $broken[] = $key;
+            } else {
+                $fixed[] = $key;
+            }
+        }
+
+        if ( ! empty( $broken ) ) {
+            $subject = sprintf(
+                '[EUComply] %d check%s failing on %s',
+                count( $broken ),
+                1 === count( $broken ) ? '' : 's',
+                $site
+            );
+        } else {
+            $subject = sprintf( '[EUComply] %d check%s passing again on %s', count( $fixed ), 1 === count( $fixed ) ? '' : 's', $site );
+        }
+
+        $lines   = array();
+        $lines[] = $subject;
+        $lines[] = '';
+        $lines[] = 'The scheduled compliance scan on ' . $site . ' ran on ' . gmdate( 'Y-m-d' ) . ' UTC and found changes since the last time you were told:';
+        $lines[] = '';
+
+        foreach ( $moves as $key => $move ) {
+            $label  = isset( $results[ $key ]['label'] ) ? (string) $results[ $key ]['label'] : $key;
+            $detail = isset( $results[ $key ]['detail'] ) ? (string) $results[ $key ]['detail'] : '';
+            $fix    = isset( $results[ $key ]['fix'] ) ? (string) $results[ $key ]['fix'] : '';
+            $was    = ( '' === $move['from'] ) ? 'not previously recorded' : $move['from'];
+            $lines[] = '- ' . $label . ': ' . strtoupper( $was ) . ' -> ' . strtoupper( $move['to'] );
+            if ( '' !== $detail ) {
+                $lines[] = '    ' . $detail;
+            }
+            if ( 'fail' === $move['to'] && '' !== $fix ) {
+                $lines[] = '    Fix: ' . $fix;
+            }
+        }
+
+        $lines[] = '';
+        $lines[] = 'The full report and the scan history are here:';
+        $lines[] = admin_url( 'admin.php?page=eucomply' );
+        $lines[] = '';
+        $lines[] = 'This alert is sent from the site itself, by the EUComply plugin, to the address stored in';
+        $lines[] = 'EUComply -> Settings. Clear that field to stop it. Changing the address stops alerts to the old';
+        $lines[] = 'one and starts from the last recorded scan, so you will not get a first mail full of old news.';
+
+        return array( $subject, implode( "\n", $lines ) );
     }
 
     /**
@@ -963,6 +1201,24 @@ class EUComply {
                     $warning = 'The accessibility contact email was not saved: "' . $typed . '" is not a usable address. The accessibility statement will show a field to complete until this is fixed.';
                 }
             }
+            if ( isset( $_POST['eucomply_alert_email'] ) ) {
+                $typed  = trim( (string) wp_unslash( $_POST['eucomply_alert_email'] ) );
+                $alert  = sanitize_email( $typed );
+                $is_alert = ( is_email( $alert ) && $alert === $typed ) ? $alert : '';
+                update_option( 'eucomply_alert_email', $is_alert );
+                if ( '' !== $typed && '' === $is_alert ) {
+                    // Appending, so a form with two bad addresses says so twice
+                    // instead of silently reporting only the last one.
+                    $msg     = 'The regression alert address was not saved: "' . $typed . '" is not a usable email address. No alert will be sent until a valid address is saved here.';
+                    $warning = ( '' === $warning ) ? $msg : $warning . ' ' . $msg;
+                }
+                // The state that decides what counts as a change is dropped on
+                // every save of this field, so the next scan re-seeds it from
+                // the last recorded scan. Keeping it would let the old
+                // address' history decide whether the new one gets a first mail
+                // listing every check as a change.
+                delete_option( 'eucomply_alert_state' );
+            }
         }
         if ( ! empty( $_POST ) && isset( $_POST['eucomply_release'] ) ) {
             check_admin_referer( 'eucomply_release' );
@@ -1007,6 +1263,10 @@ class EUComply {
                 <label for="eucomply_contact_email">Accessibility contact email</label>
                 <input type="email" id="eucomply_contact_email" name="eucomply_contact_email" value="<?php echo esc_attr( get_option( 'eucomply_contact_email', '' ) ); ?>" autocomplete="off" spellcheck="false">
                 <p class="desc">Published in the Pro accessibility statement, which must name an address people can report barriers to. Leave it empty and the document shows a field to complete instead of a broken link.</p>
+
+                <label for="eucomply_alert_email">Regression alert email (Pro)</label>
+                <input type="email" id="eucomply_alert_email" name="eucomply_alert_email" value="<?php echo esc_attr( get_option( 'eucomply_alert_email', '' ) ); ?>" autocomplete="off" spellcheck="false">
+                <p class="desc">Leave this empty and no alert is ever sent. With an address saved, the plugin mails you when a check changes &mdash; a check that passed starts failing, or a failing one passes again &mdash; and stays quiet while nothing changes. It is sent by this site's own mailer, so it depends on the site being able to send email at all. Change or clear the field and the next scan starts from the last recorded scan, so you do not get a first mail full of older news.</p>
 
                 <p style="margin-top:20px"><button class="eucomply-btn" type="submit">Save Settings</button></p>
             </form>
@@ -1277,6 +1537,13 @@ class EUComply {
         // released or expired licence puts the sentence back on its weekly run
         // instead of promising a daily one it will not deliver.
         echo '<p>Scheduled on this WordPress server: ' . esc_html( $this->cadence_phrase() ) . '. The checks run on the site itself, so no external service is involved.</p>';
+        // Only when an address is actually stored, and it names the same
+        // configured state the plugin reads when it decides to send. A report
+        // that promised alerts the site is not set up to send would be the
+        // false claim this whole block exists to avoid.
+        if ( '' !== $this->alert_address() ) {
+            echo '<p>The owner is emailed when a check changes, so a regression between two reports does not go unnoticed.</p>';
+        }
         echo '<table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>';
         foreach ( $results as $key => $r ) {
             $status = ! empty( $r['pass'] ) ? 'PASS' : ( ! empty( $r['warn'] ) ? 'WARN' : 'FAIL' );

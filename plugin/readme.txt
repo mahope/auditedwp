@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.9
+Stable tag: 1.3.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,15 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.10 (2026-09-26) =
+* Pro: set an address in Settings and the plugin mails you when a check changes — a check that passed starts failing, or a failing one passes again. Silence by default: with no address stored, nothing is ever sent.
+* One mail per change, not one per scan. The state is remembered as of the last mail that actually went out, so a site that stays broken is told once instead of every morning for a year.
+* Changing or clearing the address re-seeds that state from the last recorded scan, so you never get a first mail listing every check as old news.
+* The mail is sent by your own site, with your own mailer, and carries no From address of its own — a made-up sender is how the one mail that must arrive ends up in spam. A mailer that refuses does not mark the change as reported, so the next scan tries again.
+* A check seen for the first time is an observation, not a regression, and is not mailed as a change.
+* The compliance report says you are emailed when a check changes, but only on a site where an address is actually set.
+* The alert follows the licence like the daily interval does: a released, expired or out-of-slots key stops it.
 
 = 1.3.9 (2026-09-26) =
 * Pro: the compliance report now states the interval the site is actually scheduled for, so the document a client reads says how often it was checked instead of leaving them to ask.
