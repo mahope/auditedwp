@@ -145,28 +145,37 @@ const MOTOR_TABEL = {
  * måling — fem af dem — og tallet må kun synke.
  */
 const DAEKNING = {
-  // Fire leverandører, og **fire** strenge — opgave 69. Før denne regel havde
-  // rækken én streng, og den lå på OneTrust, fordi det var det eneste af de fire
-  // der var et hul. De fire er målt hver for sig 2026-09-27; ULAEVNET har de
-  // fem leverandører der stadig mangler, i de tre andre navngivne rækker.
-  "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+  // Otte leverandører, otte rækker, **otte** strenge — opgave 69 satte kravet om
+  // én streng pr. navngiven leverandør, og opgave 83 delte de to rækker der
+  // rummede fire hver, fordi rækkens navn ryger i `Consent platform: …` og i
+  // rapportens `Detected: …`. Før delingen lå de fire strenge under ét navn, og
+  // det navn var det eneste kunden så. Målt 2026-09-27; ULAEVNET har de fem
+  // leverandører der stadig mangler, i de tre andre navngivne rækker.
+  "OneTrust":
     [["OneTrust", '<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="a1b2c3"></script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27"],
-     ["OneTrust", '<script>var optanonCookieName = "OptanonConsent";</script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27 · this.optanonCookieName"],
-     ["Cookiebot", '<script src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-consentmode="live"></script>', "vaert 200 2026-09-27"],
-     ["Usercentrics", '<script src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-usercentrics-endpoint="a1b2"></script>', "vaert 200 2026-09-27"],
-     ["ConsentManager", '<script src="https://www.consentmanager.de/gtm.js" id="CookieConsent" data-cmpid="a1b2"></script>', "vaert 200 2026-09-27"]],
+     ["OneTrust", '<script>var optanonCookieName = "OptanonConsent";</script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27 · this.optanonCookieName"]],
+  "Cookiebot":
+    [["Cookiebot", '<script src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-consentmode="live"></script>', "vaert 200 2026-09-27"]],
+  "Usercentrics":
+    [["Usercentrics", '<script src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-usercentrics-endpoint="a1b2"></script>', "vaert 200 2026-09-27"]],
+  "ConsentManager":
+    [["ConsentManager", '<script src="https://www.consentmanager.de/gtm.js" data-cmpid="a1b2"></script>', "vaert 200 2026-09-27"]],
   "CookieYes":
     [["CookieYes", '<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"]],
-  // Fire leverandører, og **fire** strenge. TarteAuCitron og Osano fik streng i
-  // opgave 70, begge læst i leverandørens egen kode: TarteAuCitron i sit eget
-  // repos README (`<script src="/tarteaucitron/tarteaucitron.js">`), Osano i sin
-  // egen GTM-template, der bygger adressen
+  // Fire leverandører, fire rækker, fire strenge — opgave 83. TarteAuCitron og
+  // Osano fik streng i opgave 70, begge læst i leverandørens egen kode:
+  // TarteAuCitron i sit eget repos README
+  // (`<script src="/tarteaucitron/tarteaucitron.js">`), Osano i sin egen
+  // GTM-template, der bygger adressen
   // `https://cmp.osano.com/<kundeId>/<configId>/osano.js`.
-  "TarteAuCitron / Klaro / Osano / CookieConsent":
-    [["TarteAuCitron", '<script src="/tarteaucitron/tarteaucitron.js"></script>', "dokumenteret leverandørens egen README 2026-09-27 · github AmauriC/tarteaucitron.js"],
-     ["Klaro", '<script src="https://cdn.jsdelivr.net/npm/klaro/dist/klaro.js"></script>', "vaert 200 · filliste læst 2026-09-27"],
-     ["Osano", '<script src="https://cmp.osano.com/a1b2c3/a1b2c3/osano.js"></script>', "dokumenteret leverandørens egen GTM-template 2026-09-27 · vaert 502 på opdigtede id"],
-     ["CookieConsent", '<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"></script>', "vaert 200 · filliste læst 2026-09-27"]],
+  "TarteAuCitron":
+    [["TarteAuCitron", '<script src="/tarteaucitron/tarteaucitron.js"></script>', "dokumenteret leverandørens egen README 2026-09-27 · github AmauriC/tarteaucitron.js"]],
+  "Klaro":
+    [["Klaro", '<script src="https://cdn.jsdelivr.net/npm/klaro/dist/klaro.js"></script>', "vaert 200 · filliste læst 2026-09-27"]],
+  "Osano":
+    [["Osano", '<script src="https://cmp.osano.com/a1b2c3/a1b2c3/osano.js"></script>', "dokumenteret leverandørens egen GTM-template 2026-09-27 · vaert 502 på opdigtede id"]],
+  "CookieConsent":
+    [["CookieConsent", '<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"></script>', "vaert 200 · filliste læst 2026-09-27 · versionsmærket, fordi den nøgne cookieconsent er OneTrusts egen konfiguration"]],
   "Complianz GDPR":
     [["Complianz GDPR", "<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"]],
   "Generic cookie consent banner":
@@ -427,49 +436,38 @@ const DAEKNING_FORMS = {
   // Forms er betalt og derfor ikke i det offentlige katalog; det stod allerede
   // i tabellens kommentar, og mønstret skriver på plugin-mappen, som en
   // betalt plugin også leverer sine assets fra.
-  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
-    [["Contact Form 7", '<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
-     ["WPForms", '<script src="https://shop.example/wp-content/plugins/wpforms-lite/assets/js/wpforms.js"></script>', "wp.org 200 wpforms-lite 2026-09-27"],
-     ["Formidable", '<script src="https://shop.example/wp-content/plugins/formidable/assets/js/frm_forms.min.js"></script>', "wp.org 200 formidable 2026-09-27"],
-     ["Gravity", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/gravityforms/assets/css/gravityforms.css">', "wp.org 404 gravityforms — betalt plugin, ikke i det offentlige katalog"],
-      ["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"],
-      // Opgave 71. `ninja[_-]?forms` lå i mønstret siden længe, men **ikke** i
-      // navnet — så en side med en Ninja-formular fik *"Contact Form 7 /
-      // WPForms / Formidable / Gravity / Fluent / Elementor detected"*, et grønt
-      // fund på en leverandør rapporten ikke nævner. Samme fejl som opgave 70s
-      // `cognito[_-]?forms`, og den var stadig levende da porten blev skrevet.
-      // Slug'en er verificeret: `ninja-forms` svarer **200** i WordPress' eget
-      // katalog (2026-09-27), og `wp-content/plugins/ninja-forms/` er den sti
-      // pluginen enqueuer sine assets fra.
-      ["Ninja", '<script src="https://shop.example/wp-content/plugins/ninja-forms/assets/js/min/front-end.js"></script>', "wp.org 200 ninja-forms 2026-09-27"],
-      // Opgave 75. Samme fejl som Ninja, og målingen er den interessante del:
-      // Caldera Forms er ** lukket i WordPress' eget katalog** —
-      // `api.wordpress.org/plugins/info/1.0/caldera-forms.json` svarer
-      // `"closed": true, "closed_date": "2022-04-05", "reason": "author-request"`
-      // og *"This closure is permanent"* — så en agent der leder i katalog-API'en
-      // finder intet og fjerner platformen, som opgave 70 gjorde med Jotform.
-      // Den findes i leverandørens **eget repo** `CalderaWP/caldera-forms` (200,
-      // ikke arkiveret, sidste push 2024-06-11, 189 stjerner), og to linjer dér
-      // danner den installation strengen skriver:
-      //   - `caldera-core.php:55` — `define('CFCORE_URL', plugin_dir_url(__FILE__));`
-      //     altså mappen `wp-content/plugins/caldera-forms/`;
-      //   - `classes/render/assets.php:259` — `'front' => self::make_url('caldera-forms-front', false)`
-      //     og linje 315 samme kald uden `false`, og `make_url()` bygger
-      //     `$root_url . 'assets/build/js/' . $name . '.min.js'` på linje 637 med
-      //     `$root_url = CFCORE_URL` på linje 573.
-      // Filen navnet ender på er `assets/build/js/caldera-forms-front.min.js`
-      // (152 489 B, hentet) — altså **pluggens egen mappe**, ikke et gæt.
-      ["Caldera", '<script src="https://shop.example/wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js"></script>', "dokumenteret CalderaWP/caldera-forms · caldera-core.php:55 CFCORE_URL + classes/render/assets.php:259,315,637 målt 2026-09-27 · wp.org 404 caldera-forms (lukket 2022-04-05)"],
-     ["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
+  // Otte leverandører, otte rækker, otte strenge — opgave 83. Rækkens navn ryger
+  // i rapporten (`Form plugins detected: <navn>`), så ét navn med otte leverandøre
+  // er otte fund rapporten ikke kan holde op mod siden. Samme fejl som de to
+  // consent-rækker, og målt på samme måde. Bevisstyrkerne er de målte fra
+  // opgave 69, 71 og 75 — de er ikke ændret, kun hvilken række de hænger på.
+  "Contact Form 7":
+    [["Contact Form 7", '<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"]],
+  "WPForms":
+    [["WPForms", '<script src="https://shop.example/wp-content/plugins/wpforms-lite/assets/js/wpforms.js"></script>', "wp.org 200 wpforms-lite 2026-09-27"]],
+  "Formidable":
+    [["Formidable", '<script src="https://shop.example/wp-content/plugins/formidable/assets/js/frm_forms.min.js"></script>', "wp.org 200 formidable 2026-09-27"]],
+  "Gravity":
+    [["Gravity", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/gravityforms/assets/css/gravityforms.css">', "wp.org 404 gravityforms — betalt plugin, ikke i det offentlige katalog"]],
+  "Fluent":
+    [["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"]],
+  "Ninja":
+    [["Ninja", '<script src="https://shop.example/wp-content/plugins/ninja-forms/assets/js/min/front-end.js"></script>', "wp.org 200 ninja-forms 2026-09-27"]],
+  "Caldera":
+    [["Caldera", '<script src="https://shop.example/wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js"></script>', "dokumenteret CalderaWP/caldera-forms · caldera-core.php:55 CFCORE_URL + classes/render/assets.php:259,315,637 målt 2026-09-27 · wp.org 404 caldera-forms (lukket 2022-04-05)"]],
+  "Elementor":
+    [["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
+
   // To leverandører efter opgave 70. Jotform er væk, fordi ingen af de fire
   // dokumenterede stier kunne læses fra byggemiljøet (404 på alle fire, selv om
   // `cdn.jotform.com` svarer 200 på roden) — samme metode som Quantcast i 1.3.25
   // og CookieNinja i 1.3.29. Mønstret mistede samtidig `cognito[_-]?forms` og
   // `\bformsort\b`: de lå i mønstret uden at stå i **navnet**, så rapporten
   // skrev "Typeform / Formspree" om en side de ikke kan finde. Se opgave 71.
-  "Typeform / Formspree":
-    [["Typeform", '<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
-     ["Formspree", '<script src="https://formspree.io/js/formspree.js"></script>', "vaert 403 fra byggemiljøet 2026-09-27"]],
+  "Typeform":
+    [["Typeform", '<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"]],
+  "Formspree":
+    [["Formspree", '<script src="https://formspree.io/js/formspree.js"></script>', "vaert 403 fra byggemiljøet 2026-09-27"]],
   "WooCommerce Checkout":
     // Opgave 72 del 3. `wc_[_-]?checkout` lå i mønstret uden streng, og det er
     // ikke en antagelse: WooCommerce **selv** skriver variablen, på den linje
@@ -837,13 +835,13 @@ const MEKANISME = [
     // er derfor denne fixture findes: en ren scriptregel ville have slettet den
     // mest almindelige WordPress-formulardetektion.
     navn: "Contact Form 7 som attribut", gruppe: "forms", phpGruppe: "forms", liste: "forms",
-    forventet: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor",
+    forventet: "Contact Form 7",
     html: side('<div class="wpcf7"><p>Send en besked</p></div>'),
   },
   {
     // Klaro kommer som et stylesheet-link, altså igen en attribut og ikke kode.
     navn: "Klaro som stylesheet-link", gruppe: "cookies", phpGruppe: "trackers", liste: "consent",
-    forventet: "TarteAuCitron / Klaro / Osano / CookieConsent",
+    forventet: "Klaro",
     html: side('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@1.0.5/dist/klaro.css">'
       + '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-ABC"></script><p>Hej</p>'),
   },
@@ -1718,6 +1716,46 @@ function pluginChecks(html) {
 // kan blive grøn ved at forvente noget andet end det porten kræver.
 
 /**
+ * R11: en række hvis navn **trykkes i rapporten** må navngive én leverandør.
+ *
+ * Opgave 83. `checks.cookies.label` er `Consent platform: ${navn}`,
+ * `checks.forms` skriver `Form plugins detected: ${navn}`, og pluginens rapport
+ * skriver `Detected: ${navne}`. Rækkens navn er altså ikke en overskrift over
+ * flere rækker — det er fundet. Målt 2026-09-27 på en rigtig side: de to
+ * consent-rækker navngivede otte platformer, og `onetrust` var den eneste der
+ * stod i de 634 234 byte markup. Kunden fik at vide de kørte syv platforme de
+ * ikke kørte.
+ *
+ * Reglen gælder kun de tabeller hvor **fundet** er rækkens navn. I `dora` er
+ * navnet en *dokumenttype* (`Imprint / Legal notice`) — det er korrekt at sige
+ * "den slags dokument", og slet ikke det samme som at påstå platformen er
+ * fundet. Derfor er den parametreret pr. gruppe og ikke hårdkodet.
+ */
+function contractR11(gruppe, grupper, rapporten) {
+  grupper.forEach((raekker, kopi) => {
+    for (const { navn } of raekker) {
+      if (!rapporten.has(gruppe)) continue;
+      const segmenter = leverandoerer(navn);
+      assert.ok(
+        segmenter.length <= 1,
+        `rækken «${navn}» i «${gruppe}» (kopi ${kopi + 1}) navngiver ${segmenter.length} `
+          + `leverandører (${segmenter.join(", ")}), og rækkens navn ryger i den rapport `
+          + `kunden læser — "${rapporten.get(gruppe)}: <navn>". Den skal hedde den leverandør der `
+          + "er fundet, og en der ikke passer, skal have sin egen række med sin egen installationstest."
+      );
+    }
+  });
+  return true;
+}
+
+// Hvad hvert tjek skriver, målt i de tre produkter 2026-09-27. Det er denne
+// tekst der gør en leverandørrække til et **fund** frem for en overskrift.
+const RAPPORTENS_NAVN = new Map([
+  ["consent", "Consent platform"],
+  ["forms", "Form plugins detected"],
+]);
+
+/**
  * R1: prosa giver nul fund. Læst på **holdene** — `checks` er ikke `checks.trackers`.
  */
 function contractR1(domme, fixture, navne) {
@@ -1935,6 +1973,10 @@ await test("R5 hver consent-række har en installationstest", () => contractR5(R
 await test("R5 hver tracker-række har en installationstest", () => contractR5(R5_TRACKERE, DAEKNING_TRACKERE, MINDST.trackers));
 await test("R5 hver form-række har en installationstest", () => contractR5(R5_FORMS, DAEKNING_FORMS, MINDST.forms));
 await test("R5 hver dora-række har en installationstest", () => contractR5(R5_DORA, DAEKNING_DORA, MINDST.dora, { prosa: true }));
+await test("R11 en række rapporten trykker skal navngive én leverandør (consent)", () =>
+  contractR11("consent", R5_MOENSTRE, RAPPORTENS_NAVN));
+await test("R11 en række rapporten trykker skal navngive én leverandør (forms)", () =>
+  contractR11("forms", R5_FORMS, RAPPORTENS_NAVN));
 // (h) Registeret dømmes her, så en ny ubevist leverandør uden begrundelse er
 //     rød i den kørsel CI ser — ikke først når nogen kører --selftest.
 const LEVERANDOERER_I_TABELLERNE = [DAEKNING, DAEKNING_TRACKERE, DAEKNING_FORMS, DAEKNING_DORA]
@@ -2035,7 +2077,7 @@ if (process.argv.includes("--selftest")) {
   expectRed("R1 (cookies består på prosa)", contractR1, [
     ["motoren i repoet", {
       trackers: { label: "Third-party trackers: 0 found", detail: "No third-party marketing/analytics trackers found in the served HTML.", pass: true },
-      cookies: { label: "Consent platform: Klaro", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent", pass: true },
+      cookies: { label: "Consent platform: Klaro", detail: "Detected: Klaro", pass: true },
     }],
   ], prosa, MOTOR_NAVNE);
 
@@ -2067,15 +2109,15 @@ if (process.argv.includes("--selftest")) {
 
   // 8. R3: pluginen er uenig med motorerne om et fund i `forms`.
   expectRed("R3 (pluginen uenig om fund)", contractR3, [
-    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor." } }],
-    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor." } }],
+    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 detected", detail: "Form plugins detected: Contact Form 7." } }],
+    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 detected", detail: "Form plugins detected: Contact Form 7." } }],
     ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
   ], MOTOR_NAVNE);
 
   // 9. R3: pluginen **og** motoren er uenige om samtykkeplatformen.
   expectRed("R3 (uenige om samtykkeplatformen)", contractR3, [
-    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "Consent platform: Klaro", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" }, forms: { label: "x", detail: "x" } }],
-    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "Consent platform: Klaro", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" }, forms: { label: "x", detail: "x" } }],
+    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "Consent platform: Klaro", detail: "Detected: Klaro" }, forms: { label: "x", detail: "x" } }],
+    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "Consent platform: Klaro", detail: "Detected: Klaro" }, forms: { label: "x", detail: "x" } }],
     ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
   ], MOTOR_NAVNE);
 
@@ -2084,7 +2126,7 @@ if (process.argv.includes("--selftest")) {
   expectRed("R3 (pluginen navngiver en uset platform)", contractR3, [
     ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
     ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
-    ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "Cookie consent active", detail: "Detected: Cookiebot / OneTrust / Usercentrics / ConsentManager" }, forms: { label: "x", detail: "x" } }],
+    ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "Cookie consent active", detail: "Detected: OneTrust" }, forms: { label: "x", detail: "x" } }],
   ], MOTOR_NAVNE);
 
   // 11. R4: dora læser ikke prosa mere.
@@ -2100,16 +2142,16 @@ if (process.argv.includes("--selftest")) {
   expectRed("R3 (motoren skriver ikke platformens navn)", contractR3, [
     ["motoren i repoet", {
       trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected." },
-      cookies: { label: "Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" },
+      cookies: { label: "Consent platform: TarteAuCitron", detail: "Detected: Klaro" },
       forms: { label: "x", detail: "x" },
     }],
     ["den publicerede motor", {
-      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron / Klaro / Osano / CookieConsent)." },
-      cookies: { label: "Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" },
+      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron)." },
+      cookies: { label: "Consent platform: TarteAuCitron", detail: "Detected: Klaro" },
       forms: { label: "x", detail: "x" },
     }],
     ["pluginen", {
-      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron / Klaro / Osano / CookieConsent)." },
+      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron)." },
       cookies: { label: "x", detail: "x" },
       forms: { label: "x", detail: "x" },
     }],
@@ -2128,7 +2170,7 @@ if (process.argv.includes("--selftest")) {
   //     *navne*. Uden denne case ved næste agent ikke om reglen virker.
   const fireSomEn = {
     ...DAEKNING,
-    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+    "OneTrust / Usercentrics":
       [["OneTrust", '<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"></script>', "vaert 200"]],
   };
   expectRed("R5 (fire leverandører, én streng)", contractR5, R5_MOENSTRE, fireSomEn, MINDST.consent);
@@ -2139,9 +2181,9 @@ if (process.argv.includes("--selftest")) {
   //     navne, bare uden at de passer sammen.
   const forkertEtiket = {
     ...DAEKNING,
-    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
-      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"].map(
-        ([l, s, b]) => [l === "Cookiebot" ? "Cookiebot OG GDPR" : l, s, b]
+    "OneTrust":
+      DAEKNING["OneTrust"].map(
+        ([l, s, b]) => [l === "OneTrust" ? "OneTrust OG GDPR" : l, s, b]
       ),
   };
   expectRed("R5 (streng for en leverandør uden for navnet)", contractR5, R5_MOENSTRE, forkertEtiket, MINDST.consent);
@@ -2151,9 +2193,9 @@ if (process.argv.includes("--selftest")) {
   //     leverandører "dækkes" af den samme adresse skrevet to gange.
   const toEns = {
     ...DAEKNING,
-    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
-      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"].map(
-        ([l, s, b], i) => (i === 1 ? [l, DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"][0][1], b] : [l, s, b])
+    "OneTrust":
+      DAEKNING["OneTrust"].map(
+        ([l, s, b], i) => (i === 1 ? [l, DAEKNING["OneTrust"][0][1], b] : [l, s, b])
       ),
   };
   expectRed("R5 (to leverandører deler én installation)", contractR5, R5_MOENSTRE, toEns, MINDST.consent);
@@ -2162,25 +2204,20 @@ if (process.argv.includes("--selftest")) {
   //     hele tabellen (seks). Den mutation der sletter **én** af de seks
   //     strenge skal give rød, så en agent der tilføjer en ny form-plugin til
   //     navnet ikke kan gøre det ved at fjerne en anden leverandørs bevis.
-  const formsUdenEn = {
-    ...DAEKNING_FORMS,
-    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
-      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor"]
-        .filter(([l]) => l !== "Fluent"),
-  };
-  expectRed("R5 (form-række: én af seks leverandører taber sin streng)", contractR5, R5_FORMS, formsUdenEn, MINDST.forms);
+  const formsUdenEn = { ...DAEKNING_FORMS, Fluent: [] };
+  expectRed("R5 (form-række: en leverandør taber sin streng)", contractR5, R5_FORMS, formsUdenEn, MINDST.forms);
 
   // 30. R5 regel (h): ULAEVNET må ikke sige at en leverandør er ubevist, når
   //     porten beviser den. Registret er ellers et sted, hvor dækning kan
   //     **aftage** i papiret uden at nogen melder det.
   const hulletForEnBevist = {
-    "Cookiebot / OneTrust / Usercentrics / ConsentManager": {
+    "OneTrust": {
       OneTrust: "cdn.cookielaw.org svarer 200, men det er ikke nok — jeg gad ikke se den",
     },
   };
   expectRed("(h) (ULAEVNET kalder en beviset leverandør ubevist)", contractULAEVNET,
     { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA },
-    { ...ULAEVNET, "Cookiebot / OneTrust / Usercentrics / ConsentManager": hulletForEnBevist });
+    { ...ULAEVNET, OneTrust: hulletForEnBevist });
 
   // 31b. Regel (i) — **præcis opgave 70s fejl, genskabt ordret.** `cognito[_-]?forms`
   //      og `\bformsort\b` lå i mønstret for rækken *Typeform / Formspree* uden at
@@ -2188,7 +2225,7 @@ if (process.argv.includes("--selftest")) {
   //      alle tre kopier, så porten skal blive rød på **27 → 29** — to over
   //      ratchetten. Uden denne case ved næste agent ikke om reglen virker, og
   //      mutationen er skrevet mod `R5_FORMS`, altså mod de data porten dømmer på.
-  const medCognito = R5_FORMS.map((raekker) => raekker.map((r) => (r.navn === "Typeform / Formspree"
+  const medCognito = R5_FORMS.map((raekker) => raekker.map((r) => (r.navn === "Typeform"
     ? { navn: r.navn, re: new RegExp(`${r.re.source}|cognito[_-]?forms|\\bformsort\\b`, r.re.flags) }
     : r)));
   expectRed("(i) (et alternativ uden leverandør i navnet — opgave 70s cognito/formsort)",
@@ -2327,12 +2364,12 @@ if (process.argv.includes("--selftest")) {
   //      `ALIASSER` en bagdør.
   expectRed("(i) (ALIASSER tilskriver en leverandør uden for navnet)", contractAlternativer, "forms",
     R5_FORMS, DAEKNING_FORMS,
-    { "Typeform / Formspree": { cognitoforms: ["Cognito Forms", "målt i leverandørens egen kode 2026-09-27"] } },
+    { Typeform: { cognitoforms: ["Cognito Forms", "målt i leverandørens egen kode 2026-09-27"] } },
     HOEJST_UTILREGNET);
   // …og en begrundelse der ikke er en måling.
   expectRed("(i) (ALIASSER-begrundelsen er ikke en måling)", contractAlternativer, "forms",
     R5_FORMS, DAEKNING_FORMS,
-    { "Typeform / Formspree": { cognitoforms: ["Typeform", "kan ikke findes"] } },
+    { Typeform: { cognitoforms: ["Typeform", "kan ikke findes"] } },
     HOEJST_UTILREGNET);
 
   // 31f. Regel (i) mod **målede** aliasser. `ALIASSER` lukkede seks af de
@@ -2357,8 +2394,8 @@ if (process.argv.includes("--selftest")) {
   //     normaliseringen bærer sporingen eller om porten bare har et højere tal.
   const cf7UdenMarkup = {
     ...DAEKNING_FORMS,
-    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
-      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor"]
+    "Contact Form 7":
+      DAEKNING_FORMS["Contact Form 7"]
         .map(([l, s, b]) => (l === "Contact Form 7" ? [l, '<div class="kontaktformular"></div>', b] : [l, s, b])),
   };
   expectRed("(i) (CF7s egen markup er beviset for \bwpcf7\b og \bcf7[-_])",
@@ -2380,13 +2417,13 @@ if (process.argv.includes("--selftest")) {
   //     en vilje, og den er præcis den, der gjorde de tolv antagelser i
   //     opgave 66 mulige at leve med i ni runder.
   const vilje = {
-    "TarteAuCitron / Klaro / Osano / CookieConsent": {
+    "TarteAuCitron": {
       TarteAuCitron: "kan ikke findes",
     },
   };
   expectRed("(h) (ULAEVNET-begrundelsen er ikke en måling)", contractULAEVNET,
     { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA },
-    { ...ULAEVNET, "TarteAuCitron / Klaro / Osano / CookieConsent": vilje });
+    { ...ULAEVNET, TarteAuCitron: vilje });
 
   // 32. Spejlet: de **rigtige** tabeller skal være grønne i (h), ellers er case
   //     30 og 31 grønne fordi porten altid er rød.
@@ -2401,8 +2438,8 @@ if (process.argv.includes("--selftest")) {
   //      den forskel mellem "jeg kan ikke læse den" og "jeg læste den".
   const udenOsano = {
     ...DAEKNING,
-    "TarteAuCitron / Klaro / Osano / CookieConsent":
-      DAEKNING["TarteAuCitron / Klaro / Osano / CookieConsent"].filter(([l]) => l !== "Osano"),
+    Osano:
+      DAEKNING["Osano"].filter(([l]) => l !== "Osano"),
   };
   expectRed("(g) (en læst leverandør taber sin streng, og ULAEVNET er tomt)", contractR5,
     R5_GRUPPER, udenOsano, MINDST.consent);
@@ -2412,12 +2449,34 @@ if (process.argv.includes("--selftest")) {
   //     denne regel var det den eneste vej til en død række i tabellen.
   const nyLeverandørINavnet = {
     ...DAEKNING,
-    "Cookiebot / OneTrust / Usercentrics / ConsentManager / En Upfundet Femte":
-      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"],
+    "OneTrust / En Upfundet Femte":
+      DAEKNING["OneTrust"],
   };
   expectRed("R5 (en ny leverandør skrevet ind i navnet uden streng)", contractR5, R5_MOENSTRE, nyLeverandørINavnet, MINDST.consent);
 
-  // 14. R5: en række uden installationstest. Den er grøn i dag kun fordi
+    // 34. R11 — opgave 83s fejl, genskabt ordret. De to consent-rækker delte otte
+  //     leverandøre, og rækkens navn ryger i rapporten. Mutationen lægger de
+  //     fire tilbage i én række; porten skal blive rød, for uden den kan en
+  //     agent gøre det samme igen og få en rapport der navngiver syv platforme
+  //     en side ikke kører.
+  const otteIEn = R5_MOENSTRE.map((raekker) => raekker.flatMap((r) => (
+    r.navn === "OneTrust"
+      ? [{ navn: "Cookiebot / OneTrust / Usercentrics / ConsentManager", re: r.re }, r] : [r]
+  )));
+  expectRed("R11 (fire leverandøre i én række, i en rapport der trykker navnet)",
+    contractR11, "consent", otteIEn, RAPPORTENS_NAVN);
+  const otteFormIEn = R5_FORMS.map((raekker) => raekker.flatMap((r) => (
+    r.navn === "Caldera"
+      ? [{ navn: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor", re: r.re }, r] : [r]
+  )));
+  expectRed("R11 (otte form-leverandøre i én række, i en rapport der trykker navnet)",
+    contractR11, "forms", otteFormIEn, RAPPORTENS_NAVN);
+  // Spejlet: en række der trykkes i rapporten og kun har én leverandør er grøn,
+  // ellers er R11 rød af design.
+  expectGreen("R11 (de rigtige tabeller har én leverandør pr. række)", contractR11,
+    "consent", R5_MOENSTRE, RAPPORTENS_NAVN);
+
+// 14. R5: en række uden installationstest. Den er grøn i dag kun fordi
   //     `DAEKNING` er skrevet — en ny leverandør kan tilføjes i tabellen uden
   //     streng, og så må porten sige det.
   const udenStreng = { ...DAEKNING };
@@ -2474,8 +2533,8 @@ if (process.argv.includes("--selftest")) {
   //     (b) `gdpr[_-]?cookie[_-]?banner` — slug'en står i leverandørens eget
   //         front-end-enqueue, og `gdpr[_-]?banner` kan ikke matche den.
   const udenOneTrust = R5_MOENSTRE.map((rækker) => rækker.map((r) => (
-    r.navn === "Cookiebot / OneTrust / Usercentrics / ConsentManager"
-      ? { navn: r.navn, re: /cookiebot|consentmanager|onetrust|usercentrics/i } : r
+    r.navn === "OneTrust"
+      ? { navn: r.navn, re: /cookiebot|consentmanager|usercentrics/i } : r
   )));
   expectRed("R5 (OneTrusts leverandør-sti matcher ikke)", contractR5, udenOneTrust, DAEKNING, MINDST.consent);
   const udenSlug = R5_MOENSTRE.map((rækker) => rækker.map((r) => (

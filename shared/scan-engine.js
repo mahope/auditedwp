@@ -43,10 +43,21 @@ const CMV2_SIGNATURES = [
   { re: /consent.*analytics_storage|analytics_storage.*consent/i, name: "Analytics storage consent signal" },
 ];
 
+// Én leverandør pr. række, fordi navnet ryger i den rapport kunden læser
+// (`Consent platform: ${consentMatches[0]}`). Se `eucomply-scanner/engine/index.js`
+// for målingen: en jysk.dk-kunde fik syv platforme navngivet, kun OneTrust var
+// til stede. Unionen er uændret på nær den nøgne `cookieconsent`, som er målt som
+// OneTrusts egen konfiguration og derfor ikke kan tilskrives ét produkt.
 const CONSENT_SIGNATURES = [
-  { re: /cookiebot|consentmanager|onetrust|usercentrics|cookielaw\.org|otSDKStub|optanon/i, name: "Cookiebot / OneTrust / Usercentrics / ConsentManager" },
-  { re: /cookieyes|cookie-yes|cookieyes/i, name: "CookieYes" },
-  { re: /tarteaucitron|klaro|osano|cookieconsent/i, name: "TarteAuCitron / Klaro / Osano / CookieConsent" },
+  { re: /cookiebot/i, name: "Cookiebot" },
+  { re: /consentmanager/i, name: "ConsentManager" },
+  { re: /onetrust|cookielaw\.org|otSDKStub|optanon/i, name: "OneTrust" },
+  { re: /usercentrics/i, name: "Usercentrics" },
+  { re: /cookieyes|cookie-yes/i, name: "CookieYes" },
+  { re: /tarteaucitron/i, name: "TarteAuCitron" },
+  { re: /klaro/i, name: "Klaro" },
+  { re: /osano/i, name: "Osano" },
+  { re: /cookieconsent@|cookieconsent\.min\.js/i, name: "CookieConsent" },
   { re: /complianz|cmplz/i, name: "Complianz GDPR" },
   { re: /gdpr[_-]?cookie[_-]?banner|gdpr[_-]?banner|eu[_-]?cookie|cookie[_-]?solution/i, name: "Generic cookie consent banner" },
   { re: /axeptio|axept\.io/i, name: "Axeptio" },
@@ -169,8 +180,19 @@ const DORA_SIGNATURES = [
 const FORM_PLUGIN_SIGNATURES = [
   // NOTE: all patterns are anchored tightly (boundaries/exact slugs) so they
   // cannot false-positive on arbitrary substrings in non-WordPress HTML.
-  { re: /contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor" },
-  { re: /\btypeform\b|\bformspree\b/i, name: "Typeform / Formspree" },
+  // Én leverandør pr. række, fordi rækkens navn ryger i rapporten:
+  // `Form plugins detected: <navn>`. Målt 2026-09-27 — samme fejl som de to
+  // consent-rækker i samme rapport, otte leverandøre i én.
+  { re: /contact[_-]form[_-]7|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7" },
+  { re: /\bwpforms\b|\bwpforms?-/i, name: "WPForms" },
+  { re: /\bformidable\b/i, name: "Formidable" },
+  { re: /gravity[_-]?forms/i, name: "Gravity" },
+  { re: /fluent[_-]?forms?\b/i, name: "Fluent" },
+  { re: /ninja[_-]?forms\b/i, name: "Ninja" },
+  { re: /caldera[_-]?forms\b/i, name: "Caldera" },
+  { re: /\belementor\b[^<>]{0,40}form/i, name: "Elementor" },
+  { re: /\btypeform\b/i, name: "Typeform" },
+  { re: /\bformspree\b/i, name: "Formspree" },
   { re: /woocommerce[_-]?checkout|wc_[_-]?checkout/i, name: "WooCommerce Checkout" },
   // Shopify and Stripe were both **dead rows** until 2026-09-27 (task 65
   // part 2). Neither pattern could match anything the vendor actually ships:

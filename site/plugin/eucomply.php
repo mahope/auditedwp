@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.35
+ * Version:           1.3.36
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.35' );
+define( 'EUCOMPLY_VERSION', '1.3.36' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -841,9 +841,22 @@ class EUComply {
             // Consent platforms, used by the trackers check to tell "tracker
             // present" from "tracker present with consent in front of it".
             'consent'  => array(
-                array( 'name' => 'Cookiebot / OneTrust / Usercentrics / ConsentManager', 're' => '~cookiebot|consentmanager|onetrust|usercentrics|cookielaw\.org|otSDKStub|optanon~i' ),
+                // Én leverandør pr. række, fordi navnet ryger i `Detected: …`
+                // i rapporten kunden læser. Se `eucomply-scanner/engine/index.js`
+                // for målingen: de fire delte én række, så en jysk.dk-kunde fik
+                // syv platforme navngvet, mens kun OneTrust var til stede.
+                array( 'name' => 'Cookiebot', 're' => '~cookiebot~i' ),
+                array( 'name' => 'ConsentManager', 're' => '~consentmanager~i' ),
+                array( 'name' => 'OneTrust', 're' => '~onetrust|cookielaw\.org|otSDKStub|optanon~i' ),
+                array( 'name' => 'Usercentrics', 're' => '~usercentrics~i' ),
                 array( 'name' => 'CookieYes', 're' => '~cookieyes|cookie-yes~i' ),
-                array( 'name' => 'TarteAuCitron / Klaro / Osano / CookieConsent', 're' => '~tarteaucitron|klaro|osano|cookieconsent~i' ),
+                array( 'name' => 'TarteAuCitron', 're' => '~tarteaucitron~i' ),
+                array( 'name' => 'Klaro', 're' => '~klaro~i' ),
+                array( 'name' => 'Osano', 're' => '~osano~i' ),
+                // Den nøgne `cookieconsent` er målt som OneTrusts egen
+                // konfiguration (`"cookieConsent":{…}`), ikke Orestbidas bibliotek,
+                // så den kræver det versionsmærkede alternativ.
+                array( 'name' => 'CookieConsent', 're' => '~cookieconsent@|cookieconsent\.min\.js~i' ),
                 array( 'name' => 'Complianz GDPR', 're' => '~complianz|cmplz~i' ),
                 array( 'name' => 'Generic cookie consent banner', 're' => '~gdpr[_-]?cookie[_-]?banner|gdpr[_-]?banner|eu[_-]?cookie|cookie[_-]?solution~i' ),
                 array( 'name' => 'Axeptio', 're' => '~axeptio|axept\.io~i' ),
@@ -866,8 +879,18 @@ class EUComply {
             // in the same bytes, because a signature in a comment is not a form
             // a visitor can fill in.
             'forms'    => array(
-                array( 'name' => 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor', 're' => '~contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]~i' ),
-                array( 'name' => 'Typeform / Formspree', 're' => '~\btypeform\b|\bformspree\b~i' ),
+                // Én leverandør pr. række, fordi rækkens navn ryger i rapporten
+                // (`Form plugins detected: <navn>`). Se `eucomply-scanner/engine/index.js`.
+                array( 'name' => 'Contact Form 7', 're' => '~contact[_-]form[_-]7|\bwpcf7\b|\bcf7[-_]~i' ),
+                array( 'name' => 'WPForms', 're' => '~\bwpforms\b|\bwpforms?\-~i' ),
+                array( 'name' => 'Formidable', 're' => '~\bformidable\b~i' ),
+                array( 'name' => 'Gravity', 're' => '~gravity[_-]?forms~i' ),
+                array( 'name' => 'Fluent', 're' => '~fluent[_-]?forms?\b~i' ),
+                array( 'name' => 'Ninja', 're' => '~ninja[_-]?forms\b~i' ),
+                array( 'name' => 'Caldera', 're' => '~caldera[_-]?forms\b~i' ),
+                array( 'name' => 'Elementor', 're' => '~\belementor\b[^<>]{0,40}form~i' ),
+                array( 'name' => 'Typeform', 're' => '~\btypeform\b~i' ),
+                array( 'name' => 'Formspree', 're' => '~\bformspree\b~i' ),
             ),
             // DORA-adjacent page signals. Static text markers only: this is not
             // a DORA assessment and the fix text says so.

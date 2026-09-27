@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.35
+Stable tag: 1.3.36
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -122,6 +122,14 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * The LinkedIn Insight Tag row now also has a test for the line the shop itself writes. snap.licdn.com/li.lms-analytics/insight.min.js is the loader; the installation is the inline var _linkedin_partner_id = "..." line, which was in the pattern but in no test string, so a site carrying only the inline line had nothing to trace it to. The TikTok row got the same treatment for its inline loader.
 * The TikTok test data named analytics.tiktok.com/i18n/pixel/<id>.js, which answers 404 on a made-up id - its own evidence said so. The path a real site actually uses is analytics.tiktok.com/i18n/pixel/events.js.
 * If you scanned your site between 1.3.34 and now, run a new scan. No tracker lost its finding: three new tests cover the inline LinkedIn and TikTok lines and the Hotjar host, so the removals are provably not narrowing. One row can now report fewer findings: a page that mentioned Hotjar's hj( call in a code sample, without having Hotjar installed, was previously counted as a Hotjar site.
+
+= 1.3.36 (2026-09-27) =
+* Fix: the report named four consent platforms when the site runs one. The row was called 'Cookiebot / OneTrust / Usercentrics / ConsentManager' and a second one 'TarteAuCitron / Klaro / Osano / CookieConsent', and the row's name is printed in the report - the heading reads 'Consent platform: <name>' and the detail reads 'Detected: <names>'. A site running OneTrust was therefore told it ran Cookiebot, Usercentrics and ConsentManager as well.
+* Measured before the fix, on a real site on 2026-09-27: of the eight platforms the two rows named, exactly one was in the page. The other seven were not - the report still listed every one of them.
+* Each platform now has its own row and its own name, so the report names the one the site actually runs: OneTrust is still recognised by its own loader on cdn.cookielaw.org, its optanon fields, and its stub. This plugin, the free scanner and the published CLI engine give the same answer on the same page.
+* One marker is no longer matched, and it could not honestly be attributed to a single product: the bare word 'cookieconsent'. On the measured site it was OneTrust's own configuration ("cookieConsent": {...}, enableOneTrustCookieConsent), not the CookieConsent library. That library is now recognised by its own documented file name, cookieconsent@3.1.1/cookieconsent.min.js, so a site installing it the documented way is still found. A site whose only consent marker was the bare word now needs a new scan to be named correctly.
+
+* The same fix, in the form row. It was called 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor' and the report prints the row's name after 'Form plugins detected:', so a site running one form plugin was told it ran all eight. Each of the eight now has its own row, its own name and its own measured installation - the eight test strings are the ones already documented for them, nothing was narrowed. Typeform and Formspree were split the same way.
 
 = 1.3.34 (2026-09-27) =
 * Fix: the DORA row for multi-server and failover signals could not recognise two markers it had been written for, and reported a third under a name the report did not contain.
