@@ -521,6 +521,73 @@ def check_runner_pins(root: Path) -> tuple[list, list]:
     return findings, warnings
 
 
+# En python der kører et af repoets scripts, men ikke gennem bindingen.
+# `(?<![\w$-/])` holder igen for `$PY` (foran står `$`), for `python3.13` i
+# pick_python's kandidatliste (foran står `.`) og for stier som `minipython`.
+# Kræver den efterfølgende sti at være `tools/…` eller `scripts/…`, så
+# pick_python's egen `-c`-probe og loggen med `$`-tegn ikke tæller med.
+GATE_PYTHON_CALL_RE = re.compile(
+    r"(?<![\w$-/])(?:python3(?:\.\d+)?|python)(?=\s+(?:tools|scripts)/)"
+)
+
+
+def check_gate_interpreter(root: Path) -> list[str]:
+    """Gaten skal bruge den python den siger den bruger — alle steder.
+
+    `quality_gate.sh` erklærer at den kræver 3.10+ og skriver en `pick_python`
+    til formålet. Det var målet: gaten havde *32* python-kald, og kun ** ét af
+    dem — SEO-trinnet — brugte den valgte fortolkning. De 31 andre kørte på
+    whatever `python3` hed på maskinen.
+
+    I CI er det uskadeligt, fordi `setup-python` gør `python3` til 3.11. Lokalt er
+    macOS' system-python 3.9, og `build_public_tree.py` dør så med
+
+        TypeError: write_text() got an unexpected keyword argument 'newline'
+
+    hvilket er 3.10+. Da træet ikke blev bygget, faldt tre kontroller efter i en
+    kaskade: `check_cta.py` meldte at alle 216 sider manglede i det publicerede
+    træ, `check_public_tree.py` meldte 30 døde redirects, `check_inline_js.py`
+    sagde den læste intet. **Ingen af dem var fejl.** De var følger af ét dødt
+    trin, og de så ud som produktrelaterede problemer — den slags fejl der får en
+    agent til at "rette" produktkode for at tilfredsstille en fortolkning der
+    aldrig skulle have kørt den.
+
+    Derfor er dette en rød regel og ikke en advarsel. Den skal være umulig at
+    genindføre ved at tilføje et nyt step til gaten — det er præcis det der skete.
+    """
+    findings: list[str] = []
+    path = root / "tools" / "quality_gate.sh"
+    if not path.is_file():
+        # Gaten selv mangler; en anden kontrol siger det.
+        return findings
+    text = path.read_text(encoding="utf-8", errors="replace")
+    body = COMMENT_RE.sub("", text)
+
+    if 'PY="$(pick_python)"' not in body:
+        findings.append(
+            "tools/quality_gate.sh binder ikke den python den kræver. Kravet er "
+            "3.10+ (build_public_tree.py bruger Path.write_text(newline=)), så "
+            "gaten skal binde den én gang i PY= og bruge den i alle kald — ellers "
+            "kører gaten på maskinens python3, som på macOS er 3.9"
+        )
+    if "pick_python" in body and "-z \"$PY\"" not in body:
+        findings.append(
+            "tools/quality_gate.sh fejler ikke hårdt når ingen python >= 3.10 "
+            "findes. Uden vagten springer den kravet over og fortsætter med "
+            "python3, hvilket er præcis den fejl denne regel er skrevet for"
+        )
+
+    for lineno, line in enumerate(body.splitlines(), 1):
+        if GATE_PYTHON_CALL_RE.search(line):
+            findings.append(
+                f"tools/quality_gate.sh:{lineno}: kalder en python ved navn "
+                f"(`{' '.join(GATE_PYTHON_CALL_RE.findall(line))}`) i stedet for "
+                f'"$PY" — bind den valgte fortolkning i PY= og kald "$PY" så alle '
+                f"steps kører på den python gaten siger den bruger"
+            )
+    return findings
+
+
 def check_eol_soon(packages: list, today: date) -> list[str]:
     """Advarsel — ikke rødt resultat — når den erklærede floor er tæt på EOL.
 
@@ -668,6 +735,7 @@ def collect(root: Path, today: date | None = None, probe_node: bool = True) -> t
     if probe_node:
         found.extend(check_running_node(floor, _major_of_running_node()))
     found.extend(check_dependencies(packages))
+    found.extend(check_gate_interpreter(root))
     return found, action_warnings + runner_warnings + check_eol_soon(packages, today)
 
 
@@ -690,7 +758,8 @@ def selftest() -> int:
                         drop_nvmrc=False, drop_engines=False, no_ci=False,
                         second_floor=None, ci_comment_only=False, no_node_step=False,
                         extra_uses=None, action_ref=None, runner=RUNNER_IMAGE,
-                        drop_runs_on=False, runner_comment_only=False):
+                        drop_runs_on=False, runner_comment_only=False,
+                        bind_py=True, hard_fail=True, one_named_call=False):
             for rel in EUCOMPLY_PACKAGES:
                 path = base / rel
                 data = json.loads(path.read_text(encoding="utf-8"))
@@ -750,6 +819,39 @@ def selftest() -> int:
                     encoding="utf-8",
                 )
 
+            # Gaten selv. Uden denne fil er `check_gate_interpreter` tavst, og
+            # dens selftest-cases ville teste ingenting — de mutationer nedenfor
+            # skriver i en fil, porten ikke læser.
+            #
+            # `pick_python` er bevaret ordret, fordi porten skal kunne læse den
+            # som den virkelige gaten skriver den: kandidatlisten med
+            # `python3.13`/`python3.11` er præcis den, der ikke må tælle med.
+            (base / "tools").mkdir(parents=True, exist_ok=True)
+            binding = 'PY="$(pick_python)" || PY=""\n' if bind_py else ""
+            guard = 'if [ -z "$PY" ]; then exit 1; fi\n' if hard_fail else ""
+            call = ("run \"tools/check_cta.py\" python3 tools/check_cta.py\n"
+                    if one_named_call else
+                    'run "tools/check_cta.py" "$PY" tools/check_cta.py\n')
+            (base / "tools" / "quality_gate.sh").write_text(
+                "#!/usr/bin/env bash\n"
+                "set -u\n"
+                "pick_python() {\n"
+                "  for candidate in python3.13 python3.12 python3.11 python3 python; do\n"
+                '    if command -v "$candidate" >/dev/null 2>&1; then\n'
+                "      if \"$candidate\" -c 'import sys' 2>/dev/null; then\n"
+                '        printf \'%s\' "$candidate"; return 0\n'
+                "      fi\n"
+                "    fi\n"
+                "  done\n"
+                "  return 1\n"
+                "}\n"
+                + binding
+                + guard
+                + call
+                + 'run "tools/seo_check.py" "$PY" tools/seo_check.py --verbose\n',
+                encoding="utf-8",
+            )
+
         # Frø: de to pakker skal findes, før write_state kan rette i dem.
         for rel in EUCOMPLY_PACKAGES:
             (base / rel).write_text(
@@ -773,8 +875,7 @@ def selftest() -> int:
              lambda: write_state(nvmrc_major="24")),
             ("CI bygger på en anden version", "mens engines angiver",
              lambda: write_state(ci="20")),
-            ("manglende .nvmrc", ".nvmrc mangler",
-             lambda: write_state(drop_nvmrc=True)),
+            ("manglende .nvmrc", ".nvmrc mangler",             lambda: write_state(drop_nvmrc=True)),
             ("manglende engines.node", "runtimekravet er ikke erklæret",
              lambda: write_state(drop_engines=True)),
             ("workflow uden setup-node-steg", "runnernes default",
@@ -815,6 +916,18 @@ def selftest() -> int:
              lambda: write_state(drop_runs_on=True)),
             ("kommenteret runs-on tæller ikke", "har ingen runs-on",
              lambda: write_state(drop_runs_on=True, runner_comment_only=True)),
+            # Opgave 81: gaten erklærede 3.10+ og skrev en `pick_python` til
+            # det, men 31 af 32 python-kald brugte alligevel `python3`. I CI er
+            # det uskadeligt (setup-python), lokalt dør `build_public_tree.py`
+            # på `Path.write_text(newline=)`, og tre kontroller efter faldt i
+            # en kaskade der så ud som produktrelaterede fejl. De tre cases er
+            # præcis de tre måder bindingen kan mangle.
+            ("gaten kalder python3 ved navn", "kalder en python ved navn",
+             lambda: write_state(one_named_call=True)),
+            ("gaten binder ikke den python den kræver", "binder ikke den python",
+             lambda: write_state(bind_py=False, one_named_call=True)),
+            ("gaten fejler ikke hårdt uden python", "fejler ikke hårdt",
+             lambda: write_state(hard_fail=False, one_named_call=True)),
         ]
         for label, needle, mutate in cases:
             mutate()
