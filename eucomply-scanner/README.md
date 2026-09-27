@@ -3,7 +3,7 @@
 > **Universal website compliance scanner** — GDPR, DSA, ePrivacy, cookie consent, security headers, and resilience checks. Platform-independent: works on **any URL, any CMS**.
 
 ```bash
-npx github:mahope/eucomply-scanner https://example.com
+npx @mahope/eucomply-scanner https://example.com
 ```
 
 ## Why this exists
@@ -25,19 +25,25 @@ Most compliance scanners are tied to WordPress or require installing a plugin on
 ### Via npx (no install)
 
 ```bash
-npx github:mahope/eucomply-scanner https://example.com
+npx @mahope/eucomply-scanner https://example.com
 ```
 
 ### Install globally
 
-An npm registry release is planned (pending publish access). Until then, the
-`npx github:mahope/eucomply-scanner <url>` command above always runs the latest version.
+```bash
+npm install -g @mahope/eucomply-scanner
+eucomply-scanner https://example.com
+```
+
+The package is published on npm as **`@mahope/eucomply-scanner`**. The unscoped
+name `eucomply-scanner` has never been published, so `npm install
+eucomply-scanner` fails with a 404 — use the scoped name above.
 
 
 ### As a library
 
 ```js
-import { runScan } from 'eucomply-scanner';
+import { runScan } from '@mahope/eucomply-scanner';
 
 const report = await runScan('https://example.com');
 console.log(`Score: ${report.score.pct}%`);
