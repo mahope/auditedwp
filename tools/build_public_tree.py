@@ -14,6 +14,7 @@ Exit code 1 hvis en godkendt sti mangler i kilden, så en slettet side ikke
 kan forsvinde lydløst ud af det publicerede træ.
 """
 import argparse
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -119,6 +120,29 @@ REQUIRED = (
     "_redirects",
 )
 
+# Plausible (analytics.holstjensen.eu, cookieløs, EU-hostet) sættes ind i
+# <head> på hver publiceret side her i bygget og ikke i site/. Grunden er
+# at hermes-passiv læser site/deskuptime/ og site/assets/ direkte ind i
+# deskuptime.com, som har sit eget Plausible-site. Lå scriptet i kilden,
+# ville deskuptime.com tælle sine besøg som eucomplypro.com. Nye sider får
+# det automatisk, fordi alt HTML i det publicerede træ går igennem her.
+# CE-scriptet kræver init-kaldet ved siden af, ellers sendes intet.
+PLAUSIBLE_SRC = "https://analytics.holstjensen.eu/js/pa-X_LLzQW6nZX70uQN8qAyA.js"
+PLAUSIBLE_TAG = (
+    f'<script async src="{PLAUSIBLE_SRC}"></script>\n'
+    "<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},"
+    "plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>\n"
+)
+HEAD_END = re.compile(r"</head>", re.I)
+
+
+def with_analytics(html: str) -> str:
+    """Sæt Plausible ind lige før </head>. Sider uden <head> (partials) røres ikke."""
+    if PLAUSIBLE_SRC in html or not HEAD_END.search(html):
+        return html
+    return HEAD_END.sub(lambda m: PLAUSIBLE_TAG + m.group(0), html, count=1)
+
+
 # Også inde i en godkendt mappe er der interne filer. Navnene her er nævnt
 # eksplicit, så det er læsbart hvad der er holdt ude.
 INTERNAL_SUFFIXES = (".md", ".sh", ".py", ".toml", ".log", ".bak", ".env")
@@ -201,7 +225,12 @@ def main() -> int:
     for path in keep:
         destination = target / path.relative_to(source)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, destination)
+        if path.suffix.lower() == ".html":
+            text = path.read_text(encoding="utf-8", errors="surrogateescape")
+            destination.write_text(with_analytics(text), encoding="utf-8", errors="surrogateescape", newline="")
+            shutil.copystat(path, destination)
+        else:
+            shutil.copy2(path, destination)
 
     if args.quiet:
         print(f"{len(keep)} offentlige filer -> {target}")
