@@ -19,6 +19,10 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 ORIGIN = "https://eucomplypro.com"
 PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
+# Lifetime-udgaven af samme Pro-licens (engangskøb, founding-pris, første 100
+# køb). Den er den eneste anden checkout en købsside må have, og højst én gang,
+# så årsabonnementet stadig er den ene Pro-CTA siden måles på.
+PRO_LIFETIME_LINK = "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f"
 PLUGIN_VERSION = "1.3.32"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
@@ -1534,9 +1538,11 @@ def stripe_cta_findings(relative: str, text: str) -> List[str]:
     findings: List[str] = []
     if len(purchase_links) != 1 or text.count(PRO_LINK) != 1:
         findings.append(f"{relative}: expected exactly one Pro Stripe CTA")
+    if text.count(PRO_LIFETIME_LINK) > 1:
+        findings.append(f"{relative}: expected at most one Pro Lifetime Stripe CTA")
     for url in set(re.findall(r"https?://[^\s\"'<>]+", html.unescape(text))):
         normalized = url.rstrip(".,);")
-        if any(host in normalized.lower() for host in ("buy.stripe.com", "lemonsqueezy.com", "gumroad.com")) and normalized != PRO_LINK:
+        if any(host in normalized.lower() for host in ("buy.stripe.com", "lemonsqueezy.com", "gumroad.com")) and normalized not in (PRO_LINK, PRO_LIFETIME_LINK):
             findings.append(f"{relative}: unexpected checkout CTA {normalized}")
     return findings
 
@@ -2046,6 +2052,9 @@ def run_self_tests() -> Tuple[int, List[str]]:
     stripe_cases = (
         ("single Stripe CTA", f'<a href="{PRO_LINK}">Buy</a>', False),
         ("duplicate Stripe CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LINK}">Buy again</a>', True),
+        ("yearly plus lifetime CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LIFETIME_LINK}">Lifetime</a>', False),
+        ("duplicate lifetime CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LIFETIME_LINK}">Lifetime</a><a href="{PRO_LIFETIME_LINK}">Again</a>', True),
+        ("lifetime without yearly CTA", f'<a href="{PRO_LIFETIME_LINK}">Lifetime</a>', True),
         ("legacy Lemon CTA", f'<a href="https://example.lemonsqueezy.com/checkout">Buy</a>', True),
         ("JavaScript Stripe CTA", f'<button onclick="location.href=\'{PRO_LINK}\'">Buy</button>', True),
     )

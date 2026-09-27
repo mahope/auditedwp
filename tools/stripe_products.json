@@ -46,6 +46,15 @@
       "template": false
     },
     {
+      "product_key": "eucomply-pro-lifetime",
+      "label": "EUComply Pro Lifetime",
+      "url": "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f",
+      "price_usd": 149,
+      "scope": "eucomply",
+      "billing": "one_time",
+      "template": false
+    },
+    {
       "product_key": "page-profile-pro",
       "label": "Page Profile Pro",
       "url": "https://buy.stripe.com/9B6eVcgHp7YK69ggN9bMQ04",
