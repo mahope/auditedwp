@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.30
+Stable tag: 1.3.31
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.31 (2026-09-27) =
+* Fix: one of the most common WordPress form plugins was invisible in the row's name. The pattern already matched `ninja-forms`, but the row was named 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor' - Ninja Forms is not in that name. A site running Ninja Forms was therefore reported as running Contact Form 7 or one of the other five, a finding the customer cannot check against the page, and the row is the one that decides whether a site is asked for consent.
+* Nothing was narrowed. `ninja-forms` answers 200 in the WordPress catalogue, so the platform is now named and has its own test, and every pattern that matched something still matches it. This plugin, the free scanner and the published CLI engine give the same answer on the same page.
+* A new rule in this plugin's test suite fails when a pattern in a row can find a platform the row's name does not mention. The same mistake, with Cognito Forms and Formsort in the form row, was removed in the previous release - this is the rule that would have caught it.
 
 = 1.3.30 (2026-09-27) =
 * Two consent platforms that the report named are now found where they are really installed, and three that nobody could read are no longer named at all. TarteAuCitron installs itself with a script called /tarteaucitron/tarteaucitron.js, which is what the vendor's own repository documents - the earlier note only looked in the WordPress catalogue and on npm, where it is not published. Osano's own Tag Manager template builds its own address, https://cmp.osano.com/<id>/<id>/osano.js; the old note measured cdn.osano.com, which is a marketing page and never carried the script.
