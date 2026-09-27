@@ -495,7 +495,15 @@ def unsold_products(base: Path | None = None) -> list[tuple[str, str]]:
     Målt 26/9 (opgave 37): `eu-compliance-ebook-bundle` ($29) har nul forekomster
     i det publicerede træ. Det er et live Stripeprodukt uden salgsside, og der
     står intet i repoet om hvad køberen modtager — så der er ingen side at skrive
-    uden at opfinde løftet. Se spørgsmål 20 i planen.
+    uden at opfinde løftet. Se spørgsmål 20 under `## ❓ Til Mads — tillagt`
+    i planen.
+
+    Nummeret er skrevet fuldt ud med sin sektion, fordi planen den 27/9 havde
+    **to** spørgsmål med nummer 20 (målt: 1, 2, 3, 4, 5, 19, 20 og 21 stod
+    hver især to steder med forskelligt indhold), så en agent der fulgte
+    `spørgsmål 20` kunne lande i npm-pakke-spørgsmålet og rette det i stedet.
+    Den første listens 19/20/21 er nummereret om til 23/24/25, så hvert nummer
+    nu er unikt i planen.
     """
     root = base or PUBLISHED
     corpus: list[str] = []
