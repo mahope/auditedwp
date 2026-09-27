@@ -664,3 +664,99 @@ læst leverandørens egen kode.
 **Resultat i porten:** `42 af 46 rækker med installationstest` (42 står i
 tabellen, 46 er det samlede antal rækker i de fire tabeller efter de fire
 fjernelser), `52 af 52` negative cases uændret, `GATE GRØN — alle 24 steps`.
+
+## Fejl 13 — et mønstalternativ fandt en leverandør, rapporten ikke navngiver (opgave 71, rettet i 1.3.31)
+
+**Fejlen.** `FORM_PLUGIN_SIGNATURES`' række *Contact Form 7 / WPForms /
+Formidable / Gravity / Fluent / Elementor* indeholdt alternativet
+`ninja[_-]?forms`. Ninja Forms stod **ikke** i rækkens navn. En side der
+indlæser Ninja Forms' egne scripts fik derfor dommen *"Contact Form 7 / WPForms
+/ Formidable / Gravity / Fluent / Elementor detected"* — et grønt fund på seks
+leverandører, hvor den installerte er den syvende, og ingen af de seks kan
+findes i sidens markup.
+
+Det er præcis opgave 70s fejl, som den samme måling havde fjernet fra
+mønstret: `cognito[_-]?forms` og `\bformsort\b` lå i rækken *Typeform /
+Formspree* på samme måde. **De var ikke de eneste.** Opgave 70 fjernede to
+markører, den fandt ved at læse koden — og den regel, der skulle have fortalt at
+der var flere, manglede stadig.
+
+**Hvorfor ingen port så den.** R5 (regel b) læser hvert mønster og tester det
+mod rækkens **egen installationstest**. `ninja[_-]?forms` matcher ingen af dem,
+og det er netop ikke et problem for R5: den spørger "kan mønstret finde det, det
+er skrevet til", og det kan den. Den spørger aldrig "**nævner** mønstret den
+leverandør, det er skrevet til". Regel (g) fra opgave 69 går den modsatte vej — den tæller navne og kræver
+en streng pr. navngiven leverandør — så de to regler er blinde for hver især
+og porten er blind for fejlen mellem dem.
+
+**Rettelsen.** Leverandøren får sit navn og sin streng. `ninja-forms` svarer
+**200** i WordPress' eget katalog (2026-09-27), og `wp-content/plugins/ninja-forms/`
+er den sti pluginen enqueuer sine assets fra. Rækken hedder nu *Contact Form 7 /
+WPForms / Formidable / Gravity / Fluent / **Ninja** / Elementor* i alle tre
+kopier. Intet er indsnævret: hvert mønster der matchede noget, matcher stadig
+det, og rækken afgør om en side beder om samtykke — en falsk grøn række dér er
+dyrere end en rød.
+
+**Den nye regel (i), så den ikke kommer tilbage.** `contractAlternativer` i
+`tools/check_signature_prose.mjs` læser hvert `|`-adskilt alternativ i alle fire
+tabeller i alle tre kopier og spørger, om det kan spores til en leverandør
+rækken navngiver. Tre veje, i den rækkefølge de skal bruges:
+
+1. **navnet** — alternativet rummer et navneord fra en leverandør i samme række
+   (`cookiebot` i *Cookiebot / OneTrust / …*). Parentensens indhold tæller med,
+   fordi det i `dora` er en **beskrivelse af samme markør**: *MX (Mail exchange)*
+   finder `mail[ _-]?exchange`, og uden parentesens indhold ville det være et fund
+   på *Mail exchange* i en række der kun hedder *MX*.
+2. **installationstesten** — alternativet står bogstaveligt i en af rækkens
+   strenge. Strengene er målte installationer af de **navngivne** leverandører,
+   så `otSDKStub` (OneTrusts egen stub) og `s.pinimg.com/ct` (Pinterests egen
+   loader) er sporet uden en note.
+3. **`ALIASSER`** — en note, fordi 1 og 2 ikke kan se en **forkortelse**:
+   `wpcf7` er ikke *Contact Form 7* med mellemrum væk. Noten skal pege på en
+   leverandør der står i navnet, og begrundelsen skal være en måling.
+
+**Fejl i min egen regel, fundet mens jeg skrev den.** Tre ting var forkert i
+første udkast, og alle tre ville have givet **flere** røde end de fortjente —
+altså en port agenten lærer at ignorere:
+
+- **Tegnklasser i normaliseringen.** `js\.stripe\.com\/v[0-9]` blev til
+  `jsstripecomv09`, som ikke findes i installationstestens `js.stripe.com/v3` —
+  så porten ville have meldt en fejl på en markør der *er* målt. `[...]` er
+  valg, ikke navne, og er nu fjernet før normalisering. Målt: de fire
+  `forms`-huller faldt fra ni til syv.
+- **To-bogstavs navne.** `MX` er to tegn, og tærsklen var tre, så *MX (Mail
+  exchange)* tabte alle tre af sine egne alternativer. Tærsklen er nu to.
+- **Parentes læst efter de var fjernet.** `navneKandidater` kaldte
+  `leverandoerer()`, som fjerner parentesen — altså fjernede den præcis den
+  beskrivelse, parentesen rummer. Parenteserne læses nu på den **rå** streng.
+  Målt: dora faldt fra syv til fire.
+
+Et fjerde sted, der ikke var en fejl men et valg: attributtet `data-stripe-(key|publishable)`
+er **ét** alternativ med to veje, og kun den indre `data-stripe-key` står i
+strengen. Tilskrivningen prøver derfor alle fragmenter af et alternativ, ikke
+kun helheden — ellers ville porten melde en fejl der ikke er der.
+
+**Målingen.** 86 forskellige alternativer på tværs af alle tre kopier.
+**27 kan ikke spores** — consent 5, trackers 11, forms 7, dora 4 — og de er
+opgjort pr. række i opgave 72 med den måling, der lukker hver. Ratchetten står
+**pr. tabel** (`HOEJST_UTILREGNET`), ikke samlet: et samlet tal ville give
+consent-tabellen tilladelse til trackers' huller, fordi hver test kun dømmer sin
+egen. Loftet må kun synke.
+
+De 27 er ikke alle fejl. Nogle er leverandørens **egen JS-funktion** — `fbq(`,
+`hj(`, `snaptr(`, `ttq.`, `pintrk(` — som vejen 1 og 2 ikke kan se, fordi de er
+forkortelser af navnet; de skal have en `ALIASSER`-note. Én er en fejl af
+opgave 70s slags og ligger i samme række stadig: **`cookie[_-]?notice` i rækken
+*Generic cookie consent banner*** er slug'en på *Cookie Notice Lite*, som er en
+egen række i samme tabel. Og to af `forms` er hverken navn eller målt kode:
+`caldera[_-]?forms` (Caldera Forms svarer **404** i WordPress' eget katalog under
+`caldera-forms`, så intet kan læses herfra — samme som JustUno, Privy og Jotform
+i opgave 70) og `wc_[_-]?checkout` (WooCommerces egen klasse hedder
+`woocommerce-checkout`, jf. opgave 65 del 2).
+
+**Resultat i porten:** `51 signatur-prosatest` (47 → 51, fire nye
+regel-(i)-tests), `70 af 70` negative cases (63 → 70 — syv nye: opgave 70s
+`cognito`/`formsort` genskabt i alle tre kopier skal give rød, fire grønne
+beviser på at reglen ikke er rød af design, og to røde på en `ALIASSER`-note
+til en leverandør uden for navnet og på en begrundelse uden måling),
+`GATE GRØN — alle 24 steps`. Plugin **1.3.31**.
