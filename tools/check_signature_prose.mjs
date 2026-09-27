@@ -151,6 +151,7 @@ const DAEKNING = {
   // fem leverandører der stadig mangler, i de tre andre navngivne rækker.
   "Cookiebot / OneTrust / Usercentrics / ConsentManager":
     [["OneTrust", '<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="a1b2c3"></script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27"],
+     ["OneTrust", '<script>var optanonCookieName = "OptanonConsent";</script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27 · this.optanonCookieName"],
      ["Cookiebot", '<script src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-consentmode="live"></script>', "vaert 200 2026-09-27"],
      ["Usercentrics", '<script src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-usercentrics-endpoint="a1b2"></script>', "vaert 200 2026-09-27"],
      ["ConsentManager", '<script src="https://www.consentmanager.de/gtm.js" id="CookieConsent" data-cmpid="a1b2"></script>', "vaert 200 2026-09-27"]],
@@ -191,6 +192,14 @@ const DAEKNING = {
     [["Real Cookie Banner", '<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"]],
   "Cookie Notice Lite":
     [["Cookie Notice Lite", '<script src="https://shop.example/wp-content/plugins/cookie-notice-lite/cookie-notice-lite.js"></script>', "wp.org 200"]],
+  // Slug'en `cookie-notice` er **ikke** Cookie Notice Lite. Målt 2026-09-27:
+  // to forskellige plugins ejer den — `cookie-notice-lite` (den har sin egen
+  // række) og `cookie-notice` = *Cookie Compliance for WordPress – Cookie
+  // Consent, GDPR & CCPA* (humanityco, 3.1.12, MIT), der enqueue'r
+  // `/js/front.min.js` og `/css/front.min.css` (egen kode, includes/frontend.php).
+  "Cookie Compliance for WordPress":
+    [["Cookie Compliance for WordPress", '<script src="https://shop.example/wp-content/plugins/cookie-notice/js/front.min.js"></script>', "wp.org 200 cookie-notice 3.1.12 2026-09-27 · læst i pluginens eget enqueue"],
+     ["Cookie Compliance for WordPress", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/cookie-notice/css/front.min.css">', "wp.org 200 cookie-notice 3.1.12 2026-09-27 · læst i pluginens eget enqueue"]],
   "GDPR Cookie Compliance":
     [["GDPR Cookie Compliance", '<script src="https://shop.example/wp-content/plugins/gdpr-cookie-compliance/gdpr-cookie-compliance.js"></script>', "wp.org 200"]],
   "PixelYourSite (GDPR)":
@@ -1077,6 +1086,17 @@ function contractR5(grupper, daekning, mindstRækker, krav = {}) {
  * @param {Object<string, Object<string, [string, string]>>} [aliasser] deklarerede aliasser
  * @param {number} [hoejst] ratchet; udeladt i de negative cases, der skal være røde
  */
+/** Står et alternativ i en *navngiven* rækkes egen installationstest? Regel (j). */
+function findesIProvensStreng(ord, daekning, undtagen) {
+  const fragmenter = new Set([ord, ...(ord.match(/[a-z0-9]{2,}/g) || [])]);
+  for (const [raekke, strenge] of Object.entries(daekning)) {
+    if (raekke === undtagen || /^generic\b/i.test(raekke)) continue;
+    const mal = normalisér(strenge.map(([, s]) => s).join(" "));
+    if ([...fragmenter].some((f) => f.length >= 3 && mal.includes(f))) return raekke;
+  }
+  return null;
+}
+
 function contractAlternativer(gruppe, grupper, daekning, aliasser = ALIASSER, hoejst = HOEJST_UTILREGNET) {
   //union på **normaliseret** tekst, fordi de tre kopier skriver det samme
   // alternativ forskillinget: motoren har `fbq\(['"]`, pluginen `fbq\([\'"]`.
@@ -1128,6 +1148,13 @@ function contractAlternativer(gruppe, grupper, daekning, aliasser = ALIASSER, ho
       );
       continue;
     }
+    // (j) En række der **erklærer sig generisk** («Generic …») tilskrives sit eget
+    //     navn, fordi den ikke påstår at kende en platform. Det er kun sandt for
+    //     et alternativ der ikke kan findes i en *navngiven* leverandørs egen
+    //     installationstest — målt, ikke antaget: `cookie[_-]?notice` lå i denne
+    //     række og stod bogstaveligt i Cookie Notice Liter egen streng, så det er
+    //     den måling der dømmer, ikke ordet "generic" i navnet.
+    if (/^generic\b/i.test(navn) && !findesIProvensStreng(ord, daekning, navn)) continue;
     utilregnede.push(`«${navn}» → /${alt}/ (kopi ${[...new Set(kopier)].join(", ")})`);
   }
   assert.ok(
@@ -1225,7 +1252,7 @@ const ALIASSER = {};
  * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
-const HOEJST_UTILREGNET = { consent: 5, trackers: 11, forms: 7, dora: 4 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 11, forms: 7, dora: 4 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -1790,6 +1817,15 @@ if (process.argv.includes("--selftest")) {
     contractAlternativer, "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
   expectGreen("(i) (alle alternative i dora-tabellen er sporet)",
     contractAlternativer, "dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
+
+  // 31e. Regel (j) genskaber **consent**-tabellens fem huller. `cookie[_-]?notice`
+  //      lå i den generiske række og stod i Cookie Notice Liter egen
+  //      installationstest, så den fandt en platform rapporten ikke navngiver.
+  const medGenerisk = R5_MOENSTRE.map((raekker) => raekker.map((r) => (r.navn === "Generic cookie consent banner"
+    ? { navn: r.navn, re: new RegExp(`cookie[_-]?notice|${r.re.source}`, r.re.flags) }
+    : r)));
+  expectRed("(i) (et generisk alternativ der findes i en navngiven leverandørs egen streng)",
+    contractAlternativer, "consent", medGenerisk, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent);
 
   // 31d. En **erklæret** tilskrivning til en leverandør uden for navnet er den
   //      samme fejl med et navn på — så den skal være rød, ellers er
