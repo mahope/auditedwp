@@ -16,7 +16,7 @@ Sidste iteration: opgave 72 del 7 — **ratchetten er på 0 i alle fire tabeller
 
 **`57 signatur-prosatest`** (51 → 57), **`81 negative selftest-cases`** (79 → 81), **`70 installationstester`** (68 → 70), `GATE GRØN — alle 24 steps bestået`, `180 self-tests`, `0 unexpected EUComply Pro claims`, `216 sider, 0 findings`, plugin **1.3.35** med ny zip, 35 redirects omdirigeret + den nye 1.3.34-linje, `update.json` ×2, readme ×2, `site/plugin/index.html`. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres (workspace-permissions nægter adgang), så gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
 
-VERIFICÉR DEPLOY: tracker-tabellens fem sidste alternativer lukket (to døde værter væk, to indlejrede linjer målt ind, Hotjars fiktion erstattet) + `phpBlok`-kommentarfejlen rettet — plugin 1.3.35 <commit> 2026-09-27 ca. 21:1x
+VERIFICÉR DEPLOY: tracker-tabellens fem sidste alternativer lukket (to døde værter væk, to indlejrede linjer målt ind, Hotjars fiktion erstattet) + `phpBlok`-kommentarfejlen rettet — plugin 1.3.35 kodecommit `fde7161`, merge `98fd27c` 2026-09-27 ca. 21:1x
 
 Opdateret: 2026-09-27 (iteration 77)
 
