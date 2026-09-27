@@ -1262,7 +1262,10 @@ if (process.argv.includes("--selftest")) {
   //     installation. Den består kravet om `//`, `.`, `=` eller `<`, som er
   //     hele pointen: `quantcast_choice` ville tilfredsstille et navne-krav og
   //     skjule præcis den fejl R5 blev skrevet for.
-  const navnebaseret = { ...DAEKNING, Axeptio: ["axeptio", "formodnet"] };
+  // Bevisstyrken er `vaert 200` og **ikke** `formodnet`: siden opgave 67 er
+  // loftet 0, så en `formodnet`-streng også giver rød i regel (f), og casen
+  // ville være rød af to grunde. Den skal rød af præcis sin egen.
+  const navnebaseret = { ...DAEKNING, Axeptio: ["axeptio", "vaert 200"] };
   expectRed("R5 (strengen er skrevet efter navnet, ikke en installation)", contractR5, R5_MOENSTRE, navnebaseret, MINDST.consent);
 
   // 18. R5 regel (d): en kopi der læser **nule rækker**. Det er ikke en
