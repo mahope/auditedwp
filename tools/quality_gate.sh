@@ -498,6 +498,20 @@ hdr "den kunde henter, er den version der er rettet"
 run "tools/check_asset_delivery.py" "$PY" tools/check_asset_delivery.py
 run "tools/check_asset_delivery.py --selftest" "$PY" tools/check_asset_delivery.py --selftest
 
+# Den rapport ALLE besøgende får. Målt 27/9: den udgivne worker kører
+# `027fc40` før den, så github.com får at vide den kører fire samtykke-
+# platforme (pass) hvor den korrekte svar er "ingen" (warn), og dr.dk får
+# fire i stedet for én. De tre andre porte læser alle **repoet**; ingen læste
+# den udgivne rapport, så den dyre fejl var grøn i hver eneste gate. Drift
+# mellem de to er en RAPPORT (spørgsmål 9: `worker-scan/` kan ikke deployes
+# fra en agent) — men en afvigelse der IKKE står i aftalen er et fund, ellers
+# forsvinder den næste fejl i samme mørke. Selftesten er den egentlige
+# evidens: den er prøvet med `compare()` slået fra, og da sagde den FEJL
+# mens live-kørslen stadig printede GRØN.
+hdr "den rapport kunden laeser, er den vi har rettet"
+run "tools/check_live_funnel.py" "$PY" tools/check_live_funnel.py
+run "tools/check_live_funnel.py --selftest" "$PY" tools/check_live_funnel.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
