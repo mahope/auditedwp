@@ -928,5 +928,67 @@ Ingen motor, ingen plugin, ingen ny version, ingen ny zip.
 **Selftestens egen etiket blev rettet samtidig.** Den sagde «(i) (alle
 alternative i dora-tabellen er sporet)» mens tre åbenbart stod i ratchetten.
 Det er opgave 45bs fejlklasse — en grøn etiket der siger det modsatte af det
-den måler — flyttet til selftestens egen tekst, så den nu siger at tabellen
-holder sig inden for ratchetten på de **målte** alternative.
+den måler — flyttet til selftestens egen tekst. Efter opgave 72 del 5 og 6 står
+alle fire tabeller på 0, så etiketten siger nu at **alle** alternative i
+`dora` er sporet, hvilket er sandt.
+
+## Fejl 17 — en installationstest der var skrevet fra hukommelsen, og en markør der ikke findes (opgave 72 del 6)
+
+**Fejlen.** Rækken *Stripe Checkout / Payment* havde **to** installationstester.
+Den ene var `<div id="payment-element" data-stripe-key="pk_live_a1b2c3"></div>`, og
+dens bevisstyrke lød «vaert 200 · payment-element læst i leverandørens egen v3-fil».
+Attributten `data-stripe-key` forekommer **0 gange** i `js.stripe.com/v3/`. Den
+blev altså skrevet fra hukommelsen, og **intet mønster i rækken matcher den** undtagen det
+alternativ, der også var opdigtet.
+
+Det er opgave 60s fejlklasse, som her gav sig selv: en **falsk grøn** måling i en
+betalt vare. Alt efter var grønt — R5 fandt mønstret i installationstesten, og
+regel (i) fandt en leverandør i rækkens navn — fordi porten læser det, den er
+skrevet til, og den opførte sætning er præcis den slags streng der får begge dele
+til at sige ja. Bevisstyrken var den eneste, der kunne have stoppet den, og den
+lød som en måling.
+
+**Målingen.** Alle fem kilder svarer 200:
+
+| Kilde | Størrelse | `data-stripe-key` / `-publishable` |
+|---|---|---|
+| `checkout.stripe.com/checkout.js` | 90 238 B | 0 / 0 |
+| `js.stripe.com/v3/` | 1 121 765 B | 0 / 0 |
+| `docs.stripe.com/payments/accept-a-payment` | 1 711 358 B | 0 / 0 |
+| `docs.stripe.com/js/custom_checkout/init` | 2 149 961 B | 0 / 0 |
+| `docs.stripe.com/payments/checkout` | 489 398 B | 0 / 0 |
+
+To ting ved de to script-filer er værd at sige, fordi de lukker spørgsmålet om
+hvor markøren så kom fra. `js.stripe.com/v3/` indeholder to `data-stripe-` —
+`data-stripe-backdrop-id`, som Stripe selv sætter på sin egen dialog, og intet
+andet. Og `checkout.stripe.com/checkout.js` læser slet **ingen** data-attributter:
+0 `dataset`, 2 `getAttribute`. Nøglen kommer altså fra købmandens egen markup,
+ikke fra leverandørens fil — så attributten kan ikke dokumenteres i den, og ingen
+fil fra leverandøren er det sted, den skal måles.
+
+**Rettelsen, og hvorfor fjernelsen ikke taber noget.** `data-stripe-(key|
+publishable)` er væk fra mønstret, og den opdigtede streng er væk fra porten. Den
+taber intet målbart, fordi attributten kun betyder noget for Stripe.js — og
+Stripe.js hentes fra `js.stripe.com/v3`, som er et alternativ der stadig står i
+rækken og den eneste streng den har. Enhver side der har den attribut, indlæser
+altså den fil, rækken allerede finder. Det er **ikke** samme sag som
+`shopify[_-]?checkout` i opgave 65 del 2, hvor markøren var den eneste vej til en
+hele familier af sider.
+
+**Rækken hedder nu `Stripe`, ikke `Stripe Checkout / Payment`.** Regel (g) kræver
+én installationstest pr. navngiven leverandør, og ` / ` gør *Stripe Checkout* og
+*Payment* til to leverandører. Da den anden streng forsvandt, stod der én
+leverandør og to navne der så ud som to firmaer. Et navn der tæller flere
+leverandører end rækken dækker får en agent til at skrive en streng til en streng,
+der allerede dækker alt.
+
+**En fejl i selftesten, fundet fordi den blev skrevet.** Den negative case for
+dette spørgsmål tog formen: sæt `data-stripe-(key|publishable)` tilbage i
+mønstret og kræv rødt på regel (i). Den var **grøn**. Ikke fordi porten er gåt i
+stykker, men fordi den bevidst ikke kan se denne fejl: `normalisér()` gør
+alternativet til `datastripekeypublishable`, og vejen gennem navnet matcher, fordi
+«stripe» er en del af det. Samme blindhed som `\b` i opgave 72 del 3 og
+tegnklasserne i opgave 71 — porten læser et *fragment* af et alternativ som sit
+eget navn. Den mutation der **kan** være rød er den ægte fejl, den opdigtede
+streng: intet mønster matcher den, så regel (b) fanger den samme sekund den
+skrives ind igen. Den er skrevet ind, og **79 af 79** negative cases fanges.

@@ -470,9 +470,35 @@ const DAEKNING_FORMS = {
   // fil**: `https://js.stripe.com/v3/` svarer 200, og filen rummer ordet
   // `payment-element` — så Payment Element er ikke en antagelse om hvad
   // Stripe leverer, men noget der står i den kode kunden faktisk indlæser.
-  "Stripe Checkout / Payment":
-    [["Stripe Checkout", '<script src="https://js.stripe.com/v3/"></script>', "vaert 200"],
-     ["Payment", '<div id="payment-element" data-stripe-key="pk_live_a1b2c3"></div>', "vaert 200 · payment-element læst i leverandørens egen v3-fil 2026-09-27"]],
+  // Rækken hedder nu **`Stripe`** og ikke *Stripe Checkout / Payment*. Regel (g)
+  // kræver én installationstest pr. **navngiven leverandør**, og den gamle
+  // brød ` / ` i to leverandører — «Stripe Checkout» og «Payment» — så den krævede
+  // to strenge. Den anden af dem var den opdigtede (se nedenfor), og da den
+  // forsvandt, var der **én** leverandør tilbage og to navne der så ikke ud som
+  // det samme firma. Det er én fejlklasse: et navn der tæller flere leverandører
+  // end rækken dækker, får en agent til at skrive en streng til en streng der
+  // allerede dækker alt.
+  "Stripe":
+    // **Én streng, fordi den anden var opdigtet.** Opgave 72 del 6 (2026-09-27):
+    // `<div id="payment-element" data-stripe-key="pk_live_a1b2c3"></div>` lå her
+    // med bevisstyrken «vaert 200 · payment-element læst i leverandørens egen
+    // v3-fil», men `data-stripe-key` forekommer **0 gange** i `js.stripe.com/v3/`
+    // (200, 1 121 765 B) — de eneste to `data-stripe-` i filen er
+    // `data-stripe-backdrop-id`, som Stripe selv sætter. Samme nul i
+    // `checkout.stripe.com/checkout.js` (200, 90 238 B, som desuden læser slet
+    // ingen data-attributter: 0 `dataset`, 2 `getAttribute`) og i tre af Stripes
+    // egne dokumentationssider. Attributten var altså skrevet fra hukommelsen,
+    // og den var det **eneste** alternativ der kunne finde den streng — så porten
+    // var grøn på en installation ingen har læst. Det er opgave 60s fejlklasse:
+    // en falsk grøn måling, dyrere end en rød.
+    //
+    // Fjernelsen taber intet: attributten betyder kun noget for Stripe.js, og
+    // Stripe.js hentes fra `js.stripe.com/v3` — samme fil som denne streng, og
+    // et alternativ der **stadig** står i mønstret. Den eneste streng her er
+    // derfor den eneste målte installation af rækken: leverandørens egen
+    // `<script src>` som **enhver** Stripe Elements-integration indlæser.
+    [["Stripe", '<script src="https://js.stripe.com/v3/"></script>',
+      "vaert 200 · js.stripe.com/v3 27 gange i leverandørens egen fil 2026-09-27 (1 121 765 B)"]],
 };
 
 /**
@@ -1518,6 +1544,16 @@ const ALIASSER = {
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
 /**
+ * **Målt 2026-09-27 (iteration 77, del 6): `forms` 1 → 0.** `data-stripe-
+ * (key|publishable)` er fjernet, fordi den findes i **nogen** målt kilde — og
+ * fordi den **eneste** installationstest den holdt oppe,
+ * `<div id="payment-element" data-stripe-key="pk_live_a1b2c3">`, var skrevet fra
+ * hukommelsen med en bevisstyrke der lød som en måling. Se `DAEKNING_FORMS`.
+ *
+ * **Alle fire tabeller står nu på 0.** Det er første gang, og det er kun
+ * sandt fordi de sidste huller blev **målt frem for at slås ihjel**: hver af de
+ * ni lukninger i opgave 72 har en kilde med en statuskode og et bytestal bag.
+ *
  * **Målt 2026-09-27 (iteration 77, del 5): `dora` 3 → 0.** De tre sidste
  * ubeviste alternativer er lukket ved måling, og alle tre lå i **mønstrene** —
  * så de krævede en udgivelse (plugin 1.3.34) og ikke bare en port-rettelse.
@@ -1533,11 +1569,10 @@ const ALIASSER = {
  *     redundancy signals* ellers ville rapportere fundet under et navn kunden
  *     ikke kan finde det i mod.
  *
- * Ratchetten er **0 i alle fire tabeller** for første gang: `consent` 0 (72 del 1),
- * `trackers` 5, `forms` 1, `dora` 0. De to der står tilbage er de to døde værter
- * og `data-stripe-(key|publishable)` — se `NÆSTE` i planen.
+ * Ratchetten gik samtidig `forms` 1 → 0 (del 6), så **kun `trackers` har huller
+ * tilbage**: de fem umålte aliasser og de to døde værter — se `NÆSTE` i planen.
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 0 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 0, dora: 0 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -2094,8 +2129,35 @@ if (process.argv.includes("--selftest")) {
 
   // 31c. Samme regel skal være **grøn** på den rigtige tabel. En regel der kun kan
   //      være rød er en fejl, ikke en regel — så den måles begge veje, som (f).
-  expectGreen("(i) (alle alternative i den målte tabel er sporet)",
+  expectGreen("(i) (alle alternative i forms-tabellen er sporet)",
     contractAlternativer, "forms", R5_FORMS, DAEKNING_FORMS, ALIASSER, HOEJST_UTILREGNET.forms);
+
+  // 31k. Opgave 72 del 6 — og den negative case, mutationen **ikke** kan være,
+  //      skrevet ned fordi næste agent vil prøve den igen.
+  //
+  //      Den naturlige mutation er at sætte `data-stripe-(key|publishable)`
+  //      tilbage i mønstret og kræve rødt på regel (i). **Den kan ikke være
+  //      rød**, og det er ikke portens fejl: normalisér() gør alternativet til
+  //      `datastripekeypublishable`, og vejen gennem **navnet** matcher, fordi
+  //      «stripe» er en del af det. Samme blindhed som `` i opgave 72 del 3 og
+  //      tegnklasserne i opgave 71: porten læser et **fragment** af et alternativ
+  //      som sit egen navn. Altså: for denne række er målingen den eneste
+  //      kontrol, og det er derfor markøren er **fjernet** frem for at blive
+  //      rødfodet. Skrevet ned, fordi en agent der skriver den case og ser den
+  //      være grøn, kan tro porten er gåt i stykker — den er ikke.
+  //
+  //      Den mutation der **kan** være rød, er den ægte fejl: den opdigtede
+  //      installationstest. `<div id="payment-element" data-stripe-key="pk_live_
+  //      a1b2c3">` findes i ingen målt kilde, og intet mønster matcher den, så
+  //      regel (b) fanger den i samme sekund den skrives ind igen.
+  const stripeMedFiktion = {
+    ...DAEKNING_FORMS,
+    Stripe: [...DAEKNING_FORMS.Stripe,
+      ["Payment", '<div id="payment-element" data-stripe-key="pk_live_a1b2c3"></div>',
+        "vaert 200 · payment-element læst i leverandørens egen v3-fil 2026-09-27"]],
+  };
+  expectRed("R5 (den opdigtede payment-element-streng sat tilbage — data-stripe-key er 0 i fem kilder)",
+    contractR5, R5_FORMS, stripeMedFiktion, MINDST.forms);
   expectGreen("(i) (alle alternative i de tre andre tabeller er sporet)",
     contractAlternativer, "consent", R5_MOENSTRE, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent);
   expectGreen("(i) (alle alternative i tracker-tabellen er sporet)",
