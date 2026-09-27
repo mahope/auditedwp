@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.31
+Stable tag: 1.3.32
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.32 (2026-09-27) =
+* Fix: a cookie-consent row could report a platform this report never names. The generic row matched cookie-notice, which is not a generic banner: it is the WordPress slug of two different consent plugins. One of them, Cookie Notice Lite, has its own row; the other - Cookie Compliance for WordPress, version 3.1.12 - had no row at all, so a site running it was reported as running a generic banner instead of the platform it actually runs.
+* The generic row now names only generic banners, and the second plugin has its own row, read from the plugin's own code: it enqueues /js/front.min.js and /css/front.min.css. A site running Cookie Compliance for WordPress is now reported under its own name in this plugin, in the free scanner and in the published CLI engine.
+* The iubenda row no longer matches cookie-solution. iubenda's own code (3.13.5) writes //cdn.iubenda.com/cs/iubenda_cs.js, never the words cookie-solution, so the pattern made the report name iubenda on sites that do not run it. The marker is kept, in the generic row, where an unnamed marker belongs.
+* OneTrust's optanon marker is now documented instead of assumed: the platform's own loader, served from cdn.cookielaw.org, sets optanonCookieName="OptanonConsent", optanonHtmlGroupData and optanonHostData. Nothing was narrowed, and the generic markers gdpr-banner and eu-cookie stay exactly where they were.
+* If you scanned your site between 1.3.31 and now, run a new scan: a site running Cookie Compliance for WordPress is now named correctly, and a site that was reported as iubenda without running it is no longer.
 
 = 1.3.31 (2026-09-27) =
 * Fix: one of the most common WordPress form plugins was invisible in the row's name. The pattern already matched `ninja-forms`, but the row was named 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor' - Ninja Forms is not in that name. A site running Ninja Forms was therefore reported as running Contact Form 7 or one of the other five, a finding the customer cannot check against the page, and the row is the one that decides whether a site is asked for consent.
