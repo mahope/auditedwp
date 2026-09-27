@@ -145,10 +145,10 @@ const DORA_SIGNATURES = [
   { re: /dkim|[_-]?domainkey/i, name: "DKIM (Email signing)" },
   { re: /dmarc_|dmarc[ _-]?record|_dmarc\./i, name: "DMARC (Email policy)" },
   { re: /mx[ _-]?record|mx [0-9]|mail[ _-]?exchange/i, name: "MX (Mail exchange)" },
-  { re: /multiple[ _-]?server|failover|redundan|multi[ _-]?az[ _-]?dns/i, name: "Multi-server / failover signals" },
+  { re: /multiple[ _-]?server|failover|redundan|multi[ _-]?az/i, name: "Multi-server / failover / redundancy signals" },
   { re: /cdn[ _-]?failover|multi[ _-]?cdn|backup[ _-]?origin/i, name: "CDN failover / multi-CDN" },
   { re: /incident[ _-]?response|soc[ _-]?report|security[ _-]?incident/i, name: "Incident response / SOC reporting" },
-  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: "BC/DR planning reference" },
+  { re: /bcdr|dr[ _-]?plan|business[ _-]?continuity/i, name: "BC/DR planning reference" },
   { re: /status[ _-]?page|uptime[ _-]?monitor/i, name: "Status page / uptime monitoring" },
 ];
 

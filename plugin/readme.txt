@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.33
+Stable tag: 1.3.34
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,14 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.34 (2026-09-27) =
+* Fix: the DORA row for multi-server and failover signals could not recognise two markers it had been written for, and reported a third under a name the report did not contain.
+* 'multi-AZ' is now recognised. The pattern asked for the three-part form 'multi-AZ-DNS', which does not occur: AWS' own Amazon RDS documentation writes 'Multi-AZ' 62 times in running text and 'multi-AZ-DNS' 0 times. The pattern now matches 'Multi-AZ', which also still matches 'multi-AZ DNS'. A site describing its database as a Multi-AZ deployment is counted from now on.
+* The row is now named 'Multi-server / failover / redundancy signals'. It has always matched the word 'redundant', and Microsoft's own Availability Zones page writes it 8 times in running text - 'Azure datacenters are designed with redundant infrastructure like power, cooling, and network connectivity' - but the row's name did not say so, so the report named a finding the customer could not look for in the page.
+* 'BCP-plan' is no longer part of the BC/DR row. The pattern asked for 'bcp plan' exactly, a form that does not occur: the Wikipedia article on business continuity planning writes 'BCP' 23 times and 'business continuity' 227 times, and 'bcp plan' not once. 'BCDR', 'DR-plan' and 'business-continuity' are unchanged and still found, so the row loses nothing that was ever detected.
+* The public marker table in the DORA guide now lists the same markers the code matches, in this plugin, in the free scanner and in the published CLI engine.
+* If you scanned your site between 1.3.33 and now, run a new scan: a site describing a Multi-AZ deployment now registers a signal it did not, and the multi-server row is reported under a name that includes what was found.
 
 = 1.3.33 (2026-09-27) =
 * Fix: a form plugin was found but never named. The pattern has always matched Caldera Forms, but the row it belongs to was named 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor' - Caldera is not in that name. A site running Caldera was therefore reported as running Contact Form 7 or one of the other six, a finding the customer cannot check against the page, and the row is the one that decides whether a site is asked for consent. The same mistake was found and fixed for Ninja Forms in 1.3.31, one row further down the same list.

@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.33
+ * Version:           1.3.34
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.33' );
+define( 'EUCOMPLY_VERSION', '1.3.34' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -879,10 +879,10 @@ class EUComply {
                 array( 'name' => 'DKIM (Email signing)', 're' => '~dkim|[_-]?domainkey~i' ),
                 array( 'name' => 'DMARC (Email policy)', 're' => '~dmarc_|dmarc[ _-]?record|_dmarc\.~i' ),
                 array( 'name' => 'MX (Mail exchange)', 're' => '~mx[ _-]?record|mx [0-9]|mail[ _-]?exchange~i' ),
-                array( 'name' => 'Multi-server / failover signals', 're' => '~multiple[ _-]?server|failover|redundan|multi[ _-]?az[ _-]?dns~i' ),
+                array( 'name' => 'Multi-server / failover / redundancy signals', 're' => '~multiple[ _-]?server|failover|redundan|multi[ _-]?az~i' ),
                 array( 'name' => 'CDN failover / multi-CDN', 're' => '~cdn[ _-]?failover|multi[ _-]?cdn|backup[ _-]?origin~i' ),
                 array( 'name' => 'Incident response / SOC reporting', 're' => '~incident[ _-]?response|soc[ _-]?report|security[ _-]?incident~i' ),
-                array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity~i' ),
+                array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|dr[ _-]?plan|business[ _-]?continuity~i' ),
                 array( 'name' => 'Status page / uptime monitoring', 're' => '~status[ _-]?page|uptime[ _-]?monitor~i' ),
             ),
         );

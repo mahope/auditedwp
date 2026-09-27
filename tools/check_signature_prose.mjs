@@ -505,8 +505,40 @@ const DAEKNING_DORA = {
     [["DMARC", "Our DMARC policy is published at _dmarc.example.org with p=reject", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "MX (Mail exchange)":
     [["MX", "Mail is delivered by our MX 1 and MX 2 records in Frankfurt and Amsterdam", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
-  "Multi-server / failover signals":
-    [["Multi-server", "Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
+  // **Tre strenge, fordi rækken har tre grupper markører, og de blev målt hver
+  // for sig.** Opgave 72 del 5 (2026-09-27) lukkede de tre sidste ubeviste
+  // alternativer i `dora` — alle tre lå i mønstret uden at rækkens **navn** eller
+  // nogen streng kunne finde dem, så regel (i) dømte dem som dækning de ikke var:
+  //   - `multi[ _-]?az[ _-]?dns` var **død i hele sin form** og **udvidet**:
+  //     AWS' egen RDS-dokumentation (`docs.aws.amazon.com/AmazonRDS/latest/
+  //     UserGuide/Concepts.MultiAZ.html`, 200, 14 310 bytes) skriver «Multi-AZ»
+  //     **62 gange** i løbende prosa og «multi-AZ-DNS» **0 gange**. Rettelsen er
+  //     derfor at *udvide* til `multi[ _-]?az`, som er en ægte supermængde — den
+  //     finder også «multi-AZ DNS» — og ikke at fjerne noget. Målt i samme kørsel
+  //     på fem sider: 62 / 0.
+  //   - `redundan` er **bekræftet i prosa** her, hvor den forrige måling kun
+  //     fandt den som linktekst. Microsofts egen side om availability zones
+  //     (`learn.microsoft.com/en-us/azure/availability-zones/overview`, 200,
+  //     66 711 bytes) skriver den **8 gange**, herunder i løbende prosa: *"Azure
+  //     datacenters are designed with redundant infrastructure like power,
+  //     cooling, and network connectivity"*. Ordet er altså ikke en dansk
+  //     egenhed, men engelsk «redundancy/redundant» — og rækken hed *Multi-server
+  //     / failover signals*, så et fund på **redundancy** blev rapporteret under
+  //     et navn kunden ikke kan finde det i mod. Rækken **navngiver** derfor
+  //     markøren nu, præcis som opgave 52 gjorde med `Terms & Conditions`. Målt
+  //     samtidig: 0 forekomster på Postgresqls to HA-dokumenter, Hetzners forside
+  //     og Cloudflares forside, så markøren er ikke bredere end sit ord.
+  //   - `bcp[ _-]?plan` er **målt død og fjernet**. Wikipedia-siden om emnet
+  //     (`en.wikipedia.org/wiki/Business_continuity_planning`, 200, 363 579
+  //     bytes) skriver «BCP» 23 gange og «business continuity» 227 gange, men
+  //     «bcp plan» **0 gange** — rækken var skrevet til præcis den side, og
+  //     skriveformen den ledte efter findes ikke i den. Samme klasse som
+  //     `shopify[_-]?checkout` i opgave 65 del 2. `bcdr`, `dr[ _-]?plan` og
+  //     `business[ _-]?continuity` står uændrede og er alle målte.
+  "Multi-server / failover / redundancy signals":
+    [["Multi-server", "Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+      ["Multi-AZ", "Multi-AZ deployments can have one standby or two standby DB instances", "dokumenteret mønstret matcher denne sætning 2026-09-27 i AWS' egen RDS-dokumentation (200, 14 310 bytes), der skriver Multi-AZ 62 gange i prosa"],
+      ["Redundancy", "Azure datacenters are designed with redundant infrastructure like power, cooling, and network connectivity", "dokumenteret mønstret matcher denne sætning 2026-09-27 i Microsofts egen availability-zones-side (200, 66 711 bytes), der skriver redundan 8 gange i prosa"]],
   "CDN failover / multi-CDN":
     [["CDN failover", "Traffic is served from a multi-CDN setup with a backup origin in a second region", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   // To installationstester, fordi rækken har **to** grupper markører: en der
@@ -1486,45 +1518,26 @@ const ALIASSER = {
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
 /**
- * **Målt 2026-09-27 (iteration 76, del 4): `dora` 4 → 3.** `security[ _-]?incident`
- * blev lukket ved **læsning på en reel side om præcis den praksis** — UK's egen
- * NCSC om hændelsesstyring, der skriver «security incident» 3 gange (se
- * `DAEKNING_DORA`). Ingen mønster blev ændret, så ingen motor og ingen plugin
- * rørtes: lukningen er et **bevis**, ikke en rettelse.
+ * **Målt 2026-09-27 (iteration 77, del 5): `dora` 3 → 0.** De tre sidste
+ * ubeviste alternativer er lukket ved måling, og alle tre lå i **mønstrene** —
+ * så de krævede en udgivelse (plugin 1.3.34) og ikke bare en port-rettelse.
+ * Bevisene, målingerne og retningen står pr. alternativ i `DAEKNING_DORA`:
  *
- * **De tre der står, og hvorfor de ikke blev lukket i samme diff — de kræver
- * alle tre en mønsterændring, og mønstre bor i de tre produkter:**
+ *   - `bcp[ _-]?plan` **fjernet** — «bcp plan» 0 gange på den wikipedia-side der
+ *     skriver «BCP» 23 gange. Rækken tabte intet målbart.
+ *   - `multi[ _-]?az[ _-]?dns` **udvidet** til `multi[ _-]?az` — «Multi-AZ» 62
+ *     gange i AWS' egen prosa, hele formen 0 gange. Udvidelsen **vinder** fund.
+ *   - `redundan` **navngivet** — Microsofts egen availability-zones-side skriver
+ *     det 8 gange i prosa (ikke kun som linktekst, som den forrige måling så på
+ *     en anden Microsoft-side), så rækken hed nu *Multi-server / failover /
+ *     redundancy signals* ellers ville rapportere fundet under et navn kunden
+ *     ikke kan finde det i mod.
  *
- *   - `bcp[ _-]?plan` — **målt død.** `bcp plan` forekommer **0 gange** på
- *     `en.wikipedia.org/wiki/Business_continuity_planning` (200, 363 579
- *     bytes), en side der skriver *BCP* **23 gange** og *business continuity*
- *     **227 gange**. Den række er altså skrevet til præcis denne side, og
- *     skriveformen den leder efter findes ikke i den. Samme klasse som
- *     `shopify[_-]?checkout` i opgave 65 del 2: fjern den, målt.
- *   - `multi[ _-]?az[ _-]?dns` — hele formen forekommer **0 gange** på de syv
- *     sider der blev hentet, mens `multi-AZ` i **løbende prosa** forekommer 62
- *     gange på AWS' egen dokumentation
- *     (`docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html`,
- *     200, 14 310 bytes: *"Multi-AZ deployments can have one standby or two
- *     standby DB instances."*). Retningen er derfor at **udvide** til
- *     `multi[ _-]?az`, som er en ægte supermængde — den matcher også
- *     «multi-AZ DNS» — og ikke at fjerne noget.
- *   - `redundan` — **svagt bekræftet, ikke bekræftet.** Ordet står i Microsofts
- *     egen resiliency-side (`learn.microsoft.com/en-us/azure/architecture/
- *     framework/resiliency`, 200, 35 461 bytes) to gange, men kun som
- *     linkteksten *Design for redundancy*; i løbende prosa står det **0 gange**
- *     på Postgresqls to HA-dokumenter (200, 20 424 og 62 779 bytes) og på
- *     Hetzners forside (200, 135 123 bytes). Der er altså ingen rigtig side
- *     hvis *prosa* bruger ordet. Valget er enten at **navngive** ordet i
- *     rækkens navn (opgave 52s rettelse, kræver plugin-udgivelse) eller at
- *     fjerne markøren.
- *
- * Ingen af de tre blev lukket ved at slå ratchetten ned, og ingen fik en note
- * uden en måling — de tolv antagelser opgave 66 efterlod, og som kostede ni
- * runder at rydde, er præcis hvad en note uden tal ville være igen.
+ * Ratchetten er **0 i alle fire tabeller** for første gang: `consent` 0 (72 del 1),
+ * `trackers` 5, `forms` 1, `dora` 0. De to der står tilbage er de to døde værter
+ * og `data-stripe-(key|publishable)` — se `NÆSTE` i planen.
  */
-
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 3 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 0 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -2087,14 +2100,33 @@ if (process.argv.includes("--selftest")) {
     contractAlternativer, "consent", R5_MOENSTRE, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent);
   expectGreen("(i) (alle alternative i tracker-tabellen er sporet)",
     contractAlternativer, "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
-  // Ratchetten står på 3, så «alle er sporet» ville være en løgn i munden på
-  // porten: `bcp[ _-]?plan`, `multi[ _-]?az[ _-]?dns` og `redundan` står åbent
-  // i `HOEJST_UTILREGNET` med hver sin måling. Etiketten siger derfor præcis
-  // hvad der kontrolleres, så en agent der læser den ikke tror tabellen er
-  // færdig — det er opgave 45bs fejlklasse flyttet til selftestens egen
-  // etiket.
-  expectGreen("(i) (dora holder sig inden for ratchetten på de målte alternative)",
+  // Ratchetten står på 0, så «alle er sporet» er ikke en løgn i munden på
+  // porten: `bcp[ _-]?plan`, `multi[ _-]?az[ _-]?dns` og `redundan` blev alle
+  // lukket ved måling i opgave 72 del 5 — det første ved at fjernes, det andet ved
+  // at udvides til `multi[ _-]?az` og det tredje ved at blive **navngivet** i
+  // rækkens navn, hver med sin egen streng. Etiketten sigger derfor præcis hvad
+  // der kontrolleres, så en agent der læser den ikke tror tabellen er færdig
+  // uden at have læset målingerne ovenfor.
+  expectGreen("(i) (alle alternative i dora-tabellen er sporet)",
     contractAlternativer, "dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
+
+  // 31j. Regel (i) skal være **grøn på den rigtige tabel og rød på de to fejl
+  //      opgave 72 del 5 gjorde mulige**, så ratchetten 0 ikke er grøn af
+  //      manglende strenge. Den første: en agent tilføjer `multi[ _-]?az` i
+  //      mønstret men glemmer AWS-strengen. Den anden — og den dyrere: agenten
+  //      læser Microsoft-siden, skriver `redundan`-strengen og **glemmer at
+  //      navngive markøren**, så fundet stadig rapporteres under et navn kunden
+  //      ikke kan finde det i mod. Den mutation er umulig at se uden regel (i).
+  const doraUdenMultiAz = { ...DAEKNING_DORA };
+  doraUdenMultiAz["Multi-server / failover / redundancy signals"] =
+    doraUdenMultiAz["Multi-server / failover / redundancy signals"].filter(([l]) => l !== "Multi-AZ");
+  expectRed("(i) (multi-AZ uden den målte sætning fra AWS)",
+    contractAlternativer, "dora", R5_DORA, doraUdenMultiAz, ALIASSER, HOEJST_UTILREGNET.dora);
+  const doraUdenNavngivelse = R5_DORA.map((raekker) => raekker.map((r) => (r.navn === "Multi-server / failover / redundancy signals"
+    ? { navn: "Multi-server / failover signals", re: r.re }
+    : r)));
+  expectRed("(i) (redundancy målt, men rækkens navn nævner det ikke — opgave 72 del 5)",
+    contractAlternativer, "dora", doraUdenNavngivelse, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
 
   // 31i. Den nye måling skal være **bærende**: uden NCSC-sætningen er
   //      `security[ _-]?incident` et alternativ igen uden leverandør i navnet,
@@ -2517,7 +2549,7 @@ if (process.argv.includes("--selftest")) {
       fixture: "dora i prosa (engelsk, lange former)",
       foer: [
         {
-          for: "  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
+          for: "  { re: /bcdr|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
           efter: "  { re: /bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity/i, name: \"BC/DR planning reference\" }, // mutation: ingen mellemrum",
         },
         {
@@ -2533,7 +2565,7 @@ if (process.argv.includes("--selftest")) {
       fixture: "dora i prosa (engelsk, lange former)",
       foer: [
         {
-          for: "array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity~i' ),",
+          for: "array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|dr[ _-]?plan|business[ _-]?continuity~i' ),",
           efter: "array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity~i' ), // mutation: ingen mellemrum",
         },
       ],
@@ -2545,7 +2577,7 @@ if (process.argv.includes("--selftest")) {
       fixture: "dora i prosa (engelsk, lange former)",
       foer: [
         {
-          for: "  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
+          for: "  { re: /bcdr|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
           efter: "  { re: /bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity/i, name: \"BC/DR planning reference\" },",
         },
         {
