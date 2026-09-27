@@ -12,6 +12,8 @@ Sidste iteration: opgave 72 del 6 — **den dyreste fejl i hele opgave 72 var ik
 
 **En fejl i min egen negative case, fundet fordi porten sagde nej.** Den naturlige case tog formen: sæt `data-stripe-(key|publishable)` tilbage og kræv rødt på regel (i). Den var **grøn** — ikke fordi porten er gået i stykker, men fordi den bevidst ikke kan se denne fejl: `normalisér()` gør alternativet til `datastripekeypublishable`, og vejen gennem navnet matcher, fordi «stripe» er en del af det. Samme blindhed som `\b` i del 3 og tegnklasserne i opgave 71. Case'en er skrevet om til den mutation der **kan** være rød — den opdigtede streng, som regel (b) fanger samme sekund den skrives ind igen — og **hvorfor den anden ikke kan**, er skrevet ned i porten, så næste agent ikke skriver den igen og tror porten er i stykker. `79 negative selftest-cases` (78 → 79).
 
+**CI grøn på begge merges** (`713cb9b` dora/1.3.34 og `fa5f28d` Stripe) — samme 24 steps som lokalt, på CI's egen Python 3.11 uden shim.
+
 **Ingen `plugin/**`-fil rørt, så ingen ny version og ingen ny zip.** Pluginens `forms`-tabel har kun to rækker, og Stripe-rækken findes kun i de to motorer — jf. samme grund som opgave 65 del 2. Opgave 72 er dermed **lukket for ratchettens vedkommende**: `consent` 0, `dora` 0, `forms` 0, `trackers` 5. `GATE GRØN — alle 24 steps bestået`, spec `docs/eucomply-signatur-prosa.md` "Fejl 17".
 
 VERIFICÉR DEPLOY: Stripe-fiktionen fjernet + rækken omdøbt + plugin 1.3.34 (dora) 713cb9b, Stripe-delen c02882c 2026-09-27 ca. 19:5x
