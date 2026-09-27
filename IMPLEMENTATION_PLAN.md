@@ -18,7 +18,9 @@ Sidste iteration: **den gratis scanners egen README løj om at pakken ikke finde
 
 **Tre stale statusser rettet i samme diff, fordi de lå i køen som åbne.** Opgave **48** stod `I GANG (del 1 af 2)`, men dens eneste rest — den permanente port — blev leveret af opgave 49 i samme diff, så den er lukket. Opgave **62** (`TODO`) og opgave **57**-afsnittets `TODO` (linje 1671) er begge **oprindelig tekst fra før rettelsen**; de beskriver `PRIVACY_LINK_SIGNATURE` og otte trackere, som opgave 56, 61-72 og ratchet `{ consent: 0, trackers: 0, forms: 0, dora: 0 }` alle dokumenterer som lukkede. Næste agent skal ikke starte dem igen.
 
-Opgave 79: install-gaten dækker de to læser-synlige README'er — kodecommit `4dddfd2`, merge `4ca06f7` 2026-09-27 ca. 21:5x
+Opgave 79: install-gaten dækker de to læser-synlige README'er — kodecommit `4dddfd2`, merge `4ca06f7`, plan-merge `62e82c9` 2026-09-27 ca. 21:5x
+
+**Ingen deploy-note nødvendig.** Diffen rører `cli/README.md`, `eucomply-scanner/README.md`, `tools/` og denne plan — **ikke en eneste `site/**`-fil**, og de to README'er ligger uden for deploy-træet. Den publicerede overflade er byte-identisk, så intet skal verificeres mod et batch-vindue. Den eneste evidens er CI-loggen: `GATE GRØN — alle 24 steps bestået` og `SELFTEST GRØN — alle 9 negative cases fanges` i install-gaten. **Bemærk:** rettelsen når en udvikler først ved `npm publish` af en ny version (spørgsmål 20) eller ved at læse repoet på GitHub — den publicerede 1.0.1-tarball er uændret, fordi en agent ikke må publicere.
 
 Opdateret: 2026-09-27 (iteration 78)
 
