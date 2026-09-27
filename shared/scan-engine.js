@@ -161,8 +161,17 @@ const FORM_PLUGIN_SIGNATURES = [
   { re: /contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor" },
   { re: /\btypeform\b|\bformspree\b|\bjotform\b|cognito[_-]?forms\b|\bformsort\b/i, name: "Typeform / Formspree / Jotform" },
   { re: /woocommerce[_-]?checkout|wc_[_-]?checkout/i, name: "WooCommerce Checkout" },
-  { re: /shopify[_-]?checkout|checkout[_-]?shopify/i, name: "Shopify Checkout" },
-  { re: /stripe[_-]?checkout|stripe[_-]?payment|[_-]?stripe[_-]?form/i, name: "Stripe Checkout / Payment" },
+  // Shopify and Stripe were both **dead rows** until 2026-09-27 (task 65
+  // part 2). Neither pattern could match anything the vendor actually ships:
+  // `shopify[_-]?checkout` requires the two words next to each other, and a
+  // real Shopify cart page and checkout page say `shopify-accelerated-checkout`
+  // (4 stores, 6 pages, measured); `stripe[_-]?checkout` needs "stripe" first,
+  // but every real Stripe marker puts "checkout" first (`checkout.stripe.com`)
+  // or carries neither word (`js.stripe.com/v3`, `<div id="payment-element">`).
+  // The added alternatives are the measured forms; the old ones stay, because
+  // they cost nothing and a bespoke theme may well use them.
+  { re: /shopify[_-]?(accelerated[_-]?)?checkout|checkout[_-]?shopify/i, name: "Shopify Checkout" },
+  { re: /stripe[_-]?checkout|stripe[_-]?payment|[_-]?stripe[_-]?form|js\.stripe\.com\/v[0-9]|data-stripe-(key|publishable)/i, name: "Stripe Checkout / Payment" },
 ];
 
 const PLATFORM_SIGNATURES = [
