@@ -107,6 +107,7 @@ li{margin-bottom:6px}</style>
 <ul>
 <li>Standard web server logs (IP address, browser user-agent, page requested, timestamp) are retained by Cloudflare Pages for up to 30 days</li>
 <li>We set no cookies ourselves. Cloudflare may set strictly functional cookies for CDN operation</li>
+<li>Page visits are counted with Plausible Analytics, self-hosted by us in the EU at <code>analytics.holstjensen.eu</code>. Plausible sets no cookies and stores no IP addresses or other personal data: it records the page, referrer, country and browser type as aggregate counts only, and a visitor cannot be recognised across days or across sites</li>
 </ul>
 <p><strong>When you use the open monitoring beta:</strong></p>
 <ul>
@@ -155,6 +156,7 @@ li{margin-bottom:6px}</style>
 <li><strong>Stripe</strong> — payment processing (privacy policy: stripe.com/privacy)</li>
 <li><strong>Mahope tools</strong> — license validation and bug reports</li>
 <li><strong>jsDelivr</strong> — serves the BugBottle feedback script</li>
+<li><strong>Plausible Analytics</strong> — cookieless, aggregate visitor statistics, self-hosted in the EU (plausible.io/data-policy)</li>
 <li><strong>Resend</strong> — delivers open-monitoring alerts when configured</li>
 </ul>
 <p>BugBottle is loaded by the site shell. If you use the report-a-bug control, the report is sent to the Mahope BugBottle endpoint. The site's JavaScript stores your light or dark theme preference in browser local storage; it does not use advertising or analytics cookies.</p>
@@ -210,7 +212,7 @@ li{margin-bottom:6px}</style>
     </div>
     <div>
       <p class="sf-maker">Built by <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — developer and technical partner for small businesses, Odense, Denmark.</p>
-      <p class="sf-note">No cookies, no trackers, no external fonts.</p>
+      <p class="sf-note">No cookies, no cross-site tracking, no external fonts.</p>
       <p class="sf-note">Everything here is technical guidance, not legal advice.</p>
     </div>
   </div>
