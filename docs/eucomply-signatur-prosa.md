@@ -260,3 +260,63 @@ pluginen er **tredje kopi** af hver signatur, og opgave 59 skrev en mutation for
 glemte pluginen, men fordi porten ikke kunne udtrykke det. Grenen måler nu R2 på
 pluginen, og mutation 8 og 10 er begge skrevet mod `plugin/eucomply.php`.
 
+
+## Fejl 6 — Pinterests dokumenterede stier (rettet i 1.3.23)
+
+Opgave 61 skrev, at Pinterest-mønsteret `cdn\.pinterest\.com.*pin.*js|pintrk\(`
+ramte `assets.pinterest.com/js/pinit.js` via `pintrk(`-grenen, men **ikke**
+Pinterests basistag. Det viste sig at være værre end et delvist fund.
+
+**Kilde.** `https://help.pinterest.com/business/article/install-the-base-code`
+("Install the base code"), hentet 2026-09-27. Den dokumenterede basistag er:
+
+```html
+<script>!function(e){if(e.pintrk){return;}var n=e.pintrk=function(){…n.version="3.0";
+…t.src=e;…}}("https://s.pinimg.com/ct/core.js");
+pintrk('load', 'YOUR_TAG_ID');
+pintrk('page');</script>
+<noscript><img … src="https://ct.pinterest.com/v3/?tid=YOUR_TAG_ID&event=init&noscript=1" /></noscript>
+```
+
+**Målt før rettelsen** (fixture mod motoren i repoet, den publicerede
+npm-motor og pluginen): `s.pinimg.com/ct/core.js` alene → `Third-party trackers:
+0 found` i alle tre. `ct.pinterest.com/v3/?tid=…&noscript=1` alene → **0 fund** i
+alle tre. Hele basistaget → 1 fund i alle tre, **kun** fordi den indlejrede
+`pintrk(` findes i markup'en.
+
+Det er altså ikke en mangel i en alternativ sti: **hele den dokumenterede
+installation var usynlig, så længe de indlejrede scripts var indlejrede.** Og
+de bliver det — det er præcis hvad samtykke-værktøjer gør, når de flytter
+scripts ud af en bundle, og det er hvad en `script-src`-CSP gør når den
+tillader domænet men ikke inline. Samme fejlretning som opgave 60: en grøn
+række på en side der sender et pixel. `cdn.pinterest.com.*pin.*js` matcher
+forresten **intet** i Pinterests nuværende dokumentation.
+
+**Rettelsen matcher stien, ikke værten:** `s\.pinimg\.com\/ct\/` og
+`ct\.pinterest\.com\/v3\/`, begge læst direkte af dokumentationen. Ikke
+`pinimg\.com`, fordi Pinterests **billed**-CDN ligger på samme vært — en butik
+med tre opslagsbilleder har intet tag at slette. Den negative fixture
+`i.pinimg.com` er derfor målt på samme måde som R1s prosa: en bred regel på
+værten skal gøre porten rød. Det gør den (mutation 5).
+
+### Fejl fundet i porten undervejs
+
+Selftestens R1-gren læste altid `PROSA_FIXTURES[0]` — den danske prosa — uanset
+hvilken fixture mutationen var skrevet til. Den negative billed-fixture gjorde
+mutationen grøn ved at aldrig blive kørt, og porten ville have skrevet
+"mutationen fanges" fordi den ikke var målt. R1-grenen læser nu
+`m.fixture` med `prosa` som fallback. Samme fejlklasse som opgave 59 fund 1.
+
+### Hvad der stadig ikke er verificeret
+
+De elleve øvrige tracker-markører er **kun** kontrolleret mod leverandørernes
+værter, ikke mod deres dokumentation: `snap.licdn.com` (LinkedIn,
+`insight.min.js` svarer 200), `sc-static.net` (Snap, `scevent.min.js` 200) og
+`connect.facebook.net` (Meta, `fbevents.js` 200) er bekræftet på leverandørens
+egen vært, og mønstrene dækker dem. `static.tiktok.com`, `googlesyndication.com`,
+`cdn.matomo.cloud`, `cdn.cookiebot.com` og `quantcast.mgr.consensu.org` kunne
+**ikke** bekræftes i denne iteration — de skal have hver sin kilde-registrerede
+fixture, før en rettelse skrives, og det er opgave 62. `quantcast[_-]?choice`
+ser især ud til at skulle være `quantcast\.[^"']*choice` for at ramme
+`quantcast.mgr.consensu.org/choice/…`, men det er **formodet**, ikke målt, og
+en død markør er værre end ingen.
