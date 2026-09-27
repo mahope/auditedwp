@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.24
+ * Version:           1.3.25
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.24' );
+define( 'EUCOMPLY_VERSION', '1.3.25' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -856,7 +856,6 @@ class EUComply {
                 array( 'name' => 'Moove GDPR', 're' => '~moove[_-]?gdpr~i' ),
                 array( 'name' => 'PixelYourSite (GDPR)', 're' => '~pixel[_-]?your[_-]?site~i' ),
                 array( 'name' => 'WebToffee GDPR', 're' => '~webtoffee|gdpr[_-]?cookie[_-]?consent~i' ),
-                array( 'name' => 'Quantcast Choice', 're' => '~quantcast[_-]?choice~i' ),
                 array( 'name' => 'Analytify/CAOS', 're' => '~analytics[_-]?cat~i' ),
             ),
             // Form plugins named in the markup, for `check_forms()`. These are

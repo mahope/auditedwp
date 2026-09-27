@@ -91,8 +91,17 @@ const SPROG = { DA: "dansk", SV: "svensk", NL: "nederlandsk", EN: "engelsk" };
 /** De grupper R1 og R3 måler. `dora` er R4s gruppe og er bevidst ikke her. */
 const GRUPPER = ["trackers", "cookies", "forms"];
 
-/** Hvor mange navne hver signatur-tabel skal have, før porten går videre. */
-const MINDST = { trackers: 12, consent: 21, forms: 2, dora: 9 };
+/**
+ * Hvor mange navne hvar signatur-tabel skal have, før porten går videre.
+ *
+ * `consent` var 21 og er 20 siden 1.3.25: `quantcast[_-]?choice` blev **fjernet**
+ * i stedet for rettet, fordi leverandørens egen installationsdokumentation ikke
+ * kunne læses fra byggemiljøet, og et mønster skrevet mod en adresse ingen har
+ * læst er præcis den fejl der fik den ind. Tallet står her, så den næste agent kan
+ * se at 20 er et **valg** og ikke en tilfældighed — og den døde markør kan ikke
+ * komme tilbage ved at sænke tallet igen, for den ville give 21.
+ */
+const MINDST = { trackers: 12, consent: 20, forms: 2, dora: 9 };
 
 /** Navnet på tabellen i de to JS-motorer. `cookies` læser CONSENT_SIGNATURES. */
 const MOTOR_TABEL = {
