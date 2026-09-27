@@ -1,3 +1,103 @@
+Opdateret: 2026-09-27 (iteration 84)
+
+Sidste iteration: **køen var tom igen (5, 6 og 7 er bloketed på spørgsmål 7 og
+9), så denne iteration målte den vej en betalende kunde går, når de henter den
+rettede plugin — og fandt at rettelsen fra sidste iteration ikke kunne nå dem.**
+
+Målt 2026-09-27 23:46 mod produktion, uden cache-buster:
+
+    /assets/eucomply-1.3.35.zip -> 200 application/zip  62622 B
+    age: 3946   cf-cache-status: HIT
+    unzip: EUCOMPLY_VERSION 1.3.35
+
+**Altså: den version med den dyreste fejl i hele rapporten — den der fortalte en
+OneTrust-side at den kørte fire samtykkeplatforme — blev serveret som en
+download i 1 time og 6 minutter efter at 1.3.36 var rettet og merged.** Ikke
+fordi den lå i træet: 1.3.35 er slettet, og med en cache-buster giver samme adresse
+`301` → 1.3.36. Den lå i **kant-cachen**, fordi `site/_headers` gav
+`/assets/*` `Cache-Control: public, max-age=31536000, immutable`. En fil der
+fjernes fra træet, kan dermed serveres i **op til et år** på den adresse den
+havde, og det er præcis den adresse en kunde har gemt.
+
+**To ting blev rettet, og den tredje fandt porten sig selv:**
+
+1. **`/assets/*` er væk, erstattet af tre ikke-overlappende regler** pr. filtype.
+   `site.css`, `site.js` og `eucomply-badge.js` har ingen version i filnavnet, så
+   `immutable` på dem betød at *ingen* redaktion af dem nogensinde nåede en
+   kunde. Nu `max-age=600, must-revalidate` på css/js/png og
+   `max-age=31536000, immutable` på `/assets/*.zip` — kun de filer bærer
+   versionen i navnet. Reglerne overlapper ikke, så resultatet ikke afhænger af
+   hvilken matchende regel Cloudflare vælger; det er derfor de er skrevet pr.
+   filtype frem for som én regel plus en undtagelse.
+2. **Version 1.3.32 havde ingen redirect** — den står i changelog'en, den er
+   udgivet, og den var ikke i `_redirects`. En installation der beder om 1.3.32
+   fik derfor 404 i stedet for den rettede plugin. Det er samme fejl som den
+   1.3.33 rettede for 1.3.29 og 1.3.31, og den er nu umulig at gentage: **den er
+   en egenskab ved filerne, ikke en husket**, målt af
+   `tools/check_asset_delivery.py`. Den døde regel `/assets/eucomply-1.3.36.zip
+   301` (en 301 uden mål, som intet gør nu og som ville være en download-sløjfe
+   hvis Cloudflare nogensinde begyndte at hænge op på den) er væk.
+3. **Opgave 6's næste skridt var spærret af denne fejl.** Den planlagde at
+   omskrive `site/assets/eucomply-badge.js` — den fil der er indlejret i
+   kunders egne sider i dag. Med `immutable` i et år ville den nye badge have nået
+   præcis nul kunder. Det er fundet af porten, ikke af en læsning.
+
+**`tools/check_asset_delivery.py` (ny, trin 25) — seks kontroller:** `immutable`
+må kun dække filer med version i navnet; en `immutable`-regel skal matche mindst
+én fil (død konfiguration ellers); kun den aktuelle zip må ligge i træet; hver
+udgivet version i changelog'en skal have en 301 til den aktuelle; ingen
+redirect uden mål eller mod en ældre version; `download_url`, `/plugin/` og de
+to `update.json` skal pege på samme version, og de to manifestfiler skal være
+ens. **13 negative selftest-cases** (12 mutationer + et grønt baseline-træ).
+
+**Fund i min egen port, og det er tredje gang den fejlklasse dukker op her:**
+`_expect_red()` sat `ok = False` på en *lokal* variabel, så kalderen troede alle
+cases var grønne og printede `SELFTEST GRØN` **mens seks af dem fejlede**. Det er
+præcis opgave 9's kanin-hul, opgave 11's tre tal der ikke kontrollerede
+hinanden, og opgave 10's kontrol der samlede returnværdier og kassérede dem.
+Selftesten returnerer nu sandhed, og kalderen summerer selv; det er efterprøvet
+med en mutation der *ikke* kan finde noget, som returnerer `False`. Dertil fire
+fejl i portens egen filfejlfinde: en sti bygget med `site/`-præfiks, en
+redirect-sti læst uden `/assets/`, en existence-kontrol der sammenlignede et
+filnavn med en hel sti, og en mutation der skrev den værdi, filen allerede havde
+— den fandt ingen forskel og ville have testet ingenting.
+
+**Målt uden den nye port ville fundet være ét: `/assets/*` + `immutable`.** Den
+andre fejl, den manglende 1.3.32-redirect, blev fundet *af* porten.
+
+Ingen plugin-version, ingen ny zip, ingen PHP, ingen `update.json`: ingen
+kunde skal hente en ny fil for at få denne rettelse. Den rører kun to site-filer
+og gaten.
+
+Gate: `GATE GRØN — alle 25 steps bestået` (24 før), herunder
+`216 sider, 0 findings`, sibling-gate kørt (SEO 0 sider, kendt advarsel),
+`npm pack --dry-run`, live røgtest, plugin-paritet byte-identisk og
+`php -l` på 4 filer. `ASSET-GATE GRØN — 6 filer i site/assets, immutable kun på
+versionerede navne, 13 udgivne versioner i kæden til eucomply-1.3.36.zip`.
+
+Opgave 84: en kunde skal hente den version, der er rettet — intet
+`immutable` på filer uden version, kæden fra 1.2.0 til 1.3.36 gjort til en
+egenskab ved filerne — `ceo/asset-cache-policy` 2026-09-27 23:5x
+
+VERIFICÉR DEPLOY: css/js/png har mistet et-års cachen, 1.3.32 har fået sin
+redirect, den døde 301 uden mål er væk — `ceo/asset-cache-policy` 2026-09-27
+23:5x. Rører `site/_headers` (to regler + kommentar), `site/_redirects` (37 →
+37 linjer: 1.3.32 tilføjet, den døde regel fjernet), `tools/quality_gate.sh`
+(trin 25) og `tools/check_asset_delivery.py` (ny). **Ingen plugin-version, ingen
+ny zip, intet `update.json`** — så det eneste der skal verificeres er
+**indholdet i to headere**, fordi det er den eneste måde denne diff kan fejle i
+produktion: (1) `/assets/site.css` skal svare `200` med
+`cache-control: public, max-age=600, must-revalidate` — **ikke**
+`max-age=31536000, immutable`; (2) `/assets/eucomply-1.3.36.zip` skal svare `200`
+`application/zip` med `cache-control: public, max-age=31536000, immutable` —
+og det må **kun** holdes af zip'en, så en fejl i css-reglen ikke har overskrevet
+den; (3) `/assets/eucomply-1.3.32.zip` skal følge `301` → 1.3.36 med
+cache-buster; (4) `/assets/eucomply-1.3.36.zip` skal svare `200` — den døde
+regel må ikke have lavet den til en sløjfe. BEMÆRK: kant-cachen kan holde den
+gamle `immutable`-header på css'en i op til sin `max-age`; mål derfor med
+`curl -sI "https://eucomplypro.com/assets/site.css?cb=<tidsstempel>"` og se på
+`age`, ikke på om der står `immutable`.
+
 Opdateret: 2026-09-27 (iteration 83)
 
 Sidste iteration: **en måling på en rigtig butik fandt den dyreste fejl i hele
@@ -77,7 +177,9 @@ Opgave 83: rapporten skal navngive den leverandør der er fundet — otte
 consent- og ni form-leverandøre delt på i otteogtyve rækker, ny regel (R11),
 plugin 1.3.36 — kodecommit `027fc40`, merge `ada98dc` 2026-09-27 ca. 23:2x
 
-VERIFICÉR DEPLOY: samtykkeplatformen og formular-pluginen navngives hver for sig (ni leverandøre delt på i ni rækker) + R11 — plugin 1.3.36 `027fc40` / `ada98dc` 2026-09-27 ca. 23:2x. Rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `readme.txt` ×2, `update.json` ×2, `site/_redirects` (37 linjer), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs` og den nye `site/assets/eucomply-1.3.36.zip` (1.3.35 fjernet af build-scriptet). Efter næste batch skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.36.zip` svarer **200 `application/zip`**, unzippet: 3 medlemmer under `eucomply/`, `Version: 1.3.36`, og **ni** rækker med ét leverandørnavn hver i stedet for to; (2) `/update.json` svarer 200 med `"version": "1.3.36"`, `download_url` på 1.3.36 og changelog der **starter** `= 1.3.36 (2026-09-27) =` med de to fund; (3) `/assets/eucomply-1.3.35.zip` følger **301** → 1.3.36; (4) `/plugin/` viser `↓ Download v1.3.36 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `84 af 84` negative cases.
+DEPLOY OK 2026-09-27 23:46 — målt på indhold, ikke på HTTP-koden. Samtykkeplatformen og formular-pluginen navngives hver for sig (ni leverandøre delt på i ni rækker) + R11 — plugin 1.3.36 `027fc40` / `ada98dc` 2026-09-27 ca. 23:2x. Rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `readme.txt` ×2, `update.json` ×2, `site/_redirects` (37 linjer), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs` og den nye `site/assets/eucomply-1.3.36.zip` (1.3.35 fjernet af build-scriptet). **Målt 23:46 med cache-buster, alle fire punkter holdt:** `/assets/eucomply-1.3.36.zip` svarer `200 application/zip` 63 492 B, unzippet med 3 medlemmer under `eucomply/` og `EUCOMPLY_VERSION', '1.3.36'`; `/update.json` svarer 200 med `"version": "1.3.36"`, `download_url` på 1.3.36 og en changelog der **starter** `= 1.3.36 (2026-09-27) =`; `/assets/eucomply-1.3.35.zip` følger `301` → 1.3.36; `/plugin/` svarer 200. Kæden er fuldstændig for alle 14 udgivne versioner — dog viste 1.3.35 sig stadig cachet i kanten med indhold fra før rettelsen, hvilket blev fundet og rettet i iteration 84. Notens oprindelige kravliste var:
+
+Efter næste batch skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.36.zip` svarer **200 `application/zip`**, unzippet: 3 medlemmer under `eucomply/`, `Version: 1.3.36`, og **ni** rækker med ét leverandørnavn hver i stedet for to; (2) `/update.json` svarer 200 med `"version": "1.3.36"`, `download_url` på 1.3.36 og changelog der **starter** `= 1.3.36 (2026-09-27) =` med de to fund; (3) `/assets/eucomply-1.3.35.zip` følger **301** → 1.3.36; (4) `/plugin/` viser `↓ Download v1.3.36 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `84 af 84` negative cases.
 
 Opdateret: 2026-09-27 (iteration 82)
 
@@ -2551,3 +2653,40 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 - 2026-09-27 (iteration 72, opgave 72 del 1) `VERIFICÉR DEPLOY: cookie-notice har nu sin egen række, den generiske banner-række er renset, iubenda-rækken er rettet — plugin 1.3.32 + ny zip (opgave 72 del 1)` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php` (alle tre kopier), `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (nu 32 zip-redirects), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs` (regel (j) + DAEKNING + case 31e) og den nye `site/assets/eucomply-1.3.32.zip` (1.3.31 fjernet af build-scriptet). Efter et batch-vindue: (1) `/assets/eucomply-1.3.32.zip` svarer **200 `application/zip`** med `Version: 1.3.32`, `EUCOMPLY_VERSION', '1.3.32'` og **én** forekomst af `Cookie Compliance for WordPress`; (2) `/update.json` svarer 200 med `"version": "1.3.32"`, `download_url` på 1.3.32 og changelog der **starter** `= 1.3.32 (2026-09-27) =` med `= 1.3.31` **én** gang bagefter; (3) `/assets/eucomply-1.3.31.zip` følger **301** → 1.3.32; (4) `/plugin/` viser `↓ Download v1.3.32 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `51 signatur-prosatest bestået … 22 mønstalternativer uden leverandør i navnet af højst 22`. **Bemærk:** de to JS-motorer deployes ikke af CI, så den nye række giver sit korrekte navn i den gratis webscanner og den publicerede CLI først ved `npm publish` eller worker-deploy (spørgsmål 9) — uændret fra opgave 58.
 
 - 2026-09-27 (iteration 73, opgave 72 del 2) **Ingen deploy-note nødvendig.** Kun `tools/check_signature_prose.mjs` (regel-porten) og `docs/eucomply-signatur-prosa.md` + denne plan er rørt — **ingen `plugin/**`-fil, ingen `site/**`-fil, ingen ny version, ingen ny zip, intet `update.json`**. Den udgivne overflade er byte-identisk, så der er intet at verificere mod et batch-vindue. Ændringen er **kode, ikke live**: de to JS-motorer røres ikke, så de fiver heller ikke den udvidede dækning; de fås først ved `npm publish` eller worker-deploy (spørgsmål 9), uændret fra opgave 58.
+
+### 84. En kunde skal hente den version, der er rettet
+
+- Status: `I GANG` — kode færdig på `ceo/asset-cache-policy`, gaten grøn (25 steps). Deploy-noten åben.
+- Fejl: 1/2 — portens egen selftest var grøn mens seks cases fejlede (se fundene), rettet i samme iteration
+- **Målingen, og hvorfor den er en del af den betalte vare.** Rettelsen fra iteration 83 fjernede den dyreste fejl i rapporten: en side der kører OneTrust blev fortalt at den kører fire samtykkeplatforme. Den rettelse nåede kun kunder, der læste `update.json` — fordi **selve rettelsen lå i en download, de hentede på den gamle adresse**:
+  - `/assets/eucomply-1.3.35.zip` → `200 application/zip`, 62 622 B, `age: 3946`, `cf-cache-status: HIT`, indhold `EUCOMPLY_VERSION 1.3.35`. Målt 23:46, altså 1 t 6 min efter merge af rettelsen.
+  - Samme adresse med cache-buster: `301` → 1.3.36. Filen er altså ikke i træet; den lå i kant-cachen.
+  - Årsagen er én linje i `site/_headers`: `/assets/*` med `Cache-Control: public, max-age=31536000, immutable`. Den gør enhver **slettet** fil serverbar i op til et år på sin gamle adresse, og enhver **redigeret** fil uændret i et år.
+- **De fire filer under `/assets/` uden version i navnet var den anden halvdel af samme fejl:** `site.css` (42 kB, 200+ sider), `site.js`, `eucomply-badge.js` (indlejret i kunders sider i dag) og `devnotify-og.png`. Målt i live: alle fire er byte-identiske med repoet lige nu, så ingen kunde har set forældet indhold** — men `site.css` har `age: 184711` (2,1 dage) uden at have ændret sig, fordi kanten ikke må genvalidere den. Grunden til at intet er galt endnu er, at filerne ikke er blevet redigeret. Det er tilfældighed, ikke egenskab.
+- **Opgave 6 var spærret af dette uden at nogen vidste det.** Den planlagte næste del er at omskrive `eucomply-badge.js`, fordi den renderer en score uden et worker-endpoint. Med `immutable` i et år ville den nye badge have nået nul indlejrede installationer, og målingen ovenfor viser at kant-cachen faktisk overholder den regel. Derfor er rettelsen gjort *før* opgave 6 fortsætter, ikke bagefter.
+- **Den anden fejl fandt porten, ikke mig: version 1.3.32 manglede i kæden.** Den står i changelog'en, den er udgivet (27/9, cookie-notice-rækken), og `site/_redirects` havde ingen regel for den. Det er samme fejl som den 1.3.33 rettede for 1.3.29 og 1.3.31, to udgivelser senere — fordi kæden er håndskrevet én linje per release, og den er skrevet otte gange. Nu er den en egenskab ved filerne: en version i changelog'en uden 301 til den aktuelle er et fund.
+- **Rettelsen i `site/_headers`, og hvorfor den er skrevet pr. filtype frem for som undtagelse.** Først forsøgt som `/assets/*` med 600 sekunder plus `/assets/*.zip` med `immutable`. Det er ** overlapgende regler, og hvilken Cache-Control der så gælder afhænger af Cloudflares matchningsrækkefølge — som jeg ikke har målt. Derfor tre ikke-overlappende mønstre (`*.css`, `*.js`, `*.png` → `max-age=600, must-revalidate`) plus `*.zip` → `max-age=31536000, immutable`. Resultatet afhænger ikke af rækkefølgen, og porten kræver at en `immutable`-regel kun matcher filer med version i navnet — så de to dele kan ikke glide fra hinanden.
+- **`site/_redirects`: +1 regel, -1 død regel.** 1.3.32 → 1.3.36 (den manglende), og `/assets/eucomply-1.3.36.zip 301` væk — en regel uden mål, som intet gør nu, og som ville være en download-sløjfe hvis Cloudflare nogensinde tog den seriøst. Den er målt i live før fjernelse: 1.3.36 svarer 200, fordi filen findes, så fjernelsen ændrer intet for kunden.
+- **Porten, `tools/check_asset_delivery.py` (ny, trin 25), seks kontroller:**
+  1. `immutable` må kun dække filer med version i filnavnet (målt mod de filer der faktisk findes under mønsteret, ikke mod en antagelse om filnavne).
+  2. En `immutable`-regel skal matche mindst én eksisterende fil — ellers er den død konfiguration, som intet advarer om.
+  3. Højst én plugin-zip i `site/assets/`, og den skal være den aktuelle. En gammel zip i træet er en download, der *aldrig* kan forsvinde.
+  4. Hver version i changelog'en skal have en `301` til den aktuelle zip; ingen regel må pege på en ældre version eller have intet mål; ingen regel må skygge den aktuelle version.
+  5. `download_url` skal være den aktuelle zip **og** filen skal findes i træet — ellers henter WordPress en adresse, der ikke er der.
+  6. `/plugin/`s download-link skal pege på den aktuelle version, og de to `update.json` skal være ens (de læses fra to forskellige stier i produktionen).
+- **13 negative selftest-cases:** grønt baseline-træ først (så mutationerne ikke kan være grønne af en fejl i porten), immutable på `/assets/*` med en fil uden version, immutable på et snævrere mønster, immutable på et mønster uden filer, gammel zip i træet, changelog-version uden redirect, redirect uden mål, redirect mod en gammel version, `download_url` på en anden version, `download_url` på en fil der ikke findes, pluginsiden der linker en gammel version, de to `update.json` der ikke er ens, en `version` der ikke er en x.y.z.
+- **Fund 1 — min egen selftest var grøn mens seks cases fejlede.** `_expect_red()` sat `ok = False` på en lokal variabel og returnerede intet, så kalderens `ok` forblev sand og den printede `SELFTEST GRØN — alle 13 negative cases fanges` midt i en rød kørsel. Det er **tredje gang** denne fejlklasse dukker op i selftesten her: opgave 9's kanin-hul (`/IMPLEMENTATION_PLAN.md` som leak-kontrol), opgave 11's tre runtime-tal der ikke kontrollerede hinanden, opgave 10's kontrol der samlede returnværdier lokalt og aldrig skrev dem i listen. Nu returnerer `_expect_red()` sandheden og kalderen summerer selv, og mekanismen er efterprøvet med en mutation der umuligt kan finde noget: den returnerer `False`.
+- **Fund 2 — fire fejl i portens egen sti-håndtering,** alle fundet fordi baseline-træet skulle være grønt og ikke var: (a) `assets`-stierne blev bygget med `site/`-præfiks, mens `_headers`-mønstre er relative til `site/`; (b) redirect-kilden blev læst uden `/assets/`, så ingen af de 13 versioners opslag ramte reglerne, og porten rapporterede 13 falske fund; (c) existence-kontrollen sammenlignede et filnavn med en hel sti; (d) `download_url`-mutationen skrev den værdi, filen allerede havde, så den skabte ingen forskel og ville have testet en mutation der ikke muterer.
+- **Ingen ny fejlklasse, men én ting der var tæt på at være det:** `site.css` og `site.js` er redigeret mange gange siden de første blev lagt i træet, og de har hele tiden haft `immutable`. De er altså aldrig nået kunder i en redigeret form. Målt: de er byte-identiske med live lige nu, så ingen kunde har set gammel CSS. Den nye regel gør det umuligt at fortsætte — med ét forbehold, der er skrevet i noten: en kants cache holder den gamle header indtil sin egen `max-age` løber ud, så verifikationen skal læse `age`, ikke kun om der står `immutable`.
+- **Ingen plugin-version, ingen ny zip, intet `update.json`, ingen PHP.** Ingen kunde skal hente en ny fil for at få denne rettelse; de skal bare kunne hente den de altid har hentet. Det er derfor intet i denne diff der kræver en changelog-post — og det er derfor deploy-noten er skrevet om *to headere* i stedet for om indholdet i en ny pakke.
+- Begrundelse: rang 1 i "hvad der tæller" — en kunde der køber en rettelse og får den gamle fejl, fordi vi serverede den gamle fil i et år, er den dyreste fejl type produktet kan lave. Rang 3 herudover: opgave 6 var færdig til at blive bygget på en måde, der ikke virkede, og det vidste ingen.
+- Scope: mål leveringsvejen for den betalte plugin; ret cache-politikken så kun versionerede filer er `immutable`; luk hullet i redirect-kæden; gør kæden, versionen og de to manifesters enshed til en permanent port med negative cases; skriv både cache-hoved og adrasser ind i deploy-noten.
+- Accept:
+  - ~~Ingen fil uden version i navnet må have `immutable`.~~ **Dækket.** `site/_headers` har `immutable` kun på `/assets/*.zip`, og porten finder filerne under mønsteret i stedet for at tro på filnavne. Negativ case: `immutable` på `/assets/*` med `site.css` i træet → rød med filens sti.
+  - ~~En gammel plugin-zip må ikke ligge i træet.~~ **Dækket.** Porten kræver præcis én, og at den er den aktuelle. Negativ case: `eucomply-1.3.0.zip` lagt ved siden af → rød.
+  - ~~Alle udgivne versioner skal have en `301` til den aktuelle.~~ **Dækket**: 13 versioner i kæden til 1.3.36, fra 1.2.0. Negativ case: changelog-version uden regel → rød med versionsnummeret.
+  - ~~Ingen redirect uden mål.~~ **Dækket.** Den døde `/assets/eucomply-1.3.36.zip 301` er fjernet og porten melder en sådan regel. Negativ case: regel uden mål → rød med linjenummer.
+  - ~~`download_url`, `/plugin/` og begge `update.json` skal pege på den aktuelle version.~~ **Dækket**, plus de to manifester skal være ens — en forskel uden at `version` er ændret tæller også (det er den mutation selftesten bruger).
+  - ~~Selftesten må ikke kunne sige grønt mens en case fejler.~~ **Dækket og efterprøvet.** Efterprøvet med en mutation der ikke kan finde noget: returnerer `False`, og en kørsel med den fejl ville exit 1.
+  - ~~Ingen PHP- eller plugin-ændring i samme diff.~~ **Dækket.** Kun `site/_headers`, `site/_redirects`, `tools/quality_gate.sh` og den nye port.
+  - Efter merge verificeres på indhold. **ÅBEN — `VERIFICÉR DEPLOY`-noten ovenfor.** Fire punkter, alle headere og kodede: css'en må ikke længere være `immutable`, zip'en skal være det, 1.3.32 skal give 301, og 1.3.36 skal stadig give 200.
