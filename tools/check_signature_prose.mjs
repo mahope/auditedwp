@@ -156,14 +156,15 @@ const DAEKNING = {
      ["ConsentManager", '<script src="https://www.consentmanager.de/gtm.js" id="CookieConsent" data-cmpid="a1b2"></script>', "vaert 200 2026-09-27"]],
   "CookieYes":
     [["CookieYes", '<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"]],
-  // Fire leverandører. Klaro og CookieConsent har strenge, TarteAuCitron og
-  // Osano står i ULAEVNET med dagens måling. Klaro's gamle streng pegede på
-  // `klaro@1.0.5` — en version der ikke findes (jsdelivr 404, og
-  // `data.jsdelivr.com` lister 0.7.21 som nyeste), så påstanden om et 200 var
-  // ikke sand. Rettet til den sti leverandørens egen pakke indeholder, læst i
-  // jsdelivrs filliste: `/dist/klaro.js`.
+  // Fire leverandører, og **fire** strenge. TarteAuCitron og Osano fik streng i
+  // opgave 70, begge læst i leverandørens egen kode: TarteAuCitron i sit eget
+  // repos README (`<script src="/tarteaucitron/tarteaucitron.js">`), Osano i sin
+  // egen GTM-template, der bygger adressen
+  // `https://cmp.osano.com/<kundeId>/<configId>/osano.js`.
   "TarteAuCitron / Klaro / Osano / CookieConsent":
-    [["Klaro", '<script src="https://cdn.jsdelivr.net/npm/klaro/dist/klaro.js"></script>', "vaert 200 · filliste læst 2026-09-27"],
+    [["TarteAuCitron", '<script src="/tarteaucitron/tarteaucitron.js"></script>', "dokumenteret leverandørens egen README 2026-09-27 · github AmauriC/tarteaucitron.js"],
+     ["Klaro", '<script src="https://cdn.jsdelivr.net/npm/klaro/dist/klaro.js"></script>', "vaert 200 · filliste læst 2026-09-27"],
+     ["Osano", '<script src="https://cmp.osano.com/a1b2c3/a1b2c3/osano.js"></script>', "dokumenteret leverandørens egen GTM-template 2026-09-27 · vaert 502 på opdigtede id"],
      ["CookieConsent", '<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"></script>', "vaert 200 · filliste læst 2026-09-27"]],
   "Complianz GDPR":
     [["Complianz GDPR", "<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"]],
@@ -175,10 +176,12 @@ const DAEKNING = {
     [["CookieHub", '<script src="https://shop.example/wp-content/plugins/cookiehub/includes/js/dcchub-test.js"></script>', "wp.org 200 cookiehub 2026-09-27"]],
   "iubenda":
     [["iubenda", '<script src="https://cdn.iubenda.com/iubenda.js"></script>', "wp.org 200 iubenda-cookie-law-solution 2026-09-27 · vaert 200"]],
-  // Tre leverandører. OptinMonster har streng; JustUno og Privy står i
-  // ULAEVNET. Før opgave 69 hed etiketten på OptinMonster-strengen "JustUno",
-  // fordi porten slet ikke kunne se forskel: den tællede rækker, ikke navne.
-  "JustUno / Privy / OptinMonster (popup detected)":
+  // Én leverandør efter opgave 70. Rækken hed tidligere *JustUno / Privy /
+  // OptinMonster*, og de to første er væk: `js.justuno.com` og
+  // `widget.justuno.com` svarer 520, deres hjælpecentre 520, og `privy.com` er
+  // 403 mens docs.privy.com sender videre til en login-side. En platform
+  // ingen kan læse er ikke dækning, så rapporten ikke længere navngiver den.
+  "OptinMonster (popup detected)":
     [["OptinMonster", '<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"]],
   "WP Consent API":
     [["WP Consent API", '<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"]],
@@ -376,11 +379,13 @@ const DAEKNING_FORMS = {
      ["Gravity", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/gravityforms/assets/css/gravityforms.css">', "wp.org 404 gravityforms — betalt plugin, ikke i det offentlige katalog"],
      ["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"],
      ["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
-  // Tre leverandører. Jotform står i ULAEVNET. Formspree fik en streng i denne
-  // iteration: den svarer **403** på `formspree.io/js/formspree.js`, og en 403
-  // er værtens eget svar på en fil der findes — præcis den bevisstyrke
-  // consent-tabellen allerede bruger for CookieYes' `cdn-cookieyes.com`.
-  "Typeform / Formspree / Jotform":
+  // To leverandører efter opgave 70. Jotform er væk, fordi ingen af de fire
+  // dokumenterede stier kunne læses fra byggemiljøet (404 på alle fire, selv om
+  // `cdn.jotform.com` svarer 200 på roden) — samme metode som Quantcast i 1.3.25
+  // og CookieNinja i 1.3.29. Mønstret mistede samtidig `cognito[_-]?forms` og
+  // `\bformsort\b`: de lå i mønstret uden at stå i **navnet**, så rapporten
+  // skrev "Typeform / Formspree" om en side de ikke kan finde. Se opgave 71.
+  "Typeform / Formspree":
     [["Typeform", '<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
      ["Formspree", '<script src="https://formspree.io/js/formspree.js"></script>', "vaert 403 fra byggemiljøet 2026-09-27"]],
   "WooCommerce Checkout":
@@ -822,20 +827,31 @@ function leverandoerer(navn) {
  * samme, med mindst to veje ud: læs leverandørens egen kode og skriv strengen,
  * eller skriv her hvorfor den ikke kan læses.
  *
- * Alle fem er **målt** 2026-09-27, ikke antaget:
- *   TarteAuCitron — `api.wordpress.org` svarer **404** på slug'en
- *     `tarteaucitron` (såvel som på `tarteaucitron-cookies`), og pakken findes
- *     ikke på npm. Der er altså ingen kode at læse herfra; kun et produktnavn.
- *   Osano — `cdn.osano.com` svarer **200 på roden**, men **404** på
- *     `cdn.osano.com/js/osano.js`, `cdn.osano.com/v1/cmp/osano.js` og
- *     `static.osano.com/js/osano.min.js`. Værten findes, ingen sti gør.
- *   JustUno — `js.justuno.com` svarer **520** og `widget.justuno.com/script.js`
- *     **520**: værtens egen fejlside, ikke et 404 på en bestemt fil.
- *   Privy — `widget.privy.com` svarer **403** og `static.privy.com/pidget.js` /
- *     `static.privy.com/privy.js` **404**; kun `static.privy.com` roden er 200.
- *   Jotform — `cdn.jotform.com` svarer **200 på roden**, men **404** på
- *     `cdn.jotform.com/embed/`, `…/embed/iframe/frame.html` og
- *     `…/js/embed/v2/embed.js`. Samme billede som Osano.
+ * **Opgave 70 tømte registret**, og det er derfor det står tomt:
+ *
+ *   TarteAuCitron — *læst*. Slug'en findes ikke i WordPress' katalog og
+ *     pakken ikke på npm, men leverandørens **eget repo** står i hans egen
+ *     README: `<script src="/tarteaucitron/tarteaucitron.js">`. Den gamle
+ *     måling ledte i wp.org og npm og nåede derfor aldrig den kode, der lå
+ *     lige ved siden af.
+ *   Osano — *læst, og den gamle måling målte den forkert værte*. Noten sagde
+ *     `cdn.osano.com 200 på roden, 404 på alle tre stier`; roden er en
+ *     HubSpot-marketing-side, ikke et CDN. Osanos **egne GTM-template**
+ *     (`osano/gtm-template`, `template.tpl`, 78 146 bytes) bygger adressen
+ *     selv: `https://cmp' + env + '.osano.com/' + customerId + '/' + ccId +
+ *     '/osano.js`, og `env` er tom i standardopsætningen. Derfor hedder
+ *     værten `cmp.osano.com` og ikke `cdn.osano.com` — og derfor gav alle tre
+ *     gamle stier 404, fordi de aldrig var leverandørens.
+ *   JustUno — *fjernet fra tabellen og alle tre motorer*. `js.justuno.com` og
+ *     `widget.justuno.com` svarer **520**, hjælpe- og dokumentationsværterne
+ *     også 520, og der er ingen wp.org-pakke under navnet. Intet læsbart.
+ *   Privy — *fjernet fra tabellen og alle tre motorer*. `widget.privy.com` er
+ *     **403**, `static.privy.com/pidget.js` og `/privy.js` 404, og
+ *     `docs.privy.com` sender videre til `dashboard.privy.com/users/sign_in`.
+ *   Jotform — *fjernet fra tabellen og alle tre motorer*. `cdn.jotform.com`
+ *     svarer 200 på roden og **404** på `embed/`,
+ *     `embed/iframe/frame.html`, `js/embed/v2/embed.js` og
+ *     `oldfeedback.js`; hjælpesiden leveres uden artiklen til dette byggemiljø.
  *
  * Bemærk hvad der **ikke** står her, fordi det blev målt i samme kørsel:
  * Formspree svarer **403** på `formspree.io/js/formspree.js` — en 403 er
@@ -845,30 +861,26 @@ function leverandoerer(navn) {
  * `data.jsdelivr.com` lister `0.7.21` som nyeste) — altså en påstand om et 200
  * der ikke var sand; rettet til den sti leverandørens egen pakke virkelig
  * indeholder, læst i jsdelivrs filliste.
+ *
+ * Registeret er ikke dødt: regel (h) dømmer det stadig i begge retninger, så en
+ * agent kan ikke bare skrive en ny leverandør ind i et navn og hæfte den her.
+ * Den skal **måles** — og målingen skal være af leverandørens egen kode, som
+ * de tre tilfælde ovenfor viser kan ligge et andet sted end den gamle note
+ * pegede på.
  */
-const ULAEVNET = {
-  "TarteAuCitron / Klaro / Osano / CookieConsent": {
-    TarteAuCitron: "wp.org 404 (tarteaucitron, tarteaucitron-cookies) · ikke på npm · ingen læsbar kode 2026-09-27",
-    Osano: "cdn.osano.com 200 på roden, 404 på alle tre dokumenterede stier 2026-09-27",
-  },
-  "JustUno / Privy / OptinMonster (popup detected)": {
-    JustUno: "js.justuno.com 520, widget.justuno.com/script.js 520 2026-09-27",
-    Privy: "widget.privy.com 403, static.privy.com roden 200 men pidget.js/privy.js 404 2026-09-27",
-  },
-  "Typeform / Formspree / Jotform": {
-    Jotform: "cdn.jotform.com 200 på roden, 404 på embed/, embed/iframe/frame.html og js/embed/v2/embed.js 2026-09-27",
-  },
-};
+const ULAEVNET = {};
 
 /**
- * Højst antal leverandører i navne uden installationstest — opgave 69.
+ * Højst antal leverandører i navne uden installationstest — opgave 69, hævet
+ * af opgave 70 fra 5 til **0**.
  *
- * Loftet er ikke et mål, så **færre** er grønt. Det er en ratchet fordi opgaven
- * netop startede med nul: `DAEKNING` havde én streng pr. række, så tallet af
- * navngivne leverandører uden bevis var ikke bare ukendt — porten kunne ikke
- * se det. Hver ny udfyldning skal skaffe bevis og **sænke** tallet.
+ * Loftet er ikke et mål, så **færre** er grønt, og det må ikke hæves igen: opgave
+ * 70 viste at en tom licens ikke kan hentes med ét værtsnavn, men med fire
+ * målinger af hver sin leverandør — og at to af de fem huller var leverandører,
+ * der bare aldrig var blevet ledt efter det rigtige sted. Derfor nul: en agent der
+ * tilføjer en ny leverandør i et navn må læse den, eller fjerne den igen.
  */
-const HOEJST_ULAEVNET = 5;
+const HOEJST_ULAEVNET = 0;
 
 function contractR5(grupper, daekning, mindstRækker, krav = {}) {
   // (d) En kopi porten ikke læser, er en kopi porten ikke dømmer på. Den gamle
@@ -1562,6 +1574,20 @@ if (process.argv.includes("--selftest")) {
   //     30 og 31 grønne fordi porten altid er rød.
   expectGreen("(h) (de fire rigtige tabeller passerer ULAEVNET)", contractULAEVNET,
     { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA }, ULAEVNET);
+
+  // 32b. Opgave 70s egen effekt, målt. Før opgaven var der en udvej: en agent
+  //      der tabte en læst leverandørs streng kunne skrive en begrundelse i
+  //      `ULAEVNET` og være grøn, fordi registret var tilladt op til fem huller.
+  //      Nu er loftet nul, så **taber en leverandør sin streng, er den rød med
+  //      det samme** — uanset hvor god en begrundelse der kan skrives. Det er
+  //      den forskel mellem "jeg kan ikke læse den" og "jeg læste den".
+  const udenOsano = {
+    ...DAEKNING,
+    "TarteAuCitron / Klaro / Osano / CookieConsent":
+      DAEKNING["TarteAuCitron / Klaro / Osano / CookieConsent"].filter(([l]) => l !== "Osano"),
+  };
+  expectRed("(g) (en læst leverandør taber sin streng, og ULAEVNET er tomt)", contractR5,
+    R5_GRUPPER, udenOsano, MINDST.consent);
 
   // 33. Spejlet af case 26: en agent der skriver en **ny** leverandør ind i et
   //     navn, uden at læse den, får rød. Det er det opgaven forbyder, og før

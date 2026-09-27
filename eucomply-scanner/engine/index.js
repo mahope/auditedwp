@@ -113,7 +113,7 @@ const CONSENT_SIGNATURES = [
   { re: /axeptio|axept\.io/i, name: "Axeptio" },
   { re: /cookiehub|cookie[_-]?hub/i, name: "CookieHub" },
   { re: /iubenda|cookie[_-]?solution/i, name: "iubenda" },
-  { re: /justuno|privy|optinmonster/i, name: "JustUno / Privy / OptinMonster (popup detected)" },
+  { re: /optinmonster/i, name: "OptinMonster (popup detected)" },
   { re: /wp-consent-api/i, name: "WP Consent API" },
   { re: /borlabs/i, name: "Borlabs" },
   { re: /real[_-]?cookie[_-]?banner/i, name: "Real Cookie Banner" },
@@ -196,7 +196,7 @@ const FORM_PLUGIN_SIGNATURES = [
   // NOTE: all patterns are anchored tightly (boundaries/exact slugs) so they
   // cannot false-positive on arbitrary substrings in non-WordPress HTML.
   { re: /contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor" },
-  { re: /\btypeform\b|\bformspree\b|\bjotform\b|cognito[_-]?forms\b|\bformsort\b/i, name: "Typeform / Formspree / Jotform" },
+  { re: /\btypeform\b|\bformspree\b/i, name: "Typeform / Formspree" },
   { re: /woocommerce[_-]?checkout|wc_[_-]?checkout/i, name: "WooCommerce Checkout" },
   // Shopify and Stripe were both **dead rows** until 2026-09-27 (task 65
   // part 2). Neither pattern could match anything the vendor actually ships:
