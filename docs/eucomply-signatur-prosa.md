@@ -760,3 +760,73 @@ regel-(i)-tests), `70 af 70` negative cases (63 → 70 — syv nye: opgave 70s
 beviser på at reglen ikke er rød af design, og to røde på en `ALIASSER`-note
 til en leverandør uden for navnet og på en begrundelse uden måling),
 `GATE GRØN — alle 24 steps`. Plugin **1.3.31**.
+
+## Fejl 14 — elleve tracker-markører pegede på leverandører rapporten ikke kunne navngive (opgave 72 del 2)
+
+Regel (i) blev skrevet i opgave 71 med 27 målte huller: mønstalternativer der
+finder en platform, men hvor ingen kilde kunne tilskrive dem en leverandør, rækken
+navngiver. Opgave 72 del 1 lukkede consent-tabellens fem. Del 2 er `trackers`
+med elleve, og målingen delte dem i to klasser, som viste sig at kræve to
+forskellige rettelser.
+
+**Seks var værter eller funktioner i leverandørens egen kode — de blev læst, ikke
+antaget.** Ratchetten går 11 → 5, og intet i porten blev slappet for at få den
+til at synke.
+
+To var **værter, rækken matchede men ingen installationstest dækkede**. Begge viste
+sig at være præcis leverandørens egen adresse, så rigtigvis manglede
+installationstesten og ikke mønstret:
+
+- `ct.pinterest.com/v3/` står i Pinterests **egen installationsside**
+  (`help.pinterest.com/business/article/install-the-base-code`, 200, 148 228
+  bytes). Rækken havde kun `s.pinimg.com/ct/core.js`, så vejen 2 ikke kunne se
+  den. Strengen er udvidet, ikke mønstret indsnævret.
+- `www.googleadservices.com/pagead/conversion.js` **er** Googles eget
+  konverteringsscript — målt 200, og filen definerer `google_conversion` 19
+  gange. Rækken hed *Google Ads remarketing*, så det er præcis den kode. Også
+  her udvidet strengen.
+
+Fire var leverandørernes **egne globale funktioner**. De kan per definition ikke
+findes i installationstesten, fordi strengen er et `<script src>`-tag, mens
+funktionen defineres i det indlejrede kald der indlæser den — så de fik
+`ALIASSER`-noter, hver med en måling i leverandørens egen kode:
+
+| Alternativ | Række | Målt i leverandørens egen kode |
+|---|---|---|
+| `fbq(` | Meta (Facebook) Pixel | `connect.facebook.net/en_US/fbevents.js` (200, 424 690 B) rummer `fbq` **83** gange; Metas egen udviklerreference viser `fbq('track')` |
+| `snaptr(` | Snapchat Pixel | `sc-static.net/scevent.min.js` (200, 59 319 B) rummer `snaptr` **5** gange |
+| `pintrk(` | Pinterest Tag | leverandørens egen installationsside har `pintrk('load', 'YOUR_TAG_ID')` ved siden af `s.pinimg.com/ct/core.js` |
+| `google_conversion` | Google Ads remarketing | `www.googleadservices.com/pagead/conversion.js` (200) definerer den **19** gange |
+
+**Fem blev ikke lukket, og de fik ingen note.** Målingen, der kom ud af at prøve,
+er skrevet ned her, fordi den er dyrere end de seks fund:
+
+- `hj(` — `help.hotjar.com` svarer **403** på sit eget installations-artikel,
+  `hotjar.com/docs/hotjar-tracking-code` er **404**, og hotjar.com's egen forside
+  (200, 415 922 B) rummer **0** forekomster. Hotjar bruger sin egen sporing
+  gennem et andet klient-id end den rækken vedligeholder.
+- `_linkedin_partner_id` — LinkedIns hjælpeartikel er 200 men klient-renderet
+  (52 261 B, 0 forekomster), og leverandørens eget script
+  `snap.licdn.com/li.lms-analytics/insight.min.js` er kun **3 326 B**: en loader,
+  ikke koden. Den har `partner_id`, ikke `_linkedin_partner_id`.
+- `ttq.` — `ads.tiktok.com/help/article/get-started-pixel` er 200 men **1 542 739
+  B uden ét `ttq.`**. Den eneste forekomst i TikToks næste artikel var en
+  **fejlmatch**: pixel-id'et `5KXttq2qqWM6REORtjRf1s`, hvor `ttq` er to tegn i en
+  tilfældig nøgle. Den slags match skal afvises, ikke tages til siglighed for.
+- `static.tiktok.com` — **ingen DNS** (`dig +short` er tom).
+- `cdn.pinterest.com.*pin.*js` — **ingen DNS**. Pinterests egen side bruger
+  `s.pinimg.com`, som rækken allerede dækker.
+
+De to døde værter er værd at beslutte om i næste iteration: en død
+CDN-adresse i et mønster er dækning på papiret. De er **ikke** fjernet her, fordi
+opgave 60 viste at en for snæver markør giver en **falsk grøn** — det dyreste fund
+i tabellen — så beslutningen skal måles på rigtige sider, ikke gættes.
+
+**Selftesten** får case 31f, der tømmer `ALIASSER` uden at sænke ratchetten, så
+porten skal blive rød på de seks noter den mister, og en grøn case der beviser at
+de faktisk giver sporing. Uden case 31f ved næste agent ikke, om lukningen skyldes
+noterne eller et tal — og det er præcis den fejl opgave 63 så ud som en grøn
+linje. `51 signatur-prosatest`, `73 af 73` negative cases (var 70),
+`64 installationstester` (62 → 64), `16 mønstalternativer` (22 → 16),
+`GATE GRØN — alle 24 steps`. **Ingen `plugin/**`-fil rørt** — kun `tools/` og
+`docs/`, så ingen ny version, ingen ny zip, ingen publiceret overflade.

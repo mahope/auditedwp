@@ -295,9 +295,23 @@ const DAEKNING_TRACKERE = {
   "Plausible":
     [["Plausible", '<script defer data-domain="shop.example" src="https://plausible.io/js/script.js"></script>', "vaert 200"]],
   "Pinterest Tag":
-    [["Pinterest Tag", '<script src="https://s.pinimg.com/ct/core.js" data-embed-type="dynamic"></script>', "dokumenteret help.pinterest.com 2026-09-27 · vaert 200"]],
+    [["Pinterest Tag", '<script src="https://s.pinimg.com/ct/core.js" data-embed-type="dynamic"></script>', "dokumenteret help.pinterest.com 2026-09-27 · vaert 200"],
+     // Den tredje udgave af Pinterests tag indlæses fra et andet sted end
+     // `s.pinimg.com`, og mønstret rummer begge. Før denne streng lå kun den
+     // første, så vejen 2 ikke kunne tilskrive `ct.pinterest.com/v3/` — selv om
+     // leverandørens **egen** installationsside er præcis den adresse. Målt
+     // 2026-09-27 i help.pinterest.com/business/article/install-the-base-code
+     // (200, 148 228 bytes), der nævner den.
+     ["Pinterest Tag", '<script src="https://ct.pinterest.com/v3/pixel.min.js" data-embed-type="dynamic"></script>', "dokumenteret leverandørens egen installationsside 2026-09-27"]],
   "Google Ads remarketing":
-    [["Google Ads remarketing", '<script src="https://www.googletagservices.com/tag/js/gpt.js"></script>', "vaert 200"]],
+    [["Google Ads remarketing", '<script src="https://www.googletagservices.com/tag/js/gpt.js"></script>', "vaert 200"],
+     // `googleadservices.com/pagead/conversion.js` **er** Googles egen
+     // konverteringsscript, og mønstret rummer værten. Målt 2026-09-27: 200,
+     // og filen definerer `google_conversion` 19 gange. Rækken havde før
+     // denne streng kun `googletagservices`, så ingen installationstest
+     // dækkede den værte mønstret leder efter. Google Ads Remarketing er
+     // præcis den kode, så den hører hjemme her.
+     ["Google Ads remarketing", '<script src="https://www.googleadservices.com/pagead/conversion.js"></script>', "vaert 200 · definerer google_conversion 2026-09-27"]],
   "DoubleClick / AdSense":
     [["AdSense", '<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>', "vaert 200"],
      ["DoubleClick", '<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>', "vaert 200 2026-09-27"]],
@@ -1223,12 +1237,56 @@ function normalisér(s) {
 /**
  * Aliasser vejen 1 og 2 ikke kan se: en **forkortelse** af leverandørens navn.
  *
- * Tomt i denne iteration — målingen i `contractAlternativer` viser hvor mange der
- * er brug for, og opgave 72 rydder dem. Formen er
- * `{ "Rækkens navn": { "normaliseretAlternativ": ["Leverandør", "måling"] } }`,
- * fordi nøglen er normaliseret: de tre kopier skriver samme alternativ forskelligt.
+ * Fire noter, alle målt 2026-09-27 i **leverandørens egen kode** — ikke i en
+ * søgemaskine og ikke i hukommelsen. Fælden, opgave 72 del 1 gjorde målbar:
+ * en note uden en måling er en vilje, og viljerne var præcis de tolv antagelser
+ * opgave 66 efterlod, som så kostede ni runder at rydde.
+ *
+ * Alle fire er **leverandørens egen globale funktion**, og derfor kan ingen af
+ * dem findes i installationstesten: strengen er et `<script src>`-tag, og
+ * funktionen defineres i det indlejrede kald der indlæser den. Beviset er derfor
+ * hentet fra **selve scriptet** leverandøren serverer, som navngiver den:
+ *
+ *   - `fbq` — Meta serverer `connect.facebook.net/en_US/fbevents.js` (200,
+ *     424 690 bytes) med `fbq` 83 gange, og Meta's egen udviklerreference
+ *     (`developers.facebook.com/docs/meta-pixel/reference`, 200) viser
+ *     kodeblokken `fbq('track')`.
+ *   - `snaptr` — Snapchat serverer `sc-static.net/scevent.min.js` (200,
+ *     59 319 bytes) med `snaptr` 5 gange.
+ *   - `pintrk` — leverandørens egen installationsside
+ *     (`help.pinterest.com/business/article/install-the-base-code`, 200,
+ *     148 228 bytes) indeholder `pintrk('load', 'YOUR_TAG_ID')` lige ved
+ *     siden af `s.pinimg.com/ct/core.js`.
+ *   - `google_conversion` — Google serverer
+ *     `www.googleadservices.com/pagead/conversion.js` (200) og definerer
+ *     `google_conversion` 19 gange i den.
+ *
+ * Formen er `{ "Rækkens navn": { "normaliseretAlternativ": ["Leverandør",
+ * "måling"] } }`, fordi nøglen er normaliseret: de tre kopier skriver samme
+ * alternativ forskelligt (`fbq\(['"]` mod `fbq\([\'"]`).
+ *
+ * **Fem trackere mangler stadig** og har ingen note, fordi de ikke kunne læses
+ * i denne kørsel — se `HOEJST_UTILREGNET` og opgave 72 del 2. De bliver
+ * **målt** af den næste agent med de resultater, der står der.
  */
-const ALIASSER = {};
+const ALIASSER = {
+  "Meta (Facebook) Pixel": {
+    fbq: ["Meta (Facebook) Pixel",
+      "målt 2026-09-27 i leverandørens eget script connect.facebook.net/en_US/fbevents.js (200, 424 690 bytes), der indeholder fbq 83 gange; Meta's egen udviklerreference viser fbq('track')"],
+  },
+  "Snapchat Pixel": {
+    snaptr: ["Snapchat Pixel",
+      "målt 2026-09-27 i leverandørens eget script sc-static.net/scevent.min.js (200, 59 319 bytes), der indeholder snaptr 5 gange"],
+  },
+  "Pinterest Tag": {
+    pintrk: ["Pinterest Tag",
+      "målt 2026-09-27 i leverandørens egen installationsside help.pinterest.com/business/article/install-the-base-code (200, 148 228 bytes): pintrk('load', 'YOUR_TAG_ID') står ved siden af s.pinimg.com/ct/core.js"],
+  },
+  "Google Ads remarketing": {
+    googleconversion: ["Google Ads remarketing",
+      "målt 2026-09-27 i leverandørens eget script www.googleadservices.com/pagead/conversion.js (200), der definerer google_conversion 19 gange"],
+  },
+};
 
 /**
  * Højst antal mønstalternativer uden tilskrivning — opgave 71.
@@ -1248,11 +1306,55 @@ const ALIASSER = {};
  * navnet, og slug'en `ninja-forms` svarer 200 i WordPress' eget katalog, så
  * leverandøren fik sit navn og sin streng.
  *
+ * **Målt 2026-09-27 (iteration 73, del 2): 16 i alt** — consent 0, trackers 5,
+ * forms 7, dora 4. Seks af de elleve trackers-alternativer blev lukket ved
+ * læsning i leverandørens egen kode, ikke ved at slå ratchetten ned. To var
+ * **værter uden streng** og fik deres installationstest udvidet, fordi de viste
+ * sig at være præcis leverandørens egen adresse: `ct.pinterest.com/v3/` står i
+ * Pinterests egen installationsside, og `www.googleadservices.com/pagead/
+ * conversion.js` er Googles eget konverteringsscript (200, definerer
+ * `google_conversion` 19 gange). Fire var leverandørernes **egne globale
+ * funktioner** og fik en målt `ALIASSER`-note — se `ALIASSER` for målingerne.
+ *
+ * **De fem der er tilbage, og hvorfor de står.** Ingen af dem fik en note, fordi
+ * ingen af dem kunne læses i denne kørsel, og en note uden en måling er en
+ * vilje. Målingen, der kom ud af det, er skrevet ned, så næste agent ikke
+ * gentager den:
+ *
+ *   - `hj\(['"]` (Hotjar) — `help.hotjar.com` svarer **403** på sit eget
+ *     installations-artikel, `hotjar.com/docs/hotjar-tracking-code` er **404**,
+ *     og `www.hotjar.com`'s egen forside (200, 415 922 bytes) rummer **0**
+ *     forekomster af `hj(` — hotjar.com kører sin egen sporing gennem et
+ *     andet klient-id end den række vedligeholder.
+ *   - `_linkedin_partner_id` — LinkedIns egen hjælpeartikel svarer 200 men er
+ *     klient-renderet (52 261 bytes, 0 forekomster), og leverandørens eget
+ *     script `snap.licdn.com/li.lms-analytics/insight.min.js` (200) er kun
+ *     **3 326 bytes** — en loader, ikke koden: den har `partner_id`, men ikke
+ *     `_linkedin_partner_id`.
+ *   - `ttq\.` (TikTok) — `ads.tiktok.com/help/article/get-started-pixel` er 200
+ *     men **1 542 739 bytes uden ét `ttq.`** (klient-renderet). Den eneste
+ *     forekomst i `ads.tiktok.com/help/article/pixel-code` var en fejlmatch:
+ *     pixel-id'et `5KXttq2qqWM6REORtjRf1s`, hvor `ttq` er to tegn i en tilfældig
+ *     nøgle. Det er den slags match porten skal kunne afvise, ikke tage til
+ *     siglighed for.
+ *   - `static\.tiktok\.com` — værten har **ingen DNS** (`dig +short
+ *     static.tiktok.com` er tom), så den kan ikke matche en levende side.
+ *   - `cdn\.pinterest\.com.*pin.*js` — samme: `dig +short cdn.pinterest.com`
+ *     er tom. Pinterests egen side bruger `s.pinimg.com`, som rækken allerede
+ *     dækker.
+ *
+ * De to døde værter er værd at overveje som **markører der aldrig kan matche**:
+ * en død CDN-adresse i et mønster er dækning på papiret. De er ikke fjernet i
+ * denne iteration, fordi en gammel side stadig kan servere en død adresse, og
+ * fordi opgave 60 viste at en for snæver markør giver en **falsk grøn** — det
+ * dyreste fund i tabellen. Beslutningen hører til næste iteration og skal måles
+ * på rigtige sider, ikke gættes.
+ *
  * Ratchetten er her fordi en agent skal kunne gå fra 27 til 26 uden at blive
  * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 11, forms: 7, dora: 4 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 7, dora: 4 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -1839,6 +1941,20 @@ if (process.argv.includes("--selftest")) {
     R5_FORMS, DAEKNING_FORMS,
     { "Typeform / Formspree": { cognitoforms: ["Typeform", "kan ikke findes"] } },
     HOEJST_UTILREGNET);
+
+  // 31f. Regel (i) mod **målede** aliasser. `ALIASSER` lukkede seks af de
+  //      elleve huller i tracker-tabellen (iteration 73 del 2), og hver note
+  //      har en måling i leverandørens egen kode ved siden af. Case'en tømmer
+  //      `ALIASSER` og **sænker ikke** ratchetten, så porten skal blive rød på
+  //      de **seks** noter den således mister. Uden denne case ved næste
+  //      agent ikke, om lukningen afhænger af noterne eller af et tal — og
+  //      det er præcis den fejl opgave 63 (en række der ikke kan finde den
+  //      platform den navngiver) så ud som en grøn linje.
+  expectRed("(i) (målte aliasser fjernet fra tracker-tabellen)", contractAlternativer,
+    "trackers", R5_TRACKERE, DAEKNING_TRACKERE, {}, HOEJST_UTILREGNET.trackers);
+  // …og den skal være grøn med dem, ellers er ratchetten det hele.
+  expectGreen("(i) (de målte aliasser giver sporing på alle ni fund)", contractAlternativer,
+    "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
 
   // 31. R5 regel (h): en begrundelse skal være en måling. "Kan ikke findes" er
   //     en vilje, og den er præcis den, der gjorde de tolv antagelser i
