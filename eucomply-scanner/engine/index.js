@@ -195,7 +195,7 @@ const DORA_SIGNATURES = [
 const FORM_PLUGIN_SIGNATURES = [
   // NOTE: all patterns are anchored tightly (boundaries/exact slugs) so they
   // cannot false-positive on arbitrary substrings in non-WordPress HTML.
-  { re: /contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor" },
+  { re: /contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]/i, name: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor" },
   { re: /\btypeform\b|\bformspree\b/i, name: "Typeform / Formspree" },
   { re: /woocommerce[_-]?checkout|wc_[_-]?checkout/i, name: "WooCommerce Checkout" },
   // Shopify and Stripe were both **dead rows** until 2026-09-27 (task 65

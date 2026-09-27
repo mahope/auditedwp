@@ -372,12 +372,21 @@ const DAEKNING_FORMS = {
   // Forms er betalt og derfor ikke i det offentlige katalog; det stod allerede
   // i tabellens kommentar, og mønstret skriver på plugin-mappen, som en
   // betalt plugin også leverer sine assets fra.
-  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor":
+  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
     [["Contact Form 7", '<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
      ["WPForms", '<script src="https://shop.example/wp-content/plugins/wpforms-lite/assets/js/wpforms.js"></script>', "wp.org 200 wpforms-lite 2026-09-27"],
      ["Formidable", '<script src="https://shop.example/wp-content/plugins/formidable/assets/js/frm_forms.min.js"></script>', "wp.org 200 formidable 2026-09-27"],
      ["Gravity", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/gravityforms/assets/css/gravityforms.css">', "wp.org 404 gravityforms — betalt plugin, ikke i det offentlige katalog"],
-     ["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"],
+      ["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"],
+      // Opgave 71. `ninja[_-]?forms` lå i mønstret siden længe, men **ikke** i
+      // navnet — så en side med en Ninja-formular fik *"Contact Form 7 /
+      // WPForms / Formidable / Gravity / Fluent / Elementor detected"*, et grønt
+      // fund på en leverandør rapporten ikke nævner. Samme fejl som opgave 70s
+      // `cognito[_-]?forms`, og den var stadig levende da porten blev skrevet.
+      // Slug'en er verificeret: `ninja-forms` svarer **200** i WordPress' eget
+      // katalog (2026-09-27), og `wp-content/plugins/ninja-forms/` er den sti
+      // pluginen enqueuer sine assets fra.
+      ["Ninja", '<script src="https://shop.example/wp-content/plugins/ninja-forms/assets/js/min/front-end.js"></script>', "wp.org 200 ninja-forms 2026-09-27"],
      ["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
   // To leverandører efter opgave 70. Jotform er væk, fordi ingen af de fire
   // dokumenterede stier kunne læses fra byggemiljøet (404 på alle fire, selv om
@@ -646,7 +655,7 @@ const MEKANISME = [
     // er derfor denne fixture findes: en ren scriptregel ville have slettet den
     // mest almindelige WordPress-formulardetektion.
     navn: "Contact Form 7 som attribut", gruppe: "forms", phpGruppe: "forms", liste: "forms",
-    forventet: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor",
+    forventet: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor",
     html: side('<div class="wpcf7"><p>Send en besked</p></div>'),
   },
   {
@@ -1027,6 +1036,197 @@ function contractR5(grupper, daekning, mindstRækker, krav = {}) {
  * navnet, og en begrundelse skal være en måling — derfor mindst 20 tegn, så
  * "kan ikke findes" ikke kan bruges som afslutning.
  */
+/**
+ * (i) Et mønstalternativ skal kunne spores til en leverandør, rapporten navngiver.
+ *
+ * **Den fejl denne regel lukker er målt, ikke formodet.** Opgave 70 fjernede to
+ * alternativer fra `FORM_PLUGIN_SIGNATURES` uden at nogen port havde set dem:
+ * `cognito[_-]?forms` og `\bformsort\b` lå i mønstret for rækken *Typeform /
+ * Formspree* uden at stå i **navnet**. Rækkens installationstester (`R5`) så
+ * begge præcis som de så: Typeform har en streng, Formspree har en streng, og
+ * ingen af dem ved at mønstret også kunne finde en tredje og fjerde platform.
+ * Følgen i rapporten er den pinsede: en side med en Cognito-formular fik
+ * *"Typeform / Formspree detected"* — et fund på en leverandør rapporten ikke
+ * nævner, og en kunde der graver i den kan ikke få den til at holde.
+ *
+ * Regel (g) dømmer den modsatte retning: hver leverandør **i navnet** skal have
+ * en streng. Den kan ikke se denne fejl, fordi den tæller navne og læser
+ * strenge — den læser aldrig mønsteret. Det er derfor denne regel er en egen.
+ *
+ * **Tre veje til en tilskrivning, i den rækkefølge de skal bruges:**
+ *
+ *   1. **navnet** — alternativet rummer et navneord fra en leverandør rækken
+ *      selv navngiver. Det er det normale og kræver ingen note:
+ *      `cookiebot` i rækken *Cookiebot / OneTrust / …*.
+ *   2. **installationstesten** — alternativet står bogstaveligt i en af rækkens
+ *      strenge. Strengene er målte installationer af de **navngivne** leverandører,
+ *      så et bogstav som `otSDKStub` (i OneTrusts egen stub) eller
+ *      `s.pinimg.com/ct` (i Pinterests egen loader) er sporet uden en note.
+ *   3. **`ALIASSER`** — en note, fordi vejen 1 og 2 ikke kan se en **forkortelse
+ *      af** leverandørens navn: `wpcf7` er ikke *Contact Form 7* med mellemrum
+ *      væk, og `hj(` er ikke *Hotjar*. Notes skal pege på en leverandør der
+ *      står i navnet, og begrundelsen skal være en måling.
+ *
+ * **Målt 2026-09-27, alle fire tabeller, alle tre kopier:** se `HOEJST_UTILREGNET`
+ * og opgave 72 i planen. Ratchetten er målt og må kun synke, så en agent der
+ * tilføjer et nyt alternativ uden leverandør får rødt med det samme — det er
+ * selftestens negative case, der genskaber præcis `cognito[_-]?forms`.
+ *
+ * @param {Array<Array<{navn: string, re: RegExp}>>} grupper én pr. kopi
+ * @param {Object<string, [string, string, string]>} daekning installationstest pr. række
+ * @param {Object<string, Object<string, [string, string]>>} [aliasser] deklarerede aliasser
+ * @param {number} [hoejst] ratchet; udeladt i de negative cases, der skal være røde
+ */
+function contractAlternativer(gruppe, grupper, daekning, aliasser = ALIASSER, hoejst = HOEJST_UTILREGNET) {
+  //union på **normaliseret** tekst, fordi de tre kopier skriver det samme
+  // alternativ forskillinget: motoren har `fbq\(['"]`, pluginen `fbq\([\'"]`.
+  // Uden normaliseringen ville porten tælle det som to huller, hvor det er ét.
+  const fundet = new Map();
+  grupper.forEach((raekker, kopi) => {
+    for (const { navn, re } of raekker) {
+      for (const alt of topAlternativer(re.source)) {
+        const ord = normalisér(alt);
+        if (ord.length < 2) continue;
+        if (!fundet.has(ord)) fundet.set(ord, { navn, alt, ord, kopier: [] });
+        fundet.get(ord).kopier.push(kopi + 1);
+      }
+    }
+  });
+
+  const utilregnede = [];
+  for (const { navn, alt, ord, kopier } of fundet.values()) {
+    const strenge = daekning[navn] || [];
+    const segmenter = leverandoerer(navn);
+    const kandidater = navneKandidater(navn);
+    // Ét alternativ kan rumme flere spor. `data-stripe-(key|publishable)` er ét
+    // alternativ med to veje, og kun den indre `data-stripe-key` står i
+    // installationstesten — så tilskrivningen prøver alle fragmenter, ikke kun
+    // helheden. Ellers ville porten melde en fejl der ikke er der.
+    const fragmenter = new Set([ord, ...(ord.match(/[a-z0-9]{2,}/g) || [])]);
+    // (1) navnet
+    const iNavnet = segmenter.filter((v) => kandidater.some(
+      (k) => k.length >= 2 && [...fragmenter].some((f) => f.includes(k) || k.includes(f))
+    ));
+    if (iNavnet.length) continue;
+    // (2) installationstesten — kun leverandørernes **egne** strenge i denne række
+    const mal = normalisér(strenge.map(([, s]) => s).join(" ").replace(/\[[^\]]*\]/g, ""));
+    if ([...fragmenter].some((f) => f.length >= 3 && mal.includes(f))) continue;
+    // (3) erklæret
+    const note = (aliasser[navn] || {})[ord];
+    if (note) {
+      const [leverandoer, grund] = note;
+      assert.ok(
+        segmenter.includes(leverandoer),
+        `ALIASSER tilskriver «${alt}» i rækken «${navn}» til «${leverandoer}», som ikke står i navnet `
+          + `(${segmenter.join(", ")}) — en tilskrivning til en leverandør rapporten ikke nævner er `
+          + "præcis den fejl regel (i) lukker"
+      );
+      assert.ok(
+        grund && grund.length > 20,
+        `ALIASSER-begrundelsen for «${navn} → ${alt}» er «${grund}» — den skal være en måling, `
+          + "ikke en vilje. Skriv hvad der blev læst, og hvor."
+      );
+      continue;
+    }
+    utilregnede.push(`«${navn}» → /${alt}/ (kopi ${[...new Set(kopier)].join(", ")})`);
+  }
+  assert.ok(
+    utilregnede.length <= hoejst,
+    `«${gruppe}»: ${utilregnede.length} mønstalternativ(er) kan ikke spores til en leverandør rækken `
+      + `navngiver — højst ${hoejst} er tilladt, og tallet må kun synke. Et alternativ der finder en `
+      + "platform rapporten ikke nævner, gør fundet ubrugeligt for kunden:\n    - " + utilregnede.join("\n    - ")
+  );
+  return utilregnede.length;
+}
+
+/**
+ * De navne en række **kan** tilskrives til: segmenterne fra `leverandoerer()` og
+ * indholdet af enhver parentes.
+ *
+ * Parentesen er ikke altid en note. I `dora` er den en **beskrivelse af samme
+ * markør**: rækken *MX (Mail exchange)* finder `mx[ _-]?record`,
+ * `mx [0-9]` og `mail[ _-]?exchange`, og uden parentesens indhold ville
+ * `mail[ _-]?exchange` være et alternativ uden leverandør — et fund på *Mail
+ * exchange* i en række der kun hedder *MX*. Samme fejl som opgave 52s `Terms &
+ * Conditions`: et navn der ikke rummer den ordform kunden møder i markup'en.
+ */
+function navneKandidater(navn) {
+  const kandidater = [];
+  // Parenteserne læses på den **rå** streng. `leverandoerer()` fjerner dem
+  // (`MX (Mail exchange)` → `MX`), så den kan ikke bruges her — ellers ville
+  // beskrivelsen af markøren forsvinde netop hvor den skal bruges.
+  for (const segment of navn.split(/\s+\/\s+/)) {
+    kandidater.push(segment.replace(/\s*\([^()]*\)\s*$/, ""));
+    kandidater.push(...(segment.match(/\(([^()]*)\)/g) || []).map((p) => p.slice(1, -1)));
+  }
+  return kandidater.map(normalisér).filter(Boolean);
+}
+
+/** Alle `|`-adskilte alternativer i et mønster, springende over escapes, klasser og grupper. */
+function topAlternativer(src) {
+  const alt = [];
+  let dybde = 0, i = 0, klasse = false, nu = "";
+  while (i < src.length) {
+    const c = src[i];
+    if (c === "\\") { nu += c + (src[i + 1] ?? ""); i += 2; continue; }
+    if (c === "[") klasse = true;
+    else if (c === "]") klasse = false;
+    else if (!klasse && (c === "(" || c === "{")) dybde++;
+    else if (!klasse && (c === ")" || c === "}")) dybde--;
+    if (!klasse && dybde === 0 && c === "|") { alt.push(nu); nu = ""; i++; continue; }
+    nu += c;
+    i++;
+  }
+  alt.push(nu);
+  return alt;
+}
+
+/**
+ * Kun bogstaver og tal, og **tegnklasser væk**.
+ *
+ * `[0-9]` er det eneste sted normaliseringen ellers lyver: `js\.stripe\.com\/v[0-9]`
+ * bliver til `jsstripecomv09`, som ikke findes i installationstestens
+ * `js.stripe.com/v3` — så porten ville melde en fejl på en markør der *er*
+ * målt. Klasserne er valg, ikke navne, så de skal ikke tælle med.
+ */
+function normalisér(s) {
+  return String(s).replace(/\[[^\]]*\]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Aliasser vejen 1 og 2 ikke kan se: en **forkortelse** af leverandørens navn.
+ *
+ * Tomt i denne iteration — målingen i `contractAlternativer` viser hvor mange der
+ * er brug for, og opgave 72 rydder dem. Formen er
+ * `{ "Rækkens navn": { "normaliseretAlternativ": ["Leverandør", "måling"] } }`,
+ * fordi nøglen er normaliseret: de tre kopier skriver samme alternativ forskelligt.
+ */
+const ALIASSER = {};
+
+/**
+ * Højst antal mønstalternativer uden tilskrivning — opgave 71.
+ *
+ * Loftet er **målt, ikke sat i hovedet**, og det må kun synke. Før denne regel
+ * var tallet ukendt, fordi ingen port læste mønstrene på den måde: R5 læser dem
+ * for at se om de kan finde deres egen installationstest, og ingen regel spurgte
+ * om de overhovedet **nævner** den leverandør, de er skrevet til. Opgave 70 fandt
+ * to af dem ved at læse koden, og de var tilfældigt to i **samme** række.
+ *
+ * **Målt 2026-09-27: 27 i alt** — consent 5, trackers 11, forms 7, dora 4 — i
+ * 86 forskellige alternativer på tværs af alle tre kopier. Loftet står pr. tabel,
+ * fordi hver test kun dømmer sin egen: et samlet tal ville give consent-rækken
+ * tilladelse til trackers' huller. Rækkerne er opgjort i opgave 72 med den
+ * måling, der lukker hver af dem. Ét af de 27 blev lukket i samme diff:
+ * `ninja[_-]?forms` stod i mønstret for CF7-rækken siden længe uden at stå i
+ * navnet, og slug'en `ninja-forms` svarer 200 i WordPress' eget katalog, så
+ * leverandøren fik sit navn og sin streng.
+ *
+ * Ratchetten er her fordi en agent skal kunne gå fra 27 til 26 uden at blive
+ * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
+ * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
+ */
+const HOEJST_UTILREGNET = { consent: 5, trackers: 11, forms: 7, dora: 4 };
+
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
     const tabel = Object.entries(daekninger).find(([, d]) => d[navn]);
@@ -1330,6 +1530,15 @@ const LEVERANDOERER_NAVNGIVNE = [DAEKNING, DAEKNING_TRACKERE, DAEKNING_FORMS]
 const ULÆVNET_TAL = Object.values(ULAEVNET).reduce((n, h) => n + Object.keys(h).length, 0);
 await test("(h) ULAEVNET er sandt i begge retninger", () =>
   contractULAEVNET({ consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA }));
+// (i) Mønstalternativer uden leverandør i navnet. Dømmes pr. tabel, som R5.
+await test("(i) hvert mønstalternativ spores til en leverandør (consent)", () =>
+  contractAlternativer("consent", R5_MOENSTRE, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent));
+await test("(i) hvert mønstalternativ spores til en leverandør (trackers)", () =>
+  contractAlternativer("trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers));
+await test("(i) hvert mønstalternativ spores til en leverandør (forms)", () =>
+  contractAlternativer("forms", R5_FORMS, DAEKNING_FORMS, ALIASSER, HOEJST_UTILREGNET.forms));
+await test("(i) hvert mønstalternativ spores til en leverandør (dora)", () =>
+  contractAlternativer("dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora));
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -1352,9 +1561,10 @@ console.log(
     + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length
       + Object.keys(DAEKNING_FORMS).length + Object.keys(DAEKNING_DORA).length} af 46 rækker med installationstest, `
     + `${LEVERANDOERER_I_TABELLERNE} installationstester for ${LEVERANDOERER_NAVNGIVNE} navngivne leverandører, `
-    + `${ULÆVNET_TAL} ubeviste i ULAEVNET af højst ${HOEJST_ULAEVNET}`
+    + `${ULÆVNET_TAL} ubeviste i ULAEVNET af højst ${HOEJST_ULAEVNET}, `
+    + `${Object.values(HOEJST_UTILREGNET).reduce((a, b) => a + b, 0)} mønstalternativer uden `
+    + `leverandør i navnet af højst ${Object.values(HOEJST_UTILREGNET).reduce((a, b) => a + b, 0)} (opgave 71)`
 );
-
 if (failures.length) {
   for (const f of failures) console.error(`FEJL  ${f}`);
   process.exit(1);
@@ -1443,8 +1653,8 @@ if (process.argv.includes("--selftest")) {
 
   // 8. R3: pluginen er uenig med motorerne om et fund i `forms`.
   expectRed("R3 (pluginen uenig om fund)", contractR3, [
-    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor." } }],
-    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor." } }],
+    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor." } }],
+    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor." } }],
     ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
   ], MOTOR_NAVNE);
 
@@ -1540,8 +1750,8 @@ if (process.argv.includes("--selftest")) {
   //     navnet ikke kan gøre det ved at fjerne en anden leverandørs bevis.
   const formsUdenEn = {
     ...DAEKNING_FORMS,
-    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor":
-      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor"]
+    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
+      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor"]
         .filter(([l]) => l !== "Fluent"),
   };
   expectRed("R5 (form-række: én af seks leverandører taber sin streng)", contractR5, R5_FORMS, formsUdenEn, MINDST.forms);
@@ -1557,6 +1767,42 @@ if (process.argv.includes("--selftest")) {
   expectRed("(h) (ULAEVNET kalder en beviset leverandør ubevist)", contractULAEVNET,
     { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA },
     { ...ULAEVNET, "Cookiebot / OneTrust / Usercentrics / ConsentManager": hulletForEnBevist });
+
+  // 31b. Regel (i) — **præcis opgave 70s fejl, genskabt ordret.** `cognito[_-]?forms`
+  //      og `\bformsort\b` lå i mønstret for rækken *Typeform / Formspree* uden at
+  //      stå i navnet, og ingen port kunne se det. Mutationen sætter dem tilbage i
+  //      alle tre kopier, så porten skal blive rød på **27 → 29** — to over
+  //      ratchetten. Uden denne case ved næste agent ikke om reglen virker, og
+  //      mutationen er skrevet mod `R5_FORMS`, altså mod de data porten dømmer på.
+  const medCognito = R5_FORMS.map((raekker) => raekker.map((r) => (r.navn === "Typeform / Formspree"
+    ? { navn: r.navn, re: new RegExp(`${r.re.source}|cognito[_-]?forms|\\bformsort\\b`, r.re.flags) }
+    : r)));
+  expectRed("(i) (et alternativ uden leverandør i navnet — opgave 70s cognito/formsort)",
+    contractAlternativer, "forms", medCognito, DAEKNING_FORMS, ALIASSER, HOEJST_UTILREGNET.forms);
+
+  // 31c. Samme regel skal være **grøn** på den rigtige tabel. En regel der kun kan
+  //      være rød er en fejl, ikke en regel — så den måles begge veje, som (f).
+  expectGreen("(i) (alle alternative i den målte tabel er sporet)",
+    contractAlternativer, "forms", R5_FORMS, DAEKNING_FORMS, ALIASSER, HOEJST_UTILREGNET.forms);
+  expectGreen("(i) (alle alternative i de tre andre tabeller er sporet)",
+    contractAlternativer, "consent", R5_MOENSTRE, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent);
+  expectGreen("(i) (alle alternative i tracker-tabellen er sporet)",
+    contractAlternativer, "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
+  expectGreen("(i) (alle alternative i dora-tabellen er sporet)",
+    contractAlternativer, "dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
+
+  // 31d. En **erklæret** tilskrivning til en leverandør uden for navnet er den
+  //      samme fejl med et navn på — så den skal være rød, ellers er
+  //      `ALIASSER` en bagdør.
+  expectRed("(i) (ALIASSER tilskriver en leverandør uden for navnet)", contractAlternativer, "forms",
+    R5_FORMS, DAEKNING_FORMS,
+    { "Typeform / Formspree": { cognitoforms: ["Cognito Forms", "målt i leverandørens egen kode 2026-09-27"] } },
+    HOEJST_UTILREGNET);
+  // …og en begrundelse der ikke er en måling.
+  expectRed("(i) (ALIASSER-begrundelsen er ikke en måling)", contractAlternativer, "forms",
+    R5_FORMS, DAEKNING_FORMS,
+    { "Typeform / Formspree": { cognitoforms: ["Typeform", "kan ikke findes"] } },
+    HOEJST_UTILREGNET);
 
   // 31. R5 regel (h): en begrundelse skal være en måling. "Kan ikke findes" er
   //     en vilje, og den er præcis den, der gjorde de tolv antagelser i

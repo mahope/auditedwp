@@ -861,7 +861,7 @@ class EUComply {
             // in the same bytes, because a signature in a comment is not a form
             // a visitor can fill in.
             'forms'    => array(
-                array( 'name' => 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor', 're' => '~contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]~i' ),
+                array( 'name' => 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor', 're' => '~contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]~i' ),
                 array( 'name' => 'Typeform / Formspree', 're' => '~\btypeform\b|\bformspree\b~i' ),
             ),
             // DORA-adjacent page signals. Static text markers only: this is not
