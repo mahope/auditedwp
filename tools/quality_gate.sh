@@ -58,7 +58,43 @@ pick_python() {
   return 1
 }
 
-printf 'EUComply kvalitetsgate\nrepo:  %s\ngate:  %s\n' "$ROOT" "$(git rev-parse --short HEAD 2>/dev/null || echo ukendt)"
+# Kravet er ikke 3.10+ "fordi seo_check.py bruger typeannoteringer". Det er
+# 3.10+, fordi **gaten selv** gør: `build_public_tree.py` kalder
+# `Path.write_text(newline="")`, og det argument kom først i 3.10. Alt i
+# 3.9 eller ældre dør der med en TypeError der intet siger om produktet.
+#
+# Det var målt, og det var derfor gaten var rød på en maskine med intet
+# galt ved produktet. macOS' system-python er 3.9, så `python3` på en ren
+# udviklermaskine er ældre end den kode vi har bedt den køre:
+#
+#   TypeError: write_text() got an unexpected keyword argument 'newline'
+#
+# Og da træet ikke blev bygget, faldt de følgende kontroller **inde i en
+# kaskade af røde linjer der så ud som produktrelaterede fejl** —
+# check_cta.py meldte at alle 216 sider manglede i det publicerede træ,
+# check_public_tree.py meldte 30 døde redirects. Ingen af dem var fejl. De
+# var følger af at ét trin døde.
+#
+# Forskriften er derfor: **bind fortolkningen én gang, brug den alle steder,
+# og dø hårdt hvis den ikke findes.** En gate der ikke kan finde sin egen
+# fortolkning skal være rød med det — ikke springe kravet over og fortsætte
+# med `python3`, som er præcis det der skjulte fejlen.
+#
+# `tools/check_runtime.py` holder dette fast: en port er rød hvis
+# quality_gate.sh kalder en python ved navn uden om bindingen, så den næste
+# agent der tilføjer et step ikke kan genindføre det.
+PY="$(pick_python)" || PY=""
+if [ -z "$PY" ]; then
+  printf 'FEJL  ingen python >= 3.10 fundet — gaten kan ikke køre.\n' >&2
+  printf 'FEJL  Se "pick_python" ovenfor: kravet er 3.10+, fordi\n' >&2
+  printf 'FEJL  tools/build_public_tree.py bruger Path.write_text(newline=).\n' >&2
+  exit 1
+fi
+
+printf 'EUComply kvalitetsgate\nrepo:    %s\ngate:    %s\npython:  %s (%s)\n' \
+  "$ROOT" "$(git rev-parse --short HEAD 2>/dev/null || echo ukendt)" \
+  "$PY" "$("$PY" -c 'import sys; print(sys.version.split()[0])' 2>/dev/null || echo '?')"
+
 
 # ---------------------------------------------------------------- 1. PHP-lint
 hdr "PHP-syntax"
@@ -121,7 +157,7 @@ fi
 # kildetre, der aldrig bliver uploadet, eller kræve et publiceret træ, der
 # ingen har lavet endnu. Samme rækkefølge som i deploy-workflowen.
 hdr "Publiceret træ (build)"
-run "tools/build_public_tree.py" python3 tools/build_public_tree.py --quiet
+run "tools/build_public_tree.py" "$PY" tools/build_public_tree.py --quiet
 
 # ----------------------------------------------------------- 5. repoets tests
 hdr "Repo-tests"
@@ -130,47 +166,46 @@ run "tools/test_engine_parity.mjs" node tools/test_engine_parity.mjs
 run "tools/test_license_verdicts.php" php tools/test_license_verdicts.php
 run "tools/test_pro_documents.php" php tools/test_pro_documents.php
 run "tools/test_pro_documents.php --selftest" php tools/test_pro_documents.php --selftest
-run "tools/check_pro_claims.py" python3 tools/check_pro_claims.py
-run "tools/check_cta.py" python3 tools/check_cta.py
-run "tools/check_cta.py --selftest" python3 tools/check_cta.py --selftest
-run "tools/check_runtime.py" python3 tools/check_runtime.py
-run "tools/check_runtime.py --selftest" python3 tools/check_runtime.py --selftest
-run "tools/check_package_identity.py" python3 tools/check_package_identity.py
-run "tools/check_package_identity.py --selftest" python3 tools/check_package_identity.py --selftest
-run "tools/check_published_installs.py" python3 tools/check_published_installs.py
-run "tools/check_published_installs.py --selftest" python3 tools/check_published_installs.py --selftest
-run "tools/check_dom_xss.py" python3 tools/check_dom_xss.py
-run "tools/check_dom_xss.py --selftest" python3 tools/check_dom_xss.py --selftest
+run "tools/check_pro_claims.py" "$PY" tools/check_pro_claims.py
+run "tools/check_cta.py" "$PY" tools/check_cta.py
+run "tools/check_cta.py --selftest" "$PY" tools/check_cta.py --selftest
+run "tools/check_runtime.py" "$PY" tools/check_runtime.py
+run "tools/check_runtime.py --selftest" "$PY" tools/check_runtime.py --selftest
+run "tools/check_package_identity.py" "$PY" tools/check_package_identity.py
+run "tools/check_package_identity.py --selftest" "$PY" tools/check_package_identity.py --selftest
+run "tools/check_published_installs.py" "$PY" tools/check_published_installs.py
+run "tools/check_published_installs.py --selftest" "$PY" tools/check_published_installs.py --selftest
+run "tools/check_dom_xss.py" "$PY" tools/check_dom_xss.py
+run "tools/check_dom_xss.py --selftest" "$PY" tools/check_dom_xss.py --selftest
 # Inline <script> i de publicerede HTML-sider. Step 03 linted .js-filerne i
 # repoet, men ikke de 276 scripts der ligger INLINE i markup'et — og det er dem
 # en besøgende faktisk kører. Default-træet er site-dist, fordi opgave 23
 # lærte os at klassificere det publicerede træ og ikke kilden.
-run "scripts/check_inline_js.py" python3 scripts/check_inline_js.py
-run "scripts/check_inline_js.py --selftest" python3 scripts/check_inline_js.py --selftest
+run "scripts/check_inline_js.py" "$PY" scripts/check_inline_js.py
+run "scripts/check_inline_js.py --selftest" "$PY" scripts/check_inline_js.py --selftest
 run "tools/test_quickcheck_render.mjs" node tools/test_quickcheck_render.mjs
 run "tools/test_quickcheck_render.mjs --selftest" node tools/test_quickcheck_render.mjs --selftest
-run "tools/check_production_drift.py --selftest" python3 tools/check_production_drift.py --selftest
+run "tools/check_production_drift.py --selftest" "$PY" tools/check_production_drift.py --selftest
 # Prøverapporten er den eneste Pro-overflade, der viser en køber hvad vedkommende
 # får, og den lå 5 tjek bag motorens 9 med tal i både HTML og PDF. Nu læger alle
 # tre det samme datasæt, og denne kontrol holder kæden motor → datasæt → HTML +
 # PDF. Den læser også site-dist, fordi det er den side der sælges.
-run "tools/check_sample_coverage.py" python3 tools/check_sample_coverage.py
-run "tools/check_sample_coverage.py --selftest" python3 tools/check_sample_coverage.py --selftest
+run "tools/check_sample_coverage.py" "$PY" tools/check_sample_coverage.py
+run "tools/check_sample_coverage.py --selftest" "$PY" tools/check_sample_coverage.py --selftest
 
 # --------------------------------------------- 6. publiceret træ (kontrol)
 # Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
 # kontrolleres det: ingen interne eller betalte filer, ingen døde referencer.
 hdr "Publiceret træ (kontrol)"
-run "tools/check_public_tree.py" python3 tools/check_public_tree.py
+run "tools/check_public_tree.py" "$PY" tools/check_public_tree.py
 
 # ------------------------------------------------------------------- 7. SEO
 hdr "SEO"
-seo_python="$(pick_python)" || seo_python=""
-if [ -z "$seo_python" ]; then
+if [ -z "$PY" ]; then
   bad "SEO (ingen python >= 3.10 fundet)" 1
 else
-  printf '$ %s tools/seo_check.py --verbose\n' "$seo_python"
-  seo_out="$("$seo_python" tools/seo_check.py --verbose 2>&1)"
+  printf '$ %s tools/seo_check.py --verbose\n' "$PY"
+  seo_out="$("$PY" tools/seo_check.py --verbose 2>&1)"
   seo_rc=$?
   printf '%s\n' "$seo_out" | tail -20
   pages="$(printf '%s' "$seo_out" | sed -n 's/^\([0-9]\{1,\}\) pages checked.*/\1/p' | tail -1)"
@@ -184,7 +219,7 @@ else
   elif [ "$findings" != "0" ]; then
     bad "tools/seo_check.py fandt $findings sider med findings" 1
   else
-    ok "tools/seo_check.py ($pages sider, 0 findings, $seo_python)"
+    ok "tools/seo_check.py ($pages sider, 0 findings, $PY)"
   fi
 fi
 
@@ -192,12 +227,12 @@ fi
 hdr "Sibling-gate (../hermes-passiv)"
 SIBLING="$ROOT/../hermes-passiv"
 if [ -f "$SIBLING/build_sites.py" ] && [ -f "$SIBLING/tools/seo_check.py" ]; then
-  if [ -n "$seo_python" ]; then
-    printf '$ (cd %s && AUDITEDWP_DIR=%s python3 build_sites.py --only eucomplypro.com)\n' "$SIBLING" "$ROOT"
-    (cd "$SIBLING" && AUDITEDWP_DIR="$ROOT" python3 build_sites.py --only eucomplypro.com)
+  if [ -n "$PY" ]; then
+    printf '$ (cd %s && AUDITEDWP_DIR=%s %s build_sites.py --only eucomplypro.com)\n' "$SIBLING" "$ROOT" "$PY"
+    (cd "$SIBLING" && AUDITEDWP_DIR="$ROOT" "$PY" build_sites.py --only eucomplypro.com)
     sib_rc=$?
-    printf '$ (cd %s && %s tools/seo_check.py --only eucomplypro.com)\n' "$SIBLING" "$seo_python"
-    sib_out="$(cd "$SIBLING" && "$seo_python" tools/seo_check.py --only eucomplypro.com 2>&1)"
+    printf '$ (cd %s && %s tools/seo_check.py --only eucomplypro.com)\n' "$SIBLING" "$PY"
+    sib_out="$(cd "$SIBLING" && "$PY" tools/seo_check.py --only eucomplypro.com 2>&1)"
     sib_seo_rc=$?
     printf '%s\n' "$sib_out" | tail -10
     sib_pages="$(printf '%s' "$sib_out" | sed -n 's/^\([0-9]\{1,\}\) pages checked.*/\1/p' | tail -1)"
@@ -258,9 +293,9 @@ fi
 # ingen af de ti steps ovenfor så det. Gate-definitionen udvides derfor med elleve.
 hdr "Drift mellem repo og produktion"
 if [ "$NETWORK" -eq 0 ]; then
-  run "tools/check_production_drift.py --offline" python3 tools/check_production_drift.py --offline
+  run "tools/check_production_drift.py --offline" "$PY" tools/check_production_drift.py --offline
 else
-  run "tools/check_production_drift.py" python3 tools/check_production_drift.py
+  run "tools/check_production_drift.py" "$PY" tools/check_production_drift.py
 fi
 
 # ------------------------------- 12. er SSRF-guarden live, og har den lukket scanneren?
@@ -270,17 +305,17 @@ fi
 # produktion. Grøn i dag: 12 reserverede intervaller afvises ved kanten, og en
 # offentlig adresse giver stadig alle ni tjek.
 hdr "Live-hærdning af den gratis scanner"
-run "tools/check_live_hardening.py --selftest" python3 tools/check_live_hardening.py --selftest
+run "tools/check_live_hardening.py --selftest" "$PY" tools/check_live_hardening.py --selftest
 if [ "$NETWORK" -eq 0 ]; then
-  run "tools/check_live_hardening.py --offline" python3 tools/check_live_hardening.py --offline
+  run "tools/check_live_hardening.py --offline" "$PY" tools/check_live_hardening.py --offline
 else
-  run "tools/check_live_hardening.py" python3 tools/check_live_hardening.py
+  run "tools/check_live_hardening.py" "$PY" tools/check_live_hardening.py
 fi
 
 # ------------------------------------------------- 13. Døde betalingsudbydere
 hdr "Ingen død betalingsudbyder i koden der kan nå en kunde"
-run "tools/check_dead_providers.py --selftest" python3 tools/check_dead_providers.py --selftest
-run "tools/check_dead_providers.py" python3 tools/check_dead_providers.py
+run "tools/check_dead_providers.py --selftest" "$PY" tools/check_dead_providers.py --selftest
+run "tools/check_dead_providers.py" "$PY" tools/check_dead_providers.py
 
 # --------------------------- 14. Har den PUBLICEREDE motor et hul, motoren her ikke har?
 # site/cli/ fortæller brugere at installere @mahope/eucomply-scanner. Den pakke er
@@ -323,8 +358,8 @@ run "tools/test_plugin_engine_parity.mjs --selftest" node tools/test_plugin_engi
 # branche. R5 (en bred "DORA + kapabilitetsord"-regel) er bevidst ikke lavet;
 # se begrundelsen i tools/check_dora_claims.py.
 hdr "DORA-markørtjekket er det, siderne siger det er"
-run "tools/check_dora_claims.py --selftest" python3 tools/check_dora_claims.py --selftest
-run "tools/check_dora_claims.py" python3 tools/check_dora_claims.py
+run "tools/check_dora_claims.py --selftest" "$PY" tools/check_dora_claims.py --selftest
+run "tools/check_dora_claims.py" "$PY" tools/check_dora_claims.py
 
 # ------------------------- 17. Kør de elleve tjek — også de seks ingen kørte
 # Trin 15 stoppede ved de fem tjek, der deler en motor med den gratis scanner.
@@ -353,8 +388,8 @@ run "tools/test_plugin_checks.php --selftest" php tools/test_plugin_checks.php -
 # "urørt" være en påstand. Uden dette step kunne værktøjet være grønt i porten
 # og ubrugt i workflowen, præcis fejlen opgave 39 fandt i en anden kontrol.
 hdr "Deploy-verificeringen kan skelne racen fra en manglende udgivelse"
-run "tools/wait_for_deploy.py --selftest" python3 tools/wait_for_deploy.py --selftest
-run "tools/wait_for_deploy.py --check-workflow" python3 tools/wait_for_deploy.py --check-workflow
+run "tools/wait_for_deploy.py --selftest" "$PY" tools/wait_for_deploy.py --selftest
+run "tools/wait_for_deploy.py --check-workflow" "$PY" tools/wait_for_deploy.py --check-workflow
 
 # ------------------------ 19. Kan en etiket modsige sit eget dom?
 # Opgave 45b fandt to checks, der skrev "Legal pages checked" på en RØD række.

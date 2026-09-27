@@ -5,7 +5,7 @@
  * Usage:
  *   eucomply-scanner https://example.com
  *   eucomply-scanner --json https://example.com
- *   npx eucomply-scanner https://example.com
+ *   npx @mahope/eucomply-scanner https://example.com
  */
 
 import { runScan } from '../engine/index.js';
@@ -29,7 +29,7 @@ OPTIONS:
 EXAMPLES:
   eucomply-scanner https://example.com
   eucomply-scanner --json https://example.com
-  npx eucomply-scanner https://example.com
+  npx @mahope/eucomply-scanner https://example.com
 
 REPORT:
   Scans a public URL for GDPR, DSA, ePrivacy, cookie consent,

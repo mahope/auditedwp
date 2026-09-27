@@ -19,11 +19,11 @@
  *   tech             platform fingerprint (informational)
  *
  * Usage:
- *   import { runScan, normalizeUrl } from 'eucomply-scanner'
+ *   import { runScan, normalizeUrl } from '@mahope/eucomply-scanner'
  *   const report = await runScan('https://example.com')
  *
  * CLI:
- *   npx eucomply-scanner https://example.com
+ *   npx @mahope/eucomply-scanner https://example.com
  *
  * License: MIT
  */
@@ -57,7 +57,7 @@ OPTIONS:
 EXAMPLES:
   node engine/index.js https://example.com
   node engine/index.js --json https://example.com
-  npx eucomply-scanner https://example.com
+  npx @mahope/eucomply-scanner https://example.com
 `);
     process.exit(url ? 0 : 1);
   }

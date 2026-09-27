@@ -78,6 +78,27 @@ PRODUCT_DOCS = [
     "chrome-ext/README.md",
 ]
 
+# Produkternes **egne kildfiler**. Rækkefølgen gjorde de tre READM'er dækket,
+# men en README er ikke det eneste sted et navn står: `--help`-teksten i
+# `cli/eucomply.js`, docblock-eksemplet i `engine/index.js` og EXAMPLES-blokken
+# i samme fil er alle noget en læser kopierer, og de lå uden for både træet og
+# `PRODUCT_DOCS`.
+#
+# Målt 27/9 (iteration 80): de fire steder skrev `npx eucomply-scanner` — det
+# uscoped navn, der **aldrig** er publiceret (npm-registret svarer 404, hentet
+# 27/9). `npx` med et navn der ikke findes henter ikke "noget lignende": den
+# fejler. Brugeren fik altså en kommando fra værktøjets egen hjælpetekst, der
+# ikke virker, mens README'en lige ovenfor advarede mod præcis den.
+#
+# Derfor er det ikke nok at dække de læser-synlige *dokumenter* — porten skal
+# se de filer koden selv skriver sin brugsanvisning i. Holdt som en liste, så en
+# ny kildefil ikke kommer med uden at nogen har set den.
+PRODUCT_SOURCE = [
+    "eucomply-scanner/cli/eucomply.js",
+    "eucomply-scanner/engine/index.js",
+    "eucomply-scanner/examples/node.js",
+]
+
 # Pakker det publicerede træ fortæller en besøgende at installere, og som er
 # verificeret i npm-registret.
 #
@@ -217,13 +238,15 @@ def _read(path):
         return None, str(exc)
 
 
-def collect(base=None, records=None, today=None, docs=None):
-    """Find alle fund. `base`, `records`, `today` og `docs` kan overstyres, så
-    selftesten kan udtrykke tilfælde uden at røre repoets egne filer."""
+def collect(base=None, records=None, today=None, docs=None, source=None):
+    """Find alle fund. `base`, `records`, `today`, `docs` og `source` kan
+    overstyres, så selftesten kan udtrykke tilfælde uden at røre repoets egne
+    filer."""
     base = base or ROOT
     records = VERIFIED_PACKAGES if records is None else records
     today = today or date.today()
     docs = PRODUCT_DOCS if docs is None else docs
+    source = PRODUCT_SOURCE if source is None else source
     findings = []
     seen = {}
 
@@ -231,17 +254,26 @@ def collect(base=None, records=None, today=None, docs=None):
         return ["%s/ findes ikke — gaten kan så ikke se, hvad træet fortæller "
                 "brugeren at installere" % PUBLIC_TREE]
 
-    # En README der forsvinder må ikke gøre dækningen mindre uden at sige det.
+    # En fil der forsvinder må ikke gøre dækningen mindre uden at sige det.
     # Ellers kan en slettet fil slås sammen med et kryds, der så fanges — og
     # gaten ville være grøn på præcis den fejl, den blev skrevet for.
-    for rel in docs:
+    #
+    # Fundet navngiver den liste filen står i. Det er ikke kosmetik: de to
+    # lister dækker forskellige ting, så et fund der siger "PRODUCT_DOCS" om en
+    # kildefil peger en læser hen i den forkerte tabel — og en selftest der
+    # leder efter det ord, kan ikke skelne de to tilfælde fra hinanden.
+    for rel, tabel in [(r, "PRODUCT_DOCS") for r in docs] + \
+                      [(r, "PRODUCT_SOURCE") for r in source]:
         if not os.path.isfile(os.path.join(base, rel)):
             findings.append(
-                "%s findes ikke, men står i PRODUCT_DOCS. Gaten kan så ikke se "
+                "%s findes ikke, men står i %s. Gaten kan så ikke se "
                 "den læser-synlige tekst, og en slettet fil må ikke gøre "
-                "dækningen mindre i stilhed." % rel)
+                "dækningen mindre i stilhed." % (rel, tabel))
 
-    for rel, full in list(_iter_public_files(base)) + list(_iter_doc_files(base, docs)):
+    scanned = list(_iter_public_files(base)) + list(_iter_doc_files(base, docs))
+    scanned += list(_iter_doc_files(base, source))
+
+    for rel, full in scanned:
         text, err = _read(full)
         if text is None:
             findings.append("%s: kan ikke læses (%s)" % (rel, err))
@@ -341,6 +373,25 @@ def _selftest():
             return False
         return True
 
+    def probe(records=None, docs=(), source=()):
+        """`collect()` med fixture-træet og datoen fastsat, og med **begge**
+        dækningslister sat eksplicit.
+
+        Det er ikke en bekvemmelighed, det er fejlens form. `collect` har to
+        lister: `docs` (README'er) og `source` (kildefiler). En case der
+        skriver `docs=[]` fordi den kun vil se på træet, arver stilt `source`
+        fra `PRODUCT_SOURCE` — de rigtige repo-stier, som ikke findes i
+        fixture-træet. Så får casen fund den *selv* ikke skrev om, og en case
+        der egentlig ville være grøn, bliver rød af en fil den aldrig satte op.
+
+        Med `probe` er det umuligt at glemme den ene liste: begge er
+        parametre uden forudindet værdi, så en case der kun tænker på
+        dokumenter må sige hvad den vil se på i kilder.
+        """
+        return collect(base=tmp, records={} if records is None else records,
+                       today=date(2026, 9, 26), docs=list(docs),
+                       source=list(source))
+
     ok = True
 
     # 1. Det navn, der lå i site/ 26/9, skal fanges, med fil OG linje.
@@ -353,7 +404,7 @@ def _selftest():
     target = os.path.join(tree, "index.html")
     with open(target, "w", encoding="utf-8") as fh:
         fh.write("<p>install with npm install eucomply-scanner</p>\n")
-    res = collect(base=tmp, records={}, today=date(2026, 9, 26), docs=[])
+    res = probe(records={})
     ok &= expect_red("udokumenteret pakkenavn", res)
     if res and "index.html:1" not in res[0]:
         print("SELFTEST FEJLT: fundet peger ikke på fil:linje — %r" % res[0])
@@ -363,8 +414,8 @@ def _selftest():
         ok = False
     with open(target, "w", encoding="utf-8") as fh:
         fh.write("<p>install with npm install @mahope/eucomply-scanner</p>\n")
-    if collect(base=tmp, records={"@mahope/eucomply-scanner": VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
-               today=date(2026, 9, 26), docs=[]):
+    if probe(records={"@mahope/eucomply-scanner":
+                                 VERIFIED_PACKAGES["@mahope/eucomply-scanner"]}):
         print("SELFTEST FEJLT: en verificeret pakke gav fund")
         ok = False
 
@@ -376,9 +427,8 @@ def _selftest():
     with open(target, "w", encoding="utf-8") as fh:
         fh.write("<pre>cd eucomply-scanner/cli &amp;&amp; npm install\n"
                  "npm i -g @mahope/transmute\n</pre>\n")
-    res = collect(base=tmp,
-                  records={"@mahope/transmute": VERIFIED_PACKAGES["@mahope/transmute"]},
-                  today=date(2026, 9, 26), docs=[])
+    res = probe(records={"@mahope/transmute":
+                          VERIFIED_PACKAGES["@mahope/transmute"]})
     extra += 1
     if res:
         print("SELFTEST FEJLT: en korrekt side gav fund — %r" % res)
@@ -388,8 +438,7 @@ def _selftest():
     #    Uden denne kontrol kan tabellen vokse med dokumentation ingen side
     #    henviser til, og kontrol 1 har så mindre og mindre at se.
     extra += 1
-    if not [f for f in collect(base=tmp, records=VERIFIED_PACKAGES,
-                               today=date(2026, 9, 26), docs=[]) if "står i tabellen" in f]:
+    if not [f for f in probe(records=VERIFIED_PACKAGES) if "står i tabellen" in f]:
         print("SELFTEST FEJLT: en ubrugt post gav ikke et fund")
         ok = False
 
@@ -399,21 +448,20 @@ def _selftest():
                                             verified="2020-01-01")}
     with open(target, "w", encoding="utf-8") as fh:
         fh.write("npm install @mahope/eucomply-scanner\n")
-    res = collect(base=tmp, records=old, today=date(2026, 9, 26), docs=[])
+    res = probe(records=old)
     if not [f for f in res if "dage siden" in f]:
         print("SELFTEST FEJLT: en 6 år gammel verificering gav ikke et fund")
         ok = False
-    if [f for f in collect(base=tmp,
-                           records={"@mahope/eucomply-scanner": VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
-                           today=date(2026, 9, 26), docs=[]) if "dage siden" in f]:
+    if [f for f in probe(records={"@mahope/eucomply-scanner":
+                                 VERIFIED_PACKAGES["@mahope/eucomply-scanner"]})
+            if "dage siden" in f]:
         print("SELFTEST FEJLT: dagens verificering gav en aldersadvarsel")
         ok = False
 
     # 5. En udokumenteret dato må give fund, ikke crash.
     extra += 1
-    res = collect(base=tmp,
-                  records={"@mahope/eucomply-scanner": {"version": "1.0.1", "verified": "25/9-2026"}},
-                  today=date(2026, 9, 26), docs=[])
+    res = probe(records={"@mahope/eucomply-scanner": {"version": "1.0.1",
+                                                     "verified": "25/9-2026"}})
     if not [f for f in res if "verified-dato" in f]:
         print("SELFTEST FEJLT: en udokumenteret dato gav ikke et fund")
         ok = False
@@ -437,7 +485,7 @@ def _selftest():
     with open(readme, "w", encoding="utf-8") as fh:
         fh.write("```bash\nnpx eucomply-scanner https://example.com\n```\n"
                  "```js\nimport { runScan } from 'eucomply-scanner';\n```\n")
-    res = collect(base=tmp, records={}, today=date(2026, 9, 26))
+    res = probe(records={}, docs=["eucomply-scanner/README.md"])
     if not [f for f in res if f.startswith("eucomply-scanner/README.md:")]:
         print("SELFTEST FEJLT: npx/import i en README uden for site/ gav ikke "
               "et fund — de nye mønstre rækker ikke filen")
@@ -448,10 +496,9 @@ def _selftest():
     with open(readme, "w", encoding="utf-8") as fh:
         fh.write("```bash\nnpx @mahope/eucomply-scanner https://example.com\n```\n"
                  "```js\nimport { runScan } from '@mahope/eucomply-scanner';\n```\n")
-    res = collect(base=tmp, docs=["eucomply-scanner/README.md"],
-                  records={"@mahope/eucomply-scanner":
-                           VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
-                  today=date(2026, 9, 26))
+    res = probe(records={"@mahope/eucomply-scanner":
+                                 VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
+                 docs=["eucomply-scanner/README.md"])
     if res:
         print("SELFTEST FEJLT: en korrekt README gav fund — %r" % res)
         ok = False
@@ -463,7 +510,7 @@ def _selftest():
     with open(target, "w", encoding="utf-8") as fh:
         fh.write("<p>npx github:mahope/deskuptime check https://example.com</p>\n"
                  "<h3>Via npx (no install)</h3>\n")
-    res = collect(base=tmp, records={}, today=date(2026, 9, 26), docs=[])
+    res = probe(records={})
     if res:
         print("SELFTEST FEJLT: et git-spec eller en overskrift gav fund — %r" % res)
         ok = False
@@ -472,9 +519,90 @@ def _selftest():
     #     dækningen falder i stilhed — grøn på præcis den fejl porten
     #     blev skrevet for.
     extra += 1
-    res = collect(base=tmp, records={}, today=date(2026, 9, 26))
+    res = probe(records={}, docs=["eucomply-scanner/LAV.md"])
     if not [f for f in res if "står i PRODUCT_DOCS" in f]:
         print("SELFTEST FEJLT: en manglende README gav ikke et fund")
+        ok = False
+
+    # 6f. KILDEFILERNE skal være dækket, ikke kun dokumenterne. Det er den
+    #     fejl iteration 80 målte: `--help`-teksten i `cli/eucomply.js` skrev
+    #     `npx eucomply-scanner` — et navn der aldrig er publiceret (npm
+    #     svarer 404) — mens README'en lige overfor advarede mod præcis den.
+    #
+    #     Casen indskrænker **dækningsbredden på egen funktion**: `collect`
+    #     skal læse en fil, der kun står i `source`. Beviset er den negative
+    #     halvdel — samme fil, samme port, kun navnet ændret — så den grønne
+    #     halvdel ikke kan være grøn fordi porten slet ikke kigger.
+    #
+    #     Den siger derimod **intet om repoets egen `PRODUCT_SOURCE`**, fordi
+    #     den kalden her er `probe(source=[src_rel])` og ikke standardlisten.
+    #     Det blev målt: mutationen der tømmer `PRODUCT_SOURCE` gav stadig
+    #     "SELFTEST GRØN — alle 11 negative cases". Den påstand, casen havde
+    #     om sig selv, var altså forkert, og det er case 6h der bærer den nu.
+    extra += 1
+    src_rel = "eucomply-scanner/cli/eucomply.js"
+    os.makedirs(os.path.join(tmp, "eucomply-scanner", "cli"), exist_ok=True)
+    with open(os.path.join(tmp, src_rel), "w", encoding="utf-8") as fh:
+        fh.write("/** npx @mahope/eucomply-scanner https://example.com */\n")
+    res = probe(records={"@mahope/eucomply-scanner":
+                         VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
+                source=[src_rel])
+    if res:
+        print("SELFTEST FEJLT: en korrekt kildefil gav fund — %r" % res)
+        ok = False
+    # Og den skal være rød, så snart navnet i den er det uscoped. Beviset er at
+    # porten *læser* filen — ikke at den altid er grøn.
+    with open(os.path.join(tmp, src_rel), "w", encoding="utf-8") as fh:
+        fh.write("/** npx eucomply-scanner https://example.com */\n")
+    res = probe(records={"@mahope/eucomply-scanner":
+                         VERIFIED_PACKAGES["@mahope/eucomply-scanner"]},
+                source=[src_rel])
+    if not res:
+        print("SELFTEST FEJLT: det uscopede navn i en kildefil gav ikke et fund")
+        ok = False
+
+    # 6h. **Repoets egen `PRODUCT_SOURCE` skal være brugt og fuld.** Det er den
+    #     egenskab case 6f ikke har, og den er den der betyder noget: hvis
+    #     listen tømmes, eller en kildefil flytter uden at listen følger med,
+    #     falder dækningen i stilhed, og alle de øvrige cases er stadig grønne
+    #     fordi de selv sætter deres egen `source`.
+    #
+    #     Beviset er målt begge veje: tømmes listen, eller laves en indgang til
+    #     en sti der ikke findes, går den rød. Det er derfor den læser de
+    #     rigtige konstanter og ikke en kopi af dem.
+    extra += 1
+    if not PRODUCT_SOURCE:
+        print("SELFTEST FEJLT: PRODUCT_SOURCE er tom — ingen kildefil dækkes, "
+              "og ingen case ovenfor ville have fundet det")
+        ok = False
+    for rel in PRODUCT_SOURCE:
+        if not os.path.isfile(os.path.join(ROOT, rel)):
+            print("SELFTEST FEJLT: %s står i PRODUCT_SOURCE men findes ikke — "
+                  "dækningen peger på en fil der ikke er der" % rel)
+            ok = False
+
+    # 6i. Samme krav for de tre læser-synlige README'er, så de to lister er
+    #     stillet på samme måde. Ellers kunne en agent slette en kildefil
+    #     nævnt her og ikke en README nævnt i PRODUCT_DOCS.
+    extra += 1
+    for rel in PRODUCT_DOCS:
+        if not os.path.isfile(os.path.join(ROOT, rel)):
+            print("SELFTEST FEJLT: %s står i PRODUCT_DOCS men findes ikke" % rel)
+            ok = False
+
+    # 6g. En kildefil der forsvinder må give fund, samme grund som 6e — og
+    #     fundet skal navngive **PRODUCT_SOURCE**, ikke PRODUCT_DOCS. Casen
+    #     leder derfor efter den tabel filen står i. Det er den direkte følge
+    #     af at fund-teksten blev præciseret: en læser skal kunne se hvilken
+    #     dækningsliste der har mistet en fil, og en selftest der led efter det
+    #     forkerte ord ville have accepteret en port der blandede de to.
+    extra += 1
+    res = probe(records={}, source=["eucomply-scanner/engine/index.js"])
+    if not [f for f in res if "står i PRODUCT_SOURCE" in f]:
+        print("SELFTEST FEJLT: en manglende kildefil gav ikke et fund")
+        ok = False
+    if [f for f in res if "står i PRODUCT_DOCS" in f]:
+        print("SELFTEST FEJLT: en kildefil blev meldt som en README — %r" % res)
         ok = False
 
     # 7. --online må kunne fejle på en pakke, der ikke findes. Fetcheren er
