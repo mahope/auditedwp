@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.27
+ * Version:           1.3.28
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.27' );
+define( 'EUCOMPLY_VERSION', '1.3.28' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -843,19 +843,15 @@ class EUComply {
                 array( 'name' => 'Complianz GDPR', 're' => '~complianz|cmplz~i' ),
                 array( 'name' => 'Generic cookie consent banner', 're' => '~cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie~i' ),
                 array( 'name' => 'Axeptio', 're' => '~axeptio|axept\.io~i' ),
-                array( 'name' => 'CookieScript', 're' => '~cookiescript~i' ),
                 array( 'name' => 'CookieHub', 're' => '~cookiehub|cookie[_-]?hub~i' ),
                 array( 'name' => 'iubenda', 're' => '~iubenda|cookie[_-]?solution~i' ),
                 array( 'name' => 'JustUno / Privy / OptinMonster (popup detected)', 're' => '~justuno|privy|optinmonster~i' ),
-                array( 'name' => 'CEE/PL consent plugin', 're' => '~shoper|shoprenter|idelo~i' ),
                 array( 'name' => 'WP Consent API', 're' => '~wp-consent-api~i' ),
                 array( 'name' => 'Borlabs / CookieNinja', 're' => '~borlabs|cookieninja~i' ),
                 array( 'name' => 'Real Cookie Banner', 're' => '~real[_-]?cookie[_-]?banner~i' ),
                 array( 'name' => 'Cookie Notice Lite', 're' => '~cookie[_-]?notice[_-]?lite~i' ),
                 array( 'name' => 'GDPR Cookie Compliance', 're' => '~gdpr[_-]?cookie[_-]?compliance~i' ),
-                array( 'name' => 'Moove GDPR', 're' => '~moove[_-]?gdpr~i' ),
                 array( 'name' => 'PixelYourSite (GDPR)', 're' => '~pixel[_-]?your[_-]?site~i' ),
-                array( 'name' => 'WebToffee GDPR', 're' => '~webtoffee|gdpr[_-]?cookie[_-]?consent~i' ),
                 array( 'name' => 'Analytify/CAOS', 're' => '~analytify|caos~i' ),
             ),
             // Form plugins named in the markup, for `check_forms()`. These are
