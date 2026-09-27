@@ -39,7 +39,9 @@ cd eucomply-scanner/cli && npm install
 node eucomply.js example.com
 ```
 
-> An npm registry release (`npm install -g eucomply-scanner`) is planned — pending publish access. The GitHub command above always runs the latest version.
+> The package is published on npm as **`@mahope/eucomply-scanner`**. The
+> unscoped name has never been published, so installing it fails with a 404 —
+> install the scoped name shown below instead.
 
 ## Usage
 
