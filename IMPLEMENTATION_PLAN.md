@@ -1,4 +1,4 @@
-VERIFICÉR DEPLOY: dora-tabellen: `security[ _-]?incident` sporet ved læsning i UK's egen NCSC-side (opgave 72 del 4) <KODE> 2026-09-27 ca. 18:5x
+VERIFICÉR DEPLOY: dora-tabellen: `security[ _-]?incident` sporet ved læsning i UK's egen NCSC-side (opgave 72 del 4) 57a464d 2026-09-27 ca. 18:5x
 
 Opdateret: 2026-09-27 (iteration 76)
 
