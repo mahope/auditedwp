@@ -33,26 +33,34 @@
  *       scriptregel. R1 alene kan ikke se den forskel; kun R2 kan. Selftestens
  *       fjerde mutation beviser det: den efterlader R1 grøn og gør R2 rød.
  *   R3  **De tre produkter er ens.** Samme fund i alle tre, og de to motorer
- *       samme `label` og `detail` i alle tre grupper. Læst på **holdene**, ikke
- *       på hele `checks`-objektet: `.detail` på `checks` er `undefined`, og en
- *       påstand om nul fund bliver grøn af den grund (opgave 56 fund 4).
+ *       skal være byte-identiske i `label` og `detail` for alle tre grupper.
+ *       Læst på **holdene**, ikke på hele `checks`-objektet: `.detail` på
+ *       `checks` er `undefined`, og en påstand om nul fund bliver grøn af den
+ *       grund (opgave 56 fund 4). Siden opgave 59 gælder ligheden også for
+ *       **pluginens** tracker-detalje: motoren skrev "…was also detected."
+ *       mens pluginen skrev "…was also detected (Klaro / …)" om det samme
+ *       website, og undtagelsen der gjorde R3 grøn for lige netop den forskel
+ *       er nu væk.
  *   R4  **`dora` er stadig urørt.** "vi har en business continuity plan" i prosa
  *       skal stadig finde `BC/DR planning reference` i alle tre produkter. Det
  *       er undtagelsen `matched_signatures()` skriver i sin docblock: DORA-
  *       markørerne er påstande om *virksomheden*, ikke om at kode kører. Uden
  *       R4 bliver undtagelsen usynlig, og en senere agent "forenkler" den væk
- *       fordi den ser unødigt speciel ud.
+ *       fordi den ser unødigt speciel ud. R4 måler **også** den lange engelske
+ *       form med mellemrum, som var den anden lækage i opgave 59.
  *
  * Fund-listen læses **af porten selv**: navnene parses ud af produkternes egne
  * signatur-tabeller, så en ny signatur dækkes automatisk, og en tabel der ikke
  * kan parses gør porten rød frem for grøn. Samme "dækkede-ikke-antaget"-regel
  * som trin 21.
  *
- * Hvad porten **ikke** dækker, målt i denne iteration: GTM's egen
- * noscript-iframe (`googletagmanager.com/ns.html`) er ikke i nogen signatur,
- * så den er ikke fundet i noget produkt. Det er en lækage, ikke en regression
- * fra opgave 57 — mønsteret har aldrig matchet den — og den står som opgave 59
- * med fixture og måling.
+ * Hvad porten **ikke** dækker, og hvorfor: den måler at portens egne fixtures
+ * er fundet, ikke at signatur-tabellerne er *fuldstændige*. En markør der
+ * mangler helt i en tabel kan porten ikke se — den læser navnene, den læser
+ * ikke formernes rækkevidde. Det er opgave 59s tredje lækage forklaret:
+ * `googletagmanager.com/ns.html` var i ingen tabel, så intet fixture kunne
+ * finde den. De to mutationer der fjerner `ns.html` igen er derfor netop så
+ * vigtige som fixtures — de binder tabellen til et krav om dækning.
  *
  * Spec: `docs/eucomply-signatur-prosa.md`.
  */
@@ -176,6 +184,16 @@ const MEKANISME = [
     html: side('<noscript><a href="https://www.hotjar.com" target="_blank"><img src="https://static.hotjar.com/hjblockedpixels/banner.gif" border="0" alt=""></a></noscript><p>Hej</p>'),
   },
   {
+    // Googles egen no-JavaScript-fallback for GTM. Det er det snippet Googles
+    // dokumentation beder **alle** GTM-sites installere, og på en side der kun
+    // har fallbacken er det den eneste analytics-reference. Mønsteret matchede
+    // kun `gtm.js`, så "Third-party trackers: 0 found" stod på en side der
+    // sender et pixel. Målt før rettelsen: 0 fund i alle tre produkter.
+    navn: "GTM's ns.html-fallback", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Google Analytics / GTM",
+    html: side('<noscript><iframe height="0" width="0" style="display:none;visibility:hidden" src="https://www.googletagmanager.com/ns.html?id=GTM-ABC"></iframe></noscript><p>Hej</p>'),
+  },
+  {
     // Contact Form 7 lever som `<div class="wpcf7">` i **markup'en**, ikke som
     // et script. Det er grunden til at opgave 57 beholdte attributterne, og det
     // er derfor denne fixture findes: en ren scriptregel ville have slettet den
@@ -201,13 +219,25 @@ const DORA_FIXTURES = [
   {
     navn: "dora i prosa (dansk)", lang: "DA", slags: "dora",
     // `BCP-plan` og `DR-plan` er de formuleringer et dansk eller norsk
-    // bureau skriver, og de er fundet i dag. Den lange engelske form ("business
-    // continuity plan" med mellemrum) er **ikke** fundet i noget produkt, fordi
-    // `business[_-]?continuity` kun tillader bindestreg — samme separatorfejl
-    // som opgave 52 fandt i `terms`. Det er målt, det er en lækage i den
-    // betalte DORA-række, og det står som opgave 59 med diffen.
+    // bureau skriver, og de er fundet i dag. Den lange engelske form er målt i
+    // fixturet nedenfor — den var **ikke** fundet i noget produkt, fordi
+    // `business[_-]?continuity` kun tillod bindestreg. Samme separatorfejl som
+    // opgave 52 fandt i `terms` og opgave 55 i `sla`.
     html: side("<h1>Driftssikkerhed</h1><p>Vi har en BCP-plan og en DR-plan, og vi "
       + "publicerer vores MX- og DMARC-opsætning.</p>"),
+  },
+  {
+    navn: "dora i prosa (engelsk, lange former)", lang: "EN", slags: "dora",
+    // Den sætning en **engelsk** sikkerhedsside faktisk skriver, med mellemrum
+    // mellem ordene. Målt før rettelsen: `business continuity plan`,
+    // `incident response` og `status page` gav **0 af 3** i alle tre produkter,
+    // fordi separatoren var `[_-]?`. Kun de enkeltstående tokens (DKIM, SPF,
+    // `failover`) kunne finde noget, og de er tilfældigvis ikke dem siden
+    // handler om. Det er den betalte DORA-række, der taber point på en side der
+    // gør præcis det tjekket spørger efter.
+    html: side("<h1>Business continuity</h1><p>We have a business continuity plan and an "
+      + "incident response process, and we publish a public status page for uptime. "
+      + "We publish our SPF record and our DMARC policy too.</p>"),
   },
 ];
 
@@ -348,8 +378,7 @@ function contractR2(domme, fixture, navne) {
  * Fund-listen skal være **identisk** i alle tre, og de to motorer skal være
  * byte-identiske i `label` og `detail` for alle tre grupper. Pluginens
  * `trackers` er skrevet med motorens sætninger, så den skal også være
- * identisk der — det er den del af den betalte rapport der rører de samme
- * bytes.
+ * identisk der — hele detaljen, ikke kun etiketten.
  *
  * Pluginens `cookies` kan **ikke** være med i ligheden, og det er ikke en
  * undtagelse for lettede: det er et WordPress-tilstandstjek, der læser hvilke
@@ -383,24 +412,39 @@ function contractR3(domme, navne) {
       `pluginen er uenig med motorerne om fund i ${gruppe}: «${fundneListe(a[gruppe], navne[gruppe])}» mod «${fundneListe(c[gruppe], navne[gruppe])}»`
     );
   }
+  // Etiketten skal vælge ens, og **detaljen skal være ens for `trackers`**. Den
+  // gjorde det ikke før opgave 59: pluginen skrev "…was also detected
+  // (TarteAuCitron / Klaro / …)" mens motoren skrev "…was also detected." — samme
+  // dom, to forskellige rapporter om det *samme* website, og den betalte var den
+  // mere informative. Da motoren blev rettet til at navngive platformen, kunne
+  // undtagelsen fjernes: de to produkter skal nu svare præcis det samme, så
+  // holdet sammenligner hele detaljen og ikke bare om sætningen er med.
   assert.equal(
     c.trackers.label,
     a.trackers.label,
     `pluginens tracker-etiket afviger fra motorens: «${a.trackers.label}» mod «${c.trackers.label}»`
   );
-  // Etiketten skal vælge ens — den er dommens plads. **Detaljen** afviger
-  // med vilje, og fordi det er målt: pluginen navngiver samtykkeplatformen
-  // ("…was also detected (TarteAuCitron / Klaro / …)") mens motoren kun siger
-  // "…was also detected.". Det er en reel forskel i den betalte rapport, og den
-  // er skrevet op som opgave 59 — motoren skal navngive platformen som
-  // pluginen gør, for de to produkter skal svare det samme. Her holdes derfor
-  // på det sammenlignelige: samme fund, samme etikette, og consent-beviset
-  // nedenfor.
   assert.equal(
-    /A consent platform was also detected/i.test(c.trackers.detail),
-    /A consent platform was also detected/i.test(a.trackers.detail),
-    `de to produkter er uenige om der overhovedet står en samtykkeplatform i tracker-detaljen: «${a.trackers.detail}» mod «${c.trackers.detail}»`
+    c.trackers.detail,
+    a.trackers.detail,
+    `samme dom, to rapporter i tracker-detaljen: «${a.trackers.detail}» mod «${c.trackers.detail}»`
   );
+  // Og platformens **navn** skal stå i motorens egen rapport, når den fandt en.
+  // Ellers kunne en motor finde platformen, skrive "was also detected" og være
+  // grøn på detail-ligheden fordi pluginen heller ikke skrev noget navn — det er
+  // præcis den fejlretning R3 holdt fast ved at sammenligne sætningen alene.
+  const fundetPlatform = fundneNavne(a.trackers, navne.consent);
+  if (fundetPlatform.length) {
+    assert.equal(
+      c.trackers.detail,
+      a.trackers.detail,
+      "platformens navn skal stå i begge produkter"
+    );
+    assert.ok(
+      fundetPlatform.every((n) => a.trackers.detail.includes(n)),
+      `motoren fandt ${fundetPlatform.join(", ")} men skrev det ikke i rapporten: "${a.trackers.detail}"`
+    );
+  }
   // Og pluginens consent-bevis skal være motorens `cookies`-fund.
   assert.equal(
     fundneListe(c.trackers, navne.consent),
@@ -583,6 +627,35 @@ if (process.argv.includes("--selftest")) {
     ["motoren i repoet", { dora: { label: "No DORA-related page signals detected", detail: "No page-text references to failover, incident response or continuity were found." } }],
   ], DORA_FIXTURES[0], MOTOR_NAVNE);
 
+  // 12. R3: motoren **finder** platformen men skriver ikke navnet i rapporten.
+  //     Det var den gamle fejl: "A consent platform was also detected." Den
+  //     gamle R3-regel var grøn for den, fordi den spurgte om sætningen var der
+  //     — og den kan ikke se en motor der udelader navnet. Den nye regel
+  //     sammenligner hele detaljen med pluginens og kræver navnet i rapporten.
+  expectRed("R3 (motoren skriver ikke platformens navn)", contractR3, [
+    ["motoren i repoet", {
+      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected." },
+      cookies: { label: "Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" },
+      forms: { label: "x", detail: "x" },
+    }],
+    ["den publicerede motor", {
+      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron / Klaro / Osano / CookieConsent)." },
+      cookies: { label: "Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent", detail: "Detected: TarteAuCitron / Klaro / Osano / CookieConsent" },
+      forms: { label: "x", detail: "x" },
+    }],
+    ["pluginen", {
+      trackers: { label: "1 tracker(s) detected, consent platform present", detail: "Trackers found in page markup: Google Analytics / GTM. A consent platform was also detected (TarteAuCitron / Klaro / Osano / CookieConsent)." },
+      cookies: { label: "x", detail: "x" },
+      forms: { label: "x", detail: "x" },
+    }],
+  ], MOTOR_NAVNE);
+
+  // 13. R2: GTM's ns.html-fallback forsvinder igen. Den er den eneste
+  //     analytics-reference på den fixture, så uden den er svaret "0 fundet".
+  expectRed("R2 (GTM ns.html taber dækning)", contractR2, [
+    ["motoren i repoet", { trackers: { label: "Third-party trackers: 0 found", detail: "No third-party marketing/analytics trackers found in the served HTML." } }],
+  ], MEKANISME.find((m) => m.navn === "GTM's ns.html-fallback"), MOTOR_NAVNE);
+
   /*
    * Fire mutationer mod repoets egne filer.
    *
@@ -640,6 +713,80 @@ if (process.argv.includes("--selftest")) {
         },
       ],
     },
+    /*
+     * De fire nye er opgave 59s tre lækager, skrevet som mutationer mod
+     * repoets egne filer. En lækage er en mangel, der ikke kan ses i en diff —
+     * mønstret er der, det matcher bare ikke det, kunden skriver. Den eneste
+     * måde at binde den er at tage rettelsen væk igen og kræve rødt.
+     */
+    {
+      navn: "motoren i repoet taber GTM's ns.html-fallback",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R2",
+      fixture: "GTM's ns.html-fallback",
+      foer: [
+        {
+          for: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html)",
+          efter: "googletagmanager\\.com\\/gtm\\.js",
+        },
+      ],
+    },
+    {
+      navn: "motoren i repoet taber mellerummet i DORA-separatoren",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R4",
+      fixture: "dora i prosa (engelsk, lange former)",
+      foer: [
+        {
+          for: "  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
+          efter: "  { re: /bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity/i, name: \"BC/DR planning reference\" }, // mutation: ingen mellemrum",
+        },
+        {
+          for: "  { re: /status[ _-]?page|uptime[ _-]?monitor/i, name: \"Status page / uptime monitoring\" },",
+          efter: "  { re: /status[_-]?page|uptime[_-]?monitor/i, name: \"Status page / uptime monitoring\" }, // mutation: ingen mellemrum",
+        },
+      ],
+    },
+    {
+      navn: "pluginen taber mellerummet i DORA-separatoren",
+      fil: PLUGIN,
+      forventer: "R4",
+      fixture: "dora i prosa (engelsk, lange former)",
+      foer: [
+        {
+          for: "array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity~i' ),",
+          efter: "array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity~i' ), // mutation: ingen mellemrum",
+        },
+      ],
+    },
+    {
+      navn: "den publicerede motor taber mellerummet i DORA-separatoren",
+      fil: join(REPO, "eucomply-scanner", "engine", "index.js"),
+      forventer: "R4",
+      fixture: "dora i prosa (engelsk, lange former)",
+      foer: [
+        {
+          for: "  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: \"BC/DR planning reference\" },",
+          efter: "  { re: /bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity/i, name: \"BC/DR planning reference\" },",
+        },
+        {
+          for: "  { re: /status[ _-]?page|uptime[ _-]?monitor/i, name: \"Status page / uptime monitoring\" },",
+          efter: "  { re: /status[_-]?page|uptime[_-]?monitor/i, name: \"Status page / uptime monitoring\" },",
+        },
+      ],
+    },
+    {
+      navn: "motoren i repoet holder op med at navngive samtykkeplatformen",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R3",
+      fixture: "Klaro som stylesheet-link",
+      foer: [
+        {
+          for: "${hasConsentPlatform ? `A consent platform was also detected (${consentMatches[0]}).` :",
+          efter: "${hasConsentPlatform ? \"A consent platform was also detected.\" :",
+        },
+      ],
+    },
   ];
 
   for (const m of MUTATIONER) {
@@ -657,14 +804,33 @@ if (process.argv.includes("--selftest")) {
     writeFileSync(m.fil, mutant);
     let rød = false;
     let grund = "";
+    const red = (e) => {
+      rød = true;
+      if (!grund) grund = e.message;
+    };
+    const valgtFixture = m.fixture
+      ? FIXTURES.find((f) => f.navn === m.fixture)
+      : prosa;
+    if (!valgtFixture) {
+      failures.push(`selftest: mutationen «${m.navn}» har ingen fixture ved navnet «${m.fixture}»`);
+      writeFileSync(m.fil, original);
+      continue;
+    }
     try {
       if (m.fil.endsWith(".php")) {
-        const dom = pluginChecks(prosa.html);
-        try {
-          contractR1([["mutationen", dom]], prosa, PHP_NAVNE);
-        } catch (e) {
-          rød = true;
-          grund = e.message;
+        const dom = pluginChecks(valgtFixture.html);
+        if (m.forventer === "R1") {
+          try {
+            contractR1([["mutationen", dom]], valgtFixture, PHP_NAVNE);
+          } catch (e) {
+            red(e);
+          }
+        } else {
+          try {
+            contractR4([["mutationen", dom]], valgtFixture, PHP_NAVNE);
+          } catch (e) {
+            red(e);
+          }
         }
       } else {
         // Query-strengen på importen, fordi ESM cache'r modulerne pr. URL.
@@ -674,8 +840,35 @@ if (process.argv.includes("--selftest")) {
           try {
             contractR1([["mutationen", await engineChecks(mutantScan, prosa.html)]], prosa, MOTOR_NAVNE);
           } catch (e) {
-            rød = true;
-            grund = e.message;
+            red(e);
+          }
+        } else if (m.forventer === "R4") {
+          // DORA er den eneste gruppe der **skal** læse prosa, så R4 er dens
+          // kontrakt. En separator der igen kun matcher bindestreg tager alle
+          // de lange engelske markører, og porten skal se det.
+          try {
+            contractR4([["mutationen", await engineChecks(mutantScan, valgtFixture.html)]], valgtFixture, MOTOR_NAVNE);
+          } catch (e) {
+            red(e);
+          }
+        } else if (m.forventer === "R3") {
+          // R3 er den eneste kontrakt der sammenligner **alle tre** produkter,
+          // så mutationen skal måles i alle tre: den muterede motor, den
+          // **urørte** søskermotor og pluginen. Søskeren er den der *ikke* er
+          // muteret — at tage `m.fil` selv ville gøre de to motorer ens af
+          // mutationen, og R3 ville så teste to kopier af den samfe fejl.
+          const soster = ENGINES.find(([, fil]) => fil !== m.fil);
+          assert.ok(soster, `mutationen «${m.navn}» rammer begge motorer — der er ingen urørt søsker at sammenligne med`);
+          const urort = (await import(pathToFileURL(soster[1]).href)).runScan;
+          const domme = [
+            ["mutationen", await engineChecks(mutantScan, valgtFixture.html)],
+            ["den urørte motor", await engineChecks(urort, valgtFixture.html)],
+            ["pluginen", pluginChecks(valgtFixture.html)],
+          ];
+          try {
+            contractR3(domme, MOTOR_NAVNE);
+          } catch (e) {
+            red(e);
           }
         } else {
           // R1 skal være **grøn** for denne mutation. Det er hele pointen med
@@ -686,12 +879,11 @@ if (process.argv.includes("--selftest")) {
           } catch (e) {
             grund = `R1 var rød på en mutation der kun taber attributter — parret kan ikke se forskellen: ${e.message}`;
           }
-          for (const fx of [wpcf7, klaro]) {
+          for (const fx of (m.fixture ? [valgtFixture] : [wpcf7, klaro])) {
             try {
               contractR2([["mutationen", await engineChecks(mutantScan, fx.html)]], fx, MOTOR_NAVNE);
             } catch (e) {
-              rød = true;
-              if (!grund) grund = e.message;
+              red(e);
             }
           }
           // Og pluginen skal se det samme tab, ellers er R2 kun halvt målt.

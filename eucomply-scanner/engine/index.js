@@ -128,8 +128,14 @@ const CONSENT_SIGNATURES = [
   { re: /analytics[_-]?cat/i, name: "Analytify/CAOS" },
 ];
 
+// `ns.html` er Googles egen no-JavaScript-fallback for GTM — det snippet
+// Googles dokumentation beder **alle** GTM-sites installere, og det er den
+// eneste GTA-reference på en side der kun har fallbacken. Mønsteret matchede
+// kun container-scriptet (`gtm.js`), så "Third-party trackers: 0 found" stod på
+// en side der sender et pixel. Ikke en regression fra opgave 57: mønsteret har
+// aldrig matchet den. Målt før rettelsen: 0 fund i alle tre produkter.
 const TRACKER_SIGNATURES = [
-  { re: /google-analytics\.com|googletagmanager\.com\/gtm\.js|gtag\(/i, name: "Google Analytics / GTM" },
+  { re: /google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html)|gtag\(/i, name: "Google Analytics / GTM" },
   { re: /connect\.facebook\.net|fbq\(['"]/i, name: "Meta (Facebook) Pixel" },
   { re: /static\.hotjar\.com|hj\(['"]/i, name: "Hotjar" },
   { re: /clarity\.ms/i, name: "Microsoft Clarity" },
@@ -143,16 +149,23 @@ const TRACKER_SIGNATURES = [
   { re: /doubleclick\.net|googlesyndication/i, name: "DoubleClick / AdSense" },
 ];
 
+// Separatoren er `[ _-]?` — bindestreg, understreg **eller mellemrum**.
+// Den var `[_-]?`, hvilket aldrig matcher et mellemrum, og det gjorde hver
+// flerords-markør ufandet i sin egen lange form: "business continuity plan",
+// "incident response" og "status page" er skrevet med mellemrum på en
+// engelsk sikkerhedsside og blev læst som nul. Målt før rettelsen: 0 af de 3
+// flerords-markører, i begge motorer og i pluginen. Samme fejlklasse som
+// opgave 52 (`terms`) og opgave 55 (`sla`). Spec: `docs/eucomply-signatur-prosa.md`.
 const DORA_SIGNATURES = [
-  { re: /spf[_-]?record|v[_-]?=spf/i, name: "SPF (Email sender auth)" },
+  { re: /spf[ _-]?record|v[ _-]?=spf/i, name: "SPF (Email sender auth)" },
   { re: /dkim|[_-]?domainkey/i, name: "DKIM (Email signing)" },
-  { re: /dmarc_|dmarc[_-]?record|_dmarc\./i, name: "DMARC (Email policy)" },
-  { re: /mx[_-]?record|mx [0-9]|mail[_-]?exchange/i, name: "MX (Mail exchange)" },
-  { re: /multiple[_-]?server|failover|redundan|multi[_-]?az[_-]?dns/i, name: "Multi-server / failover signals" },
-  { re: /cdn[_-]?failover|multi[_-]?cdn|backup[_-]?origin/i, name: "CDN failover / multi-CDN" },
-  { re: /incident[_-]?response|soc[_-]?report|security[_-]?incident/i, name: "Incident response / SOC reporting" },
-  { re: /bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity/i, name: "BC/DR planning reference" },
-  { re: /status[_-]?page|uptime[_-]?monitor/i, name: "Status page / uptime monitoring" },
+  { re: /dmarc_|dmarc[ _-]?record|_dmarc\./i, name: "DMARC (Email policy)" },
+  { re: /mx[ _-]?record|mx [0-9]|mail[ _-]?exchange/i, name: "MX (Mail exchange)" },
+  { re: /multiple[ _-]?server|failover|redundan|multi[ _-]?az[ _-]?dns/i, name: "Multi-server / failover signals" },
+  { re: /cdn[ _-]?failover|multi[ _-]?cdn|backup[ _-]?origin/i, name: "CDN failover / multi-CDN" },
+  { re: /incident[ _-]?response|soc[ _-]?report|security[ _-]?incident/i, name: "Incident response / SOC reporting" },
+  { re: /bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity/i, name: "BC/DR planning reference" },
+  { re: /status[ _-]?page|uptime[ _-]?monitor/i, name: "Status page / uptime monitoring" },
 ];
 
 const FORM_PLUGIN_SIGNATURES = [
@@ -731,7 +744,12 @@ export async function runScan(url) {
   for (const sig of TRACKER_SIGNATURES) {
     if (sig.re.test(teknisk)) trackerMatches.push(sig.name);
   }
-  const hasConsentPlatform = CONSENT_SIGNATURES.some(s => s.re.test(teknisk));
+  // Navnet følger med. Pluginen skrev "…was also detected (Klaro / …)" mens
+  // motoren skrev "…was also detected." — samme dom, to forskellige rapporter om
+  // det *samme* website, og den betalte var den mere informative. Rækkefølgen er
+  // tabellens, som i pluginen, så de to produkter vælger samme navn.
+  const consentMatches = CONSENT_SIGNATURES.filter(s => s.re.test(teknisk)).map(s => s.name);
+  const hasConsentPlatform = consentMatches.length > 0;
   checks.trackers = {
     pass: trackerMatches.length === 0 || hasConsentPlatform,
     warn: trackerMatches.length > 0 && hasConsentPlatform && !/consent[_-]?mode|__tcfapi/i.test(html),
@@ -741,7 +759,7 @@ export async function runScan(url) {
         ? `${trackerMatches.length} tracker(s) detected, consent platform present`
         : `${trackerMatches.length} tracker(s) with NO consent platform`,
     detail: trackerMatches.length > 0
-      ? `Trackers found in page markup: ${trackerMatches.join(", ")}. ${hasConsentPlatform ? "A consent platform was also detected." : "No consent management platform was found — these trackers likely fire before consent."}`
+      ? `Trackers found in page markup: ${trackerMatches.join(", ")}. ${hasConsentPlatform ? `A consent platform was also detected (${consentMatches[0]}).` : "No consent management platform was found — these trackers likely fire before consent."}`
       : "No third-party marketing/analytics trackers found in the served HTML.",
   };
   if (trackerMatches.length > 0 && !hasConsentPlatform) {
@@ -779,10 +797,9 @@ export async function runScan(url) {
   }
 
   // 2. Cookie consent detection
-  const consentMatches = [];
-  for (const sig of CONSENT_SIGNATURES) {
-    if (sig.re.test(teknisk)) consentMatches.push(sig.name);
-  }
+  // Samme liste som `trackers` regel 0b brugte. Den lå to gange i denne fil —
+  // to steder der læser det samme og skriver det samme, hvilket er præcis
+  // hvad der gør at de to rækker kan komme til at svare forskelligt.
   checks.cookies = {
     pass: consentMatches.length > 0,
     warn: consentMatches.length === 0,

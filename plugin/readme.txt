@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.20
+Stable tag: 1.3.21
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,16 +114,15 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
-= 1.3.20 (2026-09-26) =
-* Fix: the words of a tool counted as the tool. Every signature - trackers, consent platforms, form plugins - was tried against the whole page HTML, so a paragraph that merely *writes* "we use Matomo" produced a red tracker row and a fix instructing the customer to install a consent platform they already do not need, and a blog post naming Typeform produced "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy page configured".
-* Measured before the fix: 12 false findings per language across Danish, Swedish, Dutch and English, in this plugin, the free scanner and the published CLI engine - 48 in total, none of them true.
-* Evidence is now code - an inline script, a src or href on an external asset, the noscript pixel fallback - and element attributes, because Contact Form 7 ships as <div class="wpcf7"> in markup rather than as a script. Prose is not evidence for either.
-* The patterns themselves are unchanged, so nothing that was really detected stopped being detected: the same pages with a real script, a real pixel or a real wpcf7 class give the same rows as before. Measured in both directions.
-* The DORA signals are deliberately left reading the whole page. Their markers - SPF record, business continuity plan, status page - are claims about the organisation rather than about code running, and a company that writes "we have a business continuity plan" on its security page has said exactly what that row asks about.
-* If you scanned your site between 1.3.19 and now, treat the trackers, cookie-consent and forms rows as unknown rather than as clean: a row passed on a sentence may now be reported as a finding. Run a new scan.
+= 1.3.21 (2026-09-27) =
+* Fix: a DORA page signal was only recognised with a hyphen or an underscore between the words, so the wording an English security page actually uses was read as nothing. "Business continuity plan", "incident response" and "status page" are written with spaces. Measured before the fix: 0 of those three markers in this plugin, in the free scanner and in the published CLI engine, on a page that lists all three. The row now recognises hyphen, underscore or a space, in all three products.
+* The Google Tag Manager fallback was invisible. Google's own documentation asks every GTM site to add a <noscript> iframe pointing at googletagmanager.com/ns.html, and on a site that has only the fallback that iframe is the only analytics reference there is. The pattern matched the container script alone, so such a site was told "Third-party trackers: 0 found" - a clean row on a page that still sends a pixel. This was never a false positive from the 1.3.20 narrowing: the pattern had never matched it.
+* The scanner and this plugin answered the same question in two different sentences. The plugin wrote "A consent platform was also detected (Klaro / ...)" and the scanner wrote "A consent platform was also detected." The scanner now names the platform, reading the same signature list in the same order, so the same website produces the same report from both products.
+* The DORA row still reads the whole page, on purpose. Its markers are claims about the organisation rather than about code running, and a company that writes "we have a business continuity plan" on its security page has said exactly what that row asks about.
+* If you scanned your site between 1.3.20 and now, treat the DORA and tracker rows as unknown rather than as clean: a scan before may now report signals it did not. Run a new scan.
 
 = 1.3.20 (2026-09-26) =
-* Fix: the words of a tool counted as the tool. Every signature - trackers, consent platforms, form plugins - was tried against the whole page HTML, so a paragraph that merely *writes* "we use Matomo" produced a red tracker row and a fix instructing the customer to install a consent platform they did not need, and a blog post naming Typeform produced "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy page configured".
+* Fix: the words of a tool counted as the tool. Every signature - trackers, consent platforms, form plugins - was tried against the whole page HTML, so a paragraph that merely *writes* "we use Matomo" produced a red tracker row and a fix instructing the customer to install a consent platform they already do not need, and a blog post naming Typeform produced "Forms detected (Typeform / Formspree / Jotform), but no Privacy Policy page configured".
 * Measured before the fix: 12 false findings per language across Danish, Swedish, Dutch and English, in this plugin, the free scanner and the published CLI engine - 48 in total, none of them true.
 * Evidence is now code - an inline script, a src or href on an external asset, the noscript pixel fallback - and element attributes, because Contact Form 7 ships as <div class="wpcf7"> in markup rather than as a script. Prose is not evidence for either.
 * The patterns themselves are unchanged, so nothing that was really detected stopped being detected: the same pages with a real script, a real pixel or a real wpcf7 class give the same rows as before. Measured in both directions.
