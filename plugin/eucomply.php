@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.23
+ * Version:           1.3.24
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.23' );
+define( 'EUCOMPLY_VERSION', '1.3.24' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -809,7 +809,13 @@ class EUComply {
                 array( 'name' => 'Microsoft Clarity', 're' => '~clarity\.ms~i' ),
                 array( 'name' => 'LinkedIn Insight Tag', 're' => '~snap\.licdn\.com|_linkedin_partner_id~i' ),
                 array( 'name' => 'Snapchat Pixel', 're' => '~sc-static\.net|snaptr\([\'"]~i' ),
-                array( 'name' => 'TikTok Pixel', 're' => '~static\.tiktok\.com|ttq\.~i' ),
+                // Se `shared/scan-engine.js` for kilderne: TikToks nuværende
+                // pixel-sti er `analytics.tiktok.com/i18n/pixel/<id>.js`
+                // (hjælpe-side ads.tiktok.com, hentet 2026-09-27), ikke den
+                // ældre `static.tiktok.com/js/`. Kun vært **og** sti, fordi
+                // en TikTok-video indlejret fra `www.tiktok.com/embed/` ikke
+                // er en pixel.
+                array( 'name' => 'TikTok Pixel', 're' => '~analytics\.tiktok\.com/|static\.tiktok\.com|ttq\.~i' ),
                 array( 'name' => 'Matomo / Piwik', 're' => '~matomo|piwik\.js~i' ),
                 array( 'name' => 'Plausible', 're' => '~plausible\.io\/js~i' ),
                 // Pinterests egen dokumentation ("Install the base code",
@@ -819,7 +825,13 @@ class EUComply {
                 // billed-CDN ligger også på `pinimg.com`, og et billede er ikke
                 // et tracker-fund. Spec: `docs/eucomply-signatur-prosa.md`.
                 array( 'name' => 'Pinterest Tag', 're' => '~s\.pinimg\.com/ct/|ct\.pinterest\.com/v3/|cdn\.pinterest\.com.*pin.*js|pintrk\(~i' ),
-                array( 'name' => 'Google Ads remarketing', 're' => '~googleadservices\.com|google_conversion~i' ),
+                // `googletagservices.com/tag/js/gpt.js` er Google tag, den
+                // officielle afløser for `googleadservices.com/pagead/
+                // conversion.js`, og den ligger på en anden vært end de to
+                // mønstre denne række ellers kender. 200 fra Googles egen
+                // vært 2026-09-27; målt før rettelsen gav den
+                // `Third-party trackers: 0 found` i alle tre produkter.
+                array( 'name' => 'Google Ads remarketing', 're' => '~googleadservices\.com|googletagservices\.com/tag/js/gpt\.js|google_conversion~i' ),
                 array( 'name' => 'DoubleClick / AdSense', 're' => '~doubleclick\.net|googlesyndication~i' ),
             ),
             // Consent platforms, used by the trackers check to tell "tracker
