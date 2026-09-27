@@ -276,7 +276,21 @@ const DAEKNING = {
 const DAEKNING_TRACKERE = {
   "Google Analytics / GTM":
     [["Google Analytics", '<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>', "vaert 200"],
-     ["GTM", '<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);})(window,document,"script","dataLayer","GTM-ABC123");</script>', "vaert 404 på et opdigtet id 2026-09-27"]],
+     ["GTM", '<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);})(window,document,"script","dataLayer","GTM-ABC123");</script>', "vaert 404 på et opdigtet id 2026-09-27"],
+     // Opgave 72 del 3. `ns.html` lå i mønstret som en **indre** alternativ i
+     // `(?:gtm\.js|ns\.html|gtag\/js)`, og portens egen kommentar sagde, at
+     // `ns.html` var "dækket af samme mønstalternativer" — den var dækket af
+     // et alternativ, der så ud til at hedde GTM, fordi `gtm.js` lå i samme
+     // gruppe. Da del 3 læser de indre veje som deres egne fragmenter, faldt
+     // den ned som sit eget alternativ, og den manglede en streng. Det er
+     // samme fejl som opgave 52: et navn der ikke rummer den ordform kunden
+     // møder i markup'en. Nu har den den **målte** form, og den er den
+     // iframe Googles egen dokumentation beder alle GTM-sites installere.
+     // Bevisstyrken er målt 2026-09-27 samme dag: `googletagmanager.com/ns.html`
+     // svarer **400** uden id (1 555 B) og **404** på et opdigtet id (1 582 B) —
+     // værten svarer altså på præcis den sti fallbacken peger på, samme måleform
+     // som `gtm.js` ovenfor.
+     ["GTM", '<noscript><iframe height="0" width="0" style="display:none;visibility:hidden" src="https://www.googletagmanager.com/ns.html?id=GTM-ABC123"></iframe></noscript>', "vaert 400 uden id og 404 på et opdigtet id 2026-09-27"]],
   "Meta (Facebook) Pixel":
     [["Meta (Facebook) Pixel", '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>', "vaert 200"]],
   "Hotjar":
@@ -421,7 +435,17 @@ const DAEKNING_FORMS = {
     [["Typeform", '<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
      ["Formspree", '<script src="https://formspree.io/js/formspree.js"></script>', "vaert 403 fra byggemiljøet 2026-09-27"]],
   "WooCommerce Checkout":
-    [["WooCommerce Checkout", '<div class="woocommerce-checkout">', "dokumenteret plugins.svn.wordpress.org/woocommerce/trunk/templates/checkout/form-checkout.php 2026-09-27"]],
+    // Opgave 72 del 3. `wc_[_-]?checkout` lå i mønstret uden streng, og det er
+    // ikke en antagelse: WooCommerce **selv** skriver variablen, på den linje
+    // der danner navnet. `includes/class-wc-frontend-scripts.php` i
+    // WordPress.orgs egen trunk (200, 35 439 B) har på linje 597
+    // `$name = str_replace( '-', '_', $handle ) . '_params';` og kalder
+    // `wp_localize_script( $handle, $name, … )`, og linje 504 gør
+    // `self::enqueue_script( 'wc-checkout' )` på `is_checkout()`. Navnet bliver
+    // derfor `wc_checkout_params` i checkout-sidens egen markup, og
+    // leverandørens `assets/js/frontend/checkout.js` (200, 45 481 B) læser det
+    // 20 gange. To uafhængige steder i leverandørens egen kode.
+    [["WooCommerce Checkout", '<div class="woocommerce-checkout"><script>var wc_checkout_params = {"ajax_url":"https://shop.example/wc-ajax/checkout","checkout_url":"https://shop.example/checkout/"};</script>', "dokumenteret plugins.svn.wordpress.org/woocommerce/trunk/templates/checkout/form-checkout.php 2026-09-27 · wc_checkout_params fra class-wc-frontend-scripts.php:597 målt 2026-09-27"]],
   "Shopify Checkout":
     [["Shopify Checkout", '<link rel="stylesheet" href="https://cdn.shopify.com/extensions/01a0e1ba/shopify-accelerated-checkout-styles.css">', "dokumenteret 4 butikker, 6 sider målt 2026-09-27"]],
   // To leverandører, to strenge. Den anden er **læst i leverandørens egen
@@ -1222,6 +1246,7 @@ function topAlternativer(src) {
   return alt;
 }
 
+
 /**
  * Kun bogstaver og tal, og **tegnklasser væk**.
  *
@@ -1231,7 +1256,19 @@ function topAlternativer(src) {
  * målt. Klasserne er valg, ikke navne, så de skal ikke tælle med.
  */
 function normalisér(s) {
-  return String(s).replace(/\[[^\]]*\]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  return String(s)
+    .replace(/\[[^\]]*\]/g, "")
+    // Opgave 72 del 3. `\b` er en **nulbredde-påstand**, ikke et tegn: den siger
+    // "her er en ordgrænse" og skriver ingen karakter. Uden denne linje blev den
+    // til bogstavet `b` og limte sig til ordet — `\bwpcf7\b` blev `bwpcf7b` — så
+    // fragmenterne var ubrugelige og markørerne umulige at spore. Samme
+    // fejlklasse som tegnklasserne ovenfor, og målt på dens følger: **2 af de 7**
+    // `forms`-huller var kun huller, fordi porten limte et `b` foran dem. Med
+    // `\b` væk er `wpcf7` sporet i Contact Form 7s **egen** installationstest
+    // (`<div class="wpcf7">`) og `cf7` deri, så begge er lukket ved måling.
+    .replace(/\\[bB]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 }
 
 /**
@@ -1288,6 +1325,57 @@ const ALIASSER = {
   },
 };
 
+/**
+ * **Målt 2026-09-27 (iteration 74, del 3): 16 i alt** — consent 0, trackers 5,
+ * forms **2**, dora 4. `forms` gik 7 → 2, og ingen af de syv blev lukket ved at
+ * slå ratchetten ned. **Tre var portens egen fejl:** `normalisér` skrev
+ * `\b` som bogstavet `b` og limte det til ordet, så `\bwpcf7\b` blev
+ * `bwpcf7b` — et fragment, ingen installationstest kan rumme. Da `\b` er en
+ * nulbredde-**påstand** og ikke et tegn, er det samme fejl som tegnklasserne i
+ * opgave 71, og rettelsen er at fjerne den. `\bwpcf7\b` står i Contact Form 7s
+ * **egen** installationstest (`<div class="wpcf7">`), og `\bcf7[-_]` ligger deri
+ * — begge lukket ved måling, ikke ved en ny note.
+ *
+ * **En var en måling i leverandørens egen kode:** `wc_[_-]?checkout` lå i
+ * WooCommerce-rækken uden streng. `includes/class-wc-frontend-scripts.php` i
+ * WordPress.orgs trunk (200, 35 439 B) danner navnet på linje 597 —
+ * `$name = str_replace( '-', '_', $handle ) . '_params';` — og kalder
+ * `wp_localize_script( $handle, $name, … )` på `is_checkout()` (linje 504), så
+ * checkout-siden selv skriver `wc_checkout_params`. Leverandørens egen
+ * `assets/js/frontend/checkout.js` (200, 45 481 B) læser den 20 gange. Strengen
+ * rummer nu den inline-linje, så markøren sporer sig i **målt** markup.
+ *
+ * **To var ubeviste gæt og er væk fra de to JS-motorer** — samme metode som
+ * Quantcast i 1.3.25: målt på rigtige sider eller i leverandørens egen fil, og
+ * fjernet når der ikke kom en måling. `checkout[_-]?shopify`: **0 forekomster på
+ * 3 af 3** rigtige Shopify-kurvsider (allbirds.com 423 051 B, gymshark.com
+ * 51 683 B, kith.com 1 523 685 B — alle tre med `cdn.shopify.com` 15/10/9 og
+ * den målte `shopify-accelerated-checkout` 4 gange, så strengen holder).
+ * `[_-]?stripe[_-]?form`: **0** forekomster af `stripe_form`, `stripe-form` og
+ * `stripeForm` i leverandørens egen `https://js.stripe.com/v3/` (200,
+ * 1 121 765 B) — samme fil der bærer de to strenge rækken har.
+ *
+ * **De to der er tilbage, og hvorfor de står.** `caldera[_-]?forms\b` kan
+ * **lukkes næste iteration**, og det er en udgivelse: wp.org-API'en svarer
+ * **404** på `caldera-forms` med `"closed": true, "closed_date": "2022-04-05",
+ * "reason": "Author Request"` og *"This closure is permanent"* — men
+ * leverandørens **eget repo** `CalderaWP/caldera-forms` (200, ikke arkiveret,
+ * sidste push 2024-06-11) har `Text Domain: caldera-forms` og
+ * `CFCORE_URL = plugin_dir_url(__FILE__)` i `caldera-core.php`, så mappen hedder
+ * `wp-content/plugins/caldera-forms/`. Løsningen er derfor at **navngive**
+ * Caldera i rækkens navn og give den en streng, som opgave 71 gjorde med Ninja —
+ * det rører pluginens egen række og kræver derfor en ny version, ikke en
+ * port-fix. `data-stripe-(key|publishable)` er et **helt særligt** tilfælde: de
+ * to veje ligger i én gruppe, og portens egen kommentar siger, at tilskrivningen
+ * skal prøve alle fragmenter. Målt: selv om porten læser **indveje** i grupper
+ * som egne fragmenter, bliver hullet **2** større, ikke mindre — den kortere vejs
+ * attribut `data-stripe-publishable` findes ikke i installationstesten, og
+ * helheden `datastripekeypublishable` findes den heller ikke. En port-rettelse
+ * uden måling på den anden vejs attribut ville derfor bare flytte hullet, så
+ * rettelsen er **ikke** lavet; næste iteration måler Stripes egen legacy-script
+ * (`checkout.stripe.com/checkout.js`) for begge attributter og skriver dem i
+ * strengen.
+ */
 /**
  * Højst antal mønstalternativer uden tilskrivning — opgave 71.
  *
@@ -1354,7 +1442,7 @@ const ALIASSER = {
  * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 7, dora: 4 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 2, dora: 4 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -1955,6 +2043,33 @@ if (process.argv.includes("--selftest")) {
   // …og den skal være grøn med dem, ellers er ratchetten det hele.
   expectGreen("(i) (de målte aliasser giver sporing på alle ni fund)", contractAlternativer,
     "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
+
+  // 31g. Opgave 72 del 3: de tre lukninger i `forms` skal hvile på **målingen**,
+  //     ikke på portens egen normalisering. Mutationen tager `wpcf7` ud af
+  //     Contact Form 7s installationstest — den markup CF7 leverer — så både
+  //     `\bwpcf7\b` og `\bcf7[-_]` mister det eneste bevis de har, og porten
+  //     skal blive rød på præcis de to. Uden denne case ved næste agent ikke om
+  //     normaliseringen bærer sporingen eller om porten bare har et højere tal.
+  const cf7UdenMarkup = {
+    ...DAEKNING_FORMS,
+    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
+      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor"]
+        .map(([l, s, b]) => (l === "Contact Form 7" ? [l, '<div class="kontaktformular"></div>', b] : [l, s, b])),
+  };
+  expectRed("(i) (CF7s egen markup er beviset for \bwpcf7\b og \bcf7[-_])",
+    contractAlternativer, "forms", R5_FORMS, cf7UdenMarkup, ALIASSER, HOEJST_UTILREGNET.forms);
+
+  // 31h. Samme krav for `wc_[_-]?checkout`: WooCommerce skriver selv
+  //     `wc_checkout_params` (class-wc-frontend-scripts.php:597), så strengen
+  //     skal rumme den. Uden den skal porten blive rød — ellers er lukningen en
+  //     vane og ikke en måling.
+  const wooUdenParams = {
+    ...DAEKNING_FORMS,
+    "WooCommerce Checkout": DAEKNING_FORMS["WooCommerce Checkout"]
+      .map(([l, s, b]) => [l, '<div class="woocommerce-checkout">', b]),
+  };
+  expectRed("(i) (WooCommerce skriver selv wc_checkout_params — strengen er beviset)",
+    contractAlternativer, "forms", R5_FORMS, wooUdenParams, ALIASSER, HOEJST_UTILREGNET.forms);
 
   // 31. R5 regel (h): en begrundelse skal være en måling. "Kan ikke findes" er
   //     en vilje, og den er præcis den, der gjorde de tolv antagelser i

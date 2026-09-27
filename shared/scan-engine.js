@@ -167,8 +167,25 @@ const FORM_PLUGIN_SIGNATURES = [
   // or carries neither word (`js.stripe.com/v3`, `<div id="payment-element">`).
   // The added alternatives are the measured forms; the old ones stay, because
   // they cost nothing and a bespoke theme may well use them.
-  { re: /shopify[_-]?(accelerated[_-]?)?checkout|checkout[_-]?shopify/i, name: "Shopify Checkout" },
-  { re: /stripe[_-]?checkout|stripe[_-]?payment|[_-]?stripe[_-]?form|js\.stripe\.com\/v[0-9]|data-stripe-(key|publishable)/i, name: "Stripe Checkout / Payment" },
+  // Opgave 72 del 3. `checkout[_-]?shopify` er **fjernet**, målt 2026-09-27 på
+  // tre rigtige Shopify-kurvsider: allbirds.com (423 051 B), gymshark.com
+  // (51 683 B) og kith.com (1 523 685 B). Alle tre er Shopify-butikker —
+  // `cdn.shopify.com` 15/10/9 gange — og alle tre har den målte markør
+  // `shopify-accelerated-checkout` 4 gange, så strengen holder. Den omvendte
+  // ordstilling: **0 forekomster på 3 af 3 sider**. Den var en gæt, så den er
+  // væk — samme metode som Quantcast i 1.3.25 og CookieNinja i 1.3.29.
+  // `shopify[_-]?checkout` i PLATFORM_SIGNATURES nedenfor er en anden række og
+  // urørt.
+  { re: /shopify[_-]?(accelerated[_-]?)?checkout/i, name: "Shopify Checkout" },
+  // Opgave 72 del 3. `[_-]?stripe[_-]?form` er **fjernet**: leverandørens egen
+  // `https://js.stripe.com/v3/` (200, 1 121 765 B) rummer **0** forekomster af
+  // `stripe_form`, `stripe-form` og `stripeForm` — målt 2026-09-27 i samme fil
+  // der bærer de to strenge denne række har (`js.stripe.com` 31 gange,
+  // `payment-element` 6 gange). `data-stripe-key` står der **ikke**, så den
+  // attribut her kommer fra Stripes egen dokumentation, ikke fra v3-filen;
+  // portens installationstest for Payment Element rummer den, og det er den
+  // måling dommen hviler på.
+  { re: /stripe[_-]?checkout|stripe[_-]?payment|js\.stripe\.com\/v[0-9]|data-stripe-(key|publishable)/i, name: "Stripe Checkout / Payment" },
 ];
 
 const PLATFORM_SIGNATURES = [
