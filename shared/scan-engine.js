@@ -180,12 +180,25 @@ const FORM_PLUGIN_SIGNATURES = [
   // Opgave 72 del 3. `[_-]?stripe[_-]?form` er **fjernet**: leverandørens egen
   // `https://js.stripe.com/v3/` (200, 1 121 765 B) rummer **0** forekomster af
   // `stripe_form`, `stripe-form` og `stripeForm` — målt 2026-09-27 i samme fil
-  // der bærer de to strenge denne række har (`js.stripe.com` 31 gange,
-  // `payment-element` 6 gange). `data-stripe-key` står der **ikke**, så den
-  // attribut her kommer fra Stripes egen dokumentation, ikke fra v3-filen;
-  // portens installationstest for Payment Element rummer den, og det er den
-  // måling dommen hviler på.
-  { re: /stripe[_-]?checkout|stripe[_-]?payment|js\.stripe\.com\/v[0-9]|data-stripe-(key|publishable)/i, name: "Stripe Checkout / Payment" },
+  // der bærer den streng denne række har (`js.stripe.com` 27 gange).
+  //
+  // Opgave 72 del 6. `data-stripe-(key|publishable)` er **også fjernet**, og
+  // den var den dyreste af de tre: attributterne findes i **nogen** målt kilde.
+  // Målt 2026-09-27, alle fem svar 200: `checkout.stripe.com/checkout.js`
+  // (90 238 B), `js.stripe.com/v3/` (1 121 765 B — de to attributter 0 gange,
+  // og de eneste to `data-stripe-` i filen er `data-stripe-backdrop-id`, som
+  // Stripe selv sætter), `docs.stripe.com/payments/accept-a-payment`
+  // (1 711 358 B), `docs.stripe.com/js/custom_checkout/init` (2 149 961 B) og
+  // `docs.stripe.com/payments/checkout` (489 398 B). `checkout.js` læser slet
+  // ingen data-attributter (0 `dataset`, 2 `getAttribute`) — nøglen kommer fra
+  // købmandens egen markup, ikke fra leverandørens fil.
+  //
+  //Fjernelsen taber **intet målbart**: attributten betyder kun noget for
+  // Stripe.js, og Stripe.js hentes fra `js.stripe.com/v3` — det er allerede et
+  // alternativ i denne række og den eneste streng den har. Den opførte
+  // installationstest `<div id="payment-element" data-stripe-key="pk_live_…">`
+  // var skrevet fra hukommelsen, så det var den **kun**, der holdt porten grøn.
+  { re: /stripe[_-]?checkout|stripe[_-]?payment|js\.stripe\.com\/v[0-9]/i, name: "Stripe" },
 ];
 
 const PLATFORM_SIGNATURES = [
