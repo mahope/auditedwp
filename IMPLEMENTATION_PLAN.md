@@ -1,3 +1,115 @@
+Opdateret: 2026-09-28 (iteration 86)
+
+Sidste iteration: **jeg ville finde ud af, om de 0 besøgende var ærlige, for
+de har afgjort hver prioritering i 85 iterationer — og de var ærlige.
+Taggen virker. Det er derfor den nu er målt i stedet for antaget.**
+
+Målt 2026-09-28 01:15–01:24, altså på det publicerede træ (228 HTML) og
+ikke på kilden:
+
+| mål | resultat |
+|---|---|
+| sider med analytics-tag | **225 af 225** (de 3 øvrige er `_partials`/`shared`-fragmenter uden `<head>` — inkluderede, ikke udgivne) |
+| CSP `script-src` | tillader `https://analytics.holstjensen.eu` — tilladt |
+| CSP `connect-src` | tillader samme — tilladt |
+| scriptet | `200`, `content-length: 6204`, `cdn-tag: tracker_script::pa-X_LLzQW6nZX70uQN8qAyA` |
+| **adfærd, målt** | `tools/analytics_probe.mjs` kører den rigtige tag fra `/badge/` i en stubbet DOM: **præcis 1 pageview**, `d: "eucomplypro.com"`, `POST https://analytics.holstjensen.eu/api/event` — i **begge** rækkefølger |
+
+**Den sidste række er pointen.** Plausible-proxy-scriptet definerer selv
+sit endpoint og sit domæne og kalder sig kun op, hvis `plausible.o`
+findes; det `o` sættes af inline-stubben, og om det overlever afhænger
+af om `async`-scriptet nåede at køre før eller efter den. Begge
+rækkefølger er mulige i en rigtig browser, så **en tag der sender intet
+ser identisk ud med en side ingen besøger** — og jeg kunne ikke skelne
+de to ved at læse koden. Det krøb en måling. Før denne port var tallet
+0 altså ubrugeligt: det kunne være ingen trafik **eller** en død tag, og
+intet i repoet skilte de to. Nu er forskellen en egenskab ved filerne.
+
+**Konklusionen er den ubehagelige, ærlige version: EUComply har 0
+mennesker.** Cloudflare's 5265 besøgende-dage er bots. 85 iterationers
+produktforbedringer har altså nået et publikum på nul, og ingen ny
+konverterings- eller SEO-opgave i denne plan kan ændre det — de kan kun
+gøre det bedre for den første besøgende, når den kommer. Det er skrevet
+op i `❓` nedenfor, fordi distributionssiden af opgaven er Mads' og ikke
+min.
+
+**Ny port `tools/check_analytics.py` (trin 27) — fire kontroller:**
+1. **Dækning.** Hver publiceret side med `<head>` skal have taggen; en
+   side uden `<head>` er kun gyldig under `_partials/` og `shared/`.
+2. **CSP må ikke blokere taggen.** Origin skal stå i både `script-src`
+   og `connect-src` — uden den første dør scriptet, uden den anden dør
+   *eventet*, stille. Begge ser ens ud i koden.
+3. **Ét script-id** i træet, i byggeren og i den optagede fixture, så en
+   roteret id ikke efterlader porten med en gammel måling.
+4. **Adfærd.** Ét pageview pr. rækkefølge, til det rigtige domæne og
+   endpoint. Uden `node` er porten **rød** med beskeden — en port der
+   springer sin egen kontrol over er grøn uden at have kontrolleret
+   noget, samme fejlklasse som opgave 9's kanin-hul.
+
+**9 negative selftest-cases:** grønt baseline-træ først; side uden tag;
+CSP uden `connect-src`; CSP uden `script-src`; fremmed script-id i træet;
+publiceret side uden `<head>`; træ uden sider; **tag uden init-kald sender
+0 pageviews**; og en mutation uden forskel, der beviser at selftesten kan
+fejle.
+
+**To fejl i min egen kode, fundet fordi baseline-træet skulle være grønt:**
+(a) porten læste CSP fra `site/_headers`, men det er `site-dist/_headers`
+der udgives — mutationerne skrev til træets egen fil og blev ignoreret,
+så to cases var grønne uden at teste noget; (b) selftestens baseline var
+håndskrevet med kun `<script src>` og uden init-kallet, så den var rød i
+portens egen adfærdskontrol, og alle mutationer så røde ud af en fejl i
+baseline. Nu er baseline byggerens **egne** `PLAUSIBLE_TAG`.
+
+**Målingen kostede 40 minutter i en fejltagelse, og den er værd at
+noteres.** Jeg målte "0 af 228 sider har taggen" og fik reproduceret det
+tre gange — fordi jeg i mine egne målescripts skrev script-id'et med `Q`
+i stedet for `L` (`pa-X_L**Q**z` mod `pa-X_L**L**z`). Konklusionen holdt
+alle tre gange, og var forkert alle tre gange. `wc -c` mod
+`read_text()` gav samme effekt: 21668 **bytes** mod 21622 **tegn** i
+em-dashes og emoji. To tal der ligner hinanden, er ikke det samme tal.
+Evidensen skal læses fra den samme kilde to gange.
+
+Gate: `GATE GRØN — alle 27 steps bestået` (26 før), herunder
+`ANALYTICS-GATE GRØN — 228 sider, 225 med tag … ét pageview pr. rækkefølge`
+og `SELFTEST GRØN — alle 9 negative cases fanges`. **Ingen `site/**`-fil,
+ingen `plugin/**`-fil, ingen ny version, ingen ny zip, intet
+`update.json`** — så intet publiceres ved denne diff, og CI-loggen er den
+eneste evidens. Kodecommit `35badf7`, merge `375f106` 2026-09-28 01:24
+CEST.
+
+Opgave 86: de 0 besøgende viste sig at være rigtige — så spørgsmålet ikke
+længere er om vores måling virker, men om nogen overhovedet kommer
+
+❓ **Til Mads — det her er ikke en fejl, og det kan ikke løses fra en
+agent.** Målingen siger, at der ingen trafik er: taggen virker, og der
+kommer ingen. 85 iterationers arbejde på fejl, caching, caches, løfter og
+gates har nået **nul** mennesker. Alt det arbejde var ikke spildt — det er
+stadig alt, der gør at *den første* kunde ikke møder en fejl, en gammel
+zip eller fire opfundne samtykkeplatforme — men det er ikke længere nogen
+grund til at fortsætte med flere funktioner. De næste 20 iterationer med
+konverterings- og SEO-opgave vil med sikkerhed give 0 kr, fordi de
+forbedrer noget, ingen besøger.
+
+Det der mangler er distribution, og de tre veje er alle Mads':
+1. **En post der fortæller historien.** Det er en historie værd at læse:
+   en scanner der fortalte en kunde han kører fire samtykkeplatforme hvor
+   han kører nul, og en WordPress-kunde der fik en rapport, der vidste
+   mindre end den scanner, der var gratis. Den ligger i `RAPPORT-2026-08-26.md`
+   og i den her plans fund — den skal bare ud af repoet.
+2. **`npm publish` og Chrome Web Store.** Begge er forbudt for mig
+   (kontrakten), og begge er de steder, hvorfra et værktøj som dette
+   typisk får sin første bruger. `mahope/eucomply-scanner` står på 14
+   kloninger og 0 npm-downloads — den eksisterer kun som kilde.
+3. **Om de andre produkter linker til EUComply.** `mahope.tools` har den
+   eneste reelle trafik, der findes, og den ligger i et andet repo.
+
+❓ **Til Mads — `eucomply-scan`-workeren, uændret fra iteration 85.** Den
+dyreste fejl i hele rapporten ligger stadig live og kan kun rettes med ét
+kommando: `cd worker-scan && wrangler deploy`. Det udgiver scanneren med
+`027fc40`s motor; bagefter skal `drift`-felterne i `tools/funnel_drift.json`
+slettes, og porten bliver grøn med ens etiketter. Fjerde opgave i træk bag
+spørgsmål 9.
+
 Opdateret: 2026-09-28 (iteration 85)
 
 Sidste iteration: **køen var tom igen (5, 6 og 7 er blokeret på spørgsmål 7 og
@@ -551,6 +663,11 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 - `LUKKET` (målt 27/9, iteration 82): den afsluttende afsnitlinje i denne køsektion, der bad om at lukke "de 27 ubeviste alternativer" og opremsede dem — `cookie[_-]?notice`, `caldera[_-]?forms`, `fbq(`, `hj(`, `snaptr(`, `ttq.`, `_linkedin_partner_id`, `static.tiktok.com`, `ct.pinterest.com/v3/`, `multi[ _-]?az[ _-]?dns`, `security[ _-]?incident`, `bcp[ _-]?plan` — var **oprindelig tekst fra før opgave 72**. Den pegede på `HOEJST_UTILREGNET`, som den gang stod på 27; opgave 72 lukkede dem i syv dele, og **ratchetten står nu på 0 i alle fire tabeller** (`{ consent: 0, trackers: 0, forms: 0, dora: 0 }`). Hvert eneste alternativ på den liste er altså lukket, og en agent der læste den ville genbestille arbejde, der er gjort og udgivet i plugin 1.3.30–1.3.35.
 
 
+- `FÆRDIG`: **86 — 0 besøgende viste sig at være ærlige: taggen virker, og der kommer ingen** på `ceo/analytics-gate`, kodecommit `35badf7`, merge `375f106`. Ny port trin 27 `tools/check_analytics.py` + den adfærdsmålende `tools/analytics_probe.mjs` + optaget tracker i `tools/fixtures/`. Målt: tag på 225 af 225 sider, CSP tillader både `script-src` og `connect-src`, scriptet 200 (6204 B), og **ét pageview med `d: "eucomplypro.com"` i begge rækkefølger** i en stubbet DOM. `9 negative selftest-cases`, `GATE GRØN — alle 27 steps bestået`. To fejl i min egen kode (CSP læst fra kilden, baseline uden init-kald). **Ingen `site/**`-fil.** Se afsnittet øverst.
+- `NÆSTE` (ny, og den eneste køpost der ikke kræver Mads): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en.
+- `LUKKET` (målt 01:24, samme iteration): **`site/pro/sample-report/index.html` så ud til at blive skrevet undervejs, mens `git status` var ren.** Jeg fik mistanke om en skjult mutation, fordi filens længde syntes at ændre sig (21622 → 21668). Forklaringen er triviel og må ikke koster den næste agent tid: **`wc -c` tæller bytes, `read_text()` tæller tegn**, og em-dashes og emoji gør de to tal forskellige (46 bytes) for præcis den fil. Der var ingen mutation. Mtime 01:23:42 er **min egen kvalitetsgate**, som regenererer prøverapporten; indholdet er byte-identisk med HEAD, derfor er `git status` ren. *Bemækningsvis* findes launchd-agenter (`com.mahope.ceo-check`, `com.mahope.hermes-ceo`, `com.mahope.oxloop-watchdog`) i `~/Library/LaunchAgents`, så et samtidigt loop kan røre arbejdstræet: tjek `git status` før du differ, og stol på **indhold** aldrig på mtime.
+- `LUKKET`: **`_expect_red`-familien.** `check_asset_delivery.py` (trin 25) havde "grøn selftest mens seks cases fejlede"; `check_analytics.py` er skrevet med `return`-sandhed og en kalder, der summerer selv, så samme fejlklasse kan ikke gentages der. Beviset er den negative case, der returnerer `False`.
+
 ## Iterationsstatus
 
 - `FÆRDIG` (del 1 + 2): **48 — samme egenskab for hele varedybden.** Del 1 (`forms` i begge motorer) på `ceo/forms-fejl-etiket`; del 2 er **opgave 49** nedenfor, som lukker de to åbne acceptkriterier med den permanente port (trin 19). Se **opgave 50** nedenfor: samme fejlklasse, en niveau lavere — `forms` svarede *svagere* end den gratis scanner.
@@ -875,7 +992,7 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 Gate-definitionen er låst her, før første implementeringsiteration:
 
 1. **PHP syntax:** `php -l` på hver ændret `.php`-fil. Ved plugin-ændringer skal både `plugin/` og deploy-kopien `site/plugin/` være byte-identiske.
-2. **Repo-tests:** repoet har ingen root-test-suite eller PHP-testkonfiguration. Den regressionstest for påstande, der tilføjes i opgave 1, bliver den nye obligatoriske test. Hvis scannerkoden ændres, køres desuden scannerens smoke-test og `npm pack --dry-run` i `eucomply-scanner/`. Siden opgave 10 gælder desuden `tools/check_cta.py` (købsvejens kontrakt) **og** `tools/check_cta.py --selftest` (beviser at gaten kan fejle), og siden opgave 11 `tools/check_runtime.py` **og** `tools/check_runtime.py --selftest` (beviser at `engines`, `.nvmrc`, CI's `node-version` **og handlingernes major** ikke kan glide fra hinanden). Siden opgave 15 desuden `tools/check_package_identity.py` **og** `--selftest` (beviser at ingen to pakker kan eje samme npm-navn). Siden opgave 23 klassificerer `check_cta.py` det **publicerede** træ (`site-dist/`), ikke kilde-træet, og `tools/build_public_tree.py` skal derfor køre **før** repo-tests — samme rækkefølge som i deploy-workflowen. Siden opgave 30 har gaten **11 steps** (var 10): `tools/check_production_drift.py` måler den version hver Cloudflare Worker **faktisk svarer** mod den version koden erklærer, fordi `worker-*/` deployes manuelt og ingen af de ti forrige steps så den afstand. Den kræver, at enhver forskud afstand er noteret med en begrundelse i `tools/production_drift.json`; ellers er den rød.
+2. **Repo-tests:** repoet har ingen root-test-suite eller PHP-testkonfiguration. Den regressionstest for påstande, der tilføjes i opgave 1, bliver den nye obligatoriske test. Hvis scannerkoden ændres, køres desuden scannerens smoke-test og `npm pack --dry-run` i `eucomply-scanner/`. Siden opgave 10 gælder desuden `tools/check_cta.py` (købsvejens kontrakt) **og** `tools/check_cta.py --selftest` (beviser at gaten kan fejle), og siden opgave 11 `tools/check_runtime.py` **og** `tools/check_runtime.py --selftest` (beviser at `engines`, `.nvmrc`, CI's `node-version` **og handlingernes major** ikke kan glide fra hinanden). Siden opgave 15 desuden `tools/check_package_identity.py` **og** `--selftest` (beviser at ingen to pakker kan eje samme npm-navn). Siden opgave 23 klassificerer `check_cta.py` det **publicerede** træ (`site-dist/`), ikke kilde-træet, og `tools/build_public_tree.py` skal derfor køre **før** repo-tests — samme rækkefølge som i deploy-workflowen. Siden opgave 30 har gaten **11 steps** (var 10). Siden opgave 86 har den **27 steps**, hvor de nye er `tools/check_asset_delivery.py` (25), `tools/check_live_funnel.py` (26) og `tools/check_analytics.py` (27); sidstnævnte kører `tools/analytics_probe.mjs` og kræver `node` — mangler den, er porten rød med beskeden, fordi en port der springer sin egen kontrol over er grøn uden at have kontrolleret noget.: `tools/check_production_drift.py` måler den version hver Cloudflare Worker **faktisk svarer** mod den version koden erklærer, fordi `worker-*/` deployes manuelt og ingen af de ti forrige steps så den afstand. Den kræver, at enhver forskud afstand er noteret med en begrundelse i `tools/production_drift.json`; ellers er den rød.
 3. **Obligatorisk site-build + SEO:** fra sibling-repoet `../hermes-passiv` med `AUDITEDWP_DIR` sat til denne repo-root:
    - `python3 build_sites.py --only eucomplypro.com`
    - `python3 tools/seo_check.py --only eucomplypro.com`
