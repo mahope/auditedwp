@@ -145,6 +145,25 @@ const PROSA_FIXTURES = Object.keys(PROSA).map((lang) => ({
   ),
 }));
 
+// Den modsatte fejlretning, målt på Pinterests **billed**-CDN. En rettelse af
+// opgave 61 skriver `s\.pinimg\.com\/ct\/`, fordi det er den dokumenterede
+// sti — men den naturlige næste bevægelse er at skrive hele værten, og Pinters
+// billeder ligger på `i.pinimg.com`. En butik der har lagt tre opslagsbilleder
+// op og **intet** tag har intet at slette på, og det er den fejlklasse hele
+// rækken af opgaverne 51–60 handler om: en mangel rettet med en for bred
+// regel. Derfor er den en R1-fixture — prosa-kontrakten kræver nul fund — og
+// derfor fanger mutationen nedenfor den.
+PROSA_FIXTURES.push({
+  navn: "Pinterest-billede (CDN, ikke tag)",
+  lang: "EN",
+  slags: "prosa",
+  html: side(
+    "<h1>Lookbook</h1><p>Photos from our autumn collection.</p>"
+    + '<img src="https://i.pinimg.com/originals/4a/2b/4a2b1c3d4e5f60718293a4b5c6d7e8f9.jpg" alt="Autumn collection" width="320" height="480">'
+    + '<form action="/kontakt" method="post"><input name="email" type="email" required></form>'
+  ),
+});
+
 /**
  * R2: en rigtig WordPress-side pr. mekanisme. `gruppe` er den række der skal
  * navne fundet i motorerne, `phpGruppe` er den række pluginen gør det i, når
@@ -213,6 +232,28 @@ const MEKANISME = [
     navn: "Google Ads-tag på gtag/js", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
     html: side('<script async src="https://www.googletagmanager.com/gtag/js?id=AW-9876543"></script><p>Hej</p>'),
+  },
+  {
+    // Pinterests egen dokumentation ("Install the base code",
+    // help.pinterest.com/business/article/install-the-base-code, hentet
+    // 2026-09-27) indlæser tagget fra `s.pinimg.com/ct/core.js` og kalder
+    // `pintrk('load', …)`. Det gamle mønster ramte **kun** indlejrede
+    // `pintrk(`-kald, så en side hvor et samtykketool har flyttet de
+    // indlejrede scripts ud i en bundle — eller en CSP der dem blokerer — gav
+    // "Third-party trackers: 0 found" på en side der kører tagget. Målt før
+    // rettelsen: 0 fund i alle tre produkter.
+    navn: "Pinterest-tagens loader", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Pinterest Tag",
+    html: side('<script async src="https://s.pinimg.com/ct/core.js"></script><p>Hej</p>'),
+  },
+  {
+    // Samme dokumentations side, anden sti: `<noscript>`-pixelet på
+    // `ct.pinterest.com/v3/?tid=…&event=init&noscript=1`. Det er Pinterests
+    // egen no-JavaScript-fallback, præcis som Googles og Hotjars, og porten
+    // har allerede begge de andre to. Målt før rettelsen: 0 fund i alle tre.
+    navn: "Pinterest-tagens noscript-pixel", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Pinterest Tag",
+    html: side('<noscript><img height="1" width="1" style="display:none" alt="" src="https://ct.pinterest.com/v3/?tid=2612345678901&amp;event=init&amp;noscript=1"></noscript><p>Hej</p>'),
   },
   {
     // Contact Form 7 lever som `<div class="wpcf7">` i **markup'en**, ikke som
@@ -887,6 +928,84 @@ if (process.argv.includes("--selftest")) {
         },
       ],
     },
+    /*
+     * Opgave 61. Pinterests egen dokumentation indlæser tagget fra
+     * `s.pinimg.com/ct/core.js` og lægger et `<noscript>`-pixel på
+     * `ct.pinterest.com/v3/`. Det gamle mønster kendte ingen af de to — den
+     * dokumenterede installation var kun synlig gennem det indlejrede
+     * `pintrk(`, altså kun så længe de indlejrede scripts ikke er blevet
+     * flyttet ud i en bundle af et samtykketool. Målt før rettelsen: 0 fund i
+     * alle tre produkter.
+     *
+     * De tre første fjerner **begge** nye stier fra én kopi ad gangen. De er
+     * skrevet mod den lange linje, så de fejler højt den dag et nyt alternativ
+     * kommer til, i stedet for at stå grønne på en mutation de ikke længere
+     * rammer. Den fjerde er den realistiske halve rettelse — kun loaderen,
+     * ikke pixelet — og den skal være rød på noscript-fixturen. Den femte er
+     * den modsatte fejlretning: en bred regel på **værten** rammer Pinterests
+     * billed-CDN, så en butik med tre opslagsbilleder får et tracker-fund den
+     * aldrig installerede.
+     */
+    {
+      navn: "motoren i repoet taber Pinterests dokumenterede stier",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R2",
+      fixture: "Pinterest-tagens loader",
+      foer: [
+        {
+          for: "s\\.pinimg\\.com\\/ct\\/|ct\\.pinterest\\.com\\/v3\\/|",
+          efter: "",
+        },
+      ],
+    },
+    {
+      navn: "den publicerede motor taber Pinterests dokumenterede stier",
+      fil: join(REPO, "eucomply-scanner", "engine", "index.js"),
+      forventer: "R2",
+      fixture: "Pinterest-tagens loader",
+      foer: [
+        {
+          for: "s\\.pinimg\\.com\\/ct\\/|ct\\.pinterest\\.com\\/v3\\/|",
+          efter: "",
+        },
+      ],
+    },
+    {
+      navn: "pluginen taber Pinterests dokumenterede stier",
+      fil: PLUGIN,
+      forventer: "R2",
+      fixture: "Pinterest-tagens loader",
+      foer: [
+        {
+          for: "s\\.pinimg\\.com/ct/|ct\\.pinterest\\.com/v3/|",
+          efter: "",
+        },
+      ],
+    },
+    {
+      navn: "motoren i repoet retter kun loaderen og taber noscript-pixelet",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R2",
+      fixture: "Pinterest-tagens noscript-pixel",
+      foer: [
+        {
+          for: "s\\.pinimg\\.com\\/ct\\/|ct\\.pinterest\\.com\\/v3\\/|",
+          efter: "s\\.pinimg\\.com\\/ct\\/|",
+        },
+      ],
+    },
+    {
+      navn: "motoren i repoet matcher Pinterests billed-CDN som et tag",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R1",
+      fixture: "Pinterest-billede (CDN, ikke tag)",
+      foer: [
+        {
+          for: "s\\.pinimg\\.com\\/ct\\/|",
+          efter: "pinimg\\.com|",
+        },
+      ],
+    },
   ];
 
   for (const m of MUTATIONER) {
@@ -953,7 +1072,13 @@ if (process.argv.includes("--selftest")) {
         const mutantScan = (await import(importPath)).runScan;
         if (m.forventer === "R1") {
           try {
-            contractR1([["mutationen", await engineChecks(mutantScan, prosa.html)]], prosa, MOTOR_NAVNE);
+            // `m.fixture` skal ændre **hvilken** prosa-prøve der køres. Uden det
+            // læste R1-grenen altid `prosa` — altså den danske tekst — så en
+            // mutation der gør en *anden* R1-fixture rød blev målt på en
+            // fixture den ikke rammer, stod grøn, og porten skrev "mutationen
+            // fanges" fordi den aldrig var blevet kørt. Samme fejlklasse som
+            // opgave 59 fund 1: et krav der kun ses i den ene retning.
+            contractR1([["mutationen", await engineChecks(mutantScan, valgtFixture.html)]], valgtFixture, MOTOR_NAVNE);
           } catch (e) {
             red(e);
           }

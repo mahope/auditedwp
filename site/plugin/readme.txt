@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.22
+Stable tag: 1.3.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.23 (2026-09-27) =
+* Fix: the most common way to install the Pinterest tag was invisible. Pinterest's own documentation (help.pinterest.com, "Install the base code") loads the tag from s.pinimg.com/ct/core.js and adds a <noscript> conversion pixel on ct.pinterest.com/v3/. The pattern knew neither path: it only matched the inlined pintrk( call and an old cdn.pinterest.com URL that the current documentation no longer uses. A site that installs the tag exactly as documented was therefore only seen while its inline scripts were still inline - move them into a bundle, or block them with a content security policy, and the row said "Third-party trackers: 0 found" on a site that was running the tag. Measured before the fix: 0 findings for both documented paths in this plugin, in the free scanner and in the published CLI engine.
+* * The match is on the file path, not on the host. Pinterest serves images from i.pinimg.com, and a shop with three lookbook photos has no tag to remove; the image CDN is now measured as well, so a pattern broad enough to catch it would turn the build red.
+* * The inline pintrk( call still counts, and the old cdn.pinterest.com form is still recognised, so an older integration does not lose its finding. This plugin, the free scanner and the published CLI engine give the same answer on the same page.
+* * If you scanned your site between 1.3.22 and now, treat the tracker row as unknown rather than as clean: a scan before may have reported 0 trackers on a site that had one. Run a new scan.
 
 = 1.3.22 (2026-09-27) =
 * Fix: the most common way to install Google Analytics 4 was invisible. GA4 loads as a single external script from googletagmanager.com/gtag/js, and when the configuration lives in a separate file there is no inline gtag( call anywhere in the page. The pattern only matched the inlined call, so such a site was told "Third-party trackers: 0 found" - a clean row, and no reason to ask a visitor for consent, on a site that was sending a pixel on every page load. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine.
