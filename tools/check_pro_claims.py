@@ -23,7 +23,7 @@ PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
 # køb). Den er den eneste anden checkout en købsside må have, og højst én gang,
 # så årsabonnementet stadig er den ene Pro-CTA siden måles på.
 PRO_LIFETIME_LINK = "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f"
-PLUGIN_VERSION = "1.3.33"
+PLUGIN_VERSION = "1.3.34"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",
