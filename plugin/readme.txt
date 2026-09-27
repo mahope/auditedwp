@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.25
+Stable tag: 1.3.26
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.26 (2026-09-27) =
+* Fix: one row in the consent-platform list could never match anything. The row is named 'Analytify/CAOS', but the pattern read 'analytics-cat' - a word neither product is called. Analytify is installed as the plugin folder /wp-content/plugins/analytify/ and CAOS is called caos, so a site running either was told 'No consent banner detected', which is the same verdict as a site with no consent platform. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine.
+* Nothing was narrowed. The other nineteen consent rows are unchanged, and each of them now has a test that fails if its own pattern stops matching the installation it is written for - the same test that caught this one, so it cannot come back unnoticed.
+* Three rows are honest about what they do not cover yet, and are listed with the evidence behind them rather than presented as full coverage: OneTrust's own loader is served from cdn.cookielaw.org and does not contain the word 'onetrust'; 'CookieNinja' is not a product anyone has read documentation for; and the popular WordPress slug gdpr-cookie-banner is not matched by the 'GDPR banner' alternative. If you scanned your site between 1.3.25 and now, treat the cookie-consent row as unknown rather than as a finding: run a new scan.
 
 = 1.3.25 (2026-09-27) =
 * Fix: one consent platform in this list could never be found by anything. The pattern read the two words of the name with a hyphen, an underscore or nothing between them, and the platform is loaded from a path - quantcast.mgr.consensu.org/choice/.../quantcast.js - where a dot and a slash stand between the words. So the pattern matched nothing at all, here and in the free scanner and the published CLI engine. Measured before the fix: a page loading the platform from its own path was reported as 'No consent banner detected', which is the same verdict as a site with no consent banner - on a site that asks every visitor for consent.

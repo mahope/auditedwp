@@ -112,6 +112,97 @@ const MOTOR_TABEL = {
 };
 
 /**
+ * R5s installationstest, én pr. række i `CONSENT_SIGNATURES`.
+ *
+ * **Hvorfor den findes:** opgave 63 fjernede en markør, fordi dens mønster
+ * aldrig kunne matche det leverandøren faktisk indlæser — punktum og skråstreg
+ * mellem to ord. Ingen port kunne se det, fordi porten testede mønstret mod
+ * **sit eget navn**. R5 tester derfor mønstret mod en **installationstest**: en
+ * rigtig URL eller et rigtigt markup-fragment, aldrig produktnavnet alene.
+ * `quantcast_choice` ville tilfredsstille `quantcast[_-]?choice` og skjule
+ * præcis den fejl R5 skal finde, så en streng skal indeholde `//`, `.`, `=`
+ * eller `<`.
+ *
+ * **`kilde` er ikke en note — det er bevisstyrken**, og den skal kunne læses af
+ * den næste agent uden at tro mig:
+ *   `wp.org 200`  — slug'en er verificeret i WordPress' eget plugin-katalog
+ *                   (`api.wordpress.org/plugins/info/1.0/<slug>.json` → 200)
+ *   `vaert 200`   — leverandørens egen vært svarede 200 i dag
+ *   `formodnet`   — **antagelse**. Intet læst, intet svaret. Rækker der kun
+ *                   hviler på denne, står i ❓-afsnittet og skal have læst
+ *                   leverandørens egen dokumentation, før de regnes som dækning.
+ *
+ * Rækker der **kun** har en streng for én af flere leverandører i samme navn
+ * (fx Cookiebot i rækken der også rummer OneTrust) siger det udtrykkeligt i
+ * kommentaren under tabellen — en streng der beviser ét navn, må ikke læses
+ * som bevis for hele navnet.
+ */
+const DAEKNING = {
+  "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+    ['<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-blockingmode="auto"></script>', "vaert 200"],
+  "CookieYes":
+    ['<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "formodnet"],
+  "TarteAuCitron / Klaro / Osano / CookieConsent":
+    ['<script src="https://cdn.jsdelivr.net/npm/klaro@1.0.5/dist/klaro.js"></script>', "vaert 200"],
+  "Complianz GDPR":
+    ["<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"],
+  "Generic cookie consent banner":
+    ['<link rel="stylesheet" href="https://shop.example/wp-content/plugins/cookie-notice/cookie-notice.css">', "wp.org 200"],
+  "Axeptio":
+    ['<script src="https://axeptio.cdn.app/axeptio.js" data-axeid="abc"></script>', "formodnet"],
+  "CookieScript":
+    ['<script src="https://app.cookiescript.com/lib/c/a1b2c3/script.min.js"></script>', "formodnet"],
+  "CookieHub":
+    ['<script src="https://app.cookiehub.com/bundle/a1b2c3/cookiehub.min.js"></script>', "formodnet"],
+  "iubenda":
+    ['<div class="iubenda-cb-banner" data-iubenda-privacy="https://iubenda.com/privacy-policy/"></div>', "formodnet"],
+  "JustUno / Privy / OptinMonster (popup detected)":
+    ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/js/optinmonster.js"></script>', "formodnet"],
+  "CEE/PL consent plugin":
+    ['<script src="https://shop.example/wp-content/plugins/shoper/assets/js/shoper-consent.js"></script>', "formodnet"],
+  "WP Consent API":
+    ['<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"],
+  "Borlabs / CookieNinja":
+    ['<script src="https://shop.example/wp-content/plugins/borlabs-cookie/borlabs-cookie.js"></script>', "formodnet"],
+  "Real Cookie Banner":
+    ['<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"],
+  "Cookie Notice Lite":
+    ['<script src="https://shop.example/wp-content/plugins/cookie-notice-lite/cookie-notice-lite.js"></script>', "wp.org 200"],
+  "GDPR Cookie Compliance":
+    ['<script src="https://shop.example/wp-content/plugins/gdpr-cookie-compliance/gdpr-cookie-compliance.js"></script>', "wp.org 200"],
+  "Moove GDPR":
+    ['<script src="https://shop.example/wp-content/plugins/moove-gdpr/assets/js/moove-gdpr.js"></script>', "formodnet"],
+  "PixelYourSite (GDPR)":
+    ['<script src="https://shop.example/wp-content/plugins/pixel-your-site/assets/js/pys.js"></script>', "formodnet"],
+  "WebToffee GDPR":
+    ['<script src="https://shop.example/wp-content/plugins/webtoffee-gdpr-cookie-consent/webtoffee-gdpr-cookie-consent.js"></script>', "formodnet"],
+  "Analytify/CAOS":
+    ['<script src="https://shop.example/wp-content/plugins/analytify/analytify.js"></script>', "formodnet"],
+};
+
+/*
+ * Fire ting tabellen **ikke** dækker, skrevet ned fordi porten ellers ville læses
+ * som om den gjorde det:
+ *
+ * 1. Rækken *Cookiebot / OneTrust / Usercentrics / ConsentManager* har fire
+ *    leverandører og **én** streng, som beviser Cookiebot. OneTrusts egen
+ *    stub ligger på `cdn.cookielaw.org/scripttemplates/otSDKStub.js` (200 i
+ *    dag) — og den sti rummer **ikke** `onetrust`, så den installationsform er
+ *    uafhængigt dækket kun hvis siden ellers skriver `OneTrust`. Det er ikke
+ *    bevist her, og det er derfor strengen kun tæller som Cookiebot-bevis.
+ * 2. Rækken *Borlabs / CookieNinja* har to leverandører og **én** streng, som
+ *    beviser Borlabs. `cookieninja` er ikke et produkt nogen i repoet har læst
+ *    om; det står under ❓.
+ * 3. `gdpr[_-]?banner` kan ikke matche det populære plugin-slug
+ *    `gdpr-cookie-banner` — der står *cookie* mellem `gdpr` og `banner`. Rækken
+ *    er dækket af `cookie[_-]?notice` i stedet (Cookie-Notices slug), så
+ *    alternativet er uafhængigt **uafhængigt ubevist** og efterlader et hul.
+ * 4. `analytify` — rækkens navn siger *Analytify/CAOS*, men mønstret var
+ *    `analytics[_-]?cat`, som ingen af de to produkter kan matche. R5 fandt det;
+ *    se `docs/eucomply-signatur-prosa.md` "Fejl 9".
+ */
+
+/**
  * R1s fixtures: navne på trackere, samtykkeplatforme og formular-plugins i
  * **løbende tekst**, ved siden af en rigtig formular. Formularen er der, fordi
  * ellers er `forms` grøn af den trivielle grund at der ingen er, og porten så
@@ -378,6 +469,77 @@ function signaturNavne(kilde, gruppe, php) {
   return navne;
 }
 
+/**
+ * R5: hver række skal have en installationstest, og sit mønster skal kunne finde
+ * den — i **alle tre** kopier.
+ *
+ * Tre røde tilfælde, ét pr. række:
+ *   (a) rækken mangler en streng i `DAEKNING` — porten ville være grøn uden at
+ *       have noget at se på, samme fejl som `MINDST` dækker på den anden side;
+ *   (b) strengen findes ikke, fordi mønstret ikke matcher den i en af de tre
+ *       kopier — det er præcis opgave 63s Quantcast, målt i stedet for antaget;
+ *   (c) en streng peger på et navn der ikke står i tabellen — en installationstest
+ *       af ingen tabellenummer er dækning på papiret.
+ *
+ * Mønstrene læses **fra filerne**, ikke ud fra et navne-array, fordi en regel der
+ * kun sammenligner to lister af navne aldrig kan se en mangel i mønsteret — det
+ * er opgave 63 fund 2, hvor netop sådan en regel meldte 23 rækker døde og var
+ * forkert på den første (`static\.hotjar\.com` kan ikke matche navnet `Hotjar`).
+ */
+function signaturMonstre(kilde, gruppe, php) {
+  const start = php
+    ? new RegExp(`'${gruppe}'\\s*=>\\s*array\\(`)
+    : new RegExp(`const ${MOTOR_TABEL[gruppe]}\\s*=\\s*\\[`);
+  const fra = start.exec(kilde);
+  assert.ok(fra, `kilden har ingen signatur-tabel for «${gruppe}»`);
+  const resten = kilde.slice(fra.index);
+  const til = resten.indexOf("\n]");
+  const blok = til === -1 ? resten : resten.slice(0, til);
+  const par = php
+    ? /\[\s*'name'\s*=>\s*'([^']+)'\s*,\s*'re'\s*=>\s*~([^~]*)~([a-z]*)/g
+    : /re:\s*\/((?:[^/\\]|\\.)*)\/([a-z]*)\s*,\s*name:\s*"([^"]+)"/g;
+  return [...blok.matchAll(par)].map((m) => (php
+    ? { navn: m[1], re: new RegExp(m[2], m[3]) }
+    : { navn: m[3], re: new RegExp(m[1], m[2]) }));
+}
+
+function contractR5(grupper, daekning) {
+  // (c) En streng på intet tabellenummer er dækning på papiret.
+  for (const navn of Object.keys(daekning)) {
+    assert.ok(
+      grupper.some((g) => g.some((r) => r.navn === navn)),
+      `DAEKNING har en installationstest for «${navn}», som ikke står i nogen signatur-tabel — ` +
+        "en streng der peger på ingen række dækker ingen"
+    );
+  }
+  for (const rækker of grupper) {
+    for (const { navn } of rækker) {
+      // (a) Uden streng er porten grøn uden at have noget at se på.
+      const streng = daekning[navn];
+      assert.ok(
+        streng && streng[0],
+        `signatur-rækken «${navn}» har ingen installationstest i DAEKNING — en række ingen har læst ` +
+          "et krav på kan hverken bekræfte eller afkræfte sit eget mønster"
+      );
+      assert.ok(
+        /(\/\/|[.=<])/.test(streng[0]),
+        `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den ` +
+          "er skrevet efter mønsterets eget navn og beviser intet"
+      );
+      // (b) Mønstret skal kunne finde sin egen installationstest, i hver kopi.
+      for (const række of grupper) {
+        const rækkeMedNavn = række.find((r) => r.navn === navn);
+        if (!rækkeMedNavn) continue;
+        assert.ok(
+          rækkeMedNavn.re.test(streng[0]),
+          `mønstret i «${navn}» kan ikke finde sin egen installationstest «${streng[0]}» — ` +
+            "denne række er død for den installation den er skrevet til (opgave 63)"
+        );
+      }
+    }
+  }
+}
+
 /** Alle fundne signatur-navne i en doms tekst. */
 function fundneNavne(verdict, navne) {
   const tekst = `${(verdict && verdict.label) || ""} ${(verdict && verdict.detail) || ""}`;
@@ -620,7 +782,21 @@ function laesSignaturer(fil, php) {
 const MOTOR_NAVNE = laesSignaturer(join(REPO, "shared", "scan-engine.js"), false);
 const PHP_NAVNE = laesSignaturer(PLUGIN, true);
 
+/** R5 læser mønstrene fra de tre filer — se `signaturMonstre`. */
+const R5_GRUPPER = [MOTOR_NAVNE, PHP_NAVNE].map((navne) => navne.consent.map((n) => n));
+const MOTOR_FILER = [
+  [join(REPO, "shared", "scan-engine.js"), false],
+  [join(REPO, "eucomply-scanner", "engine", "index.js"), false],
+  [PLUGIN, true],
+];
+const R5_MOENSTRE = MOTOR_FILER.map(([fil, php]) => signaturMonstre(readFileSync(fil, "utf8"), "consent", php));
+
 const FIXTURES = [...PROSA_FIXTURES, ...MEKANISME, ...DORA_FIXTURES];
+
+// R5 måler tabellen, ikke fixtures, så den kører **én** gang og ikke pr. fixture.
+// De tre negative cases i selftesten kalder den samme funktion med en brudt
+// tabel, så en case der forventer grønt ikke kan blive grøn af en anden grund.
+await test("R5 hver consent-række har en installationstest", () => contractR5(R5_MOENSTRE, DAEKNING));
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -639,7 +815,7 @@ for (const fixture of FIXTURES) {
 
 console.log(
   `${passed} signatur-prosatest bestået — ${FIXTURES.length} fixtures i ${Object.keys(PROSA).length} sprog, `
-    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 4 kontrakter, 3 produkter`
+    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 5 kontrakter, 3 produkter`
 );
 
 if (failures.length) {
@@ -769,6 +945,35 @@ if (process.argv.includes("--selftest")) {
   expectRed("R2 (GTM ns.html taber dækning)", contractR2, [
     ["motoren i repoet", { trackers: { label: "Third-party trackers: 0 found", detail: "No third-party marketing/analytics trackers found in the served HTML." } }],
   ], MEKANISME.find((m) => m.navn === "GTM's ns.html-fallback"), MOTOR_NAVNE);
+
+  // 14. R5: en række uden installationstest. Den er grøn i dag kun fordi
+  //     `DAEKNING` er skrevet — en ny leverandør kan tilføjes i tabellen uden
+  //     streng, og så må porten sige det.
+  const udenStreng = { ...DAEKNING };
+  delete udenStreng["Axeptio"];
+  expectRed("R5 (række uden installationstest)", contractR5, R5_MOENSTRE, udenStreng);
+
+  // 15. R5: en streng mønstret ikke matcher — Quantcast-fejlen, som et navne-
+  //     array aldrig kunne se. Den er skrevet mod **R5_MOENSTRE's** egen
+  //     mønsterkopi, så den er en mutation af de data porten dømmer på, ikke
+  //     en syntaktisk død streng i tabellen.
+  const boetMønster = R5_MOENSTRE.map((rækker) => rækker.map((r) => (
+    r.navn === "Axeptio" ? { navn: r.navn, re: /axepti(?:o)?s\.example/i } : r
+  )));
+  expectRed("R5 (mønstret finder ikke sin egen installationstest)", contractR5, boetMønster, DAEKNING);
+
+  // 16. R5: en streng der peger på et navn der ikke står i nogen tabel. Den er
+  //     den fejl der ligner mest en dækning: tabellen siger "testet", og
+  //     ingen læser må tro at den testede noget.
+  const forvisset = { ...DAEKNING, "En platform der ikke findes": ['<script src="https://gone.example/cmp.js"></script>', "formodnet"] };
+  expectRed("R5 (streng på en række der ikke findes)", contractR5, R5_MOENSTRE, forvisset);
+
+  // 17. R5: en streng skrevet efter mønstret **navn** i stedet for en
+  //     installation. Den består kravet om `//`, `.`, `=` eller `<`, som er
+  //     hele pointen: `quantcast_choice` ville tilfredsstille et navne-krav og
+  //     skjule præcis den fejl R5 blev skrevet for.
+  const navnebaseret = { ...DAEKNING, Axeptio: ["axeptio", "formodnet"] };
+  expectRed("R5 (strengen er skrevet efter navnet, ikke en installation)", contractR5, R5_MOENSTRE, navnebaseret);
 
   /*
    * Fire mutationer mod repoets egne filer.

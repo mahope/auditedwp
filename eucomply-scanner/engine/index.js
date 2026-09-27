@@ -124,7 +124,13 @@ const CONSENT_SIGNATURES = [
   { re: /moove[_-]?gdpr/i, name: "Moove GDPR" },
   { re: /pixel[_-]?your[_-]?site/i, name: "PixelYourSite (GDPR)" },
   { re: /webtoffee|gdpr[_-]?cookie[_-]?consent/i, name: "WebToffee GDPR" },
-  { re: /analytics[_-]?cat/i, name: "Analytify/CAOS" },
+  // Rækkens navn er *Analytify/CAOS*, men mønstret var `analytics[_-]?cat`, som
+  // ingen af de to produkter kan matche: Analytifs plugin-slug er `analytify` og
+  // CAOS (Cookie Assistant for Osano) hedder *caos*. Mønstret var altså dødt i
+  // alle tre produkter, og ingen port kunne se det, fordi porten testede
+  // mønstret mod rækkens **navn** — opgave 63 fund 2. R5 tester nu mønstret mod
+  // en installationstest i stedet (`tools/check_signature_prose.mjs`, DAEKNING).
+  { re: /analytify|caos/i, name: "Analytify/CAOS" },
 ];
 
 // `ns.html` er Googles egen no-JavaScript-fallback for GTM — det snippet
