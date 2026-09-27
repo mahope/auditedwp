@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.21
+Stable tag: 1.3.22
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.22 (2026-09-27) =
+* Fix: the most common way to install Google Analytics 4 was invisible. GA4 loads as a single external script from googletagmanager.com/gtag/js, and when the configuration lives in a separate file there is no inline gtag( call anywhere in the page. The pattern only matched the inlined call, so such a site was told "Third-party trackers: 0 found" - a clean row, and no reason to ask a visitor for consent, on a site that was sending a pixel on every page load. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine.
+* This was the more expensive direction of the error. The 1.3.20 fix removed false findings, and a false finding at least shows up in the report; a tracker that is not reported cannot be found by anyone reading it.
+* Google's Ads tags load from the same URL with an AW- id instead of a G- id. Both are now recognised, because the match is on the file path and not on the id - a match bound to G- would keep passing the most common installation and still miss the other one.
+* Nothing else was narrowed. The other eight tracker patterns are untouched, and this plugin, the free scanner and the published CLI engine give the same answer on the same page, as they now do for every signature.
+* If you scanned your site between 1.3.21 and now, treat the tracker row as unknown rather than as clean: a scan before may have reported 0 trackers on a site that had one. Run a new scan.
 
 = 1.3.21 (2026-09-27) =
 * Fix: a DORA page signal was only recognised with a hyphen or an underscore between the words, so the wording an English security page actually uses was read as nothing. "Business continuity plan", "incident response" and "status page" are written with spaces. Measured before the fix: 0 of those three markers in this plugin, in the free scanner and in the published CLI engine, on a page that lists all three. The row now recognises hyphen, underscore or a space, in all three products.

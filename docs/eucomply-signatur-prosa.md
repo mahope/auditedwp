@@ -118,17 +118,73 @@ Det her lå i portens R3 som en **undtagelse med vilje**: holdet sammenlignede
 rettet, forsvand undtagelsen, og R3 sammenligner nu hele `trackers`-detaljen
 byte-identisk på tværs af alle tre produkter.
 
-## Porten: fire kontrakter, ni mutationer
+## Fejl 5 — GA4's eget indlæsscript (rettet i 1.3.22)
 
-`node tools/check_signature_prose.mjs [--selftest]` — 26 tests, 21 negative cases,
-**ni mutationer mod repoets egne filer**.
+Den dyreste lækage i de fire tabeller, og den eneste der gav en **grøn** række
+på en side med en tracker.
+
+GA4 indlæses med ét eksternt script:
+
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>
+```
+
+Det gamle mønster var
+`google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html)|gtag\(` — altså
+matchede det kun det **indlejrede** `gtag(`-kald. Når konfigurationen ligger i
+en aparte fil, som den gør i den almindeligste opsætning, står der **intet**
+`gtag(` i markup'en, og siden fik:
+
+```
+Third-party trackers: 0 found
+No third-party marketing/analytics trackers found in the served HTML.
+```
+
+Målt før rettelsen, i alle tre produkter, på præcis den installation ovenfor.
+Samme måling på de otte andre markører i tabellen: syv fundet, og kun GA4's
+`gtag/js` ikke. Hullet var altså den ene mekanisme, ikke hele mønstret.
+
+**Hvorfor den er dyrere end de 48 falske fund fra 1.3.20.** Et falsk fund står i
+rapporten og kan bemærkes. Et tracker der *ikke* rapporteres kan ingen læse sig
+til: kunden får en grøn række og ingen grund til at sætte samtykke ind, på en
+side der sender et pixel ved hvert besøg. Det er den modsatte fejlretning af
+fejl 1, og den er den værre af de to for en kunde.
+
+**Rettelsen matcher filstien, ikke id-præfikset.** Googles **Ads**-tags indlæses
+fra samme URL med `AW-` i stedet for `G-`:
+
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-9876543"></script>
+```
+
+Der er derfor to fixtures og ikke én. En "rettelse" der skriver
+`gtag\/js\?id=G-` ville få den første til at bestå og den anden til at fejle, så
+parret kan skelne de to. Det er den mutation, der fanges med vilje.
+
+Consent Mode v2 kommer fra **samme URL** — den indlæses også fra `gtag/js`, og
+dets særlige `gtag('consent', 'default', …)`-kald var allerede dækket af det
+gamle `gtag(`. Derfor er der to fixtures og ikke tre: den anden mekanisme i
+opgavens scope viste sig at være den samme filsti, ikke en ny markør.
+
+### Hvad den *ikke* var
+
+GA4's klassiske `collect`-pixel og GTM's container-script var fundet begge, før
+og efter. Det er derfor opgaven blev skrevet som én markør og én rettelse: målt
+først, rettet bagefter. En bred `googletagmanager`-regel ville have ramt prosa
+med "vi bruger Google Analytics" — den fejlretning opgave 57 gjorde, og R1 i
+porten forhindrer den.
+
+## Porten: fire kontrakter, fjorten mutationer
+
+`node tools/check_signature_prose.mjs [--selftest]` — 30 tests, 27 negative cases,
+**fjorten mutationer mod repoets egne filer**.
 
 | Kontrakt | Krav |
 |---|---|
 | R1 | prosa giver **nul** fund i alle tre produkter, fire sprog |
 | R2 | en rigtig side pr. mekanisme giver sit fund, i alle tre |
 | R3 | samme fund, samme etikette, samme detalje i alle tre |
-| R4 | `dora` læser prosa, også den lange engelske form |
+| R4 | `dora` læser prosa, også den lange engelsk form |
 
 Fund-listen læses **af porten selv**: navnene parses ud af produkternes egne
 signatur-tabeller, så en ny signatur dækkes automatisk, og en tabel der ikke kan
@@ -140,8 +196,15 @@ parses gør porten rød frem for grøn (`MINDST`: 12/21/2/9). Samme
 Den måler at portens egne fixtures er fundet — ikke at signatur-tabellerne er
 **fuldstændige**. En markør der mangler helt i en tabel kan ingen fixture finde,
 fordi porten læser navnene og ikke formernes rækkevidde. Det er præcis fejl 3
-forklaret, og derfor er mutationerne der fjerner `ns.html` igen lige så vigtige
-som fixtures: de binder tabellen til et krav om dækning.
+og fejl 5 forklaret, og derfor er mutationerne der fjerner dækningen igen lige
+så vigtige som fixtures: de binder tabellen til et krav om dækning.
+
+**Og den ser kun de produkter den kører.** R3 sammenligner de tre, men en
+mutation i det ene produkt er målt i det ene. Derfor er der skrevet **én
+mutation pr. kopi**: `shared/scan-engine.js`,
+`eucomply-scanner/engine/index.js` og `plugin/eucomply.php` har hver sin egen
+lang linje, og en rettelse der kun rammer to af dem er en lækage der ikke kan ses
+i en diff.
 
 ### Mutationerne
 
@@ -150,12 +213,17 @@ som fixtures: de binder tabellen til et krav om dækning.
 | 1–3 | hvert produkt læser hele HTML'en igen | R1 rød |
 | 4 | motoren læser kun kode og taber attributterne | R1 **grøn**, R2 rød |
 | 5 | motoren taber GTM's `ns.html` | R2 rød |
-| 6–8 | DORA-separatoren taber mellerummet (motor, npm-motor, plugin) | R4 rød |
-| 9 | motoren holder op med at navngive platformen | R3 rød |
+| 6–8 | `gtag/js` taber (motor, npm-motor, plugin) | R2 rød |
+| 9–10 | `gtag/js` bindes til id-præfikset `G-` (motor, plugin) | R2 rød |
+| 11–13 | DORA-separatoren taber mellerummet (motor, npm-motor, plugin) | R4 rød |
+| 14 | motoren holder op med at navngive platformen | R3 rød |
 
-Alle ni er skrevet mod den **lange** linje, så de fejler højt med "fandt ikke den
-linje den erstatter" den dag et nyt kald indsættes, frem for at stå grønne på en
-mutation de ikke længere rammer (samme selvbeskyttelse som opgave 29 og 51).
+Alle er skrevet mod den **lange** linje, så de fejler højt med "fandt ikke den
+linje den erstatter" den dag et nyt kald eller et nyt alternativ indsættes,
+frem for at stå grønne på en mutation de ikke længere rammer (samme
+selvbeskyttelse som opgave 29 og 51). Det er ikke en teoretisk beskyttelse: da
+`gtag/js` kom til, brød mutation 5 med præcis den besked, fordi den skrev den
+gamle linje, og den blev skrevet om i stedet for at slettes.
 
 ## Fejl fundet i min egen port
 
@@ -178,3 +246,17 @@ Den fjerde er hele pointen med at køre en port mod rigtige fixtures: fundet lå
 produktkoden, opdaget af værktøjet, og ikke i nogen af de 23 forrige steps — de
 måler at en rigtig side stadig findes, ikke at **prosa ikke tæller** og ikke at
 **mellemrum matcher**.
+
+## Femte fejl i porten: den kunne ikke skrive en plugin-mutation overhovedet
+
+Selftestens PHP-gren læste `if (forventer === "R1") … else …`, og `else` kørte
+**R4**. En `forventer: "R2"`-mutation i `plugin/eucomply.php` blev derfor målt
+med DORA-kontrakten, som ingen tracker-mutation kan gøre rød — den ville have
+stået grøn, og porten ville have hævdet at pluginen er dækket.
+
+Det er samme fejlklasse som punkt 1 og 2, og det er derfor den lå ubemærket:
+pluginen er **tredje kopi** af hver signatur, og opgave 59 skrev en mutation for
+`ns.html` i `shared/scan-engine.js` og ingenting for de to andre — ikke fordi den
+glemte pluginen, men fordi porten ikke kunne udtrykke det. Grenen måler nu R2 på
+pluginen, og mutation 8 og 10 er begge skrevet mod `plugin/eucomply.php`.
+
