@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.21
+ * Version:           1.3.22
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.21' );
+define( 'EUCOMPLY_VERSION', '1.3.22' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -792,8 +792,18 @@ class EUComply {
             // fallback. The pattern matched the container script alone, so
             // "Third-party trackers: 0 found" stood on a page that still sends
             // a pixel. Never matched it, so this is a leak, not a regression.
+            //
+            // `gtag/js` is the same leak's other half, and the costlier one:
+            // GA4 loads as `<script async src="…/gtag/js?id=G-…">`, and when the
+            // configuration lives in a **separate file** there is no `gtag(` in
+            // the markup at all — only the inlined config matched the old
+            // `gtag(`. That is the most common analytics setup in use today and
+            // it scored "Third-party trackers: 0 found", so a site running GA4
+            // got a green row and no reason to ask for consent. The alternative
+            // must not be bound to `?id=G-`: Google's Ads tags use the same URL
+            // with `AW-`, so only the file path is matched.
             'trackers' => array(
-                array( 'name' => 'Google Analytics / GTM', 're' => '~google-analytics\.com|googletagmanager\.com/(?:gtm\.js|ns\.html)|gtag\(~i' ),
+                array( 'name' => 'Google Analytics / GTM', 're' => '~google-analytics\.com|googletagmanager\.com/(?:gtm\.js|ns\.html|gtag\/js)|gtag\(~i' ),
                 array( 'name' => 'Meta (Facebook) Pixel', 're' => '~connect\.facebook\.net|fbq\([\'"]~i' ),
                 array( 'name' => 'Hotjar', 're' => '~static\.hotjar\.com|hj\([\'"]~i' ),
                 array( 'name' => 'Microsoft Clarity', 're' => '~clarity\.ms~i' ),

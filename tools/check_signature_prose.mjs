@@ -194,6 +194,27 @@ const MEKANISME = [
     html: side('<noscript><iframe height="0" width="0" style="display:none;visibility:hidden" src="https://www.googletagmanager.com/ns.html?id=GTM-ABC"></iframe></noscript><p>Hej</p>'),
   },
   {
+    // Den dyreste lækage målt til dato, og den der gav den grønne række. GA4
+    // indlæses med ét eksternt script, og når konfigurationen ligger i en
+    // **aparte fil** står der intet `gtag(` i markup'en. Det gamle mønster
+    // ramte kun det indlejrede kald, så denne almindeligste GA4-opsætning gav
+    // `Third-party trackers: 0 found` — altså *modsatte* fejlretning af
+    // opgave 57: kunden fik en grøn række og ingen grund til samtykke.
+    // Målt før rettelsen: 0 fund i alle tre produkter.
+    navn: "GA4's gtag/js-script", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Google Analytics / GTM",
+    html: side('<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script><p>Hej</p>'),
+  },
+  {
+    // Samme URL, andet id-præfiks: Googles **Ads**-tags indlæses også fra
+    // `gtag/js`, med `AW-` i stedet for `G-`. Fixturet findes, fordi en
+    // "rettelse" der skriver `gtag\/js\?id=G-` ville få den grønne fixture
+    // ovenfor til at bestå og denne til at fejle — den skal kunne skelne de to.
+    navn: "Google Ads-tag på gtag/js", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Google Analytics / GTM",
+    html: side('<script async src="https://www.googletagmanager.com/gtag/js?id=AW-9876543"></script><p>Hej</p>'),
+  },
+  {
     // Contact Form 7 lever som `<div class="wpcf7">` i **markup'en**, ikke som
     // et script. Det er grunden til at opgave 57 beholdte attributterne, og det
     // er derfor denne fixture findes: en ren scriptregel ville have slettet den
@@ -726,8 +747,87 @@ if (process.argv.includes("--selftest")) {
       fixture: "GTM's ns.html-fallback",
       foer: [
         {
-          for: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html)",
-          efter: "googletagmanager\\.com\\/gtm\\.js",
+          // Opdateret i opgave 60, fordi den lange linje fik et alternativ til.
+          // Mutationen skriver den **nye** lange linje, så den fejler højt den
+          // dag endnu et alternativ kommer til i stedet for at ramme en linje der
+          // ikke længere findes — eller værre: ramme den del der stadig er der
+          // og stå grøn, mens den tabte dækning er usynlig.
+          for: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html|gtag\\/js)",
+          efter: "googletagmanager\\.com\\/(?:gtm\\.js|gtag\\/js)",
+        },
+      ],
+    },
+    /*
+     * Opgave 60. `gtag/js` lå i ingen alternativ, så en GA4-side hvis config
+     * ligger i en aparte fil fik "Third-party trackers: 0 found" — den modsatte
+     * fejlretning af opgave 57. Alle tre mutationer er skrevet mod den **lange**
+     * linje, så de fejler med "fandt ikke den linje den erstatter" den dag et
+     * nyt alternativ kommer til, frem for at stå grønne på en mutation de ikke
+     * længere rammer.
+     *
+     * `gtag\/js\?id=G-` er en mutation der fjerner *mindre*: den rammer stadig
+     * den almindeligste GA4-fixture og taber kun Googles Ads-tag. Den er der
+     * fordi den er den fejl en "rettelse" faktisk begår — man binder mønsteret
+     * til id-præfikset fordi det er det man kan huske — og den fanges kun fordi
+     * den anden fixture findes.
+     */
+    {
+      navn: "motoren i repoet taber GA4's gtag/js",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R2",
+      fixture: "GA4's gtag/js-script",
+      foer: [
+        {
+          for: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html|gtag\\/js)",
+          efter: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html)",
+        },
+      ],
+    },
+    {
+      navn: "den publicerede motor taber GA4's gtag/js",
+      fil: join(REPO, "eucomply-scanner", "engine", "index.js"),
+      forventer: "R2",
+      fixture: "GA4's gtag/js-script",
+      foer: [
+        {
+          for: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html|gtag\\/js)",
+          efter: "googletagmanager\\.com\\/(?:gtm\\.js|ns\\.html)",
+        },
+      ],
+    },
+    {
+      navn: "pluginen taber GA4's gtag/js",
+      fil: PLUGIN,
+      forventer: "R2",
+      fixture: "GA4's gtag/js-script",
+      foer: [
+        {
+          for: "googletagmanager\\.com/(?:gtm\\.js|ns\\.html|gtag\\/js)",
+          efter: "googletagmanager\\.com/(?:gtm\\.js|ns\\.html)",
+        },
+      ],
+    },
+    {
+      navn: "motoren i repoet binder gtag/js til id-præfikset G-",
+      fil: join(REPO, "shared", "scan-engine.js"),
+      forventer: "R2",
+      fixture: "Google Ads-tag på gtag/js",
+      foer: [
+        {
+          for: "gtag\\/js)",
+          efter: "gtag\\/js\\?id=G-)",
+        },
+      ],
+    },
+    {
+      navn: "pluginen binder gtag/js til id-præfikset G-",
+      fil: PLUGIN,
+      forventer: "R2",
+      fixture: "Google Ads-tag på gtag/js",
+      foer: [
+        {
+          for: "gtag\\/js)",
+          efter: "gtag\\/js\\?id=G-)",
         },
       ],
     },
@@ -822,6 +922,21 @@ if (process.argv.includes("--selftest")) {
         if (m.forventer === "R1") {
           try {
             contractR1([["mutationen", dom]], valgtFixture, PHP_NAVNE);
+          } catch (e) {
+            red(e);
+          }
+        } else if (m.forventer === "R2") {
+          // R2 på pluginen. Denne gren manglede, og den er præcis derfor
+          // pluginen ikke kunne have en egen signatur-mutation: `else` greb
+          // alt andet end R1 og kørte **R4** på den, som intet af en
+          // tracker-signaturmutation kan gøre rød. Den ville altså have stået
+          // grøn og porten ville have løjet om at pluginen er dækket — samme
+          // fejlklasse som opgave 58 fund 1, hvor R2 sammenlignede `undefined`
+          // med `undefined`. Pluginen er **tredje kopi** af hver signatur, så
+          // en rettelse der kun rammer de to JS-motorer er en lækage der ikke
+          // kan ses i en diff.
+          try {
+            contractR2([["mutationen", dom]], valgtFixture, PHP_NAVNE);
           } catch (e) {
             red(e);
           }

@@ -71,10 +71,21 @@ const CONSENT_SIGNATURES = [
 // Googles dokumentation beder **alle** GTM-sites installere, og det er den
 // eneste GTA-reference på en side der kun har fallbacken. Mønsteret matchede
 // kun container-scriptet (`gtm.js`), så "Third-party trackers: 0 found" stod på
-// en side der sender et pixel. Ikke en regression fra opgave 57: mønsteret har
+// en side der sender et pixel. Ikke en regression fra opgave 57: mønstret har
 // aldrig matchet den. Målt før rettelsen: 0 fund i alle tre produkter.
+//
+// `gtag/js` er den anden del af samme hullet og den dyreste af alle: GA4
+// indlæses som `<script async src="…/gtag/js?id=G-…">`, og når konfigurationen
+// ligger i en **aparte fil** står der intet `gtag(` i markup'en — kun den
+// indlejrede konfiguration rammer det gamle `gtag(`. Det er den mest almindelige
+// analytics-opsætning i dag, og den gav `Third-party trackers: 0 found` med
+// detaljen *"No third-party marketing/analytics trackers found"*: en kunde med
+// GA4 fik en grøn række og ingen grund til at sætte samtykke ind. Målt før
+// rettelsen: 0 fund i alle tre produkter. Mønsteret må ikke bindes til
+// `?id=G-` — Googles Ads-tags bruger samme URL med `AW-`, så alternativet er
+// kun filstien. Spec: `docs/eucomply-signatur-prosa.md`.
 const TRACKER_SIGNATURES = [
-  { re: /google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html)|gtag\(/i, name: "Google Analytics / GTM" },
+  { re: /google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html|gtag\/js)|gtag\(/i, name: "Google Analytics / GTM" },
   { re: /connect\.facebook\.net|fbq\(['"]/i, name: "Meta (Facebook) Pixel" },
   { re: /static\.hotjar\.com|hj\(['"]/i, name: "Hotjar" },
   { re: /clarity\.ms/i, name: "Microsoft Clarity" },
