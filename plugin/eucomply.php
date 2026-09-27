@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.29
+ * Version:           1.3.30
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.29' );
+define( 'EUCOMPLY_VERSION', '1.3.30' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -845,7 +845,7 @@ class EUComply {
                 array( 'name' => 'Axeptio', 're' => '~axeptio|axept\.io~i' ),
                 array( 'name' => 'CookieHub', 're' => '~cookiehub|cookie[_-]?hub~i' ),
                 array( 'name' => 'iubenda', 're' => '~iubenda|cookie[_-]?solution~i' ),
-                array( 'name' => 'JustUno / Privy / OptinMonster (popup detected)', 're' => '~justuno|privy|optinmonster~i' ),
+                array( 'name' => 'OptinMonster (popup detected)', 're' => '~optinmonster~i' ),
                 array( 'name' => 'WP Consent API', 're' => '~wp-consent-api~i' ),
                 array( 'name' => 'Borlabs', 're' => '~borlabs~i' ),
                 array( 'name' => 'Real Cookie Banner', 're' => '~real[_-]?cookie[_-]?banner~i' ),
@@ -862,7 +862,7 @@ class EUComply {
             // a visitor can fill in.
             'forms'    => array(
                 array( 'name' => 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor', 're' => '~contact[_-]form[_-]7|\bwpforms\b|\bformidable\b|gravity[_-]?forms|fluent[_-]?forms?\b|ninja[_-]?forms\b|caldera[_-]?forms\b|\bwpforms?-|\belementor\b[^<>]{0,40}form|\bwpcf7\b|\bcf7[-_]~i' ),
-                array( 'name' => 'Typeform / Formspree / Jotform', 're' => '~\btypeform\b|\bformspree\b|\bjotform\b|cognito[_-]?forms\b|\bformsort\b~i' ),
+                array( 'name' => 'Typeform / Formspree', 're' => '~\btypeform\b|\bformspree\b~i' ),
             ),
             // DORA-adjacent page signals. Static text markers only: this is not
             // a DORA assessment and the fix text says so.
