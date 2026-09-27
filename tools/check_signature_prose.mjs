@@ -134,49 +134,66 @@ const MOTOR_TABEL = {
  *                   hviler på denne, står i ❓-afsnittet og skal have læst
  *                   leverandørens egen dokumentation, før de regnes som dækning.
  *
- * Rækker der **kun** har en streng for én af flere leverandører i samme navn
- * (fx Cookiebot i rækken der også rummer OneTrust) siger det udtrykkeligt i
- * kommentaren under tabellen — en streng der beviser ét navn, må ikke læses
- * som bevis for hele navnet.
+ * **Én streng pr. navngiven leverandør, siden opgave 69.** Formen er
+ * `[etiket, installation, bevisstyrke]`, og etiketten står der, fordi en streng
+ * pr. *række* ikke kan se forskel på fire leverandører: før denne regel lå
+ * OneTrusts streng i rækken *Cookiebot / OneTrust / Usercentrics /
+ * ConsentManager* under navnet *Cookiebot*, fordi rækken blev talt og ikke
+ * læst. `leverandoerer()` læser antallet leverandører **af selve navnet**, så
+ * en agent der skriver en ny leverandør ind i et navn får rød i regel (g) med
+ * det samme. Leverandører uden installationstest står i `ULAEVNET` med dagens
+ * måling — fem af dem — og tallet må kun synke.
  */
 const DAEKNING = {
-  // Fire leverandører, og strengen er den **første** af dem der efterprøves
-  // 1.3.29: OneTrusts egen stub. Den lå før her som den eneste streng, og den
-  // bevidste Cookiebot — altså bevis på den leverandør, der ikke var hullet.
-  // Cookiebot, Usercentrics og ConsentManager er hver målt 4/4 i alle fire
-  // kopier i samme måling, se kommentaren under tabellen.
+  // Fire leverandører, og **fire** strenge — opgave 69. Før denne regel havde
+  // rækken én streng, og den lå på OneTrust, fordi det var det eneste af de fire
+  // der var et hul. De fire er målt hver for sig 2026-09-27; ULAEVNET har de
+  // fem leverandører der stadig mangler, i de tre andre navngivne rækker.
   "Cookiebot / OneTrust / Usercentrics / ConsentManager":
-    ['<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="a1b2c3"></script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27"],
+    [["OneTrust", '<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="a1b2c3"></script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27"],
+     ["Cookiebot", '<script src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-consentmode="live"></script>', "vaert 200 2026-09-27"],
+     ["Usercentrics", '<script src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-usercentrics-endpoint="a1b2"></script>', "vaert 200 2026-09-27"],
+     ["ConsentManager", '<script src="https://www.consentmanager.de/gtm.js" id="CookieConsent" data-cmpid="a1b2"></script>', "vaert 200 2026-09-27"]],
   "CookieYes":
-    ['<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"],
+    [["CookieYes", '<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"]],
+  // Fire leverandører. Klaro og CookieConsent har strenge, TarteAuCitron og
+  // Osano står i ULAEVNET med dagens måling. Klaro's gamle streng pegede på
+  // `klaro@1.0.5` — en version der ikke findes (jsdelivr 404, og
+  // `data.jsdelivr.com` lister 0.7.21 som nyeste), så påstanden om et 200 var
+  // ikke sand. Rettet til den sti leverandørens egen pakke indeholder, læst i
+  // jsdelivrs filliste: `/dist/klaro.js`.
   "TarteAuCitron / Klaro / Osano / CookieConsent":
-    ['<script src="https://cdn.jsdelivr.net/npm/klaro@1.0.5/dist/klaro.js"></script>', "vaert 200"],
+    [["Klaro", '<script src="https://cdn.jsdelivr.net/npm/klaro/dist/klaro.js"></script>', "vaert 200 · filliste læst 2026-09-27"],
+     ["CookieConsent", '<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"></script>', "vaert 200 · filliste læst 2026-09-27"]],
   "Complianz GDPR":
-    ["<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"],
+    [["Complianz GDPR", "<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"]],
   "Generic cookie consent banner":
-    ["<link rel='stylesheet' id='gdpr-cookie-banner-public-css' href='https://shop.example/wp-content/plugins/gdpr-cookie-banner/public/css/gdpr-cookie-banner-public.css'>", "wp.org 200 gdpr-cookie-banner 2026-09-27 · læst i pluginens eget enqueue"],
+    [["Generic cookie consent banner", "<link rel='stylesheet' id='gdpr-cookie-banner-public-css' href='https://shop.example/wp-content/plugins/gdpr-cookie-banner/public/css/gdpr-cookie-banner-public.css'>", "wp.org 200 gdpr-cookie-banner 2026-09-27 · læst i pluginens eget enqueue"]],
   "Axeptio":
-    ['<script src="https://static.axept.io/sdk.js"></script>', "vaert 200 · læst i leverandørens egen SDK 2026-09-27"],
+    [["Axeptio", '<script src="https://static.axept.io/sdk.js"></script>', "vaert 200 · læst i leverandørens egen SDK 2026-09-27"]],
   "CookieHub":
-    ['<script src="https://shop.example/wp-content/plugins/cookiehub/includes/js/dcchub-test.js"></script>', "wp.org 200 cookiehub 2026-09-27"],
+    [["CookieHub", '<script src="https://shop.example/wp-content/plugins/cookiehub/includes/js/dcchub-test.js"></script>', "wp.org 200 cookiehub 2026-09-27"]],
   "iubenda":
-    ['<script src="https://cdn.iubenda.com/iubenda.js"></script>', "wp.org 200 iubenda-cookie-law-solution 2026-09-27 · vaert 200"],
+    [["iubenda", '<script src="https://cdn.iubenda.com/iubenda.js"></script>', "wp.org 200 iubenda-cookie-law-solution 2026-09-27 · vaert 200"]],
+  // Tre leverandører. OptinMonster har streng; JustUno og Privy står i
+  // ULAEVNET. Før opgave 69 hed etiketten på OptinMonster-strengen "JustUno",
+  // fordi porten slet ikke kunne se forskel: den tællede rækker, ikke navne.
   "JustUno / Privy / OptinMonster (popup detected)":
-    ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"],
+    [["OptinMonster", '<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"]],
   "WP Consent API":
-    ['<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"],
+    [["WP Consent API", '<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"]],
   "Borlabs":
-    ['<script>window.BorlabsCookie = window.BorlabsCookie || {}; var BorlabsCookie = window.BorlabsCookie;</script>', "dokumenteret leverandørens egen GTM-template 2026-09-27"],
+    [["Borlabs", '<script>window.BorlabsCookie = window.BorlabsCookie || {}; var BorlabsCookie = window.BorlabsCookie;</script>', "dokumenteret leverandørens egen GTM-template 2026-09-27"]],
   "Real Cookie Banner":
-    ['<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"],
+    [["Real Cookie Banner", '<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"]],
   "Cookie Notice Lite":
-    ['<script src="https://shop.example/wp-content/plugins/cookie-notice-lite/cookie-notice-lite.js"></script>', "wp.org 200"],
+    [["Cookie Notice Lite", '<script src="https://shop.example/wp-content/plugins/cookie-notice-lite/cookie-notice-lite.js"></script>', "wp.org 200"]],
   "GDPR Cookie Compliance":
-    ['<script src="https://shop.example/wp-content/plugins/gdpr-cookie-compliance/gdpr-cookie-compliance.js"></script>', "wp.org 200"],
+    [["GDPR Cookie Compliance", '<script src="https://shop.example/wp-content/plugins/gdpr-cookie-compliance/gdpr-cookie-compliance.js"></script>', "wp.org 200"]],
   "PixelYourSite (GDPR)":
-    ['<script src="https://shop.example/wp-content/plugins/pixelyoursite/pys.js"></script>', "wp.org 200 pixelyoursite 2026-09-27"],
+    [["PixelYourSite", '<script src="https://shop.example/wp-content/plugins/pixelyoursite/pys.js"></script>', "wp.org 200 pixelyoursite 2026-09-27"]],
   "Analytify/CAOS":
-    ['<script src="https://shop.example/wp-content/plugins/wp-analytify/analytify.js"></script>', "wp.org 200 wp-analytify 2026-09-27"],
+    [["Analytify/CAOS", '<script src="https://shop.example/wp-content/plugins/wp-analytify/analytify.js"></script>', "wp.org 200 wp-analytify 2026-09-27"]],
 };
 
 /*
@@ -226,9 +243,10 @@ const DAEKNING = {
  * R5s installationstest, én pr. række i `TRACKER_SIGNATURES` — opgave 65 del 1.
  *
  * Samme krav og samme bevisstyrke som `DAEKNING`, målt 2026-09-27. Rækken
- * *Google Analytics / GTM* har **én** streng, som beviser GA4s `gtag/js`; GTM's
- * `gtm.js` og `ns.html` er dækket af de samme mønsteralternativer, men kun
- * `gtag/js` er efterprøvet her.
+ * *Google Analytics / GTM* har **to** strenge siden opgave 69: GA4s `gtag/js`
+ * og GTM's egen `gtm.js`-snippet, som er den installation Googles egen
+ * dokumentation beder alle GTM-sites installere. `ns.html` er dækket af
+ * samme mønsteralternativer, men efterprøvet i opgave 59's R2-måling.
  *
  * Der er **to** rækker hvor værtens svar ikke er 200, og begge er målt, ikke
  * antaget: TikToks pixel og Matomos CDN svarer **404 på et opdigtet id** — de
@@ -245,29 +263,32 @@ const DAEKNING = {
  */
 const DAEKNING_TRACKERE = {
   "Google Analytics / GTM":
-    ['<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>', "vaert 200"],
+    [["Google Analytics", '<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>', "vaert 200"],
+     ["GTM", '<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);})(window,document,"script","dataLayer","GTM-ABC123");</script>', "vaert 404 på et opdigtet id 2026-09-27"]],
   "Meta (Facebook) Pixel":
-    ['<script src="https://connect.facebook.net/en_US/fbevents.js"></script>', "vaert 200"],
+    [["Meta (Facebook) Pixel", '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>', "vaert 200"]],
   "Hotjar":
-    ['<script src="https://static.hotjar.com/c/hotjar-1234567890.js?sv=6"></script>', "vaert 200"],
+    [["Hotjar", '<script src="https://static.hotjar.com/c/hotjar-1234567890.js?sv=6"></script>', "vaert 200"]],
   "Microsoft Clarity":
-    ['<script src="https://www.clarity.ms/tag/abc123"></script>', "vaert 204 på et ukendt id"],
+    [["Microsoft Clarity", '<script src="https://www.clarity.ms/tag/abc123"></script>', "vaert 204 på et ukendt id"]],
   "LinkedIn Insight Tag":
-    ['<script src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>', "vaert 200"],
+    [["LinkedIn Insight Tag", '<script src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>', "vaert 200"]],
   "Snapchat Pixel":
-    ['<script src="https://sc-static.net/scevent.min.js"></script>', "vaert 200"],
+    [["Snapchat Pixel", '<script src="https://sc-static.net/scevent.min.js"></script>', "vaert 200"]],
   "TikTok Pixel":
-    ['<script src="https://analytics.tiktok.com/i18n/pixel/1234567890123.js"></script>', "dokumenteret ads.tiktok.com 2026-09-27 · vaert 404 på et opdigtet id"],
+    [["TikTok Pixel", '<script src="https://analytics.tiktok.com/i18n/pixel/1234567890123.js"></script>', "dokumenteret ads.tiktok.com 2026-09-27 · vaert 404 på et opdigtet id"]],
   "Matomo / Piwik":
-    ['<script src="https://cdn.matomo.cloud/abc123/matomo.js"></script>', "vaert 404 på et opdigtet id"],
+    [["Matomo", '<script src="https://cdn.matomo.cloud/abc123/matomo.js"></script>', "vaert 404 på et opdigtet id"],
+     ["Piwik", '<script src="https://cdn.matomo.cloud/abc123/piwik.js"></script>', "vaert 404 på et opdigtet id 2026-09-27"]],
   "Plausible":
-    ['<script defer data-domain="shop.example" src="https://plausible.io/js/script.js"></script>', "vaert 200"],
+    [["Plausible", '<script defer data-domain="shop.example" src="https://plausible.io/js/script.js"></script>', "vaert 200"]],
   "Pinterest Tag":
-    ['<script src="https://s.pinimg.com/ct/core.js" data-embed-type="dynamic"></script>', "dokumenteret help.pinterest.com 2026-09-27 · vaert 200"],
+    [["Pinterest Tag", '<script src="https://s.pinimg.com/ct/core.js" data-embed-type="dynamic"></script>', "dokumenteret help.pinterest.com 2026-09-27 · vaert 200"]],
   "Google Ads remarketing":
-    ['<script src="https://www.googletagservices.com/tag/js/gpt.js"></script>', "vaert 200"],
+    [["Google Ads remarketing", '<script src="https://www.googletagservices.com/tag/js/gpt.js"></script>', "vaert 200"]],
   "DoubleClick / AdSense":
-    ['<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>', "vaert 200"],
+    [["AdSense", '<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>', "vaert 200"],
+     ["DoubleClick", '<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>', "vaert 200 2026-09-27"]],
 };
 
 /**
@@ -342,16 +363,37 @@ const HOEJST_FORMODNET = 0;
  *    der har den slået til — det er en delmængde, og det står her.
  */
 const DAEKNING_FORMS = {
+  // Seks leverandører, seks strenge — opgave 69. Slug'e verificeret i
+  // `api.wordpress.org` 2026-09-27: contact-form-7, wpforms-lite, formidable,
+  // fluentform, elementor → **200**. `gravityforms` → **404**, fordi Gravity
+  // Forms er betalt og derfor ikke i det offentlige katalog; det stod allerede
+  // i tabellens kommentar, og mønstret skriver på plugin-mappen, som en
+  // betalt plugin også leverer sine assets fra.
   "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor":
-    ['<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
+    [["Contact Form 7", '<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
+     ["WPForms", '<script src="https://shop.example/wp-content/plugins/wpforms-lite/assets/js/wpforms.js"></script>', "wp.org 200 wpforms-lite 2026-09-27"],
+     ["Formidable", '<script src="https://shop.example/wp-content/plugins/formidable/assets/js/frm_forms.min.js"></script>', "wp.org 200 formidable 2026-09-27"],
+     ["Gravity", '<link rel="stylesheet" href="https://shop.example/wp-content/plugins/gravityforms/assets/css/gravityforms.css">', "wp.org 404 gravityforms — betalt plugin, ikke i det offentlige katalog"],
+     ["Fluent", '<script src="https://shop.example/wp-content/plugins/fluentform/assets/js/form-submission.js"></script>', "wp.org 200 fluentform 2026-09-27"],
+     ["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
+  // Tre leverandører. Jotform står i ULAEVNET. Formspree fik en streng i denne
+  // iteration: den svarer **403** på `formspree.io/js/formspree.js`, og en 403
+  // er værtens eget svar på en fil der findes — præcis den bevisstyrke
+  // consent-tabellen allerede bruger for CookieYes' `cdn-cookieyes.com`.
   "Typeform / Formspree / Jotform":
-    ['<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
+    [["Typeform", '<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
+     ["Formspree", '<script src="https://formspree.io/js/formspree.js"></script>', "vaert 403 fra byggemiljøet 2026-09-27"]],
   "WooCommerce Checkout":
-    ['<div class="woocommerce-checkout">', "dokumenteret plugins.svn.wordpress.org/woocommerce/trunk/templates/checkout/form-checkout.php 2026-09-27"],
+    [["WooCommerce Checkout", '<div class="woocommerce-checkout">', "dokumenteret plugins.svn.wordpress.org/woocommerce/trunk/templates/checkout/form-checkout.php 2026-09-27"]],
   "Shopify Checkout":
-    ['<link rel="stylesheet" href="https://cdn.shopify.com/extensions/01a0e1ba/shopify-accelerated-checkout-styles.css">', "dokumenteret 4 butikker, 6 sider målt 2026-09-27"],
+    [["Shopify Checkout", '<link rel="stylesheet" href="https://cdn.shopify.com/extensions/01a0e1ba/shopify-accelerated-checkout-styles.css">', "dokumenteret 4 butikker, 6 sider målt 2026-09-27"]],
+  // To leverandører, to strenge. Den anden er **læst i leverandørens egen
+  // fil**: `https://js.stripe.com/v3/` svarer 200, og filen rummer ordet
+  // `payment-element` — så Payment Element er ikke en antagelse om hvad
+  // Stripe leverer, men noget der står i den kode kunden faktisk indlæser.
   "Stripe Checkout / Payment":
-    ['<script src="https://js.stripe.com/v3/"></script>', "vaert 200"],
+    [["Stripe Checkout", '<script src="https://js.stripe.com/v3/"></script>', "vaert 200"],
+     ["Payment", '<div id="payment-element" data-stripe-key="pk_live_a1b2c3"></div>', "vaert 200 · payment-element læst i leverandørens egen v3-fil 2026-09-27"]],
 };
 
 /**
@@ -377,23 +419,23 @@ const DAEKNING_FORMS = {
  */
 const DAEKNING_DORA = {
   "SPF (Email sender auth)":
-    ["Our sending IPs are published in the SPF record: v=spf1 include:_spf.example.com ~all", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["SPF", "Our sending IPs are published in the SPF record: v=spf1 include:_spf.example.com ~all", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "DKIM (Email signing)":
-    ["Add the DKIM public key in DNS as a TXT record named selector1._domainkey.example.com", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["DKIM", "Add the DKIM public key in DNS as a TXT record named selector1._domainkey.example.com", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "DMARC (Email policy)":
-    ["Our DMARC policy is published at _dmarc.example.org with p=reject", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["DMARC", "Our DMARC policy is published at _dmarc.example.org with p=reject", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "MX (Mail exchange)":
-    ["Mail is delivered by our MX 1 and MX 2 records in Frankfurt and Amsterdam", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["MX", "Mail is delivered by our MX 1 and MX 2 records in Frankfurt and Amsterdam", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "Multi-server / failover signals":
-    ["Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["Multi-server", "Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "CDN failover / multi-CDN":
-    ["Traffic is served from a multi-CDN setup with a backup origin in a second region", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["CDN failover", "Traffic is served from a multi-CDN setup with a backup origin in a second region", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "Incident response / SOC reporting":
-    ["Our incident response plan is tested twice a year and shared with customers under NDA", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["Incident response", "Our incident response plan is tested twice a year and shared with customers under NDA", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "BC/DR planning reference":
-    ["The business continuity plan is reviewed annually and covers our disaster recovery procedure", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["BC/DR planning reference", "The business continuity plan is reviewed annually and covers our disaster recovery procedure", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "Status page / uptime monitoring":
-    ["System status is published on our status page, with uptime monitoring alerts", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+    [["Status page", "System status is published on our status page, with uptime monitoring alerts", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
 };
 
 
@@ -743,6 +785,91 @@ function signaturMonstre(kilde, gruppe, php) {
     : { navn: m[3], re: new RegExp(m[1], m[2]) }));
 }
 
+/**
+ * Leverandørerne i en rækkes navn, læst **af navnet selv**.
+ *
+ * Et navn med ` / ` imellem opregner flere produkter: *Cookiebot / OneTrust /
+ * Usercentrics / ConsentManager* er fire leverandører, og en installationstest
+ * for den første siger intet om de tre andre. Det er hele opgave 69: før denne
+ * regel havde `DAEKNING` én streng pr. række, så den mest navnerige række i
+ * tabellen kunne bevise **én** af sine fire — opgave 68 målte alle fire i samme
+ * kørsel, men kun OneTrust kom i tabellen, fordi der var plads til én.
+ *
+ * Separatoren er ` / ` **med mellemrum på begge sider**, fordi to navne i
+ * tabellen bruger en skråstreg uden mellemrum som en del af ét produktnavn:
+ * `Analytify/CAOS` er ét plugin (CAOS er dets betalte modul), og `BC/DR` i
+ * `dora`-tabellen er to initialer for ét ord. En regel der splittede på enhver
+ * `/` ville kræve to installationstester for to navne på ét produkt, og så
+ * ville næste agent "løse" det ved at slette den anden test.
+ *
+ * En afsluttende parentes er ikke en del af leverandørnavnet, så *OptinMonster
+ * (popup detected)* er segmentet `OptinMonster`. Samme normalisering på begge
+ * sider af regel (g), så etiketten og segmentet kan ikke glide fra hinanden.
+ */
+function leverandoerer(navn) {
+  return navn
+    .split(/\s+\/\s+/)
+    .map((s) => s.replace(/\s*\([^()]*\)\s*$/, "").trim())
+    .filter(Boolean);
+}
+
+/**
+ * Leverandører i et navn, der står **uden** installationstest — opgave 69.
+ *
+ * Registeret er begrundet pr. segment, fordi en navngiven leverandør uden bevis
+ * ellers er usynlig: porten så én streng og troede den dækkede navnet. En agent
+ * der tilføjer en ny leverandør i et navn får derfor rødt i regel (g) med det
+ * samme, med mindst to veje ud: læs leverandørens egen kode og skriv strengen,
+ * eller skriv her hvorfor den ikke kan læses.
+ *
+ * Alle fem er **målt** 2026-09-27, ikke antaget:
+ *   TarteAuCitron — `api.wordpress.org` svarer **404** på slug'en
+ *     `tarteaucitron` (såvel som på `tarteaucitron-cookies`), og pakken findes
+ *     ikke på npm. Der er altså ingen kode at læse herfra; kun et produktnavn.
+ *   Osano — `cdn.osano.com` svarer **200 på roden**, men **404** på
+ *     `cdn.osano.com/js/osano.js`, `cdn.osano.com/v1/cmp/osano.js` og
+ *     `static.osano.com/js/osano.min.js`. Værten findes, ingen sti gør.
+ *   JustUno — `js.justuno.com` svarer **520** og `widget.justuno.com/script.js`
+ *     **520**: værtens egen fejlside, ikke et 404 på en bestemt fil.
+ *   Privy — `widget.privy.com` svarer **403** og `static.privy.com/pidget.js` /
+ *     `static.privy.com/privy.js` **404**; kun `static.privy.com` roden er 200.
+ *   Jotform — `cdn.jotform.com` svarer **200 på roden**, men **404** på
+ *     `cdn.jotform.com/embed/`, `…/embed/iframe/frame.html` og
+ *     `…/js/embed/v2/embed.js`. Samme billede som Osano.
+ *
+ * Bemærk hvad der **ikke** står her, fordi det blev målt i samme kørsel:
+ * Formspree svarer **403** på `formspree.io/js/formspree.js` — en 403 er
+ * værtens eget svar på en fil der findes, præcis som CookieYes' `vaert 403` i
+ * den consent-tabel, så Formspree har en streng. Klaro lå med en streng på
+ * `klaro@1.0.5`, en version der **ikke findes** (jsdelivr svarer 404, og
+ * `data.jsdelivr.com` lister `0.7.21` som nyeste) — altså en påstand om et 200
+ * der ikke var sand; rettet til den sti leverandørens egen pakke virkelig
+ * indeholder, læst i jsdelivrs filliste.
+ */
+const ULAEVNET = {
+  "TarteAuCitron / Klaro / Osano / CookieConsent": {
+    TarteAuCitron: "wp.org 404 (tarteaucitron, tarteaucitron-cookies) · ikke på npm · ingen læsbar kode 2026-09-27",
+    Osano: "cdn.osano.com 200 på roden, 404 på alle tre dokumenterede stier 2026-09-27",
+  },
+  "JustUno / Privy / OptinMonster (popup detected)": {
+    JustUno: "js.justuno.com 520, widget.justuno.com/script.js 520 2026-09-27",
+    Privy: "widget.privy.com 403, static.privy.com roden 200 men pidget.js/privy.js 404 2026-09-27",
+  },
+  "Typeform / Formspree / Jotform": {
+    Jotform: "cdn.jotform.com 200 på roden, 404 på embed/, embed/iframe/frame.html og js/embed/v2/embed.js 2026-09-27",
+  },
+};
+
+/**
+ * Højst antal leverandører i navne uden installationstest — opgave 69.
+ *
+ * Loftet er ikke et mål, så **færre** er grønt. Det er en ratchet fordi opgaven
+ * netop startede med nul: `DAEKNING` havde én streng pr. række, så tallet af
+ * navngivne leverandører uden bevis var ikke bare ukendt — porten kunne ikke
+ * se det. Hver ny udfyldning skal skaffe bevis og **sænke** tallet.
+ */
+const HOEJST_ULAEVNET = 5;
+
 function contractR5(grupper, daekning, mindstRækker, krav = {}) {
   // (d) En kopi porten ikke læser, er en kopi porten ikke dømmer på. Den gamle
   //     PHP-læsning gjorde præcis det, og R5 erklærede i sin egen docblock at
@@ -767,7 +894,14 @@ function contractR5(grupper, daekning, mindstRækker, krav = {}) {
   //     leverandør med `formodnet` og være grøn, fordi R5 slet ikke kan se
   //     forskellen på en antagelse og et bevis — det er hele pointen med
   //     bevisstyrken. Loftet er et loft, ikke et mål, så **færre** er grønt.
-  const formodnede = Object.entries(daekning).filter(([, s]) => s[1] === "formodnet");
+  //     NB: den gamle form var `s[1] === "formodnet"`. Med `[etiket, streng,
+  //     bevis]` pr. streng er `s[1]` den **anden streng** i rækken, så
+  //     ratchetten talte nul og var grøn på enhver antagelse. Selftesten
+  //     "en installationstest der kun er formodet" fandt den.
+  const formodnede = Object.entries(daekning)
+    .flatMap(([række, strenge]) => strenge
+      .map(([, , bevis], i) => (bevis === "formodnet" ? `«${række}»#${i + 1}` : null))
+      .filter(Boolean));
   assert.ok(
     formodnede.length <= HOEJST_FORMODNET,
     `DAEKNING har ${formodnede.length} installationstester der kun er ` +
@@ -776,50 +910,138 @@ function contractR5(grupper, daekning, mindstRækker, krav = {}) {
   );
   for (const rækker of grupper) {
     for (const { navn } of rækker) {
-      // (a) Uden streng er porten grøn uden at have noget at se på.
-      const streng = daekning[navn];
+      // (a) Uden streng er porten grøn uden at have noget at se på. En række
+      //     med N leverandører i navnet skal have N strenge — regel (g).
+      const strenge = daekning[navn];
       assert.ok(
-        streng && streng[0],
+        strenge && strenge.length,
         `signatur-rækken «${navn}» har ingen installationstest i DAEKNING — en række ingen har læst `
           + "et krav på kan hverken bekræfte eller afkræfte sit eget mønster"
       );
-      // (e) I en prosa-tabel er installationen en sætning fra en virksomheds
-      //     side, så kravet er at den læses som en sætning — ikke at den rummer
-      //     et tegn, som kun en URL gør. Se `DAEKNING_DORA`.
-      if (krav.prosa) {
-        const ord = (streng[0].toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
-        const navneord = new Set(navn.toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
-        const udenfor = ord.filter((o) => !navneord.has(o));
-        assert.ok(
-          ord.length >= 6 && udenfor.length >= 2,
-          `installationstesten for «${navn}» er «${streng[0]}» — den har ${ord.length} ord og `
-            + `${udenfor.length} ord uden for rækkens navn, og en prosa-tabel kræver mindst 6 og 2, `
-            + "fordi en genindskrivning af navnet ellers ville være grøn"
+      // (g) Én streng pr. navngiven leverandør. En streng der beviser Cookiebot
+      //     siger intet om OneTrust, så en række der navngiver fire skal have
+      //     fire — ellers kan næste agent skrive en femtende leverandør ind i
+      //     navnet uden at læse den, og det er præcis det hullet var.
+      if (!krav.prosa) {
+        const segmenter = leverandoerer(navn);
+        const begrundet = ULAEVNET[navn] || {};
+        const ubeviste = segmenter.filter(
+          (seg) => !strenge.some(([l]) => l === seg) && !begrundet[seg]
         );
-      } else {
         assert.ok(
-          /(\/\/|[.=<])/.test(streng[0]),
-          `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den `
-            + "er skrevet efter mønsterets eget navn og beviser intet"
+          ubeviste.length === 0,
+          `signatur-rækken «${navn}» navngiver ${segmenter.length} leverandører `
+            + `(${segmenter.join(", ")}) men har ${strenge.length} installationstest`
+            + `${strenge.length > 1 ? ` (${strenge.map(([l]) => l).join(", ")})` : ""} — `
+            + `ingen installationstest for: ${ubeviste.join(", ")}. Skriv en streng pr. leverandør, `
+            + "mærket med leverandørens navn, eller en begrundelse i ULAEVNET hvis den ikke kan læses. "
+            + "En streng for den første leverandør siger intet om de andre."
+        );
+        // En streng skal være for en leverandør der står i navnet — ellers
+        // beviser den en leverandør, rapporten ikke nævner.
+        for (const [etiket] of strenge) {
+          assert.ok(
+            segmenter.includes(etiket),
+            `installationstesten «${etiket}» i rækken «${navn}» er for en leverandør der ikke står i `
+              + `navnet (${segmenter.join(", ")}) — den beviser en leverandør rapporten ikke nævner`
+          );
+        }
+        // To ens strenge er én måling, ikke to: ellers kan fire leverandører
+        // "dækkes" af den samme adresse skrevet to gange.
+        const unikke = new Set(strenge.map(([, s]) => s));
+        assert.ok(
+          unikke.size === strenge.length,
+          `rækken «${navn}» har ${strenge.length - unikke.size} installationstest(s) der er ens — `
+            + "en måling tæller én gang, så den kan ikke bevise to leverandører"
         );
       }
-      assert.ok(
-        streng[1] && BEVISSTYRKE.some((p) => streng[1].startsWith(p)),
-        `bevisstyrken for «${navn}» er «${streng[1]}» — den skal begynde med ${BEVISSTYRKE.join(", ")}, `
-          + "for uden den er strengen en antagelse der læser som et bevis"
-      );
-      // (b) Mønstret skal kunne finde sin egen installationstest, i hver kopi.
-      for (const række of grupper) {
-        const rækkeMedNavn = række.find((r) => r.navn === navn);
-        if (!rækkeMedNavn) continue;
+      for (const [etiket, streng, bevis] of strenge) {
+        const hvilken = `«${navn}»${strenge.length > 1 ? ` → «${etiket}»` : ""}`;
+        // (e) I en prosa-tabel er installationen en sætning fra en virksomheds
+        //     side, så kravet er at den læses som en sætning — ikke at den rummer
+        //     et tegn, som kun en URL gør. Se `DAEKNING_DORA`.
+        if (krav.prosa) {
+          const ord = (streng.toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
+          const navneord = new Set(navn.toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
+          const udenfor = ord.filter((o) => !navneord.has(o));
+          assert.ok(
+            ord.length >= 6 && udenfor.length >= 2,
+            `installationstesten for ${hvilken} er «${streng}» — den har ${ord.length} ord og `
+              + `${udenfor.length} ord uden for rækkens navn, og en prosa-tabel kræver mindst 6 og 2, `
+              + "fordi en genindskrivning af navnet ellers ville være grøn"
+          );
+        } else {
+          assert.ok(
+            /(\/\/|[.=<])/.test(streng),
+            `installationstesten for ${hvilken} er «${streng}» — den rummer hverken //, ., = eller <, så den `
+              + "er skrevet efter mønsterets eget navn og beviser intet"
+          );
+        }
         assert.ok(
-          rækkeMedNavn.re.test(streng[0]),
-          `mønstret i «${navn}» kan ikke finde sin egen installationstest «${streng[0]}» — ` +
-            "denne række er død for den installation den er skrevet til (opgave 63)"
+          bevis && BEVISSTYRKE.some((p) => bevis.startsWith(p)),
+          `bevisstyrken for ${hvilken} er «${bevis}» — den skal begynne med ${BEVISSTYRKE.join(", ")}, `
+            + "for uden den er strengen en antagelse der læser som et bevis"
         );
+        // (b) Mønstret skal kunne finde sin egen installationstest, i hver kopi.
+        for (const række of grupper) {
+          const rækkeMedNavn = række.find((r) => r.navn === navn);
+          if (!rækkeMedNavn) continue;
+          assert.ok(
+            rækkeMedNavn.re.test(streng),
+            `mønstret i ${hvilken} kan ikke finde sin egen installationstest «${streng}» — `
+              + "denne leverandør er død for den installation rækken er skrevet til (opgave 63)"
+          );
+        }
       }
     }
   }
+  // (h) Registeret tælles her, men valideres i `contractULAEVNET` — det er et
+  //     register over **alle fire** tabeller, så en assert her ville løbe for
+  //     hver enkelt tabel og bebrejde tracker-tabellen en consent-række.
+  const huller = Object.entries(ULAEVNET).flatMap(([n, h]) => Object.keys(h).map((e) => `${n} → ${e}`));
+  assert.ok(
+    huller.length <= HOEJST_ULAEVNET,
+    `ULAEVNET har ${huller.length} navngivne leverandører uden installationstest — højst `
+      + `${HOEJST_ULAEVNET} er tilladt, og tallet må kun synke: ${huller.join("; ")}`
+  );
+}
+
+/**
+ * (h) `ULAEVNET` skal være sandt i begge retninger, målt mod **alle fire** tabeller.
+ *
+ * Registeret er kun værd at have, hvis det ikke kan lyve: en leverandør med en
+ * installationstest må ikke stå som ubevist (så fortæller registret en løgn om
+ * egen dækning), en begrundelse må ikke pege på en leverandør der ikke står i
+ * navnet, og en begrundelse skal være en måling — derfor mindst 20 tegn, så
+ * "kan ikke findes" ikke kan bruges som afslutning.
+ */
+function contractULAEVNET(daekninger, register = ULAEVNET) {
+  for (const [navn, huller] of Object.entries(register)) {
+    const tabel = Object.entries(daekninger).find(([, d]) => d[navn]);
+    assert.ok(
+      tabel,
+      `ULAEVNET har huller for «${navn}», som ikke står i nogen af de fire tabeller — en begrundet `
+        + "undtagelse på intet er en undtagelse, der læser som dækning"
+    );
+    for (const [etiket, grund] of Object.entries(huller)) {
+      assert.ok(
+        grund && grund.length > 20,
+        `ULAEVNET-begrundelsen for «${navn} → ${etiket}» er «${grund}» — den skal være en måling, `
+          + "ikke en vilje. Skriv hvad der blev spurgt om, og hvad værten svarede."
+      );
+      assert.ok(
+        leverandoerer(navn).includes(etiket),
+        `ULAEVNET nævner «${etiket}» i «${navn}», men navnet siger `
+          + `${leverandoerer(navn).join(", ")} — registret skal pege på en leverandør i navnet`
+      );
+      assert.ok(
+        !(tabel[1][navn] || []).some(([l]) => l === etiket),
+        `ULAEVNET siger at «${etiket}» i «${navn}» mangler en installationstest, men den har en — `
+          + "fjern hullet, ellers fortæller registret en leverandør er ubevist, mens porten beviser den"
+      );
+    }
+  }
+  return Object.values(register).reduce((n, h) => n + Object.keys(h).length, 0);
 }
 
 /** Alle fundne signatur-navne i en doms tekst. */
@@ -1087,6 +1309,15 @@ await test("R5 hver consent-række har en installationstest", () => contractR5(R
 await test("R5 hver tracker-række har en installationstest", () => contractR5(R5_TRACKERE, DAEKNING_TRACKERE, MINDST.trackers));
 await test("R5 hver form-række har en installationstest", () => contractR5(R5_FORMS, DAEKNING_FORMS, MINDST.forms));
 await test("R5 hver dora-række har en installationstest", () => contractR5(R5_DORA, DAEKNING_DORA, MINDST.dora, { prosa: true }));
+// (h) Registeret dømmes her, så en ny ubevist leverandør uden begrundelse er
+//     rød i den kørsel CI ser — ikke først når nogen kører --selftest.
+const LEVERANDOERER_I_TABELLERNE = [DAEKNING, DAEKNING_TRACKERE, DAEKNING_FORMS, DAEKNING_DORA]
+  .flatMap((d) => Object.values(d)).reduce((n, strenge) => n + strenge.length, 0);
+const LEVERANDOERER_NAVNGIVNE = [DAEKNING, DAEKNING_TRACKERE, DAEKNING_FORMS]
+  .flatMap((d) => Object.keys(d)).reduce((n, navn) => n + leverandoerer(navn).length, 0);
+const ULÆVNET_TAL = Object.values(ULAEVNET).reduce((n, h) => n + Object.keys(h).length, 0);
+await test("(h) ULAEVNET er sandt i begge retninger", () =>
+  contractULAEVNET({ consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA }));
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -1107,7 +1338,9 @@ console.log(
   `${passed} signatur-prosatest bestået — ${FIXTURES.length} fixtures i ${Object.keys(PROSA).length} sprog, `
     + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 6 kontrakter, 3 produkter, `
     + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length
-      + Object.keys(DAEKNING_FORMS).length + Object.keys(DAEKNING_DORA).length} af 46 rækker med installationstest`
+      + Object.keys(DAEKNING_FORMS).length + Object.keys(DAEKNING_DORA).length} af 46 rækker med installationstest, `
+    + `${LEVERANDOERER_I_TABELLERNE} installationstester for ${LEVERANDOERER_NAVNGIVNE} navngivne leverandører, `
+    + `${ULÆVNET_TAL} ubeviste i ULAEVNET af højst ${HOEJST_ULAEVNET}`
 );
 
 if (failures.length) {
@@ -1252,6 +1485,94 @@ if (process.argv.includes("--selftest")) {
     ["motoren i repoet", { trackers: { label: "Third-party trackers: 0 found", detail: "No third-party marketing/analytics trackers found in the served HTML." } }],
   ], MEKANISME.find((m) => m.navn === "GTM's ns.html-fallback"), MOTOR_NAVNE);
 
+  // 26. R5 regel (g) — **denne iterations egen fejl**, genskabt præcis som den
+  //     var: en række der navngiver fire leverandører med én streng. Før
+  //     regel (g) var dette tilstanden i «Cookiebot / OneTrust / Usercentrics /
+  //     ConsentManager», og porten var grøn, fordi den tællede *rækker*, ikke
+  //     *navne*. Uden denne case ved næste agent ikke om reglen virker.
+  const fireSomEn = {
+    ...DAEKNING,
+    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+      [["OneTrust", '<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"></script>', "vaert 200"]],
+  };
+  expectRed("R5 (fire leverandører, én streng)", contractR5, R5_MOENSTRE, fireSomEn, MINDST.consent);
+
+  // 27. R5 regel (g): en streng mærket med en leverandør der ikke står i navnet.
+  //     Ellers kan en agent "bevise" en leverandør, rapporten ikke nævner — og
+  //     regel (g) ville være tilfreds, fordi der så er lige så mange strenge som
+  //     navne, bare uden at de passer sammen.
+  const forkertEtiket = {
+    ...DAEKNING,
+    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"].map(
+        ([l, s, b]) => [l === "Cookiebot" ? "Cookiebot OG GDPR" : l, s, b]
+      ),
+  };
+  expectRed("R5 (streng for en leverandør uden for navnet)", contractR5, R5_MOENSTRE, forkertEtiket, MINDST.consent);
+
+  // 28. R5 regel (g): fire strenge hvor to er ens. Antallet er rigtigt, så
+  //     porten må ikke kunne tælle — en måling er én måling, og ellers kan fire
+  //     leverandører "dækkes" af den samme adresse skrevet to gange.
+  const toEns = {
+    ...DAEKNING,
+    "Cookiebot / OneTrust / Usercentrics / ConsentManager":
+      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"].map(
+        ([l, s, b], i) => (i === 1 ? [l, DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"][0][1], b] : [l, s, b])
+      ),
+  };
+  expectRed("R5 (to leverandører deler én installation)", contractR5, R5_MOENSTRE, toEns, MINDST.consent);
+
+  // 29. R5 regel (g) for **forms**: den række der har flest leverandører i
+  //     hele tabellen (seks). Den mutation der sletter **én** af de seks
+  //     strenge skal give rød, så en agent der tilføjer en ny form-plugin til
+  //     navnet ikke kan gøre det ved at fjerne en anden leverandørs bevis.
+  const formsUdenEn = {
+    ...DAEKNING_FORMS,
+    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor":
+      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor"]
+        .filter(([l]) => l !== "Fluent"),
+  };
+  expectRed("R5 (form-række: én af seks leverandører taber sin streng)", contractR5, R5_FORMS, formsUdenEn, MINDST.forms);
+
+  // 30. R5 regel (h): ULAEVNET må ikke sige at en leverandør er ubevist, når
+  //     porten beviser den. Registret er ellers et sted, hvor dækning kan
+  //     **aftage** i papiret uden at nogen melder det.
+  const hulletForEnBevist = {
+    "Cookiebot / OneTrust / Usercentrics / ConsentManager": {
+      OneTrust: "cdn.cookielaw.org svarer 200, men det er ikke nok — jeg gad ikke se den",
+    },
+  };
+  expectRed("(h) (ULAEVNET kalder en beviset leverandør ubevist)", contractULAEVNET,
+    { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA },
+    { ...ULAEVNET, "Cookiebot / OneTrust / Usercentrics / ConsentManager": hulletForEnBevist });
+
+  // 31. R5 regel (h): en begrundelse skal være en måling. "Kan ikke findes" er
+  //     en vilje, og den er præcis den, der gjorde de tolv antagelser i
+  //     opgave 66 mulige at leve med i ni runder.
+  const vilje = {
+    "TarteAuCitron / Klaro / Osano / CookieConsent": {
+      TarteAuCitron: "kan ikke findes",
+    },
+  };
+  expectRed("(h) (ULAEVNET-begrundelsen er ikke en måling)", contractULAEVNET,
+    { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA },
+    { ...ULAEVNET, "TarteAuCitron / Klaro / Osano / CookieConsent": vilje });
+
+  // 32. Spejlet: de **rigtige** tabeller skal være grønne i (h), ellers er case
+  //     30 og 31 grønne fordi porten altid er rød.
+  expectGreen("(h) (de fire rigtige tabeller passerer ULAEVNET)", contractULAEVNET,
+    { consent: DAEKNING, trackers: DAEKNING_TRACKERE, forms: DAEKNING_FORMS, dora: DAEKNING_DORA }, ULAEVNET);
+
+  // 33. Spejlet af case 26: en agent der skriver en **ny** leverandør ind i et
+  //     navn, uden at læse den, får rød. Det er det opgaven forbyder, og før
+  //     denne regel var det den eneste vej til en død række i tabellen.
+  const nyLeverandørINavnet = {
+    ...DAEKNING,
+    "Cookiebot / OneTrust / Usercentrics / ConsentManager / En Upfundet Femte":
+      DAEKNING["Cookiebot / OneTrust / Usercentrics / ConsentManager"],
+  };
+  expectRed("R5 (en ny leverandør skrevet ind i navnet uden streng)", contractR5, R5_MOENSTRE, nyLeverandørINavnet, MINDST.consent);
+
   // 14. R5: en række uden installationstest. Den er grøn i dag kun fordi
   //     `DAEKNING` er skrevet — en ny leverandør kan tilføjes i tabellen uden
   //     streng, og så må porten sige det.
@@ -1271,7 +1592,7 @@ if (process.argv.includes("--selftest")) {
   // 16. R5: en streng der peger på et navn der ikke står i nogen tabel. Den er
   //     den fejl der ligner mest en dækning: tabellen siger "testet", og
   //     ingen læser må tro at den testede noget.
-  const forvisset = { ...DAEKNING, "En platform der ikke findes": ['<script src="https://gone.example/cmp.js"></script>', "formodnet"] };
+  const forvisset = { ...DAEKNING, "En platform der ikke findes": [["En platform der ikke findes", '<script src="https://gone.example/cmp.js"></script>', "formodnet"]] };
   expectRed("R5 (streng på en række der ikke findes)", contractR5, R5_MOENSTRE, forvisset, MINDST.consent);
 
   // 17. R5: en streng skrevet efter mønstret **navn** i stedet for en
@@ -1281,7 +1602,7 @@ if (process.argv.includes("--selftest")) {
   // Bevisstyrken er `vaert 200` og **ikke** `formodnet`: siden opgave 67 er
   // loftet 0, så en `formodnet`-streng også giver rød i regel (f), og casen
   // ville være rød af to grunde. Den skal rød af præcis sin egen.
-  const navnebaseret = { ...DAEKNING, Axeptio: ["axeptio", "vaert 200"] };
+  const navnebaseret = { ...DAEKNING, Axeptio: [["Axeptio", "axeptio", "vaert 200"]] };
   expectRed("R5 (strengen er skrevet efter navnet, ikke en installation)", contractR5, R5_MOENSTRE, navnebaseret, MINDST.consent);
 
   // 18. R5 regel (d): en kopi der læser **nule rækker**. Det er ikke en
@@ -1296,7 +1617,7 @@ if (process.argv.includes("--selftest")) {
   //     reglen kan næste agent skrive hvad som helst i feltet, og R5 er grøn på
   //     en antagelse der læser som et bevis — den fejl `quantcast_choice` ville
   //     have vædt, hvis den ikke var en død markør.
-  const ubevidst = { ...DAEKNING, Axeptio: ['<script src="https://axeptio.cdn.app/axeptio.js"></script>', "testet"] };
+  const ubevidst = { ...DAEKNING, Axeptio: [["Axeptio", '<script src="https://axeptio.cdn.app/axeptio.js"></script>', "testet"]] };
   expectRed("R5 (bevisstyrken er ikke en af de fire slags)", contractR5, R5_MOENSTRE, ubevidst, MINDST.consent);
 
   // 25. R5: de to markører opgave 68 tilføjede efter at have læst leverandørens
@@ -1347,12 +1668,12 @@ if (process.argv.includes("--selftest")) {
   //     `<` **og** mønsteret — så uden regel (e) ville den være grøn. Det er
   //     dora-tabellen hele problem: en påstand om virksomheden skal læses som
   //     en sætning, ellers er den en genindskrivning af det vi led efter.
-  const doraNavnebaseret = { ...DAEKNING_DORA, "Status page / uptime monitoring": ["Status page / uptime monitoring.", "dokumenteret målt 2026-09-27"] };
+  const doraNavnebaseret = { ...DAEKNING_DORA, "Status page / uptime monitoring": [["Status page / uptime monitoring", "Status page / uptime monitoring.", "dokumenteret målt 2026-09-27"]] };
   expectRed("R5 (dora-strengen er navnet igen, ikke en sætning)", contractR5, R5_DORA, doraNavnebaseret, MINDST.dora, { prosa: true });
 
   // 24. R5 regel (e): en sætning der er for kort til at være en påstand om en
   //     virksomhed. Den matcher mønsteret, så kun ordtællingen kan fange den.
-  const doraKort = { ...DAEKNING_DORA, "SPF (Email sender auth)": ["SPF record.", "dokumenteret målt 2026-09-27"] };
+  const doraKort = { ...DAEKNING_DORA, "SPF (Email sender auth)": [["SPF", "SPF record.", "dokumenteret målt 2026-09-27"]] };
   expectRed("R5 (dora-strengen er for kort til at være en installationstest)", contractR5, R5_DORA, doraKort, MINDST.dora, { prosa: true });
 
   // 25. R5 for `dora`: mønsteret skal kunne finde sætningen, i hver kopi. Det er
@@ -1392,7 +1713,7 @@ if (process.argv.includes("--selftest")) {
   // signatur-tabellen — ellers fyrer regel (c) først, og casen er så rød af den
   // forkerte grund. Det er præcis den bevægelse opgaven forbyder: at føje en
   // leverandør til på en antagelse.
-  const antagelse = { ...DAEKNING, "En ny leverandør": ['<script src="https://ny.example/ny-cmp.js"></script>', "formodnet"] };
+  const antagelse = { ...DAEKNING, "En ny leverandør": [["En ny leverandør", '<script src="https://ny.example/ny-cmp.js"></script>', "formodnet"]] };
   expectRed("R5 (en installationstest der kun er formodet)", contractR5, medLeverandør, antagelse, MINDST.consent);
 
 
