@@ -601,3 +601,66 @@ der står tilbage — en agent der rydder videre skal kunne sænke det, og en de
 glemmer det kan ikke hæve det. To selftest-cases beviser begge veje: grøn ved
 præcis tolv, rød ved tretten. Den nye række i casen står **i signatur-tabellen**,
 så regel (c) ikke fyrer først og casen er rød af den rigtige grund.
+
+## Fejl 12 — de fem sidste antagelser: fire væk, én læst (opgave 67, rettet i 1.3.28)
+
+Opgave 66 efterlod fem `formodnet`-strenge og et loft på tolv. Opgave 67 gjorde
+opgaven færdig, så der står **nul** antagelser tilbage.
+
+**Målt før rettelsen, 2026-09-27.** De fire slug'e tabellen brugte er ikke i
+WordPress' eget katalog. Ikke bare 404 i info-API'en — de **301'er til en
+søgeside**, som er wp.orgs egen måde at sige at slug'en ikke findes:
+
+| slug | `info/1.0/<slug>.json` | `wordpress.org/plugins/<slug>/` |
+|---|---|---|
+| `shoper` (CEE/PL) | 404 | 301 → `/plugins/search/shoper/` |
+| `borlabs-cookie` | 404 | 301 → søgeside |
+| `moove-gdpr-cookie-consent` | 404 | 301 → søgeside |
+| `webtoffee-gdpr-cookie-consent` | 404 | 301 → søgeside |
+| `cookiehub` *(kontrol)* | **200** | 200 |
+| `wp-consent-api` *(kontrol)* | **200** | 200 |
+| `contact-form-7` *(kontrol)* | **200** | 200 |
+| `complianz-gdpr` *(kontrol)* | **200** | 200 |
+
+Kontrol-slugene er derfor ikke til pynt: de gør målingen i stand til at skelne
+mellem *denne slug findes ikke* og *mit katalog-kald virker ikke*, som var
+ metodefejlen i opgave 66. CookieScripts egne værter svarer desuden 000 herfra
+(`cookiescript.com`, `app.cookiescript.com`, `cdn.cookiescript.com`), og
+`app.cookiescript.com` peger på 192.64.119.254 — et parkeringsområde, ikke et CDN.
+
+**Hvad der blev gjort.** `CookieScript`, `CEE/PL consent plugin`, `Moove GDPR` og
+`WebToffee GDPR` er væk fra `CONSENT_SIGNATURES` i alle tre motorer, og deres
+strenge er væk fra `DAEKNING`. Det er samme skæbne som Quantcast fik i 1.3.25,
+og af samme grund: en række der ikke kan finde den platform den navngiver er
+ikke dækning. Den er en grøn linje i en rapport kunden betaler for.
+
+**Borlabs blev læst, ikke fjernet.** Leverandørens eget repo
+`Borlabs/Borlabs-Cookie-GTM-Variable-Template` indeholder `template.tpl` (8 205
+bytes), der kalder `callInWindow('BorlabsCookie.checkCookieConsent', …)` og
+`callInWindow('BorlabsCookie.Consents.hasConsent', …)`, og som henviser til
+`borlabs.io/kb/google-tag-manager/`. Den dokumenterede installation er altså den
+**globale `BorlabsCookie`**, ikke et filnavn. Den gamle streng hed
+`…/borlabs-cookie/borlabs-cookie.js` — et filnavn jeg havde gættet. Rækken
+beholdes, og den nye streng finder en side uanset hvilket asset Borlabs enqueue'r,
+hvilket den gamle ikke gjorde.
+
+**Ratchetten.** `HOEJST_FORMODNET` går fra **12 til 0**. Loftet var 12, fordi det
+var antallet før de tolv blev læst; en agent der rydder videre skulle kunne sænke
+det. Nu er der ingen antagelser, så reglen er ikke længere et tal men opgave 63s
+krav: *en installationstest skal være læst, ellers er den ingen*. Den første
+antagelse giver rødt, og selftesten beviser begge veje (`nul antagelser` grøn,
+`en installationstest der kun er formodet` rød). Den nye række i casen står stadig
+**i** signatur-tabellen, så regel (c) ikke fyrer først.
+
+**Hvad det koster kunden.** `consent` går fra 20 til 16 rækker, og en side med
+CookieScript, Shoper, Moove eller WebToffee får i dag **færre** fund end før.
+Changelog'en siger det samme, fordi det er sandt: en plattform der tabes er
+bedre end en grøn linje der aldrig kunne findes. Mønstrene for de fire var
+desuden rettet mod **mappe-navne**, så de ville have fundet en installation
+hvis filen hed noget andet — de var ikke døde, de var ubeviste. Det er grunden
+til at de ikke kommer tilbage i denne version: de kan tilbage, når nogen har
+læst leverandørens egen kode.
+
+**Resultat i porten:** `42 af 46 rækker med installationstest` (42 står i
+tabellen, 46 er det samlede antal rækker i de fire tabeller efter de fire
+fjernelser), `52 af 52` negative cases uændret, `GATE GRØN — alle 24 steps`.
