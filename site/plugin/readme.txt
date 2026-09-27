@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.28
+Stable tag: 1.3.29
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.29 (2026-09-27) =
+* Fix: OneTrust was invisible in its own normal installation, so a site running OneTrust - the most widely deployed consent platform in Europe - was told 'No consent banner detected', which is the same verdict as a site with no consent platform at all. OneTrust installs itself with a single script tag, src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" with a data-domain-script attribute, and that path contains no occurrence of the word 'onetrust', which was all the pattern looked for. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine, while Cookiebot, Usercentrics and ConsentManager - the other three platforms the same row names - were found in all three. The vendor's own stub answers 200 and is OneTrust's SDK: it defines OneTrustStub, reads window.OneTrust and uses OneTrust's own optanon fields. The pattern now matches what the markup actually contains, so it is read rather than assumed.
+* Fix: the WordPress plugin 'GDPR Cookie Banner' (slug gdpr-cookie-banner) was not matched. The pattern read 'gdpr' and 'banner' with a hyphen, an underscore or nothing between them, and the word 'cookie' stands in the middle of the slug. The plugin exists - the public WordPress catalogue answers 200 for it - and its own source enqueues public/css/gdpr-cookie-banner-public.css and public/js/gdpr-cookie-banner-public.js on the front end, and the banner's own markup carries the class gdpr-cookie-banner. All three are now matched, so a site running it no longer reads as having no banner at all. The existing 'cookie-notice' form is still matched.
+* The row named 'Borlabs / CookieNinja' is now named 'Borlabs', because 'CookieNinja' is not a product anyone can read documentation for: neither cookieninja nor cookie-ninja exists in the public WordPress catalogue. A report that names a platform cannot find is not coverage. Borlabs is unchanged and still found - it is documented from Borlabs' own Google Tag Manager template.
+* Nothing else in the list narrowed. The test suite's test data now uses the OneTrust installation and the gdpr-cookie-banner enqueue, and two new cases fail if either marker stops matching, so neither can come back unnoticed.
+* Plugin 1.3.29. If you scanned your site between 1.3.28 and now, treat the cookie-consent row as unknown rather than as a finding: run a new scan.
 
 = 1.3.28 (2026-09-27) =
 * Four consent rows are removed rather than kept on an assumption. CookieScript, the CEE/PL consent plugin, Moove GDPR and WebToffee GDPR each carried a test string naming a file that was written from memory, and none of the four exists in the public WordPress catalogue under the slug the test data used - all four slugs redirect to a search page, while contact-form-7, complianz-gdpr, cookiehub and wp-consent-api answer 200 in the same measurement. A row that cannot find the platform it names is not coverage: it is a green line in a report the customer reads as coverage. If you scanned your site between 1.3.27 and now, a site running one of those four platforms may report fewer consent findings than before. Nothing else in the row list narrowed.

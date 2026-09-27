@@ -44,17 +44,17 @@ const CMV2_SIGNATURES = [
 ];
 
 const CONSENT_SIGNATURES = [
-  { re: /cookiebot|consentmanager|onetrust|usercentrics/i, name: "Cookiebot / OneTrust / Usercentrics / ConsentManager" },
+  { re: /cookiebot|consentmanager|onetrust|usercentrics|cookielaw\.org|otSDKStub|optanon/i, name: "Cookiebot / OneTrust / Usercentrics / ConsentManager" },
   { re: /cookieyes|cookie-yes|cookieyes/i, name: "CookieYes" },
   { re: /tarteaucitron|klaro|osano|cookieconsent/i, name: "TarteAuCitron / Klaro / Osano / CookieConsent" },
   { re: /complianz|cmplz/i, name: "Complianz GDPR" },
-  { re: /cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie/i, name: "Generic cookie consent banner" },
+  { re: /cookie[_-]?notice|gdpr[_-]?cookie[_-]?banner|gdpr[_-]?banner|eu[_-]?cookie/i, name: "Generic cookie consent banner" },
   { re: /axeptio|axept\.io/i, name: "Axeptio" },
   { re: /cookiehub|cookie[_-]?hub/i, name: "CookieHub" },
   { re: /iubenda|cookie[_-]?solution/i, name: "iubenda" },
   { re: /justuno|privy|optinmonster/i, name: "JustUno / Privy / OptinMonster (popup detected)" },
   { re: /wp-consent-api/i, name: "WP Consent API" },
-  { re: /borlabs|cookieninja/i, name: "Borlabs / CookieNinja" },
+  { re: /borlabs/i, name: "Borlabs" },
   { re: /real[_-]?cookie[_-]?banner/i, name: "Real Cookie Banner" },
   { re: /cookie[_-]?notice[_-]?lite/i, name: "Cookie Notice Lite" },
   { re: /gdpr[_-]?cookie[_-]?compliance/i, name: "GDPR Cookie Compliance" },

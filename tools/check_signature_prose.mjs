@@ -140,8 +140,13 @@ const MOTOR_TABEL = {
  * som bevis for hele navnet.
  */
 const DAEKNING = {
+  // Fire leverandører, og strengen er den **første** af dem der efterprøves
+  // 1.3.29: OneTrusts egen stub. Den lå før her som den eneste streng, og den
+  // bevidste Cookiebot — altså bevis på den leverandør, der ikke var hullet.
+  // Cookiebot, Usercentrics og ConsentManager er hver målt 4/4 i alle fire
+  // kopier i samme måling, se kommentaren under tabellen.
   "Cookiebot / OneTrust / Usercentrics / ConsentManager":
-    ['<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-blockingmode="auto"></script>', "vaert 200"],
+    ['<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="a1b2c3"></script>', "vaert 200 · læst i leverandørens egen stub 2026-09-27"],
   "CookieYes":
     ['<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"],
   "TarteAuCitron / Klaro / Osano / CookieConsent":
@@ -149,7 +154,7 @@ const DAEKNING = {
   "Complianz GDPR":
     ["<link rel='stylesheet' id='cmplz-css' href='https://shop.example/wp-content/plugins/complianz-gdpr/assets/css/complianz.min.css'>", "wp.org 200"],
   "Generic cookie consent banner":
-    ['<link rel="stylesheet" href="https://shop.example/wp-content/plugins/cookie-notice/cookie-notice.css">', "wp.org 200"],
+    ["<link rel='stylesheet' id='gdpr-cookie-banner-public-css' href='https://shop.example/wp-content/plugins/gdpr-cookie-banner/public/css/gdpr-cookie-banner-public.css'>", "wp.org 200 gdpr-cookie-banner 2026-09-27 · læst i pluginens eget enqueue"],
   "Axeptio":
     ['<script src="https://static.axept.io/sdk.js"></script>', "vaert 200 · læst i leverandørens egen SDK 2026-09-27"],
   "CookieHub":
@@ -160,7 +165,7 @@ const DAEKNING = {
     ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"],
   "WP Consent API":
     ['<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"],
-  "Borlabs / CookieNinja":
+  "Borlabs":
     ['<script>window.BorlabsCookie = window.BorlabsCookie || {}; var BorlabsCookie = window.BorlabsCookie;</script>', "dokumenteret leverandørens egen GTM-template 2026-09-27"],
   "Real Cookie Banner":
     ['<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"],
@@ -175,35 +180,46 @@ const DAEKNING = {
 };
 
 /*
- * Fire ting tabellen **ikke** dækker, skrevet ned fordi porten ellers ville læses
- * som om den gjorde det:
+ * De tre huller tabellen erklærede, lukket 1.3.29 — hvert ved at læse
+ * leverandørens egen kode, målt før rettelsen i alle fire kopier:
  *
- * 1. Rækken *Cookiebot / OneTrust / Usercentrics / ConsentManager* har fire
- *    leverandører og **én** streng, som beviser Cookiebot. OneTrusts egen
- *    stub ligger på `cdn.cookielaw.org/scripttemplates/otSDKStub.js` (200 i
- *    dag) — og den sti rummer **ikke** `onetrust`, så den installationsform er
- *    uafhængigt dækket kun hvis siden ellers skriver `OneTrust`. Det er ikke
- *    bevist her, og det er derfor strengen kun tæller som Cookiebot-bevis.
- * 2. Rækken *Borlabs / CookieNinja* har to leverandører og **én** streng, som
- *    siden 1.3.28 beviser Borlabs i **leverandørens egen kode**: dens egen
- *    Google-Tag-Manager-template kalder `callInWindow('BorlabsCookie.…')`, så den
- *    globale `BorlabsCookie` er den installation Borlabs selv dokumenterer — ikke
- *    et filnavn, jeg havde gættet. `cookieninja` er stadig ikke et produkt nogen
- *    i repoet har læst om; det står under ❓.
- * 3. `gdpr[_-]?banner` kan ikke matche det populære plugin-slug
- *    `gdpr-cookie-banner` — der står *cookie* mellem `gdpr` og `banner`. Rækken
- *    er dækket af `cookie[_-]?notice` i stedet (Cookie-Notices slug), så
- *    alternativet er uafhængigt **uafhængigt ubevist** og efterlader et hul.
- * 4. **Fire rækker er fjernet i 1.3.28**, fordi ingen af dem findes i WordPress'
- *    eget katalog under den slug tabellen brugte — alle fire slug'e **301'er til en
- *    søgeside**, mens kontrol-slugene `contact-form-7`, `complianz-gdpr`,
- *    `cookiehub` og `wp-consent-api` svarer 200 i samme måling: CookieScript,
- *    CEE/PL (shoper), Moove GDPR og WebToffee. Deres installationstester var
- *    desuden filnavne skrevet fra hukommelsen. En død række er værre end ingen,
- *    fordi den er en grøn linje i rapporten kunden læser.
- * 5. `analytify` — rækkens navn siger *Analytify/CAOS*, men mønstret var
- *    `analytics[_-]?cat`, som ingen af de to produkter kan matche. R5 fandt det;
- *    se `docs/eucomply-signatur-prosa.md` "Fejl 9".
+ * 1. *Cookiebot / OneTrust / Usercentrics / ConsentManager* — OneTrust var det
+ *    eneste af de fire, tabellen ikke kunne finde. **Målt før:** 0 fund på
+ *    OneTrusts egen dokumenterede installation, mens Cookiebot,
+ *    `app.usercentrics.eu/browser-ui/latest/loader.js` (200) og
+ *    `www.consentmanager.de/gtm.js` (200) gav fund i alle fire kopier — altså
+ *    3 af de 4 leverandører rækken navngiver. **Læst i leverandørens egen kode:**
+ *    `cdn.cookielaw.org/scripttemplates/otSDKStub.js` svarer 200 og **er**
+ *    OneTrusts egen SDK-stub — filen definerer `var OneTrustStub`, læser
+ *    `window.OneTrust` og bruger OneTrusts `optanon`-felter. Stien rummer
+ *    ikke `onetrust`, som den gamle note sagde, så alternativet
+ *    `cookielaw\.org|otSDKStub|optanon` er skrevet efter **den markør der står i
+ *    markup'en**, og den er læst, ikke gættet. Efter rettelsen: 4 af 4.
+ * 2. `gdpr[_-]?banner` matchede ikke slug'en `gdpr-cookie-banner`. **Slug'en
+ *    findes:** `api.wordpress.org` svarer 200 — *GDPR Cookie Banner*,
+ *    version 1.0.0, 1615 downloads. **Læst i pluginens egen kode:** den
+ *    enqueue'r på `wp_enqueue_scripts` (altså i front-end) både
+ *    `public/css/gdpr-cookie-banner-public.css` og
+ *    `public/js/gdpr-cookie-banner-public.js` via `plugin_dir_url()`, og
+ *    bannerens egen markup har klassen `gdpr-cookie-banner`. Mønsteret er derfor
+ *    `gdpr[_-]?cookie[_-]?banner|gdpr[_-]?banner` — **ikke** fordi nogen antager
+ *    stien, men fordi den står i leverandørens egen kode. Rækkens anden sti,
+ *    Cookie-Notices' `cookie-notice.css`, er ligeledes målt fund i alle fire
+ *    kopier, så den blev ikke taget med.
+ * 3. `cookieninja` er **væk fra mønstret og fra rækkens navn** (1.3.29), som
+ *    Quantcast i 1.3.25: hverken `cookieninja` eller `cookie-ninja` findes i
+ *    WordPress' eget katalog (404 mod `api.wordpress.org`), og der er intet i
+ *    repoet der nogensinde har læst om et produkt ved det navn. En rapport der
+ *    siger *Borlabs / CookieNinja* lover kunden en platform, der ikke kan
+ *    findes, så rækken hedder nu **Borlabs** — det navn leverandørens egen
+ *    GTM-template dokumenterer, og det er stadig 4/4 fund.
+ *
+ * De øvrige punkter under denne liste står uændrede: fire rækker er fjernet i
+ * 1.3.28, fordi ingen af dem findes i WordPress' eget katalog under den slug
+ * tabellen brugte (CookieScript, CEE/PL (shoper), Moove GDPR, WebToffee — alle
+ * fire slug'e 301'er til en søgeside, mens fire kontrol-slug'e svarer 200 i
+ * samme måling), og `analytify` var et dødt mønster indtil 1.3.26, se
+ * `docs/eucomply-signatur-prosa.md` "Fejl 9".
  */
 
 /**
@@ -1282,6 +1298,26 @@ if (process.argv.includes("--selftest")) {
   //     have vædt, hvis den ikke var en død markør.
   const ubevidst = { ...DAEKNING, Axeptio: ['<script src="https://axeptio.cdn.app/axeptio.js"></script>', "testet"] };
   expectRed("R5 (bevisstyrken er ikke en af de fire slags)", contractR5, R5_MOENSTRE, ubevidst, MINDST.consent);
+
+  // 25. R5: de to markører opgave 68 tilføjede efter at have læst leverandørens
+  //     egen kode. Begge mutationer er skrevet mod **R5_MOENSTRE's** egen
+  //     mønsterkopi, så de beviser at strengen i `DAEKNING` ikke kan være
+  //     grøn uden den markør den udtrykkeligt blev skrevet for:
+  //     (a) OneTrusts `cookielaw\.org|otSDKStub|optanon` — OneTrusts egen
+  //         stub-sti rummer ikke `onetrust`, så uden den er den største CMP i
+  //         rækkens navn usynlig, og det er præcis det hullet var;
+  //     (b) `gdpr[_-]?cookie[_-]?banner` — slug'en står i leverandørens eget
+  //         front-end-enqueue, og `gdpr[_-]?banner` kan ikke matche den.
+  const udenOneTrust = R5_MOENSTRE.map((rækker) => rækker.map((r) => (
+    r.navn === "Cookiebot / OneTrust / Usercentrics / ConsentManager"
+      ? { navn: r.navn, re: /cookiebot|consentmanager|onetrust|usercentrics/i } : r
+  )));
+  expectRed("R5 (OneTrusts leverandør-sti matcher ikke)", contractR5, udenOneTrust, DAEKNING, MINDST.consent);
+  const udenSlug = R5_MOENSTRE.map((rækker) => rækker.map((r) => (
+    r.navn === "Generic cookie consent banner"
+      ? { navn: r.navn, re: /cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie/i } : r
+  )));
+  expectRed("R5 (slug'en gdpr-cookie-banner matcher ikke)", contractR5, udenSlug, DAEKNING, MINDST.consent);
 
   // 20. R5 for `forms`: en række uden installationstest. Samme fejl som case 14,
   //     men i den tabel hvor en ny betalingsplatform oftest bliver tilføjet — og
