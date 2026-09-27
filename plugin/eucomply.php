@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.20
+ * Version:           1.3.21
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.20' );
+define( 'EUCOMPLY_VERSION', '1.3.21' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -786,8 +786,14 @@ class EUComply {
                 array( 'name' => 'TCF version indicator', 're' => '~tcf[_-]?v[12]|tcfapiv[12]~i' ),
             ),
             // Trackers that fire without consent being the classic EU case.
+            // `ns.html` is Google's own no-JavaScript fallback for GTM - the
+            // snippet Google's documentation asks every GTM site to install,
+            // and the only analytics reference on a page that has only the
+            // fallback. The pattern matched the container script alone, so
+            // "Third-party trackers: 0 found" stood on a page that still sends
+            // a pixel. Never matched it, so this is a leak, not a regression.
             'trackers' => array(
-                array( 'name' => 'Google Analytics / GTM', 're' => '~google-analytics\.com|googletagmanager\.com\/gtm\.js|gtag\(~i' ),
+                array( 'name' => 'Google Analytics / GTM', 're' => '~google-analytics\.com|googletagmanager\.com/(?:gtm\.js|ns\.html)|gtag\(~i' ),
                 array( 'name' => 'Meta (Facebook) Pixel', 're' => '~connect\.facebook\.net|fbq\([\'"]~i' ),
                 array( 'name' => 'Hotjar', 're' => '~static\.hotjar\.com|hj\([\'"]~i' ),
                 array( 'name' => 'Microsoft Clarity', 're' => '~clarity\.ms~i' ),
@@ -837,16 +843,23 @@ class EUComply {
             ),
             // DORA-adjacent page signals. Static text markers only: this is not
             // a DORA assessment and the fix text says so.
+            // The separator is `[ _-]?` — hyphen, underscore **or a space**. It
+            // was `[_-]?`, which never matches a space, so every multi-word
+            // marker was invisible in its own long form: "business continuity
+            // plan", "incident response" and "status page" are written with
+            // spaces on an English security page and read as nothing. Measured
+            // before the fix: 0 of those 3, here and in both engines. Same bug
+            // class as the `terms` and `sla` patterns (tasks 52 and 55).
             'dora'     => array(
-                array( 'name' => 'SPF (Email sender auth)', 're' => '~spf[_-]?record|v[_-]?=spf~i' ),
+                array( 'name' => 'SPF (Email sender auth)', 're' => '~spf[ _-]?record|v[ _-]?=spf~i' ),
                 array( 'name' => 'DKIM (Email signing)', 're' => '~dkim|[_-]?domainkey~i' ),
-                array( 'name' => 'DMARC (Email policy)', 're' => '~dmarc_|dmarc[_-]?record|_dmarc\.~i' ),
-                array( 'name' => 'MX (Mail exchange)', 're' => '~mx[_-]?record|mx [0-9]|mail[_-]?exchange~i' ),
-                array( 'name' => 'Multi-server / failover signals', 're' => '~multiple[_-]?server|failover|redundan|multi[_-]?az[_-]?dns~i' ),
-                array( 'name' => 'CDN failover / multi-CDN', 're' => '~cdn[_-]?failover|multi[_-]?cdn|backup[_-]?origin~i' ),
-                array( 'name' => 'Incident response / SOC reporting', 're' => '~incident[_-]?response|soc[_-]?report|security[_-]?incident~i' ),
-                array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[_-]?plan|dr[_-]?plan|business[_-]?continuity~i' ),
-                array( 'name' => 'Status page / uptime monitoring', 're' => '~status[_-]?page|uptime[_-]?monitor~i' ),
+                array( 'name' => 'DMARC (Email policy)', 're' => '~dmarc_|dmarc[ _-]?record|_dmarc\.~i' ),
+                array( 'name' => 'MX (Mail exchange)', 're' => '~mx[ _-]?record|mx [0-9]|mail[ _-]?exchange~i' ),
+                array( 'name' => 'Multi-server / failover signals', 're' => '~multiple[ _-]?server|failover|redundan|multi[ _-]?az[ _-]?dns~i' ),
+                array( 'name' => 'CDN failover / multi-CDN', 're' => '~cdn[ _-]?failover|multi[ _-]?cdn|backup[ _-]?origin~i' ),
+                array( 'name' => 'Incident response / SOC reporting', 're' => '~incident[ _-]?response|soc[ _-]?report|security[ _-]?incident~i' ),
+                array( 'name' => 'BC/DR planning reference', 're' => '~bcdr|bcp[ _-]?plan|dr[ _-]?plan|business[ _-]?continuity~i' ),
+                array( 'name' => 'Status page / uptime monitoring', 're' => '~status[ _-]?page|uptime[ _-]?monitor~i' ),
             ),
         );
 
