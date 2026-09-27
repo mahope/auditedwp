@@ -1,3 +1,33 @@
+Opdateret: 2026-09-27 (iteration 81)
+
+Sidste iteration: **gaten var rød på en maskine, der ikke havde gjort noget forkert — fordi den erklærede et python-krav og så ignorerede det 31 steder ud af 32.** Det er den vigtigste rettelse i denne plan hidtil, og den er sket uden at nogen produktrelateret kode blev rørt.
+
+**Målingen er tre linjer i et shell-script.** `tools/quality_gate.sh` skrev i sin egen kommentar at den kræver 3.10+, og skrev `pick_python()` til formålet. **Kun ét af de 32 python-kald brugte den** — SEO-trinnet, som fik sin egen `seo_python`. De 31 andre kaldte bare `python3`, altså maskinens egen fortolkning.
+
+I CI er det uskadeligt: `setup-python` gør `python3` til 3.11. **Lokalt er macOS' system-python 3.9.** Og `build_public_tree.py` kalder `Path.write_text(newline="")` — det argument kom først i 3.10:
+
+```
+TypeError: write_text() got an unexpected keyword argument 'newline'
+```
+
+**Og da træet ikke blev bygget, faldt tre kontroller efter i en kaskade, der så ud som produktrelaterede fejl.** `check_cta.py` meldte at **alle 216 sider** manglede i det publicerede træ. `check_public_tree.py` meldte **30 døde redirects**. `check_inline_js.py` sagde den læste intet. Ingen af dem var fejl — de var følger af ét dødt trin. Det er præcis den slags fejl der får en agent til at "rette" produktkode for at tilfredsstille en fortolkning, der aldrig skulle have kørt den, så kilden er skrevet ned i porten.
+
+**Rettelsen er hermetisk, ikke et hack:** `PY="$(pick_python)"` bindes én gang, alle 32 kald bruger `"$PY"`, og gaten **døer hårdt** med en læsbar besked når ingen python >= 3.10 findes, i stedet for at springe kravet over og fortsætte. Headeren skriver hvilken fortolkning der kørte, så et log-udsnit kan bruges som evidens. `seo_python` er væk; samme fortolkning bruges i SEO-, sibling- og alle andre trin.
+
+**Målt før/efter:** 3 røde steps → `GATE GRØN — alle 24 steps bestået`, 216 sider **0 findings**, `check_inline_js` læser igen, 0 døde redirects. `check_runtime.py` fik **28 → 31 negative cases**, de tre nye er præcis de tre måder bindingen kan mangle: en python kaldt ved navn, en manglende `PY=`, en manglende hård fejl. Beviset er mutationerne er røde **og** det rene fixture er grønt — ellers var reglen rød af design.
+
+**Den anden halvdel af iterationen var en diff fra en dræbet iteration 80, som lå uden commit.** Scannerens egen hjælpe tekst (`--help` i `cli/eucomply.js`, docblock-eksemplet i `engine/index.js`) skrev `npx eucomply-scanner` og `from 'eucomply-scanner'` — navne der **aldrig er publiceret**, npm svarer 404. De peger nu på `@mahope/eucomply-scanner`. Årsagen var at install-gaten dækkede læser-synlige *dokumenter*, ikke de filer koden selv skriver sin brugsanvisning i; `PRODUCT_SOURCE` dækker dem nu.
+
+**To ting i den selftest var falske, og begge er målt i stedet for antaget.** (a) Fund-teksten sagde *"står i PRODUCT_DOCS"* også for kildefiler, så den pegede i den forkerte tabel. Den navngiver nu den liste filen står i. (b) Case 6f skrev i sin egen kommentar at dækningen *"ikke kan falde i stilhed, for hvis `PRODUCT_SOURCE` tømmes bliver casen rød"*. **Den påstand var forkert:** case 6f kalder `probe(source=[...])` med sin egen liste, så mutationen der tømmer `PRODUCT_SOURCE` gav stadig `SELFTEST GRØN — alle 11 negative cases`. Påstanden er nu målet begge veje og bæres af **case 6h**, som læser repoets *egne* konstanter og kræver at listen er fyldt og hver sti findes. Samme fejltype som opgave 46 fund 4, opgave 65 del 1 og opgave 30 fund 1: en case der siger den dækker noget den selv sætter op.
+
+**Selftestens 14 call sites lignede hver især en lille fejl, men var én og samme.** En case der skriver `docs=[]` fordi den kun vil se på træet, arvede stilt den rigtige `PRODUCT_SOURCE` — som ikke findes i fixture-træet — og fik fund den aldrig havde sat op. Case 6e læste desuden grøn *på de forkerte fund*. `probe()` fastlægger nu base, dato og **begge** lister, så det ikke kan glemmes. **9 → 13 negative cases.**
+
+Opgave 81: install-gaten dækker kilderne — kodecommit `bec272b`; gatens fortolkning bindes én gang, `check_runtime.py` holder det fast med tre mutationer — kodecommit `3265a98`, merge `9fd0f01` 2026-09-27
+
+**Ingen deploy-note nødvendig.** `git diff --stat 2409b15..9fd0f01` rører `eucomply-scanner/cli/`, `eucomply-scanner/engine/` og `tools/` — **ikke en eneste `site/**`-fil**, og de to JS-motorer deployes ikke af CI (jf. spørgsmål 9). Den publicerede overflade er byte-identisk, så intet skal verificeres mod et batch-vindue. Den eneste evidens er CI-loggen: `GATE GRØN — alle 24 steps bestået` og `SELFTEST GRØN — alle 13 negative cases fanges`.
+
+---
+
 Opdateret: 2026-09-27 (iteration 79)
 
 Sidste iteration: **den gratis scanners egen README løj om at pakken ikke findes på npm, og gaten der skulle have set den, læste kun `site/**`.** Det er missionens rang 1 — *et køb, der ikke leverer* — i den gratis scanner, som er hele tragten.
