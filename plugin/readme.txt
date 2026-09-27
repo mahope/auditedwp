@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.34
+Stable tag: 1.3.35
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,15 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.35 (2026-09-27) =
+* Fix: three tracker markers in the test suite could not be traced to anything the report names, and two of them pointed at hosts that no longer exist. They are gone in this plugin, in the free scanner and in the published CLI engine.
+* Hotjar's hj( call is no longer part of the pattern. It is Hotjar's own global function, and it is defined in the file its script URL points at - the scanner reads a page's markup and never opens a loaded script, so that call cannot be found on a site that actually has Hotjar. The test data for the row was also written from memory: static.hotjar.com/c/hotjar-<id>.js answers 200 with an empty body for any id, so 'the host answered 200' proved nothing. The row keeps static.hotjar.com, Hotjar's own host, which answers 200 with a real file. Measured before the fix on 2026-09-27.
+* static.tiktok.com has no DNS at all - dig returns nothing - so it can never match a live site. The current pixel still counts: analytics.tiktok.com and the inlined ttq. call are both still recognised, and both were read in a real site's own inline loader on 2026-09-27.
+* cdn.pinterest.com has no DNS either, so the old cdn.pinterest.com.*pin.*js form is gone. Pinterest's own two documented paths - s.pinimg.com/ct/core.js and the ct.pinterest.com/v3/ noscript pixel - are unchanged and still found.
+* The LinkedIn Insight Tag row now also has a test for the line the shop itself writes. snap.licdn.com/li.lms-analytics/insight.min.js is the loader; the installation is the inline var _linkedin_partner_id = "..." line, which was in the pattern but in no test string, so a site carrying only the inline line had nothing to trace it to. The TikTok row got the same treatment for its inline loader.
+* The TikTok test data named analytics.tiktok.com/i18n/pixel/<id>.js, which answers 404 on a made-up id - its own evidence said so. The path a real site actually uses is analytics.tiktok.com/i18n/pixel/events.js.
+* If you scanned your site between 1.3.34 and now, run a new scan. No tracker lost its finding: three new tests cover the inline LinkedIn and TikTok lines and the Hotjar host, so the removals are provably not narrowing. One row can now report fewer findings: a page that mentioned Hotjar's hj( call in a code sample, without having Hotjar installed, was previously counted as a Hotjar site.
 
 = 1.3.34 (2026-09-27) =
 * Fix: the DORA row for multi-server and failover signals could not recognise two markers it had been written for, and reported a third under a name the report did not contain.

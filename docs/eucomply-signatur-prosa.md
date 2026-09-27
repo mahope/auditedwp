@@ -992,3 +992,56 @@ tegnklasserne i opgave 71 — porten læser et *fragment* af et alternativ som s
 eget navn. Den mutation der **kan** være rød er den ægte fejl, den opdigtede
 streng: intet mønster matcher den, så regel (b) fanger den samme sekund den
 skrives ind igen. Den er skrevet ind, og **79 af 79** negative cases fanges.
+
+## Fejl 18 — en installationstest der ikke kan fejle, og en port der læste 40 rækker i en tabel med 12
+
+Målt 2026-09-27, opgave 72 del 7. Ratchetten `HOEJST_UTILREGNET` står nu på **0 i
+alle fire tabeller** for første gang.
+
+**De fem sidste ubeviste alternativer delte sig efter hvor de står, og de krævede
+to modsatte rettelser.** `_linkedin_partner_id` og `ttq.` står i **købmandens egen
+markup** og blev lukket ved at lægge den målte indlejrede linje ind som
+installationstest — dækningstilvækst, fordi begge markører lå i mønstret uden nogen
+streng at spore dem på. Målt i en rigtig sides markup (`motionapp.com`,
+3 394 123 B): `var _linkedin_partner_id = "5119106";` (2 forekomster) og
+`ttq.load('C823P2LGL1ARI64QV9NG'); ttq.page();` (6 forekomster).
+
+`hj(` er det modsatte. Det er leverandørens **egne globale funktion**, defineret i
+den fil dens script-URL peger på — og scanneren læser en sides markup og åbner
+aldrig et indlæst script. Den kan derfor ikke findes på en side der faktisk har
+Hotjar, kun på en side der *viser* Hotjars kode. Den er fjernet, og den kunne ikke
+få en `ALIASSER`-note, fordi en note kræver en måling i leverandørens egen kode,
+og den kræver et rigtigt Hotjar-id: 16 målte sider havde ingen Hotjar, og
+`help.hotjar.com` svarer 403.
+
+**To installationstester viste sig at være fiktion, og det er den dyrebeste fejl i
+delen.** Hotjars streng navngav `static.hotjar.com/c/hotjar-1234567890.js?sv=6` med
+beviset «vaert 200» — målt svarer den **200 med nul byte på ethvert id**. Et bevis
+der ikke kan fejle er ikke et bevis; samme fejlklasse som `data-stripe-key` i Fejl
+17. TikToks streng navngav `/i18n/pixel/1234567890123.js`, som **404** på et
+opdigtet id — dens egen bevisnote siger det — mens den sti en rigtig side bruger
+hedder `events.js`. En streng der er skrevet efter mønsteret beviser intet, og
+regel (b) kan ikke se forskellen.
+
+**To døde værter, målt frem for antaget:** `static.tiktok.com` og
+`cdn.pinterest.com` svarer **intet** på `dig +short`, så de kan ikke matche en
+levende side. De er væk, og tre nye fixtures er R2-beviset på at fjernelsen ikke
+er en indsnævring.
+
+**Fejlen i porten, som var stum.** `phpBlok` sprang PHP-strenge over, men ikke
+kommentarer. Min egen kommentar med `hj(` i pluginens `trackers`-tabell tællede som
+en åben klamme, rækkens egen afsluttende `)` bragte aldrig dybden til 0, og blokken
+løb videre gennem resten af filen: **40 rækker læst i stedet for 12**, og porten
+meldte OneTrust manglende en installationstest — *i en tabel den ikke står i*.
+Uden en klamme i kommentaren ville det have været en fejl ingen så. Rettelsen
+springer `//`, `#` og `/* */` over.
+
+**Case 31m fangede en fejl i sig selv.** Den skrev 14 som forventet antal rækker,
+fordi den gamle læsers 40 havde fået mig til at tælle de to næste tabeller med. Den
+var rød på sin egen måling, og det rigtige tal er 12. **En mutation der skriver et
+gjættet tal i stedet for at måle det er den samme fejlklasse som den streng den
+skal fange** — derfor står tallet i en egen assertion med en besked der siger at
+den skal tjekkes.
+
+Case 31l og 31k tager de to nye strenge væk og kræver rødt, så målingen for de
+indlejrede linjer er bærende. **81 af 81** negative cases fanges.
