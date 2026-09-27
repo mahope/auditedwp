@@ -509,8 +509,22 @@ const DAEKNING_DORA = {
     [["Multi-server", "Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "CDN failover / multi-CDN":
     [["CDN failover", "Traffic is served from a multi-CDN setup with a backup origin in a second region", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
+  // To installationstester, fordi rækken har **to** grupper markører: en der
+  // skriver «incident response» og en der skriver «security incident». Den
+  // anden var et alternativ uden leverandør, fordi vejen gennem navnet
+  // («Incident response / SOC reporting») ikke kan se ordet *security* foran
+  // *incident*, og vejen gennem strengene ikke enten kunne se en
+  // «security incident»-sætning. Beviset er læst i **UK's egen** side om
+  // hændelsesstyring — en reel myndighedsside om præcis denne praksis, ikke en
+  // marketing-side: `www.ncsc.gov.uk/collection/incident-management` svarer 200
+  // (136 142 bytes) og skriver «security incident» **3 gange**, herunder i
+  // løbende prosa om hændelsesresponsteamets evne. Samme fejlklasse som
+  // opgave 70s `cognito[_-]?forms`: et mønstalternativ, der finder en plattform
+  // rapporten ikke nævner — og her er det omvendt, et fund på en række, der
+  // aldrig kan få navnet på den.
   "Incident response / SOC reporting":
-    [["Incident response", "Our incident response plan is tested twice a year and shared with customers under NDA", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
+    [["Incident response", "Our incident response plan is tested twice a year and shared with customers under NDA", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+      ["Incident response", "This section explores the technology that will be needed in the event of a cyber security incident", "dokumenteret mønstret matcher denne sætning 2026-09-27 i www.ncsc.gov.uk/collection/incident-management (200, 136 142 bytes), der skriver security incident 3 gange"]],
   "BC/DR planning reference":
     [["BC/DR planning reference", "The business continuity plan is reviewed annually and covers our disaster recovery procedure", "dokumenteret mønstret matcher denne sætning 2026-09-27"]],
   "Status page / uptime monitoring":
@@ -1471,7 +1485,46 @@ const ALIASSER = {
  * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 4 };
+/**
+ * **Målt 2026-09-27 (iteration 76, del 4): `dora` 4 → 3.** `security[ _-]?incident`
+ * blev lukket ved **læsning på en reel side om præcis den praksis** — UK's egen
+ * NCSC om hændelsesstyring, der skriver «security incident» 3 gange (se
+ * `DAEKNING_DORA`). Ingen mønster blev ændret, så ingen motor og ingen plugin
+ * rørtes: lukningen er et **bevis**, ikke en rettelse.
+ *
+ * **De tre der står, og hvorfor de ikke blev lukket i samme diff — de kræver
+ * alle tre en mønsterændring, og mønstre bor i de tre produkter:**
+ *
+ *   - `bcp[ _-]?plan` — **målt død.** `bcp plan` forekommer **0 gange** på
+ *     `en.wikipedia.org/wiki/Business_continuity_planning` (200, 363 579
+ *     bytes), en side der skriver *BCP* **23 gange** og *business continuity*
+ *     **227 gange**. Den række er altså skrevet til præcis denne side, og
+ *     skriveformen den leder efter findes ikke i den. Samme klasse som
+ *     `shopify[_-]?checkout` i opgave 65 del 2: fjern den, målt.
+ *   - `multi[ _-]?az[ _-]?dns` — hele formen forekommer **0 gange** på de syv
+ *     sider der blev hentet, mens `multi-AZ` i **løbende prosa** forekommer 62
+ *     gange på AWS' egen dokumentation
+ *     (`docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html`,
+ *     200, 14 310 bytes: *"Multi-AZ deployments can have one standby or two
+ *     standby DB instances."*). Retningen er derfor at **udvide** til
+ *     `multi[ _-]?az`, som er en ægte supermængde — den matcher også
+ *     «multi-AZ DNS» — og ikke at fjerne noget.
+ *   - `redundan` — **svagt bekræftet, ikke bekræftet.** Ordet står i Microsofts
+ *     egen resiliency-side (`learn.microsoft.com/en-us/azure/architecture/
+ *     framework/resiliency`, 200, 35 461 bytes) to gange, men kun som
+ *     linkteksten *Design for redundancy*; i løbende prosa står det **0 gange**
+ *     på Postgresqls to HA-dokumenter (200, 20 424 og 62 779 bytes) og på
+ *     Hetzners forside (200, 135 123 bytes). Der er altså ingen rigtig side
+ *     hvis *prosa* bruger ordet. Valget er enten at **navngive** ordet i
+ *     rækkens navn (opgave 52s rettelse, kræver plugin-udgivelse) eller at
+ *     fjerne markøren.
+ *
+ * Ingen af de tre blev lukket ved at slå ratchetten ned, og ingen fik en note
+ * uden en måling — de tolv antagelser opgave 66 efterlod, og som kostede ni
+ * runder at rydde, er præcis hvad en note uden tal ville være igen.
+ */
+
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 3 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -2034,8 +2087,26 @@ if (process.argv.includes("--selftest")) {
     contractAlternativer, "consent", R5_MOENSTRE, DAEKNING, ALIASSER, HOEJST_UTILREGNET.consent);
   expectGreen("(i) (alle alternative i tracker-tabellen er sporet)",
     contractAlternativer, "trackers", R5_TRACKERE, DAEKNING_TRACKERE, ALIASSER, HOEJST_UTILREGNET.trackers);
-  expectGreen("(i) (alle alternative i dora-tabellen er sporet)",
+  // Ratchetten står på 3, så «alle er sporet» ville være en løgn i munden på
+  // porten: `bcp[ _-]?plan`, `multi[ _-]?az[ _-]?dns` og `redundan` står åbent
+  // i `HOEJST_UTILREGNET` med hver sin måling. Etiketten siger derfor præcis
+  // hvad der kontrolleres, så en agent der læser den ikke tror tabellen er
+  // færdig — det er opgave 45bs fejlklasse flyttet til selftestens egen
+  // etiket.
+  expectGreen("(i) (dora holder sig inden for ratchetten på de målte alternative)",
     contractAlternativer, "dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
+
+  // 31i. Den nye måling skal være **bærende**: uden NCSC-sætningen er
+  //      `security[ _-]?incident` et alternativ igen uden leverandør i navnet,
+  //      og ratchetten (3) gør porten rød. Uden denne case ville en agent kunne
+  //      slette den nye installationstest og få en grøn port — præcis den
+  //      egenskab de tolv antagninger i opgave 66 havde, og som ratchetten
+  //      blev hævet for.
+  const doraUdenSikkerhedsincident = { ...DAEKNING_DORA };
+  doraUdenSikkerhedsincident["Incident response / SOC reporting"] =
+    doraUdenSikkerhedsincident["Incident response / SOC reporting"].slice(0, 1);
+  expectRed("(i) (security incident uden den målte sætning fra NCSC)",
+    contractAlternativer, "dora", R5_DORA, doraUdenSikkerhedsincident, ALIASSER, HOEJST_UTILREGNET.dora);
 
   // 31e. Regel (j) genskaber **consent**-tabellens fem huller. `cookie[_-]?notice`
   //      lå i den generiske række og stod i Cookie Notice Liter egen
