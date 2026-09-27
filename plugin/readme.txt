@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.32
+Stable tag: 1.3.33
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.33 (2026-09-27) =
+* Fix: a form plugin was found but never named. The pattern has always matched Caldera Forms, but the row it belongs to was named 'Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor' - Caldera is not in that name. A site running Caldera was therefore reported as running Contact Form 7 or one of the other six, a finding the customer cannot check against the page, and the row is the one that decides whether a site is asked for consent. The same mistake was found and fixed for Ninja Forms in 1.3.31, one row further down the same list.
+* Caldera is closed in the public WordPress catalogue - the catalogue reports the plugin as closed since 5 April 2022, permanently, at the author's request - so it cannot be read there. It is documented from the vendor's own repository instead. caldera-core.php sets CFCORE_URL to the plugin's own folder, and classes/render/assets.php builds the front-end script URL from it, so the installation is /wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js - the plugin's own folder, read in the vendor's code rather than assumed. Caldera has its own name and its own test now, and every pattern that matched something still matches it. This plugin, the free scanner and the published CLI engine give the same answer on the same page.
+* Two plugin versions that shipped without a download redirect now have one. 1.3.29 and 1.3.31 were removed from the download folder with no redirect line, so an installation still on either asked for its own package and got a 404. Both now redirect to the current version.
+* If you scanned your site between 1.3.32 and now, run a new scan: a site running Caldera Forms is now named correctly.
 
 = 1.3.32 (2026-09-27) =
 * Fix: a cookie-consent row could report a platform this report never names. The generic row matched cookie-notice, which is not a generic banner: it is the WordPress slug of two different consent plugins. One of them, Cookie Notice Lite, has its own row; the other - Cookie Compliance for WordPress, version 3.1.12 - had no row at all, so a site running it was reported as running a generic banner instead of the platform it actually runs.
