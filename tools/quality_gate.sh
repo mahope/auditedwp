@@ -437,6 +437,23 @@ hdr "et juridisk dokument tæller kun, når siden linker det"
 run "tools/check_legal_links.mjs" node tools/check_legal_links.mjs
 run "tools/check_legal_links.mjs --selftest" node tools/check_legal_links.mjs --selftest
 
+# ------------------------ 24. Tæller et værktøjsnavn i prosa et værktøj?
+# Trin 21 målte *sprog* i de juridiske mønstre, trin 23 målte at et dokument
+# skal *linkes*. Ingen af portene måler den egenskab opgave 57 rettede: at
+# `trackers`, `consent` og `forms` læser kode og attributter, og **ikke** løbende
+# tekst. Målt før rettelsen: 48 falske fund — en side der *skriver* "vi bruger
+# Matomo" fik en rød tracker-række og en fix om en samtykkeplatform den ikke
+# havde brug for, i alle tre produkter. Uden dette step kan hele rettelsen
+# forsvinde i en diff der kun rører de tre `teknisk`-kald, og de andre 23 steps
+# er grønne. Fire regler: prosa i fire sprog giver nul fund, hver mekanisme
+# (script, inline, noscript-pixel, attribut) er stadig fundet, de tre produkter
+# er ens, og `dora` læser stadig prosa. Selftesten muterer repoets egne filer
+# fire gange — de to motorer og pluginen til at læse hele HTML'en igen, plus en
+# for smal beholder der skal gøre R2 rød mens R1 er grøn.
+hdr "et værktøjsnavn i prosa er ikke et værktøj"
+run "tools/check_signature_prose.mjs" node tools/check_signature_prose.mjs
+run "tools/check_signature_prose.mjs --selftest" node tools/check_signature_prose.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
