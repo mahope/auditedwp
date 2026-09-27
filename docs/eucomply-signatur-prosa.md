@@ -529,3 +529,75 @@ har et punktum, og den er en genindskrivning af det vi led efter. Målt før
 rettelsen: ingen af de ni dora-rækker var døde; de ni mønster matcher deres
 egen sætning, i alle tre kopier. **R5 dækker nu alle 46 rækker.**
 
+## Fejl 11 — tolv consent-rækker hvilede på en antagelse, og én af dem var død (opgave 66, rettet i 1.3.27)
+
+Opgave 65 gjorde R5 i stand til at måle alle 46 rækker mod hver sin
+installationstest. Opgave 66 spørger den spørgsmål, R5 ikke kan stille for sig
+selv: **hvor kommer strengen fra?**
+
+**Målt før rettelsen.** 12 af de 20 consent-rækker stod markeret `formodnet` —
+antagelse, intet læst, intet svaret. En antagelse kan være lige så død som
+Quantcast, og R5 kan ikke se forskellen, fordi den tester mønstret mod **min egen
+streng**.
+
+**Fundet: `Axeptio` var død for sin egen normale installation.** Leverandørens SDK
+blev hentet direkte (715 445 bytes, 2026-09-27) og læst. Den sætter
+`window.axeptio` — men den **indlæses** som
+
+```
+<script src="https://static.axept.io/sdk.js"></script>
+```
+
+og den adresse rummer **ikke** ordet `axeptio` (kun `axept.io`). Mønstret
+`/axeptio/i` kan altså ikke finde script-tag'en; det kan kun finde det indlejrede
+`axeptio('init', …)`-kald, som er den **valgfrie** form. Målt før rettelsen gav
+`<script src="https://static.axept.io/sdk.js"></script>` gennem alle tre produkter
+`No consent banner detected` — samme svar som en side uden samtykkeplatform.
+Den gamle streng `axeptio.cdn.app/axeptio.js` svarer **000** (DNS fejler): den var
+skrevet fra hukommelsen og aldrig læst.
+
+Rettet til `axeptio|axept\.io` i alle tre kopier. Det indlejrede kald matcher
+stadig, så ingen installation mister sit fund.
+
+### De andelle elleve: otte læst, tre stadig antagelser
+
+Alle tolv blev ført gennem leverandørens **egne** kilder — WordPress' offentlige
+katalog (`api.wordpress.org/plugins/info/1.0/<slug>.json`) og leverandørens egen
+kode, hentet som zip og læst. Fire af de antagede stier pegede på **filer der ikke
+findes**:
+
+| Række | Streng før rettelsen | Målt | Efter rettelsen |
+|---|---|---|---|
+| `Axeptio` | `axeptio.cdn.app/axeptio.js` | 000, DNS fejler | `static.axept.io/sdk.js`, **vaert 200** + læst i SDK'en |
+| `CookieHub` | `app.cookiehub.com/bundle/…` | 000 | wp.org `cookiehub` (200) → `cookiehub/includes/js/dcchub-test.js` |
+| `Analytify/CAOS` | `plugins/analytify/analytify.js` | 404 i kataloget | wp.org slug er **`wp-analytify`**, ikke `analytify` |
+| `PixelYourSite` | `plugins/pixel-your-site/assets/js/pys.js` | 404 | wp.org slug er **`pixelyoursite`** (ingen bindestreger) |
+| `OptinMonster` | `plugins/optinmonster/assets/js/optinmonster.js` | 200 på slugen, stien findes ikke | wp.org 200 (2.17.1) → `optinmonster/assets/dist/js/global.min.js` |
+| `CookieYes` | `cdn-cookieyes.com/client_data/…/script.js` | 403 på opdigtet id; værtet er nævnt i leverandørens egen kode | wp.org `cookie-law-info` (200, 1 000 000 installs) |
+| `iubenda` | `<div class="iubenda-cb-banner" …>` | — | wp.org `iubenda-cookie-law-solution` (200k) + `cdn.iubenda.com/iubenda.js` **vaert 200** |
+
+Mønstrene for de tre sidste var i forvejen brede nok til at ramme de rigtige
+stier, så de fund var ikke døde rækker — men **strengene var fiktion**, og en
+fiktiv streng er præcis det R5 ikke kan se.
+
+**Tre bliver `formodnet`**, fordi de ikke findes i WordPress' offentlige katalog
+under det navn tabellen bruger, og deres egen vært svarer `000` eller `404`:
+`CookieScript`, `CEE/PL consent plugin` (slug `shoper`), `Borlabs / CookieNinja`
+og `Moove GDPR` (slug `moove-gdpr-cookie-consent`) samt `WebToffee GDPR`. De står
+under ❓ og tæller **ikke** som dækning.
+
+> En metodefejl undervejs, skrevet ned fordi den er let at gentage: en 404 fra
+> WordPress' info-API er **ikke** i sig selv bevis på at et plugin ikke findes. Den
+> er det kun når *begge* svar er der — API'en **og** pluginsiden, som WordPress
+> sender videre til sin søgning for en slug den ikke kender. Sluggen
+> `moove-gdpr-cookie-consent` gav 404 i begge, mens en opdigtet slug gav præcis
+> samme to svar, så kontrol-sluggen var nødvendig.
+
+### Ratchetten, så det ikke kan ske igen
+
+R5 har nu **regel (f)**: højst `HOEJST_FORMODNET = 12` `formodnet`-strenge i alt.
+Tallet er et **loft, ikke et mål**, og det er bevidst ikke sat ned til de fem
+der står tilbage — en agent der rydder videre skal kunne sænke det, og en der
+glemmer det kan ikke hæve det. To selftest-cases beviser begge veje: grøn ved
+præcis tolv, rød ved tretten. Den nye række i casen står **i signatur-tabellen**,
+så regel (c) ikke fyrer først og casen er rød af den rigtige grund.
