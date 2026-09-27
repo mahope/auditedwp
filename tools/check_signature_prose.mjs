@@ -203,6 +203,65 @@ const DAEKNING = {
  */
 
 /**
+ * R5s installationstest, én pr. række i `TRACKER_SIGNATURES` — opgave 65 del 1.
+ *
+ * Samme krav og samme bevisstyrke som `DAEKNING`, målt 2026-09-27. Rækken
+ * *Google Analytics / GTM* har **én** streng, som beviser GA4s `gtag/js`; GTM's
+ * `gtm.js` og `ns.html` er dækket af de samme mønsteralternativer, men kun
+ * `gtag/js` er efterprøvet her.
+ *
+ * Der er **to** rækker hvor værtens svar ikke er 200, og begge er målt, ikke
+ * antaget: TikToks pixel og Matomos CDN svarer **404 på et opdigtet id** — de
+ * to værter svarer altså, og netop det er bevist. Claritys `tag/<id>` svarer
+ * **204** på et ukendt id, samme sag. En streng der kun kan få 200 med et rigtigt
+ * kundenummer ville være ubrugelig i en port, så de tre er skrevet med det svar
+ * de faktisk giver.
+ *
+ * Fire rækker er **ikke** nye fund men opgaver 60-62s arbejde, og deres strenge er
+ * de samme stier: GA4 (`googletagmanager.com/gtag/js`), Google tag
+ * (`googletagservices.com/tag/js/gpt.js`), TikTok (`analytics.tiktok.com/i18n/`)
+ * og Pinterest (`s.pinimg.com/ct/`, `ct.pinterest.com/v3/`). R5 her dokumenterer
+ * dem — den fik dem ikke.
+ */
+const DAEKNING_TRACKERE = {
+  "Google Analytics / GTM":
+    ['<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>', "vaert 200"],
+  "Meta (Facebook) Pixel":
+    ['<script src="https://connect.facebook.net/en_US/fbevents.js"></script>', "vaert 200"],
+  "Hotjar":
+    ['<script src="https://static.hotjar.com/c/hotjar-1234567890.js?sv=6"></script>', "vaert 200"],
+  "Microsoft Clarity":
+    ['<script src="https://www.clarity.ms/tag/abc123"></script>', "vaert 204 på et ukendt id"],
+  "LinkedIn Insight Tag":
+    ['<script src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>', "vaert 200"],
+  "Snapchat Pixel":
+    ['<script src="https://sc-static.net/scevent.min.js"></script>', "vaert 200"],
+  "TikTok Pixel":
+    ['<script src="https://analytics.tiktok.com/i18n/pixel/1234567890123.js"></script>', "dokumenteret ads.tiktok.com 2026-09-27 · vaert 404 på et opdigtet id"],
+  "Matomo / Piwik":
+    ['<script src="https://cdn.matomo.cloud/abc123/matomo.js"></script>', "vaert 404 på et opdigtet id"],
+  "Plausible":
+    ['<script defer data-domain="shop.example" src="https://plausible.io/js/script.js"></script>', "vaert 200"],
+  "Pinterest Tag":
+    ['<script src="https://s.pinimg.com/ct/core.js" data-embed-type="dynamic"></script>', "dokumenteret help.pinterest.com 2026-09-27 · vaert 200"],
+  "Google Ads remarketing":
+    ['<script src="https://www.googletagservices.com/tag/js/gpt.js"></script>', "vaert 200"],
+  "DoubleClick / AdSense":
+    ['<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>', "vaert 200"],
+};
+
+/**
+ * Hvilket ord en bevisstyrke må starte med.
+ *
+ * Bevisstyrken er ikke en note — den er det, der gør tabellen læsbar af en agent
+ * der ikke stoler på mig. Uden denne regel kan næste agent skrive `testet` og så
+ * er R5 grøn på en antagelse, præcis som `quantcast_choice` ville være grøn på
+ * en død markør. `formodnet` er bevidst med: en antagelse må kunne stå, men den
+ * skal stå som det den er.
+ */
+const BEVISSTYRKE = ["vaert ", "dokumenteret ", "wp.org ", "formodnet"];
+
+/**
  * R1s fixtures: navne på trackere, samtykkeplatforme og formular-plugins i
  * **løbende tekst**, ved siden af en rigtig formular. Formularen er der, fordi
  * ellers er `forms` grøn af den trivielle grund at der ingen er, og porten så
@@ -473,37 +532,87 @@ function signaturNavne(kilde, gruppe, php) {
  * R5: hver række skal have en installationstest, og sit mønster skal kunne finde
  * den — i **alle tre** kopier.
  *
- * Tre røde tilfælde, ét pr. række:
+ * Fire røde tilfælde:
  *   (a) rækken mangler en streng i `DAEKNING` — porten ville være grøn uden at
  *       have noget at se på, samme fejl som `MINDST` dækker på den anden side;
  *   (b) strengen findes ikke, fordi mønstret ikke matcher den i en af de tre
  *       kopier — det er præcis opgave 63s Quantcast, målt i stedet for antaget;
  *   (c) en streng peger på et navn der ikke står i tabellen — en installationstest
- *       af ingen tabellenummer er dækning på papiret.
+ *       af ingen tabellenummer er dækning på papiret;
+ *   (d) en kopi læser nule rækker, så (b) springer den over. Det er ikke en
+ *       hypotetisk fejl: det var denne ports egen PHP-læsning indtil 2026-09-27.
+ *       Målt før rettelsen: `consent` 20/20/**0** og `trackers` 12/12/**0**.
  *
  * Mønstrene læses **fra filerne**, ikke ud fra et navne-array, fordi en regel der
  * kun sammenligner to lister af navne aldrig kan se en mangel i mønsteret — det
  * er opgave 63 fund 2, hvor netop sådan en regel meldte 23 rækker døde og var
  * forkert på den første (`static\.hotjar\.com` kan ikke matche navnet `Hotjar`).
+ *
+ * @param {Array<Array<{navn: string, re: RegExp}>>} grupper én pr. kopi
+ * @param {Object<string, [string, string]>} daekning installationstest pr. række
+ * @param {number} mindstRækker hvor mange rækker hver kopi skal læse (regel d)
  */
-function signaturMonstre(kilde, gruppe, php) {
-  const start = php
-    ? new RegExp(`'${gruppe}'\\s*=>\\s*array\\(`)
-    : new RegExp(`const ${MOTOR_TABEL[gruppe]}\\s*=\\s*\\[`);
-  const fra = start.exec(kilde);
+/**
+ * Blokken efter `'trackers' => array(` i pluginen, med **klammebalance** der
+ * respekterer strenge.
+ *
+ * Den gamle læsning holdt op ved det første `\n]` i filen. PHP-arrayet ender på
+ * `\n            ),` — der står **aldrig** et `\n]` i pluginens signaturtabeller —
+ * så `indexOf` læste *resten af filen* og den efterfølgende regex, der krævede et
+ * `[` foran `'name'`, fandt **0 rækker**. R5 erklærede i sin egen docblock at den
+ * læser mønstrene i "alle tre" kopier; den læste to. Målt 2026-09-27:
+ * `consent` 20/20/0 og `trackers` 12/12/0. Samme fejlklasse som opgave 30 fund 1,
+ * opgave 32 fund 1 og opgave 63 fund 2 — en regel der læser mindre end den påstår.
+ */
+function phpBlok(kilde, gruppe) {
+  const fra = new RegExp(`'${gruppe}'\\s*=>\\s*array\\(`).exec(kilde);
   assert.ok(fra, `kilden har ingen signatur-tabel for «${gruppe}»`);
-  const resten = kilde.slice(fra.index);
-  const til = resten.indexOf("\n]");
-  const blok = til === -1 ? resten : resten.slice(0, til);
+  const start = fra.index + fra[0].length;
+  let dybde = 0;
+  for (let i = fra.index + fra[0].length - 1; i < kilde.length; i++) {
+    const c = kilde[i];
+    if (c === "'") {
+      // Spring en PHP-streng over — og dens `\'`-escapes med.
+      i++;
+      while (i < kilde.length && kilde[i] !== "'") i += kilde[i] === "\\" ? 2 : 1;
+      continue;
+    }
+    if (c === "(") dybde++;
+    else if (c === ")" && --dybde === 0) return kilde.slice(start, i);
+  }
+  throw new Error(`signatur-tabellen for «${gruppe}» har ubalancerede klammer`);
+}
+
+function signaturMonstre(kilde, gruppe, php) {
+  const blok = php
+    ? phpBlok(kilde, gruppe)
+    : (() => {
+        const fra = new RegExp(`const ${MOTOR_TABEL[gruppe]}\\s*=\\s*\\[`).exec(kilde);
+        assert.ok(fra, `kilden har ingen signatur-tabel for «${gruppe}»`);
+        const resten = kilde.slice(fra.index);
+        const til = resten.indexOf("\n]");
+        return til === -1 ? resten : resten.slice(0, til);
+      })();
   const par = php
-    ? /\[\s*'name'\s*=>\s*'([^']+)'\s*,\s*'re'\s*=>\s*~([^~]*)~([a-z]*)/g
+    ? /'name'\s*=>\s*'([^']+)'\s*,\s*'re'\s*=>\s*'~([^~]*)~([a-z]*)/g
     : /re:\s*\/((?:[^/\\]|\\.)*)\/([a-z]*)\s*,\s*name:\s*"([^"]+)"/g;
   return [...blok.matchAll(par)].map((m) => (php
     ? { navn: m[1], re: new RegExp(m[2], m[3]) }
     : { navn: m[3], re: new RegExp(m[1], m[2]) }));
 }
 
-function contractR5(grupper, daekning) {
+function contractR5(grupper, daekning, mindstRækker) {
+  // (d) En kopi porten ikke læser, er en kopi porten ikke dømmer på. Den gamle
+  //     PHP-læsning gjorde præcis det, og R5 erklærede i sin egen docblock at
+  //     den læser "alle tre" kopier — målt 2026-09-27: consent 20/20/**0**,
+  //     trackers 12/12/**0**, altså aldrig ét mønster i den betalte plugin.
+  grupper.forEach((rækker, i) => {
+    assert.ok(
+      rækker.length >= mindstRækker,
+      `kopi ${i + 1} af ${grupper.length} læste ${rækker.length} rækker, forventede mindst ${mindstRækker} — ` +
+        "en kopi porten ikke læser, kan den heller ikke se en mangel i, så R5 ville være grøn på den"
+    );
+  });
   // (c) En streng på intet tabellenummer er dækning på papiret.
   for (const navn of Object.keys(daekning)) {
     assert.ok(
@@ -523,8 +632,13 @@ function contractR5(grupper, daekning) {
       );
       assert.ok(
         /(\/\/|[.=<])/.test(streng[0]),
-        `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den ` +
-          "er skrevet efter mønsterets eget navn og beviser intet"
+        `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den `
+          + "er skrevet efter mønsterets eget navn og beviser intet"
+      );
+      assert.ok(
+        streng[1] && BEVISSTYRKE.some((p) => streng[1].startsWith(p)),
+        `bevisstyrken for «${navn}» er «${streng[1]}» — den skal begynde med ${BEVISSTYRKE.join(", ")}, `
+          + "for uden den er strengen en antagelse der læser som et bevis"
       );
       // (b) Mønstret skal kunne finde sin egen installationstest, i hver kopi.
       for (const række of grupper) {
@@ -789,14 +903,18 @@ const MOTOR_FILER = [
   [join(REPO, "eucomply-scanner", "engine", "index.js"), false],
   [PLUGIN, true],
 ];
-const R5_MOENSTRE = MOTOR_FILER.map(([fil, php]) => signaturMonstre(readFileSync(fil, "utf8"), "consent", php));
+const læsMønstre = (gruppe) => MOTOR_FILER.map(([fil, php]) => signaturMonstre(readFileSync(fil, "utf8"), gruppe, php));
+const R5_MOENSTRE = læsMønstre("consent");
+const R5_TRACKERE = læsMønstre("trackers");
 
 const FIXTURES = [...PROSA_FIXTURES, ...MEKANISME, ...DORA_FIXTURES];
 
-// R5 måler tabellen, ikke fixtures, så den kører **én** gang og ikke pr. fixture.
-// De tre negative cases i selftesten kalder den samme funktion med en brudt
-// tabel, så en case der forventer grønt ikke kan blive grøn af en anden grund.
-await test("R5 hver consent-række har en installationstest", () => contractR5(R5_MOENSTRE, DAEKNING));
+// R5 måler tabellen, ikke fixtures, så den kører **én** gang pr. tabel og ikke
+// pr. fixture. De negative cases i selftesten kalder den samme funktion med en
+// brudt tabel, så en case der forventer grønt ikke kan blive grøn af en anden
+// grund. `mindstRækker` er regel (d): hver kopi skal læse hele tabellen.
+await test("R5 hver consent-række har en installationstest", () => contractR5(R5_MOENSTRE, DAEKNING, MINDST.consent));
+await test("R5 hver tracker-række har en installationstest", () => contractR5(R5_TRACKERE, DAEKNING_TRACKERE, MINDST.trackers));
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -815,7 +933,8 @@ for (const fixture of FIXTURES) {
 
 console.log(
   `${passed} signatur-prosatest bestået — ${FIXTURES.length} fixtures i ${Object.keys(PROSA).length} sprog, `
-    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 5 kontrakter, 3 produkter`
+    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 6 kontrakter, 3 produkter, `
+    + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length} af 46 rækker med installationstest`
 );
 
 if (failures.length) {
@@ -951,7 +1070,7 @@ if (process.argv.includes("--selftest")) {
   //     streng, og så må porten sige det.
   const udenStreng = { ...DAEKNING };
   delete udenStreng["Axeptio"];
-  expectRed("R5 (række uden installationstest)", contractR5, R5_MOENSTRE, udenStreng);
+  expectRed("R5 (række uden installationstest)", contractR5, R5_MOENSTRE, udenStreng, MINDST.consent);
 
   // 15. R5: en streng mønstret ikke matcher — Quantcast-fejlen, som et navne-
   //     array aldrig kunne se. Den er skrevet mod **R5_MOENSTRE's** egen
@@ -960,20 +1079,35 @@ if (process.argv.includes("--selftest")) {
   const boetMønster = R5_MOENSTRE.map((rækker) => rækker.map((r) => (
     r.navn === "Axeptio" ? { navn: r.navn, re: /axepti(?:o)?s\.example/i } : r
   )));
-  expectRed("R5 (mønstret finder ikke sin egen installationstest)", contractR5, boetMønster, DAEKNING);
+  expectRed("R5 (mønstret finder ikke sin egen installationstest)", contractR5, boetMønster, DAEKNING, MINDST.consent);
 
   // 16. R5: en streng der peger på et navn der ikke står i nogen tabel. Den er
   //     den fejl der ligner mest en dækning: tabellen siger "testet", og
   //     ingen læser må tro at den testede noget.
   const forvisset = { ...DAEKNING, "En platform der ikke findes": ['<script src="https://gone.example/cmp.js"></script>', "formodnet"] };
-  expectRed("R5 (streng på en række der ikke findes)", contractR5, R5_MOENSTRE, forvisset);
+  expectRed("R5 (streng på en række der ikke findes)", contractR5, R5_MOENSTRE, forvisset, MINDST.consent);
 
   // 17. R5: en streng skrevet efter mønstret **navn** i stedet for en
   //     installation. Den består kravet om `//`, `.`, `=` eller `<`, som er
   //     hele pointen: `quantcast_choice` ville tilfredsstille et navne-krav og
   //     skjule præcis den fejl R5 blev skrevet for.
   const navnebaseret = { ...DAEKNING, Axeptio: ["axeptio", "formodnet"] };
-  expectRed("R5 (strengen er skrevet efter navnet, ikke en installation)", contractR5, R5_MOENSTRE, navnebaseret);
+  expectRed("R5 (strengen er skrevet efter navnet, ikke en installation)", contractR5, R5_MOENSTRE, navnebaseret, MINDST.consent);
+
+  // 18. R5 regel (d): en kopi der læser **nule rækker**. Det er ikke en
+  //     hypotetisk fejl — det var portens egen PHP-læsning indtil denne diff,
+  //     fordi blokken blev afsluttet på `\n]` som PHP-arrayet aldrig gør. Case
+  //     18 genskaber præcis den tilstand med tredje gruppe tømt, så reglen (d)
+  //     skal være rød netop sådan som den var grøn i virkeligheden.
+  const blindKopi = [R5_MOENSTRE[0], R5_MOENSTRE[1], []];
+  expectRed("R5 (en kopi læses ikke)", contractR5, blindKopi, DAEKNING, MINDST.consent);
+
+  // 19. R5 regel om bevisstyrke: en streng hvis anden felt er «testet». Uden
+  //     reglen kan næste agent skrive hvad som helst i feltet, og R5 er grøn på
+  //     en antagelse der læser som et bevis — den fejl `quantcast_choice` ville
+  //     have vædt, hvis den ikke var en død markør.
+  const ubevidst = { ...DAEKNING, Axeptio: ['<script src="https://axeptio.cdn.app/axeptio.js"></script>', "testet"] };
+  expectRed("R5 (bevisstyrken er ikke en af de fire slags)", contractR5, R5_MOENSTRE, ubevidst, MINDST.consent);
 
   /*
    * Fire mutationer mod repoets egne filer.
