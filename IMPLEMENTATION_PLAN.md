@@ -1,3 +1,115 @@
+Opdateret: 2026-09-28 (iteration 87)
+
+Sidste iteration: **den gratis scanner viste en besøgende motorens egen
+fejltekst, i det felt resultatet står i.** Køen var tom (5, 6 og 7 er
+blokeret på spørgsmål 7 og 9), så denne iteration gik ned i selve
+trappen alle 0 besøgende ville have gået ned ad, hvis der havde været én.
+
+Målt 2026-09-28 01:47 mod den **udgivne** worker
+`eucomply-scan.mahope-eeb.workers.dev`:
+
+    $ curl ".../scan?url=this-domain-does-not-exist-…invalidtld"
+    502  {"error":"Scan failed: The site responded with HTTP 530 — a
+          compliance scan needs a reachable page."}
+
+Alle fem scannere gjorde sådan her:
+
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Scan failed.');
+    } catch (ex) { errEl.textContent = ex.message || 'Network error…'; }
+
+To forskellige fejl nåede derfor en besøgende i `#scan-err`:
+
+| fejl | hvad den besøgende så |
+|---|---|
+| domæne med en tastefejl (502) | `Scan failed: The site responded with HTTP 530 — a compliance scan needs a reachable page.` |
+| Cloudflare-kantfejl (520/522/524, kvota) | kantfejlen er **HTML**, så `.json()` kastede, og `ex.message` lagde browserens `Unexpected token '<' …` i feltet |
+
+**Hvorfor det er den værste klasse fejl på hele sitet.** Det er det første
+en ny besøgende skriver, når der er en tastefejl i — den mest
+sandsynlige fejl i hele produktet — og den fik **intet at gøre ved**:
+ingen råd, ingen næste skridt, bare en motorens sætning med et
+statusnummer. De øvrige 86 iterationers fund (cache, løfter, redirects,
+gates) ramte alle en besøgende der var nået *forbi* dette felt. Denne ramte
+den i selve resultatet.
+
+**Rettelsen.** `apiError(status, d)` på alle fem sider kortlægger 400
+(adresse der ikke er en webadresse), 429 (for mange scanninger), 502
+(uopnåeligt domæne) og alt andet til en sætning med et **næste skridt**.
+Fejlvejen læser svaret beskyttet og skriver aldrig undtagelsesteksten:
+
+    "We could not reach that site. Check the spelling, or try the
+     address without https://."
+
+**Port trin 28 — `tools/check_scan_errors.py` + `tools/scan_error_probe.mjs`.**
+Den har to dele, og de siger hver især hvad de dækker, fordi en regel der
+læser mindre end den påstår er den sjette forekomst i træk
+(opgave 30/32/41/63/65):
+- **Kilde.** De fem sider skal have `apiError`, en beskyttet `.json()` og
+  ingen `ex.message` i `#scan-err`.
+- **Adfærd.** Proben tager sidens **egne** `apiError` og `T` og kører de
+  **rigtige** svar fra den **udgivne** worker gennem dem i en `vm`, så
+  porten kan bevise hvilken tekst en besøgende faktisk ser — ikke at
+  strengen ser rigtig ud. Uden `node` er porten **rød** med beskeden.
+
+**9 negative selftest-cases**, blandt andet en `apiError` der *bare*
+videregiver motorens tekst (kildefunden er grøn på den side, så kun
+adfærdsdelen kan fange den) og en besked for et uopnåeligt domæne uden
+næste skridt (stadig venlig, men en blindgade — præcis det en besøgende
+mød før rettelsen).
+
+**To fejl i min egen kode, fundet fordi den rene side skulle være grøn:**
+(a) kildekontrollen greb `var d = await r.json();` overalt i filen, også i
+de to **monitor**-kald der slet ikke er scannerens fejlvej, så porten var
+rød på den korrekte kode; (b) min første mutation for "uopnåeligt domæne
+falder i netværksfejlen" var **inert** — den fjernede `status === 502`, men
+regex-armen `/responded/` stadig fangede samme svar, så mutationen passede
+af den forkerte grund. Den er nu erstattet af to mutationer der faktisk
+ændrer adfærden. En mutation der ikke kan fejle er den farligste slags
+selftest, fordi den ligner bevis.
+
+**Motoren er ikke rørt, og det er bevidst.** `shared/scan-engine.js:754`
+kaster stadig `The site responded with HTTP ${resp.status}`, og
+`worker-scan/index.js` pakker den som `Scan failed: …`. Det er *motorens*
+hale, og den kan kun rettes i repoet her — den når først en besøgende når
+`worker-scan` er deployet (spørgsmål 9, fem runder i træk). Jeg har bevidst
+ikke rørt den: `check_published_engine.mjs` måler den publicerede motor mod
+motoren i repoet, så en ændring her ville gøre porten rød på en afstand
+jeg ikke kan lukke. **Skrevet under ❓ nedenfor som et fund Mads kan lukke
+sammen med deployen.**
+
+Gate: `GATE GRØN — alle 28 steps bestået` (27 før), herunder
+`SCAN-FEJL-GATE GRØN — 5 scanner-sider, egen apiError mod optagede svar fra
+2026-09-28, ingen intern tekst på #scan-err.` og
+`SELFTEST GRØN — alle 9 negative cases fanges`. **`php -l` ikke betinget**
+(ingen PHP rørt), **ingen plugin-version, ingen ny zip, intet
+`update.json`**. Root-SEO `216 pages checked, 0 findings`; sibling-kommandoen
+i `../hermes-passiv` kunne igen **ikke** køres (workspace-permissions nægter
+adgang), så gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86 målte taggen
+og fandt at de 0 er ærlige). Denne diff kan derfor ikke måles i trafik, og
+det er ikke skrevet op som om det kunne. Det den gør er at fjerne den
+fejl, den første besøgende mød.
+
+Kodecommit `1f2f4cc`, merge `9a7b269` 2026-09-28 01:52 CEST.
+
+**VERIFICÉR DEPLOY: scannerens fejlvej på 5 sider, `1f2f4cc`/`9a7b269`
+2026-09-28 01:52 CEST.** Efter et batch-vindue: hent `/scan/`, `/da/scan/`,
+`/gdpr-scanner-free/`, `/gdpr-compliance-check/` og `/cookie-banner-check/`
+og søg på `Scan failed:` og `ex.message` — de skal være **væk**, og
+`apiError(` skal stå i alle fem. HTTP 200 beviser intet.
+
+❓ **Til Mads — motorens hale kan lukkes samme dag som spørgsmål 9.**
+`shared/scan-engine.js:754` skriver råt `HTTP ${resp.status}` ind i en
+fejl, og `worker-scan/index.js:149` pakker den som `Scan failed: …`. Med
+et `cd worker-scan && wrangler deploy` er begge dele rettet på én gang hvis
+linjen bliver `throw new Error('The site could not be reached.')` — så
+fejlteksten ikke afhænger af et tal, og porten ovenfor holder resten af
+sproget. Jeg har lavet sitesiden, så **den** side af fejlen er lukket uden
+deploy; motorens side kan jeg ikke lukke, fordi porten til publiceret motor
+så ville blive rød på en afstand agenten ikke kan lukke alene.
+
 Opdateret: 2026-09-28 (iteration 86)
 
 Sidste iteration: **jeg ville finde ud af, om de 0 besøgende var ærlige, for
