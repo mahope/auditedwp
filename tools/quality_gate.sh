@@ -512,6 +512,20 @@ hdr "den rapport kunden laeser, er den vi har rettet"
 run "tools/check_live_funnel.py" "$PY" tools/check_live_funnel.py
 run "tools/check_live_funnel.py --selftest" "$PY" tools/check_live_funnel.py --selftest
 
+# Om vi overhovedet kan se en besøgende. Plausible har vist 0 besøgende,
+# 0 sidevisninger, 0 s i 28 dage, mens Cloudflare viser 5265
+# besøgende-dage (bots). Målt 28/9: taggen er i orden — 225 af 225
+# sider, CSP tillader både `script-src` og `connect-src`, og
+# `tools/analytics_probe.mjs` kører den rigtige tag i en stubbet DOM og
+# får ét pageview i begge rækkefølger. Så de 0 er ærlige tal. Før denne
+# port kunne de 0 også have været en tag, der sender intet, og intet i
+# repoet skilte de to — det er den forskel porten gør til en egenskab.
+# Uden `node` er porten rød, fordi en port der springer sin egen kontrol
+# over er grøn uden at have kontrolleret noget.
+hdr "en besogende skal kunne taelles"
+run "tools/check_analytics.py" "$PY" tools/check_analytics.py
+run "tools/check_analytics.py --selftest" "$PY" tools/check_analytics.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

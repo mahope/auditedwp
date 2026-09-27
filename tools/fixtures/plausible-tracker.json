@@ -1,0 +1,8 @@
+{
+  "_kommentar": "Optaget 2026-09-28 fra den rigtige proxy-endpoint, uaendret, saa porten kan køre offline. Genhentages ved: curl -s <source_url> -o tools/fixtures/plausible-tracker.js",
+  "source_url": "https://analytics.holstjensen.eu/js/pa-X_LLzQW6nZX70uQN8qAyA.js",
+  "script_id": "pa-X_LLzQW6nZX70uQN8qAyA.js",
+  "hentet": "2026-09-28",
+  "bytes": 6204,
+  "sha256": "c9c1da8087f6d6de76a47053175f9b97385694b797e64f0c3c7fda749ca712ce"
+}
