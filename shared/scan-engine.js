@@ -89,21 +89,33 @@ const CONSENT_SIGNATURES = [
 const TRACKER_SIGNATURES = [
   { re: /google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html|gtag\/js)|gtag\(/i, name: "Google Analytics / GTM" },
   { re: /connect\.facebook\.net|fbq\(['"]/i, name: "Meta (Facebook) Pixel" },
-  { re: /static\.hotjar\.com|hj\(['"]/i, name: "Hotjar" },
+  // `hj(` er væk, og det er målt, ikke antaget (2026-09-27). Det er leverandørens
+  // **egen globale funktion**, som defineres i den fil dens script-URL peger på —
+  // og scanneren læser *markup*, aldrig ind i et indlæst script. Den kan derfor
+  // ikke findes på en side der faktisk har Hotjar. Værtens egen fil på den adresse
+  // rækken blev testet med (`static.hotjar.com/c/hotjar-<id>.js`) svarer **200 med
+  // nul byte** på ethvert id, så beviset "vaert 200" var en måling der ikke kan
+  // fejle. `static.hotjar.com` er leverandørens egen vært og står i både
+  // loader-scriptet og `<noscript>`-banneret.
+  { re: /static\.hotjar\.com/i, name: "Hotjar" },
   { re: /clarity\.ms/i, name: "Microsoft Clarity" },
   { re: /snap\.licdn\.com|_linkedin_partner_id/i, name: "LinkedIn Insight Tag" },
   { re: /sc-static\.net|snaptr\(['"]/i, name: "Snapchat Pixel" },
-  // `analytics.tiktok.com/i18n/pixel/<id>.js` er den sti TikToks egen
+  // `analytics.tiktok.com/i18n/pixel/events.js` er den sti TikToks egen
   // hjælpe-side sender folk til i dag ("Install the base code onto your
   // website", ads.tiktok.com/help/article/get-started-pixel, hentet
-  // 2026-09-27). Mønsteret kendte kun den **ældre** `static.tiktok.com/js/`
-  // og det indlejrede `ttq.`-kald, så den almindeligeste pixel-opsætning gav
-  // `Third-party trackers: 0 found` i alle tre produkter. TikToks vært
-  // svarer selv i dag: 404 med et opdigtet pixel-id (2026-09-27).
+  // 2026-09-27) — målt i **en rigtig sides** inline-loader 2026-09-27, hvor
+  // den bygges som `ttq.load=function(e,n){var i="…/i18n/pixel/events.js"`.
+  // Mønsteret kendte kun den **ældre** `static.tiktok.com/js/` og det
+  // indlejrede `ttq.`-kald, så den almindeligeste pixel-opsætning gav
+  // `Third-party trackers: 0 found` i alle tre produkter.
   // Kun **værten + stien**, ikke `tiktok.com`: en butik der indlejrer en
   // TikTok-video fra `www.tiktok.com/embed/` har ikke installeret en pixel,
   // og det er den brede regel opgave 57 lavede.
-  { re: /analytics\.tiktok\.com\/|static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
+  // `static.tiktok.com` er væk: `dig +short` svarer **intet** (2026-09-27), så
+  // værten kan ikke matche en levende side. Den ældre pixelform er dækket af
+  // `analytics.tiktok.com/` og `ttq.`, som begge findes i den målte inline-loader.
+  { re: /analytics\.tiktok\.com\/|ttq\./i, name: "TikTok Pixel" },
   { re: /matomo|piwik\.js/i, name: "Matomo / Piwik" },
   { re: /plausible\.io\/js/i, name: "Plausible" },
   // Pinterests egen dokumentation ("Install the base code",
@@ -117,9 +129,11 @@ const TRACKER_SIGNATURES = [
   //
   // Kun **stien**, ikke værten: Pinterests billed-CDN ligger også på
   // `pinimg.com` (i.pinimg.com), og den billeder en butik har lagt op er ikke
-  // et tracker-fund. `cdn.pinterest.com.*pin.*js` er beholdt, fordi den gamle
-  // form stadig findes i ældre integrationer.
-  { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
+  // et tracker-fund. `cdn.pinterest.com.*pin.*js` er væk: `dig +short` svarer
+  // **intet** på `cdn.pinterest.com` (2026-09-27), så værten kan ikke matche en
+  // levende side — og de to dokumenterede stier plus `pintrk(` dækker den
+  // målte installation.
+  { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|pintrk\(/i, name: "Pinterest Tag" },
   // `googletagservices.com/tag/js/gpt.js` er **Google tag**, den officielle
   // afløser for `googleadservices.com/pagead/conversion.js`, og den ligger
   // på **en anden vært** end de to mønsteret ovenfor kender: hverken

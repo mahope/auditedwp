@@ -150,7 +150,12 @@ const CONSENT_SIGNATURES = [
 const TRACKER_SIGNATURES = [
   { re: /google-analytics\.com|googletagmanager\.com\/(?:gtm\.js|ns\.html|gtag\/js)|gtag\(/i, name: "Google Analytics / GTM" },
   { re: /connect\.facebook\.net|fbq\(['"]/i, name: "Meta (Facebook) Pixel" },
-  { re: /static\.hotjar\.com|hj\(['"]/i, name: "Hotjar" },
+  // `hj(` er væk, og det er målt, ikke antaget (2026-09-27) — se
+  // `shared/scan-engine.js`: det er leverandørens egen globale funktion i den
+  // fil dens script-URL peger på, og scanneren læser aldrig ind i et indlæst
+  // script. Værtens fil på den adresse rækken blev testet med svarer 200 med
+  // nul byte på ethvert id, så beviset "vaert 200" var en måling der ikke kan fejle.
+  { re: /static\.hotjar\.com/i, name: "Hotjar" },
   { re: /clarity\.ms/i, name: "Microsoft Clarity" },
   { re: /snap\.licdn\.com|_linkedin_partner_id/i, name: "LinkedIn Insight Tag" },
   { re: /sc-static\.net|snaptr\(['"]/i, name: "Snapchat Pixel" },
@@ -159,7 +164,8 @@ const TRACKER_SIGNATURES = [
   // 2026-09-27) og TikToks nuværende pixel-sti (`analytics.tiktok.com/`,
   // hjælpe-siden ads.tiktok.com/help/article/get-started-pixel). Begge gav
   // `Third-party trackers: 0 found` i alle tre produkter før rettelsen.
-  { re: /analytics\.tiktok\.com\/|static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
+  // `static.tiktok.com` er væk: `dig +short` svarer intet (2026-09-27).
+  { re: /analytics\.tiktok\.com\/|ttq\./i, name: "TikTok Pixel" },
   { re: /matomo|piwik\.js/i, name: "Matomo / Piwik" },
   { re: /plausible\.io\/js/i, name: "Plausible" },
   // Pinterests egen dokumentation ("Install the base code",
@@ -168,8 +174,9 @@ const TRACKER_SIGNATURES = [
   // `ct.pinterest.com/v3/`. Ingen af de to findes i det gamle mønster, så den
   // **dokumenterede** installation var kun synlig gennem det indlejrede
   // `pintrk(`-kald. Kun **stien**, ikke værten: Pinterests billed-CDN ligger også
-  // på `pinimg.com`. Spec: `docs/eucomply-signatur-prosa.md`.
-  { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
+  // på `pinimg.com`. `cdn.pinterest.com.*pin.*js` er væk: `dig +short` svarer
+  // intet (2026-09-27). Spec: `docs/eucomply-signatur-prosa.md`.
+  { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|pintrk\(/i, name: "Pinterest Tag" },
   { re: /googleadservices\.com|googletagservices\.com\/tag\/js\/gpt\.js|google_conversion/i, name: "Google Ads remarketing" },
   { re: /doubleclick\.net|googlesyndication/i, name: "DoubleClick / AdSense" },
 ];

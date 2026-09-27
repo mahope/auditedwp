@@ -293,16 +293,34 @@ const DAEKNING_TRACKERE = {
      ["GTM", '<noscript><iframe height="0" width="0" style="display:none;visibility:hidden" src="https://www.googletagmanager.com/ns.html?id=GTM-ABC123"></iframe></noscript>', "vaert 400 uden id og 404 på et opdigtet id 2026-09-27"]],
   "Meta (Facebook) Pixel":
     [["Meta (Facebook) Pixel", '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>', "vaert 200"]],
+  // Den gamle streng var skrevet fra hukommelsen: den navngav
+  // `static.hotjar.com/c/hotjar-<id>.js`, og målt 2026-09-27 svarer den **200
+  // med nul byte** på ethvert id. Et bevis der ikke kan fejle er ikke et bevis —
+  // samme fejlklasse som `data-stripe-key` i opgave 72 del 6. Strengen er nu
+  // leverandørens **egne vært**, som svarer 200 med en rigtig fil (415 922 B).
   "Hotjar":
-    [["Hotjar", '<script src="https://static.hotjar.com/c/hotjar-1234567890.js?sv=6"></script>', "vaert 200"]],
+    [["Hotjar", '<script src="https://static.hotjar.com/"></script>', "vaert 200, 415 922 B 2026-09-27 · leverandørens egen vært"]],
   "Microsoft Clarity":
     [["Microsoft Clarity", '<script src="https://www.clarity.ms/tag/abc123"></script>', "vaert 204 på et ukendt id"]],
+  // Den anden streng er den **indlejrede** linje købmanden selv skriver, målt i en
+  // rigtig sides markup 2026-09-27 (motionapp.com, 3 394 123 B, 2 forekomster):
+  // `_linkedin_partner_id = "5119106";`. Den lå i mønsteret men ikke i nogen
+  // streng, så `snap.licdn.com`-scriptet var det eneste bevis — og en side der
+  // kun har den indlejrede linje gav intet at spore den på.
   "LinkedIn Insight Tag":
-    [["LinkedIn Insight Tag", '<script src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>', "vaert 200"]],
+    [["LinkedIn Insight Tag", '<script src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>', "vaert 200 (3 326 B) 2026-09-27"],
+     ["LinkedIn Insight Tag", '<script>var _linkedin_partner_id = "5119106"; window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script>', "dokumenteret i en rigtig sides markup 2026-09-27 (motionapp.com, 3 394 123 B)"]],
   "Snapchat Pixel":
     [["Snapchat Pixel", '<script src="https://sc-static.net/scevent.min.js"></script>', "vaert 200"]],
+  // Den anden streng er den **indlejrede loader** en rigtig side har i dag
+  // (motionapp.com, 3 394 123 B, 52 forekomster af `ttq`): den bygger
+  // `ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js"`
+  // og kalder `ttq.load('<pixel-id>')`. Den gamle streng navngav
+  // `/i18n/pixel/<id>.js`, som **404** på et opdigtet id — dens eget bevis siger
+  // det, og den rigtige sti hedder `events.js`. Begge dele er rettet.
   "TikTok Pixel":
-    [["TikTok Pixel", '<script src="https://analytics.tiktok.com/i18n/pixel/1234567890123.js"></script>', "dokumenteret ads.tiktok.com 2026-09-27 · vaert 404 på et opdigtet id"]],
+    [["TikTok Pixel", '<script src="https://analytics.tiktok.com/i18n/pixel/events.js"></script>', "vaert 200 (7 878 B) 2026-09-27 · målt i en rigtig sides inline-loader"],
+     ["TikTok Pixel", "<script>ttq.load('C823P2LGL1ARI64QV9NG'); ttq.page();</script>", "dokumenteret i en rigtig sides markup 2026-09-27 (motionapp.com, 3 394 123 B)"]],
   "Matomo / Piwik":
     [["Matomo", '<script src="https://cdn.matomo.cloud/abc123/matomo.js"></script>', "vaert 404 på et opdigtet id"],
      ["Piwik", '<script src="https://cdn.matomo.cloud/abc123/piwik.js"></script>', "vaert 404 på et opdigtet id 2026-09-27"]],
@@ -771,7 +789,34 @@ const MEKANISME = [
     // tracker. Målt før rettelsen: 0 fund i alle tre produkter.
     navn: "TikToks nuværende pixel-sti", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "TikTok Pixel",
-    html: side('<script src="https://analytics.tiktok.com/i18n/pixel/C1A2B3C4D5E6F7890.js"></script><p>Hej</p>'),
+    html: side('<script src="https://analytics.tiktok.com/i18n/pixel/events.js"></script><p>Hej</p>'),
+  },
+  {
+    // Den **indlejrede** loader en rigtig side har i dag (motionapp.com,
+    // 3 394 123 B, hentet 2026-09-27): `ttq.load('C823P2LGL1ARI64QV9NG');` og
+    // `ttq.page();`. Fixturet findes fordi `static.tiktok.com` blev fjernet fra
+    // mønsteret som en vært uden DNS — det her er beviset på at den ældre
+    // pixelform stadig findes, altså R2 for en **fjernelse** og ikke en
+    // indsnævring. Uden denne fixture ville fjernelsen se ud til at miste dækning.
+    navn: "TikTok-pixelet i en sides inline-loader", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "TikTok Pixel",
+    html: side("<script>ttq.load('C823P2LGL1ARI64QV9NG'); ttq.page();</script><p>Hej</p>"),
+  },
+  {
+    // Samme måling for LinkedIn (motionapp.com, 3 394 123 B, 2 forekomster):
+    // partner-id'en skrives i **sidens egen** inline-kode. `snap.licdn.com`
+    // er loaderen, denne linje er installationen — og før denne streng lå kun
+    // loaderen i tabellen, så `ttq`-ligheden holdt på det forkerte sted.
+    navn: "LinkedIn-tagget i en sides inline-kode", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "LinkedIn Insight Tag",
+    html: side('<script>var _linkedin_partner_id = "5119106"; window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script><p>Hej</p>'),
+  },
+  {
+    // R2 for Hotjar-fjernelsen: `hj(` forsvandt fra mønsteret, så portens egen
+    // noscript-fixture er beviset på at rækken stadig finder leverandørens vært.
+    navn: "Hotjars loader-vært alene", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Hotjar",
+    html: side('<script src="https://static.hotjar.com/"></script><p>Hej</p>'),
   },
   {
     // Googles egen Google tag, som er den officielle afløser for
@@ -906,6 +951,28 @@ function phpBlok(kilde, gruppe) {
   let dybde = 0;
   for (let i = fra.index + fra[0].length - 1; i < kilde.length; i++) {
     const c = kilde[i];
+    // Kommentarer springes over, lige som strenge. En kommentar med **en
+    // klamme** — `` `hj(` ``, `` `ttq.` ``, en funktion i en forklaring — tæller
+    // ellers med i dybden, så sluttet `)` på rækkens egen sidste linje aldrig
+    // bringer den til 0. Blokken løber så videre gennem resten af filen og
+    // læser de næste tabeller med som om de hørte til denne gruppe: målt
+    // 2026-09-27, da 40 rækker blev læst i `trackers`-tabellen i stedet for
+    // 14, og porten meldte OneTrust manglende en installationstest — en
+    // påstand om en række der ikke engang var i tabellen. Fandtes der ikke en
+    // klamme i kommentaren, ville det have været en stum fejl.
+    if (c === "/" && kilde[i + 1] === "/") {
+      while (i < kilde.length && kilde[i] !== "\n") i++;
+      continue;
+    }
+    if (c === "#") {
+      while (i < kilde.length && kilde[i] !== "\n") i++;
+      continue;
+    }
+    if (c === "/" && kilde[i + 1] === "*") {
+      const luk = kilde.indexOf("*/", i + 2);
+      i = luk === -1 ? kilde.length : luk + 1;
+      continue;
+    }
     if (c === "'") {
       // Spring en PHP-streng over — og dens `\'`-escapes med.
       i++;
@@ -1572,7 +1639,7 @@ const ALIASSER = {
  * Ratchetten gik samtidig `forms` 1 → 0 (del 6), så **kun `trackers` har huller
  * tilbage**: de fem umålte aliasser og de to døde værter — se `NÆSTE` i planen.
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 0, dora: 0 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 0, forms: 0, dora: 0 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -2172,6 +2239,50 @@ if (process.argv.includes("--selftest")) {
   expectGreen("(i) (alle alternative i dora-tabellen er sporet)",
     contractAlternativer, "dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora);
 
+  // 31l. Opgave 72 del 7 — de to mutationer der kan være røde, fordi de er de
+  //      **ægte** fejle, og en der *kun* kan læses.
+  //
+  //      1. **Den indlejrede linje tages væk fra `DAEKNING_TRACKERE`.** Den er
+  //         det eneste bevis for `_linkedin_partner_id` og `ttq.`: de to mønstre
+  //         består hver af to veje, og `snap.licdn.com` / `analytics.tiktok.com`
+  //         dækker den anden. Uden strengen kan vejen 2 ikke tilskrive dem, så
+  //         porten bliver rød — altså kan en agent ikke slette målingen og få
+  //         det til at se ud som om tabellen stadig er dækket.
+  const linkedinUdenInline = {
+    ...DAEKNING_TRACKERE,
+    "LinkedIn Insight Tag": DAEKNING_TRACKERE["LinkedIn Insight Tag"].slice(0, 1),
+  };
+  expectRed("(i) (LinkedIn-strengen for den indlejrede partner-id tages væk)",
+    contractAlternativer, "trackers", R5_TRACKERE, linkedinUdenInline, ALIASSER, 0);
+  const tiktokUdenInline = {
+    ...DAEKNING_TRACKERE,
+    "TikTok Pixel": DAEKNING_TRACKERE["TikTok Pixel"].slice(0, 1),
+  };
+  expectRed("(i) (TikTok-strengen for den indlejrede loader tages væk)",
+    contractAlternativer, "trackers", R5_TRACKERE, tiktokUdenInline, ALIASSER, 0);
+
+  // 31m. **`phpBlok` tæller klammer i kommentarer.** Mutationen sætter en
+  //      kommentar med én klamme ind i `trackers`-tabellen i pluginen, så
+  //      rækkens egen afsluttende `)` aldrig bringer dybden til 0. Uden
+  //      spring-over-kommentarer læser blokken **40** rækker i stedet for 12 og
+  //      de næste tabeller med som om de hørte til `trackers` — præcis det fund
+  //      denne mutation genskaber, målt 2026-09-27 da porten meldte OneTrust
+  //      manglende en installationstest i en tabel den ikke står i.
+  //      Mutationen sammenligner **antal rækker**, ikke "ingen fejl": med fixen
+  //      er kommentaren ligegyldig. Uden fixen er den 40 ≠ 14, så casen er rød
+  //      — den er bærende, ikke en grøn etiket uden indhold.
+  const phpKilde = readFileSync(PLUGIN, "utf8");
+  const raekke40 = "array( 'name' => 'Hotjar', 're' => '~static\\.hotjar\\.com~i' ),";
+  const phpMedKlamme = phpKilde.replace(raekke40,
+    "// se `shared/scan-engine.js` for `hj(`\\n                " + raekke40);
+  assert.ok(phpMedKlamme !== phpKilde,
+    "31m: rækken blev ikke fundet i pluginen, så mutationen prøver ingenting");
+  const uændret = signaturMonstre(phpKilde, "trackers", true).length;
+  const muteret = signaturMonstre(phpMedKlamme, "trackers", true).length;
+  assert.equal(uændret, 12,
+    `31m: trackers-tabellen i pluginen har ${uændret} rækker og ikke 12 — tallet er fra en måling, så tjek den`);
+  assert.equal(muteret, uændret,
+    `31m: en kommentar med én klamme i signatur-tabellen ændrede rækkerne fra ${uændret} til ${muteret} — phpBlok tæller stadig klammer i kommentarer`);
   // 31j. Regel (i) skal være **grøn på den rigtige tabel og rød på de to fejl
   //      opgave 72 del 5 gjorde mulige**, så ratchetten 0 ikke er grøn af
   //      manglende strenge. Den første: en agent tilføjer `multi[ _-]?az` i
