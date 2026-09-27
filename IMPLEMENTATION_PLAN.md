@@ -1,3 +1,99 @@
+Opdateret: 2026-09-28 (iteration 85)
+
+Sidste iteration: **køen var tom igen (5, 6 og 7 er blokeret på spørgsmål 7 og
+9), så denne iteration kørte den gratis scanner mod rigtige sider — og fandt at
+den dyre fejl fra iteration 83 stadig er den rapport alle besøgende får.**
+
+Målt 2026-09-27 22:35 UTC, tre offentlige sider, **arbejderens egen
+User-Agent** (en måling med en anden UA rammer en anden side, og en port der
+måler en anden side er ikke en port):
+
+| mål | live worker | motoren i repoet |
+|---|---|---|
+| `github.com` | `Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent` — **pass** | `No consent banner detected` — **warn** |
+| `dr.dk` | `Consent platform: Cookiebot / OneTrust / Usercentrics / ConsentManager` — pass | `Consent platform: Cookiebot` — pass |
+| `shopify.com` | `No consent banner detected` — warn | `No consent banner detected` — warn |
+
+**Fundet: den udgivne `eucomply-scan` kører `027fc40` før den.** Rækkerne blev
+skrevet om til én leverandør pr. række i `027fc40` (plugin 1.3.36). Den gamle
+kode findes stadig i historien som **navn** i stedet for som mønster:
+
+    { re: /tarteaucitron|klaro|osano|cookieconsent/i, name: "TarteAuCitron / Klaro / Osano / CookieConsent" }
+
+Fire leverandøre i ét navn, så `consentMatches[0]` er hele navnet. Beviset er
+etikettens egen form — den er bygget som `' / '`-join af fire navne, hvilket
+kun den gamle kode kan lave. Målt i `github.com`s egen markup (576 275 B, samme
+UA): `cookieconsent` **1** forekomst, `tarteaucitron` **0**, `klaro` **0**,
+`osano` **0**.
+
+**Det er den dyreste fejl i rapporten, fordi den er en grøn dom på en række der
+skal være gul:** `github.com` har ingen samtykkeplatform og får `pass=true` med
+fire opfundne leverandøre. Det er præcis den fejl opgave 83 rettede i koden —
+og den var aldrig nået nogen, fordi **`worker-scan/` uploades aldrig af CI**
+(spørgsmål 9).
+
+**Hvorfor ingen port så den.** De tre porte læser alle **repoet**:
+`check_signature_prose.mjs` (R11: mønstre mod navne),
+`check_published_engine.mjs` (publiceret npm-motor mod motoren her) og
+`check_production_drift.py` (site-filer mod produktion). **Ingen læste den
+udgivne rapport.** R11 forbyder flere leverandøre i én række — men den tester
+*mønstrene i koden*, ikke *den udgivne motor*, så den var grøn mens den dyre
+fejl var live for hver besøgende. **Femte gang i træk at en regel læser en
+mindre mængde end den påstår** (opgave 30/32/41/63/65).
+
+**`tools/check_live_funnel.py` (ny, trin 26) + `tools/funnel_drift.json`.**
+Måler den udgivne rapport mod motoren i repoet på tre faste mål — de to med
+drift og **én negativ kontrol** (`shopify.com`, hvor de to motorer er enige;
+uden den måler afvigelsen intet). Drift mellem de to er en **RAPPORT**, ikke et
+fund, af samme grund som `KNOWN_LAG` (opgave 38) og `unsold_products()`
+(opgave 37): `worker-scan/` kan ikke deployes fra en agent, og en permanent rød
+gate ville låse hvert merge og dermed hele sitets deploy — præcis skaden opgave
+35 lavede. Det der **håndhæves** er den anden side: (1) uden aftalen kan en
+afvigelse ikke skelnes fra en fejl, så filen er påkrævet; (2) en afvigelse der
+**ikke** står i aftalen er et **fund** — ellers forsvinder den næste fejl i
+samme mørke; (3) aftalen skal kunne lukkes, når workeren er deployet, hvilket
+selftesten bekræfter med de rigtige labels, så den ikke kan blive stående som
+en løgn.
+
+**Selftesten er den egentlige evidens, og den blev prøvet.** `compare()` slået
+fra → selftesten siger **FEJL, exit 1**, mens live-kørslen stadig printede
+`FUNNEL-GATE GRØN`. Det er præcis den fejl der fik `check_asset_delivery.py` til
+at melde `SELFTEST GRØN` **mens seks af dens cases fejlede** (iteration 84):
+forskellen er at porten her **summerer sig selv** og returnerer sandhed, ikke en
+lokal variabel. **Selftesten fandt to fejl i sin egen kode**, som begge er rettet:
+en mutation der skrev `{}` i aftalen ramte den forkerte fejl (`{}` er gyldig
+JSON, så den gav "indeholder ingen cases" i stedet for "kunne ikke læses"), og
+`target`-valideringen lå så sent i `collect()` at den aldrig nåede at køre i
+offline-tilstand — så "case uden target" var **grøn** med en mutation der burde
+gøre den rød.
+
+**7 selftest-cases:** grøn baseline; aftalen beskadiget; aftalen uden cases;
+uregistreret afvigelse er rød; registreret afvigelse er en note og ikke et
+fund; ens etiketter giver hverken fund eller note; case uden `target`.
+
+Gate: `GATE GRØN — alle 26 steps bestået` (25 før), herunder
+`FUNNEL-GATE GRØN — 3 cases i aftalen, 3 målt live, ingen uregistreret
+afvigelse`. **Ingen `site/**`-fil, ingen `plugin/**`-fil, ingen ny version,
+ingen ny zip, intet `update.json`** — så intet publiceres ved denne diff, og
+CI-loggen er den eneste evidens.
+
+Opgave 85: den rapport kunden læser måles mod motoren vi har rettet — de tre
+gamle porte læste alle repoet, aldrig den udgivne motor — kodecommit `433e095`,
+merge `3b8d83a` 2026-09-28 00:5x CEST
+
+❓ **Til Mads — dette er den dyreste fejl i hele rapporten, og den kan kun
+rettes med ét kommando.** Den udgivne scanner fortaler en kunde at han kører fire
+samtykkeplatforme, hvor han kører nul, og giver ham en **grøn** dom på det:
+
+    cd ~/Projects/hermes/auditedwp/worker-scan && wrangler deploy
+
+Det udgiver `eucomply-scan` (og kun den) med `027fc40`s motor. Bagefter skal
+`drift`-felterne i `tools/funnel_drift.json` slettes — de beskriver præcis
+hvad der forsvinder — og porten bliver grøn med ens etiketter. **Det er den
+tredje opgave i træk der kun en `wrangler`-login kan lukke** (spørgsmål 9);
+`eucomply-watch`, `worker-quickcheck` og de to npm-motorer ligger bag samme
+dør, og de får hver den dyreste fejl de har haft med at følge repoet.
+
 Opdateret: 2026-09-27 (iteration 84)
 
 Sidste iteration: **køen var tom igen (5, 6 og 7 er bloketed på spørgsmål 7 og
@@ -476,6 +572,7 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 - `FÆRDIG`: **42 — De fire Pro-sider lovede ni tjek i en betalt funktion, der kører seks** på `ceo/plugin-tjekantal`. Ny permanent gate `plugin_check_count_findings()` (13 negative selftest-cases) + rettet copy i fire sprog. Se afsnittet nedenfor.
 - `FÆRDIG`: **41 — Den publicerede npm-motor målt mod motoren i repoet** på `ceo/npm-motor-hastighed`. Ny gate trin 14 `tools/check_published_engine.mjs` (8 prøver, 15 negative selftest-cases) + en ærlig note på `/cli/`. Se afsnittet nedenfor.
 - `FÆRDIG`: **40 — To forældede rodmapper slettet, og den tredje viste sig at være en byggekilde** på `ceo/rodmapper-ryddet`. `store/` væk, `deskuptime/` reduceret til én henvisningsfil, to linjer fjernet fra `tools/dead_provider_allowlist.json`, publiceret træ **byte-identisk** (`cmp` på 322 sha256). Se afsnittet nedenfor.
+- `FÆRDIG`: **85 — Den udgivne rapport måles mod motoren i repoet, fordi de tre gamle porte læste alle repoet** på `ceo/live-funnel-drift`, kodecommit `433e095`, merge `3b8d83a`. Ny permanent gate `tools/check_live_funnel.py` (trin 26) + aftalen `tools/funnel_drift.json` med 3 målte cases. **Rettelsen kræver `wrangler deploy`** (spørgsmål 9) — se `❓` øverst. Se afsnittet øverst.
 - `FÆRDIG`: **39 — To kalder på en lukket betalingsudbyder, og ingen af dem var synlige for portene** på `ceo/doed-betalingsudbyder`. Ny permanent gate `tools/check_dead_providers.py` (trin 13) + begrundet register `tools/dead_provider_allowlist.json`. Se afsnittet nedenfor.
 
 - `FÆRDIG`: **38 — Den gratis scanners SSRF-guard er målt i produktion for første gang, og den er en måned bagen** på `ceo/live-ssrf-gaade`. Ny permanent gate `tools/check_live_hardening.py` (trin 12). Se afsnittet nedenfor.
@@ -1537,6 +1634,8 @@ Målt undervejs, og det er derfor de står som `formodnet` og ikke som bevis:
 - 2026-09-27 (iteration 64) `DEPLOY OK 2026-09-27 07:20 UTC` — **de tre åbne noter fra iteration 61, 62 og 63 er lukket på indhold**, cache-buster `?cb=3a3ba48` på den seneste merge: (1) `/assets/eucomply-1.3.25.zip` svarer **200 `application/zip`**, 57 714 bytes, unzippet til 3 filer under `eucomply/`, `Version: 1.3.25` i headeren og **0** forekomster af `quantcast` i `eucomply.php`; (2) `/update.json` svarer 200 med `"version": "1.3.25"`, `download_url` på 1.3.25 og changelog der **starter** `= 1.3.25 (2026-09-27) =` — de to forrige blokkes `\n`-tegn og dobbelt overskrift er rettet; (3) `/assets/eucomply-1.3.24.zip` **og** 1.3.23 følger begge **301** → 1.3.25; (4) `/plugin/` viser `↓ Download v1.3.25 (free)`; (5) CI `36294706198`, alle job `success`, loggen læst: `GATE GRØN — alle 24 steps bestået`, `42 signatur-prosatest bestået`, `Uploaded 5 files (317 already uploaded)` — de fem er præcis den publicerede overflade de tre noter skrev om. Pinstikets, TikToks og Googles nye stier er efterprøvet i den **publicerede** zip: 1 forekomst af `s\.pinimg\.com`, 1 af `analytics\.tiktok\.com`, 2 af `googletagservices`.
 - 2026-09-27 (iteration 64, opgave 64) `VERIFICÉR DEPLOY: R5 — hver consent-række får en installationstest, og den døde `Analytify/CAOS`-række er rettet til `analytify|caos` (opgave 64) 0a7fe2c / ae984ea 2026-09-27 07:5x UTC` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (26 linjer på 1.3.26 + den nye 1.3.25-linje), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs`, `docs/eucomply-signatur-prosa.md` og den nye `site/assets/eucomply-1.3.26.zip` (1.3.25 fjernet af build-scriptet). **Ingen salgscopy rørt, ingen købsknap rørt.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.26.zip` svarer **200 `application/zip`**, unzippet: `Version: 1.3.26` og `'~analytify|caos~i'` i `eucomply.php`; (2) `/update.json` svarer 200 med `"version": "1.3.26"`, `download_url` på 1.3.26 og changelog der **starter** `= 1.3.26 (2026` med de tre ærrede huller (OneTrust-stubben, `cookieninja`, `gdpr-cookie-banner`) i teksten; (3) `/assets/eucomply-1.3.25.zip` følger **301** → 1.3.26, og alle 26 gamle redirects gør også — den redirect var **manglende** indtil denne diff, så den er værd at se; (4) `/plugin/` viser `↓ Download v1.3.26 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `43 signatur-prosatest bestået`. **Bemærk:** de to JS-motorer deployes ikke af CI, så rettelsen i `shared/scan-engine.js` og `eucomply-scanner/engine/index.js` når kunden først ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret fra opgave 58.
 ## Deploy-log
+- 2026-09-28 (iteration 85, opgave 85) `VERIFICÉR DEPLOY: den udgivne rapport måles mod motoren i repoet — github.com får fire samtykkeplatforme (pass) hvor svaret er "ingen" (warn) 433e095 / 3b8d83a 2026-09-28 00:5x CEST` — rører **kun** `tools/check_live_funnel.py` (ny), `tools/funnel_drift.json` (ny aftale med 3 målte cases) og `tools/quality_gate.sh` (trin 26). **Ingen `site/**`-fil, ingen `plugin/**`-fil, ingen `update.json`, ingen ny zip, ingen worker.** Deployen skal derfor logge **`Uploaded 0 files`** og intet på sitet ændrer sig — præcis som noterne for opgave 65/66/74; et andet tal betyder at diffen gjorde noget den ikke skulle. Den eneste forventede ændring i loggen er `GATE GRØN — alle 26 steps bestået` (var 25) og `FUNNEL-GATE GRØN — 3 cases i aftalen, 3 målt live, ingen uregistreret afvigelse` + de 7 selftest-cases. **Der er intet at verificere på sitets indhold.** **Og den fejl porten dokumenterer, er stadig ude i live:** den rettes kun af `cd worker-scan && wrangler deploy` (spørgsmål 9), og indtil da er det `NOTE`-linjerne i hver gaten-kørsel der bekræfter at den stadig er der. Når workeren er deployet skal `drift`-felterne i `tools/funnel_drift.json` slettes, ellers vil porten blive rød så snart den ser den nye etiket.
+
 - 2026-09-27 (iteration 68, opgave 67) `VERIFICÉR DEPLOY: fire consent-rækker der aldrig har eksisteret, fjernet; Borlabs læst i leverandørens kode; plugin 1.3.28 (opgave 67) eaf0f5b / bca54da 2026-09-27 09:55 UTC` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (27 linjer på 1.3.28 + den nye 1.3.27-linje), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs`, `docs/eucomply-signatur-prosa.md` ("Fejl 12"), den nye `site/assets/eucomply-1.3.28.zip` (1.3.27 fjernet af build-scriptet) og denne plan. **Ingen salgscopy rørt, ingen købsknap rørt, ingen prisside rørt.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.28.zip` svarer **200 `application/zip`**, unzippet: `Stable tag: 1.3.28` i `readme.txt` og `define( 'EUCOMPLY_VERSION', '1.3.28' )` i `eucomply.php`, **0** forekomster af `cookiescript`, `shoper|shoprenter|idelo`, `moove[_-]?gdpr` og `webtoffee|gdpr[_-]?cookie[_-]?consent`, og `~borlabs|cookieninja~i` stadig med; (2) `/update.json` svarer 200 med `"version": "1.3.28"`, `download_url` på 1.3.28 og changelog der **starter** `= 1.3.28 (2026-09-27) =` med de **fire** fjernelser og Borlabs' globale — og hvor `= 1.3.27 (2026-09-27) =` står **én** gang, fordi min egen bump skrev om historikken og det er rettet; (3) `/assets/eucomply-1.3.27.zip` følger **301** → 1.3.28, og de 26 ældre redirects gør også; (4) `/plugin/` viser `↓ Download v1.3.28 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `46 signatur-prosatest bestået … 42 af 46 rækker med installationstest` + `52 af 52` negative cases. **Bemærk:** de to JS-motorer deployes ikke af CI, så de fire rækker forsvinder først fra den publicerede npm-CLI og fra `worker-scan` ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret fra opgave 58. **To plan-commits i denne iteration, ikke én:** den første (`cfc22ed`) fik en SyntaxError i den note-skrivende python og shippede derfor uden deploy-noten; den her tilføjer den. Samme fejl som opgave 66s readme-bump ovenfor: et værktøj der fejler stille og en commit der går alligevel er en port der ikke kan fejle.
 - 2026-09-27 (iteration 71, opgave 71) `VERIFICÉR DEPLOY: Ninja Forms navngivet i CF7-rækken, og ny regel (i) måler de 27 mønstalternativer uden leverandør i navnet — plugin 1.3.31 49a0110 / 57a8408` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php` (alle tre kopier: rækkens **navn**), `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (nu 31 zip-redirects: den nye 1.3.30-linje + alle 30 gamle retaget), `site/plugin/index.html`, `tools/check_pro_claims.py` (PLUGIN_VERSION), `tools/check_signature_prose.mjs` (regel (i) + syv selftest-cases), `docs/eucomply-signatur-prosa.md` ("Fejl 13"), den nye `site/assets/eucomply-1.3.31.zip` (1.3.30 fjernet af build-scriptet) og denne plan. **Ingen salgscopy rørt, ingen købsknap rørt, ingen prisside rørt, ingen `site/`-side rørt ud over plugin-downloadsiden.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.31.zip` svarer **200 `application/zip`**, unzippet: 3 medlemmer under `eucomply/`, `Version: 1.3.31` og `EUCOMPLY_VERSION', '1.3.31'`, og **én** forekomst af `Ninja` i rækkens navn; (2) `/update.json` svarer 200 med `"version": "1.3.31"`, `download_url` på 1.3.31 og changelog der **starter** `= 1.3.31 (2026-09-27) =` med de **tre** linjer om Ninja, og hvor `= 1.3.30 (2026-09-27) =` står **én** gang; (3) `/assets/eucomply-1.3.30.zip` følger **301** → 1.3.31 — den redirect var **manglende** før denne diff; (4) `/plugin/` viser `↓ Download v1.3.31 (free)` **og** teksten skal være 1.3.31 — den stod på 1.3.29 mens `href` pegede på 1.3.30, altså to versioner i én knap, og det er rettet her; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået`, `51 signatur-prosatest bestået … 59 installationstester for 50 navngivne leverandører, 0 ubeviste i ULAEVNET af højst 0, 27 mønstalternativer uden leverandør i navnet af højst 27` og `SELFTEST GRØN — alle negative cases fanges (70 af 70)`. **Bemærk:** de to JS-motorer deployes ikke af CI, så `ninja[_-]?forms` giver sit korrekte navn i pluginen **og i den gratis webscanner** først ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret fra opgave 58. Uden deployen er en Ninja-side stadig et fund på CF7-rækken i den publicerede CLI.
 
