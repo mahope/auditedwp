@@ -1017,6 +1017,48 @@ $ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://exam
 
 19. **Må kundelinket, filen, historikken og det daglige interval nævnes på `/pro/`?** (26/9, opgave 24, opdateret 26/9 af opgave 27) Rapporten kan nu både læses på et link og hentes som en fil, og det er det eneste Pro-produkt der ikke kræver en Mads-beslutning for at virke. Den holdes stadig ude af Pro-tabellen, fordi spørgsmål 1 og 18 er ubesvarede. Hvis nøglen dækker plugin *og* hosted, kan den nævnes der med præcis den afgrænsning den har: lokalt, i kundens eget WordPress, read-only, 30 dage, ikke hosted. **Opdatering 26/9 (opgave 27):** siden spørgsmålet blev skrevet, er fire ting bygget, testet og udgivet uden at nogen af dem står i Pro-tabellen — historikken (1.3.4), kundelinket (1.3.5), filen (1.3.6 og 1.3.7) og det daglige interval, som nu også står i selve rapporten (1.3.9). **Det betyder, at `/pro/` i dag underlover det koden gør, fire gange.** Ikke fordi nogen har slået det fra, men fordi den afgørende beslutning ikke er taget.
 
+### Opgave 64: ti consent-rækker hviler på en antagelse, og tre huller er målt (2026-09-27)
+
+R5 har gjort det synligt, hvilke rækker i `CONSENT_SIGNATURES` der har **bevis** på
+en installationstest (8 `wp.org 200`, 2 `vaert 200`) og hvilke der hviler på en
+antagelse (10 `formodnet`, markeret i koden). For de ti skal leverandørens egen
+dokumentation læses — præcis den betingelse opgave 63 satte for at Quantcast måtte
+komme tilbage: **en streng der er læst, ellers ingen streng**. Listen findes som
+`DAEKNING` i `tools/check_signature_prose.mjs`, sorteret på `kilde: "formodnet"`:
+
+`CookieYes`, `Axeptio`, `CookieScript`, `CookieHub`, `iubenda`,
+`JustUno / Privy / OptinMonster`, `CEE/PL consent plugin`,
+`Borlabs / CookieNinja`, `Moove GDPR`, `PixelYourSite (GDPR)`, `WebToffee GDPR`,
+`Analytify/CAOS`.
+
+Målt undervejs, og det er derfor de står som `formodnet` og ikke som bevis:
+
+- `api.wordpress.org/plugins/info/1.0/<slug>.json` svarer **404** for
+  `moove-gdpr`, `pixel-your-site`, `analytify`, `borlabs-cookie` og
+  `webtoffee-gdpr-cookie-consent` — de ligger ikke i WordPress' offentlige
+  katalog under de slugs rækkerne antager. Det beviser **ikke** at produkterne
+  ikke findes; det beviser at slug-formen er ubevist, og derfor bruges de
+  strenge kun til at vise mønsteret *kan* finde en installation af den slags.
+- Leverandørens egne værter svarede 200 for `consent.cookiebot.com/uc.js` og
+  `cdn.cookielaw.org/scripttemplates/otSDKStub.js`; `axeptio.cdn.app`,
+  `app.cookiescript.com` og `app.cookiehub.com` gav ingen forbindelse herfra,
+  og `sdk.justuno.com` svarede 520.
+- **Tre huller der skal besluttes om, ikke bare læses:**
+  1. **OneTrust.** Rækkens navn rummer fire leverandører, og den ene streng
+     beviser Cookiebot. OneTrusts egen stub ligger på `cdn.cookielaw.org`, som
+     **ikke** indeholder `onetrust` — så dens dokumenterede installation er
+     uafhængigt ubevist. Skal OneTrust have sit eget mønster (f.eks.
+     `cookielaw|optanoncookie`), eller skal navnet i rækken rettes, så den kun
+     lover det der er dækket?
+  2. **`cookieninja`.** Ingen leverandør, ingen dokumentation, ingen plugin-slug
+     fundet. Efter opgave 63s beslutning skal den **fjernes**, indtil den kan
+     give en installationstest. Den er ikke fjernet i denne iteration, fordi det
+     er en produktafgørelse — en række forsvinder fra en rapport kunder læser.
+  3. **`gdpr[_-]?banner`** matcher ikke det populære WordPress-slug
+     `gdpr-cookie-banner` (der står *cookie* mellem `gdpr` og `banner`).
+     Alternativet bør skrives `gdpr[_-]?cookie[_-]?banner|gdpr[_-]?banner`, hvis
+     `wp.org 200` bekræfter slug'en.
+
 ## Kendte lavprioritets-rester
 
 - ~~`cli/bin/eucomply-scan.js` er en separat, ældre CLI der laver sit eget `fetch(u)` uden redirect-guard.~~ **LUKKET i opgave 15 — og præmissen viste sig at være forkert.** Der er ingen SSRF i den fil: den bygger `new URL(API)` mod *vores egen* worker og sender brugerens adresse som en `url`-**query-parameter** (`cli/bin/eucomply-scan.js:48-50`). Den henter aldrig et brugerstyret værtsnavn, så der er ingen redirect at validere. Den egentlige fejl var en anden, og den er rettet: `cli/` erklærede **samme npm-navn som den ægte motor**. Se opgave 15.
@@ -1048,6 +1090,8 @@ $ curl -s 'https://deskuptime-quickcheck.mahope-eeb.workers.dev/?url=http://exam
   - ~~Portens negative cases skal stadig være negative.~~ **Dækket** efter fund 1.
   - ~~Efter merge verificeres på indhold.~~ **Ikke relevant for sitet** — ingen `site/**`-fil rørt. Deploy-noten siger præcis, hvad der så skal læses i CI.
 
+- 2026-09-27 (iteration 64) `DEPLOY OK 2026-09-27 07:20 UTC` — **de tre åbne noter fra iteration 61, 62 og 63 er lukket på indhold**, cache-buster `?cb=3a3ba48` på den seneste merge: (1) `/assets/eucomply-1.3.25.zip` svarer **200 `application/zip`**, 57 714 bytes, unzippet til 3 filer under `eucomply/`, `Version: 1.3.25` i headeren og **0** forekomster af `quantcast` i `eucomply.php`; (2) `/update.json` svarer 200 med `"version": "1.3.25"`, `download_url` på 1.3.25 og changelog der **starter** `= 1.3.25 (2026-09-27) =` — de to forrige blokkes `\n`-tegn og dobbelt overskrift er rettet; (3) `/assets/eucomply-1.3.24.zip` **og** 1.3.23 følger begge **301** → 1.3.25; (4) `/plugin/` viser `↓ Download v1.3.25 (free)`; (5) CI `36294706198`, alle job `success`, loggen læst: `GATE GRØN — alle 24 steps bestået`, `42 signatur-prosatest bestået`, `Uploaded 5 files (317 already uploaded)` — de fem er præcis den publicerede overflade de tre noter skrev om. Pinstikets, TikToks og Googles nye stier er efterprøvet i den **publicerede** zip: 1 forekomst af `s\.pinimg\.com`, 1 af `analytics\.tiktok\.com`, 2 af `googletagservices`.
+- 2026-09-27 (iteration 64, opgave 64) `VERIFICÉR DEPLOY: R5 — hver consent-række får en installationstest, og den døde `Analytify/CAOS`-række er rettet til `analytify|caos` (opgave 64) 0a7fe2c / ae984ea 2026-09-27 07:5x UTC` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (26 linjer på 1.3.26 + den nye 1.3.25-linje), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs`, `docs/eucomply-signatur-prosa.md` og den nye `site/assets/eucomply-1.3.26.zip` (1.3.25 fjernet af build-scriptet). **Ingen salgscopy rørt, ingen købsknap rørt.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.26.zip` svarer **200 `application/zip`**, unzippet: `Version: 1.3.26` og `'~analytify|caos~i'` i `eucomply.php`; (2) `/update.json` svarer 200 med `"version": "1.3.26"`, `download_url` på 1.3.26 og changelog der **starter** `= 1.3.26 (2026` med de tre ærrede huller (OneTrust-stubben, `cookieninja`, `gdpr-cookie-banner`) i teksten; (3) `/assets/eucomply-1.3.25.zip` følger **301** → 1.3.26, og alle 26 gamle redirects gør også — den redirect var **manglende** indtil denne diff, så den er værd at se; (4) `/plugin/` viser `↓ Download v1.3.26 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `43 signatur-prosatest bestået`. **Bemærk:** de to JS-motorer deployes ikke af CI, så rettelsen i `shared/scan-engine.js` og `eucomply-scanner/engine/index.js` når kunden først ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret fra opgave 58.
 ## Deploy-log
 
 - 2026-09-27 (iteration 63, opgave 63) `VERIFICÉR DEPLOY: fjern en samtykkeplatform der aldrig kunne findes — plugin 1.3.25 3a3ba48 / merge 6a05ad1 2026-09-27 04:34 UTC` — rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects`, `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs`, `docs/eucomply-signatur-prosa.md`, den nye `site/assets/eucomply-1.3.25.zip` (1.3.24 fjernet af build-scriptet) og denne plan. **Ingen salgscopy rørt, ingen købsknap rørt.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.25.zip` svarer **200 `application/zip`**, unzippet: `Version: 1.3.25` og **ingen** `quantcast` i `eucomply.php`; (2) `/update.json` svarer 200 med `"version": "1.3.25"`, `download_url` på 1.3.25, og changelog'en **starter** med `= 1.3.25 (2026-09-27) =` med `= 1.3.24` og `= 1.3.23` bagefter — de to forrige blokke lå med bogstavelige `\n` og dobbelt overskrift, så det er værd at se at de nu er rigtige lister; (3) `/assets/eucomply-1.3.24.zip` følger **301** → 1.3.25, og alle 26 gamle zip-redirects gør også; (4) `/plugin/` viser `↓ Download v1.3.25 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `42 signatur-prosatest bestået`. **Bemærk:** de to JS-motorer deployes ikke af CI, så fjernelsen i `shared/scan-engine.js` og `eucomply-scanner/engine/index.js` når kunden først ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret fra opgave 58.

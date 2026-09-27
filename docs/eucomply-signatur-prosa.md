@@ -419,3 +419,38 @@ kan give en troværdig installationstest, skal **fjernes** indtil de kan det.
 Rækkefølgen er `consent` først (20 rækker), så `trackers` (12), `forms` (5) og
 `dora` (9).
 
+
+
+## Fejl 9 — en række, der hedder *Analytify/CAOS*, matchede `analytics-cat` (opgave 64)
+
+**Målt før rettelsen:** `<script src="https://shop.example/wp-content/plugins/analytify/analytify.js">`
+gennem motoren i repoet, den publicerede npm-motor og pluginen →
+`No consent banner detected`, `Third-party trackers: 0 found`. Samme svar som en
+side uden samtykkeplatform. Mønstret var `analytics[_-]?cat`, som kræver
+`analytics-cat`, `analytics_cat` eller `analyticscat`.
+
+**Beviset er ikke et netværkskald, og det er pointen med R5.** Rækkens *navn* er
+`Analytify/CAOS` — og det navn kan ikke matches af sit eget mønster, fordi det
+rimmer `/`. En regel der tester et mønster mod **sit eget navn** kan aldrig se
+denne klasse fejl; opgave 63 fund 2 målte det og fandt den forkert på den første
+af 23 rækker (`static\.hotjar\.com` matcher fint navnet `Hotjar`).
+
+**R5** (`contractR5` i `tools/check_signature_prose.mjs`) gør hver række af
+`CONSENT_SIGNATURES` målebar mod en **installationstest**: en rigtig URL eller et
+rigtigt markup-fragment i `DAEKNING`, markeret med hvor den kommer fra. Rød
+ved (a) manglende streng, (b) mønstre der ikke matcher sin egen streng i nogen
+af de tre kopier, (c) en streng der peger på en række der ikke findes. En streng
+skal rumme `//`, `.`, `=` eller `<`, så en streng skrevet efter mønstret navn
+ikke kan bestå.
+
+**Rettelse:** `analytify|caos` i alle tre kopier. Analytifs plugin-sti rummer
+`analytify`; CAOS (Cookie Assistant for Osano) hedder *caos* — og Osano dækkes
+allerede af `osano` i rækken ovenfor, så det er ikke ny dækning.
+
+**Hvad R5 *ikke* har dækket endnu, skrevet ned fordi porten ellers læses som om
+den gjorde det:** denne iteration dækker `consent`-tabellen. `trackers` (12),
+`forms` (5) og `dora` (9) har endnu ingen installationstest — opgave 65.
+
+**Bevisstyrken.** 8 strenge er verificeret i WordPress' eget plugin-katalog
+(200), 2 på leverandørens egen vært (200), og 10 er markeret `formodnet` — de
+står i ❓-afsnittet med målingen der viser hvorfor de ikke er bevis.
