@@ -63,7 +63,6 @@ const CONSENT_SIGNATURES = [
   { re: /moove[_-]?gdpr/i, name: "Moove GDPR" },
   { re: /pixel[_-]?your[_-]?site/i, name: "PixelYourSite (GDPR)" },
   { re: /webtoffee|gdpr[_-]?cookie[_-]?consent/i, name: "WebToffee GDPR" },
-  { re: /quantcast[_-]?choice/i, name: "Quantcast Choice" },
   { re: /analytics[_-]?cat/i, name: "Analytify/CAOS" },
 ];
 

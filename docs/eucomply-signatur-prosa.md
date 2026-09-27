@@ -316,8 +316,8 @@ værter, ikke mod deres dokumentation: `snap.licdn.com` (LinkedIn,
 egen vært, og mønstrene dækker dem. `cdn.matomo.cloud` og `cdn.cookiebot.com`
 er målt i denne iteration og dækkes af `matomo` hhv. `cookiebot` — de to mønstre
 er brede nok til at ramme **enhver** sti på de to værter, så ingen rettelse
-er nødvendig. `quantcast[_-]?choice` er derimod **død som skrevet** og er
-ladt urørt; se "Fejl 7" nedenfor.
+er nødvendig. `quantcast[_-]?choice` var **død som skrevet**; den er fjernet i
+1.3.25, se "Fejl 8" nedenfor.
 
 ## Fejl 7 — to af de mest almindelige annonce-tags var usynlige (rettet i 1.3.24)
 
@@ -369,14 +369,53 @@ ladt urørt; se "Fejl 7" nedenfor.
   nul fund på den, og mutationen der skriver hele `tiktok\.com` gør porten rød
   på præcis den fixture. Samme fejlretning som Pinterests billed-CDN.
 
-### Hvad der *ikke* blev rettet, og hvorfor
+## Fejl 8 — en samtykkeplatform der aldrig kunne findes (fjernet i 1.3.25)
 
-`quantcast[_-]?choice` kan ikke matche `quantcast.mgr.consensu.org/choice/…`,
-fordi der står et punktum og skråstreger mellem de to ord. Det er **målt** — den
-gav 0 fund i alle tre produkter — men **kvantcasts vært kunne ikke nås fra
-buildmiljøet** (forbindelsen døde mod både `docs.quantcast.com` og
-`quantcast.mgr.consensu.org`). En fixture med en URL jeg ikke har læst hos
-leverandøren er præcis den påstand opgave 61 satte stop for, så mønsteret er
-**ladt urørt**: en død markør er dårligere end ingen, fordi porten så ville have
-et fixture der så ud som dækning. Den kræver sin egen iteration med en kilde.
+- **Målt først, i alle tre produkter.** `quantcast[_-]?choice` kan ikke matche
+  `quantcast.mgr.consensu.org/choice/…/quantcast.js`, fordi der står et **punktum
+  og en skråstreg** mellem de to ord, og mønstret tillader kun bindestreg,
+  understreg eller intet. En fixture med den sti gav
+  `No consent banner detected` — altså præcis det samme svar som på en side der
+  **ikke** har nogen samtykkeplatform, på en side der spørger hvert besøgende.
+  Det er den dyre fejlretning: et falsk *fund* kan ses i rapporten, et fund der
+  mangler kan det ikke.
+
+- **Dokumentationen kunne læses tre gange og tre gange fejlede.** `curl` mod
+  `https://docs.quantcast.com/docs/` gav `000` på 0,02 s, `webfetch` gav
+  *Transport error*, og `defuddle` gav `getaddrinfo ENOTFOUND
+  docs.quantcast.com` — DNS slår fejl, så det er ikke en blokade men en vært der
+  ikke løser fra byggemiljøet. `web.archive.org` har **ingen** snapshot af
+  `docs.quantcast.com` og **ingen** af `quantcast.mgr.consensu.org`.
+  Kvantcasts eget hjælpecenter findes derimod, og er nået via
+  `https://quantcast.us.document360.io/v1/en` → `https://help.quantcast.com/v1/en`
+  — men dets maskinlæsbare indeks (`llms.txt`, 60 039 bytes) indeholder **ingen**
+  dokumentation om CMP'en. Den leverandøren kan læse, findes altså ikke.
+
+- **Derfor fjernet, ikke rettet.** At skrive `quantcast\.mgr\.consensu\.org` ville
+  være en påstand om en sti, ingen i dette repo har læst hos leverandøren — og
+  det er præcis den fejl, der fik den oprindelige markør ind. En død markør i
+  tabellen er værre end ingen: R2-porten ville få et fixture der så ud som
+  dækning, og en læser af tabellen ville tro at platformen bliver fundet.
+  Markøren er derfor fjernet fra **alle tre** tabeller i 1.3.25.
+
+- **Gaten holdt, først og fremmest fordi den tæller.** `MINDST.consent` stod på
+  21 og blev rød med præcis den besked, der er værd at få:
+  *"signatur-tabellen for «consent» gav 20 navne, forventede mindst 21 — en tabel
+  der ikke kan parses gør porten grøn uden at den har noget at se på"*. Den blev
+  sænket til 20 **med begrundelse i koden**, så den næste agent kan se at 20 er
+  et valg: den døde markør kan ikke komme tilbage ved at sænke tallet igen, for
+  den ville give 21.
+
+### Hvad der stadig ikke er dækket, og hvorfor det er en opgave
+
+Der findes **ingen** regel i porten, der kan se en markør der er død *uden* at
+gulvet `MINDST` rammer den. En agent kan derfor tilføje en ny, død markør i dag,
+hvis den samtidig hæver et tal, og ingen af de 24 steps vil sige det. R5 skal
+lukke det: **hver signatur-række skal have en installationstest, porten erklærer,
+som mønstret kan finde** — en rigtig URL eller et rigtig markup-fragment, aldrig
+produktnavnet alene, fordi `quantcast_choice` ville tilfredsstille
+`quantcast[_-]?choice` og skjule præcis den fejl R5 skal finde. Rækker, der ikke
+kan give en troværdig installationstest, skal **fjernes** indtil de kan det.
+Rækkefølgen er `consent` først (20 rækker), så `trackers` (12), `forms` (5) og
+`dora` (9).
 
