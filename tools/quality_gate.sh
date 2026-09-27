@@ -526,6 +526,23 @@ hdr "en besogende skal kunne taelles"
 run "tools/check_analytics.py" "$PY" tools/check_analytics.py
 run "tools/check_analytics.py --selftest" "$PY" tools/check_analytics.py --selftest
 
+# ------------------------------------------------------------------ fejlvej
+# En besøgende der skriver et domæne med en tastefejl fik motorens egen
+# sætning med et HTTP-statusnummer i resultatfeltet, fordi alle fem
+# scannere gjorde `throw new Error(d.error …)` og skrev `ex.message` i
+# `#scan-err`. Målt 28/9 mod den udgivne worker: 502 med
+# "Scan failed: The site responded with HTTP 530 …". Det er det første en
+# ny besøgende skriver, og det var en blindgade.
+#
+# Kildef delen kræver `apiError`, en beskyttet `.json()` og ingen
+# `ex.message`. Adfærdsdelen tager sidens EGNE `apiError` og `T` og kører
+# de rigtige svar fra den udgivne worker gennem dem i en `vm` — det er den
+# der kan bevise hvilken tekst en besøgende faktisk ser. Uden `node` er
+# porten rød, samme grund som porten ovenfor.
+hdr "en fejl fra scanneren skal vaere en besked, ikke en intern tekst"
+run "tools/check_scan_errors.py" "$PY" tools/check_scan_errors.py
+run "tools/check_scan_errors.py --selftest" "$PY" tools/check_scan_errors.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

@@ -155,6 +155,9 @@
   var T = {
     scanning: 'Scanner…', run: 'Kør scanningen', enter: 'Indtast et domæne først.',
     failed: 'Scanningen kunne ikke gennemføres.', network: 'Netværksfejl. Prøv igen om lidt.',
+    badurl: 'Det er ikke en webadresse, vi kan scanne. Skriv kun domænet, for eksempel example.com.',
+    ratelimit: 'For mange scanninger efter hinanden fra dette netværk. Vent et minut, og scan igen.',
+    unreachable: 'Vi kunne ikke nå sitet. Tjek stavemåden, eller prøv adressen uden https://.',
     passed: ' af ', checks: ' tjek bestået', platform: 'Platform: ',
     pass: 'Bestået', warn: 'Advarsel', manual: 'Tjek manuelt', fail: 'Skal rettes', fix: 'Forslag til rettelse: ',
     copied: 'Link kopieret', copy: 'Kopiér link til dette resultat',
@@ -181,6 +184,17 @@
     });
   }
   function verdict(c) { return c.warn ? 'warn' : (c.pass ? 'pass' : 'fail'); }
+
+  // Se den engelske side for begrundelsen: en Cloudflare-kantfejl er HTML, så
+  // `.json()` kaster, og et site der ikke kan nås kommer som 502 med motorens
+  // egen tekst. Ingen af delene må nå den besøgende.
+  function apiError(status, d) {
+    var why = (d && typeof d.error === 'string') ? d.error : '';
+    if (status === 400) return T.badurl;
+    if (status === 429) return T.ratelimit;
+    if (status === 502 || /responded with HTTP|too many redirects|timed out|fetch failed/i.test(why)) return T.unreachable;
+    return T.failed;
+  }
   function pill(c) {
     if (c.warn && c.pass === false) return T.manual;
     if (c.warn) return T.warn;
@@ -195,11 +209,12 @@
     btn.disabled = true; btn.textContent = T.scanning;
     try {
       var r = await fetch(API + '/scan?url=' + encodeURIComponent(url));
-      var d = await r.json();
-      if (!r.ok) throw new Error(d.error || T.failed);
+      var d = null;
+      try { d = await r.json(); } catch (e) { /* ikke JSON — apiError kortlægger stadig status */ }
+      if (!r.ok) { errEl.textContent = apiError(r.status, d); return; }
       render(d);
     } catch (ex) {
-      errEl.textContent = ex.message || T.network;
+      errEl.textContent = T.network;
     } finally {
       btn.disabled = false; btn.textContent = T.run;
     }

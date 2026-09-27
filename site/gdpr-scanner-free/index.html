@@ -269,6 +269,17 @@ h2{font-size:21px}}</style>
     return c.pass ? 'Pass' : 'Fix needed';
   }
 
+  // Se /scan/ for begrundelsen: en Cloudflare-kantfejl er HTML, så `.json()`
+  // kaster, og et site der ikke kan nås kommer som 502 med motorens egen tekst.
+  // Ingen af delene må nå den besøgende, og et uopnåeligt domæne er netop det
+  // første en ny besøgende skriver.
+  function apiError(status, d) {
+    var why = (d && typeof d.error === 'string') ? d.error : '';
+    if (status === 400) return 'That is not a web address we can scan. Type the domain only, for example example.com.';
+    if (status === 429) return 'Too many scans in a row from this network. Wait a minute, then scan again.';
+    if (status === 502 || /responded with HTTP|too many redirects|timed out|fetch failed/i.test(why)) return 'We could not reach that site. Check the spelling, or try the address without https://.';
+    return 'The scan could not be completed.';
+  }
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     var url = input.value.trim();
@@ -278,11 +289,12 @@ h2{font-size:21px}}</style>
     btn.textContent = 'Scanning…';
     try {
       var r = await fetch(API + '/scan?url=' + encodeURIComponent(url));
-      var d = await r.json();
-      if (!r.ok) throw new Error(d.error || 'Scan failed.');
+      var d = null;
+      try { d = await r.json(); } catch (e) { /* ikke JSON — apiError kortlægger stadig status */ }
+      if (!r.ok) { errEl.textContent = apiError(r.status, d); return; }
       render(d);
     } catch (ex) {
-      errEl.textContent = ex.message || 'Network error. Try again.';
+      errEl.textContent = 'Network error. Try again in a moment.';
     } finally {
       btn.disabled = false;
       btn.textContent = 'Scan my site free';
