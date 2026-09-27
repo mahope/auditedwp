@@ -14,7 +14,7 @@ Sidste iteration: opgave 72 del 6 — **den dyreste fejl i hele opgave 72 var ik
 
 **Ingen `plugin/**`-fil rørt, så ingen ny version og ingen ny zip.** Pluginens `forms`-tabel har kun to rækker, og Stripe-rækken findes kun i de to motorer — jf. samme grund som opgave 65 del 2. Opgave 72 er dermed **lukket for ratchettens vedkommende**: `consent` 0, `dora` 0, `forms` 0, `trackers` 5. `GATE GRØN — alle 24 steps bestået`, spec `docs/eucomply-signatur-prosa.md` "Fejl 17".
 
-VERIFICÉR DEPLOY: Stripe-fiktionen fjernet + rækken omdøbt + plugin 1.3.34 (dora) 713cb9b, Stripe-delen da5a5aa 2026-09-27 ca. 19:5x
+VERIFICÉR DEPLOY: Stripe-fiktionen fjernet + rækken omdøbt + plugin 1.3.34 (dora) 713cb9b, Stripe-delen c02882c 2026-09-27 ca. 19:5x
 
 Opdateret: 2026-09-27 (iteration 77)
 
