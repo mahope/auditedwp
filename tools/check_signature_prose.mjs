@@ -409,7 +409,7 @@ const DAEKNING_FORMS = {
   // Forms er betalt og derfor ikke i det offentlige katalog; det stod allerede
   // i tabellens kommentar, og mønstret skriver på plugin-mappen, som en
   // betalt plugin også leverer sine assets fra.
-  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
+  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
     [["Contact Form 7", '<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
      ["WPForms", '<script src="https://shop.example/wp-content/plugins/wpforms-lite/assets/js/wpforms.js"></script>', "wp.org 200 wpforms-lite 2026-09-27"],
      ["Formidable", '<script src="https://shop.example/wp-content/plugins/formidable/assets/js/frm_forms.min.js"></script>', "wp.org 200 formidable 2026-09-27"],
@@ -424,6 +424,24 @@ const DAEKNING_FORMS = {
       // katalog (2026-09-27), og `wp-content/plugins/ninja-forms/` er den sti
       // pluginen enqueuer sine assets fra.
       ["Ninja", '<script src="https://shop.example/wp-content/plugins/ninja-forms/assets/js/min/front-end.js"></script>', "wp.org 200 ninja-forms 2026-09-27"],
+      // Opgave 75. Samme fejl som Ninja, og målingen er den interessante del:
+      // Caldera Forms er ** lukket i WordPress' eget katalog** —
+      // `api.wordpress.org/plugins/info/1.0/caldera-forms.json` svarer
+      // `"closed": true, "closed_date": "2022-04-05", "reason": "author-request"`
+      // og *"This closure is permanent"* — så en agent der leder i katalog-API'en
+      // finder intet og fjerner platformen, som opgave 70 gjorde med Jotform.
+      // Den findes i leverandørens **eget repo** `CalderaWP/caldera-forms` (200,
+      // ikke arkiveret, sidste push 2024-06-11, 189 stjerner), og to linjer dér
+      // danner den installation strengen skriver:
+      //   - `caldera-core.php:55` — `define('CFCORE_URL', plugin_dir_url(__FILE__));`
+      //     altså mappen `wp-content/plugins/caldera-forms/`;
+      //   - `classes/render/assets.php:259` — `'front' => self::make_url('caldera-forms-front', false)`
+      //     og linje 315 samme kald uden `false`, og `make_url()` bygger
+      //     `$root_url . 'assets/build/js/' . $name . '.min.js'` på linje 637 med
+      //     `$root_url = CFCORE_URL` på linje 573.
+      // Filen navnet ender på er `assets/build/js/caldera-forms-front.min.js`
+      // (152 489 B, hentet) — altså **pluggens egen mappe**, ikke et gæt.
+      ["Caldera", '<script src="https://shop.example/wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js"></script>', "dokumenteret CalderaWP/caldera-forms · caldera-core.php:55 CFCORE_URL + classes/render/assets.php:259,315,637 målt 2026-09-27 · wp.org 404 caldera-forms (lukket 2022-04-05)"],
      ["Elementor", '<script src="https://shop.example/wp-content/plugins/elementor/assets/js/forms.js"></script>', "wp.org 200 elementor 2026-09-27"]],
   // To leverandører efter opgave 70. Jotform er væk, fordi ingen af de fire
   // dokumenterede stier kunne læses fra byggemiljøet (404 på alle fire, selv om
@@ -702,7 +720,7 @@ const MEKANISME = [
     // er derfor denne fixture findes: en ren scriptregel ville have slettet den
     // mest almindelige WordPress-formulardetektion.
     navn: "Contact Form 7 som attribut", gruppe: "forms", phpGruppe: "forms", liste: "forms",
-    forventet: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor",
+    forventet: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor",
     html: side('<div class="wpcf7"><p>Send en besked</p></div>'),
   },
   {
@@ -1355,26 +1373,37 @@ const ALIASSER = {
  * `stripeForm` i leverandørens egen `https://js.stripe.com/v3/` (200,
  * 1 121 765 B) — samme fil der bærer de to strenge rækken har.
  *
- * **De to der er tilbage, og hvorfor de står.** `caldera[_-]?forms\b` kan
- * **lukkes næste iteration**, og det er en udgivelse: wp.org-API'en svarer
- * **404** på `caldera-forms` med `"closed": true, "closed_date": "2022-04-05",
- * "reason": "Author Request"` og *"This closure is permanent"* — men
- * leverandørens **eget repo** `CalderaWP/caldera-forms` (200, ikke arkiveret,
- * sidste push 2024-06-11) har `Text Domain: caldera-forms` og
- * `CFCORE_URL = plugin_dir_url(__FILE__)` i `caldera-core.php`, så mappen hedder
- * `wp-content/plugins/caldera-forms/`. Løsningen er derfor at **navngive**
- * Caldera i rækkens navn og give den en streng, som opgave 71 gjorde med Ninja —
- * det rører pluginens egen række og kræver derfor en ny version, ikke en
- * port-fix. `data-stripe-(key|publishable)` er et **helt særligt** tilfælde: de
- * to veje ligger i én gruppe, og portens egen kommentar siger, at tilskrivningen
- * skal prøve alle fragmenter. Målt: selv om porten læser **indveje** i grupper
- * som egne fragmenter, bliver hullet **2** større, ikke mindre — den kortere vejs
- * attribut `data-stripe-publishable` findes ikke i installationstesten, og
- * helheden `datastripekeypublishable` findes den heller ikke. En port-rettelse
- * uden måling på den anden vejs attribut ville derfor bare flytte hullet, så
- * rettelsen er **ikke** lavet; næste iteration måler Stripes egen legacy-script
- * (`checkout.stripe.com/checkout.js`) for begge attributter og skriver dem i
- * strengen.
+ * **Den ene der var tilbage, og hvorfor den lå her.** `caldera[_-]?forms\b` lå
+ * i CF7-rækkens mønster siden længe, men **ikke i navnet** — så en
+ * Caldera-side fik *"Contact Form 7 / WPForms / … detected"*, et grønt fund på
+ * en leverandør rapporten ikke nævner. Samme fejl som opgave 71s Ninja, og den
+ * lå lige ved siden af den. Den er lukket i **1.3.33**: Caldera har et navn og
+ * sin egen streng i alle tre kopier, målt i leverandørens eget repo, fordi
+ * wp.orgs katalog-API **lukker** platformen (se `DAEKNING_FORMS`). Den
+ * interessante del af målingen er skrevet ned, fordi næste agent gør fejlen igen:
+ * **et lukket wp.org-slug er ikke en død platform.** `caldera-forms` svarer
+ * `"closed": true, "closed_date": "2022-04-05", "reason": "author-request"` og
+ * *"This closure is permanent"*, mens leverandørens eget repo
+ * `CalderaWP/caldera-forms` ikke er arkiveret (sidste push 2024-06-11) og
+ * skriver `Text Domain: caldera-forms`. Fjerner man platformen på katalog-svaret
+ * alene, gør man opgave 70s Jotform-fejl på en platform der kører 189 stjerner
+ * væk. Kilden er leverandørens kode: `caldera-core.php:55` sætter
+ * `CFCORE_URL = plugin_dir_url(__FILE__)`, og `classes/render/assets.php`
+ * linje 259/315 kalder `make_url('caldera-forms-front')`, som bygger
+ * `$root_url . 'assets/build/js/<navn>.min.js'` på linje 637. Altså
+ * `wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js`
+ * (filen er 152 489 B) — **pluggens egen mappe**, læst i koden.
+ *
+ * **Den sidste der er tilbage** er `data-stripe-(key|publishable)`, og den er et
+ * **helt særligt** tilfælde: de to veje ligger i én gruppe, og portens egen
+ * kommentar siger, at tilskrivningen skal prøve alle fragmenter. Målt: selv om
+ * porten læser **indveje** i grupper som egne fragmenter, bliver hullet **2**
+ * større, ikke mindre — den kortere vejs attribut `data-stripe-publishable`
+ * findes ikke i installationstesten, og helheden `datastripekeypublishable`
+ * findes den heller ikke. En port-rettelse uden måling på den anden vejs attribut
+ * ville derfor bare flytte hullet, så rettelsen er **ikke** lavet; næste
+ * iteration måler Stripes egen legacy-script (`checkout.stripe.com/checkout.js`)
+ * for begge attributter og skriver dem i strengen.
  */
 /**
  * Højst antal mønstalternativer uden tilskrivning — opgave 71.
@@ -1442,7 +1471,7 @@ const ALIASSER = {
  * låst ude af arbejdet, mens den **ikke** må kunne gå fra 27 til 28. Det er samme
  * form som `HOEJST_FORMODNET` (12 → 0) og `HOEJST_ULAEVNET` (5 → 0).
  */
-const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 2, dora: 4 };
+const HOEJST_UTILREGNET = { consent: 0, trackers: 5, forms: 1, dora: 4 };
 
 function contractULAEVNET(daekninger, register = ULAEVNET) {
   for (const [navn, huller] of Object.entries(register)) {
@@ -1870,8 +1899,8 @@ if (process.argv.includes("--selftest")) {
 
   // 8. R3: pluginen er uenig med motorerne om et fund i `forms`.
   expectRed("R3 (pluginen uenig om fund)", contractR3, [
-    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor." } }],
-    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor." } }],
+    ["motoren i repoet", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor." } }],
+    ["den publicerede motor", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor detected", detail: "Form plugins detected: Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor." } }],
     ["pluginen", { trackers: { label: "a", detail: "a" }, cookies: { label: "x", detail: "x" }, forms: { label: "x", detail: "x" } }],
   ], MOTOR_NAVNE);
 
@@ -1967,8 +1996,8 @@ if (process.argv.includes("--selftest")) {
   //     navnet ikke kan gøre det ved at fjerne en anden leverandørs bevis.
   const formsUdenEn = {
     ...DAEKNING_FORMS,
-    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
-      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor"]
+    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
+      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor"]
         .filter(([l]) => l !== "Fluent"),
   };
   expectRed("R5 (form-række: én af seks leverandører taber sin streng)", contractR5, R5_FORMS, formsUdenEn, MINDST.forms);
@@ -2052,8 +2081,8 @@ if (process.argv.includes("--selftest")) {
   //     normaliseringen bærer sporingen eller om porten bare har et højere tal.
   const cf7UdenMarkup = {
     ...DAEKNING_FORMS,
-    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor":
-      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Elementor"]
+    "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor":
+      DAEKNING_FORMS["Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor"]
         .map(([l, s, b]) => (l === "Contact Form 7" ? [l, '<div class="kontaktformular"></div>', b] : [l, s, b])),
   };
   expectRed("(i) (CF7s egen markup er beviset for \bwpcf7\b og \bcf7[-_])",

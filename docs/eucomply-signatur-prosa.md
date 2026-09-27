@@ -830,3 +830,57 @@ linje. `51 signatur-prosatest`, `73 af 73` negative cases (var 70),
 `64 installationstester` (62 → 64), `16 mønstalternativer` (22 → 16),
 `GATE GRØN — alle 24 steps`. **Ingen `plugin/**`-fil rørt** — kun `tools/` og
 `docs/`, så ingen ny version, ingen ny zip, ingen publiceret overflade.
+
+## Fejl 15 — en platform, der er *lukket* i kataloget, så ud som død (opgave 75, rettet i 1.3.33)
+
+`caldera[_-]?forms\b` lå i CF7-rækkens mønster siden længe, men **ikke i
+navnet** — præcis opgave 71s Ninja, en række længere ned i samme liste. En
+Caldera-side fik derfor *"Contact Form 7 / WPForms / Formidable / Gravity /
+Fluent / Ninja / Elementor detected"*: et grønt fund på syv leverandører, hvor
+kunden kører den ottende, og ingen af de syv kan findes på siden. Rækken er den
+der afgør, om en side beder om samtykke, så en falsk grøn dér er dyrere end en
+rød.
+
+**Målingen er den interessante del, fordi den peger på en fejl type agenten
+let gentager.** WordPress' egen info-API svarer på `caldera-forms`:
+
+```json
+{"error":"closed","closed":true,"closed_date":"2022-04-05",
+ "reason":"author-request","reason_text":"Author Request",
+ "description":"This plugin has been closed ... This closure is permanent."}
+```
+
+Det er **ikke** en død platform. Leverandørens eget repo `CalderaWP/caldera-forms`
+er ikke arkiveret, sidste push 2024-06-11, 189 stjerner, og to linjer i dets kode
+danner præcis den installation strengen skriver:
+
+- `caldera-core.php:55` — `define('CFCORE_URL', plugin_dir_url(__FILE__));`, altså
+  mappen `wp-content/plugins/caldera-forms/`
+- `classes/render/assets.php:259` og `:315` — `self::make_url('caldera-forms-front')`,
+  og `make_url()` bygger `$root_url . 'assets/build/js/' . $name . '.min.js'`
+  (linje 637) med `$root_url = CFCORE_URL` (linje 573)
+
+Strengen er derfor `…/wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js`
+— **pluggens egen mappe**, målt i koden. Filen hedder det og er 152 489 B.
+
+**Reglen for den næste agent, skrevet ned fordi den er billig at bryde:** *et
+lukket wp.org-slug er ikke en død platform.* Opgave 70 fjernede Jotform, Privy
+og JustUno fordi **alle** deres dokumenterede stier var 404/403/520 — platformen
+kunne ikke læses nogen steder. Caldera kan læses i leverandørens eget repo, så
+den fik navn og streng. Fjerner man en platform på katalog-svaret alene, gør man
+opgave 70s fejl på en platform med 189 stjerner.
+
+**Ratchetten går `forms` 2 → 1**, så 11 → **10** i alt. `51 signatur-prosatest`,
+`66 installationstester` (65 → 66) for `52 navngivne leverandører` (51 → 52).
+Ingen ny regel og ingen ny negativ case: rettelsen er en navngivelse plus en
+målt streng, og portens regel (g) — én streng pr. navngiven leverandør — var
+allerede rød, fordi navnet krævede den. Uden den streng ville porten være blevet
+rød ved navnet alene, så rettelsen er ikke valgfri.
+
+**To fund ved siden af, i en kundevej.** `site/_redirects` havde ingen linje for
+`eucomply-1.3.29.zip` eller `eucomply-1.3.31.zip`, selv om begge pakker var fjernet
+fra træet ved tidligere udgivelser: en installation på en af dem bad om sin egen
+pakke og fik en 404. Begge har nu en linje, og `redirect_findings` i porten læser
+den version, `sections.changelog` nævner som den foregående — som var **1.3.24**,
+fordi `sections.changelog` var fire udgivelser bag `changelog`. Den er nu ajour,
+så porten dømmer den version den erstatter.
