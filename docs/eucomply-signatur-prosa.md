@@ -884,3 +884,49 @@ pakke og fik en 404. Begge har nu en linje, og `redirect_findings` i porten læs
 den version, `sections.changelog` nævner som den foregående — som var **1.3.24**,
 fordi `sections.changelog` var fire udgivelser bag `changelog`. Den er nu ajour,
 så porten dømmer den version den erstatter.
+
+## Fejl 16 — fire DORA-markører pegede på noget, rapporten ikke kunne navngive (opgave 72 del 4)
+
+**Målt 2026-09-27.** `contractAlternativer` delte `dora`-tabellens fire
+ubeviste alternativer i to helt forskellige klasser, og det er den anden
+klasse der er den interessante:
+
+- **Ét var sporbart ved læsning.** `security[ _-]?incident` lå i mønstret for
+  *Incident response / SOC reporting* uden at ordet *security* findes i
+  navnet, og vejen gennem installationstesterne havde ingen «security
+  incident»-sætning at finde. Beviset er læst i **UK's egen** side om
+  hændelsesstyring — ikke en marketing-side, men en myndighedsside om præcis
+  den praksis rækken påstår at måle:
+  `www.ncsc.gov.uk/collection/incident-management` svarer **200** (136 142
+  bytes) og skriver «security incident» **3 gange**, herunder i løbende prosa
+  om, hvilken teknologi et hændelsesresponsteam har brug for. Den sætning står
+  nu som rækkens **anden** installationstest, så regel (e) dømmer den som prosa
+  (mindst 6 ord, mindst 2 ord uden for rækkens navn) og regel (b) kræver at alle
+  tre kopiers mønster kan finde den.
+- **Tre var ikke sporbart, og de kræver alle tre en mønsterændring** — altså en
+  ændring i `shared/scan-engine.js`, `eucomply-scanner/engine/index.js` **og**
+  `plugin/eucomply.php`, som ikke kan gøres uden plugin-udgivelse. De blev derfor
+  **målt** i stedet for lukket, og målingerne står i `HOEJST_UTILREGNET`:
+  `bcp[ _-]?plan` er **død** («bcp plan» 0 gange på
+  `en.wikipedia.org/wiki/Business_continuity_planning`, 200, 363 579 bytes, som
+  skriver *BCP* 23 gange og *business continuity* 227 gange — samme klasse som
+  `shopify[_-]?checkout` i opgave 65 del 2); `multi[ _-]?az[ _-]?dns` er den
+  fulde form 0 gange på syv hentede sider, mens `multi-AZ` i prosa står 62
+  gange på AWS' egen RDS-dokumentation, så rettelsen er at **udvide** til
+  `multi[ _-]?az` (en ægte supermængde) og ikke at fjerne; `redundan` er kun
+  bekræftet som *linktekst* («Design for redundancy», Microsofts egen
+  resiliency-side, 200, 35 461 bytes) og **0 gange i prosa** på Postgresqls to
+  HA-dokumenter og Hetzners forside, så valget er at navngive ordet i rækken
+  (opgave 52) eller fjerne markøren.
+
+**Ratchetten `dora` går 4 → 3**, så 10 → **9** i alt. `51 signatur-prosatest`,
+`67 installationstester` (66 → 67), `76 negative selftest-cases` (75 → 76 — den
+nye case 31i sletter NCSC-sætningen igen og kræver rødt, så beviset er
+bærende og ikke en note der kan slettes), `GATE GRØN — alle 24 steps bestået`.
+Ingen motor, ingen plugin, ingen ny version, ingen ny zip.
+
+**Selftestens egen etiket blev rettet samtidig.** Den sagde «(i) (alle
+alternative i dora-tabellen er sporet)» mens tre åbenbart stod i ratchetten.
+Det er opgave 45bs fejlklasse — en grøn etiket der siger det modsatte af det
+den måler — flyttet til selftestens egen tekst, så den nu siger at tabellen
+holder sig inden for ratchetten på de **målte** alternative.
