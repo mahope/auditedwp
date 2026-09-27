@@ -77,11 +77,11 @@ versionerede navne, 13 udgivne versioner i kæden til eucomply-1.3.36.zip`.
 
 Opgave 84: en kunde skal hente den version, der er rettet — intet
 `immutable` på filer uden version, kæden fra 1.2.0 til 1.3.36 gjort til en
-egenskab ved filerne — `ceo/asset-cache-policy` 2026-09-27 23:5x
+egenskab ved filerne — kodecommit `ed813db`, merge `5e255c3` 2026-09-27 23:54
 
 VERIFICÉR DEPLOY: css/js/png har mistet et-års cachen, 1.3.32 har fået sin
-redirect, den døde 301 uden mål er væk — `ceo/asset-cache-policy` 2026-09-27
-23:5x. Rører `site/_headers` (to regler + kommentar), `site/_redirects` (37 →
+redirect, den døde 301 uden mål er væk — `ed813db` / `5e255c3` 2026-09-27 23:54.
+Rører `site/_headers` (to regler + kommentar), `site/_redirects` (37 →
 37 linjer: 1.3.32 tilføjet, den døde regel fjernet), `tools/quality_gate.sh`
 (trin 25) og `tools/check_asset_delivery.py` (ny). **Ingen plugin-version, ingen
 ny zip, intet `update.json`** — så det eneste der skal verificeres er
@@ -2656,7 +2656,7 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 ### 84. En kunde skal hente den version, der er rettet
 
-- Status: `I GANG` — kode færdig på `ceo/asset-cache-policy`, gaten grøn (25 steps). Deploy-noten åben.
+- Status: `FÆRDIG` i repoet på `ceo/asset-cache-policy` — kodecommit `ed813db`, merge `5e255c3` 2026-09-27 23:54, `GATE GRØN — alle 25 steps bestået`. Deploy-noten åben.
 - Fejl: 1/2 — portens egen selftest var grøn mens seks cases fejlede (se fundene), rettet i samme iteration
 - **Målingen, og hvorfor den er en del af den betalte vare.** Rettelsen fra iteration 83 fjernede den dyreste fejl i rapporten: en side der kører OneTrust blev fortalt at den kører fire samtykkeplatforme. Den rettelse nåede kun kunder, der læste `update.json` — fordi **selve rettelsen lå i en download, de hentede på den gamle adresse**:
   - `/assets/eucomply-1.3.35.zip` → `200 application/zip`, 62 622 B, `age: 3946`, `cf-cache-status: HIT`, indhold `EUCOMPLY_VERSION 1.3.35`. Målt 23:46, altså 1 t 6 min efter merge af rettelsen.
