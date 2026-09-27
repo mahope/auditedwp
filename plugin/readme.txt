@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.29
+Stable tag: 1.3.30
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.30 (2026-09-27) =
+* Two consent platforms that the report named are now found where they are really installed, and three that nobody could read are no longer named at all. TarteAuCitron installs itself with a script called /tarteaucitron/tarteaucitron.js, which is what the vendor's own repository documents - the earlier note only looked in the WordPress catalogue and on npm, where it is not published. Osano's own Tag Manager template builds its own address, https://cmp.osano.com/<id>/<id>/osano.js; the old note measured cdn.osano.com, which is a marketing page and never carried the script.
+* The rows that are gone: the popup row is now 'OptinMonster' and the form row 'Typeform / Formspree'. JustUno, Privy and Jotform answered 520, 403 and 404 on every documented address from here, and nothing could be read that says how they are installed - so a report no longer names a platform this check cannot find. The form row also stopped matching Cognito Forms and Formsort, which were in the pattern but not in the row's name.
+* If you scanned your site between 1.3.29 and now, run a new scan: a site running TarteAuCitron or Osano is now reported correctly, and a site running one of the three removed platforms is no longer named for it.
 
 = 1.3.29 (2026-09-27) =
 * Fix: OneTrust was invisible in its own normal installation, so a site running OneTrust - the most widely deployed consent platform in Europe - was told 'No consent banner detected', which is the same verdict as a site with no consent platform at all. OneTrust installs itself with a single script tag, src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" with a data-domain-script attribute, and that path contains no occurrence of the word 'onetrust', which was all the pattern looked for. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine, while Cookiebot, Usercentrics and ConsentManager - the other three platforms the same row names - were found in all three. The vendor's own stub answers 200 and is OneTrust's SDK: it defines OneTrustStub, reads window.OneTrust and uses OneTrust's own optanon fields. The pattern now matches what the markup actually contains, so it is read rather than assumed.
