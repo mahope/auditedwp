@@ -164,6 +164,24 @@ PROSA_FIXTURES.push({
   ),
 });
 
+// Den modsatte fejlretning for TikToks værtrettelse. Rettelsen af opgave 62
+// skriver `analytics\.tiktok\.com\/`, fordi det er den sti TikToks egen
+// hjælpe-side sender folk til i dag — men den naturlige næste bevægelse er at
+// skrive hele `tiktok\.com`, og en butik der har indlejret **én** TikTok-video
+// i sin"Lookbook" har ikke installeret en pixel. Samme fejlretning som
+// Pinterests billed-CDN en linje ovenfor, så den er samme slags fixture: R1
+// kræver nul fund, og mutationen nedenfor binder mønsteret til hele værten.
+PROSA_FIXTURES.push({
+  navn: "TikTok-video indlejret (værten, ikke pixel)",
+  lang: "EN",
+  slags: "prosa",
+  html: side(
+    "<h1>Lookbook</h1><p>Se vores efterårskollektion.</p>"
+    + '<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@lookbook/video/7418529630"></blockquote>'
+    + '<form action="/kontakt" method="post"><input name="email" type="email" required></form>'
+  ),
+});
+
 /**
  * R2: en rigtig WordPress-side pr. mekanisme. `gruppe` er den række der skal
  * navne fundet i motorerne, `phpGruppe` er den række pluginen gør det i, når
@@ -254,6 +272,31 @@ const MEKANISME = [
     navn: "Pinterest-tagens noscript-pixel", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Pinterest Tag",
     html: side('<noscript><img height="1" width="1" style="display:none" alt="" src="https://ct.pinterest.com/v3/?tid=2612345678901&amp;event=init&amp;noscript=1"></noscript><p>Hej</p>'),
+  },
+  {
+    // TikToks *nuværende* pixel-sti, fra TikToks egen hjælpe-side
+    // ("Install the base code onto your website",
+    // ads.tiktok.com/help/article/get-started-pixel, hentet 2026-09-27).
+    // Mønsteret kendte kun den ældre `static.tiktok.com/js/` og det indlejrede
+    // `ttq.`-kald, så den almindeligste pixel-opsætning gav
+    // `Third-party trackers: 0 found` — en grøn række på en side med en
+    // tracker. Målt før rettelsen: 0 fund i alle tre produkter.
+    navn: "TikToks nuværende pixel-sti", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "TikTok Pixel",
+    html: side('<script src="https://analytics.tiktok.com/i18n/pixel/C1A2B3C4D5E6F7890.js"></script><p>Hej</p>'),
+  },
+  {
+    // Googles egen Google tag, som er den officielle afløser for
+    // `googleadservices.com/pagead/conversion.js` — på **en anden vært**, så
+    // hverken AdSensens `googlesyndication` eller det gamle `googleadservices`
+    // matcher den. Bevis: `https://www.googletagservices.com/tag/js/gpt.js`
+    // svarer 200 fra Googles egen vært 2026-09-27. Målt før rettelsen: 0 fund
+    // i alle tre produkter. Den nye alternativstien gør det til *Google Ads
+    // remarketing* og ikke til DoubleClick/AdSense, fordi det er Googles egen
+    // annoncebibliotek og ikke AdSenses annoncebibliotek.
+    navn: "Google tag (gpt.js)", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
+    forventet: "Google Ads remarketing",
+    html: side('<script async src="https://www.googletagservices.com/tag/js/gpt.js"></script><p>Hej</p>'),
   },
   {
     // Contact Form 7 lever som `<div class="wpcf7">` i **markup'en**, ikke som
@@ -994,8 +1037,88 @@ if (process.argv.includes("--selftest")) {
         },
       ],
     },
-    {
-      navn: "motoren i repoet matcher Pinterests billed-CDN som et tag",
+  {
+    // Opgave 62. Alle fire mutationer herunder er skrevet mod den **nye**
+    // lange linje, så de fejler med "fandt ikke den linje den erstatter" den
+    // dag nye stier kommer til, i stedet for at stå grønne på en mutation de
+    // ikke længere rammer.
+    navn: "motoren i repoet taber Googles Google tag",
+    fil: join(REPO, "shared", "scan-engine.js"),
+    forventer: "R2",
+    fixture: "Google tag (gpt.js)",
+    foer: [
+      {
+        for: "|googletagservices\\.com\\/tag\\/js\\/gpt\\.js",
+        efter: "",
+      },
+    ],
+  },
+  {
+    navn: "den publicerede motor taber Googles Google tag",
+    fil: join(REPO, "eucomply-scanner", "engine", "index.js"),
+    forventer: "R2",
+    fixture: "Google tag (gpt.js)",
+    foer: [
+      {
+        for: "|googletagservices\\.com\\/tag\\/js\\/gpt\\.js",
+        efter: "",
+      },
+    ],
+  },
+  {
+    navn: "pluginen taber Googles Google tag",
+    fil: PLUGIN,
+    forventer: "R2",
+    fixture: "Google tag (gpt.js)",
+    foer: [
+      {
+        for: "|googletagservices\\.com/tag/js/gpt\\.js",
+        efter: "",
+      },
+    ],
+  },
+  {
+    navn: "motoren i repoet taber TikToks nuværende pixel-sti",
+    fil: join(REPO, "shared", "scan-engine.js"),
+    forventer: "R2",
+    fixture: "TikToks nuværende pixel-sti",
+    foer: [
+      {
+        for: "analytics\\.tiktok\\.com\\/|",
+        efter: "",
+      },
+    ],
+  },
+  {
+    navn: "pluginen taber TikToks nuværende pixel-sti",
+    fil: PLUGIN,
+    forventer: "R2",
+    fixture: "TikToks nuværende pixel-sti",
+    foer: [
+      {
+        for: "analytics\\.tiktok\\.com/|",
+        efter: "",
+      },
+    ],
+  },
+  {
+    // Den brede regel: hele værten i stedet for vært **og** sti. Den fanges af
+    // R1 på `www.tiktok.com`-værten, altså af den negative fixture en linje
+    // længere oppe. Uden den fixture ville mutationen stå grøn, fordi porten
+    // aldrig ville spørge om en indlejret video.
+    navn: "motoren i repoet matcher hele TikTok-værten som et pixel",
+    fil: join(REPO, "shared", "scan-engine.js"),
+    forventer: "R1",
+    fixture: "TikTok-video indlejret (værten, ikke pixel)",
+    foer: [
+      {
+        for: "analytics\\.tiktok\\.com\\/|",
+        efter: "tiktok\\.com|",
+      },
+    ],
+  },
+  {
+    navn: "motoren i repoet matcher Pinterests billed-CDN som et tag",
       fil: join(REPO, "shared", "scan-engine.js"),
       forventer: "R1",
       fixture: "Pinterest-billede (CDN, ikke tag)",

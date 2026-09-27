@@ -313,10 +313,70 @@ De elleve øvrige tracker-markører er **kun** kontrolleret mod leverandørernes
 værter, ikke mod deres dokumentation: `snap.licdn.com` (LinkedIn,
 `insight.min.js` svarer 200), `sc-static.net` (Snap, `scevent.min.js` 200) og
 `connect.facebook.net` (Meta, `fbevents.js` 200) er bekræftet på leverandørens
-egen vært, og mønstrene dækker dem. `static.tiktok.com`, `googlesyndication.com`,
-`cdn.matomo.cloud`, `cdn.cookiebot.com` og `quantcast.mgr.consensu.org` kunne
-**ikke** bekræftes i denne iteration — de skal have hver sin kilde-registrerede
-fixture, før en rettelse skrives, og det er opgave 62. `quantcast[_-]?choice`
-ser især ud til at skulle være `quantcast\.[^"']*choice` for at ramme
-`quantcast.mgr.consensu.org/choice/…`, men det er **formodet**, ikke målt, og
-en død markør er værre end ingen.
+egen vært, og mønstrene dækker dem. `cdn.matomo.cloud` og `cdn.cookiebot.com`
+er målt i denne iteration og dækkes af `matomo` hhv. `cookiebot` — de to mønstre
+er brede nok til at ramme **enhver** sti på de to værter, så ingen rettelse
+er nødvendig. `quantcast[_-]?choice` er derimod **død som skrevet** og er
+ladt urørt; se "Fejl 7" nedenfor.
+
+## Fejl 7 — to af de mest almindelige annonce-tags var usynlige (rettet i 1.3.24)
+
+- **Målt før rettelsen, i alle tre produkter.** Elleve installationer kørt
+  gennem motoren i repoet, den publicerede npm-motor og pluginen. **otte** gav
+  fund. To gav `Third-party trackers: 0 found` — altså en grøn række på en side
+  der kører en annonce-tracker, den modsatte fejlretning af opgave 57 og den
+  dyre af de to. Den tredje af de elleve gav et fund i de to JS-motorer men
+  ikke i pluginen, fordi pluginens `cookies`-række er et WordPress-tilstandstjek;
+  dens consent-signaturer læses af `check_trackers()`, som opgave 57s port
+  allerede vidste.
+
+### Fejl 7a — Googles egen Google tag
+
+- **Kilde, ikke formodet:** `https://www.googletagservices.com/tag/js/gpt.js`
+  svarer **200 fra Googles egen vært**, hentet 2026-09-27. Det er den officielle
+  afløser for `googleadservices.com/pagead/conversion.js`, som den gamle mønsterstreg
+  kendte, og den ligger på en **tredje** vært: hverken `googleadservices\.com`
+  (remarketing) eller `googlesyndication` (AdSense) matcher `googletagservices`.
+  Google Docs-siderne (`developers.google.com/tag-platform/tag-manager/web`,
+  `support.google.com/tagmanager/answer/6103696`) er JS-renderede og gav ingen
+  tekst til dette miljø, så **beviset er en 200 fra leverandørens vært plus en
+  dødsbetjent reference i Googles egen kode** — ikke et læst snippet. Det er
+  skrevet her, fordi opgave 61 krævede *kilde-registreret* fixture, og forskellen
+  er ærlig: stien er bekræftet, snippetet er ikke gengivet her.
+- **Rettelsen** føjer `googletagservices\.com\/tag\/js\/gpt\.js` til
+  **Google Ads remarketing**, ikke til DoubleClick/AdSense. Det er Googles eget
+  annoncebibliotek; AdSense's er `adsbygoogle.js` på `googlesyndication`, og
+  de to skal ikke slås sammen i én etiket.
+- **Ingen ny bred regel:** kun `googletagservices`, fordi værtens navn ikke er et
+  ord der kan stå i prosa — og containeren læser alligevel kun kode, så en
+  regel der skrev hele `google` ville ramme enhver Google-knap.
+
+### Fejl 7b — TikToks nuværende pixel-sti
+
+- **Kilde:** TikToks egen hjælpe-side
+  (`ads.tiktok.com/help/article/get-started-pixel`, "Set up and Verify Pixel",
+  hentet 2026-09-27) beder kunden "Install the base code onto your website".
+  Stien er `analytics.tiktok.com/i18n/pixel/<id>.js`; TikToks vært svarer selv
+  i dag med **404 på et opdigtet pixel-id**, altså at stien serveres og kun
+  id'et er forkert.
+- **Målt før rettelsen:** 0 fund i alle tre produkter. Det gamle mønster kendte
+  kun den **ældre** `static.tiktok.com/js/` og det indlejrede `ttq.`-kald, så
+  den almindeligste pixel-opsætning i dag var usynlig.
+- **Rettelsen matcher vært og sti, ikke navnet:** `analytics\.tiktok\.com\/`.
+  TikTok indlejres også på `www.tiktok.com/embed/…`, og en butik der har lagt
+  **én** TikTok-video ind i sin lookbook har ikke installeret en pixel. Derfor er
+  den negative fixture en del af rettelsen, ikke en bivirkning af den: R1 kræver
+  nul fund på den, og mutationen der skriver hele `tiktok\.com` gør porten rød
+  på præcis den fixture. Samme fejlretning som Pinterests billed-CDN.
+
+### Hvad der *ikke* blev rettet, og hvorfor
+
+`quantcast[_-]?choice` kan ikke matche `quantcast.mgr.consensu.org/choice/…`,
+fordi der står et punktum og skråstreger mellem de to ord. Det er **målt** — den
+gav 0 fund i alle tre produkter — men **kvantcasts vært kunne ikke nås fra
+buildmiljøet** (forbindelsen døde mod både `docs.quantcast.com` og
+`quantcast.mgr.consensu.org`). En fixture med en URL jeg ikke har læst hos
+leverandøren er præcis den påstand opgave 61 satte stop for, så mønsteret er
+**ladt urørt**: en død markør er dårligere end ingen, fordi porten så ville have
+et fixture der så ud som dækning. Den kræver sin egen iteration med en kilde.
+

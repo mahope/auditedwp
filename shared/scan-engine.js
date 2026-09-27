@@ -91,7 +91,17 @@ const TRACKER_SIGNATURES = [
   { re: /clarity\.ms/i, name: "Microsoft Clarity" },
   { re: /snap\.licdn\.com|_linkedin_partner_id/i, name: "LinkedIn Insight Tag" },
   { re: /sc-static\.net|snaptr\(['"]/i, name: "Snapchat Pixel" },
-  { re: /static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
+  // `analytics.tiktok.com/i18n/pixel/<id>.js` er den sti TikToks egen
+  // hjælpe-side sender folk til i dag ("Install the base code onto your
+  // website", ads.tiktok.com/help/article/get-started-pixel, hentet
+  // 2026-09-27). Mønsteret kendte kun den **ældre** `static.tiktok.com/js/`
+  // og det indlejrede `ttq.`-kald, så den almindeligeste pixel-opsætning gav
+  // `Third-party trackers: 0 found` i alle tre produkter. TikToks vært
+  // svarer selv i dag: 404 med et opdigtet pixel-id (2026-09-27).
+  // Kun **værten + stien**, ikke `tiktok.com`: en butik der indlejrer en
+  // TikTok-video fra `www.tiktok.com/embed/` har ikke installeret en pixel,
+  // og det er den brede regel opgave 57 lavede.
+  { re: /analytics\.tiktok\.com\/|static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
   { re: /matomo|piwik\.js/i, name: "Matomo / Piwik" },
   { re: /plausible\.io\/js/i, name: "Plausible" },
   // Pinterests egen dokumentation ("Install the base code",
@@ -108,7 +118,16 @@ const TRACKER_SIGNATURES = [
   // et tracker-fund. `cdn.pinterest.com.*pin.*js` er beholdt, fordi den gamle
   // form stadig findes i ældre integrationer.
   { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
-  { re: /googleadservices\.com|google_conversion/i, name: "Google Ads remarketing" },
+  // `googletagservices.com/tag/js/gpt.js` er **Google tag**, den officielle
+  // afløser for `googleadservices.com/pagead/conversion.js`, og den ligger
+  // på **en anden vært** end de to mønsteret ovenfor kender: hverken
+  // `googlesyndication` (AdSense) eller `googleadservices` matcher den.
+  // Målt før rettelsen: 200 fra Googles egen vært 2026-09-27, og en side der
+  // kun har den gav `Third-party trackers: 0 found` i alle tre produkter —
+  // den modsatte fejlretning af opgave 57, altså en **grøn** række på en side
+  // med en annonce-tracker. Kun `googletagservices`, fordi værtens navn
+  // ikke er et ord der kan stå i prosa, og containeren desuden kun læser kode.
+  { re: /googleadservices\.com|googletagservices\.com\/tag\/js\/gpt\.js|google_conversion/i, name: "Google Ads remarketing" },
   { re: /doubleclick\.net|googlesyndication/i, name: "DoubleClick / AdSense" },
 ];
 
