@@ -1,3 +1,5 @@
+VERIFICÉR DEPLOY: Caldera navngivet i formrækken + plugin 1.3.33 (kodecommit 5f616ec, merge 92f8567) 2026-09-27 ca. 17:45
+
 Opdateret: 2026-09-27 (iteration 75)
 
 Sidste iteration: opgave 72 del 3-resten — **Caldera er lukket i WordPress' eget katalog, så platformen så død ud som de tre opgave 70 fjernede. Den er 189 stjerner værd.** Ratchetten går `forms` 2 → **1**, så 11 → **10** i alt.
