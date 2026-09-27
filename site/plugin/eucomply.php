@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.22
+ * Version:           1.3.23
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.22' );
+define( 'EUCOMPLY_VERSION', '1.3.23' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -812,7 +812,13 @@ class EUComply {
                 array( 'name' => 'TikTok Pixel', 're' => '~static\.tiktok\.com|ttq\.~i' ),
                 array( 'name' => 'Matomo / Piwik', 're' => '~matomo|piwik\.js~i' ),
                 array( 'name' => 'Plausible', 're' => '~plausible\.io\/js~i' ),
-                array( 'name' => 'Pinterest Tag', 're' => '~cdn\.pinterest\.com.*pin.*js|pintrk\(~i' ),
+                // Pinterests egen dokumentation ("Install the base code",
+                // help.pinterest.com, hentet 2026-09-27) indlæser tagget fra
+                // `s.pinimg.com/ct/core.js` og lægger et `<noscript>`-pixel på
+                // `ct.pinterest.com/v3/`. Kun **stien**, ikke værten: Pinterests
+                // billed-CDN ligger også på `pinimg.com`, og et billede er ikke
+                // et tracker-fund. Spec: `docs/eucomply-signatur-prosa.md`.
+                array( 'name' => 'Pinterest Tag', 're' => '~s\.pinimg\.com/ct/|ct\.pinterest\.com/v3/|cdn\.pinterest\.com.*pin.*js|pintrk\(~i' ),
                 array( 'name' => 'Google Ads remarketing', 're' => '~googleadservices\.com|google_conversion~i' ),
                 array( 'name' => 'DoubleClick / AdSense', 're' => '~doubleclick\.net|googlesyndication~i' ),
             ),

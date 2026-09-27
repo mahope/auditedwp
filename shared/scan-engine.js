@@ -94,7 +94,20 @@ const TRACKER_SIGNATURES = [
   { re: /static\.tiktok\.com|ttq\./i, name: "TikTok Pixel" },
   { re: /matomo|piwik\.js/i, name: "Matomo / Piwik" },
   { re: /plausible\.io\/js/i, name: "Plausible" },
-  { re: /cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
+  // Pinterests egen dokumentation ("Install the base code",
+  // help.pinterest.com, hentet 2026-09-27) indlæser tagget fra
+  // `s.pinimg.com/ct/core.js` og lægger et `<noscript>`-pixel på
+  // `ct.pinterest.com/v3/`. Ingen af de to findes i det gamle mønster, så den
+  // **dokumenterede** installation var kun synlig gennem det indlejrede
+  // `pintrk(`-kald — og en side hvor et samtykketool har flyttet de
+  // indlejrede scripts ud i en bundle fik "Third-party trackers: 0 found".
+  // Målt før rettelsen: 0 fund i alle tre produkter, på begge stier.
+  //
+  // Kun **stien**, ikke værten: Pinterests billed-CDN ligger også på
+  // `pinimg.com` (i.pinimg.com), og den billeder en butik har lagt op er ikke
+  // et tracker-fund. `cdn.pinterest.com.*pin.*js` er beholdt, fordi den gamle
+  // form stadig findes i ældre integrationer.
+  { re: /s\.pinimg\.com\/ct\/|ct\.pinterest\.com\/v3\/|cdn\.pinterest\.com.*pin.*js|pintrk\(/i, name: "Pinterest Tag" },
   { re: /googleadservices\.com|google_conversion/i, name: "Google Ads remarketing" },
   { re: /doubleclick\.net|googlesyndication/i, name: "DoubleClick / AdSense" },
 ];
