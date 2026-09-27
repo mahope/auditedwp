@@ -489,6 +489,15 @@ hdr "et værktøjsnavn i prosa er ikke et værktøj"
 run "tools/check_signature_prose.mjs" node tools/check_signature_prose.mjs
 run "tools/check_signature_prose.mjs --selftest" node tools/check_signature_prose.mjs --selftest
 
+# Kunden skal hente den version, der er rettet. Målt 27/9: den gamle zip
+# 1.3.35 blev serveret som 200 med indholdet fra før rettelsen, fordi
+# `/assets/*` havde immutable i et år, og 1.3.32 havde ingen redirect, så en
+# installation på den fik 404. Gaten holder nu fast i begge dele plus at
+# download_url, /plugin/ og de to update.json peger på den samme version.
+hdr "den kunde henter, er den version der er rettet"
+run "tools/check_asset_delivery.py" "$PY" tools/check_asset_delivery.py
+run "tools/check_asset_delivery.py --selftest" "$PY" tools/check_asset_delivery.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

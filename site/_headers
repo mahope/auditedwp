@@ -7,8 +7,25 @@
   Cross-Origin-Opener-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://analytics.holstjensen.eu; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://analytics.holstjensen.eu https://mahope.tools https://*.mahope-eeb.workers.dev https://rdap.org https://api.github.com; form-action 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests
 
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
+# /assets/* må ikke være immutable. Filnavnene her (site.css, site.js,
+# eucomply-badge.js) bærer ingen version, så en redaction på plads var
+# usynlig for alle kunde-caches i op til et år. Målt 27/9 23:46: den gamle
+# plugin-zip 1.3.35 blev stadig serveret som 200 med indholdet fra før
+# rettelsen, age 3946 s, cf-cache-status HIT — altså den rapportfejl, 1.3.36
+# rettede, til en kunde der brugte et gammelt downloadlink.
+#
+# Reglerne er skrevet pr. filtype og overlapper derfor ikke, så resultatet
+# ikke afhænger af hvilken matchende regel Cloudflare Pages vælger. Kun
+# pakkerne bærer version i filnavnet, og kun de får et års cache.
+# tools/check_asset_delivery.py holder begge dele fast.
+/assets/*.css
+  Cache-Control: public, max-age=600, must-revalidate
+
+/assets/*.js
+  Cache-Control: public, max-age=600, must-revalidate
+
+/assets/*.png
+  Cache-Control: public, max-age=600, must-revalidate
 
 /search-index.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
@@ -46,3 +63,10 @@
 /devnotify/download/*.dmg
   Content-Type: application/octet-stream
   Cache-Control: public, max-age=0, must-revalidate
+
+# Pakkerne bærer versionen i filnavnet (eucomply-1.3.36.zip), så de kan
+# caches uafhængigt af indhold og i et år uden at en ny udgivelse arver den
+# gamles cache. Mønsteret overlapper ikke med css/js/png ovenfor, så
+# rækkefølgen ikke afgør hvad der gælder.
+/assets/*.zip
+  Cache-Control: public, max-age=31536000, immutable
