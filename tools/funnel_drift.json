@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "measured": "2026-09-27T22:35:00Z",
+  "note": "Aftalen mellem den UDIVNE rapport (eucomply-scan) og motoren i repoet. Den er lavet, fordi der ikke før har været en gate der læser den rapport en besøgende faktisk får: de tre andre porte læser alle repoet. Uden denne fil kan en afvigelse ikke skelnes fra en fejl. Når workeren er deployet (spørgsmål 9) skal hvert 'drift'-objekt slettes, og så er den grøn med ens etiketter — det bekræfter tools/check_live_funnel.py --selftest case 4, så aftalen ikke kan blive stående som en løgn.",
+  "cases": [
+    {
+      "id": "github-com-cookies",
+      "target": "github.com",
+      "why": "Målt 2026-09-27 i 576 275 B markup med arbejderens egen UA: 'cookieconsent' 1 forekomst, 'tarteaucitron' 0, 'klaro' 0, 'osano' 0. Den korrekte svar er derfor 'ingen samtykkeplatform'.",
+      "drift": {
+        "cookies": {
+          "live": "Consent platform: TarteAuCitron / Klaro / Osano / CookieConsent",
+          "repo": "No consent banner detected",
+          "measured": "2026-09-27T22:35:00Z",
+          "because": "Den udgivne worker kører 027fc40 for den. Den gamle række havde fire leverandøre i ÉT navn, så etiketten navngiver fire platforme hvor markeret 'cookieconsent' er OneTrust-ejet konfiguration og ikke kan tilskrives ét produkt. DYRESTE fund: etiketten er pass=true, mens den korrekte er warn=true — en grøn dom paa en side uden samtykkeplatform."
+        }
+      }
+    },
+    {
+      "id": "dr-dk-cookies",
+      "target": "dr.dk",
+      "why": "Fire leverandøre i én etiket, én i virkeligheden. Beviset er etikettens egen form: den er bygget som ' / '-join af fire navne, hvilket kun den gamle kode kan lave.",
+      "drift": {
+        "cookies": {
+          "live": "Consent platform: Cookiebot / OneTrust / Usercentrics / ConsentManager",
+          "repo": "Consent platform: Cookiebot",
+          "measured": "2026-09-27T22:35:00Z",
+          "because": "Samme rodårsag som github.com: 027fc40 delte den ene række i fire med ét navn hver. Dommen er rigtig (pass), men kunden får at vide den kører fire platforme."
+        }
+      }
+    },
+    {
+      "id": "shopify-com-agreement",
+      "target": "shopify.com",
+      "why": "Negativ kontrol. Naar de to MOTORER er enige, skal de to udgaver ogsaa vaere enige — ellers maaler's afvigelsen intet. Denne case maaller derfor intet, og det er pointen med den.",
+      "drift": {}
+    }
+  ]
+}
