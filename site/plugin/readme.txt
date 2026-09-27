@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.26
+Stable tag: 1.3.27
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.27 (2026-09-27) =
+* Fix: one of the biggest consent platforms was invisible in its normal installation. Axeptio is installed by adding a single script tag, src="https://static.axept.io/sdk.js" - the platform's own SDK, read directly on 2026-09-27. That address contains no occurrence of the word "axeptio", and the pattern matched only that word, so a site installing Axeptio the documented way was told 'No consent banner detected' - the same verdict as a site with no consent platform at all.
+* The inlined axeptio( init call still counts, so an installation that has it does not lose its finding. The match is on the platform's own file path, and the old address in the test data (axeptio.cdn.app) does not resolve - it was written from memory and had never been read.
+* Twelve of the twenty consent rows in the test suite rested on that kind of assumed address. Each was checked against the vendor's own WordPress catalogue entry or the vendor's own code, and eight are now documented: CookieYes, Axeptio, CookieHub, iubenda, OptinMonster, PixelYourSite and Analytify were installed under a different folder than the test data claimed (Analytify is wp-analytify, PixelYourSite is pixelyoursite, OptinMonster loads assets/dist/js/), and their test data now names the real file. Five remain marked as assumptions and are listed as such, because none of them exists in the public WordPress catalogue under the name used here.
+* A new rule in this plugin's test suite caps assumed rows at twelve, so a new platform cannot be added on an assumption the way these were. Each consent row already has a test that fails if its own pattern stops matching the installation it is written for.
+* If you scanned your site between 1.3.26 and now, treat the cookie-consent row as unknown rather than as a finding: run a new scan. No other row changed.
 
 = 1.3.26 (2026-09-27) =
 * Fix: one row in the consent-platform list could never match anything. The row is named 'Analytify/CAOS', but the pattern read 'analytics-cat' - a word neither product is called. Analytify is installed as the plugin folder /wp-content/plugins/analytify/ and CAOS is called caos, so a site running either was told 'No consent banner detected', which is the same verdict as a site with no consent platform. Measured before the fix: 0 findings for that installation in this plugin, in the free scanner and in the published CLI engine.

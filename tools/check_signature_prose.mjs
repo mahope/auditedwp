@@ -141,7 +141,7 @@ const DAEKNING = {
   "Cookiebot / OneTrust / Usercentrics / ConsentManager":
     ['<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="a1b2c3" data-blockingmode="auto"></script>', "vaert 200"],
   "CookieYes":
-    ['<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "formodnet"],
+    ['<script src="https://cdn-cookieyes.com/client_data/a1b2c3/script.js" data-yesmode="consent"></script>', "wp.org 200 cookie-law-info 2026-09-27 · vaert 403 på et opdigtet id"],
   "TarteAuCitron / Klaro / Osano / CookieConsent":
     ['<script src="https://cdn.jsdelivr.net/npm/klaro@1.0.5/dist/klaro.js"></script>', "vaert 200"],
   "Complianz GDPR":
@@ -149,15 +149,15 @@ const DAEKNING = {
   "Generic cookie consent banner":
     ['<link rel="stylesheet" href="https://shop.example/wp-content/plugins/cookie-notice/cookie-notice.css">', "wp.org 200"],
   "Axeptio":
-    ['<script src="https://axeptio.cdn.app/axeptio.js" data-axeid="abc"></script>', "formodnet"],
+    ['<script src="https://static.axept.io/sdk.js"></script>', "vaert 200 · læst i leverandørens egen SDK 2026-09-27"],
   "CookieScript":
     ['<script src="https://app.cookiescript.com/lib/c/a1b2c3/script.min.js"></script>', "formodnet"],
   "CookieHub":
-    ['<script src="https://app.cookiehub.com/bundle/a1b2c3/cookiehub.min.js"></script>', "formodnet"],
+    ['<script src="https://shop.example/wp-content/plugins/cookiehub/includes/js/dcchub-test.js"></script>', "wp.org 200 cookiehub 2026-09-27"],
   "iubenda":
-    ['<div class="iubenda-cb-banner" data-iubenda-privacy="https://iubenda.com/privacy-policy/"></div>', "formodnet"],
+    ['<script src="https://cdn.iubenda.com/iubenda.js"></script>', "wp.org 200 iubenda-cookie-law-solution 2026-09-27 · vaert 200"],
   "JustUno / Privy / OptinMonster (popup detected)":
-    ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/js/optinmonster.js"></script>', "formodnet"],
+    ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"],
   "CEE/PL consent plugin":
     ['<script src="https://shop.example/wp-content/plugins/shoper/assets/js/shoper-consent.js"></script>', "formodnet"],
   "WP Consent API":
@@ -173,11 +173,11 @@ const DAEKNING = {
   "Moove GDPR":
     ['<script src="https://shop.example/wp-content/plugins/moove-gdpr/assets/js/moove-gdpr.js"></script>', "formodnet"],
   "PixelYourSite (GDPR)":
-    ['<script src="https://shop.example/wp-content/plugins/pixel-your-site/assets/js/pys.js"></script>', "formodnet"],
+    ['<script src="https://shop.example/wp-content/plugins/pixelyoursite/pys.js"></script>', "wp.org 200 pixelyoursite 2026-09-27"],
   "WebToffee GDPR":
     ['<script src="https://shop.example/wp-content/plugins/webtoffee-gdpr-cookie-consent/webtoffee-gdpr-cookie-consent.js"></script>', "formodnet"],
   "Analytify/CAOS":
-    ['<script src="https://shop.example/wp-content/plugins/analytify/analytify.js"></script>', "formodnet"],
+    ['<script src="https://shop.example/wp-content/plugins/wp-analytify/analytify.js"></script>', "wp.org 200 wp-analytify 2026-09-27"],
 };
 
 /*
@@ -260,6 +260,25 @@ const DAEKNING_TRACKERE = {
  * skal stå som det den er.
  */
 const BEVISSTYRKE = ["vaert ", "dokumenteret ", "wp.org ", "formodnet"];
+
+/**
+ * Højst antal `formodnet`-strenge i alt — opgave 66.
+ *
+ * **Loft, ikke mål.** Tallet 12 er *ikke* fundet ved at tælle: det er det tal
+ * `DAEKNING` havde, før de tolv rækker blev læst hos leverandørenne. Ratchetten
+ * er derfor skrevet som et **gulv på vejen opad**: en ny leverandør må ikke
+ * tilføjes på en antagelse, fordi der så ville stå tretten af dem i en tabel der
+ * læses som dækning.
+ *
+ * Målt 2026-09-27, efter at de tolv var læst: **5 af 20** står stadig
+ * `formodnet` — CookieScript, CEE/PL (shoper), Borlabs/CookieNinja, Moove GDPR
+ * og WebToffee, fordi ingen af dem findes i WordPress' offentlige katalog under
+ * de slugs tabellen bruger, og deres egen vært svarer 000 eller 404. De står
+ * under ❓ og tæller **ikke** som dækning. Loftet er bevidst ikke sat ned til 5:
+ * en agent der rydder videre skal kunne sænke det, og en der glemmer at gøre
+ * det kan stadig ikke hæve det.
+ */
+const HOEJST_FORMODNET = 12;
 
 /**
  * R5s installationstest, én pr. række i `FORM_PLUGIN_SIGNATURES` — opgave 65
@@ -722,6 +741,17 @@ function contractR5(grupper, daekning, mindstRækker, krav = {}) {
         "en streng der peger på ingen række dækker ingen"
     );
   }
+  // (f) Ratchetten fra opgave 66. Uden den kunne næste agent tilføje en ny
+  //     leverandør med `formodnet` og være grøn, fordi R5 slet ikke kan se
+  //     forskellen på en antagelse og et bevis — det er hele pointen med
+  //     bevisstyrken. Loftet er et loft, ikke et mål, så **færre** er grønt.
+  const formodnede = Object.entries(daekning).filter(([, s]) => s[1] === "formodnet");
+  assert.ok(
+    formodnede.length <= HOEJST_FORMODNET,
+    `DAEKNING har ${formodnede.length} installationstester der kun er ` +
+      `«formodnet» — højst ${HOEJST_FORMODNET} er tilladt. Rækker der kun hviler ` +
+      `på en antagelse: ${formodnede.map(([n]) => `«${n}»`).join(", ")}`
+  );
   for (const rækker of grupper) {
     for (const { navn } of rækker) {
       // (a) Uden streng er porten grøn uden at have noget at se på.
@@ -1076,6 +1106,20 @@ if (process.argv.includes("--selftest")) {
     }
   };
 
+  /**
+   * Spejlet af `expectRed`. En regel der kun kan være rød er ikke en regel, den
+   * er en fejl — så regel (f) skal kunne bevises **begge** veje: rød ved
+   * tretten antagelser, grøn ved præcis tolv.
+   */
+  const expectGreen = (name, contract, ...args) => {
+    try {
+      contract(...args);
+      caught.push(name);
+    } catch (e) {
+      failures.push(`selftest: ${name} gav en rød port på en gyldig tabel — ${e.message}`);
+    }
+  };
+
   const prosa = PROSA_FIXTURES[0];
   const wpcf7 = MEKANISME.find((m) => m.gruppe === "forms");
   const klaro = MEKANISME.find((m) => m.gruppe === "cookies");
@@ -1275,6 +1319,46 @@ if (process.argv.includes("--selftest")) {
     r.navn === "DMARC (Email policy)" ? { navn: r.navn, re: /dmarc[ _-]?enforcement/i } : r
   )));
   expectRed("R5 (dora-mønsteret finder ikke sin egen installationstest)", contractR5, doraBoet, DAEKNING_DORA, MINDST.dora, { prosa: true });
+
+  // 25. Ratchetten fra opgave 66, regel (f). Loftet er 12 `formodnet`-strenge,
+  //     og den skal give rød ved 13. Det er **ikke** en hypotetisk fejl: de tolv
+  //     rækker der lå `formodnet` var netop sådan en tabel, og den så
+  //     fuldstændig troværdig ud at to af dem viste sig at være døde rækker.
+  //     Ratchetten er derfor den regel, der gør at næste agent ikke kan
+  //     gentage det.
+  //
+  //     Case'en bygger præcis tolv `formodnet`-strenge og **tilføjer en række
+  //     der indgår i tabellen**, så regel (c) ikke kan fyre først: den nye række
+  //     findes i signatur-tabellen, og dens mønster matcher dens egen streng.
+  //     Uden det ville casen være rød af den forkerte grund.
+  const nyLeverandør = { navn: "En ny leverandør", re: /ny-cmp/ };
+  const medLeverandør = R5_MOENSTRE.map((g) => [...g, nyLeverandør]);
+  const formodnetI = (d) => Object.values(d).filter((s) => s[1] === "formodnet").length;
+  // Nedgradér de **målte** strenge indtil der står præcis `HOEJST_FORMODNET`
+  // antagelser, så tretten er rigtige antagelser og ikke tilfældigt fordelt
+  // tilfældigheder. Tællingen læser den **samme** kilde, porten læser.
+  const tolv = { ...DAEKNING };
+  for (const [navn, streng] of Object.entries(tolv)) {
+    if (formodnetI(tolv) >= HOEJST_FORMODNET) break;
+    if (streng[1] === "formodnet") continue;
+    tolv[navn] = [streng[0], "formodnet"];
+  }
+  assert.strictEqual(
+    formodnetI(tolv),
+    HOEJST_FORMODNET,
+    "selftestens egen forudsætning: der skal kunne bygges præcis tolv «formodnet»"
+  );
+  // …og **præcis** på loftet er grønt. Uden denne case ville ratchetten være
+  // rød ved nul og grøn ved tolv, hvilket er en port der aldrig kan bruges.
+  expectGreen("R5 (præcis på loftet af «formodnet»)", contractR5, R5_MOENSTRE, tolv, MINDST.consent);
+
+  // Den **trettende** antagelse skal give rød, og den nye række skal findes i
+  // signatur-tabellen — ellers fyrer regel (c) først, og casen er så rød af den
+  // forkerte grund. Det er præcis den bevægelse opgaven forbyder: at føje en
+  // leverandør til på en antagelse.
+  const tretten = { ...tolv, "En ny leverandør": ['<script src="https://ny.example/ny-cmp.js"></script>', "formodnet"] };
+  expectRed("R5 (for mange installationstester der kun er formodnet)", contractR5, medLeverandør, tretten, MINDST.consent);
+
 
   /*
    * Fire mutationer mod repoets egne filer.

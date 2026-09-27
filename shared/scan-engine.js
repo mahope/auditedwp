@@ -49,7 +49,7 @@ const CONSENT_SIGNATURES = [
   { re: /tarteaucitron|klaro|osano|cookieconsent/i, name: "TarteAuCitron / Klaro / Osano / CookieConsent" },
   { re: /complianz|cmplz/i, name: "Complianz GDPR" },
   { re: /cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie/i, name: "Generic cookie consent banner" },
-  { re: /axeptio/i, name: "Axeptio" },
+  { re: /axeptio|axept\.io/i, name: "Axeptio" },
   { re: /cookiescript/i, name: "CookieScript" },
   { re: /cookiehub|cookie[_-]?hub/i, name: "CookieHub" },
   { re: /iubenda|cookie[_-]?solution/i, name: "iubenda" },
