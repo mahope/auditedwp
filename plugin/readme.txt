@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.27
+Stable tag: 1.3.28
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.28 (2026-09-27) =
+* Four consent rows are removed rather than kept on an assumption. CookieScript, the CEE/PL consent plugin, Moove GDPR and WebToffee GDPR each carried a test string naming a file that was written from memory, and none of the four exists in the public WordPress catalogue under the slug the test data used - all four slugs redirect to a search page, while contact-form-7, complianz-gdpr, cookiehub and wp-consent-api answer 200 in the same measurement. A row that cannot find the platform it names is not coverage: it is a green line in a report the customer reads as coverage. If you scanned your site between 1.3.27 and now, a site running one of those four platforms may report fewer consent findings than before. Nothing else in the row list narrowed.
+* The Borlabs row is now documented from the vendor's own code instead of a guessed file name. Borlabs' own Google Tag Manager template calls callInWindow('BorlabsCookie.checkCookieConsent') and callInWindow('BorlabsCookie.Consents.hasConsent'), so the global BorlabsCookie - not any particular asset filename - is the installation Borlabs documents. The test data now uses that global, so a site running Borlabs Cookie is found whatever its enqueued file is called.
+* The test suite's cap on assumed rows is lowered from twelve to zero, and now fails on the first one. Each consent row already has a test that fails if its own pattern stops matching the installation it is written for; this is the same rule for the opposite mistake - an installation that was never read.
+* Plugin 1.3.28. If you scanned your site between 1.3.27 and now, treat the cookie-consent row as unknown rather than as a finding: run a new scan.
 
 = 1.3.27 (2026-09-27) =
 * Fix: one of the biggest consent platforms was invisible in its normal installation. Axeptio is installed by adding a single script tag, src="https://static.axept.io/sdk.js" - the platform's own SDK, read directly on 2026-09-27. That address contains no occurrence of the word "axeptio", and the pattern matched only that word, so a site installing Axeptio the documented way was told 'No consent banner detected' - the same verdict as a site with no consent platform at all.

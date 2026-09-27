@@ -111,19 +111,15 @@ const CONSENT_SIGNATURES = [
   { re: /complianz|cmplz/i, name: "Complianz GDPR" },
   { re: /cookie[_-]?notice|gdpr[_-]?banner|eu[_-]?cookie/i, name: "Generic cookie consent banner" },
   { re: /axeptio|axept\.io/i, name: "Axeptio" },
-  { re: /cookiescript/i, name: "CookieScript" },
   { re: /cookiehub|cookie[_-]?hub/i, name: "CookieHub" },
   { re: /iubenda|cookie[_-]?solution/i, name: "iubenda" },
   { re: /justuno|privy|optinmonster/i, name: "JustUno / Privy / OptinMonster (popup detected)" },
-  { re: /shoper|shoprenter|idelo/i, name: "CEE/PL consent plugin" },
   { re: /wp-consent-api/i, name: "WP Consent API" },
   { re: /borlabs|cookieninja/i, name: "Borlabs / CookieNinja" },
   { re: /real[_-]?cookie[_-]?banner/i, name: "Real Cookie Banner" },
   { re: /cookie[_-]?notice[_-]?lite/i, name: "Cookie Notice Lite" },
   { re: /gdpr[_-]?cookie[_-]?compliance/i, name: "GDPR Cookie Compliance" },
-  { re: /moove[_-]?gdpr/i, name: "Moove GDPR" },
   { re: /pixel[_-]?your[_-]?site/i, name: "PixelYourSite (GDPR)" },
-  { re: /webtoffee|gdpr[_-]?cookie[_-]?consent/i, name: "WebToffee GDPR" },
   // Rækkens navn er *Analytify/CAOS*, men mønstret var `analytics[_-]?cat`, som
   // ingen af de to produkter kan matche: Analytifs plugin-slug er `analytify` og
   // CAOS (Cookie Assistant for Osano) hedder *caos*. Mønstret var altså dødt i

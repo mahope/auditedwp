@@ -94,14 +94,16 @@ const GRUPPER = ["trackers", "cookies", "forms"];
 /**
  * Hvor mange navne hvar signatur-tabel skal have, før porten går videre.
  *
- * `consent` var 21 og er 20 siden 1.3.25: `quantcast[_-]?choice` blev **fjernet**
+ * `consent` var 21, blev 20 i 1.3.25 da `quantcast[_-]?choice` blev **fjernet**,
+ * og er **16** siden 1.3.28, da fire rækker der kun hvilede på en antagelse blev
+ * fjernet med dem — CookieScript, CEE/PL (shoper), Moove GDPR og WebToffee.
  * i stedet for rettet, fordi leverandørens egen installationsdokumentation ikke
  * kunne læses fra byggemiljøet, og et mønster skrevet mod en adresse ingen har
  * læst er præcis den fejl der fik den ind. Tallet står her, så den næste agent kan
  * se at 20 er et **valg** og ikke en tilfældighed — og den døde markør kan ikke
  * komme tilbage ved at sænke tallet igen, for den ville give 21.
  */
-const MINDST = { trackers: 12, consent: 20, forms: 2, dora: 9 };
+const MINDST = { trackers: 12, consent: 16, forms: 2, dora: 9 };
 
 /** Navnet på tabellen i de to JS-motorer. `cookies` læser CONSENT_SIGNATURES. */
 const MOTOR_TABEL = {
@@ -150,32 +152,24 @@ const DAEKNING = {
     ['<link rel="stylesheet" href="https://shop.example/wp-content/plugins/cookie-notice/cookie-notice.css">', "wp.org 200"],
   "Axeptio":
     ['<script src="https://static.axept.io/sdk.js"></script>', "vaert 200 · læst i leverandørens egen SDK 2026-09-27"],
-  "CookieScript":
-    ['<script src="https://app.cookiescript.com/lib/c/a1b2c3/script.min.js"></script>', "formodnet"],
   "CookieHub":
     ['<script src="https://shop.example/wp-content/plugins/cookiehub/includes/js/dcchub-test.js"></script>', "wp.org 200 cookiehub 2026-09-27"],
   "iubenda":
     ['<script src="https://cdn.iubenda.com/iubenda.js"></script>', "wp.org 200 iubenda-cookie-law-solution 2026-09-27 · vaert 200"],
   "JustUno / Privy / OptinMonster (popup detected)":
     ['<script src="https://shop.example/wp-content/plugins/optinmonster/assets/dist/js/global.min.js"></script>', "wp.org 200 optinmonster 2.17.1 2026-09-27"],
-  "CEE/PL consent plugin":
-    ['<script src="https://shop.example/wp-content/plugins/shoper/assets/js/shoper-consent.js"></script>', "formodnet"],
   "WP Consent API":
     ['<script src="https://shop.example/wp-content/plugins/wp-consent-api/assets/js/wp-consent-api.js"></script>', "wp.org 200"],
   "Borlabs / CookieNinja":
-    ['<script src="https://shop.example/wp-content/plugins/borlabs-cookie/borlabs-cookie.js"></script>', "formodnet"],
+    ['<script>window.BorlabsCookie = window.BorlabsCookie || {}; var BorlabsCookie = window.BorlabsCookie;</script>', "dokumenteret leverandørens egen GTM-template 2026-09-27"],
   "Real Cookie Banner":
     ['<script src="https://shop.example/wp-content/plugins/real-cookie-banner/assets/js/rcb.js"></script>', "wp.org 200"],
   "Cookie Notice Lite":
     ['<script src="https://shop.example/wp-content/plugins/cookie-notice-lite/cookie-notice-lite.js"></script>', "wp.org 200"],
   "GDPR Cookie Compliance":
     ['<script src="https://shop.example/wp-content/plugins/gdpr-cookie-compliance/gdpr-cookie-compliance.js"></script>', "wp.org 200"],
-  "Moove GDPR":
-    ['<script src="https://shop.example/wp-content/plugins/moove-gdpr/assets/js/moove-gdpr.js"></script>', "formodnet"],
   "PixelYourSite (GDPR)":
     ['<script src="https://shop.example/wp-content/plugins/pixelyoursite/pys.js"></script>', "wp.org 200 pixelyoursite 2026-09-27"],
-  "WebToffee GDPR":
-    ['<script src="https://shop.example/wp-content/plugins/webtoffee-gdpr-cookie-consent/webtoffee-gdpr-cookie-consent.js"></script>', "formodnet"],
   "Analytify/CAOS":
     ['<script src="https://shop.example/wp-content/plugins/wp-analytify/analytify.js"></script>', "wp.org 200 wp-analytify 2026-09-27"],
 };
@@ -191,13 +185,23 @@ const DAEKNING = {
  *    uafhængigt dækket kun hvis siden ellers skriver `OneTrust`. Det er ikke
  *    bevist her, og det er derfor strengen kun tæller som Cookiebot-bevis.
  * 2. Rækken *Borlabs / CookieNinja* har to leverandører og **én** streng, som
- *    beviser Borlabs. `cookieninja` er ikke et produkt nogen i repoet har læst
- *    om; det står under ❓.
+ *    siden 1.3.28 beviser Borlabs i **leverandørens egen kode**: dens egen
+ *    Google-Tag-Manager-template kalder `callInWindow('BorlabsCookie.…')`, så den
+ *    globale `BorlabsCookie` er den installation Borlabs selv dokumenterer — ikke
+ *    et filnavn, jeg havde gættet. `cookieninja` er stadig ikke et produkt nogen
+ *    i repoet har læst om; det står under ❓.
  * 3. `gdpr[_-]?banner` kan ikke matche det populære plugin-slug
  *    `gdpr-cookie-banner` — der står *cookie* mellem `gdpr` og `banner`. Rækken
  *    er dækket af `cookie[_-]?notice` i stedet (Cookie-Notices slug), så
  *    alternativet er uafhængigt **uafhængigt ubevist** og efterlader et hul.
- * 4. `analytify` — rækkens navn siger *Analytify/CAOS*, men mønstret var
+ * 4. **Fire rækker er fjernet i 1.3.28**, fordi ingen af dem findes i WordPress'
+ *    eget katalog under den slug tabellen brugte — alle fire slug'e **301'er til en
+ *    søgeside**, mens kontrol-slugene `contact-form-7`, `complianz-gdpr`,
+ *    `cookiehub` og `wp-consent-api` svarer 200 i samme måling: CookieScript,
+ *    CEE/PL (shoper), Moove GDPR og WebToffee. Deres installationstester var
+ *    desuden filnavne skrevet fra hukommelsen. En død række er værre end ingen,
+ *    fordi den er en grøn linje i rapporten kunden læser.
+ * 5. `analytify` — rækkens navn siger *Analytify/CAOS*, men mønstret var
  *    `analytics[_-]?cat`, som ingen af de to produkter kan matche. R5 fandt det;
  *    se `docs/eucomply-signatur-prosa.md` "Fejl 9".
  */
@@ -262,23 +266,25 @@ const DAEKNING_TRACKERE = {
 const BEVISSTYRKE = ["vaert ", "dokumenteret ", "wp.org ", "formodnet"];
 
 /**
- * Højst antal `formodnet`-strenge i alt — opgave 66.
+ * Højst antal `formodnet`-strenge i alt — opgave 66, hævet af opgave 67.
  *
- * **Loft, ikke mål.** Tallet 12 er *ikke* fundet ved at tælle: det er det tal
- * `DAEKNING` havde, før de tolv rækker blev læst hos leverandørenne. Ratchetten
- * er derfor skrevet som et **gulv på vejen opad**: en ny leverandør må ikke
- * tilføjes på en antagelse, fordi der så ville stå tretten af dem i en tabel der
- * læses som dækning.
+ * Opgave 66 satte loftet til **12**, fordi det var det antal `DAEKNING` havde,
+ * før de tolv blev læst hos leverandørerne: et loft, ikke et mål, så en ny
+ * leverandør ikke kunne tilføjes på en antagelse mens de tolv blev ryddet.
  *
- * Målt 2026-09-27, efter at de tolv var læst: **5 af 20** står stadig
- * `formodnet` — CookieScript, CEE/PL (shoper), Borlabs/CookieNinja, Moove GDPR
- * og WebToffee, fordi ingen af dem findes i WordPress' offentlige katalog under
- * de slugs tabellen bruger, og deres egen vært svarer 000 eller 404. De står
- * under ❓ og tæller **ikke** som dækning. Loftet er bevidst ikke sat ned til 5:
- * en agent der rydder videre skal kunne sænke det, og en der glemmer at gøre
- * det kan stadig ikke hæve det.
+ * Opgave 67 gjorde opgaven færdig, og derfor står der nu **nul**: de fem
+ * antagelser blev enten læst i leverandørens egen kode (Borlabs) eller fjernet
+ * fra tabellen og alle tre motorer (CookieScript, CEE/PL, Moove, WebToffee) —
+ * fordi ingen af dem findes i WordPress' katalog under de slug'e tabellen brugte
+ * (alle fire 301'er til en søgeside) og deres egne værter ikke svarer herfra.
+ * Se `docs/eucomply-signatur-prosa.md` "Fejl 12".
+ *
+ * Loftet er derfor ikke længere et loft på et tal, men **kravet fra opgave 63**:
+ * en installationstest skal være læst, ellers er den ingen. En agent der tilføjer
+ * en række med en antaget adresse får rødt i regel (f) med det samme, i stedet
+ * for at skulle huske at sænke et tal.
  */
-const HOEJST_FORMODNET = 12;
+const HOEJST_FORMODNET = 0;
 
 /**
  * R5s installationstest, én pr. række i `FORM_PLUGIN_SIGNATURES` — opgave 65
@@ -1320,44 +1326,35 @@ if (process.argv.includes("--selftest")) {
   )));
   expectRed("R5 (dora-mønsteret finder ikke sin egen installationstest)", contractR5, doraBoet, DAEKNING_DORA, MINDST.dora, { prosa: true });
 
-  // 25. Ratchetten fra opgave 66, regel (f). Loftet er 12 `formodnet`-strenge,
-  //     og den skal give rød ved 13. Det er **ikke** en hypotetisk fejl: de tolv
-  //     rækker der lå `formodnet` var netop sådan en tabel, og den så
-  //     fuldstændig troværdig ud at to af dem viste sig at være døde rækker.
-  //     Ratchetten er derfor den regel, der gør at næste agent ikke kan
-  //     gentage det.
+  // 25. Ratchetten fra opgave 66, regel (f), hævet af opgave 67 fra 12 til **0**.
+  //     Loftet var 12, fordi det var det antal antagelser tabellen havde, før de
+  //     tolv blev læst. Opgave 67 ryddede de fem sidste: en blev læst i
+  //     leverandørens egen kode, fire blev fjernet, fordi ingen af dem findes i
+  //     WordPress' katalog under den slug tabellen brugte. Derfor er der nu ingen
+  //     `formodnet`-strenge, og reglen siger det samme som opgave 63s krav: en
+  //     installationstest skal være læst, ellers er den ingen.
   //
-  //     Case'en bygger præcis tolv `formodnet`-strenge og **tilføjer en række
-  //     der indgår i tabellen**, så regel (c) ikke kan fyre først: den nye række
-  //     findes i signatur-tabellen, og dens mønster matcher dens egen streng.
-  //     Uden det ville casen være rød af den forkerte grund.
+  //     Den nye række **tilføjes i signatur-tabellen**, så regel (c) ikke kan fyre
+  //     først: den findes i tabellen, og dens mønster matcher dens egen streng.
+  //     Uden det ville casen være rød af den forkerte grund — præcis den bevægelse
+  //     opgaven forbyder, som var tolv strenge i træk.
   const nyLeverandør = { navn: "En ny leverandør", re: /ny-cmp/ };
   const medLeverandør = R5_MOENSTRE.map((g) => [...g, nyLeverandør]);
   const formodnetI = (d) => Object.values(d).filter((s) => s[1] === "formodnet").length;
-  // Nedgradér de **målte** strenge indtil der står præcis `HOEJST_FORMODNET`
-  // antagelser, så tretten er rigtige antagelser og ikke tilfældigt fordelt
-  // tilfældigheder. Tællingen læser den **samme** kilde, porten læser.
-  const tolv = { ...DAEKNING };
-  for (const [navn, streng] of Object.entries(tolv)) {
-    if (formodnetI(tolv) >= HOEJST_FORMODNET) break;
-    if (streng[1] === "formodnet") continue;
-    tolv[navn] = [streng[0], "formodnet"];
-  }
   assert.strictEqual(
-    formodnetI(tolv),
-    HOEJST_FORMODNET,
-    "selftestens egen forudsætning: der skal kunne bygges præcis tolv «formodnet»"
+    formodnetI(DAEKNING),
+    0,
+    "selftestens egen forudsætning: opgave 67 efterlod ingen antagelser, så porten " +
+      "kan kræve nul — en frisk antagelse er derfor den første og bliver rød"
   );
-  // …og **præcis** på loftet er grønt. Uden denne case ville ratchetten være
-  // rød ved nul og grøn ved tolv, hvilket er en port der aldrig kan bruges.
-  expectGreen("R5 (præcis på loftet af «formodnet»)", contractR5, R5_MOENSTRE, tolv, MINDST.consent);
+  expectGreen("R5 (nul antagelser, som opgave 67 efterlod)", contractR5, R5_MOENSTRE, DAEKNING, MINDST.consent);
 
-  // Den **trettende** antagelse skal give rød, og den nye række skal findes i
+  // Den **første** antagelse skal give rød, og den nye række skal findes i
   // signatur-tabellen — ellers fyrer regel (c) først, og casen er så rød af den
   // forkerte grund. Det er præcis den bevægelse opgaven forbyder: at føje en
   // leverandør til på en antagelse.
-  const tretten = { ...tolv, "En ny leverandør": ['<script src="https://ny.example/ny-cmp.js"></script>', "formodnet"] };
-  expectRed("R5 (for mange installationstester der kun er formodnet)", contractR5, medLeverandør, tretten, MINDST.consent);
+  const antagelse = { ...DAEKNING, "En ny leverandør": ['<script src="https://ny.example/ny-cmp.js"></script>', "formodnet"] };
+  expectRed("R5 (en installationstest der kun er formodet)", contractR5, medLeverandør, antagelse, MINDST.consent);
 
 
   /*
