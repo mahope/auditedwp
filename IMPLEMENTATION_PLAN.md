@@ -1,3 +1,84 @@
+Opdateret: 2026-09-27 (iteration 83)
+
+Sidste iteration: **en måling på en rigtig butik fandt den dyreste fejl i hele
+rapporten, og den lå i den overskrift kunden læser først.** Køen var tom
+(5/6/7 blokeret på spørgsmål 7 og 9), så denne iteration kørte den gratis
+scanner mod rigtige sider i stedet for at gætte — første gang siden missionens
+første opgave.
+
+**Fundet: rapporten siger "Consent platform: Cookiebot / OneTrust / Usercentrics
+/ ConsentManager" på en side der kører OneTrust.** Rækkens navn er ikke en
+overskrift over fire rækker — det er fundet, fordi `checks.cookies.label` er
+`Consent platform: ${consentMatches[0]}`, og pluginens betalte rapport skriver
+`Detected: …`. Målt på **jysk.dk** (200, 634 234 B) 2026-09-27:
+
+| leverandør | i markup |
+|---|---|
+| OneTrust | ja (`onetrust`, `cookielaw.org`, `otSDKStub`, `optanon`) |
+| Cookiebot, ConsentManager, Usercentrics | **0** |
+| TarteAuCitron, Klaro, Osano | **0** |
+| `CookieConsent` (nøgne) | ja — men som **OneTrusts egen konfiguration** |
+
+Så kunden blev fortalt at de kørte otte platformer, og de kørte én. Samme
+fejl, samme linje, i formrækken: `Form plugins detected: Contact Form 7 /
+WPForms / Formidable / Gravity / Fluent / Ninja / Caldera / Elementor` —
+otte plugins på én linje, fordi navnet er fundet. Det er **missionens rang 1**:
+et køb, der ikke leverer, i det betalte produkt.
+
+**Rettelsen er otteogtyve rækker der bliver til étogtyve, med ét navn hver.**
+Unionen af alternativerne er uændret på nær **én**, og den er fjernet fordi
+den ikke kan tilskrives ét produkt: den nøgne `cookieconsent` er på den målte
+side OneTrusts egen konfiguration (`"cookieConsent":{…}`,
+`enableOneTrustCookieConsent`), ikke Orestbidas bibliotek. Biblioteket står
+stadig fundet, via sin **dokumenterede sti** `cookieconsent@3.1.1` — samme
+princip som opgave 70 gjorde med Quantcast: en streng der ikke kan læses, er
+fjernet; en streng der kan, er målt.
+
+**Formrækken kostede ingen ny måling.** De otte installationstester lå allerede
+i `DAEKNING_FORMS` med hver sin leverandør som etiket — opgave 69 skrev dem
+til regel (g) og den måling var der. De flyttede bare til egne nøgler, så
+portens egen evidens blev brugt i stedet for at blive skrevet om.
+
+**Ny regel (R11) — en række hvis navn rapporten trykker skal navngive én
+leverandør.** Den er parametreret pr. tabel og **gælder kun `consent` og
+`forms`**, fordi fundet dér er rækkens navn. I `dora` er navnet en
+*dokumenttype* (`Imprint / Legal notice`), og det er korrekt at sige "den slags
+dokument" — det er ikke det samme som at påstå en platform er fundet. **Den
+fandt `Typeform / Formspree` på sin første kørsel**, før den blev rettet, så
+reglen er ikke skrevet fra formelen men fra fundet. `RAPPORTENS_NAVN` er den
+målte tekst fra de tre produkter, ikke en antagelse om hvor fundet skrives.
+
+**To cases der holdt op at være sande, fundet af selftesten.** Case 29
+(*"én af seks leverandører taber sin streng"*) og case 31b (cognito/formsort
+i `Typeform / Formspree`) var skrevet mod de delte rækker, så da delingen
+skete holdt de op at se den fejl de var skrevet til at se. De er skrevet om
+til de mutationer der nu kan være røde — samme fejlklasse som opgave 46 fund 4
+og opgave 70s `cognito`-fund, og tredje gang de dukker op i selftesten.
+**`84 negative selftest-cases` (81 → 84), heraf R11's to mutationer der begge
+lægger fire respektive otte leverandøre tilbage i én række, plus en grøn
+spejling så reglen ikke er rød af design.**
+
+**Målt før/efter på den samme side, gennem den rigtige motor:**
+`Consent platform: Cookiebot / OneTrust / Usercentrics / ConsentManager` +
+`Detected: Cookiebot / OneTrust / Usercentrics / ConsentManager,
+TarteAuCitron / Klaro / Osano / CookieConsent` → **`Consent platform: OneTrust`**
++ **`Detected: OneTrust`**, og tracker-detaljen
+`… also detected (OneTrust)`. Plugin **1.3.36**, ny zip (63 316 B), 37
+redirects, `update.json` ×2, readme ×2, `site/plugin/index.html`,
+`plugin/` og `site/plugin/` byte-identiske, `php -l` rent,
+**`GATE GRØN — alle 24 steps bestået`**.
+
+**De to JS-motorer deployes ikke af CI**, så rettelsen i
+`shared/scan-engine.js` og `eucomply-scanner/engine/index.js` når kunden først
+ved `npm publish` eller en worker-deploy (spørgsmål 9) — uændret. Den **eneste**
+kanal der reelt leverer i denne iteration er plugin-zip'en, og den gør.
+
+Opgave 83: rapporten skal navngive den leverandør der er fundet — otte
+consent- og ni form-leverandøre delt på i otteogtyve rækker, ny regel (R11),
+plugin 1.3.36 — kodecommit `027fc40`, merge `ada98dc` 2026-09-27 ca. 23:2x
+
+VERIFICÉR DEPLOY: samtykkeplatformen og formular-pluginen navngives hver for sig (ni leverandøre delt på i ni rækker) + R11 — plugin 1.3.36 `027fc40` / `ada98dc` 2026-09-27 ca. 23:2x. Rører `shared/scan-engine.js`, `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `readme.txt` ×2, `update.json` ×2, `site/_redirects` (37 linjer), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/check_signature_prose.mjs` og den nye `site/assets/eucomply-1.3.36.zip` (1.3.35 fjernet af build-scriptet). Efter næste batch skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.36.zip` svarer **200 `application/zip`**, unzippet: 3 medlemmer under `eucomply/`, `Version: 1.3.36`, og **ni** rækker med ét leverandørnavn hver i stedet for to; (2) `/update.json` svarer 200 med `"version": "1.3.36"`, `download_url` på 1.3.36 og changelog der **starter** `= 1.3.36 (2026-09-27) =` med de to fund; (3) `/assets/eucomply-1.3.35.zip` følger **301** → 1.3.36; (4) `/plugin/` viser `↓ Download v1.3.36 (free)`; (5) CI-loggen viser `GATE GRØN — alle 24 steps bestået` og `84 af 84` negative cases.
+
 Opdateret: 2026-09-27 (iteration 82)
 
 Sidste iteration: **planen havde to spørgsmål med hvert sit numre, og portens kode citerer dem.** Den anden `❓ Til Mads — tillagt` genstarter ved 19, så **19, 20 og 21 var hver defineret to steder med helt forskelligt indhold** (målt: `1 2 3 4 5 19 20 21` gav otte linjer). Det er ikke kosmetik: `tools/check_cta.py` skriver *"Se spørgsmål 20 i planen"* om e-bog-bundlen, som er den **anden** listes 20 — en agent der fulgte citationen kunne lande i npm-pakke-spørgsmålet og rette det i stedet for at svare på det, porten bad om. Den første listens 19/20/21 er nummereret om til **23/24/25**, så hvert nummer nu er unikt, og citationen skriver sin sektion med. (`1`–`5` så også dubletter ud i min måling, men de er nummererede lister *inde i* opgavetekster, ikke spørgsmål — falske positiver, ikke fund. Det er samme fejlklasse som de to falske påstande i iteration 81.)
