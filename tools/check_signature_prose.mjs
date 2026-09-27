@@ -262,6 +262,101 @@ const DAEKNING_TRACKERE = {
 const BEVISSTYRKE = ["vaert ", "dokumenteret ", "wp.org ", "formodnet"];
 
 /**
+ * R5s installationstest, én pr. række i `FORM_PLUGIN_SIGNATURES` — opgave 65
+ * del 2.
+ *
+ * Her er installationen **markup**, ikke en URL man kan kopiere, fordi rækkerne
+ * navngiver form-plugins og to betalingsplatforme. Bevisstyrkerne er målt
+ * 2026-09-27: `api.wordpress.org/plugins/info/1.0/<slug>.json` svarer 200 for
+ * `contact-form-7`, `wpforms-lite`, `formidable`, `fluentform`, `ninja-forms`,
+ * `elementor` og `woocommerce` — **ikke** for `gravityforms`, fordi Gravity
+ * Forms er betalt og derfor ikke i det offentlige katalog. `embed.typeform.com`
+ * og `js.stripe.com/v3` svarer begge 200; `checkout.stripe.com` svarer 301.
+ *
+ * **Fem af de syv strenge er hentet fra leverandørens egen kode, ikke skrevet
+ * fra hukommelsen:** WooCommerce-skabelonen `templates/checkout/form-checkout.php`
+ * (wordpress.org-svn, 200) skriver `woocommerce-checkout` i sit eget
+ * container-element, og den samme kode er grunden til at mønsteret ikke er
+ * `wc_checkout` alene. Shopify-markøren er målt på fire rigtige butikkers kurv-
+ * og betalingssider (6 sider): `shopify-accelerated-checkout`.
+ *
+ * Fire ting tabellen **ikke** dækker:
+ *
+ * 1. Rækken *Contact Form 7 / WPForms / Formidable / Gravity / Fluent /
+ *    Elementor* har seks leverandører og **én** streng, som beviser Contact
+ *    Form 7 — `<div class="wpcf7">` er den markup CF7 leverer. De øvrige fem er
+ *    uafhængigt ubeviste af denne test; deres slugs er verificeret i wp.org,
+ *    men ingen af dem har en streng her.
+ * 2. Rækken *Typeform / Formspree / Jotform* har tre leverandører og **én**
+ *    streng, som beviser Typeforms egen embed. Formspree svarede 403 på
+ *    `formspree.io/js/formspree.js` og Jotform 404 på `cdn.jotform.com/embed/`
+ *    fra byggemiljøet, så de to står ubeviste.
+ * 3. `js.stripe.com/v3` beviser at **Strikes JavaScript er indlæst**, ikke at
+ *    en betalingsformular vises. Det er samme opgave som rækken overhovedet har
+ *    — dommen kræver formular-markup i de samme bytes (se pluginens kommentar
+ *    ved `forms`), så en side der kun indlæser Stripe-JS får et navn, ingen dom.
+ * 4. `shopify-accelerated-checkout` er butikkens **accelerated-wallet-knap**,
+ *    ikke selve betalingssiden. Den er målt på alle seks sider, men en butik
+ *    der har slået den fra fanges ikke. Rækken dækker altså de Shopify-butikker
+ *    der har den slået til — det er en delmængde, og det står her.
+ */
+const DAEKNING_FORMS = {
+  "Contact Form 7 / WPForms / Formidable / Gravity / Fluent / Elementor":
+    ['<div class="wpcf7" id="wpcf7-f1234-o1"><form class="wpcf7-form" method="post" action="https://shop.example/contact/"></form></div>', "wp.org 200 (contact-form-7) · markup fra CF7s egen div"],
+  "Typeform / Formspree / Jotform":
+    ['<script src="https://embed.typeform.com/next/embed.js"></script>', "vaert 200"],
+  "WooCommerce Checkout":
+    ['<div class="woocommerce-checkout">', "dokumenteret plugins.svn.wordpress.org/woocommerce/trunk/templates/checkout/form-checkout.php 2026-09-27"],
+  "Shopify Checkout":
+    ['<link rel="stylesheet" href="https://cdn.shopify.com/extensions/01a0e1ba/shopify-accelerated-checkout-styles.css">', "dokumenteret 4 butikker, 6 sider målt 2026-09-27"],
+  "Stripe Checkout / Payment":
+    ['<script src="https://js.stripe.com/v3/"></script>', "vaert 200"],
+};
+
+/**
+ * R5s installationstest, én pr. række i `DORA_SIGNATURES` — opgave 65 del 2.
+ *
+ * **`dora` er den ene tabel hvor installationstesten *er* prosa**, og det er
+ * ikke en lavenage: de ni rækker er **påstande om virksomheden** (SPF, DKIM,
+ * DMARC, MX, failover, incident response, BCP, status page), og den eneste
+ * sted en sådan påstand står er en virksomheds egen side. R4 (opgave 58)
+ * kræver endda at `dora` *kun* læser prosa — en URL ville være modsætningen.
+ *
+ * Derfor har denne tabel sin **egen** regel (e) i `contractR5` i stedet for
+ * kravet om `//`, `.`, `=` eller `<`: en sætning skal have mindst seks ord og
+ * mindst to ord der ikke står i rækkens eget navn. Uden den ville
+ * `"Status page / uptime monitoring."` være grøn — den har et punktum, så den
+ * almindelige regel ville tage den for en installation, mens den er en
+ * genindskrivning af navnet. Det er præcis den fejl R5 blev skrevet for.
+ *
+ * Bevisstyrkerne: ingen af de ni markører er leverandør-URL'er, så der er intet
+ * at svare på. De er læst fra **målingen** af de mønstre, de skal finde, og det
+ * er derfor alle ni er `dokumenteret` med dagens måling — ikke `vaert 200`, som
+ * ville være en løgn om noget der aldrig blev hentet.
+ */
+const DAEKNING_DORA = {
+  "SPF (Email sender auth)":
+    ["Our sending IPs are published in the SPF record: v=spf1 include:_spf.example.com ~all", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "DKIM (Email signing)":
+    ["Add the DKIM public key in DNS as a TXT record named selector1._domainkey.example.com", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "DMARC (Email policy)":
+    ["Our DMARC policy is published at _dmarc.example.org with p=reject", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "MX (Mail exchange)":
+    ["Mail is delivered by our MX 1 and MX 2 records in Frankfurt and Amsterdam", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "Multi-server / failover signals":
+    ["Our platform runs on multiple servers with automatic failover between two regions", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "CDN failover / multi-CDN":
+    ["Traffic is served from a multi-CDN setup with a backup origin in a second region", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "Incident response / SOC reporting":
+    ["Our incident response plan is tested twice a year and shared with customers under NDA", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "BC/DR planning reference":
+    ["The business continuity plan is reviewed annually and covers our disaster recovery procedure", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+  "Status page / uptime monitoring":
+    ["System status is published on our status page, with uptime monitoring alerts", "dokumenteret mønstret matcher denne sætning 2026-09-27"],
+};
+
+
+/**
  * R1s fixtures: navne på trackere, samtykkeplatforme og formular-plugins i
  * **løbende tekst**, ved siden af en rigtig formular. Formularen er der, fordi
  * ellers er `forms` grøn af den trivielle grund at der ingen er, og porten så
@@ -542,6 +637,11 @@ function signaturNavne(kilde, gruppe, php) {
  *   (d) en kopi læser nule rækker, så (b) springer den over. Det er ikke en
  *       hypotetisk fejl: det var denne ports egen PHP-læsning indtil 2026-09-27.
  *       Målt før rettelsen: `consent` 20/20/**0** og `trackers` 12/12/**0**.
+ *   (e) kun for tabeller hvor installationstesten er **prosa** (`dora`): sætningen
+ *       skal have mindst seks ord og mindst to ord uden for rækkens eget navn.
+ *       Uden den ville `"Status page / uptime monitoring."` være grøn, fordi den
+ *       har et punktum og dermed klarer kravet om `//`, `.`, `=` eller `<` — den
+ *       ville være en genindskrivning af navnet, ikke en installation.
  *
  * Mønstrene læses **fra filerne**, ikke ud fra et navne-array, fordi en regel der
  * kun sammenligner to lister af navne aldrig kan se en mangel i mønsteret — det
@@ -551,6 +651,7 @@ function signaturNavne(kilde, gruppe, php) {
  * @param {Array<Array<{navn: string, re: RegExp}>>} grupper én pr. kopi
  * @param {Object<string, [string, string]>} daekning installationstest pr. række
  * @param {number} mindstRækker hvor mange rækker hver kopi skal læse (regel d)
+ * @param {{prosa?: boolean}} [krav] regel (e), kun for prosa-tabeller
  */
 /**
  * Blokken efter `'trackers' => array(` i pluginen, med **klammebalance** der
@@ -601,7 +702,7 @@ function signaturMonstre(kilde, gruppe, php) {
     : { navn: m[3], re: new RegExp(m[1], m[2]) }));
 }
 
-function contractR5(grupper, daekning, mindstRækker) {
+function contractR5(grupper, daekning, mindstRækker, krav = {}) {
   // (d) En kopi porten ikke læser, er en kopi porten ikke dømmer på. Den gamle
   //     PHP-læsning gjorde præcis det, og R5 erklærede i sin egen docblock at
   //     den læser "alle tre" kopier — målt 2026-09-27: consent 20/20/**0**,
@@ -627,14 +728,29 @@ function contractR5(grupper, daekning, mindstRækker) {
       const streng = daekning[navn];
       assert.ok(
         streng && streng[0],
-        `signatur-rækken «${navn}» har ingen installationstest i DAEKNING — en række ingen har læst ` +
-          "et krav på kan hverken bekræfte eller afkræfte sit eget mønster"
+        `signatur-rækken «${navn}» har ingen installationstest i DAEKNING — en række ingen har læst `
+          + "et krav på kan hverken bekræfte eller afkræfte sit eget mønster"
       );
-      assert.ok(
-        /(\/\/|[.=<])/.test(streng[0]),
-        `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den `
-          + "er skrevet efter mønsterets eget navn og beviser intet"
-      );
+      // (e) I en prosa-tabel er installationen en sætning fra en virksomheds
+      //     side, så kravet er at den læses som en sætning — ikke at den rummer
+      //     et tegn, som kun en URL gør. Se `DAEKNING_DORA`.
+      if (krav.prosa) {
+        const ord = (streng[0].toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
+        const navneord = new Set(navn.toLowerCase().match(/[a-z0-9æøåäöéèüç_-]+/g) || []);
+        const udenfor = ord.filter((o) => !navneord.has(o));
+        assert.ok(
+          ord.length >= 6 && udenfor.length >= 2,
+          `installationstesten for «${navn}» er «${streng[0]}» — den har ${ord.length} ord og `
+            + `${udenfor.length} ord uden for rækkens navn, og en prosa-tabel kræver mindst 6 og 2, `
+            + "fordi en genindskrivning af navnet ellers ville være grøn"
+        );
+      } else {
+        assert.ok(
+          /(\/\/|[.=<])/.test(streng[0]),
+          `installationstesten for «${navn}» er «${streng[0]}» — den rummer hverken //, ., = eller <, så den `
+            + "er skrevet efter mønsterets eget navn og beviser intet"
+        );
+      }
       assert.ok(
         streng[1] && BEVISSTYRKE.some((p) => streng[1].startsWith(p)),
         `bevisstyrken for «${navn}» er «${streng[1]}» — den skal begynde med ${BEVISSTYRKE.join(", ")}, `
@@ -906,6 +1022,8 @@ const MOTOR_FILER = [
 const læsMønstre = (gruppe) => MOTOR_FILER.map(([fil, php]) => signaturMonstre(readFileSync(fil, "utf8"), gruppe, php));
 const R5_MOENSTRE = læsMønstre("consent");
 const R5_TRACKERE = læsMønstre("trackers");
+const R5_FORMS = læsMønstre("forms");
+const R5_DORA = læsMønstre("dora");
 
 const FIXTURES = [...PROSA_FIXTURES, ...MEKANISME, ...DORA_FIXTURES];
 
@@ -915,6 +1033,8 @@ const FIXTURES = [...PROSA_FIXTURES, ...MEKANISME, ...DORA_FIXTURES];
 // grund. `mindstRækker` er regel (d): hver kopi skal læse hele tabellen.
 await test("R5 hver consent-række har en installationstest", () => contractR5(R5_MOENSTRE, DAEKNING, MINDST.consent));
 await test("R5 hver tracker-række har en installationstest", () => contractR5(R5_TRACKERE, DAEKNING_TRACKERE, MINDST.trackers));
+await test("R5 hver form-række har en installationstest", () => contractR5(R5_FORMS, DAEKNING_FORMS, MINDST.forms));
+await test("R5 hver dora-række har en installationstest", () => contractR5(R5_DORA, DAEKNING_DORA, MINDST.dora, { prosa: true }));
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -934,7 +1054,8 @@ for (const fixture of FIXTURES) {
 console.log(
   `${passed} signatur-prosatest bestået — ${FIXTURES.length} fixtures i ${Object.keys(PROSA).length} sprog, `
     + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 6 kontrakter, 3 produkter, `
-    + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length} af 46 rækker med installationstest`
+    + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length
+      + Object.keys(DAEKNING_FORMS).length + Object.keys(DAEKNING_DORA).length} af 46 rækker med installationstest`
 );
 
 if (failures.length) {
@@ -1108,6 +1229,52 @@ if (process.argv.includes("--selftest")) {
   //     have vædt, hvis den ikke var en død markør.
   const ubevidst = { ...DAEKNING, Axeptio: ['<script src="https://axeptio.cdn.app/axeptio.js"></script>', "testet"] };
   expectRed("R5 (bevisstyrken er ikke en af de fire slags)", contractR5, R5_MOENSTRE, ubevidst, MINDST.consent);
+
+  // 20. R5 for `forms`: en række uden installationstest. Samme fejl som case 14,
+  //     men i den tabel hvor en ny betalingsplatform oftest bliver tilføjet — og
+  //     det er den tabel hvor opgave 65 del 2 fandt **to** døde rækker, fordi
+  //     ingen havde spørgsmålet "hvad skriver leverandøren faktisk?".
+  const formsUden = { ...DAEKNING_FORMS };
+  delete formsUden["WooCommerce Checkout"];
+  expectRed("R5 (form-række uden installationstest)", contractR5, R5_FORMS, formsUden, MINDST.forms);
+
+  // 21. R5 for `forms`: det mønster, den ene af de to døde rækker havde. Den er
+  //     skrevet mod portens **egen** mønsterkopi, så selftesten beviser at
+  //     rettelsen ikke var kosmetisk: samme streng, grønt før og rødt nu.
+  const shopifySomDenVar = R5_FORMS.map((rækker) => rækker.map((r) => (
+    r.navn === "Shopify Checkout" ? { navn: r.navn, re: /shopify[_-]?checkout|checkout[_-]?shopify/i } : r
+  )));
+  expectRed("R5 (form-række mønstret døde på leverandørens egen markup)", contractR5, shopifySomDenVar, DAEKNING_FORMS, MINDST.forms);
+
+  // 22. R5 for `dora`: en række uden installationstest. Uden den ville porten
+  //     være grøn på ni rækker den aldrig har set sætningen fra en virksomheds
+  //     side — altså præcis det R5 blev skrevet for.
+  const doraUden = { ...DAEKNING_DORA };
+  delete doraUden["Status page / uptime monitoring"];
+  expectRed("R5 (dora-række uden installationstest)", contractR5, R5_DORA, doraUden, MINDST.dora, { prosa: true });
+
+  // 23. R5 regel (e): en prosa-streng der bare er rækkens navn med et punktum.
+  //     Den er valgt fordi den **består** det gamle krav om `//`, `.`, `=` eller
+  //     `<` **og** mønsteret — så uden regel (e) ville den være grøn. Det er
+  //     dora-tabellen hele problem: en påstand om virksomheden skal læses som
+  //     en sætning, ellers er den en genindskrivning af det vi led efter.
+  const doraNavnebaseret = { ...DAEKNING_DORA, "Status page / uptime monitoring": ["Status page / uptime monitoring.", "dokumenteret målt 2026-09-27"] };
+  expectRed("R5 (dora-strengen er navnet igen, ikke en sætning)", contractR5, R5_DORA, doraNavnebaseret, MINDST.dora, { prosa: true });
+
+  // 24. R5 regel (e): en sætning der er for kort til at være en påstand om en
+  //     virksomhed. Den matcher mønsteret, så kun ordtællingen kan fange den.
+  const doraKort = { ...DAEKNING_DORA, "SPF (Email sender auth)": ["SPF record.", "dokumenteret målt 2026-09-27"] };
+  expectRed("R5 (dora-strengen er for kort til at være en installationstest)", contractR5, R5_DORA, doraKort, MINDST.dora, { prosa: true });
+
+  // 25. R5 for `dora`: mønsteret skal kunne finde sætningen, i hver kopi. Det er
+  //     den samme fejl som case 15, men i en prosa-tabel — og den er værd at have
+  //     fordi `dora` er den tabel hvor en fejlretning giver en **falsk**
+  //     række: en DORA-påstand læst i prosa skal give fund, ellers er rapporten
+  //     stille om noget kunden har skrevet offentligt.
+  const doraBoet = R5_DORA.map((rækker) => rækker.map((r) => (
+    r.navn === "DMARC (Email policy)" ? { navn: r.navn, re: /dmarc[ _-]?enforcement/i } : r
+  )));
+  expectRed("R5 (dora-mønsteret finder ikke sin egen installationstest)", contractR5, doraBoet, DAEKNING_DORA, MINDST.dora, { prosa: true });
 
   /*
    * Fire mutationer mod repoets egne filer.

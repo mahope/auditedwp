@@ -447,10 +447,85 @@ ikke kan bestå.
 `analytify`; CAOS (Cookie Assistant for Osano) hedder *caos* — og Osano dækkes
 allerede af `osano` i rækken ovenfor, så det er ikke ny dækning.
 
-**Hvad R5 *ikke* har dækket endnu, skrevet ned fordi porten ellers læses som om
-den gjorde det:** denne iteration dækker `consent`-tabellen. `trackers` (12),
-`forms` (5) og `dora` (9) har endnu ingen installationstest — opgave 65.
+**Hvad R5 *ikke* havde dækket da denne fejl blev skrevet, skrevet ned fordi
+porten ellers læses som om den gjorde det:** den iteration dækkede
+`consent`-tabellen. `trackers` (12) kom i opgave 65 del 1, og `forms` (5) og `dora`
+(9) i del 2 — hvor `forms` gav to døde rækker, se **Fejl 10** nedenfor.
 
 **Bevisstyrken.** 8 strenge er verificeret i WordPress' eget plugin-katalog
 (200), 2 på leverandørens egen vært (200), og 10 er markeret `formodnet` — de
 står i ❓-afsnittet med målingen der viser hvorfor de ikke er bevis.
+
+## Fejl 10 — to betalingsplatforme i `forms` var døde rækker (opgave 65 del 2)
+
+R5 blev udvidet til de to sidste tabeller, og den **fandt to rækker der aldrig
+kunne finde noget** — begge i `FORM_PLUGIN_SIGNATURES`, begge i begge motorer.
+
+**Målt før rettelsen, 2026-09-27.** Fire rigtige Shopify-butikkers kurv- og
+betalingssider (6 sider, hentet og gennemgået for det tekniske udsnit motoren
+læser — scripts og attributter):
+
+| Butik / side | `shopify[_-]?checkout` (gammelt) | `shopify-accelerated-checkout` (målt) |
+|---|---|---|
+| allbirds.com `/cart` | nej | ja |
+| allbirds.com `/checkouts/cn/en-us` | nej | ja |
+| deathwishcoffee.com `/cart` | nej | ja |
+| kith.com `/cart` | nej | ja |
+| tentree.com `/cart` | nej | ja |
+| tentree.com `/checkouts/cn/en-us` | nej | ja |
+
+**6 af 6 sider: 0 fund med det gamle mønster, 6 fund med det målte.** Mønstret
+kræver at `shopify` og `checkout` står **ved siden af hinanden**; en rigtig
+Shopify-side siger `shopify-accelerated-checkout`. Det er præcis opgave 63s
+fejlklasse — en markør skrevet mod en adresse leverandøren ikke leverer.
+
+**Stripe var død på samme måde, og det er den pinligere af de to.** Mønstret var
+`stripe[_-]?checkout|stripe[_-]?payment|[_-]?stripe[_-]?form`, og **alle** de
+former Stripe faktisk leverer, matcher det ikke:
+
+| Rigtig Stripe-markør | Matchet før |
+|---|---|
+| `<form action="https://checkout.stripe.com/c/pay/cs_test_…">` | nej — "checkout" står først |
+| `<script src="https://js.stripe.com/v3/">` | nej |
+| `<div id="payment-element" data-stripe-key="pk_test_…">` | nej |
+| `Stripe("pk_live_…")` | nej |
+| `https://buy.stripe.com/6oU4gy76PgvgdBIdAXbMQ00` (vores eget betalingslink) | nej |
+
+Det eneste der matchede var en `.php`-sti under `wp-content/plugins/
+woocommerce-gateway-stripe/`, som aldrig serveres i en sides markup.
+
+**Rettelse:** begge mønstre får de **målte** former som nye alternativer, og de
+gamle bliver stående, fordi de koster intet og et specialt tema kan godt bruge
+dem. `shopify[_-]?(accelerated[_-]?)?checkout` og
+`js\.stripe\.com\/v[0-9]|data-stripe-(key|publishable)`. Bevis på en rigtig
+kurvside: gammelt mønster **nej**, nyt mønster **ja**.
+
+**To ting der er ærligt mindre end de ser ud til, skrevet ned fordi R5 ellers ville
+læses som om dækningen var fuldstændig:**
+
+1. `shopify-accelerated-checkout` er butikkens **accelerated-wallet-knap**, ikke
+   selve betalingssiden. Den var på alle seks sider, men en butik der har slået den
+   fra fanges ikke. Rækken dækker altså de Shopify-butikker der har den slået
+   til — en delmængde, målt og skrevet ned, ikke antaget.
+2. `js.stripe.com/v3` beviser at Strikes JavaScript er indlæst, ikke at en
+   betalingsformular vises. Det er samme opgave som rækken har i forvejen: dommen
+   kræver formular-markup i de samme bytes (se pluginens kommentar ved `forms`),
+   så en side der kun indlæser Stripe-JS får et navn, ingen dom.
+
+**Ingen `plugin/**`-fil rørt.** `forms`-tabellen i pluginen har to rækker — de to
+her findes kun i motorerne — så der er ingen plugin-version, ingen ny zip og
+ingen publiceret overflade. Rettelsen er **kode, ikke live**: motorerne deployes
+af `worker-scan`, og den kan ikke deployes fra en agent (spørgsmål 9). Den
+publicerede npm-CLI får den ved næste udgivelse, som Mads gør.
+
+**Hvad `dora` krævede, og hvorfor den fik sin egen regel.** `dora` er den ene
+tabel hvor installationstesten **er** prosa: de ni rækker er påstande om
+virksomheden (SPF, DKIM, DMARC, MX, failover, incident response, BCP, status
+page), og det eneste sted en sådan påstand står er virksomhedens egen side. R4
+kræver endda at `dora` *kun* læser prosa. Så den fik regel **(e)**: mindst seks ord
+og mindst to ord uden for rækkens eget navn, i stedet for kravet om `//`, `.`, `=`
+eller `<`. Uden den ville `"Status page / uptime monitoring."` være **grøn** — den
+har et punktum, og den er en genindskrivning af det vi led efter. Målt før
+rettelsen: ingen af de ni dora-rækker var døde; de ni mønster matcher deres
+egen sætning, i alle tre kopier. **R5 dækker nu alle 46 rækker.**
+
