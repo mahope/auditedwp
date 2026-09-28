@@ -35,7 +35,7 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { runScan } from "../eucomply-scanner/engine/index.js";
+import { runScan, CONDITIONAL_CHECKS, CONDITIONAL_CHECK_KEYS } from "../eucomply-scanner/engine/index.js";
 
 /** De fem tjek opgave 43 portede, med de nøgler run_checks() skriver. */
 const SHARED = ["consent_mode_v2", "tcf", "trackers", "headers", "dora"];
@@ -199,14 +199,68 @@ await test("en forside der ikke kan læses er aldrig et bestået tjek", () => {
   }
 });
 
-await test("de fem tjek henter forsiden én gang", () => {
-  const php = phpVerdicts(FIXTURES[0]);
+await test("de fem tjek henter forsiden én gang", () => {  const php = phpVerdicts(FIXTURES[0]);
   assert.equal(php._fetches, 1, `forsiden blev hentet ${php._fetches} gange for fem tjek`);
 });
 
 await test("en ulæselig forside heller ikke hentes fem gange", () => {
   const php = phpVerdicts(FIXTURES.find((f) => f.error));
   assert.equal(php._fetches, 1, `forsiden blev hentet ${php._fetches} gange på en fejlet hentning`);
+});
+
+// ── Betingelsen (opgave 85 del 2b) ─────────────────────────────────────────────
+// Fire af elleve tjek siger selv i deres egen `detail`, at de kun kan fejle
+// under en forudsætning. Før del 2b talte plugin-rapporten dem alligevel med:
+// et site uden annoncering fik "9 of 11 checks passed, 2 failed", hvor de to
+// var `dora` og en cookie-banner ingen har brug for. Rapporten er det
+// dokument et bureau videregiver til sin kunde under eget navn.
+//
+// Derfor er betingelseslisten **én** liste i to motorer, og det er den her
+// port der holder dem sammen: PHPens `conditional_checks()` skal have præcis
+// motorens nøgler og præcis motorens sætninger. Uden porten var den anden
+// metode en *tredje* historie om det samme scan.
+await test("pluginens betingelsesliste er motorens — nøgle for nøgle", () => {
+  const php = phpVerdicts(FIXTURES[0]);
+  const phpKeys = CONDITIONAL_CHECK_KEYS.filter((k) => k in php && "applies" in php[k]);
+  assert.deepEqual(phpKeys, [...CONDITIONAL_CHECK_KEYS], `motorens nøgler er ${CONDITIONAL_CHECK_KEYS}, pluginens ${phpKeys}`);
+});
+
+await test("hver betingelse er den samme sætning i begge motorer", () => {
+  const php = phpVerdicts(FIXTURES[0]);
+  for (const key of CONDITIONAL_CHECK_KEYS) {
+    assert.equal(typeof php[key].condition, "string", `${key} har ingen condition-sætning i pluginen`);
+    assert.equal(php[key].condition, CONDITIONAL_CHECKS[key], `${key}: pluginens sætning er en anden end motorens`);
+    assert.ok(/^Not counted here — .+\.$/.test(php[key].condition), `${key}: sætningen er ikke en hel sætning`);
+  }
+});
+
+await test("dora gælder aldrig — i begge motorer", () => {
+  // En offentlig side kan ikke afgøre om driftsselskabet er en bank, så rækken
+  // er aldrig tællende. Tælles den, er 100 % uopnåeligt for alle.
+  const php = phpVerdicts(FIXTURES[1]);
+  assert.equal(php.dora.applies, false, "dora blev tællende i pluginen på en side med DORA-tekst");
+  assert.equal(CONDITIONAL_CHECKS.dora.includes("not a DORA assessment"), true, "dora-sætningen siger ikke at det ikke er en DORA-vurdering");
+});
+
+await test("en side uden ad-tech har præcis de samme betingede rækker i begge motorer", async () => {
+  const fixture = FIXTURES[0];
+  const js = await engineVerdicts(fixture);
+  const php = phpVerdicts(fixture);
+  const jsNotCounted = [...js.score.conditional].sort();
+  const phpNotCounted = CONDITIONAL_CHECK_KEYS.filter((k) => php[k].applies === false).sort();
+  assert.deepEqual(phpNotCounted, jsNotCounted, `motoren tæller ikke ${jsNotCounted}, pluginen ${phpNotCounted}`);
+  // Og de tællende skal være mindst ét, ellers ville porten være grøn fordi
+  // alt udelades — det er den fejl den her skal kunne fange.
+  assert.ok(js.score.applicable_total < js.score.total, "motoren tæller alle rækker; betingelsen testes ikke");
+});
+
+await test("en butik med alt har ingen betinget række undtagen dora", async () => {
+  const fixture = FIXTURES[1];
+  const js = await engineVerdicts(fixture);
+  const php = phpVerdicts(fixture);
+  const phpNotCounted = CONDITIONAL_CHECK_KEYS.filter((k) => php[k].applies === false).sort();
+  assert.deepEqual(phpNotCounted, [...js.score.conditional].sort(), `motoren ${js.score.conditional}, pluginen ${phpNotCounted}`);
+  assert.deepEqual(phpNotCounted, ["dora"], "der burde kun være dora tilbage på en side med consent, TCF og trackere");
 });
 
 if (process.argv.includes("--selftest")) {
@@ -230,6 +284,32 @@ if (process.argv.includes("--selftest")) {
   }
   if (caught.length !== 2) {
     failures.push(`selftest: forventede 2 negative cases fanget, fangede ${caught.length}`);
+  } else {
+    passed += 2;
+  }
+
+  // Den betingede liste skal kunne være rød. Mutationen er en sætning, der er
+  // ændret ét ord: motoren siger "a public page scan", pluginen siger "a scan".
+  // Begge er sande, og alligevel ville et klientdokument læse to forskellige
+  // sætninger om det samme tjek — så præcis den mutation skal fanges.
+  const drifted = { ...CONDITIONAL_CHECKS };
+  drifted.dora = drifted.dora.replace("a public page scan", "a scan");
+  const conditionCaught = [];
+  try {
+    for (const key of Object.keys(drifted)) {
+      assert.equal(drifted[key], CONDITIONAL_CHECKS[key], `${key}: pluginens sætning er en anden end motorens`);
+    }
+  } catch {
+    conditionCaught.push("sætning");
+  }
+  const extraKey = { ...CONDITIONAL_CHECKS, backups: "Not counted here — en femte." };
+  try {
+    assert.deepEqual(Object.keys(extraKey), Object.keys(CONDITIONAL_CHECKS), "en nøgle i den ene motor og ikke i den anden");
+  } catch {
+    conditionCaught.push("nøgle");
+  }
+  if (conditionCaught.length !== 2) {
+    failures.push(`selftest: forventede 2 negative betingelses-cases fanget, fangede ${conditionCaught.length}`);
   } else {
     passed += 2;
   }

@@ -370,6 +370,16 @@ foreach ( $CHECKS as $key => $method ) {
     }
     $out[ $key ] = $m->invoke( $obj );
 }
+// Den betingelses-passage `run_checks()` kører efter de elleve tjek, så den
+// skal også køre her — ellers ville porten teste en rapport, der aldrig
+// skrives. Den er privat, så den ganges ad de samme veje som tjekkerne ovenfor.
+if ( '' === $ONLY && $ref->hasMethod( 'mark_conditional' ) ) {
+    $m = $ref->getMethod( 'mark_conditional' );
+    if ( PHP_VERSION_ID < 80100 ) {
+        $m->setAccessible( true );
+    }
+    $out = $m->invoke( $obj, $out );
+}
 $out['_fetches'] = $GLOBALS['eucomply_probe_fetches'];
 $out['_heads']   = $GLOBALS['eucomply_probe_heads'];
 $out['_keys']    = array_keys( $CHECKS );

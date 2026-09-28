@@ -325,12 +325,116 @@ class EUComply {
         $results['headers']        = $this->check_security_headers();
         $results['dora']           = $this->check_dora();
 
+        $results = $this->mark_conditional( $results );
+
         // Store results.
         update_option( 'eucomply_scan_results', $results );
         update_option( 'eucomply_last_scan', current_time( 'mysql' ) );
         $this->record_history( $results );
         $this->maybe_send_alert( $results );
 
+        return $results;
+    }
+
+    /**
+     * The four checks that only apply under a stated condition, with the
+     * sentence that states it.
+     *
+     * These keys and these sentences are the same ones the universal engine
+     * exports as `CONDITIONAL_CHECKS` in `shared/scan-engine.js`, and
+     * `tools/test_plugin_engine_parity.mjs` fails if the two lists ever drift.
+     * That gate is the point: without it this method would be a *second* list,
+     * and a second list is how five surfaces end up telling five stories about
+     * the same scan. With it, the sentence a client reads in this report is the
+     * sentence the free scanner shows, because there is only one.
+     *
+     * @return array key => sentence.
+     */
+    private static function conditional_checks() {
+        return array(
+            'cookies'         => 'Not counted here — this check only applies to a site that sets cookies or loads non-essential trackers.',
+            'tcf'             => 'Not counted here — IAB TCF only applies to a site that runs programmatic advertising in the EEA.',
+            'consent_mode_v2' => 'Not counted here — Consent Mode v2 is only required of a site that runs Google Ads in the EEA.',
+            'dora'            => 'Not counted here — DORA applies to financial entities, and a public page scan cannot tell whether the operator is one. This scan is not a DORA assessment.',
+        );
+    }
+
+    /**
+     * Short names for the same four keys, matching `COND_LABELS` in the
+     * scanner pages.
+     *
+     * A check's own `label` is no use in the "not counted here" list: three of
+     * the four are written per-result ("DORA-related page signals: 0 found"),
+     * and a sentence reading "Not counted here: DORA-related page signals: 0
+     * found" says nothing. The check's `label` still heads its own row.
+     *
+     * @return array key => short name.
+     */
+    private static function conditional_labels() {
+        return array(
+            'cookies'         => 'cookies',
+            'tcf'             => 'IAB TCF',
+            'consent_mode_v2' => 'Google Consent Mode v2',
+            'dora'            => 'DORA',
+        );
+    }
+
+    /**
+     * Mark which checks apply to this site, from this site's own findings.
+     *
+     * Four of the eleven checks say, in their own `detail`, that they can only
+     * fail under a condition: no cookie banner matters on a site that sets no
+     * cookies, and DORA is not assessable from a page scan at all. Counting
+     * them anyway meant a site that had done everything right was handed a
+     * report reading "9 of 11 checks passed, 2 failed" — where the two failures
+     * were `dora` and a banner nobody needed. An agency forwards that report to
+     * its client under its own name, so the number is the product.
+     *
+     * Every signal here comes from the front page the other checks already
+     * read, and the ad-platform signal reuses the `trackers` signature table
+     * rather than a fourth copy of the ad-vendor list. The `cookies` and `dora`
+     * keys keep the engine's own rule: `dora` is never applicable, because a
+     * public page cannot tell whether the operator is a financial entity, and
+     * counting it would make a perfect score unreachable for everyone.
+     *
+     * @param array $results As returned by run_checks().
+     * @return array The same results, each with `applies` and, where it does
+     *                not apply, the sentence that says why.
+     */
+    private function mark_conditional( $results ) {
+        $page = $this->front_page();
+        $html = $page['ok'] ? $page['html'] : '';
+        $code = self::code_and_attributes( $html );
+
+        // Programmatic advertising, from the two ad rows the `trackers` table
+        // already carries (Google Ads remarketing, DoubleClick / AdSense).
+        $ads = array();
+        foreach ( self::matched_signatures( 'trackers', $html ) as $name ) {
+            if ( 'Google Ads remarketing' === $name || 'DoubleClick / AdSense' === $name ) {
+                $ads[] = $name;
+            }
+        }
+        $ads = (bool) $ads;
+
+        $has_consent   = (bool) self::matched_signatures( 'consent', $html );
+        $has_trackers  = (bool) self::matched_signatures( 'trackers', $html );
+        $sets_cookies  = ! empty( $page['headers']['set-cookie'] );
+        $google_ads_id = (bool) preg_match( '~google_ads|gtag\(|AW-[0-9]|gtag/js/~i', $code );
+
+        $applies = array(
+            'cookies'         => $has_consent || $has_trackers || $sets_cookies,
+            'tcf'             => $ads,
+            'consent_mode_v2' => $ads || $google_ads_id,
+            'dora'            => false,
+        );
+
+        foreach ( self::conditional_checks() as $key => $sentence ) {
+            if ( ! isset( $results[ $key ] ) ) {
+                continue;
+            }
+            $results[ $key ]['applies'] = $applies[ $key ];
+            $results[ $key ]['condition'] = $sentence;
+        }
         return $results;
     }
 
@@ -2327,7 +2431,14 @@ class EUComply {
         echo '<table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>';
         foreach ( $results as $key => $r ) {
             $status = ! empty( $r['pass'] ) ? 'PASS' : ( ! empty( $r['warn'] ) ? 'WARN' : 'FAIL' );
-            echo '<tr><td>' . esc_html( $r['label'] ) . '</td><td>' . $status . '</td><td>' . esc_html( $r['detail'] ) . '</td></tr>';
+            echo '<tr><td>' . esc_html( $r['label'] ) . '</td><td>' . $status . '</td><td>' . esc_html( $r['detail'] );
+            // The condition, in the row it qualifies. A check that does not
+            // apply must not be readable as a failure the site can fix, and the
+            // sentence that says so belongs to the row, not to a footnote.
+            if ( isset( $r['applies'] ) && false === $r['applies'] && ! empty( $r['condition'] ) ) {
+                echo '<br><em>' . esc_html( $r['condition'] ) . '</em>';
+            }
+            echo '</td></tr>';
         }
         echo '</table>';
         if ( empty( $results ) ) {
@@ -2361,7 +2472,42 @@ class EUComply {
             }
             // A warning is a partial result, not a pass. It is counted and named
             // separately so the headline number cannot overstate compliance.
-            echo '<p>' . esc_html( $summary ) . '. Warnings are not counted as passed.</p>';
+            echo '<p>' . esc_html( $summary ) . '. Warnings are not counted as passed.';
+
+            // Two numbers, because they may not be read as one. The first is
+            // every check; the second is only the checks that apply to this
+            // site. A site with no advertising has no TCF banner to install and
+            // no Consent Mode to set, so on the first number alone a perfectly
+            // configured site reads as though it failed two things.
+            $applicable = 0;
+            $passed_applicable = 0;
+            $not_counted = array();
+            foreach ( $results as $key => $r ) {
+                if ( ! isset( $r['applies'] ) || false !== $r['applies'] ) {
+                    continue;
+                }
+                $not_counted[] = $key;
+            }
+            $conditional = self::conditional_checks();
+            foreach ( $results as $key => $r ) {
+                if ( ! array_key_exists( $key, $conditional ) || isset( $r['applies'] ) && false === $r['applies'] ) {
+                    continue;
+                }
+                $applicable++;
+                if ( ! empty( $r['pass'] ) ) {
+                    $passed_applicable++;
+                }
+            }
+            if ( $not_counted ) {
+                $labels = array();
+                $short  = self::conditional_labels();
+                foreach ( $not_counted as $key ) {
+                    $labels[] = isset( $short[ $key ] ) ? $short[ $key ] : $key;
+                }
+                echo ' Of the ' . $applicable . ' checks that apply to this site, ' . $passed_applicable . ' passed. Not counted here: '
+                    . count( $not_counted ) . ' of ' . count( $results ) . ': ' . esc_html( implode( ', ', $labels ) ) . '.';
+            }
+            echo '</p>';
         }
         echo $this->build_history_section(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in build_history_section()
         return ob_get_clean();
