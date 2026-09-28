@@ -118,7 +118,7 @@ h2{font-size:20px}}</style>
 <div class="wrap">
 
 <h1>How to Convert JSON to SQL INSERT Statements</h1>
-<!--shell:meta--><p class="art-meta"><time datetime="2026-09-07">Published 2026-09-07</time><span>3 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
+<!--shell:meta--><p class="art-meta"><time datetime="2026-09-25">Updated 2026-09-25</time><span>3 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
 
 
 <p>You have a JSON export and need it in a database: seed data, a migration, test fixtures for staging. Pasting values by hand doesn't scale, and most online converters want you to upload data you'd rather keep local. Here's the terminal-first path.</p>
@@ -214,7 +214,7 @@ cols = list(rows[0])
 
 </div>
 </div><!--/pg-legacy-->
-<!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="prev" href="/transmute/guides/json-to-xml/" rel="prev"><small>Newer</small><b>How to Convert JSON to XML</b></a><a class="next" href="/transmute/guides/json-to-csv-pipeline/" rel="next"><small>Older</small><b>JSON to CSV, Minus the Spreadsheet Cleanup</b></a></nav><!--/shell:pn-->
+<!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="next" href="/transmute/guides/csv-to-xml/" rel="next"><small>Older</small><b>How to Convert CSV to XML</b></a></nav><!--/shell:pn-->
 <!--shell:grid-end--></div><aside class="toc-side" aria-label="Contents"><h2>Contents</h2><ol><li class="lvl2"><a href="#cli">Option 1: The Transmute CLI (free)</a></li><li class="lvl2"><a href="#filter">Shaping rows before they hit the database</a></li><li class="lvl2"><a href="#escaping">Escaping and types (the part that breaks imports)</a></li><li class="lvl2"><a href="#python">Option 2: Python</a></li><li class="lvl2"><a href="#why-not-web">Why not paste it into an online converter?</a></li><li class="lvl2"><a href="#batching">Loading bigger files</a></li><li class="lvl2"><a href="#gotchas">Gotchas</a></li><li class="lvl3"><a href="#pipelines-like-this-without-writing-a-script">Pipelines like this — without writing a script</a></li></ol></aside></div><!--/shell:grid-end-->
 </main>
 <footer class="sf">

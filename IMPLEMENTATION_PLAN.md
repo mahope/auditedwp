@@ -1,3 +1,97 @@
+Opdateret: 2026-09-28 (iteration 111) — **opgaven for i går ("kør skallen på
+`/cli/`") ville have lavet skade, og det var målingen af den der reddede den.
+Skallen er ikke et fast punkt: fra HEAD ændrede første kørsel 33 sider, den næste
+39, og først den tredje standsede det. To opgaver i træk skrev "idempotent —
+anden kørling: 0 ændringer". Begge var målt på den ene side de arbejdede på.**
+
+**Deploy-verificering af iteration 110 (nu lukket): `DEPLOY OK 2026-09-28`.**
+Live `/api/` har `<div class="tbl">` to steder, **tre** levende `<a href="/da/api/">`
+i `sh-lang` med 0 `is-off`, og brødkrummen `Home › API` uden mellemrum — målt på
+indhold, ikke på HTTP 200. Noten fra i går sagde "Merge endnu IKKE sket"; mergen
+(var `aaa3917`) var sket, så noten var forældet, ikke sand.
+
+**Hvad målingen af `/cli/` faktisk fandt.** Punkt 1 fra i går bad om at køre
+skallen på `/cli/`. Jeg kørte den — på hele træet, fordi `apply_shell.py` ikke har
+en `--only`. Den første ændring den gjorde på `/cli/` var den her:
+
+    -  <li>…every check prints its verdict, ✅ passed, ⚠️ needs a look, ❌ failed…
+    +  <li>…every check prints its verdict,  passed,  needs a look,  failed…
+
+**Emoji-renseren slettede symbolerne og efterlod dobbelte mellemrum.** Sætningen
+er grammatisk og meningsløs uden dem, fordi de *er* det scanneren printer. Det er
+samme fejlklasse som 🔍 i sid kodeblok (opgave 110), og den rammer `/cli/`s prosa
+i stedet for kode. Rettelsen er tre linjer i `clean()`: emoji'en markeres, det
+mellemrum den efterlod renses, og **først** så fjernes markøren. Første
+udformning var `re.sub(r"  +", " ", txt)` — den ødelagde indrykningen af 145
+siders markup (`  <div>` → ` <div>`, 20.274 linjer rørt). Portene ville ikke have
+fanget det, fordi det *er* et fast punkt; det er fundet ved at se på diffen.
+
+**Den rigtige fejl var den dybere, og den lå i datoerne.** 33 sider fik nye
+`art-meta`-datoer, fordi `article_meta()` skrev `Updated <git-dato>`, og næste
+kørsel læste **sit eget output** tilbage som sidens publiceringsdato — `find_date()`
+tager det første `<time>` i body, og efter en kørsel er det skalens eget. Den nye
+dato flyttede siden i `prev_next()`-sorteringen, så hele bloggens forrige/næste-
+kæde skrev sig om, og de sider den nåede fik nye datoer, som fandt nye naboer.
+**En mekanisk gen-rendring er ikke en redaktionel opdatering**, så den må heller
+ikke flytte en dato. `article_meta()` genbruger nu en dato skalen selv har skrevet,
+uændret.
+
+**Den tredje fejl fandt porten fra i går, og den er værd at læse.** `check_sample_
+coverage.py` blev rød, fordi skallens "fjern mellemrum efter en tag"-regel
+spiste **indrykningen i prøverapportens dato-celler** (`               Dec 17`).
+Reglen er rigtig for `<p>\n  tekst` og forkert for en inline `span` med
+`style=`, som er sat med vilje for at aligninge. Reglen springer nu elementer med
+`style=` over.
+
+**Målt / accept:** fra HEAD kræver skallen nu 3 køringer (32 → 39 → 0) og så
+stopper den; det **committede** træ kræver 1: `R1 OK — 230 sider, 0 ændret af én
+kørsel af den rigtige kæde`. 0 emoji i prosa i hele træet (230 sider);
+`/cli/`s sætning læses "verdict, passed, needs a look, failed" med ét mellemrum;
+prøverapporten urørt; `SPEJLINGER MATCHER`; selftest R2 grøn; `GATE GRØN — alle 40
+steps bestået` (var 39). `php -l` grøn på begge plugin-kopier (ingen PHP rørt).
+
+**Baseline (Plausible 28/9, uændret):** 1 besøger, bounce 100 %, kun Direct,
+28 dage. Denne iteration ændrer intet i tallene — det er en egenskab ved
+værktøjet, der bygger sitet, ikke en side der sælger.
+
+**Rørt:** `tools/apply_shell.py` (`clean()`, `article_meta()`, reglen for
+mellemrum efter tag), `tools/check_shell_fixed_point.py` (ny),
+`tools/quality_gate.sh` (trin 40, to kald), `IMPLEMENTATION_PLAN.md`, samt de
+genererede `site/`-sider der nåede deres faste punkt (48 filer, 88 linjer:
+tbl-indpakning, emoji, HYPE-verb, bloggens forrige/næste-kæde) og de tre
+spejlinger af `/api/`. **Ingen plugin-version, ingen `update.json`, ingen ny zip,
+ingen Stripe-pris, ingen worker, ingen upload.**
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **De 33 legacy-siders `art-meta` er skrevet nu, så næste skalapass er 0.**
+   Bevar det: rør ikke `site/`-datoer i hånden, og kør aldrig skallen to gange i
+   træk for at "være sikker" — `R1` i gaten dømmer det, så et ekstra kørsel er
+   enten unødvendigt eller en fejl.
+2. **R2 i den nye port er tynd.** Den fjerner én `art-meta` og ser én side flytte
+   sig — den dokumenterer, at porten kan se bevægelse, men den måler ikke den
+   kæde der gjorde det her: `catalogue()`'s sorteringsnøgle. Det er den næste
+   opgave, hvis kæden skal være helt dømt.
+3. **`/cli/`s emoji-erklæring er stadig tabt.** Symbolerne ✅/⚠️/❌ blev fjernet fra
+   prosa, så sætningen nu beskriver noget uden at sige hvad. Sæt dem i `<code>`,
+   som beskyttelsen fra opgave 110 dækker, så siden igen siger hvad
+   `eucomply-scanner` printer.
+4. **De 42 øvrige engelsk-kun-siders salgsværdi** (uændret fra 108/109/110):
+   mål først hvilke der reelt sælger. Der er 1 besøger på 28 dage.
+5. Pris-overvågning (uændret) og root-LICENSE (spørgsmål 21) — kan ikke løses
+   uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): træet er et fast punkt, emoji-renseren
+> efterlader ingen dobbelte mellemrum, og skallen ødelægger ikke indrykning —
+> kodecommit på ceo/skallen-fast-punkt, 2026-09-28 ca. 20:5x CEST. Verificér **indhold**: live `/cli/` skal sige "every check prints its
+> verdict, passed, needs a look, failed" med **ét** mellemrum og uden ✅/⚠️/❌ i
+> den sætning; live `/badge/` skal miste ⚖️ i tabellen (rensning) men **beholde**
+> `               Dec 17`-lignende indrykning i prøverapporten; HTTP 200 beviser
+> intet, det er disse to ting.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+
 Opdateret: 2026-09-28 (iteration 110) — **den engelske `/api/`-side havde en død
 sprogvælger, to tabeller uden scroll-indpakning og en brødkrumme der ikke passede
 med sin egen titel. Og så viste målingen af punkt 2 fra i går, at "landminen

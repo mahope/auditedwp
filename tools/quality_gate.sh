@@ -690,6 +690,20 @@ hdr "skal skalen lade kodeblokke være i fred"
 run "tools/check_code_blocks.py" "$PY" tools/check_code_blocks.py
 run "tools/check_code_blocks.py --selftest" "$PY" tools/check_code_blocks.py --selftest
 
+# Opgave 111: planen for 107 og 110 skrev begge, at skallen var "idempotent —
+# anden kørling: 0 ændringer". Målt på **én** side var det sandt, målt på træet
+# var det falsk: fra HEAD ændrede første kørsel 33 sider, den næste 39, og først
+# den tredje standsede det. Årsagen er `article_meta()`: den skrev
+# `Updated <git-dato>` i `art-meta`, og næste kørsel læste sit eget output tilbage
+# som sidens publiceringsdato, hvorefter `prev_next()` sorterede hele bloggens
+# kæde om. R1 kræver derfor at `apply_shell.py --dry-run` over det *committede*
+# træ siger `changed: 0` — så "én kørling er nok" er en egenskab porten dømmer,
+# ikke en note i planen. R2 er selftest: porten genskaber den gamle selvkørende
+# dato og kræver at R1 så præcis den fejl den er lavet til at se.
+hdr "skal skallen nå sit faste punkt i én kørsel"
+run "tools/check_shell_fixed_point.py" "$PY" tools/check_shell_fixed_point.py
+run "tools/check_shell_fixed_point.py --selftest" "$PY" tools/check_shell_fixed_point.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

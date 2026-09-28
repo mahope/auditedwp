@@ -37,7 +37,7 @@ pre .kw{color:var(--accent)}
 pre .str{color:var(--ok)}
 .btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;padding:10px 22px;border-radius:8px;font-weight:600;margin-top:8px}
 .btn:hover{background:var(--accent-dark)}</style>
-<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"Article","headline":"Convert CSV to SQL INSERT Statements","description":"Turn any CSV, JSON, YAML or XML file into ready-to-run INSERT statements from the command line. Handles quotes, NULLs and numeric types. Free CLI examples.","url":"https://eucomplypro.com/transmute/guides/csv-to-sql/","mainEntityOfPage":"https://eucomplypro.com/transmute/guides/csv-to-sql/","inLanguage":"en","image":"https://eucomplypro.com/images/og/en.png","datePublished":"2026-09-07","dateModified":"2026-09-07","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"Article","headline":"Convert CSV to SQL INSERT Statements","description":"Turn any CSV, JSON, YAML or XML file into ready-to-run INSERT statements from the command line. Handles quotes, NULLs and numeric types. Free CLI examples.","url":"https://eucomplypro.com/transmute/guides/csv-to-sql/","mainEntityOfPage":"https://eucomplypro.com/transmute/guides/csv-to-sql/","inLanguage":"en","image":"https://eucomplypro.com/images/og/en.png","datePublished":"2026-09-25","dateModified":"2026-09-25","author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"},"publisher":{"@type":"Organization","name":"EUComply","url":"https://eucomplypro.com/","logo":{"@type":"ImageObject","url":"https://eucomplypro.com/icon-512.png"},"founder":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
@@ -94,7 +94,7 @@ pre .str{color:var(--ok)}
 <div class="wrap">
 
 <h1>Convert CSV to SQL INSERT Statements</h1>
-<!--shell:meta--><p class="art-meta"><time datetime="2026-09-07">Published 2026-09-07</time><span>2 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
+<!--shell:meta--><p class="art-meta"><time datetime="2026-09-25">Updated 2026-09-25</time><span>2 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
 
 <p>You have a CSV export — users, products, sensor readings — and you need it into a database. Most answers online are one-off Python scripts or websites that choke on files with more than a few thousand rows. Here's the shortest reliable path, straight from the terminal.</p>
 
@@ -156,7 +156,7 @@ INSERT INTO "users" ("id", "name", "email") VALUES
 
 </div>
 </div><!--/pg-legacy-->
-<!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="prev" href="/transmute/guides/csv-to-xml/" rel="prev"><small>Newer</small><b>How to Convert CSV to XML</b></a><a class="next" href="/transmute/guides/add-computed-fields/" rel="next"><small>Older</small><b>How to Add Computed Fields to JSON or CSV</b></a></nav><!--/shell:pn-->
+<!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="prev" href="/transmute/guides/csv-to-xml/" rel="prev"><small>Newer</small><b>How to Convert CSV to XML</b></a><a class="next" href="/transmute/guides/xml-to-json/" rel="next"><small>Older</small><b>How to Convert XML to JSON</b></a></nav><!--/shell:pn-->
 <!--shell:grid-end--></div><aside class="toc-side" aria-label="Contents"><h2>Contents</h2><ol><li class="lvl2"><a href="#cli">Option 1: The Transmute CLI (free, works offline)</a></li><li class="lvl2"><a href="#postgres">PostgreSQL: faster alternative for big files</a></li><li class="lvl2"><a href="#sqlite">SQLite and MySQL notes</a></li><li class="lvl2"><a href="#json">Bonus: seed data from JSON</a></li><li class="lvl3"><a href="#any-format-to-sql-without-writing-a-script">Any format to SQL — without writing a script</a></li></ol></aside></div><!--/shell:grid-end-->
 </main>
 <footer class="sf">

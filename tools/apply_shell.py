@@ -1278,15 +1278,38 @@ def prev_next(url: str, lang: str) -> str:
     return f'<nav class="pn" aria-label="{t["newer"]} / {t["older"]}">{"".join(out)}</nav>' if out else ""
 
 
+SHELL_TIME = re.compile(r'<time datetime="(\d{4}-\d{2}-\d{2})"[^>]*>([A-Za-z]+) \1</time>')
+
+
 def article_meta(url: str, lang: str, rel: str, content: str) -> str:
+    """Artiklens dato-linje. Den skal være et **fast punkt**, ikke en afledning.
+
+    Datoen blev hver kørsel genberegnet som `max(git-seneste-commit, publiceret)`.
+    Det er selvkørende: skalen skriver `Updated <git-dato>` ind i `art-meta`, og
+    næste kørsel læser **sit eget output** tilbage som sidens dato (`find_date`
+    tager det første `<time>` i body). Den nye dato flytter siden i
+    `prev_next()`'s sortering, så hele bloggens forrige/næste-kæde skrev sig om,
+    og de nye sider fik nye datoer — 33 sider i første kørsel, 39 i den næste, og
+    først i tredje standsede det. Hver ny commit der rørte `site/` startede
+    kæden forfra.
+
+    En dato skalen selv har skrevet, genbruges derfor uændret. En mekanisk
+    gen-rendring er ikke en redaktionel opdatering, så den må heller ikke flytte
+    datoen: det ville mærke artikler som "Updated" uden at en redaktør har rørt
+    dem. Kun sider uden en skrevet dato får en, og da fra siden selv eller git.
+    """
     t = I18N[lang]
     words = len(text_of(content).split())
     minutes = max(1, round(words / 220))
-    first, last = GIT_DATES.get(rel, (TODAY, TODAY))
-    published = find_date(content) or first
-    updated = max(last, published)
-    label = t["updated"] if updated != published else t["published"]
-    return (f'<p class="art-meta"><time datetime="{updated}">{label} {updated}</time><span>{minutes} {t["min_read"]}</span>'
+    frozen = SHELL_TIME.search(content)
+    if frozen:
+        date, label = frozen.group(1), frozen.group(2)
+    else:
+        first, last = GIT_DATES.get(rel, (TODAY, TODAY))
+        published = find_date(content) or first
+        date = max(last, published)
+        label = t["updated"] if date != published else t["published"]
+    return (f'<p class="art-meta"><time datetime="{date}">{label} {date}</time><span>{minutes} {t["min_read"]}</span>'
             f'<button type="button" class="btn-ghost btn-sm share" data-copy-link>{t["share"]}</button></p>')
 
 
@@ -1415,7 +1438,15 @@ def process(path: Path) -> bool:
     html = outside_code(html, aria_live_results)
     if not is_devnotify and not native:
         def clean(txt):
-            txt = EMOJI.sub("", txt)
+            # Emoji'en markeres, det dobbelte mellemrum den efterlod renses, og
+            # først så fjernes markøren. Det skal ske i den rækkefølge: renses
+            # alle "  " på én gang, ødelægger den indrykning af markupket — to
+            # mellemrum foran `<div>` er ikke et dobbelt mellemrum i løbende
+            # tekst, det er en ny linje. Kun mellemrum umiddelbart efter en
+            # fjernet emoji må renses, og det er de markeren gør mulige.
+            txt = re.sub(EMOJI.pattern, "\x00", txt)
+            txt = re.sub(r"\x00 +", "\x00", txt)
+            txt = txt.replace("\x00", "")
             for pat, rep in HYPE:
                 txt = pat.sub(rep, txt)
             return txt.replace("AuditedWP", "EUComply")
@@ -1425,7 +1456,11 @@ def process(path: Path) -> bool:
         html = neutralise_buy_buttons(html, lang)
         html = fix_generator_links(html, lang)
         html = product_ctas(html, url)
-        html = re.sub(r"(<(h[1-6]|p|li|span|strong|b|td|th|a)\b[^>]*>)\s+(?=\S)", r"\1", html)
+        # Proscerydende mellemrum efter en tag fjernes, fordi legacy-siderne
+        # har `<p>\n  tekst`. Elementer med `style=` springes over: en inline
+        # span med vilkårligt forholdsrum er sat med vilje for at aligninge i
+        # en celle, og det er præcis sådan prøverapportens datoer er sat op.
+        html = re.sub(r'(<(h[1-6]|p|li|span|strong|b|td|th|a)\b(?:(?!style=)[^>])*>)\s+(?=\S)', r"\1", html)
     elif native:
         html = fix_generator_links(html, lang)
 
