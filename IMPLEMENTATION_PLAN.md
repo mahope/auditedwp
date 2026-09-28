@@ -1,6 +1,7 @@
-Opdateret: 2026-09-28 (iteration 113) — **main er grøn igen og sitet deployer,
-og et værktøj kan ikke længere lyve om hvorfor det ikke kørte.** Punkt 1 og 2 fra
-sidste iterations liste er begge lukket.
+Opdateret: 2026-09-28 (iteration 114) — **filttallet som skjulte, om en commit
+var en skalkørsel, er væk. Målt: det var forkert i begge retninger, og det er
+kunne ikke være rigtigt, fordi ét commit kan være redaktionelt og mekanisk på
+én gang.**
 
 **Deploy-verificering af iteration 112: `DEPLOY OK 2026-09-28`.** Ét kald, ingen
 løkke: `deploy-site` for `6899694` er `success` (den røde `cdab45c` er rettelsen
@@ -8,9 +9,107 @@ selv). Dømt på **indhold**, ikke HTTP 200: live
 `/blog/shopify-gdpr-compliance-guide/` er **byte-identisk** med
 `HEAD:site/blog/shopify-gdpr-compliance-guide/index.html`, når man ignorerer den
 Plausible-injektion der tilføjes ved build (34.599 vs 34.882 byte, forskellen er
-præcis analytics-scriptet). Frosningen holder altså på det leverede træ:
-`<time datetime="2026-09-26">` uændret, ingen af de 99 bevægelige sider rører
-sig. `DEPLOY-MISSING` fra i går er lukket.
+præcis analytics-scriptet). `DEPLOY-MISSING` fra i går er lukket. CI for `main`
+er grøn (`36472894904`, `success`).
+
+**Punkt 2 fra 113 er lukket — målt, ikke antaget.** `git_dates()` svarede på
+"er det her en skalkørsel?" med ét tal: rørte committen 60+ filer, var den bulk.
+Før målingen troede jeg, at 60 lå i et tomrum. Det gør det — målt på alle 268
+commits: 55 af de 60 seneste rører under 10 filer, og næste med flere end 49 er
+`cdab45c` med 51, mens næste **bulk**-lignende er `65e2a40` med 226. Tallet
+placeret,instrumentet virker i praksis. **Det er alligevel det forkerte
+spørgsmål at stille til et tal.** To modmålinger:
+
+- `cdab45c` rørte **51** filer, altså under tærsklen, så porten frikendte den
+  som redaktionel. Målt følge: 36 sider fik `lastmod: 2026-09-28` i det
+  publicerede sitemap, uden at en redaktør havde rørt dem.
+- Samme `cdab45c` rummer samtidig en **ægte** sætningsfejl:
+  `site/plugin/index.html` "it **unlocks** editable HTML starters" → "it
+  **gets**". Så 51 filer i ét commit er 50 mekaniske og én redaktionel. Omvendt
+  blev alle 234 filer i `fba1971` frikendt, også den side der virkelig var
+  skrevet om. **Ét tal kan ikke se det, fordi svaret ikke er en egenskab ved
+  committen.**
+
+**Rettelsen måler i stedet.** Skalens output ligger indhegnet i
+`<!--shell:…-->`-blokke, så er to revisioner ens **uden** blokke pr. definition
+en mekanisk ændring, og ellers har en redaktør rørt siden. Beviset er de to
+filer i *samme* `cdab45c`: `site/plugin/index.html` beholder `2026-09-28`, og
+`blog/shopify-gdpr-compliance-guide/` falder tilbage til `2026-09-27`. Ét
+commit, to rigtige svar. Begge udfald peger i den sikre retning: en tilføjet fil
+har ingen forælder og tælles som redaktionel (ny side er nyt indhold), og en
+skalkørsel der ændrer noget *uden* blokkene tælles også som redaktionel. Porten
+kan altså aldrig markere en side som ændret, når den ikke er; den kan
+under-angive, og det er den fejl der koster en ekstra genindhentning.
+
+`_read_blobs()` bruger **én** `git cat-file --batch` til alle blobs, binært.
+Det er ikke en detalje: på en tekststrøm tæller `read(n)` tegn, så ét dansk tegn
+ville forskyde resten af strømmen, og hver svigende læsning ville se ud som en
+redaktionel ændring. Første måling af denne kode pæskede `blob` to gange i
+rækkefølge på samme nøgle, fordi jeg havde strippet `site/` fra stien — `blog/x`
+findes ikke i objektbutikken, så begge blobs kom som `None`, hvilket er
+`"redaktionel"`. Nøglen er `relative_to(SITE)`, stien til `git cat-file` er
+repo-stien; de to er ikke det samme.
+
+**Målt / accept.** `GIT_SIDE_VINDUE = 40` commits (grænse på arbejdet, ikke på
+sandheden: en side der ikke løses i vinduet har ingen redaktionel ændring
+derinde og får sin oprettelsesdato). Import af `apply_shell` med de 477 filer:
+0,49 s. Målt på hele træet: **211 af 477** filer får en anden `last`, og af de
+208 HTML-sider uden eget `dateModified` — dem, `lastmod_for()` faktisk spørger
+git om — er det **163**. Beviset på at porten stadig ikke er et fast punkt
+alene: `check_shell_fixed_point.py` giver `R1 OK — 230 sider, 0 ændret af én
+kørsel af den rigtige kæde`, og R2 fanger stadig bevægelse. `GATE GRØN — alle
+40 steps bestået`. **0 ændringer i `site/`.**
+
+**Ingen `site/`-fil rørt, og det er ikke en lighed: rettelsen er forebyggende,
+ikke rettende.** De 36 forkerte `lastmod` ligger allerede **frosset ind i
+sidernes egen `dateModified`**, som `seo_head()` skrev, da porten endnu troede
+på filtallet. Frysningen er præcis det den skal være — et fast punkt, ikke en
+selvhelbredende beregning — så den **kan ikke** trække en forkert dato tilbage,
+og det er korrekt: en gammel fejl skal rettes eksplicit, ikke ved at regne
+igen. Det er derfor næste iterations første opgave, og den skal måle hvilken
+kommando der overhovedet skriver `site/sitemap.xml`, fordi kæden kørte og
+`git status` sagde 0 filer.
+
+**Rørt:** `tools/apply_shell.py` (`git_dates()` + `_blob_reader()` +
+`_read_blobs()` + `_nøgle()`), `IMPLEMENTATION_PLAN.md`. **Ingen `site/`-fil,
+ingen plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris,
+ingen worker, intet upload.** Derfor **ingen `VERIFICÉR DEPLOY`-note**: intet
+publiceret ændrer sig, og deployen skal logge `Uploaded 0 files`.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Hvilken kæde skriver `site/sitemap.xml` og `site/**/*.html`?** Målt i
+   iteration 114: `git_dates()` flytter `last` for 163 af de 208 sider, hvis
+   `dateModified` `lastmod_for()` spørger om, og **kæden kørte alligevel med 0
+   ændrede filer**. En af to ting er sand: `apply_shell --dry-run` i R1 skriver
+   ikke, eller `build_sites.py` ejer sitemapet. Find den, kør den, og mål på
+   den rigtige kommando. **Alt andet på denne liste er uvigtigt indtil det er
+   gjort** — en måling af en kæde, der ikke skriver, er ingen måling.
+2. **De 36 forkerte `lastmod` skal rettes eksplicit, ikke ved at regne igen.**
+   De er frosset ind i sidernes `dateModified`. Skriv hvilke URL'er det er, og
+   ret dem i kilden (ikke i output) — ellers kommer de tilbage ved næste
+   redaktionelle ændring.
+3. **`65e2a40` er klassificeret redaktionel, og det er en målt overvurdering.**
+   Plausible-injektionen (226 filer, 462 linjer, median 2 pr. fil) ligger i
+   `<head>` **uden** for blokkene, så den ligner en redaktionel ændring. Derfor
+   lander 163 sider på `2026-09-27` i stedet for deres ældre, sande dato.
+   Beslutningen er bevidst: porten over-angiver aldrig, den under-angiver hellere.
+   Om injektionen skal **hegnes ind** i en `<!--shell:…-->`-blok (så den bliver
+   målbar) er en vurdering, ikke en automatik — og den skal måles, før den
+   gøres, fordi den rører alle 230 sider.
+4. **Punkt 4 fra 112/113: R2 måler kun én kæde.** Den fjerner én `art-meta` og
+   ser én side flytte sig. Den måler ikke `catalogue()`s sorteringsnøgle, som var
+   den anden del af bevægeligheden i opgave 111.
+5. **Punkt 5 fra 111/112: `/cli/`s emoji-erklæring er stadig tabt.** ✅/⚠️/❌ blev
+   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
+   `<code>`, som `check_code_blocks.py` dækker.
+6. De 26 øvrige gate-værktøjer mangler stadig vaggen (fra 113). Lavt
+   prioriteret — de dør med eget filnavn i traceback'en.
+7. Pris-overvågning og root-LICENSE (spørgsmål 21) — kan ikke løses uden Mads.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes.
 
 **Punkt 2: en port skal sige hvilken python den kræver.** Fejlen fra i går var
 ikke at porten var rød. Den var at den **aldrig kørte**, og at den så ud til at
@@ -75,31 +174,11 @@ selftest-cases + fixture), `tools/check_shell_fixed_point.py`,
 `site/`-fil, ingen plugin-version, ingen `update.json`, ingen ny zip, ingen
 Stripe-pris, ingen worker, intet upload.**
 
-### Næste iteration (prioriteret, målt 2026-09-28)
-
-1. **De 26 øvrige gate-værktøjer mangler stadig vaggen** (fra 113). Lavt
-   prioriteret — de dør med eget filnavn i traceback'en — men
-   `check_python_requirement()` dømer dem *kun* hvis de indlæser dynamisk, så
-   udvid afgrænsningen bevidst, eller kør dem alle gennem `pyreq`.
-2. **Punkt 3 fra iteration 112: `git_dates()`s bulk-tærskel på 60 filer.** Den
-   styrer stadig `first`/`last` for nye sider og `lastmod_for()`s fallback.
-   Mål den, før den ændres — 51 filer i `cdab45c` var nok til at klassificere
-   alle artikler som bulk.
-3. **Punkt 4 fra 112: R2 måler kun én kæde.** Den fjerner én `art-meta` og ser én
-   side flytte sig. Den måler ikke `catalogue()`s sorteringsnøgle, som var den
-   anden del af bevægeligheden i opgave 111.
-4. **Punkt 5 fra 111/112: `/cli/`s emoji-erklæring er stadig tabt.** ✅/⚠️/❌ blev
-   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
-   `<code>`, som `check_code_blocks.py` dækker.
-5. Pris-overvågning og root-LICENSE (spørgsmål 21) — kan ikke løses uden Mads.
-
-> `VERIFICER DEPLOY (kun efter merge): kodecommit på ceo/praev-eftersporgning,
-> 2026-09-28 21:31 CEST. Verificér **indhold**: hent
-> `https://eucomplypro.com/blog/shopify-gdpr-compliance-guide/` og kræv at den
-> stadig er byte-identisk med `HEAD:site/blog/shopify-gdpr-compliance-guide/index.html`
-> bortset fra Plausible-scriptet, og at `<time datetime="2026-09-26">` står
-> uændret. R1 skal samtidig være grøn i CI; bliver den rød igen, så holder
-> frosningen ikke på et frisk træ.
+> `LUKKET 2026-09-28 (iteration 114): DEPLOY OK.` Denne note er lukket og
+> **skal ikke genåbnes**: betingelserne den stillede er alle målt opfyldt i
+> iteration 114s header. Den lå åben, fordi den skrev *efter merge* — men den
+> havde allerede et svar ovenfor, og en åben note uden et ubesvaret spørgsmål
+> får næste agent til at lede efter et deploy-vindue, der ikke findes.
 
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
 `I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge

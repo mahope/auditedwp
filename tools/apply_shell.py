@@ -362,33 +362,129 @@ def render_shell(url: str, lang: str) -> tuple[str, str]:
 
 # ------------------------------------------------------------- git dates
 
-def git_dates() -> dict:
-    """{relpath: (first_commit_date, last_content_date)} for files under site/.
-    Commits touching 60+ files are shell/bulk runs and do not count as content updates."""
+# Hvor mange commits `git_dates()` går tilbage i tiden efter `last`. Det er en
+# arbejdsgrænse, ikke en sandhedsgrænse: en side, der ikke løses inden for
+# vinduet, har ikke haft en redaktionel ændring i vinduet, så den falder
+# tilbage på sin oprettelsesdato.
+GIT_SIDE_VINDUE = 40
+
+
+def _blob_reader():
+    """Én `git cat-file --batch` for alle blobs: én proces, hundredvis af læsninger.
+
+    Binær, ikke tekst. `read(n)` skal tælle **byte** — på en tekststrøm tæller
+    den tegn, så en side med ét dansk tegn ville forskyde resten af strømmen,
+    og hver svigende læsning ville se ud som en redaktionel ændring.
+    """
+    return subprocess.Popen(["git", "cat-file", "--batch"], cwd=ROOT,
+                            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+
+
+def _read_blobs(proc, specs):
+    proc.stdin.write(b"".join(s.encode() + b"\n" for s in specs))
+    proc.stdin.flush()
     out = {}
+    for s in specs:
+        head = proc.stdout.readline().split()
+        if len(head) < 3 or head[1] != b"blob":
+            out[s] = None  # rod-commit, tilføjet fil eller slettet sti
+            continue
+        out[s] = proc.stdout.read(int(head[2])).decode("utf-8", "replace")
+        proc.stdout.read(1)  # git skriver én newline efter hvert objekt
+    return out
+
+
+def _nøgle(rå: str) -> str:
+    """`site/blog/x/index.html` → `blog/x/index.html`, som `relative_to(SITE)` giver."""
+    return rå[5:] if rå.startswith("site/") else rå
+
+
+def git_dates() -> dict:
+    """{relpath: (første commit-dato, sidste redaktionelle dato)} for `site/`.
+
+    Den **anden** dato er den der betyder noget. Den bliver `dateModified` i
+    JSON-LD og `lastmod` i sitemapet, så den skal svare til det sidste en
+    **redaktør** rørte — ikke det sidste en skalkørsel genererede.
+
+    Før blev "er det en skalkørsel?" svaret med ét tal: rørte committen 60+
+    filer, var den bulk. Det er målt, og det er **forkert i begge retninger**.
+    `cdab45c` rørte 51 filer og blev dermed frikendt, så 36 sider fik
+    `lastmod: 2026-09-28` i sitemapet uden at en redaktør have rørt dem — og
+    samme commit rummede en ægte sætningsfejl i `site/plugin/index.html`.
+    Omvendt blev alle 234 filer i `fba1971` frikendt, også den side der virkelig
+    var skrevet om. Ét tal kan ikke se det, fordi **ét commit kan være begge
+    dele på én gang**: en skalkørsel der samtidig rettede en sætning.
+
+    Det kan måles i stedet. Skalens output ligger indhegnet i
+    `<!--shell:…-->`-blokke, så er to revisioner ens **uden** blokke pr.
+    definition en mekanisk ændring. Ellers har en redaktør rørt siden. Begge
+    udfald peger samme vej, i den sikre retning: en tilføjet fil har ingen
+    forælder og tælles som redaktionel (en ny side *er* nyt indhold), og en
+    skalkørsel der ændrer noget uden for blokkene — en `aria-label` i
+    headeren, et nyt stylesheet-link — tælles også som redaktionel. Porten kan
+    altså aldrig markere en side som ændret, når den ikke er; den kan
+    under-angive, og det er den fejl der koster en ekstra genindhentning.
+
+    `GIT_SIDE_VINDUE` sætter grænsen på arbejdet. De 268 commits der rører
+    `site/` er ikke alle værd at læse to blobs af for hver af 232 filer. Løses
+    en side ikke inden for vinduet, har den ikke haft en redaktionel ændring
+    derinde, så den får sin oprettelsesdato — præcis som den gamle bulk-regel
+    gjorde, og ærligt: siden er ikke ændret siden den blev lagt ind.
+    """
+    oprettet, sidst = {}, {}
     try:
-        log = subprocess.run(["git", "log", "--format=@%cs", "--name-only", "--", "site"],
+        log = subprocess.run(["git", "log", "--format=@%H %cs %P", "--name-only", "--", "site"],
                              cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     except Exception:
-        return out
-    commits, cur, files = [], None, []
+        return {}
+    commits, cur = [], None
     for line in log.splitlines():
         if line.startswith("@"):
             if cur:
-                commits.append((cur, files))
-            cur, files = line[1:], []
-        elif line.strip():
-            files.append(line.strip()[5:] if line.strip().startswith("site/") else line.strip())
+                commits.append(cur)
+            p = line[1:].split()
+            cur = {"sha": p[0], "dato": p[1], "forældre": p[2:], "filer": []}
+        elif line.strip() and cur:
+            cur["filer"].append(line.strip())  # repo-sti, `site/…` — nøglen tages senere
     if cur:
-        commits.append((cur, files))
-    for date, fl in commits:  # newest first
-        bulk = len(fl) >= 60
-        for rel in fl:
-            first, last = out.get(rel, (None, None))
-            if last is None and not bulk:
-                last = date
-            out[rel] = (date, last)  # first keeps being overwritten by older commits
-    return {k: (f, l or f) for k, (f, l) in out.items()}
+        commits.append(cur)
+    for c in commits:  # nyeste først
+        for rå in c["filer"]:
+            rel = rå[5:] if rå.startswith("site/") else rå
+            oprettet[rel] = c["dato"]  # overskrives af ældre commits → oprettelsesdato
+
+    uløst = set(oprettet)
+    proc = None
+    try:
+        for c in commits[:GIT_SIDE_VINDUE]:
+            kandidater = [r for r in c["filer"] if _nøgle(r) in uløst]
+            if not kandidater:
+                continue
+            if not c["forældre"]:
+                uløst.difference_update(_nøgle(r) for r in kandidater)  # rod-commit
+                for rel in (_nøgle(r) for r in kandidater):
+                    sidst[rel] = c["dato"]
+                continue
+            if proc is None:
+                proc = _blob_reader()
+            forælder = c["forældre"][0]
+            blobs = _read_blobs(proc, [f"{forælder}:{r}" for r in kandidater]
+                                     + [f"{c['sha']}:{r}" for r in kandidater])
+            for r in kandidater:
+                rel = _nøgle(r)
+                før, nu = blobs.get(f"{forælder}:{r}"), blobs.get(f"{c['sha']}:{r}")
+                if før is not None and nu is not None and \
+                        SHELL_FENCE.sub("", før) == SHELL_FENCE.sub("", nu):
+                    continue  # mekanisk: kig længere tilbage
+                uløst.discard(rel)
+                sidst[rel] = c["dato"]
+    finally:
+        if proc:
+            proc.stdin.close()
+            proc.wait()
+    for rel in uløst:  # vinduet slap: uændret siden den blev lagt ind
+        sidst[rel] = oprettet[rel]
+    return {k: (oprettet[k], sidst[k]) for k in oprettet}
 
 
 GIT_DATES = git_dates()
