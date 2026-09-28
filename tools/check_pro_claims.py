@@ -433,6 +433,11 @@ LOCAL_CADENCE_SCOPE = re.compile(
     # or German was an over-claim the gate could not see, which is the same
     # missing-word failure the name vocabularies above kept making.
     r"\bi\s+din\s+egen\w*\b|\bin\s+(?:Ihrer|ihrer|der)\s+eigenen?\b|"
+    # "den ligger i din WordPress" is the same scope without the word "egen",
+    # and site/da/scan/ writes exactly that. The branch above demands "egen",
+    # so the Danish scan page's own Pro sentence was read as an unscoped claim.
+    r"\bi\s+din(?:e)?\s+(?:wordpress|websted|hjemmeside|installation|server)\b|"
+    r"\bin\s+ihr(?:er|en)\s+(?:wordpress|webseite|installation)\b|"
     r"\bpå\s+(?:din|den\s+ne|deres|eget?)\b|\bvor\s+ort\b|\blokal\w*|\bvindues\w*\b|"
     r"\blocalement\b|\bsur\s+(?:votre|le\s+site|ce\s+site|votre\s+site)\b|\bdans\s+(?:votre\s+)?wordpress\b",
     re.I,
@@ -1368,6 +1373,146 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
     return findings
 
 
+def host_denied_features() -> Dict[str, re.Pattern]:
+    """The features /pro/ itself says are NOT in Pro, as patterns to look for.
+
+    Read from the canonical page rather than kept as a hand-written list, for
+    the same reason every other name in this file is: a list of promises is a
+    list that rots. /pro/ is the page a buyer believes, so if it denies a
+    feature, that denial is the truth this gate measures other pages against.
+
+    Only the hosted/daily-monitoring denials are collected. They are the ones a
+    non-/pro/ page can contradict by accident: /extension/ is written as an
+    upsell for a *different* product, so it reaches for the most attractive
+    sentence it can find, and the hosted daily re-scan is exactly that.
+    """
+    truth = ROOT / "site/pro/index.html"
+    if not truth.exists():
+        return {}
+    with truth.open(encoding="utf-8") as handle:
+        blocks = parse_html(handle.read()).claim_blocks("site/pro/index.html")
+    names = {feature.key: feature.name for feature in _shipped_pro_features()}
+    denied: Dict[str, re.Pattern] = {}
+    for block in blocks:
+        if not HOSTED_QUALIFIER.search(block.text):
+            continue
+        if not DENIED_VERB.search(block.text):
+            continue
+        if DAILY_CADENCE_NAME.search(block.text):
+            denied["hosted daily re-scan"] = DAILY_CADENCE_NAME
+        if names["history"].search(block.text):
+            denied["hosted scan history"] = names["history"]
+    return denied
+
+
+def cross_page_claim_findings(relative: str, blocks: Sequence[TextBlock]) -> List[str]:
+    """A page may not sell a Pro feature that /pro/ says is not in Pro.
+
+    This is the one direction neither existing gate covers, and it is how
+    /extension/ came to contradict itself: 400px apart it said "EUComply Pro
+    re-checks your site daily, keeps per-check history" and "Hosted daily
+    monitoring is not included". Both sentences were individually defensible to
+    the writer who typed them, and every gate was green, because:
+
+      * denial_findings() only fires when ONE page denies a feature the PLUGIN
+        ships — the daily re-scan *is* shipped (1.3.8), so nothing was denied;
+      * the over-claim gate skips a block that mentions "hosted", and the
+        upsell note did not;
+      * /extension/ is not a Pro page, so under_claim_findings() never saw it.
+
+    The defect is a *disagreement between two pages about the same product*,
+    which no single-page check can see. So this reads the denial off /pro/ and
+    fails any other page that sells the same thing without the hosted scope.
+
+    PRO_CONTEXT is required, and it is not decoration. Without it the rule read
+    `history.replaceState` in the scan page's own JavaScript as a claim about
+    scan history, and flagged the sibling product on /transmute/ because its
+    desktop app has a "history" tab — 92 findings, none of them about this
+    product. A page has to actually talk about the Pro licence before its
+    sentences count as claims about what Pro contains.
+    """
+    if not PRO_CONTEXT.search(" ".join(b.text for b in blocks)):
+        return []
+    denied = host_denied_features()
+    if not denied:
+        return []
+    findings: List[str] = []
+    for block in blocks:
+        # Prose only. A JavaScript string literal is not a promise a buyer
+        # reads: `history.replaceState` in the scan page's own URL handling
+        # matched the history pattern, and a monitor status string matched the
+        # cadence one. Same error class as reading a comment as copy — the
+        # sentence has to be one a person is shown.
+        if block.kind in ("image-metadata", "javascript"):
+            continue
+        if OTHER_PRODUCTS.search(block.text):
+            continue
+        # The sentence must be *about the Pro licence itself*. Scoping the check
+        # to the page was wrong: the homepage names Pro in its nav, so its
+        # privacy note about the free scanner's own daily monitoring read as a
+        # Pro claim. A promise is a promise when the sentence says what it is a
+        # promise about.
+        if not PRO_CONTEXT.search(block.text):
+            continue
+        for label, name in denied.items():
+            for match in name.finditer(block.text):
+                clause = _sentence(block.text, match)
+                # The sentence must be about the Pro licence itself. Deciding
+                # that per *block* was wrong in the same way the fixed window
+                # was: "The EUComply Pro CLI is free. The Transmute desktop app
+                # adds a history tab" is one block, and the Pro mention is in
+                # the other sentence. A promise is made in a sentence, so that
+                # is the unit the claim is judged on.
+                if not PRO_CONTEXT.search(clause):
+                    continue
+                if HOSTED_QUALIFIER.search(clause):
+                    continue
+                # …or scoped to where it actually runs. This is the mirror of
+                # HOSTED_QUALIFIER and it reuses LOCAL_CADENCE_SCOPE rather than
+                # a new list, because that is the same question asked by
+                # local_cadence_claim(): does the sentence say WHERE the daily
+                # scan happens? "a daily re-scan in your own WordPress" is true;
+                # "Pro re-checks your site daily" is the bug. Writing a third
+                # vocabulary for one concept is how this file ended up with four.
+                if LOCAL_CADENCE_SCOPE.search(clause):
+                    continue
+                if ROADMAP.search(clause) or ROADMAP_DISCLAIMER.search(clause):
+                    continue
+                findings.append(
+                    f"{relative}:{block.line}: sells {label} as part of Pro, but "
+                    "site/pro/index.html says hosted monitoring is not included — "
+                    f"scope it the same way, or drop it: {clause.strip()}"
+                )
+    return findings
+
+
+def _sentence(text: str, match: re.Match) -> str:
+    """The sentence a match sits in, bounded by stops and the block's edges.
+
+    A fixed character window is what made this rule read across a sentence
+    boundary: "The EUComply Pro CLI is free. The Transmute desktop app adds a
+    history tab" put a different product's feature in the window of a Pro claim.
+    A promise is made in a sentence, so that is the unit — and it is the same
+    unit denial_findings() already reasons about, which is why the two
+    directions cannot disagree about where a claim stops.
+    """
+    start = max(
+        text.rfind(".", 0, match.start()),
+        text.rfind("!", 0, match.start()),
+        text.rfind("?", 0, match.start()),
+        text.rfind(";", 0, match.start()),
+    ) + 1
+    stops = [i for i in (
+        text.find(".", match.end()),
+        text.find("!", match.end()),
+        text.find("?", match.end()),
+        text.find(";", match.end()),
+    ) if i != -1]
+    end = min(stops) + 1 if stops else len(text)
+    return text[start:end]
+
+
+
 def claim_exempt(segment: str, match: re.Match, relative: str = "", label: str = "") -> bool:
     if label == "daily monitoring or rescans" and local_cadence_claim(relative, segment):
         return True
@@ -2099,6 +2244,8 @@ def run_self_tests() -> Tuple[int, List[str]]:
     checks += UNDER_CLAIM_CHECKS
     failures.extend(under_claim_self_tests())
     checks += UNDER_CLAIM_CHECKS
+    checks += CROSS_PAGE_CHECKS
+    failures.extend(cross_page_self_tests())
     checks += CHECK_COUNT_CHECKS
     failures.extend(check_count_self_tests())
     failures.extend(denial_self_tests())
@@ -2166,6 +2313,71 @@ def local_cadence_self_tests() -> List[str]:
 # comparison — so a gate that simply forbade them would push the site into
 # over-claiming instead, which is the other half of the same problem.
 UNDER_CLAIM_CHECKS = 8
+
+# The cross-page rule: four truths, each a way the sentence can be wrong without
+# changing what it promises. Two are the bug that was published and two are the
+# shapes it must NOT flag, because a rule that fires on the fixed copy teaches
+# the next agent to leave the page out of the check instead.
+CROSS_PAGE_CHECKS = 4
+
+
+def cross_page_self_tests() -> List[str]:
+    """The disagreement direction, both ways.
+
+    The positive cases are the sentences that were actually published — a rule
+    that only works on a sentence nobody wrote is a rule that does not work.
+    The negative cases are the fixed copy and the two near-misses that made this
+    rule emit 92 findings before it was calibrated: `history.replaceState` in
+    the scan page's JavaScript, and a Pro sentence scoped to the customer's own
+    WordPress, which is true and must stay allowed.
+    """
+    failures: List[str] = []
+    page = "site/extension/index.html"
+
+    published = (
+        '<p class="note">Need the scan to keep running after you close the tab? '
+        '<a href="/pro/">EUComply Pro</a> re-checks your site daily, keeps per-check '
+        'history, and reports to your client. It is the same engine with a schedule.</p>'
+    )
+    if not cross_page_claim_findings(page, parse_html(published).claim_blocks(page)):
+        failures.append(
+            "self-test cross-page silent: the sentence that shipped on "
+            "/extension/ was not flagged"
+        )
+
+    unscoped_history = (
+        '<p><a href="/pro/">EUComply Pro</a> keeps a scan history and '
+        're-checks your site daily.</p>'
+    )
+    if not cross_page_claim_findings(page, parse_html(unscoped_history).claim_blocks(page)):
+        failures.append("self-test cross-page silent: an unscoped Pro sale was not flagged")
+
+    # The fixed copy: same three features, scoped to where they run. Green.
+    fixed = (
+        '<p class="note">Need the scan to keep running after you close the tab? '
+        '<a href="/pro/">EUComply Pro</a> runs the same checks on a schedule in your own '
+        "WordPress: a daily re-scan, per-check history you can read in wp-admin, and a "
+        "shareable report link for your client.</p>"
+    )
+    if cross_page_claim_findings(page, parse_html(fixed).claim_blocks(page)):
+        failures.append("self-test cross-page over-claim: a sentence scoped to WordPress was flagged")
+
+    # A JavaScript string literal is not a promise a buyer reads.
+    script = (
+        "<p>EUComply Pro licence</p>"
+        "<script>try { history.replaceState(null, '', '?url=' + host(d.url)); } catch (e) {}</script>"
+    )
+    if cross_page_claim_findings("site/scan/index.html", parse_html(script).claim_blocks("site/scan/index.html")):
+        failures.append("self-test cross-page over-claim: JavaScript was read as a Pro claim")
+
+    # The sibling product on another domain's page is not this product's claim.
+    sibling = (
+        '<p>The EUComply Pro CLI is free. The Transmute desktop app adds a history '
+        'tab and batch processing, and checks sites daily.</p>'
+    )
+    if cross_page_claim_findings("site/transmute/index.html", parse_html(sibling).claim_blocks("site/transmute/index.html")):
+        failures.append("self-test cross-page over-claim: another product's features were read as Pro's")
+    return failures
 
 # The eight truths the four published pages must reach. Written as the pages
 # actually read, because a selftest written after the pattern is the reason a
@@ -2529,6 +2741,9 @@ def main() -> int:
             # licence unlocks. This direction is otherwise unwatched: the gate
             # stays green, the page stays published, the feature stays unsold.
             findings.extend(denial_findings(relative, parse_html(text).claim_blocks(relative)))
+        if path.suffix.lower() in {".html", ".htm"} and relative not in PRO_TRUTH_SURFACES:
+            # The disagreement direction: this page sells something /pro/ denies.
+            findings.extend(cross_page_claim_findings(relative, parse_html(text).claim_blocks(relative)))
         if relative in PRO_TRUTH_SURFACES:
             # The other direction, on the pages a buyer compares plans on: a
             # shipped feature nobody names is a feature nobody pays extra for.

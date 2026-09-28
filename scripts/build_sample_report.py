@@ -376,7 +376,7 @@ def report_block(data):
     add('    <h2>Overall EU Compliance Score</h2>')
     add('    <p>{0}</p>'.format(html.escape(summary["headline"])))
     if summary["not_counted"]:
-        add('    <p>{0} {1} of the {2} checks that apply ({3} of {4}).</p>'.format(
+        add('    <p>{0} {1}% of the {2} checks that apply ({3} of {4}).</p>'.format(
             html.escape(summary["not_counted"]),
             summary["score_applicable"],
             summary["applicable_total"],
