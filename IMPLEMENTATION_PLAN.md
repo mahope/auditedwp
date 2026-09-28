@@ -1,3 +1,90 @@
+Opdateret: 2026-09-28 (iteration 88)
+
+Sidste iteration: **den betalte EAA-erklæring sagde til ethvert site, at
+tilgængelighed er en retlig forpligtelse — også til de, direktivet fritager.**
+Køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så denne iteration
+gik ned i det betalte produkt i stedet for i den Gratis trappe igen.
+
+**Fundet, målt i koden.** `plugin/eucomply.php:2291` (1.3.36) læste:
+
+    Accessibility is a legal obligation, and the enforcement body is the one
+    in the member state where <site> is established.
+
+**Lovgrundlaget, verificeret 2026-09-28 mod selve direktivet** (ikke mod en
+sekundær kilde): Art. 4(5) — *"Microenterprises providing services shall be
+exempt from complying with the accessibility requirements referred to in
+paragraph 3"*. Art. 2(23) — *"fewer than 10 persons and … an annual turnover
+not exceeding EUR 2 million or an annual balance sheet total not exceeding
+EUR 2 million"*.
+
+**Derfor er det en reel fejl og ikke en formulering.** En firepersoners bureau
+— præcis det kundesegment, `$79/website/år` er solgt til — der offentliggjorde
+erklæringen, hævdede en forpligtelse direktivet ikke pålægger dem, og navngavde
+en håndhævelsesmyndighed uden jurisdiktion over dem. Det er det værste en
+compliance-vejledning kan gøre: den udsteder en forkert *retslig* erklæring, i
+modsætning til en forældet pris eller en forældet feature-liste.
+
+**Og repoet modsagde sig selv.** `site/eaa-checklist/index.html:35` og `:306`
+har kendt fritagelsen siden den blev skrevet — *"Services-only microenterprises
+— fewer than 10 staff and under €2M annual turnover — are exempt"*. Den gratis
+side og det betalte dokument gav modsatte svar på det samme spørgsmål. Det er
+præcis den inkonsistens missionen kalder en fejl der rammer købsflowet.
+
+**Rettelsen.** Nyt afsnit *Scope of this statement* med tre åbne felter:
+hvilke sider og funktioner erklæringen dækker, hvilken tjeneste den bygger på,
+og om fritagelsen gælder. Håndhævelsesafsnittet er gjort **betinget** i stedet
+for at navngive en myndighed. Formuleringen *"It does not apply to every
+website"* er direkte fra vores egen tjeklisteske.
+
+**To fejl i min egen kode, fundet fordi porten skulle være grøn:**
+(a) Første pladsholder var 96 tegn, mens `completion_note()`s regex er
+`/\[[^\[\]\n]{1,60}\]/` — feltet faldt **silently ud af den automatiske
+feltliste**, så operatøren ville tro boksen var komplet. Det er værre end et
+felt der slet ikke findes. Rettet ved at bruge korte felter som
+`[microenterprise exemption]`, i tråd med de eksisterende, plus et nyt tjek
+på at intet nyt felt overstiger 60 tegn.
+(b) Min selftest-case *"the exemption without a threshold is flagged"* var
+selv **forkert**: den påstod, at det ændrede dokument manglede tærsklen, hvilket
+er modsatningen af, hvad den skulle bevise. Rettet til at sammenligne et
+svagt fixture med det rigtige dokument. En selftest-case der siger det modsatte
+af, hvad den tester, får porten til at grønne en fejl.
+
+**Bevis, ikke påstand.** De 14 nye checks er kørt mod **den rigtige 1.3.36-fil**
+(`git show main:plugin/eucomply.php`), som fejlede **11 af 14**; det fjortonde
+passerer korrekt, fordi den gamle fil netop ikke har et for langt felt. `251
+document checks passed` (var 237), `SELFTEST GRØN — alle 54 negative cases
+fanges` (var 50). Ingen eksisterende tjek fjernet — erklæringen har stadig alle
+elementer Art. 13(2) beder om.
+
+**En tredje fejl, som porten ovenfor afslørede, ikke mig:** da jeg bumpede
+til 1.3.37 skrev jeg `update.json` om og **tabte 33 versioners changelog-historik**
+(36 957 → 1 434 tegn). `plugin_manifest_versions()[1]` kastede så
+`IndexError` i `check_pro_claims.py`' egen selftest. Historikken er genskabt
+ordret fra git, og begge manifests (`update.json` + `site/update.json`) er nu
+på 34 versioner. En changelog er også noget en kunde kan læse, så det er ikke
+kun et portproblem.
+
+Plugin **1.3.37**, ny zip, ny redirect-linje for 1.3.36, downloadknappen på
+`/plugin/` opdateret. `GATE GRØN — alle 28 steps bestået`; `0 unexpected
+EUComply Pro claims`; `180 self-tests`; `CTA-gate grøn`, 0 døde interne
+referencer. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres
+(workspace-permissions nægter adgang), så gyldig SEO-evidence er
+root-fallbacken, jf. gate-baseline.
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86 målte taggen og
+fandt at de 0 er ærlige). Kan ikke måles i trafik. Det den gør er at fjerne en
+forkert retslig påstand fra det dokument en kunde offentliggør i sit eget navn.
+
+❓ **Til Mads — ét navn på den betalte EAA-standalone.** `$39`-produktet på
+`/store/eaa-statement/` er et **andet** dokument end pluginens — en
+Markdown/PDF-skabelon, og den ligger i Cloudflare KV, ikke i dette repo. Den
+sælger i dag en struktur uden omfang- og fritagelsesafsnit, altså samme
+mangel. Jeg har lavet rettelsen i pluginens udgave, fordi den ligger her;
+skabelonen kan kun rettes i det private repo eller i KV. **Tilbud:** samme
+tre felter + betinget håndhævelsesafsnit som i pluginen. Den gratis
+preview-side bør også vise omfanget, ellers sælger vi et skelet, vi har
+lært at værre for stort.
+
 Opdateret: 2026-09-28 (iteration 87)
 
 Sidste iteration: **den gratis scanner viste en besøgende motorens egen
@@ -94,11 +181,26 @@ fejl, den første besøgende mød.
 
 Kodecommit `1f2f4cc`, merge `9a7b269` 2026-09-28 01:52 CEST.
 
+---
+
+**Denne iteration.** Kodecommit `0351a01`, plugin **1.3.37**. Efter merge:
+`VERIFICÉR DEPLOY: EAA-erklæringens omfang og fritagelse, plugin 1.3.37,
+<merge-sha> 2026-09-28 <tid>`. Efter et batch-vindue: hent `/plugin/`,
+`/pro/` og `/store/eaa-statement/` og kræv at de **ikke** længere linker den
+gamle zip, at `/assets/eucomply-1.3.37.zip` svarer 200, og at
+`/assets/eucomply-1.3.36.zip` giver en **301** (ikke 404 — det har været en
+gentagen fejl i dette repo). Skabelonens egen tekst kan ikke verificeres her,
+fordi den ligger i KV.
+
 **VERIFICÉR DEPLOY: scannerens fejlvej på 5 sider, `1f2f4cc`/`9a7b269`
 2026-09-28 01:52 CEST.** Efter et batch-vindue: hent `/scan/`, `/da/scan/`,
 `/gdpr-scanner-free/`, `/gdpr-compliance-check/` og `/cookie-banner-check/`
 og søg på `Scan failed:` og `ex.message` — de skal være **væk**, og
 `apiError(` skal stå i alle fem. HTTP 200 beviser intet.
+
+**DEPLOY OK 2026-09-28 02:26 CEST.** Alle fem sider hentet fra det publicerede
+træ med cache-buster: `Scan failed:` **0** og `ex.message` **0** i alle fem,
+`apiError(` **2** i alle fem. Ikke HTTP 200 — indholdet.
 
 ❓ **Til Mads — motorens hale kan lukkes samme dag som spørgsmål 9.**
 `shared/scan-engine.js:754` skriver råt `HTTP ${resp.status}` ind i en
