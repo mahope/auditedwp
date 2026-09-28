@@ -68,33 +68,53 @@ EXAMPLES:
     if (jsonOutput) {
       console.log(JSON.stringify(report, null, 2));
     } else {
-      console.log(`\n🔍 EUComply Scan Report for ${report.url}`);
-      console.log(`   Platform: ${report.platform}  |  Duration: ${report.durationMs}ms`);
-      // Begge tal, fordi de ikke må læses i ét: `pct` er alle ni rækker,
-      // `pct_applicable` er kun dem der gælder for sitet.
-      const _nc = report.score.conditional || [];
-      console.log(`   Score: ${report.score.passed_applicable}/${report.score.applicable_total} of the checks that apply to this site (${report.score.pct_applicable}%)\n`);
-      if (_nc.length) {
-        for (const k of _nc) {
-          console.log(`   - not counted: ${k} — ${(report.checks[k] || {}).condition || CONDITIONAL_CHECKS[k] || ''}\n`);
-        }
-      }
-      console.log(`   All ${report.score.total} checks: ${report.score.passed}/${report.score.total} (${report.score.pct}%)\n`);
-
-      for (const [key, check] of Object.entries(report.checks)) {
-        const icon = check.pass ? '✅' : check.warn ? '⚠️' : '❌';
-        console.log(` ${icon} ${check.label}`);
-        if (check.detail) console.log(`    ${check.detail}`);
-        if (check.fix) console.log(`    💡 ${check.fix}`);
-        console.log();
-      }
-      console.log(report.disclaimer);
+      console.log(renderReport(report));
     }
     process.exit(0);
   } catch (e) {
     console.error('❌ Error:', e.message);
     process.exit(1);
   }
+}
+
+/**
+ * Den ENeste renderer af en rapport i denne pakke. Både `main()` ovenfor og
+ * `cli/eucomply.js` kalder den — pakken havde to renderere, og den i `bin` var
+ * den dårligere: den printer det forudindtagede ni-tal, dropper `- not counted:`
+ * for de betingede rækker og dropper alle `💡`-råd. Se
+ * `docs/eucomply-cli-egen-renderering.md`.
+ *
+ * Rækkefølgen er uændret fra den her flyttede kode, fordi `/scan/`,
+ * `/pro/sample-report/` og pluginens rapport taler i de tal:
+ *   1. det DELTE score — kun de checks der gælder for sitet
+ *   2. én `- not counted:`-linje pr. betinget række, så læseren kan se hvorfor
+ *   3. ni-tallet til sidst, fordi det er tallet kunder har set i årevis
+ *
+ * @param {object} report  resultatet af `runScan()`
+ * @returns {string} rapporten som den skrives til terminalen
+ */
+export function renderReport(report) {
+  const l = [];
+  l.push(`\n🔍 EUComply Scan Report for ${report.url}`);
+  l.push(`   Platform: ${report.platform}  |  Duration: ${report.durationMs}ms`);
+  // Begge tal, fordi de ikke må læses i ét: `pct` er alle ni rækker,
+  // `pct_applicable` er kun dem der gælder for sitet.
+  const notCounted = report.score.conditional || [];
+  l.push(`   Score: ${report.score.passed_applicable}/${report.score.applicable_total} of the checks that apply to this site (${report.score.pct_applicable}%)\n`);
+  for (const k of notCounted) {
+    l.push(`   - not counted: ${k} — ${(report.checks[k] || {}).condition || CONDITIONAL_CHECKS[k] || ''}\n`);
+  }
+  l.push(`   All ${report.score.total} checks: ${report.score.passed}/${report.score.total} (${report.score.pct}%)\n`);
+
+  for (const check of Object.values(report.checks)) {
+    const icon = check.pass ? '✅' : check.warn ? '⚠️' : '❌';
+    l.push(` ${icon} ${check.label}`);
+    if (check.detail) l.push(`    ${check.detail}`);
+    if (check.fix) l.push(`    💡 ${check.fix}`);
+    l.push('');
+  }
+  l.push(report.disclaimer);
+  return l.join('\n');
 }
 
 const IAB_TCF_SIGNATURES = [
@@ -798,7 +818,7 @@ export async function readCappedText(resp, cap = MAX_BODY_BYTES) {
   return new TextDecoder("utf-8", { fatal: false }).decode(buf);
 }
 
-export async function runScan(url) {
+export async function runScan(url, { timeout } = {}) {
   url = normalizeUrl(url);
   if (!url) throw new Error("Invalid URL");
   const started = Date.now();
@@ -807,7 +827,12 @@ export async function runScan(url) {
   // validated, so a public host cannot redirect us into a private network.
   let resp, finalUrl;
   try {
-    const out = await safeFetch(url, { headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" } });
+    const out = await safeFetch(url, {
+      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
+      // `timeout` forwards the CLI's own `--timeout`. `safeFetch` defaulted to
+      // 12 s, så flaget var dokumenteret i begge hjælpetekster og virkede ikke.
+      ...(Number.isFinite(timeout) && timeout > 0 ? { timeout } : {}),
+    });
     resp = out.resp;
     finalUrl = out.url;
   } catch (e) {

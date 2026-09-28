@@ -754,7 +754,7 @@ export async function readCappedText(resp, cap = MAX_BODY_BYTES) {
   return new TextDecoder("utf-8", { fatal: false }).decode(buf);
 }
 
-export async function runScan(url) {
+export async function runScan(url, { timeout } = {}) {
   url = normalizeUrl(url);
   if (!url) throw new Error("Invalid URL");
   const started = Date.now();
@@ -763,7 +763,12 @@ export async function runScan(url) {
   // validated, so a public host cannot redirect us into a private network.
   let resp, finalUrl;
   try {
-    const out = await safeFetch(url, { headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" } });
+    // `timeout` skal være identisk med eucomply-scanner/engine/index.js —
+    // samme motor, to kopier. Se docs/eucomply-cli-egen-renderering.md.
+    const out = await safeFetch(url, {
+      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*" },
+      ...(Number.isFinite(timeout) && timeout > 0 ? { timeout } : {}),
+    });
     resp = out.resp;
     finalUrl = out.url;
   } catch (e) {

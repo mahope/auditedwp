@@ -29,8 +29,15 @@ motorens formatering i repoet, så de to kan ikke glide fra hinanden.
 
 Én af tallene er ikke deterministisk: `Duration: 62ms` er en måling af det
 kørende øjeblik. Derfor sammenligner `--check` alt andet byte for byte og
-kræver af den afvigende linje, at den er `Duration: <heltal>ms`. Uden den
-undantagelse ville porten være rød af en grund der ikke findes i koden.
+kræver af den afvigende linje, at den er `   Platform: …  |  Duration:
+<heltal>ms` — altså at **kun cifrene** er undtagelsen. Uden den undtagelse ville
+porten være rød af en grund der ikke findes i koden, og uden
+linjekravet kunne undtagelsen flytte sig til en linje med noget nyt i.
+
+28/9 (iteration 102): blokken blev **længere** fra 28 til 47 linjer, fordi den
+publicerede `bin` nu kalder motorens egen `renderReport()` i stedet for sin egen
+rendering. Den skrev det forudindtagede ni-tal, droppe tre `- not counted:`-
+linjer og alle seks `💡`-råd. Se `docs/eucomply-cli-egen-renderering.md`.
 """
 
 from __future__ import annotations
@@ -55,8 +62,15 @@ END = "<!--/cli:example-->"
 # Den ene linje der må afvige, og kun fordi den er en måling af det kørende
 # øjeblik. `DURATION_RE` bruges på både den publicerede og den friske blok, så
 # der sammenlignes på den normaliserede form.
-DURATION_RE = re.compile(r"^(   Duration: )\d+(ms)$")
-DURATION_LINE_RE = re.compile(r"^   Duration: \d+ms$")
+#
+# 28/9 (iteration 102): varigheden lå i `   Duration: 62ms` på en linje for sig
+# selv. Den ligger nu i `   Platform: Webflow  |  Duration: 62ms`, fordi `bin`
+# efterlader motorens renderer i stedet for sin egen (docs/
+# eucomply-cli-egen-renderering.md). Derfor er R2 skærpet: undtagelsen er
+# **cifrene i en linje hvis øvrige indhold er låst**, så den ikke kan vokse til
+# en linje med platform, dom og måling i.
+DURATION_RE = re.compile(r"(Duration: )\d+(ms)")
+DURATION_LINE_RE = re.compile(r"^   Platform: .+  \|  Duration: \d+ms$")
 
 # Ni checks, ni domme. Den publicerede blok havde seks, og ingen port kendte
 # forskel på "seks rækker" og "alle ni" — den tæller dem.
@@ -161,13 +175,15 @@ def findings(page: str) -> list[str]:
         )
 
     # R2: den afvigende linje skal være den målte varighed, ellers er R1's
-    # undtagelse en bagdør. Kræver formatet `   Duration: <heltal>ms`.
-    duration_lines = [l for l in got_norm.split("\n") if l.startswith("   Duration:")]
+    # undtagelse en bagdør. Kræver præcis én `   Platform: … | Duration: <int>ms`:
+    # alt andet i den linje er låst, så de tal der må afvige kun er cifrene.
+    duration_lines = [l for l in got_norm.split("\n") if "Duration:" in l]
     if len(duration_lines) != 1 or not DURATION_LINE_RE.match(
         duration_lines[0].replace("<ms>", "0")
     ):
         out.append(
-            "R2: blokken skal have præcis én `   Duration: <heltal>ms`-linje, "
+            "R2: blokken skal have præcis én `   Platform: …  |  Duration: "
+            f"<heltal>ms`-linje — R1's undtagelse må kun være cifrene i den, "
             f"fandt {len(duration_lines)}"
         )
 

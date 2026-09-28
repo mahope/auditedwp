@@ -2,13 +2,20 @@
 /**
  * eucomply-scanner — CLI for EUComply Universal Scan Engine
  *
+ * Denne fil fortolker argumenterne og **intet andet**. Rapporten skrives af
+ * `renderReport()` i motoren, som `engine/index.js`'s egen `main()` også
+ * kalder. Filen havde engang sin egen, dårligere rendering: den printer det
+ * forudindtagede ni-tal, dropper `- not counted:` for de betingede rækker og
+ * dropper alle `💡`-råd, så to renderer i én pakke gav to forskellige sprog.
+ * Se `docs/eucomply-cli-egen-renderering.md`.
+ *
  * Usage:
  *   eucomply-scanner https://example.com
  *   eucomply-scanner --json https://example.com
  *   npx @mahope/eucomply-scanner https://example.com
  */
 
-import { runScan } from '../engine/index.js';
+import { runScan, renderReport } from '../engine/index.js';
 
 const args = process.argv.slice(2);
 const url = args.find(a => !a.startsWith('--'));
@@ -48,19 +55,7 @@ runScan(url, { timeout }).then(report => {
   if (jsonOutput) {
     console.log(JSON.stringify(report, null, 2));
   } else {
-    console.log(`\n🔍 EUComply Scan Report`);
-    console.log(`   URL:      ${report.url}`);
-    console.log(`   Platform: ${report.platform}`);
-    console.log(`   Duration: ${report.durationMs}ms`);
-    console.log(`   Score:    ${report.score.passed}/${report.score.total} (${report.score.pct}%)\n`);
-
-    for (const [key, check] of Object.entries(report.checks)) {
-      const icon = check.pass ? '✅' : check.warn ? '⚠️' : '❌';
-      console.log(` ${icon} ${check.label}`);
-      if (check.detail) console.log(`    ${check.detail}`);
-      console.log();
-    }
-    console.log(report.disclaimer);
+    console.log(renderReport(report));
   }
   process.exit(0);
 }).catch(e => {

@@ -1,3 +1,120 @@
+Opdateret: 2026-09-28 (iteration 102) — **den publicerede CLI havde sin egen,
+dårligere rendering af den samme rapport.** Den skrev det forudindtagede
+ni-tal, sagde ikke hvilke rækker der ikke tæller, og havde nul `💡`-råd, mens
+motorens egen `main()` skrev det delte score, tre not-counted-linjer og råd på
+6 af 9 rækker. Én `renderReport()` nu, og porten gør det umuligt at have to
+
+Iteration 102. Deploy fra iteration 101 er endnu **ikke** verificeret: merge
+08:19 UTC, næste vindue er 12:30, så noten er ikke ældre end et deploy-vindue
+og intet skal frosset.
+
+Denne iteration: **`bin` er den dårligere udgave af motorens egen CLI, og ingen
+vidste det.** Målt mod samme optagelse af webflow.com, efter rettelsen:
+
+| | `eucomply-scanner/cli/eucomply.js` (**`bin`**) | `engine/index.js`'s egen `main()` |
+|---|---|---|
+| Før | `Score: 3/9 (33%)` | `3/6 of the checks that apply to this site (50%)` + `All 9 checks: 3/9 (33%)` |
+| Før | betingede rækker **ikke nævnt** | `- not counted: tcf — …` ×3 |
+| Før | **0 `💡`-linjer** | `💡` på 6 af 9 rækker |
+| Efter | **47 linjer — 9 domme, 3 not-counted, 6 råd, byte-identisk** | det samme |
+
+`main()` kører kun når motorfilen selv er `argv[1]`, altså aldrig for en bruger
+der har `npm install`et pakken. Følgen var at **hele den gratis scanner printer
+det rå ni-tal og dropper både rådet og forklaringen på hvorfor tre rækker ikke
+tæller**, mens `/scan/`, `/pro/sample-report/` og pluginens rapport taler i de
+delte tal. To sprog i én pakke, og det dårligere stod i det program folk kører.
+
+**Den anden løgnede med, samme klasse: `--timeout` virkede ikke.** Det står i
+begge hjælpetekster, `runScan(url)` tog imidlertid ingen optioner, så
+`safeFetch`s 12-sekunders default var det eneste timeout nogen fik. Nu
+forwarder begge motorer `timeout` — de er samme kode i to filer, så de rørtes
+begge.
+
+**Rettelsen er én funktion, ikke en ny blok.** `renderReport(report)` er
+eksporteret fra motoren, og både `main()` og `bin` kalder den. Der er ingen
+gengivelse af motorens formatering tilbage i `bin`. Spec: `docs/
+eucomply-cli-egen-renderering.md`.
+
+**Fire regler i den nye port `tools/cli_render_parity.mjs` (trin 32).** R1:
+`bin`s stdout mod fixture'en skal være **byte-identisk** med
+`renderReport(runScan(...))` på samme fixture, kun `Duration: <heltal>ms` må
+afvige. R2: `bin` må ikke bruge `report.score/checks/platform/durationMs` — målt
+undtagelse, fordi `❌` også står i `bin`s egen `console.error('❌ Error:')`, så
+et naivt "ingen ikoner" ville være rød på rigtig kode. R3: `'✅'` og `'⚠️'` må
+findes i **præcis én** fil i den publicerede kode, og den skal eksportere
+`renderReport` — det er den regel, der gør to renderer umulige i stedet for
+rettet én gang. R4: rapporten skal have det delte score og mindst én
+`- not counted:`, ellers kunne motoren miste den delte tale og R1 være grøn af
+en grund den ikke måtte være grøn af.
+
+**Efterprøvet begge veje.** Den grønne case kører mod repoets egen `bin`; de
+negative cases muterer en udskrift og en kildekopi: den rå ni-tal-udskrift
+(fanges af R1), en rapport uden delt score (R4), en `bin` der selv renderer
+(R2+R3), renderer-ikon i to filer (R3), en motor uden `renderReport` (R3).
+`SELFTEST GRØN — alle 6 negative cases fanges`, `GATE GRØN — alle 32 steps
+bestået` (31 før). `build_cli_example.py`s R2 blev skærpet, fordi undtagelsen
+lå i en linje for sig selv: nu er den **cifrene i en linje hvis øvrige indhold
+er låst** (`   Platform: …  |  Duration: …`), så den ikke kan vokse.
+
+**Fundet undervejs, ikke rettet i denne iteration:** den publicerede pakke
+indeholder **to flere håndskrevne gengivelser af samme rapport** —
+`eucomply-scanner/examples/sample-output.txt` (wordpress.org, `Score: 2/9
+(22%)`, kun **seks af ni** rækker, ingen råd) og `examples/node.js` (en tredje
+renderer, der importerer `runScan` og formatterer selv), plus README'ens
+`Example output` med en **opdigtet** `Score: 5/8 (62%)` som motoren aldrig
+ printer, og `score — { passed, total, pct }` som ikke nævner
+`pct_applicable`. Det er præcis fejlen fra iteration 101, flyttet fra
+`site/cli/` ind i npm-pakken. R2/R3 dækker kun `cli/` + `engine/`, fordi en
+port der er rød på uvedkommende fund låser hvert merge; de to eksempler er
+derfor næste opgave, ikke en undtagelse.
+
+**Rørt:** `eucomply-scanner/engine/index.js` (`renderReport` + `timeout`),
+`shared/scan-engine.js` (`timeout`), `eucomply-scanner/cli/eucomply.js`,
+`site/cli/index.html` (genereret blok, 28 → 47 linjer),
+`tools/cli_render_parity.mjs` (ny), `tools/build_cli_example.py` (R2 + docstrings),
+`tools/quality_gate.sh` (trin 32), `docs/eucomply-cli-egen-renderering.md` (ny).
+**Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker.**
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflare's 5390 er bots). Kan ikke måles i trafik. Det den gør
+er at gøre det **gratis** værktøj — hele tragten — lige så ærligt som den
+betalte rapport, så en bruger der kører `$ eucomply-scanner sin-url` og `$`
+læser `/scan/` får samme svar.
+
+❓ **Til Mads.** Én ny og konkret: **`@mahope/eucomply-scanner` skal
+publiceres igen som 1.1.0**, ellers får alle `npx`-brugere den svagere
+rapport, fordi npm-pakken er fra før rettelsen. Det er spørgsmål 17, og det er
+nu målt: publiceret 1.0.1 mangler både den delte tale og rådene. Vi må ikke
+publicere selv. Spørgsmål 7, 9 og 18 uændrede, og Chrome Web Store-spørgsmålet
+(udgiverkonto + ét screenshot) uændret.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **`examples/` og README er de næste to håndskrevne gengivelser.** Se fundet
+   ovenfor. `sample-output.txt` skal genereres fra samme fixture som `/cli/`
+   (byte-identisk, gate), `node.js` skal kalde `renderReport()`, og README'ens
+   opdigtede `5/8 (62%)` skal være den rigtige tale eller en pointer til den
+   genererede fil. R2/R3 i `cli_render_parity.mjs` udvides til hele den
+   publicerede kode, når de to er rettet — så gate og kode bliver grønne samtidig.
+2. **Live-workeren er en gammel build, og scoren den giver er med vilje
+   forkert.** Målt: live `?url=shopify.com` → `{"passed":4,"total":9,"pct":44}`;
+   den samme motor i repoet giver `pct_applicable: 80` med 4 betingede rækker.
+   Kan ikke rettes af en agent: kræver `wrangler deploy` = spørgsmål 9.
+3. **Et betalt produkt kan ikke købes.** `eu-compliance-ebook-bundle` ($29) er
+   i `tools/stripe_products.json`, linket svarer 200, men dukker op på **0 af
+   209 sider**.
+4. **"Free API" er solgt uden dokumentation.** `/vs/termly/` lover *"API
+   access: Free API + CLI"*; `/api/`, `/docs/`, `/developers/` giver **404** og
+   er ikke i sitemap'en. Bemærk: `examples/python.py` og `curl.sh` i pakken
+   kalder `eucomply-scan.mahope-eeb.workers.dev` — samme ubedrede worker som
+   punkt 2, i et eksempel brugeren kopierer.
+5. **Zip'en mangler LICENSE.** `/extension/` siger "Open source", footeren siger
+   "Scanner and CLI are MIT licensed", men zip'en har ingen LICENSE-fil.
+6. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)".
+
+---
+
 Opdateret: 2026-09-28 (iteration 101) — **`/cli/` viste et eksempel på sit eget
 værktøj, som var skrevet i et andet produkts format: seks rækker i det
 forældede proxy-box, to af seks domme forkerede, og den alvorligste fund —
