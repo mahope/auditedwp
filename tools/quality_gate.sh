@@ -543,6 +543,17 @@ hdr "en fejl fra scanneren skal vaere en besked, ikke en intern tekst"
 run "tools/check_scan_errors.py" "$PY" tools/check_scan_errors.py
 run "tools/check_scan_errors.py --selftest" "$PY" tools/check_scan_errors.py --selftest
 
+# Opgave 85: tallet i et resultat skal sige, hvad det tæller. Fire af de ni
+# rækker gælder kun bestemte sites (cookies, programmatisk annoncering, Google
+# Ads, DORA) og var talt med i tallet uden forudsætning, så et site der gjorde
+# alt andet rigtigt scorede 56 % (5 af 9) mod et grønt bånd ved 80. Porten læser
+# listen fra motoren og kræver at de ni publicerede resultatsider bruger den —
+# en side må ikke finde på sin egen liste, og en ny betinget række i motoren
+# uden sideændring giver rød.
+hdr "tallet i et resultat skal sige, hvad det tæller"
+run "tools/check_score_split.py" "$PY" tools/check_score_split.py
+run "tools/check_score_split.py --selftest" "$PY" tools/check_score_split.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
