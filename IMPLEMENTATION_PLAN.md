@@ -1,10 +1,146 @@
-Opdateret: 2026-09-28 (iteration 100) — **to løfter der holdt ikke, fundet ved at
+Opdateret: 2026-09-28 (iteration 101) — **`/cli/` viste et eksempel på sit eget
+værktøj, som var skrevet i et andet produkts format: seks rækker i det
+forældede proxy-box, to af seks domme forkerede, og den alvorligste fund —
+"1 tracker(s) with NO consent platform" — stod slet ikke. Nu genereres blokken
+af motoren, og porten kræver byte-identisk udskrift**
+
+Iteration 101. Deploy fra iteration 100 er **verificeret live på indhold** først:
+begge punkter i noten holder (se afsnittet nederst).
+
+Denne iteration: **`/cli/` lovede "Example output (real scan of webflow.com)" og
+løj om det på tre måder.** Den viste seks rækker i et `║ ║ ╚═══╗`-felt — det er
+`cli/bin/eucomply-scan.js`'s format, den proxy der **aldrig blev publiceret** og
+kun videresender til workeren. Den publicerede `bin` er
+`eucomply-scanner/cli/eucomply.js` (`package.json` → `bin`), og den skriver **ni**
+rækker i `✅/⚠️/❌`-format med detaljer under hver. Målt mod samme optagelse af
+webflow.com (510 616 B, sha256 `21462fbb…`, optaget 2026-09-28 10:14) skriver
+den:
+
+```
+   Score:    3/9 (33%)
+ ❌ 1 tracker(s) with NO consent platform
+ ❌ No DORA-related page signals detected
+```
+
+To af de seks publicerede domme var forkerede: `No consent banner detected
+CHECK MANUALLY` er `⚠️ No consent banner detected` (motorens `warn`), og
+`No DORA / resilience disclosures CHECK MANUALLY` er `❌ No DORA-related page
+signals detected`. Den tredje fejl var den dyreste: **den mest alvorlige fund
+på hele siden stod ikke.** En tracker uden samtykkeplatform er det klassisk
+håndhævelsesmål under ePrivacy/GDPR Art. 6, og et eksempel der udelader den
+lærer en læser at tro at værktøjet ikke finder den slags.
+
+**Ingen port kunne se det, fordi der ikke var noget at sammenligne med.** Blocket
+var håndskrevet — derfor gav hverken `denial_findings()` (den læser *nægtelser*),
+`under_claim_findings()` (kun Pro-sider), `check_sample_coverage.py` eller nogen
+anden port noget at dømme. Og de to sætninger under blokken beskrev den samme
+døde proxy: *"sub-second scans over a public API"* (CLI'en kalder **én side**,
+ikke et API) og *"every check reports PASS, FAIL or CHECK MANUALLY"* (den skriver
+✅/⚠️/❌ og dommens etiket). To af fire bullets på siden beskrev altså et produkt
+der ikke findes.
+
+**Løsningen er generering, ikke en bedre blok.** `tools/cli_example_run.mjs`
+kører den publicerede `bin` mod `tools/fixtures/webflow.com.json` — optaget én
+gang, gzip'et, 120 660 B — og `tools/build_cli_example.py` skriver dens stdout
+mellem `<!--cli:example-->` og `<!--/cli:example-->`. Der er **ingen anden
+gengivelse af motorens formatering i repoet**, så de to kan ikke glide fra
+hinanden. Kørslen stubber to ting, begge målt frem for antaget: `fetch` (svarer
+med den optagede krop og de optagede overskrifter, og et kald til en anden URL
+er en hård fejl) og `cloudflare-dns.com/dns-query` (motorens SSRF-guard slår
+værten op; svaret er webflow.com's egen målte A-record `104.18.32.47`), så
+optagelsen hverken kalder en tredjepartstjeneste eller afhænger af en.
+
+**Fire regler, fem negative cases, og den grønne case der også skal være rød.**
+R1 kræver byte-identisk udskrift; **R2** forhindrer at R1's undtagelse vokser
+— `Duration: 62ms` er den ene måling af det kørende øjeblik, og intet andet må
+afvige, heller ikke om linjen omdøbes; **R3** tæller domme og kræver **alle
+ni**, hvilket er præcis det den håndskrevne blok fejlede på (seks); **R4** kræver
+at kommandolinjen peger på den side der blev scannet; **R5** dømmer de to
+sætninger der beskriver proxyen. Selftesten lægger den håndskrevne blok fra
+`main` mellem markørerne og kræver at både R1 **og** R3 fanger den — R4 kan
+ikke, fordi den blok startede med den rigtige kommandolinje, og det er værd at
+vide hvilken regel der bærer hvilken fejl.
+
+**Efterprøvet mod `main`s publicerede fil, ikke mod en håndskrevet fixture:** den
+er **rød med præcis 5 fund** (R1, R2, R3 og de to R5) når `main`s blok placeres
+mellem markørerne, og grøn på den nye. `GATE GRØN — alle 31 steps bestået`
+(30 før), `SELFTEST GRØN — alle negative cases fanges`.
+
+**Rørt:** `site/cli/index.html` (blokken + to bullets), `tools/capture_cli_fixture.py`
+(ny), `tools/cli_example_run.mjs` (ny), `tools/build_cli_example.py` (ny),
+`tools/fixtures/webflow.com.json` (ny optagelse), `tools/quality_gate.sh` (trin
+31). **Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker.**
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflare's tal er bots). Kan ikke måles i trafik. Det den gør
+er at fjerne en åbenlyst falsk beskrivelse af værktøjet på den side en udvikler
+læser lige før han `npm install`'er.
+
+❓ **Til Mads.** Én ny, og den er konkret og **ikke ny**: skal extensionen
+udgives på Chrome Web Store nu, og på hvilken konto? Alt er målt grønt og ligger
+klar (opgave 91) — det mangler er din udgiverkonto ($5) og ét screenshot i
+1280×800. Spørgsmål 7, 9 og 18 uændrede. Næste post uden Mads er nederst.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+Fundet ved at køre **det publicerede værktøj** og sammenligne det med det siden
+lover. Rangordnet efter hvor mange penge de berører.
+
+1. **Den publicerede `bin` er en *dårligere* udgave af motorens egen CLI, og
+   ingen vidste det.** Målt i denne iteration mod **samme** fixture og samme
+   motor:
+
+   | | `eucomply-scanner/cli/eucomply.js` (**`bin`**, det folk kører) | `engine/index.js`'s egen `main()` |
+   |---|---|---|
+   | Score | `3/9 (33%)` | `3/6 of the checks that apply to this site (50%)` + `All 9 checks: 3/9 (33%)` |
+   | Betingede rækker | nævnt **ikke** | `- not counted: tcf — …`, `- not counted: consent_mode_v2 — …`, `- not counted: dora — …` |
+   | Råd | **nul `💡`-linjer** | `💡`-råd på 6 af 9 rækker |
+
+   Det er to renderere i **ét** publiceret pakke. `bin` importerer motoren og
+   renderer rapporten selv; motorens egen `main()` kører kun når motorfilen er
+   `argv[1]`, altså aldrig for en bruger der har installeret pakken. Følgen er
+   at **den gratis scanner — hele tragten — printer det rå ni-tal og dropper
+   både rådet og forklaringen på hvorfor tre rækker ikke tæller**, mens
+   `/pro/sample-report/` og `/scan/` bruger den delte tale. *Rettelsen er lille*:
+   træk motorens rendering ud i en eksporteret `renderReport(report, opts)` og
+   lad begge kalde den, så `bin` ikke har sin egen. Skriv spec i `docs/` først,
+   og mål på den publicerede motor med `tools/check_published_engine.mjs`.
+2. **Live-workeren er en gammel build, og scoren den giver er med vilje
+   forkert.** Målt: live `?url=shopify.com` → `{"passed":4,"total":9,"pct":44}`;
+   den samme motor i repoet giver `pct_applicable: 80` med 4 betingede rækker.
+   Siden er skrevet til at vise det ærlige delte tal og kan ikke, fordi den gamle
+   worker ikke sender `pct_applicable`. **Kan ikke rettes af en agent**:
+   kræver `wrangler deploy` = spørgsmål 9.
+3. **Et betalt produkt kan ikke købes.** `eu-compliance-ebook-bundle` ($29,
+   `…MQ0b`) ligger i `tools/stripe_products.json` og linket svarer 200, men
+   dukker op på **0 af 209 sider**. En købsmulighed uden en købsvej.
+4. **"Free API" er solgt uden dokumentation.** `/vs/termly/` lover
+   *"API access: Free API + CLI"*; `/api/`, `/docs/`, `/developers/` giver alle
+   **404** og er ikke i sitemap'en. En udvikler henvist fra sammenligningssiden
+   har ingen vej.
+5. **Zip'en mangler LICENSE.** `/extension/` siger "Open source", footeren siger
+   "Scanner and CLI are MIT licensed", men den distribuerede zip har ingen
+   LICENSE-fil. Ret billedet eller ret teksten — ikke begge.
+6. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)". Lavest prioritet: skriv
+   konkurrentpriser ned som link + dato, eller fjern dem.
+
+---
+
+Opdateret før: 2026-09-28 (iteration 100) — **to løfter der holdt ikke, fundet ved at
 gå købsvejen igennem som en fremmed: `/extension/` solgte en Pro-fordel som
 `/pro/` nægter i 400 pixels afstand, og prøverapporten endte i "62 of the 8
 checks"**
 
 Iteration 100. Deploy fra iteration 99 er **verificeret live på indhold** først:
 alle tre punkter i noten holder (se afsnittet nederst).
+
+Denne iteration: **to sider lovede hver deres ting, og de modsagde hinanden.**
+`/extension/` skrev at *"EUComply Pro re-checks your site daily, keeps per-check
+history, and reports to your client"* — 400 pixels længere nede på **samme side**
+skrev et kort *"Hosted daily monitoring is not included."* Den anden sætning er
+den sande: den daglige re-scan er pluginens (1.3.8), ikke den hosted services, og
+`/pro/` siger det samme i alle fire sprog. En køber der læste den første sætning
 
 Denne iteration: **to sider lovede hver deres ting, og de modsagde hinanden.**
 `/extension/` skrev at *"EUComply Pro re-checks your site daily, keeps per-check
@@ -201,7 +337,8 @@ læse porten som om Hotjar-installationen var verificeret.
 - 2026-09-28 (iteration 98, opgave 90) `DEPLOY OK 2026-09-28` — de tre sider verificeret på **indhold** med cache-buster: alle 18 markerede sider egner de deklarerede attributter, ingen synlig tekst ændret. Opgaven er lukket.
 - 2026-09-28 (iteration 99, opgave 91) `VERIFICER DEPLOY: extensionen målt butiksparat, én købsvej på /extension/, privacy nævner extensionen, extension 1.0.2` kodecommit `4f5017a`, merge `9240434` 2026-09-28 07:09 UTC — rører `site/extension/index.html`, `site/privacy/index.html`, `site/assets/eucomply-extension-1.0.2.zip` (1.0.1 fjernet), `chrome-ext/`, `tools/`. Efter næste deploy-vindue skal indhold verificeres med cache-buster på **tre** punkter: (1) `/extension/` — "Not in the Chrome Web Store yet" i stedet for "link will appear here", afsnittet "Installation guide (once published)" **er væk**, zip-linket er `/assets/eucomply-extension-1.0.2.zip`, og `<a href="/pro/">` står i downloadboksen; (2) `/assets/eucomply-extension-1.0.2.zip` svarer 200 **og** unzippes til 9 filer med `version 1.0.2` og `permissions: ["activeTab","storage"]` — den gamle 1.0.1 skal give **404**; (3) `/privacy/` har afsnittet "When you use the browser extension" med de to permissions. **Ingen plugin-version, ingen `update.json`** — pluginzip'en er urørt.
 - 2026-09-28 (iteration 100) `DEPLOY OK 2026-09-28` — **iteration 99s `VERIFICER DEPLOY` lukket på indhold**, alle tre punkter bestået med cache-buster: `/extension/` har "Not in the Chrome Web Store yet" ×1, **0** × "link will appear here", **0** × "Installation guide (once published)", zip-linket er 1.0.2 og `<a href="/pro/">` står i downloadboksen; `/assets/eucomply-extension-1.0.2.zip` svarer **200 `application/zip`** (8333 B) og unzippes til 9 entries med `version 1.0.2` og `permissions: ["activeTab","storage"]`, mens **1.0.1 svarer 404**; `/privacy/` har afsnittet "When you use the browser extension". Opgaven er lukket.
-- 2026-09-28 (iteration 100) `VERIFICER DEPLOY: /extension/ sælger Pro kun som den virker, prøverapportens delte tale er læselig` kodecommit `558cfe8`, merge `6c032ba` 2026-09-28 07:55 UTC — rører `site/extension/index.html`, `site/pro/sample-report/index.html`, `scripts/build_sample_report.py`, `tools/check_pro_claims.py`, `tools/check_sample_coverage.py`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **to** punkter: (1) `/extension/` — upsell-sætningen siger *"runs the same checks on a schedule in your own WordPress"* og *"The extension itself is free and stays free"*, og **0** forekomster af *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` — linjen siger **"62% of the 8 checks that apply (5 of 8)"** med procenttegn, og **0** forekomster af "62 of the 8 checks". **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt.
+- 2026-09-28 (iteration 100) `VERIFICER DEPLOY: /extension/ sælger Pro kun som den virker, prøverapportens delte tale er læselig` kodecommit `558cfe8`, merge `6c032ba` 2026-09-28 07:55 UTC — rører `site/extension/index.html`, `site/pro/sample-report/index.html`, `scripts/build_sample_report.py`, `tools/check_pro_claims.py`, `tools/check_sample_coverage.py`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **to** punkter: (1) `/extension/` — upsell-sætningen siger *"runs the same checks on a schedule in your own WordPress"* og *"The extension itself is free and stays free"*, og **0** forekomster af *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` — linjen siger **"62% of the 8 checks that apply (5 of 8)"** med procenttegn, og **0** forekomster af "62 of the 8 checks". **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **`DEPLOY OK 2026-09-28 08:13 UTC` + lukket på indhold** (iteration 101): begge punkter efterprøvet med cache-buster `?cb=it101` — (1) `/extension/` har *"runs the same checks on a schedule in your own WordPress"* ×1 og *"The extension itself is free and stays free"* ×1, og **0** × *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` siger **"62% of the 8 checks that apply (5 of 8)"** ×1 og **0** × "62 of the 8 checks". Opgaven er lukket.
+- 2026-09-28 (iteration 101) `VERIFICER DEPLOY: /cli/'s eksempel er motorens egen udskrift, og de to bullets der beskrev proxyen er rettet` kodecommit `f088284`, merge `729474c` 2026-09-28 08:19 UTC — rører `site/cli/index.html`, `tools/capture_cli_fixture.py`, `tools/cli_example_run.mjs`, `tools/build_cli_example.py`, `tools/fixtures/webflow.com.json`, `tools/quality_gate.sh` (trin 31). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **tre** punkter: (1) `/cli/` — eksempelblokken har **alle ni** domme (✅/⚠️/❌) og **0** forekomster af det gamle `║`-format eller af `"No DORA / resilience disclosures"`; linjen siger `"1 tracker(s) with NO consent platform"`; (2) `/cli/` — `"sub-second scans over a public API"` og `"PASS, FAIL or CHECK MANUALLY"` giver begge **0**, erstattet af "one request to the page (plus a DNS safety check…)" og "✅ passed, ⚠️ needs a look, ❌ failed"; (3) CI-loggen viser `GATE GRØN — alle 31 steps bestået` og `SELFTEST GRØN — alle negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker** — pluginzip'en er urørt.
 
 
 
@@ -4076,3 +4213,85 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - `/extension/` har **én** købs- eller plus-vej, der virker i dag (f.eks. kundelink
     til pluginen), så en besøgende der ikke kan bruge extensionen stadig har en vej.
   - Under `❓`: skal Mads udgive den nu, og hvilken konto?
+
+### 92. `/cli/` viste et eksempel på sit eget værktøj, der var skrevet i et andet produkts format
+
+- Status: `FÆRDIG (kode + måling)` på `ceo/cli-eksempel-ekte-output`, kodecommit
+  `f088284`, merge `729474c` 2026-09-28 08:19 UTC. Ny permanent port trin 31
+  `tools/build_cli_example.py`. **Ingen plugin-version, ingen `update.json`, ingen
+  ny zip, ingen worker.**
+- **Målt før rettelsen, mod en rigtig optagelse af webflow.com** (510 616 B,
+  sha256 `21462fbb…`, optaget 2026-09-28 10:14): siden skrev *"Example output (real
+  scan of webflow.com)"* og viste **seks** rækker i et `║ ║ ╚═══╗`-felt. Det er
+  `cli/bin/eucomply-scan.js`'s format — den **forældede proxy** der aldrig blev
+  publiceret og kun videresender til workeren. Den publicerede `bin` er
+  `eucomply-scanner/cli/eucomply.js` (`package.json` → `bin`), og den skriver
+  **ni** rækker i `✅/⚠️/❌`-format. **To af de seks domme var forkerede:**
+  `No consent banner detected  CHECK MANUALLY` er `⚠️ No consent banner detected`
+  (motorens `warn`), og `No DORA / resilience disclosures  CHECK MANUALLY` er
+  `❌ No DORA-related page signals detected`. **Den tredje fejl var den dyreste:
+  `❌ 1 tracker(s) with NO consent platform` stod slet ikke** — det klassiske
+  håndhævelsesmål under ePrivacy/GDPR Art. 6, udeladt af det eneste eksempel en
+  læser får på værktøjet.
+- **Ingen port kunne se det, fordi der ikke var noget at sammenligne med.** Blocket
+  var håndskrevet, så `denial_findings()` (læser *nægtelser*),
+  `under_claim_findings()` (kun Pro-sider), `check_sample_coverage.py` og de
+  øvrige 29 steps havde intet at dømme. **To af fire bullets på siden beskrev den
+  samme døde proxy:** *"sub-second scans over a public API"* (CLI'en kalder **én
+  side**, ikke et API) og *"every check reports PASS, FAIL or CHECK MANUALLY"*
+  (den skriver ✅/⚠️/❌ og dommens etiket).
+- **Løsningen er generering, ikke en bedre blok.** `tools/cli_example_run.mjs` kører
+  den publicerede `bin` mod `tools/fixtures/webflow.com.json` (optaget én gang,
+  gzip'et, 120 660 B) og `tools/build_cli_example.py` skriver dens stdout mellem
+  `<!--cli:example-->` og `<!--/cli:example-->`. **Der er ingen anden gengivelse
+  af motorens formatering i repoet**, så de to kan ikke glide fra hinanden. Kun
+  én undtagelse findes, og den er skrevet ned: `Duration: 62ms` er en måling af
+  det kørende øjeblik, så R2 kræver at *den* linje er `   Duration: <heltal>ms`
+  og intet andet afviger — ellers kunne R1's undtagelse vokse.
+- **Efterprøvet mod `main`s publicerede fil, ikke mod en håndskrevet fixture:** rød
+  med **præcis 5 fund** (R1, R2, R3 + to R5) når `main`s blok placeres mellem
+  markørerne, grøn på den nye. Selftesten lægger den håndskrevne blok fra `main`
+  mellem markørerne og kræver at både **R1 og R3** fanger den — R4 kan ikke,
+  fordi den blok startede med den rigtige kommandolinje, og det er værd at vide
+  hvilken regel der bærer hvilken fejl. `GATE GRØN — alle 31 steps bestået` (30
+  før), `SELFTEST GRØN — alle negative cases fanges`.
+- **Kørslen kalder ingen tredjepartstjeneste.** To ting stubbes, begge målt frem for
+  antaget: `fetch` (svarer med den optagede krop og de optagede overskrifter, og et
+  kald til en anden URL end fixtureens er en hård fejl, så en fixture ikke kan i
+  stilhed servere en anden side end den siger) og `cloudflare-dns.com/dns-query`
+  (motorens SSRF-guard slår hver vært op i DNS; svaret er webflow.com's egen
+  målte A-record `104.18.32.47`). Uden den anden stub var porten afhængig af to
+  tjenester, der hver kan svare noget andet i morgen.
+- **To fejl fundet undervejs, begge ved at køre værktøjet.** (1) Fixture'en matchede
+  på `href !== fixture.url`, og motorens `normalizeUrl` + `new URL().toString()`
+  gør `https://webflow.com` til `https://webflow.com/` — så stregen fejlede på en
+  korrekt fixture, og fejlen blev læst som "kunne ikke nå webflow.com". (2) Første
+  version af selftesten forventede **ingen** fund på den håndskrevne blok, fordi
+  den lå uden for markørerne; det testede markører, ikke indhold. Nu ligger den
+  **mellem** markørerne, så det er R1 og R3 der dømmer den.
+- **Baseline for effekten:** `/cli/` **0 reelle besøgende** (Plausible gentaget
+  2026-09-28: 1 besøgende, bounce 100 %, besøgstid 0 s, kun Direct / None;
+  Cloudflare's tal er bots). Kan ikke måles i trafik. Det den gør er at fjerne tre
+  åbenlyst falske linjer om værktøjet fra den side en udvikler læser lige før han
+  `npm install`'er.
+- **Målt i samme kørsel og ikke rettet her — næste opgave (rang 1 i køen): den
+  publicerede `bin` er en dårligere udgave af motorens egen CLI.** To renderere i
+  ét publiceret pakke: `bin` importerer motoren og renderer selv, mens motorens
+  `main()` kun kører når motorfilen er `argv[1]`. Målt mod samme fixture giver de
+  `3/9 (33%)` mod `3/6 of the checks that apply to this site (50%)` + `All 9
+  checks: 3/9 (33%)` + tre `- not counted:`-linjer, og **nul `💡`-råd mod seks**.
+  Den gratis scanner printer altså det rå ni-tal og dropper både rådet og
+  forklaringen på hvorfor tre rækker ikke tæller, mens `/pro/sample-report/` og
+  `/scan/` bruger den delte tale. Rettelsen er lille — træk motorens rendering
+  ud i en eksporteret `renderReport(report, opts)` og lad begge kalde den.
+
+- Begrundelse: rang 1 (fejl der rammer brugerne) og rang 4 (synlighed) — et
+  værktøj der viser et falsk eksempel på sit eget output, taber de brugere der
+  læser grundigt, og de er præcis dem der betaler.
+- Accept:
+  - `/cli/`s eksempelblok er **motorens egen udskrift**, genereret af
+    `tools/build_cli_example.py` mellem to markører, ikke håndskrevet.
+  - Alle **ni** checks er med, og R3 er rød hvis blot én mangler.
+  - Sætninger på siden der beskriver CLI'en, beskriver den CLI'en faktisk er (R5).
+  - Porten er rød mod `main`s publicerede blok og grøn på den nye, og selftesten
+    er grøn med mindst fem negative cases.
