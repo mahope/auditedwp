@@ -70,6 +70,8 @@ på adresser der ikke finder er rettet, og den elvte kan ikke skjules som den to
 
 ❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede.
 
+- 2026-09-28 (iteration 94) `INGEN DEPLOY NØDVENDIG: R10 — hver af portens 16 mekanismer skal have et målt bevis (opgave 87) 04f4eee / merge e7a78c3 2026-09-28 04:36 UTC` — rører **kun `tools/check_signature_prose.mjs` og denne plan**. Ingen `site/**`-fil, ingen `plugin/**`-fil, ingen `update.json`, ingen ny zip, ingen ændring i `shared/scan-engine.js` eller `eucomply-scanner/engine/index.js` — altså **intet publiceret ændrer sig ved denne diff**, og intet skal genverificeres live. Deployen skal logge **`Uploaded 0 files (322 already uploaded)`**; et andet tal betyder at diffen gjorde noget den ikke skulle. Den eneste evidens er CI-loggen: `GATE GRØN — alle 29 steps bestået` og `SELFTEST GRØN — alle negative cases fanges (94 af 94)` (var 89). Noten står her, ikke som en åben `VERIFICÉR DEPLOY`, fordi en åben note ville få næste iteration til at lede efter et deploy-vindue, der umuligt kan bringe denne ændring ud.
+
 Opdateret: 2026-09-28 (iteration 93)
 
 Sidste iteration: **de to changelog'er i leverancen har fortalt hver sin
