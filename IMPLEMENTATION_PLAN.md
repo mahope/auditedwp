@@ -1,3 +1,94 @@
+Opdateret: 2026-09-28 (iteration 109) — **HYPE-renseren skrev "It get" for "It
+unlocks", og fejlen lå allerede i en publiceret sætning. Planen fra i går sagde
+at kun `/api/` var ramt; det viste sig at være en måling af ét eksempel, ikke af
+træet.**
+
+**Fundet.** `apply_shell.py`s `HYPE`-tabel erstattede **hvert** bøjt ord med
+grundformen: `Unlock(s|ed)?` → `"Get"`. Mønsteret optager tre bøjninger,
+erstatningen er skrevet til den første. Det er ikke en typfejl, det er en sætning
+der kun ses af den der læser den. Målt på hele træet i stedet for på `/api/`:
+
+- **19 prosaforekomster** af `unlocks`/`Unlock` i publiceret HTML, i 13 sider.
+- **3 sider ville få en brudt sætning** hvis skallen kører i dag — `/api/`,
+  `/checklist/`, `/plugin/` — med `It get …` og `which get …`.
+- **1 side har fejlen i dag**: `site/deskuptime/thanks/index.html:89` skrev
+  *"Run this once — it get unlimited URLs, faster intervals and desktop
+  notifications"*. Rettet i samme diff.
+
+Planens forklaring var rigtig for sit eget eksempel — de native sider skipper
+renseren — men den dækkede ikke de **170 legacy-sider**, som stadig går igennem
+den. Derfor er fundet nu en port og ikke en note.
+
+**Rettelsen** er `hype_verb(base, by_suffix)`, der bygger mønster og erstatning
+sammen, så erstatningen slår bøjningen: `unlocks`→`gets`, `unlocked`→`got`,
+`supercharges`→`speeds up`, `elevated`→`improved`. Erstatningen er et callable,
+og store/små bogstaver følger kilden som før.
+
+**Porten** `tools/check_hype_tenses.py` har to regler, der dømmer hver sin
+retning. **R1** læser den **rigtige** `HYPE`-tabel gennem `importlib` — aldrig en
+ kopi, fordi en forældet kopi er den genfejl, der har kostet tre iterationer
+(opgave 64, 65, 72) — og kræver at hver bøjning overlever, at et mønster dækker
+alle de endelser porten kender, og at et nyt verbum i tabellen er **kendt** af
+porten. **R2** måler *resultatet* på alle 230 sider: en tredjeperson (it, that,
+which, this, Pro, these …) efter grundformen af en HYPE-erstatning er rød. Den
+undtagelse blev fundet ved målingen: *"what data does it get"* er korrekt engelsk,
+så porten læser ordet foran subjektet og springer over `does`, `to`, `can`,
+`how` … **Selftest 5 negative cases**, alle dømmer begge veje.
+
+**Målt / accept:** HYPE-tabellen 12 poster, 6 med bøjning; 230 sider læst;
+`TIDSFORMER GRØN`; `SELFTEST GRØN — 5/5`. Den konkrete sætning på
+`/deskuptime/thanks/` er rettet, og de tre sider der ville få en brudt sætning
+ giver nu `It gets` / `which gets`. R2-tallet i træet går **1 → 0**.
+
+**Deploy-verificering af iteration 108 (nu lukket): `DEPLOY OK 2026-09-28`.**
+Live `sitemap.xml` har **213** `<loc>`, `/api/` og `/da/api/` svarer 200 med
+`<html lang="da">` på spejlingen, fem `rel="alternate"` på EN, købsanker til
+`buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03` og `data-endpoint`-markører i `<main>`.
+HTTP 200 blev ikke brugt som bevis.
+
+**Rørt:** `tools/apply_shell.py` (HYPE-tabellen), `tools/check_hype_tenses.py`
+(ny), `tools/quality_gate.sh` (ét step med to kald), `site/deskuptime/thanks/
+index.html` (én sætning), `docs/hype-tidsformer.md`. **Ingen plugin-version,
+ingen `update.json`, ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+**Gaten:** `bash tools/quality_gate.sh` — **38 steps, alle grønne**. De to nye
+trin er porten og dens selftest; definitionen er uændret fra iteration 108.
+`php -l`: ingen PHP-fil er rørt. Sibling-gate (`../hermes-passiv`) kører som trin 8.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Gør `/api/` til en side skallen kender** (resten af opgave fra iteration
+   108). HYPE-fejlen, der lå i vejen, er nu lukket, så `apply_shell` kan køre
+   på EN-siden. Giv `/api/` en rigtig breadcrumb-etiket i `SEG_LABELS` (ellers
+   falder brødkrummen tilbage til branden), kør skallen på **én** side — ikke på
+   hele træet, fordi emoji-renseren griber `/cli/`'s genererede eksempelblok —
+   og regenerér de tre spejlinger med `build_api_locales.py`. **Mål:** EN og
+   spejlingerne byte-identiske i `<head>`, `build_api_locales --check` grøn,
+   `seo_check` 0 fund, ingen "It get" nogen steder.
+2. **`outside_code()` beskytter kun `<script>` og `<style>`, ikke `<pre>` og
+   `<code>`.** Målt 28/9: 0 HYPE-ord i et kodeblok, så det er en landmine uden
+   tændt snore — men emoji-renseren griber allerede `/cli/`s genererede
+   eksempelblok, og det er derfor `apply_shell.py` ikke må køres frit.lav en
+   port, der dømmer at skallen ikke ændrer et `<pre>`-blok, og overvej at
+   beskytte dem i renseren. Samme fejlklasse som det `check_dom_xss.py` så i
+   quick-check-widgeten.
+3. **De 42 øvrige engelsk-kun-siders salgsværdi** (uændret fra iteration 108):
+   mål først hvilke der reelt sælger. Der er 1 besøger på 28 dage; at skrive 42
+   siders sprogstøtte uden at vide at nogen læser dem er den dyreste måde at
+   bruge en iteration.
+4. Pris-overvågning (uændret) og root-LICENSE (spørgsmål 21) — kan ikke løses
+   uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): HYPE-renseren bevarer bøjningen, og
+> /deskuptime/thanks/ siger "it gets unlimited URLs" — kodecommit på
+> ceo/hype-boejning, 2026-09-28 ca. 18:1x CEST. Merge endnu IKKE sket.`
+> Verificér **indhold**: live `/deskuptime/thanks/` skal indeholde
+> "it gets unlimited URLs" (og **ikke** "it get unlimited"). HTTP 200 beviser
+> intet; det er denne sætning, porten R2 dømmer.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+
 Opdateret: 2026-09-28 (iteration 109) — **opgave 108 er grøn og mergeklar.
 Den viste fire fund, ikke tre, og den tredje var en fejl i planen — ikke på siden.**
 

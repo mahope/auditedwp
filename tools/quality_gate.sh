@@ -663,6 +663,19 @@ hdr "skal de tre sprog af /api/ være spejle af én kilde"
 run "tools/build_api_locales.py --check" "$PY" tools/build_api_locales.py --check
 run "tools/build_api_locales.py --selftest" "$PY" tools/build_api_locales.py --selftest
 
+# Opgave 109: HYPE-renseren i `apply_shell.py` havde **en** erstatning pr.
+# hype-verbum, uanset bøjning: `Unlock(s|ed)?` -> `"Get"`. Så "It unlocks the
+# starters" blev "It get the starters". Målt 28/9: planen sagde at kun `/api/`
+# var ramt, men det er kun sandt for de native sider — de 170 legacy-sider
+# går stadig gennem renseren, og **én** publiceret side har fejlen i dag:
+# `site/deskuptime/thanks/index.html` skrev "it get unlimited URLs". R1 læser
+# den rigtige HYPE-tabel (aldrig en kopi) og kræver at hver bøjning overlever;
+# R2 måler *resultatet* på alle 230 sider, så et nyt ord i tabellen er rødt
+# samme dag det skrives. Se docs/hype-tidsformer.md.
+hdr "skal HYPE-renseren bevare verbets bøjning"
+run "tools/check_hype_tenses.py" "$PY" tools/check_hype_tenses.py
+run "tools/check_hype_tenses.py --selftest" "$PY" tools/check_hype_tenses.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

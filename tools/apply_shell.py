@@ -610,13 +610,35 @@ EMOJI = re.compile(
     "\U0001F1E6-\U0001F1FF]️?(?:‍[\U0001F000-\U0001FAFF]️?)*|️"
 )
 
+def hype_verb(base: str, by_suffix: dict[str, str]) -> tuple[re.Pattern, object]:
+    """A hype verb whose replacement keeps the inflection of the word it replaces.
+
+    `unlocks` -> `gets`, not `get`. The table this replaces had one form per verb,
+    so every third-person sentence came out ungrammatical: "It unlocks the
+    starters" became "It get the starters" on the three pages the cleaner still
+    reaches. `by_suffix` is keyed by the matched suffix, "" for the base form, and
+    the case of the replacement follows the case of `base`.
+    """
+    alts = "|".join(re.escape(s) for s in by_suffix if s)
+    pat = re.compile(r"\b%s(%s)?\b" % (base, alts))
+    upper = base[:1].isupper()
+    return pat, lambda m, _f=by_suffix, _u=upper: _cased(_f[m.group(1) or ""], _u)
+
+
+def _cased(word: str, upper: bool) -> str:
+    """`Get` when the source word started upper case, `get` when it did not."""
+    return word[:1].upper() + word[1:] if upper else word
+
+
 HYPE = [
-    (re.compile(r"\bSupercharge[sd]?\b"), "Speed up"),
-    (re.compile(r"\bsupercharge[sd]?\b"), "speed up"),
+    hype_verb("Supercharge", {"": "speed up", "s": "speeds up", "d": "sped up"}),
+    hype_verb("supercharge", {"": "speed up", "s": "speeds up", "d": "sped up"}),
     (re.compile(r"\bSeamlessly\b"), "Easily"), (re.compile(r"\bseamlessly\b"), "easily"),
     (re.compile(r"\bSeamless\b"), "Simple"), (re.compile(r"\bseamless\b"), "simple"),
-    (re.compile(r"\bElevate[sd]?\b"), "Improve"), (re.compile(r"\belevate[sd]?\b"), "improve"),
-    (re.compile(r"\bUnlock(s|ed)?\b"), "Get"), (re.compile(r"\bunlock(s|ed)?\b"), "get"),
+    hype_verb("Elevate", {"": "improve", "s": "improves", "d": "improved"}),
+    hype_verb("elevate", {"": "improve", "s": "improves", "d": "improved"}),
+    hype_verb("Unlock", {"": "get", "s": "gets", "ed": "got"}),
+    hype_verb("unlock", {"": "get", "s": "gets", "ed": "got"}),
     (re.compile(r"\bGame-changing\b|\bgame-changing\b"), "useful"),
     (re.compile(r"\bCutting-edge\b|\bcutting-edge\b"), "current"),
 ]
