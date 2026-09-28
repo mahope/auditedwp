@@ -1,3 +1,118 @@
+Opdateret: 2026-09-28 (iteration 103) — **de to sidste håndskrevne gengivelser af
+rapporten lå i npm-pakken, ikke på sitet.** `examples/sample-output.txt` viste
+`Score: 2/9 (22%)` for wordpress.org og **seks af ni** rækker, `examples/node.js`
+var en **tredje renderer** af eget format, og README's "Example output" viste
+`Score: 5/8 (62%)` — **et tal motoren aldrig printer**, hverken ni-tallet (3/9)
+eller det delte (3/6). Nu genereres eksempelfilen af `bin` selv, eksemplet kalder
+`renderReport()`, og README har et uddrag hvor hver linje findes ordret i den
+genererede fil. R2/R3 er udvidet fra to filer til **alle** publicerede `.js`.
+
+Iteration 103. Deploy fra iteration 101 er endnu **ikke** verificeret: merge
+08:19 UTC 28/9, næste vindue 12:30 UTC, og klokken er 11:2x CEST — noten er
+ikke ældre end et deploy-vindue, og intet skal frosset.
+
+Denne iteration færdiggør præcis den fund-række, iteration 102 afsluttede med:
+*"den publicerede pakke indeholder to flere håndskrevne gengivelser af samme
+rapport."* Målt, ikke formodet:
+
+| fil | hvad den påstod | målt |
+|---|---|---|
+| `examples/sample-output.txt` | `Score: 2/9 (22%)`, wordpress.org, **6 af 9** rækker, 0 `💡` | aldrig en kørsel af motorens output |
+| `examples/node.js` | tredje renderer: `Score: n/m (…)` + ét dom pr. række, uden `detail`/`fix`/disclaimér | et fjerde sprog i samme pakke |
+| `README.md` "Example output" | `Score: 5/8 (62%)` for example.com, 5 domme | **et tal motoren aldrig printer** |
+
+**README havde også dokumentationsfejl i samme klasse.** `score` var
+dokumenteret som `{ passed, total, pct }` — altså kun det forudindtagede ni-tal,
+mens `pct_applicable`, `applicable_total`, `passed_applicable` og `conditional`
+findes i objektet og ikke var nævnt. En læser der ville vise en kunde et tal,
+brugte derfor det forudindtagede. `renderReport()` var ikke dokumenteret, selv om
+`examples/node.js` er den fil der skal kalde den, og `--timeout` virkede uden at
+stå i CLI-usage.
+
+**Rettelsen er tre filer og én port, ikke en ny blok.** `sample-output.txt` er
+nu `bin`'s egen stdout mod `tools/fixtures/webflow.com.json` (47 linjer, ni
+domme, 3 not-counted, 6 råd) og skrives med `node tools/cli_render_parity.mjs
+--write`. `examples/node.js` kalder `renderReport(report)`. README har et
+uddrag på **17 linjer hvor hver enkelt findes ordret i den genererede fil**,
+plus pointer til resten — den klistrer ikke hele rapporten ind igen, for det
+ville være en fjerde kopi af samme tekst. Spec:
+`docs/npm-pakken-egne-renderinger.md`.
+
+**Fire nye regler i `tools/cli_render_parity.mjs` (trin 32), otte i alt.** R5:
+`sample-output.txt` skal være `bin`'s egen udskrift, byte-identisk undtagen
+`Duration: <heltal>ms`. R6: hver linje i README's blok skal findes ordret i
+filen, og blokken skal have mindst ét `Score:`-tal og mindst **fem** domme. R7:
+README skal dokumentere de fire delte-felter. R8: README skal dokumentere
+`renderReport(`. **R2/R3 udvides fra `{bin, engine}` til alle `.js` under
+`cli/`, `engine/` og `examples/`** — det er den udvidelse, der giver fundene
+permanens: en tredje renderer i `examples/` fanges af præcis den regel, der
+fangede `bin`'s.
+
+**Én målt undtagelse i R2:** R2 måler **kode**, ikke kommentarer. En docstring
+må gerne nævne `report.score.pct` for at forklare hvilket tal en læser skal
+bruge — det gør `examples/node.js`, og det er ikke en renderer. Uden skelnen
+ville porten være rød på den kode, der forklarer reglen. `❌` var allerede en
+målt undtagelse (den står i `bin`s egen fejludskrift).
+
+**Efterprøvet begge veje.** `SELFTEST GRØN — alle 12 negative cases fanges` (6
+før). De fire nye cases er **dagens fund**: `examples/node.js` med sin egen
+rendering (R2+R3), den håndskrevne `sample-output.txt` (R5), README med
+`5/8 (62%)` (R6), og README der kun dokumenterer ni-tallet (R7). Den grønne
+case er repoets egen pakke, så porten er grøn af design. Case 6 blev skærpet fra
+en mutation, der fjernede hele motoren (og dermed også dom-ikonerne, så den blev
+fangen af den forkerte regel) til en der kun fjerner `export` — nu er det
+eksport-reglen alene, der dømmer.
+
+**Versionen er hævet til 1.1.0** i `package.json` og i CLI'ens hjælpetekst, så
+den publicerede pakke kan få det samme nummer når Mads frigiver den. Vi må ikke
+publicere selv.
+
+**Rørt:** `eucomply-scanner/examples/node.js`, `eucomply-scanner/examples/
+sample-output.txt`, `eucomply-scanner/README.md`,
+`eucomply-scanner/package.json`, `eucomply-scanner/cli/eucomply.js` (versions-
+linje), `tools/cli_render_parity.mjs`, `docs/npm-pakken-egne-renderinger.md`
+(ny). **Ingen `site/**`-fil, ingen plugin-version, ingen `update.json`, ingen ny
+zip, ingen worker** — `git status` efter gaten viser intet i det publicerede
+træ, så intet skal genverificeres live.
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflares 5390 er bots), `★0` stjerner, 14 d: 0 npm-visninger,
+14 kloninger (11 unikke). Kan ikke måles i trafik. Det den gør er at gøre det
+**gratis** værktøj — hele tragten — lige så ærligt som den betalte rapport, så
+en bruger der kører `npx @mahope/eucomply-scanner sin-url` og læser `/scan/`
+får samme svar, og en der læser npm-siden ikke får et tal, der aldrig er blevet
+skrevet af noget som kører.
+
+❓ **Til Mads.** Én ny, og den er den samme som før men skarpere: **`@mahope/
+eucomply-scanner` skal publiceres som 1.1.0.** Repoet siger 1.1.0 nu. Publiceret
+1.0.1 mangler den delte tale, rådene, `--timeout`, og de har to eksempler og en
+README der ljøger om tallene. Det er spørgsmål 17. Vi må ikke publicere selv.
+Spørgsmål 7, 9 og 18 uændrede, og Chrome Web Store-spørgsmålet uændret.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Et betalt produkt kan ikke købes.** `eu-compliance-ebook-bundle` ($29,
+   `plink_1…0b`) ligger i `tools/stripe_products.json`, linket svarer 200, men
+   dukker op på **0 af 209 sider**. Der er en live betalingsvej med ingen dør
+   ind til den. Konvertering, missionens prioritet 2, og det eneste sted hvor
+   penge reelt er på spil uden en beslutning fra Mads.
+2. **"Free API" er solgt uden dokumentation.** `/vs/termly/` lover *"API access:
+   Free API + CLI"*; `/api/`, `/docs/`, `/developers/` giver **404** og er ikke
+   i sitemap'en. Samme klasse som denne iteration: vi sælger en overflade der
+   ikke findes. Bemærk: `examples/python.py` og `curl.sh` i pakken kalder
+   `eucomply-scan.mahope-eeb.workers.dev` — den ubedrede worker fra punkt 3, i
+   et eksempel brugeren kopierer.
+3. **Live-workeren er en gammel build, og scoren den giver er med vilje
+   forkert.** Målt: live `?url=shopify.com` → `{"passed":4,"total":9,"pct":44}`;
+   den samme motor i repoet giver `pct_applicable: 80` med 4 betingede rækker.
+   Kan ikke rettes af en agent: kræver `wrangler deploy` = spørgsmål 9.
+4. **Zip'en mangler LICENSE.** `/extension/` siger "Open source", footeren siger
+   "Scanner and CLI are MIT licensed", men zip'en har ingen LICENSE-fil.
+5. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)".
+
+---
+
 Opdateret: 2026-09-28 (iteration 102) — **den publicerede CLI havde sin egen,
 dårligere rendering af den samme rapport.** Den skrev det forudindtagede
 ni-tal, sagde ikke hvilke rækker der ikke tæller, og havde nul `💡`-råd, mens

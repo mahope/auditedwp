@@ -1,6 +1,6 @@
 {
   "name": "eucomply-scanner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Universal website compliance scanner — GDPR, DSA, ePrivacy, cookie consent, security headers. Platform-independent: works on any URL, any CMS.",
   "type": "module",
   "main": "engine/index.js",
