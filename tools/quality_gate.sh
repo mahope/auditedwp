@@ -574,6 +574,17 @@ hdr "extensionen skal være målt butiksparat, og /extension/ skal have én køb
 run "tools/check_store_ready.py" "$PY" tools/check_store_ready.py
 run "tools/check_store_ready.py --selftest" "$PY" tools/check_store_ready.py --selftest
 
+# Opgave 92: /cli/'s "Example output (real scan of webflow.com)" var håndskrevet
+# i det **forældede** proxy-format, ikke motorens. Seks rækker i et `║ ║ ╚═══╗`-
+# felt, to af seks domme forkerede, og den alvorligste fund — 1 tracker uden
+# samtykkeplatform — stod slet ikke. Ingen port kunne se det, fordi der ikke var
+# noget at sammenligne med. Blokken er nu genereret: `cli_example_run.mjs` kører
+# den publicerede `bin` mod en optaget fixture, og R1 kræver byte-identisk
+# udskrift. Derfor skal denne step have både node og den committede fixture.
+hdr "eksemplet paa /cli/ skal vaere motorens egen udskrift"
+run "tools/build_cli_example.py --check" "$PY" tools/build_cli_example.py --check
+run "tools/build_cli_example.py --selftest" "$PY" tools/build_cli_example.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
