@@ -1,4 +1,31 @@
-Opdateret: 2026-09-28 (iteration 90)
+Opdateret: 2026-09-28 (iteration 91)
+
+Sidste iteration: **opgave 85 del 2a — prøverapporten på `/pro/sample-report/`
+fik samme delte tal som de ni resultatsider fik i del 1.** Den viste 67 % (6/9)
+for `shopify.com`, et site hvor DORA ikke kan vurderes fra en offentlig scan.
+Nu viser den 67 % uændret og 63 % (5/8) af de tjek der gælder, med nævneren
+ved siden af — i HTML, i PDF'ens score-boks og i en egen kolonne i
+summary-tabellen.
+
+Betingelsen læses fra motorens `CONDITIONAL_CHECKS`, ikke fra datasættet, så
+prøverapporten ikke kan finde på sin egen liste; porten gør en række rød hvis
+den sættes til `applies: false` uden at motoren kender nøglen, og en række
+uden `applies`-felt er også rød. Kun `dora` er `false` her, fordi de tre andre
+betingede rækker faktisk er fundet i datasættets egne fund.
+
+**Del 2b er åben og er næste iteration:** plugin-rapporten, `/pro/dashboard/`,
+`/badge/` og de fire `/pro/`-ruter. Plugin-rapporten er den vigtigste — den er
+den et bureau videregiver til sin kunde — men den kræver en versionkæde
+(1.3.37 → 1.3.38, ny zip, begge `update.json`, `_redirects`, `/plugin/`), som
+ikke nåede inden for denne iterations tid.
+
+Gate: `GATE GRØN — alle 29 steps bestået` (`--no-network`).
+Kode `9a0ad41`, merge `166b5d2`.
+
+Deploy: `VERIFICÉR DEPLOY: prøverapportens delte tal (opgave 85 del 2a) 166b5d2 2026-09-28 ca. 02:55 UTC` — kun `site/pro/sample-report/index.html` og
+`site/downloads/eucomply-sample-report.pdf`. Efter næste deploy-vindue skal
+siden vise "63% of the 8 checks that apply" under 67 %, og PDF'en skal have
+den samme sætning. Sammen med del 1's åbne note.
 
 Sidste iteration: **resultatet sagde "22 %" om et site der ikke har en eneste
 ting forkert.** Køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så
@@ -3289,7 +3316,13 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 ### 85. Tallet i resultatet skal sige, hvad det tæller
 
-- Status: `I GANG — del 1 færdig` (iteration 90, `ceo/scoretal-og-betingelse`). Del 2: plugin-rapporten, HTML-/PDF-rapporten, `shared/sample-report.json`, `/pro/dashboard/`, `/badge/` og de fire `/pro/`-ruter. Målingen står øverst i planen: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
+- Status: `I GANG — del 1 og 2a færdig` (iteration 91, `ceo/proeverapport-betingelse`, `9a0ad41`, merge `166b5d2`). **Del 2b er åben: plugin-rapporten, `/pro/dashboard/`, `/badge/` og de fire `/pro/`-ruter.** Målingen fra del 1 står stadig: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
+- **Del 2a (denne iteration) — prøverapporten.** `/pro/sample-report/` viste **67 % (6/9)** for `shopify.com`, et site hvor DORA overhovedet ikke kan vurderes. Nu viser den begge tal: 67 % (6/9) uændret — det er tallet kunder har set — og **63 % (5/8) af de tjek der gælder**, med nævneren ved siden af ("Not counted here: 1/9: DORA page-signal markers. 63% of the 8 checks that apply (5 of 8)."). Samme sætning står i PDF'ens score-boks og i summary-tabellens tredje kolonne ("Of those that apply"), og den eneste række der ikke gælder bærer motorens fulde betingelsessætning under sin egen række.
+- **Betingelsen kommer fra motoren, ikke fra datasættet.** `engine_conditions()` i `scripts/build_sample_report.py` læser `CONDITIONAL_CHECKS` ud af `shared/scan-engine.js` og sætter sætningen på de rækker der har `applies: false`. Datasættet rummer **kun** `applies` — ingen egen betingelsesliste, ingen egen sætning. `load_data()` afbryder med en fejl hvis en række sættes til `false` uden at motoren kender nøglen, og `coverage_findings()` gør det samme i gaten, så det ikke kan passere en gang og fejle senere. En række uden `applies`-felt er også rød: ingen kan falde ud af det delte tal ved at mangle feltet.
+- Hvorfor kun `dora` er `false` her, og ikke de fire: `cookies`, `tcf` og `consent_mode_v2` er alle fundet i datasættets egne `detail` ("Consent banner detected", "Consent Mode v2 default state found", "One TCF signal found"), så forudsætningen er opfyldt og rækkerne gælder. `dora` kan en offentlig sidescan aldrig afgøre. Det er motorens egen regel, anvendt på dens egne fund — ikke en håndvalgt liste.
+- HTML og PDF er regenereret fra samme datasæt af samme script, så de kan ikke divergere. `check_sample_coverage.py` grøn, inkl. PDF-teksten læst og efterprøvet.
+- **Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`). Kun `shared/`, `scripts/` og `site/**` rørt; ingen PHP, ingen plugin-version, ingen worker, ingen `update.json`, ingen `_redirects`.
+- **Bemærk uden løsning i denne diff:** `check_score_split.py` (del 1's port) dækker de ni resultatsider, ikke prøverapporten — den har sin egen port i `check_sample_coverage.py`. Del 2b skal udvide `check_score_split.py`, så plugin-rapporten, dashboardet og badge'en ikke kan vise et tal uden nævneren.
 - Begrundelse: rang 1 og 2 i "hvad der tæller" på én gang. Det er det første en besøgende læser, og det er det tal et bureau videregiver til sin kunde. Fire af ni rækker siger selv i deres egen `detail`, at de kun gælder under en forudsætning (`cookies`, `tcf`, `consent_mode_v2`, `dora`), mens siden viser dem som et ubetinget pointtal. Det er samme fejlklasse som EAA-omfanget (iteration 88) og opgave 45: **dokumenteret betingelse, ubetinget dom i talform.**
 - **Beslutningen der låses først:** scoren skal **deles** — rapporten får ét tal for de tjek der gælder for sitet og ét for dem der ikke gør. Ikke "5 af 5" alene, fordi et tal uden nævneren fortsat er et tal uden betingelse; den fulde sætning skal kunne læses i rapporten. ❓-spørgsmålet øverst er, om det ændrer et tal kunder har set (min anbefaling: ja, del det).
 - Første skridt: `runScan` får **én** ny kilde til sandheden — hvert check bærer `applies: true|false` og en kort grund, og `score` får `{passed, total, pct, applicable_total, conditional[]}`. Ingen side må selv finde ud af hvilke tjek der er betingede; det er præcis det, der får fem overflader til at fortælle fem historier (samme grund som del 1 af opgave 5 og historikmodellen i opgave 4).
