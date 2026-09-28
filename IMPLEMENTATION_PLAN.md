@@ -1,3 +1,78 @@
+Opdateret: 2026-09-28 (iteration 93)
+
+Sidste iteration: **de to changelog'er i leverancen har fortalt hver sin
+historie, og ingen port så det.** `update.json` rummer *to* changelog-felter —
+`sections.changelog` til nye WordPress og `changelog` til gamle — og de
+beskrev **33 mod 15 versioner**. Den aktuelle version lå i den ene og ikke i
+den anden, og de ni versioner der kun stod i `changelog` stod i ingen af dem.
+
+**Målt før rettelsen, ikke antaget.** `1.3.38` var udgivet med **ingen
+changelog-post overhovedet** i det felt WordPress viser i opdateringsvinduet,
+mens `plugin/readme.txt` — den changelog pluginlisten viser — havde den fulde,
+ærlige tekst. Derudover: `1.3.22` holdt **1.3.21's rettelse** (DORA's
+mellemrum, opgave 59) i stedet for sin egen (GA4, opgave 60). Det er verificeret
+mod planens egen rekord, ikke mod en antagelse om rækkefølgen. En kunde der
+læste manifestet blev fortalt at en rettelse kom i en udgave den ikke kom i,
+og den udgave den faktisk kom i stod slet ikke.
+
+**De ni manglende versioner er de dyre.** 1.3.21, 1.3.25–1.3.28 og
+1.3.30–1.3.32 er præcis de rettelser planen selv kalder *dyrere end en falsk
+advarsel fordi kunden ikke kan se dem* — de falske advertensørrækker. De var
+alle bygget, testede, udgivet og nu usynlige for den kunde der opdaterer.
+
+**Rettelsen er én kilde, ikke ni håndskrevne linjer.** `plugin/readme.txt` er
+kilden, og `tools/build_plugin_zip.py --sync-changelog` skriver dens changelog
+ind i **begge** felter i **begge** manifests. Rettelsen er reproducerbar, så den
+kan ikke glemmes ved næste udgivelse.
+
+**Porten, kontrol 7 i `tools/check_asset_delivery.py`, fire krav:** den aktuelle
+version skal stå i changelog'en; hver version i `readme.txt` skal stå i
+manifestet; teksterne skal være ens; og `changelog` og `sections.changelog` må
+ikke beskrive hver sin versionmængde. Kun kroppen sammenlignes, aldrig datoen —
+den er den eneste del de to filer med rimelighed kan have forskellig, fordi
+manifestet skrives samme dag som udgivelsen.
+
+**Fire fejl fundet undervejs, tre af dem i min egen kode.** (a) Jeg skrev
+`for section in update.get("sections")`, som itererer dict-**nøgler**, så
+`sections.changelog` aldrig blev læst — porten var grøn ved at springe sin egen
+kontrol over, præcis som trin 27 gjorde før den; (b) min første sync afkortede
+den **sidste** post ved at stoppe ved dens overskrift, så `1.0.0` mistede hele
+sin tekst; (c) de to filers changelog-funktioner var uenige om hvor sektionen
+slutter, så de målte forskellige ting; (d) min egen negative case for de to
+felter skrev begge felter, så den testede slet ikke det den påstod. Alle fire
+er rettet, og `SELFTEST GRØN — alle 18 negative cases fanges` (var 13).
+
+**Bevis, ikke påstand.** De fire nye negative cases er prøvet mod et grønt
+baseline-træ, og den rettede port er grøn mod **repoets egne filer**: 16 fund
+før synkroniseringen, 0 efter. To redirects tilføjet, fordi `1.0.0` og `1.1.0`
+aldrig har været i kæden — de stod aldrig i manifestets changelog, så de var
+aldrig kravet. Nu `41 udgivne versioner i kæden`.
+
+**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`). Rørt:
+`update.json` + `site/update.json` (byte-identiske), `site/_redirects` (+2),
+`site/assets/eucomply-1.3.38.zip` (readme uændret, kun genbygget),
+`tools/build_plugin_zip.py` og `tools/check_asset_delivery.py`. Ingen PHP, ingen
+`plugin/readme.txt`-ændring, ingen salgscopy, ingen scanner, ingen worker. Der
+er **ingen ny plugin-version**: 1.3.38 er den samme kode som i går, den får bare
+den changelog den aldrig havde fået.
+
+**Deploy-noten fra del 2b er lukket på indhold — 4 af 5 punkter, og det femte
+var årsagen til denne iteration.** Målt med cache-buster: `/assets/eucomply-1.3.38.zip`
+svarer **200 `application/zip`** (66 988 B) med `Version: 1.3.38`,
+`Stable tag: 1.3.38` og `conditional_checks()` i kilden; `/update.json` svarer 200
+med `"version": "1.3.38"` og `download_url` på 1.3.38; 1.3.37 og 1.3.20 giver
+**301** → 1.3.38; `/plugin/` viser `↓ Download v1.3.38 (free)`. **Punktet der
+faldt:** changelog'en startede `= 1.3.37`, ikke `= 1.3.38` som noten krævede.
+Det er ikke en bemærkning — det er fundet denne iteration bygger på.
+
+**Baseline for effekten: 0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at gøre de ni rettelser synlige for den kunde der
+opdaterer pluginen — de var bygget, testede og solgt i to iterationer uden at
+være læsbare ét sted.
+
+❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede, og de otte
+iterationer bag dem er ikke blevet færre.
+
 Opdateret: 2026-09-28 (iteration 92)
 
 Sidste iteration: **opgave 85 del 2b — plugin-rapporten talte fire tjek med,
@@ -3273,7 +3348,7 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 - 2026-09-28 (iteration 92) `DEPLOY OK 2026-09-28 02:50 UTC` — lukker del 1s og 2as åbne noter på **indhold**: `/scan/?cb=166b5d2` svarer 200 med den nye `scoreSplit()`, og `/downloads/eucomply-sample-report.pdf` læst med `build_sample_report.pdf_text` indeholder "of the 8 checks that apply", "67%" og "Not counted here". Deploy-kørsel `36369236374`, alle tre jobs `success`.
 ### 85. Tallet i resultatet skal sige, hvad det tæller
 
-- Status: `I GANG — del 1, 2a og 2b færdig` (iteration 92, `ceo/score-split-plugin-rapport`, `fa22b31` + `d8e798f`). **Del 2b viste efter måling, at de fire site-overflader ikke viser en scoren overhovedet** — dashboard `—` + `concept-demo`, badge `illustrative`, `vs-*` ingen procent — så del 2b reducerede sig til plugin-rapporten, som nu er gjort. **Opgaven er dermed lukket på alle de overflader den dækkede.**
+- Status: `FÆRDIG` (lukket 28/9, iteration 93 — teksten herunder sagde `I GANG`, men den egne statuslinje erklærede opgaven lukket på alle overflader den dækkede, så etiketten var en tilbagebliven etiket). Del 1, 2a og 2b: `ceo/score-split-plugin-rapport` `fa22b31` + `d8e798f`. **Del 2b viste efter måling, at de fire site-overflader ikke viser en scoren overhovedet** — dashboard `—` + `concept-demo`, badge `illustrative`, `vs-*` ingen procent — så del 2b reducerede sig til plugin-rapporten, som nu er gjort.
 - **Del 2a (denne iteration) — prøverapporten.** `/pro/sample-report/` viste **67 % (6/9)** for `shopify.com`, et site hvor DORA overhovedet ikke kan vurderes. Nu viser den begge tal: 67 % (6/9) uændret — det er tallet kunder har set — og **63 % (5/8) af de tjek der gælder**, med nævneren ved siden af ("Not counted here: 1/9: DORA page-signal markers. 63% of the 8 checks that apply (5 of 8)."). Samme sætning står i PDF'ens score-boks og i summary-tabellens tredje kolonne ("Of those that apply"), og den eneste række der ikke gælder bærer motorens fulde betingelsessætning under sin egen række.
 - **Betingelsen kommer fra motoren, ikke fra datasættet.** `engine_conditions()` i `scripts/build_sample_report.py` læser `CONDITIONAL_CHECKS` ud af `shared/scan-engine.js` og sætter sætningen på de rækker der har `applies: false`. Datasættet rummer **kun** `applies` — ingen egen betingelsesliste, ingen egen sætning. `load_data()` afbryder med en fejl hvis en række sættes til `false` uden at motoren kender nøglen, og `coverage_findings()` gør det samme i gaten, så det ikke kan passere en gang og fejle senere. En række uden `applies`-felt er også rød: ingen kan falde ud af det delte tal ved at mangle feltet.
 - Hvorfor kun `dora` er `false` her, og ikke de fire: `cookies`, `tcf` og `consent_mode_v2` er alle fundet i datasættets egne `detail` ("Consent banner detected", "Consent Mode v2 default state found", "One TCF signal found"), så forudsætningen er opfyldt og rækkerne gælder. `dora` kan en offentlig sidescan aldrig afgøre. Det er motorens egen regel, anvendt på dens egne fund — ikke en håndvalgt liste.
@@ -3291,3 +3366,19 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - **Farvebåndet på `pct` er væk eller begrundet.** `>= 80 ? 'good'` på et tal med et dokumenteret loft på 56 % er det samme som en ubrugelig farve; hvis tallet ikke deles, skal båndet følge det opnåelige maksimum, og det skal stå i porten.
   - `test_engine_parity.mjs` og `test_plugin_engine_parity.mjs` grønne; `check_verdict_labels.mjs`, `check_pro_claims.py`, `check_dora_claims.py` og `check_sample_coverage.py` grønne uden nye undtagelser; `GATE GRØN` før merge.
   - **Bemærk uden løsning i denne diff:** den udgivne web-scanner (`eucomply-scan.mahope-eeb.workers.dev`) kører den gamle motor og får tallet først ved worker-deploy (spørgsmål 9). Siderne må derfor ikke love den nye talform før workeren er live — samme rækkefølge som opgave 6 (worker før klient), og samme grund: ellers viser scanner-siden et tal pluginen ikke kan levere.
+### 86. Changelog'en i leverancen er to lister, og ingen port målte dem mod hinanden
+
+- Status: `FÆRDIG` på `ceo/changelog-en-kilde` — kontrol 7 i `tools/check_asset_delivery.py` (fire krav, fire nye negative cases, 13 → **18**), `tools/build_plugin_zip.py --sync-changelog`, `update.json` + `site/update.json` byte-identiske, `site/_redirects` +2. `GATE GRØN — alle 29 steps bestået`. **Ingen ny plugin-version** — 1.3.38 er uændret kode, den får bare den changelog den aldrig havde.
+- Fundet, målt: `update.json` rummer to changelog-felter, `sections.changelog` (33 versioner) og `changelog` (15). Den aktuelle version lå i den ene og ikke i den anden. **1.3.22 holdt 1.3.21's rettelse** (DORA's mellemrum) i stedet for sin egen (GA4) — verificeret mod planens egen rekord for opgave 59 og 60, ikke mod en antagelse om rækkefølgen. Ni versioner manglede i det felt WordPress viser i opdateringsvinduet: 1.3.21, 1.3.25–1.3.28, 1.3.30–1.3.32 og den aktuelle.
+- De ni er de dyre: de falske advertensørrækker, som planen selv kalder *dyrere end en falsk advarsel fordi kunden ikke kan se dem*. Bygget, testet, udgivet — og usynlige for den kunde der opdaterer.
+- Begrundelse: rang 1 i "hvad der tæller". En changelog er det eneste sted en kunde kan se, om en fejl de har fået rettet. Ni af den slags rettelser var ikke at læse nogen sted, og en version pegede på en rettelse den ikke havde. Rang 3 desuden: den var håndskrevet to steder i 39 udgaver, og ingen port sammenlignede dem — samme fejlklasse som redirect-kæden i opgave 84.
+- Rettelsen er reproducerbar, ikke ni håndskrevne linjer: `python3 tools/build_plugin_zip.py --sync-changelog` skriver `plugin/readme.txt`s changelog ind i begge felter i begge manifests. Kilden er den fil WordPress viser i pluginlisten.
+- Fire fejl undervejs, tre i min egen kode: `for section in dict` itererer nøgler, så `sections.changelog` blev aldrig læst (porten grøn ved at springe sin egen kontrol over — samme fejlklasse som trin 27); sync'en afkortede den **sidste** post, så `1.0.0` mistede hele sin tekst; de to filers changelog-funktioner var uenige om hvor sektionen slutter; og min negative case for de to felter skrev begge felter, så den testede ikke det den påstod.
+- Bevis: 16 fund mod repoets egne filer før synkroniseringen, 0 efter. `41 udgivne versioner i kæden` — 1.0.0 og 1.1.0 fik redirects, fordi de aldrig har været i manifestets changelog og derfor aldrig har været kravet. Kun kroppen sammenlignes, aldrig datoen.
+- Accept:
+  - ~~Den aktuelle version skal stå i changelog'en WordPress viser.~~ **Dækket.** Negativ case: changelog uden den aktuelle version → rød.
+  - ~~Hver version i `readme.txt` skal stå i manifestet med samme tekst.~~ **Dækket.** To negative cases: version kun i readme, og samme version med to tekster.
+  - ~~`changelog` og `sections.changelog` må ikke beskrive hver sin versionmængde.~~ **Dækket.** Negativ case: kun top-level-feltet ændret → rød med antallet.
+  - ~~Selftesten må ikke kunne sige grønt mens en case fejler.~~ **Dækket** — alle fire nye cases fanges, 13 → 18.
+  - Efter merge verificeres på indhold. **ÅBEN — noten ovenfor.**
+- 2026-09-28 (iteration 93, opgave 86) `VERIFICER DEPLOY: changelog'en er nu én kilde — 42 poster fra readme.txt i begge felter i begge manifests, 1.3.38 dokumenteret, 41 versioner i redirect-kæden` — rører `update.json` + `site/update.json` (byte-identiske), `site/_redirects` (+2), `site/assets/eucomply-1.3.38.zip` (genbygget, kode uændret), `tools/build_plugin_zip.py`, `tools/check_asset_delivery.py` og denne plan. **Ingen `plugin/**`-fil** — især ikke `readme.txt`, der er kilden, og ikke `eucomply.php`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/update.json` svarer 200 med `"version": "1.3.38"` og **changelog der starter `= 1.3.38 (2026-09-28) =`**; (2) samme svar har **42** poster i både `changelog` og `sections.changelog`, og de to felter er ens; (3) `/assets/eucomply-1.1.0.zip` og `/assets/eucomply-1.0.0.zip` giver begge **301** → 1.3.38 — de to var aldrig i kæden; (4) `/assets/eucomply-1.3.38.zip` svarer stadig **200 `application/zip`**; (5) CI-loggen viser `GATE GRØN — alle 29 steps bestået` og `18 negative selftest-cases`. **Bemæk:** de to JS-motorer røres ikke, så intet ændrer sig for dem — uændret fra opgave 58.
