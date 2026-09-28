@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import bisect
 import html
 import json
 import re
@@ -432,14 +433,23 @@ LOCAL_CADENCE_SCOPE = re.compile(
     # and DE pages write; without these two branches a daily cadence in Danish
     # or German was an over-claim the gate could not see, which is the same
     # missing-word failure the name vocabularies above kept making.
-    r"\bi\s+din\s+egen\w*\b|\bin\s+(?:Ihrer|ihrer|der)\s+eigenen?\b|"
+    r"\bi\s+din\s+egen\w*\b|"
+    # "in Ihrem eigenen WordPress" is dative — "Ihrer" is the genitive form, so
+    # the branch below read the site's own German sentence as an unscoped claim.
+    r"\bin\s+(?:Ihrer|Ihrem|ihrer|ihrem|der|dem)\s+eigenen?\b|"
     # "den ligger i din WordPress" is the same scope without the word "egen",
     # and site/da/scan/ writes exactly that. The branch above demands "egen",
     # so the Danish scan page's own Pro sentence was read as an unscoped claim.
     r"\bi\s+din(?:e)?\s+(?:wordpress|websted|hjemmeside|installation|server)\b|"
     r"\bin\s+ihr(?:er|en)\s+(?:wordpress|webseite|installation)\b|"
     r"\bpå\s+(?:din|den\s+ne|deres|eget?)\b|\bvor\s+ort\b|\blokal\w*|\bvindues\w*\b|"
-    r"\blocalement\b|\bsur\s+(?:votre|le\s+site|ce\s+site|votre\s+site)\b|\bdans\s+(?:votre\s+)?wordpress\b",
+    r"\blocalement\b|\bsur\s+(?:votre|le\s+site|ce\s+site|votre\s+site)\b|"
+    # "dans votre propre WordPress" is the same scope in French, and the branch
+    # below only read "dans wordpress" and "dans votre WordPress" — the
+    # adjective in the middle is the whole difference, and it is what made the
+    # French mirror of /api/ unreadable. The possessive is required, so this
+    # cannot scope an unscoped claim by accident.
+    r"\bdans\s+(?:votre|mon|ton)\s+\w{0,14}\s*(?:wordpress|site)\b",
     re.I,
 )
 
@@ -479,6 +489,11 @@ class HtmlDocument:
     tables: List[TableData]
     product_state: str
     h1: str
+    # Every h1..h6, in document order, with the line it starts on. Kept apart
+    # from `blocks` because a heading is also an ordinary block there, and the
+    # denial direction needs to know which one it is: the scope of a sentence
+    # is often in the heading above it, not in the sentence.
+    headings: List[TextBlock] = field(default_factory=list)
 
     def claim_blocks(self, relative: str) -> List[TextBlock]:
         result = list(self.blocks)
@@ -504,6 +519,7 @@ class SiteParser(HTMLParser):
         "figcaption", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li",
         "main", "nav", "ol", "option", "p", "pre", "section", "summary", "table", "td", "th", "tr", "ul",
     }
+    HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
@@ -527,6 +543,9 @@ class SiteParser(HTMLParser):
         self._style_depth = 0
         self._h1_parts: Optional[List[str]] = None
         self._h1_line = 1
+        self.headings: List[TextBlock] = []
+        self._heading_parts: Optional[List[str]] = None
+        self._heading_line = 1
 
     def _attrs(self, attrs: Sequence[Tuple[str, Optional[str]]]) -> Dict[str, str]:
         return {key.lower(): value or "" for key, value in attrs}
@@ -586,6 +605,9 @@ class SiteParser(HTMLParser):
             self._flush()
             self._h1_parts = []
             self._h1_line = line
+        if tag in self.HEADING_TAGS:
+            self._heading_parts = []
+            self._heading_line = line
         if tag in self.BLOCK_TAGS:
             self._flush()
 
@@ -616,7 +638,13 @@ class SiteParser(HTMLParser):
         if tag == "table" and self._table_stack:
             self._table_stack.pop()
             return
+        if tag in self.HEADING_TAGS and self._heading_parts is not None:
+            heading = normalize(" ".join(self._heading_parts))
+            if heading:
+                self.headings.append(TextBlock(heading, self._heading_line, "heading"))
+            self._heading_parts = None
         if tag == "h1" and self._h1_parts is not None:
+
             self.h1 = normalize(" ".join(self._h1_parts))
             self._h1_parts = None
             self._flush()
@@ -638,6 +666,8 @@ class SiteParser(HTMLParser):
         self._parts.append(data)
         if self._h1_parts is not None:
             self._h1_parts.append(data)
+        if self._heading_parts is not None:
+            self._heading_parts.append(data)
 
     def close(self) -> None:
         super().close()
@@ -652,7 +682,7 @@ def parse_html(text: str) -> HtmlDocument:
     parser = SiteParser()
     parser.feed(text)
     parser.close()
-    return HtmlDocument(parser.blocks, parser.scripts, parser.links, parser.meta, parser.tables, parser.product_state, parser.h1)
+    return HtmlDocument(parser.blocks, parser.scripts, parser.links, parser.meta, parser.tables, parser.product_state, parser.h1, parser.headings)
 
 
 def json_strings(value) -> Iterable[str]:
@@ -949,6 +979,39 @@ HOSTED_QUALIFIER = re.compile(
     r"h[ée]berg[ée]\w*|distants?|notre\w*\s+serveurs?)\b",
     re.I,
 )
+
+# A denial is allowed to be about a *different surface* than the licence, and
+# the free API endpoint is that surface: the plugin ships the scan history, the
+# endpoint does not keep one, and /api/ says so in a box headed "What this API
+# does not do". Without this the German and French mirrors went red for saying
+# something true about the API, and English stayed green — not because it was
+# more honest, but because bare "no" is deliberately absent from DENIAL, where
+# it is too common to be evidence of anything. That is the same missing-word
+# failure this file has now made three times: a gate that reads one language.
+#
+# So this is read from the *heading above the sentence*, not from the sentence.
+# The subject of the denial is a pronoun in all three languages — "It keeps no
+# history", "Sie speichert keine Historie", "Elle ne garde aucun historique" —
+# and the thing it refers to is named in the heading, one element up. Searching
+# the list item instead, the way HOSTED_QUALIFIER does, cannot see it: the item
+# is "Sie speichert keine Historie" and contains no subject at all.
+#
+# It is deliberately narrow: the heading must name the API *and* limit it, in
+# the three wordings the site actually ships. A fourth locale writes it
+# differently and the gate goes red again, which is the safe direction — a false
+# red costs a diff, a false green costs the feature nobody buys.
+API_SCOPE_HEADING = re.compile(
+    r"\bapi\b[^\n.!?]{0,60}\b(?:does\s+not|do\s+not|nicht\s+tut|ne\s+fait\s+pas)\b|"
+    r"\b(?:does\s+not|do\s+not|nicht)\b[^\n.!?]{0,60}\bapi\b",
+    re.I,
+)
+# The backstop, and it is deliberately blunter than PRO_CONTEXT. That pattern is
+# conservative on purpose — it guards the over-claim direction, where being
+# conservative means missing a claim — and it does not read "Pro does not
+# include a scan history", which is the one sentence this guard exists on. Here
+# the risk runs the other way: a denial that names the licence is the
+# under-claim, whatever shape the sentence takes. So the test is the bare word.
+LICENSE_MENTION = re.compile(r"\bPro\b")
 
 # The denial verbs, in the four languages the Pro pages ship in. "does not
 # include" and "are not part of it" are the same promise in different words, and
@@ -1316,7 +1379,24 @@ def plugin_check_count_findings(
     return findings
 
 
-def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
+def _scope_heading(ordered: Sequence[Tuple[int, str]], line: int) -> str:
+    """The heading a block sits under: the last one that starts above it.
+
+    Ordered by start line, so the answer is the heading a reader would call the
+    section — not the last one in the file, and not the one nearest by character
+    count. Returns "" when the block is above every heading, which is the
+    top-of-page prose where nothing scopes it.
+    """
+    index = bisect.bisect_left(ordered, (line, ""))
+    return ordered[index - 1][1] if index else ""
+
+
+def denial_findings(
+    relative: str,
+    blocks: Sequence[TextBlock],
+    text: Optional[str] = None,
+    headings: Sequence[TextBlock] = (),
+) -> List[str]:
     """Pages that deny a Pro feature the plugin still ships.
 
     Four things have to line up, and each one closes a hole the others leave
@@ -1326,7 +1406,9 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
     * the code still ships the feature, read by predicate, not from a list;
     * a name and a denial sit in the same clause — and the clause is not scoped
       to the hosted version, which is the one denial the product requires;
-    * the block is not a paragraph about other vendors.
+    * the block is not a paragraph about other vendors;
+    * and the section it sits in is not about another surface — see
+      API_SCOPE_HEADING, and the Pro guard below.
 
     That last one is a limit of a text check, so it is worth being explicit about
     what it costs. OTHER_PRODUCTS is read on the **block**, because a competitor
@@ -1347,6 +1429,7 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
     feature flatly. The over-claim gate still reads ROADMAP, so a roadmap box can
     still not over-promise.
     """
+    ordered = sorted((heading.line, heading.text) for heading in headings)
     findings: List[str] = []
     for feature in _shipped_pro_features():
         if not feature.shipped():
@@ -1366,6 +1449,16 @@ def denial_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[s
                 separators = list(LIST_SEPARATOR.finditer(clause, 0, name.start() - start))
                 item = clause[separators[-1].end():] if separators else clause
                 if HOSTED_QUALIFIER.search(item):
+                    continue
+                # A section about the API denies things about the API. The guard
+                # is the sentence, not the heading: a heading can scope a whole
+                # box while one sentence inside it goes on to deny a Pro
+                # feature, and that sentence is the under-claim this rule exists
+                # for. So the exemption only stands while the sentence never
+                # says Pro.
+                if API_SCOPE_HEADING.search(_scope_heading(ordered, block.line)) and not LICENSE_MENTION.search(
+                    _sentence(block.text, name)
+                ):
                     continue
                 findings.append(
                     f"{relative}:{block.line}: {feature.label}: {clause.strip()}"
@@ -2478,6 +2571,16 @@ def denial_self_tests() -> List[str]:
     def denied(text: str, relative: str = "site/plugin/index.html") -> List[str]:
         return denial_findings(relative, [TextBlock(text, 1)])
 
+    def denied_under_api_box(heading: str, text: str) -> List[str]:
+        """A denial read the way /api/ writes one: a heading above the sentence.
+
+        The heading and the paragraph are separate blocks on separate lines, as
+        they are in the published file — an exemption tested against one merged
+        string would pass here and fail on the page.
+        """
+        blocks = [TextBlock(heading, 10, "heading"), TextBlock(text, 11)]
+        return denial_findings("site/api/index.html", blocks[1:], headings=blocks[:1])
+
     # Caught, once per language. DE and FR are here for a reason: the first run
     # of this check reported EN and DA and read neither, so nothing was red and
     # nothing was tested.
@@ -2519,6 +2622,36 @@ def denial_self_tests() -> List[str]:
     # Somebody else's product is not our licence.
     if denied("Cookiebot and CookieYes are consent platforms. TrustScan's free scan does not include a downloadable report."):
         failures.append("self-test denial competitor: a competitor comparison was flagged")
+    # The API surface. The plugin ships the history; the free endpoint does not
+    # keep one, and /api/ says so under a heading — with a pronoun for a subject
+    # in all three languages, so the surface is never named in the sentence
+    # itself. These four are the exact wordings the site ships, and they are the
+    # reason API_SCOPE_HEADING exists: DE and FR went red for it and EN did not,
+    # only because bare "no" is too common in English to be evidence of anything.
+    for name, heading, text in (
+        ("EN", "What this API does not do", "It keeps no history, runs nothing on a schedule, and takes no payment."),
+        ("DE", "Was diese API nicht tut", "Sie speichert keine Historie, läuft nicht nach Zeitplan und nimmt keine Zahlung an."),
+        ("FR", "Ce que cette API ne fait pas", "Elle ne garde aucun historique et ne s'exécute pas selon un calendrier."),
+    ):
+        if denied_under_api_box(heading, text):
+            failures.append(f"self-test denial api scope {name}: a true statement about the API endpoint was flagged as a Pro under-claim")
+    # …and the same heading must not become a hole. A box can be about the API
+    # and still contain a sentence that denies a shipped Pro feature, and that
+    # sentence is exactly what this rule exists to catch. The Pro guard is what
+    # keeps the exemption from being a way to say anything in this section.
+    if not denied_under_api_box(
+        "What this API does not do", "It keeps no history. Pro does not include a scan history either."
+    ):
+        failures.append("self-test denial api scope guard: a Pro denial inside the API box was allowed")
+    if not denied_under_api_box(
+        "Was diese API nicht tut", "Sie speichert keine Historie. Die Pro-Lizenz enthält keinen Scan-Verlauf."
+    ):
+        failures.append("self-test denial api scope guard DE: a Pro denial inside the API box was allowed")
+    # Without the heading the very same sentence stays red: the scope lives in
+    # the heading, and a check that guessed the scope from the page would pass
+    # here and miss the same claim written somewhere else.
+    if not denied("Sie speichert keine Historie."):
+        failures.append("self-test denial api scope unscoped: an unscoped German denial was allowed")
     # A claim, not a denial, is the over-claim gate's business and stays there.
     if denied("EUComply Pro keeps a scan history of your latest scans."):
         failures.append("self-test denial no-denial: a sentence that denies nothing was flagged")
@@ -2740,7 +2873,8 @@ def main() -> int:
             # A page that talks about the Pro licence may not deny a feature that
             # licence unlocks. This direction is otherwise unwatched: the gate
             # stays green, the page stays published, the feature stays unsold.
-            findings.extend(denial_findings(relative, parse_html(text).claim_blocks(relative)))
+            document = parse_html(text)
+            findings.extend(denial_findings(relative, document.claim_blocks(relative), headings=document.headings))
         if path.suffix.lower() in {".html", ".htm"} and relative not in PRO_TRUTH_SURFACES:
             # The disagreement direction: this page sells something /pro/ denies.
             findings.extend(cross_page_claim_findings(relative, parse_html(text).claim_blocks(relative)))
