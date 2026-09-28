@@ -636,6 +636,18 @@ hdr "skal enhver konkurrent-pris kunne spores til en kilde og en dato"
 run "tools/check_competitor_facts.py" "$PY" tools/check_competitor_facts.py
 run "tools/check_competitor_facts.py --selftest" "$PY" tools/check_competitor_facts.py --selftest
 
+# Opgave 107: sitemap.xml havde 209 `<loc>` mod 223 publicerede sider, og 13
+# af de 14 manglende var korrekt `noindex`. Den fjortede var **/api/**: ingen
+# robots-meta altsaa indekserbar, publiceret i PUBLIC_DIRS, fuld dokumentation
+# med fire endepunkter og en købsknap — og aldrig meldt til nogen. Ingen port
+# spurgte, kun om siden *findes* (check_api_docs.mjs) og om den publiceres;
+# ingen spurgte om den er *indberettet*. Fire regler dømmer nu begge
+# retninger, fordi en sitemap med en død adresse og en indekserbar side der
+# ikke står i den er samme fejl. Se docs/sitemap-indekserbar.md.
+hdr "skal hver indekserbar side være meldt i sitemap.xml"
+run "tools/check_sitemap.py" "$PY" tools/check_sitemap.py
+run "tools/check_sitemap.py --selftest" "$PY" tools/check_sitemap.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

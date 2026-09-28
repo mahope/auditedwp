@@ -1,3 +1,101 @@
+Opdateret: 2026-09-28 (iteration 107) — **`/api/` var indekserbar, publiceret
+og aldrig meldt til nogen.** Målt, ikke læst: `site/sitemap.xml` havde **209**
+`<loc>`, og det publicerede træ har **223** sider. 14 sider var aldrig
+indberettet, og 13 af dem er korrekt væk — de er `noindex`:
+`/search/` + de tre locale-søgninger, `/pro/dashboard/`, `/pro/thank-you/`,
+`/tools/`, de fem generator-sider og `/deskuptime/thanks/`. Den fjortede var
+**`/api/`**, som ikke har nogen robots-meta overhovedet.
+
+Det er den dør, hele API-argumentationen hænger på: fire endepunkter der
+svarer 200 i dag, CORS åben, to færdige kodeeksempler, et JSON-eksempel taget
+fra den kørende service, en købsknap til Pro, og en ærlig tekst om hvad
+API'et *ikke* gør. Den lå i mørket.
+
+**Hvorfor ingen port fandt den: `check_api_docs.mjs` (trin 34) har fire regler
+for præcis den overflade, og de er alle grønne.** R2 kræver en dør ind i
+dokumentationen på enhver side der lover API-adgang, R4 kræver at siden
+publiceres. Begge er sande. Ingen af dem spurgte det næste spørgsmål: **er
+den meldt til nogen?** De tre egenskaber — findes, publiceres, indberettes —
+er uafhængige, og kun den første var dømt. Det er samme fejlklasse som
+iteration 106: overfladen er rigtig, og ingen følger den hele vejen ud.
+
+**Rettelsen er én linje + fire regler.** (1) `site/sitemap.xml` har nu
+`/api/` først med `lastmod 2026-09-28`. Ingen `xhtml:link`-alternativer, fordi
+siden ingen har — den får dem ikke ved at få henvisninger til sider, der ikke
+findes. (2) `tools/check_sitemap.py` er **trin 36** og dømmer begge retninger,
+fordi en sitemap med en død adresse og en indekserbar side der ikke står i
+den er samme løgn: **R1** en publiceret indekserbar side skal have en
+`<loc>` (*denne fangede fundet*), **R2** en `<loc>` skal være en side der
+findes, **R3** en `<loc>` skal være præcis sidens egen `rel=canonical`,
+**R4** en `noindex`-side må ikke stå i sitemap. R4 er ikke kosmetik — det er
+det, der holder de 13 korrekte undtagelser skelnelige fra de nye fejl, og
+derfor holder porten grøn i dag i stedet for at råbe op på 13 rigtige valg.
+
+**Sidenes liste læses fra `build_public_tree.py`s egen `PUBLIC_DIRS`**, ikke
+fra en kopi i porten. Ellers kunne de to glide fra hinanden, og en forældet
+kopi ville få porten til at dømme sider, der ikke engang udgives.
+
+**Beviset er porten rød på den eneste sande fejl før rettelsen:**
+`publicerede sider: 223 — 210 indekserbare, sitemap-loc: 209` →
+`FEJL R1 api/ er indekserbar men staar ikke i sitemap.xml`. Selftesten gik
+**5/5** negative cases, og de er mutationer mod repoets egne filer, ikke
+fixtures: R1 med `/api/` fjernet igen, R1 med en helt ny aldrig-meldt side,
+R2 med en `<loc>` uden side, R3 med en `<loc>` uden trailing slash, R4 med
+`/search/` i sitemap. Efter rettelsen: `210 mod 210`, **SITEMAP GRØN**.
+
+**Gaten:** `GATE GRØN — alle 36 steps bestået` (35 før). Sibling-kørslen i
+`../hermes-passiv` gav exit 0 og 0 sider, som er dens kendte udfald; root-
+fallbacken `tools/seo_check.py --verbose` scannede **217 sider med 0
+findings** (uændret), så den er den gyldige SEO-evidence, jf. gate-baseline.
+
+**Deploy-verificering af iteration 106 lukket på indhold.** De otte `vs/*`-
+sider er live med rettede priser, hver med én `data-fact-source`-note:
+termly `Starter $10/mo billed annually, $14 month-to-month`, cookiebot
+`Premium Lite €7/mo`, iubenda `Essentials €4.99/mo per site billed yearly`,
+usercentrics `€30/mo` / `€50/mo`, osano `Plus $199/mo`. `DEPLOY OK 2026-09-28`.
+Live `sitemap.xml` har stadig 0 for `/api/`, som forventet før merge.
+
+**Rørt:** `tools/check_sitemap.py` (ny), `tools/quality_gate.sh` (trin 36),
+`site/sitemap.xml` (én `<url>`), `docs/sitemap-indekserbar.md` (ny).
+**Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris,
+ingen worker, ingen upload.**
+
+**Baseline for effekten:** Plausible 28 d: **1 besøger**, bounce 100 %, kun
+Direct / None. Det er ikke et målepunkt for denne iteration og bliver ikke
+brugt som et. Det målbare er indekserbarheden: **210 → 211** sider i sitemap
+mod 223 publicerede, hvor de 12 resterende er `noindex` med vilje. Det næste
+synlige resultat er en `/api/`-URL i Google Search Console, og repoet har
+ingen Search Console-adgang, så det kan først ses af en med den.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **`/api/` findes kun på engelsk, og det er nu målt at det er en synd.** Tre
+   indekserbare sider på dansk, tysk og fransk er tre reelle søgeindgange til
+   den bedste udviklerflade vi har, og sprogvælgeren på `/api/` viser
+   DA/DE/FR som slået fra. `check_locale_parity` kræver kun symmetri for
+   `index`, `pro` og `pricing`, så porten er grøn — det er et valg om tid, og
+   tiden er brugt på andre ting. **Mål ved start:** hvor mange af de 210
+   indekserbare sider findes på mere end ét sprog, og hvilke af dem der
+   bærer en købsknap. Skriv de tre spejle som *spejle af én kilde* (et
+   `api/partial`-mønster a la `apply_shell.py`), aldrig som tre håndskrevne
+   sider — ellers drifter de fra hinanden som de otte `vs/*`-sider gjorde.
+2. **Pris-overvågning er stadig en reel mangel** (iteration 106, punkt 1).
+   R4 gør optegnelser ældre end 180 dage røde, og de otte sider var skrevet
+   før i år. Den skal skrives som **et script Mads kan køre** — læs de otte
+   kilder, skriv en diff — ikke som en agent der selv overvåger. Ingen ny
+   infra.
+3. **Deploy-verificering af denne iteration** (`/api/` i live `sitemap.xml`).
+4. Root-LICENSE (spørgsmål 21) — uændret, kan ikke løses uden Mads.
+
+> `VERIFICER DEPLOY: /api/ i sitemap.xml + den nye sitemap-port (trin 36),
+> <MERGE_SHA>, 2026-09-28 ca. 15:05 CEST.` Verificér **indhold**: live
+> `sitemap.xml` skal indeholde `eucomplypro.com/api/`, og antallet af `<loc>`
+> skal være 210. HTTP 200 beviser intet.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 står uændret.
+
+---
+
 Opdateret: 2026-09-28 (iteration 106) — **syv af otte sammenligningssider
 havde en forkert pris på en konkurrent.** Køens anden post sagde "uden kilde og
 uden as of-dato". Målt mod leverandørernes egne prissider 28/9 viste det sig at
@@ -76,10 +174,11 @@ klikkede videre — ikke af os.
 4. **Deploy-verificering af denne iteration** (de otte `vs/*`-sider) — ét kald
    til CI i starten af næste iteration.
 
-> `VERIFICER DEPLOY: de otte vs/*-sider med rettede konkurrentpriser, kilde- og
-> datonote under hver tabel, f6cd5f9, 2026-09-28 ca. 14:20 CEST.` Forventes live
-> efter CI-builden; kontrollér **indhold** (en `data-fact-source`-note pr. side og
-> "Starter"/"Premium Lite" i cellerne), ikke HTTP 200.
+`DEPLOY OK 2026-09-28` — lukket i iteration 107 på **indhold**: alle otte
+sider svarer med én `data-fact-source`-note pr. tabel, og cellerne har de
+rettede tal (`Starter $10/mo billed annually`, `Premium Lite €7/mo`,
+`Essentials €4.99/mo`, `€30/mo` + `€50/mo`, `Plus $199/mo`). CI `36417626031`
+grøn.
 
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 står uændret.
 
