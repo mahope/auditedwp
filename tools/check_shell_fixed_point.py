@@ -42,7 +42,28 @@ på en frisk udtjekning af HEAD, sagde `FEJL tools/check_shell_fixed_point.py`
 med 99 bevægelige sider, og sitet holdt op med at deploye. R1 var altså ikke
 død, den var aldrig kørt.
 
-Selftest: to negative cases.
+**Og R1 kørte en kæde, der ikke er den der kører.** Den sagde
+`R1 OK — 230 sider, 0 ændret af én kørsel af den rigtige kæde`, men
+`run_shell()` kørte `catalogue()` og `process()` og **ikke** `build_sitemap()`
+eller `build_search_index()` — de to filer `main()` skriver *efter* sidernes
+`process()`. De er ikke HTML, så løkken over `page_paths()` rørte dem aldrig.
+
+Målt på den rigtige kommando (`tools/apply_shell.py`, uden `--dry-run`, altså
+ikke R1): **148 `lastmod` i `site/sitemap.xml` flyttede sig**, mens porten stod
+grøn. Ingen gik tilbage — alle 148 gik fremad, fordi de sider var redigeret
+siden sidste gang sitemapet blev skrevet. Det skyldtes ikke en fejl i
+`git_dates()`: `cdab45c` rummede en ægte sætningsfejl i `site/badge/index.html`
+("it **unlocks**" → "it **gets**"), så `2026-09-28` for `/badge/` er sand.
+
+Så det var ikke porten, der lå, men **det træ den målte**: R1 krævede et fast
+punkt for 230 HTML-sider og sagde intet om de to filer, der beskriver dem. R1
+måler nu hele `main()`s skriveflade, og R3 dømmer den modsatte retning med en
+mutation R2 ikke kan lave: en `lastmod` der er forkert, **uden** at nogen side
+røres. Bevis på at casen ikke er død: den gamle kæde ser mutationen som
+`INGEN bevægelse`, den nye fanger den.
+
+Selftest: tre negative cases. R3 er den der lukkede det hulle denne port
+havde, og den fandt 148 forældte `lastmod` i det committede sitemap.
 
 Krav: Python 3.10+. Det er ikke en bivirkning — `apply_shell.py` bruger
 `str | None` i annoteringer, og på en ældre fortolkning dør den TypeError
@@ -93,7 +114,44 @@ def run_shell(shell, tree: pathlib.Path) -> list[str]:
             delta = _first_delta(before.decode("utf-8", "replace"),
                                  after.decode("utf-8", "replace"))
             found.append(f"R1 {path.relative_to(tree).as_posix()}: {_short(delta)}")
+    found.extend(run_derivatives(shell, tree))
     return found
+
+
+# De to afledte filer. `main()` skriver dem, og de er **ikke** HTML-sider, så
+# løkken over `page_paths()` rør dem ikke. Det var hele hullet: R1 sagde
+# "0 ændret af én kørsel af den rigtige kæde", og målt på den virkelige
+# kommando (`tools/apply_shell.py`, ikke `--dry-run`) ændrede den 148
+# `lastmod` i `sitemap.xml`. Se målingen i `IMPLEMENTATION_PLAN.md`.
+DERIVEREDE = ("sitemap.xml", "search-index.json")
+
+
+def run_derivatives(shell, tree: pathlib.Path) -> list[str]:
+    """Skalens to afledte filer skal også være et fast punkt.
+
+    De skrives af `main()` efter sidernes `process()`, og de læser *alle*
+    siderne — så de arver præcis den bevægelighed porten så småt undgik at se.
+    De måles derfor på samme måde som siderne: byte før, byte efter.
+    """
+    found: list[str] = []
+    for navn in DERIVEREDE:
+        sti = tree / navn
+        if not sti.exists():
+            found.append(f"R1 {navn}: mangler i træet — kæden skriver den, så den skal findes")
+            continue
+        before = sti.read_bytes()
+        _kør_afledt(shell, navn)
+        after = sti.read_bytes()
+        if before != after:
+            found.append(f"R1 {navn}: {_first_delta(before.decode('utf-8', 'replace'), after.decode('utf-8', 'replace'))}")
+    return found
+
+
+def _kør_afledt(shell, navn: str) -> None:
+    if navn == "sitemap.xml":
+        shell.build_sitemap()
+    else:
+        shell.build_search_index()
 
 
 def _first_delta(a: str, b: str) -> str:
@@ -117,7 +175,8 @@ def tree_findings() -> list[str]:
         found = run_shell(shell, tree)
     if not found:
         pages = len(page_paths(SITE))
-        print(f"R1 OK — {pages} sider, 0 ændret af én kørsel af den rigtige kæde")
+        print(f"R1 OK — {pages} sider + {len(DERIVEREDE)} afledte filer, 0 ændret "
+              f"af én kørsel af den rigtige kæde")
     return found
 
 
@@ -161,6 +220,47 @@ def selftest_findings() -> list[str]:
         else:
             print(f"R2 OK — uden art-meta på {page.name} så R1 {len(moved)} sider flytte sig")
             print("     " + _short(moved[0]))
+    found.extend(afledt_selftest())
+    return found
+
+
+def afledt_selftest() -> list[str]:
+    """R3: en forældet `sitemap.xml` skal fanges — det var det hele hullet.
+
+    R2 fjerner en `art-meta`, som `process()` genskriver i **samme** kørsel. Den
+    bevæger derfor også `build_sitemap()`, så den er en svag mutation af R3.
+
+    R3 gør det modsatte: den skriver en `lastmod` der er **forkert**, uden at
+    røre nogen side. `process()` har intet at sige om den, så kun
+    `build_sitemap()` kan fange den — og før denne rettelse blev den slet ikke
+    kaldt. Det er præcis den fejl, der lå i træet: 148 `lastmod` der pegede på
+    den dag siden sidst blev redigeret, mens `R1 OK — 230 sider` stod i loggen.
+
+    Som R2 må mutationen kunne lyve, hvis den var død, så den måles to gange:
+    at filen faktisk blev skrevet, og at porten faktisk så den.
+    """
+    found: list[str] = []
+    shell = load_shell()
+    with tempfile.TemporaryDirectory() as tmp:
+        tree = pathlib.Path(tmp) / "site"
+        shutil.copytree(SITE, tree)
+        sti = tree / "sitemap.xml"
+        original = sti.read_text(encoding="utf-8")
+        forkeret = original.replace("<lastmod>", "<lastmod>1999-01-01<!--", 1)
+        if forkeret == original:
+            return ["R3: mutationen ændrede intet i sitemapet — den er et "
+                    "stilhedende no-op, så casen kan ikke lyve om R1"]
+        sti.write_text(forkeret, encoding="utf-8")
+        if sti.read_text(encoding="utf-8") != forkeret:
+            return ["R3: sitemapet blev ikke skrevet, så mutationen døde på vejen"]
+        moved = run_shell(shell, tree)
+        if not any(m.startswith("R1 sitemap.xml") for m in moved):
+            found.append("R3: en forældet lastmod i sitemap.xml blev ikke faget — "
+                         "porten ser kun sider, ikke de afledte filer")
+        else:
+            print("R3 OK — en forældet lastmod i sitemap.xml så R1 fange den "
+                  f"({len(moved)} linjer)")
+            print("     " + _short(next(m for m in moved if m.startswith("R1 sitemap.xml"))))
     return found
 
 

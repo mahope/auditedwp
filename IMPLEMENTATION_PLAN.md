@@ -1,3 +1,123 @@
+Opdateret: 2026-09-28 (iteration 115) — **punkt 1 fra 114 er besvaret, og
+svaret var: R1 kørte ikke den kæde den påstod at køre. `build_sitemap()` blev
+aldrig kaldt, så 148 `lastmod` i det publicerede sitemap var forældede, mens
+porten sagde `R1 OK — 230 sider, 0 ændret`.**
+
+**Deploy-verificering af iteration 114: `DEPLOY OK 2026-09-28`.** Ét kald, ingen
+løkke: `deploy-site` `36478023839` for `b881815` er `success`, og
+`build-devnotify` `36478023160` ligeledes. Læst i toppen af denne iteration.
+
+**Hvem skriver `site/sitemap.xml`? Ikke R1, og ikke `build_sites.py`.** Målt:
+`build_sitemap()` (tools/apply_shell.py:1713) er den **eneste** skriver, og den
+ligger i `main()` — efter løkken der kører `process()` på alle 230 sider.
+`build_sites.py` i `../hermes-passiv` skriver sit eget sitemap til
+`dist/<domain>/`, ikke til `site/`. R1 (`tools/check_shell_fixed_point.py`)
+kørte `catalogue()` og `process()` og **ikke** `build_sitemap()` eller
+`build_search_index()`. De to afledte filer er ikke `.html`, så løkken over
+`page_paths()` rørte dem aldrig. Porten krævede altså et fast punkt for 230
+sider og sagde **intet** om de to filer der beskriver dem.
+
+**Målt på den rigtige kommando, som er pointen fra 114.** System-`python3` er
+3.9.6 og dør i `str | None` (punkt 2 fra 114), så målingen krævede
+`python3.13`:
+
+    $ python3.13 tools/apply_shell.py
+    pages: 230, changed: 0, sitemap urls: 213, search index: 213
+    $ git status --porcelain site/
+     M site/sitemap.xml          # 1 fil, 148 linjer
+
+`changed: 0` er det samme tal porten råbte på. Forskellen er de 148 `lastmod`.
+Kørsel 2 og 3 giver præcis samme md5, så kæden er et fast punkt fra
+**iteration 2** — den afvigelse, der lå i træet, var ældre end porten.
+
+**De 148 er ikke en fejl i `git_dates()`. Den nye dato er den sande.** Alle 148
+har ingen egen `dateModified` (talt: 0 med, 148 uden), så de kommer fra
+`GIT_DATES`-fallback, og **alle 148 gik fremad, ingen baglæns** — det er et
+mønster, man får når sider er redigeret siden sidste gang sitemapet blev
+skrevet, ikke når noget regnes forkert. Modmålt på `/badge/`, der flyttede
+`2026-09-26 → 2026-09-28`: `cdab45c` rørte den fil med en **ægte**
+sætningsfejl (`it **unlocks** editable HTML starters` → `it **gets**`), så
+2026-09-28 er rigtigt, og den gamle 2026-09-26 pegede på den ældre
+DORA-commit. **Det var træet der lå, ikke porten** — og det er præcis punkt 2 fra
+114 om efter: en port skal måle det den påstår at måle.
+
+**Rettelsen er tre dele, fordi en måling uden en dødskontrol er en fromshed.**
+`run_shell()` kalder nu `build_sitemap()` og `build_search_index()` på samme
+måde som siderne (byte før, byte efter), og ok-linjen siger `230 sider + 2
+afledte filer` frem for bare `230 sider` — den skal ikke fortsætte med at lyve
+om sit omfang. R3 er den nye selftest, og den laver den mutation R2 **ikke**
+kan: en `lastmod` der er forkert, uden at nogen side røres. R2s mutation
+fjerner en `art-meta`, som `process()` genskriver i samme kørsel, så den
+bevæger også `build_sitemap()` og er en svag mutation af R3.
+
+**Målt / accept.** Før, på det uændrede træ: `R1 OK — 230 sider, 0 ændret`
+mens `git status` efter den rigtige kæde viste 1 ændret fil. Efter:
+`R1 sitemap.xml: linje 14 — <lastmod>2026-09-26</lastmod> → <lastmod>2026-09-28</lastmod>`,
+exit 1. Efter at træet er regenereret: `R1 OK — 230 sider + 2 afledte filer, 0
+ændret af én kørsel af den rigtige kæde`. Selftesten: `R2 OK — … 1 sider
+flytte sig` (uændret bevis) og `R3 OK — en forældet lastmod i sitemap.xml så R1
+fange den`, exit 0. **R3 er målt imod den gamle kæde for at den ikke skal være
+død:** mutationen indsat i træet giver `INGEN bevægelse` på den gamle
+kæde og `R1 sitemap.xml: linje 5 …` på den nye. `GATE GRØN — alle 40 steps
+bestået`. `php -l` grøn på plugin'en (ingen PHP rørt).
+
+**Baseline (Plausible 28/9, uændret):** 1 besøger, bounce 100 %, kun Direct,
+28 dage. Denne iteration flytter ingen tal — den får et sitemap, der ikke
+løber 148 `lastmod` bagud.
+
+**Rørt:** `tools/check_shell_fixed_point.py` (`run_shell()`, `DERIVEREDE`,
+`run_derivatives()`, `_kør_afledt()`, `afledt_selftest()`, ok-linje,
+dokstring), `site/sitemap.xml` (regenereret af kæden selv, 148 `lastmod`),
+`IMPLEMENTATION_PLAN.md`. **Ingen plugin-version, ingen `update.json`, ingen ny
+zip, ingen Stripe-pris, ingen worker.** Den eneste publicerede ændring er
+sitemapet, og den deployes af CI på merge.
+
+> `VERIFICÉR DEPLOY: porten måler de to afledte filer, og sitemapet er
+> regenereret (iteration 115) ceo/sitemap-i-porten 2026-09-28` — rører
+> `site/sitemap.xml` (148 `lastmod`) + `tools/check_shell_fixed_point.py`.
+> Efter næste deploy-vindue skal **indhold** verificeres: (1) live
+> `/sitemap.xml` er **byte-identisk** med `HEAD:site/sitemap.xml` (mod
+> Plausible-injektionen ved build, som kun findes i `<head>` og ikke i
+> sitemapet); (2) `/badge/` står med `<lastmod>2026-09-28</lastmod>` og
+> `/blog/bigcommerce-gdpr-compliance-guide/` med `2026-09-27` — de to tal der
+> flyttede; (3) `/sitemap.xml` har stadig **213** `<url>`-elementer, så
+> regenereringen ikke har tabt eller dubleret en side; (4) CI's
+> `kvalitetsgate` logger `R1 OK — 230 sider + 2 afledte filer`, altså at den
+> nye ok-linje kører i CI og ikke kun lokalt. (3) og (4) kan ikke efterprøves
+> uden henholdsvis et værktøj og en kørsel; (1) og (2) er indhold.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Punkt 2 fra 114 er stadig åben: de 36 forkerte `lastmod`.** De er frosset
+   ind i sidernes `dateModified`, som `seo_head()` skrev da porten endnu troede
+   på filtallet. Mål først hvilke URL'er det er, og ret dem **i kilden** — de
+   kommer tilbage ved næste redaktionelle ændring ellers. Bemærk at den
+   sikre retning her er modsat punkt 3 fra 114: for `sitemap.xml` var den nye
+   dato *bedre* end den gamle, fordi siden virkelig var redigeret. Det skal
+   måles pr. side, ikke antaget.
+2. **Punkt 3 fra 114: skal Plausible-injektionen hegnes ind i en
+   `<!--shell:…-->`-blok?** Målt i denne iteration, og svaret er delvist
+   nej: `65e2a40` ("Tilføj Plausible-tracking") rørte `site/badge/index.html`
+   med en **prosaændring** — `No cookies, no trackers` → `no cookies, no
+   cross-site tracking` — fordi injektionen sker i bygget, ikke i `site/`. Den
+   commit er altså redaktionel og *skal* flytte `lastmod`. Hegnes den ind,
+   bevares den rigtige adfærd, men de 226 filers `2026-09-27` bliver da
+   afledt af en blok, porten kan se. Vurdering, ikke automatik — og den rører
+   alle 230 sider.
+3. **Punkt 5 fra 114: `/cli/`s emoji-erklæring er stadig tabt.** ✅/⚠️/❌ blev
+   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
+   `<code>`, som `check_code_blocks.py` dækker. Lille, målbar, ingen risiko.
+4. **Punkt 6 fra 114: de 26 øvrige gate-værktøjer mangler vaggen.** Lavt
+   prioriteret — de dør med eget filnavn i traceback'en, jf. målingen i 114.
+5. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes.
+
+---
+
 Opdateret: 2026-09-28 (iteration 114) — **filttallet som skjulte, om en commit
 var en skalkørsel, er væk. Målt: det var forkert i begge retninger, og det er
 kunne ikke være rigtigt, fordi ét commit kan være redaktionelt og mekanisk på
