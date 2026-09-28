@@ -1,86 +1,81 @@
-Opdateret: 2026-09-28 (iteration 98) — **opgave 90 lukket: en forældet pris i
-en pris-tabel kan ikke komme tilbage i stilhed**
+Opdateret: 2026-09-28 (iteration 99) — **opgave 91 lukket i kode og måling: en
+butiks-parat extension måles, den er målt, og `/extension/` har nu én købsvej**
 
-Sidste iteration: **`check_cta.py` læste kun købsankeren, så hele
-pris-tabellen var ulæst — og det er præcis den fejl missionens første opgave
-handlede.** Det var en bevidst undtagelse, skrevet rigtigt: `class="price"`
-citerer også konkurrenter ($350+/mo, €30/domain, "Gratis"), så en regel der
-læste den ville være rød på ærlige sider. Men en undtagelse, der er skrevet
-som en undtagelse, glemmer sig selv.
+Sidste iteration: **"den ser sun ud" viste sig at være fire løfter, der ikke
+holdt.** `chrome-ext/` var målt sund af en tidligere iteration — zip'en
+byte-identisk med kilden, ni rigtige elementer i popup'en, `host_permissions`
+der matchede den origin popup'en faktisk kalder. Alt rigtigt, og intet af det
+er det samme som at være klar til butikken. Fire ting holdt ikke, og **ingen af
+dem kunne ses ved at læse koden**: `alarms` var erklæret og `chrome.alarms`
+findes 0 gange; README'en pegede to gange på `icons/generate-icons.py`, som
+ikke findes — og README'en ligger i zip'en, så det var en død reference
+publiceret; `/extension/` lovede en butiksliste med *"link will appear here"*;
+og `/extension/` havde **ingen købsvej**, fordi kortet "Pro upgrade path"
+forklarede licensen uden at linke nogen steder. En Pro-tekst uden et købslink
+er ikke en vej.
 
-**Løsningen er ikke en smartere gætning på tekst, men en erklæring.** Vores
-egne priser mærkes `data-product="<product_key>"` (kommasepareret, når ét kort
-dækker flere produkter), en "fra"-pris mærkes `data-from="/store/"`, og en
-konkurrentcitering skal **sige det** med `data-competitor="Complianz
-Professional"`. Målt i dag: **18 sider** markeret (4 prissider, butikken +
-5 produktsider, 8 vs-sider), **0 fund**.
+**Løsningen er et bevis, ikke en liste.** R5 i den nye port kræver at hver
+erklæret permission er **bevist brugt** af et mønster i extensionens egen kode.
+Det er ikke en måde at komme uden om `alarms` — det er måden den næste
+permission bliver dømt på samme vis. Og den viser, hvorfor "alarms er død" som
+regel ville være en fejl: `activeTab` er *deklarativt* ubrugt, ordet findes 0
+gange, men den bruges reelt, fordi `chrome.tabs.query({ active: true })` er
+præcis den adgang den køber. En strengregel ville fundet en falsk mangel og
+lært næste agent at slette en nødvendig permission; en håndskrevet undtagelse
+for `alarms` ville være grøn uden at have kontrolleret noget. Sådan er den
+skrevet: `PERMISSION_PROOF` rummer ét mønster pr. permission, og en permission
+**uden** mønster er rød — den kan altså ikke føjes ind på en bøtelogik. R7
+løser den anden slags drift: stien til zip'en lå hårdkodet som `1.0.1` og skulle
+redigeres manuelt ved hvert bump, så den følger nu manifestets egen version.
 
-**Fire regler, hver med en modsvar porten kan fejle på.** R1: en
-`data-product`-nøgle skal findes i kontrakten, ellers står en pris ucheket.
-R2: hvert USD-beløb i en deklareret region skal være **en** af de erklærede
-produkters kontraktpris. R3: en side der **viser priser** skal erklære hvert
-produkt den sælger — det er reglen der fanger en *driftet* pris, for en ny
-værdi er ikke en kontraktpris, så R2 ville tie. R4: hvert beløb i et
-`class="price"`-element skal ligge i en deklareret region, så en ny
-pris-tabel uden mærke er rød. R5: schema.org-`offers.price` — tallet Google
-viser — skal være en af sidens egne priser.
+**Efterprøvet som opgaven kræver, ikke antaget:** porten er **rød med præcis de
+4 fund** mod `main` før rettelsen — kopieret ind i et worktree på `main` og kørt
+mod hele det publicerede træ, ikke mod en håndskrevet fixture — og grøn på den
+nye. `SELFTEST GRØN — alle 18 negative cases fanges`, inklusive den grønne case
+der også skal være **rød** uden sit mærke, ellers ville porten kunne være grøn
+af en grund den ikke måtte være grøn af.
 
-**To beløb er afledt, og de er udregnet — ikke undtaget.** Butikken skriver
-"149 USD (vs 245 separately)", og 245 er 59+49+29+39+69, summen af de fem
-enkeltpriser; vs-siderne skriver `~$6.58/month`, som er 79/12. Porten regner
-begge dele ud af kontrakten (`data-derived="sum-of-others"` og
-`"per-year-12"`), så de kan ikke glide fra den. Med en håndskrevet
-undtagelsesliste ville de være grønne uden at have kontrolleret noget.
+**Tre fejl i min egen port, alle tre fundet af selftesten, ingen af dem ved at
+læse koden.** (1) `\[?::1\]?` matcher den **tomme streng** foran hvert tegn, så R4
+ville have fundet på al kode. (2) `.local` som fritekst matcher
+`chrome.storage.local`, som er lovlig kode — den matcher nu kun en `.local`-vært
+**inde i en URL**. (3) `HOSTISH.sub('', host)` fjernede hele origin'en i stedet
+for stien, så "denne tilladelse bruges aldrig" efterprøvede intet; og i første
+version lå manifesten i kodekorpuset, så den erklærede sig selv brugt, og en
+død tilladelse kunne ikke findes. R6 læser nu kun JS og HTML.
 
-**Fire fejl i min egen kode, alle fire i porten.** (1) `class="price-box"`
-blev matchet som `class="price"` — ordet `price` står i tokenet, så `-box` og
-`-grid` fulgte med; klassen matcher nu på hele tokenet. (2) Den heltalsmålende
-beløbsregex læste `~$6.58/month` som **6 USD**, altså en pris der ikke
-findes, i **vores egen** region — samme fejlklasse som `\b` skrevet som
-bogstavet `b` i opgave 72 del 3. (3) R3 krævede en erklæring på *alle* 51
-`pro`/`own`-sider, men 24 af dem har intet `price`-element: de sælger uden at
-vise en pris-tabel, så porten ville bare have lært næste agent at sætte
-markøren på skjulte elementer. (4) `data-from="/store/"` blev slået op i
-sidernes stier med `/` i begge ender, så den fandt aldrig butikken — et fund
-der afhænger af dict-iterationsrækkefølge er ikke et fund, det er en mangel
-på porten; den har nu to forlåbsrunder, så `declared` er fuldt udfyldt før
-noget dømmes.
+**Gate: `GATE GRØN — alle 30 steps bestået`** (`--no-network`). Rørt:
+`tools/check_store_ready.py` (ny, trin 30), `tools/quality_gate.sh`,
+`chrome-ext/{manifest.json,README.md}`, `site/extension/index.html`,
+`site/privacy/index.html`, `tools/check_pro_claims.py`, extension **1.0.2** med
+ny zip. **Ingen plugin-version, ingen `update.json`, ingen worker** — pluginen
+rørtes ikke. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres:
+workspace-permissions nægter adgang til sibling-repoet, jf. alle tidligere
+iterationer.
 
-**Efterprøvet på den gamle fil, som opgaven kræver:** den nye port er **rød
-med 41 fund** mod `main` før rettelsen (kopieret ind i et worktree på `main`)
-og grøn på den nye. Ikke med en håndskrevet fixture — med hele det
-publicerede træ. Selftesten fik **fire** nye negative cases, så de krævede
-tilføjinger i opgavens accept er dækket: *grøn* for en pris i et kort uden
-købslink når den siger `data-competitor` (**og** den samme pris er rød uden
-markøren — ellers var den grøn af en grund den ikke måtte være grøn af),
-*rød* for et deklareret kort med et forkert beløb (39 i DPA-kortet, som er
-EAA-prisen), og *rød* for en `data-product`-nøgle med en cyrillisk `а` i stedet
-for latinisk. `SELFTEST GRØN — alle 30 negative cases fanges` (var 26).
-
-**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`). Rørt:
-`tools/check_cta.py` (ny check + 4 selftest-cases), 18 `site/**`-sider.
-**Ingen plugin-version, ingen ny zip, ingen `update.json`, ingen worker,
-ingen salgscopy** — kun attributer på eksisterende elementer, så intet en
-besøgende læser, ændrer sig ved denne diff.
-
-**Bemærk om R3's målte grundlag:** af de 51 sider der er klassificeret som
-`pro`/`own`/`template`, har **11** et `price`-element. Det er dem porten
-kræver en erklæring fra. Resten sælger via en knap, og den knap er allerede
-dømt af `check_price_claims`.
+**Deploy fra iteration 98 er verificeret live, indhold ikke HTTP-kode:** alle tre
+sider har deres attributter i markup'en på produktion (`/pricing/` med
+`data-product="eucomply-pro,eucomply-pro-lifetime"` og `data-from="/store/"`,
+`/store/` med alle seks `data-product` og `data-derived="sum-of-others"`,
+`/vs/termly/` med `data-product="eucomply-pro"`, `data-competitor="Termly Pro"`
+og `data-derived="per-year-12"`), hentet med cache-buster. `DEPLOY OK 2026-09-28`.
 
 Baseline for effekten: **0 reelle besøgende** (iteration 86, gentaget
 2026-09-28: Plausible siger 1 besøgende, bounce 100 %, besøgstid 0 s, kun
-Direct / None — altså ingen). Kan ikke måles i trafik. Det den gør er at
-gøre det umuligt at genindføre den fejl, der fik den forrige salgskopi
-tilbageholdt.
+Direct / None — altså ingen). Kan ikke måles i trafik. Det den gør er at fjerne
+fire løfter, der ikke holdt, og gøre det umuligt at indføre den næste ubrugte
+permission uden en bevist brug.
 
-❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede. Opgave 91
-(Chrome Web Store) er den næste køpost der ikke kræver Mads, men den er
-**en rapport, ikke en funktion**: den måler manifestet og tilføjer en vej fra
-`/extension/`. Næste iteration bør derfor tage **opgave 92** hvis den skrives,
-eller lukke `NÆSTE`-posten om Hotjar-fixtureen, som er en ærlighedsrettelse.
+❓ **Til Mads.** Én ny, og den er konkret: **skal extensionen udgives på Chrome
+Web Store nu, og på hvilken konto?** Alt andet er målt grønt og ligger klar —
+se opgave 91. Det mangler er din udgiverkonto ($5, din konto) og **ét
+screenshot** i 1280×800 eller 640×400; jeg laver ikke et falsk. Spørgsmål 7, 9
+og 18 er uændrede. Næste post uden Mads er **`NÆSTE` om Hotjar-fixtureen** —
+en ærlighedsrettelse i portens egen fixture, billig, og den skal gøre umuligt at
+læse porten som om Hotjar-installationen var verificeret.
 
-- 2026-09-28 (iteration 98, opgave 90) `VERIFICER DEPLOY: vores egne pris-tabeller måles mod kontrakten — data-product/data-from/data-competitor på 18 sider` kodecommit `59ea1d7`, merge `6ef45e7` 2026-09-28 06:2x UTC — rører `tools/check_cta.py` + 18 `site/**`-sider (`pricing` ×4, `store/index.html`, `store/{dpa,nis2-clauses,nda-clauses,eaa-statement,report-kit}`, `vs/*` ×8). **Ingen plugin-ændring, ingen ny zip, ingen `update.json`.** Efter næste deploy-vindue skal indhold verificeres med cache-buster på **tre** sider: (1) `/pricing/` — `<div class="plan" data-product="eucomply-pro,eucomply-pro-lifetime">` og `<div class="plan" data-from="/store/">` er i markup'en, og `<p class="price">79 USD</p>` står **uændret**; (2) `/store/` — de fem `article.card` har hver sit `data-product`, bundlets `data-derived="sum-of-others"` sidder på `(vs $245 separately)`, og `$149` er uændret; (3) `/vs/termly/` — `price-box highlight` har `data-product="eucomply-pro"`, konkurrentboksen `data-competitor="Termly Pro"`, og `~$6.58/month` står uændret. **Ingen synlig tekst eller styling ændres** — attributterne er ikke noget en besøgende ser, så en uden dem er en cache-/deploy-fejl og ikke en designfejl.
+- 2026-09-28 (iteration 98, opgave 90) `DEPLOY OK 2026-09-28` — de tre sider verificeret på **indhold** med cache-buster: alle 18 markerede sider egner de deklarerede attributter, ingen synlig tekst ændret. Opgaven er lukket.
+- 2026-09-28 (iteration 99, opgave 91) `VERIFICER DEPLOY: extensionen målt butiksparat, én købsvej på /extension/, privacy nævner extensionen, extension 1.0.2` kodecommit `4f5017a`, merge `9240434` 2026-09-28 07:09 UTC — rører `site/extension/index.html`, `site/privacy/index.html`, `site/assets/eucomply-extension-1.0.2.zip` (1.0.1 fjernet), `chrome-ext/`, `tools/`. Efter næste deploy-vindue skal indhold verificeres med cache-buster på **tre** punkter: (1) `/extension/` — "Not in the Chrome Web Store yet" i stedet for "link will appear here", afsnittet "Installation guide (once published)" **er væk**, zip-linket er `/assets/eucomply-extension-1.0.2.zip`, og `<a href="/pro/">` står i downloadboksen; (2) `/assets/eucomply-extension-1.0.2.zip` svarer 200 **og** unzippes til 9 filer med `version 1.0.2` og `permissions: ["activeTab","storage"]` — den gamle 1.0.1 skal give **404**; (3) `/privacy/` har afsnittet "When you use the browser extension" med de to permissions. **Ingen plugin-version, ingen `update.json`** — pluginzip'en er urørt.
 
 
 
@@ -1475,7 +1470,7 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 
 
 - `FÆRDIG`: **86 — 0 besøgende viste sig at være ærlige: taggen virker, og der kommer ingen** på `ceo/analytics-gate`, kodecommit `35badf7`, merge `375f106`. Ny port trin 27 `tools/check_analytics.py` + den adfærdsmålende `tools/analytics_probe.mjs` + optaget tracker i `tools/fixtures/`. Målt: tag på 225 af 225 sider, CSP tillader både `script-src` og `connect-src`, scriptet 200 (6204 B), og **ét pageview med `d: "eucomplypro.com"` i begge rækkefølger** i en stubbet DOM. `9 negative selftest-cases`, `GATE GRØN — alle 27 steps bestået`. To fejl i min egen kode (CSP læst fra kilden, baseline uden init-kald). **Ingen `site/**`-fil.** Se afsnittet øverst.
-- `NÆSTE` (opdateret 28/9, iteration 98): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en. **Bemærk:** denne post var tidligere skrevet som "den eneste køpost der ikke kræver Mads". Det er ikke længere sandt — den er **tredje** i rækken efter opgave 91 og denne. Opgave 90 er lukket (iteration 98).
+- `NÆSTE` (opdateret 28/9, iteration 99): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en. **Bemærk:** denne post var tidligere skrevet som "den eneste køpost der ikke kræver Mads". Det er ikke længere sandt — den er **tredje** i rækken efter opgave 91 og denne. **Opgave 91 er nu lukket i kode og måling** (iteration 99, `ceo/chrome-store-klar`, extension 1.0.2): porten er grøn, `/extension/` har én købsvej, og det sidste led — selve uploaden — kræver Mads' udgiverkonto. **Denne Hotjar-post er derfor den næste opgave, og den kræver ingen beslutning.**
 - `LUKKET` (målt 01:24, samme iteration): **`site/pro/sample-report/index.html` så ud til at blive skrevet undervejs, mens `git status` var ren.** Jeg fik mistanke om en skjult mutation, fordi filens længde syntes at ændre sig (21622 → 21668). Forklaringen er triviel og må ikke koster den næste agent tid: **`wc -c` tæller bytes, `read_text()` tæller tegn**, og em-dashes og emoji gør de to tal forskellige (46 bytes) for præcis den fil. Der var ingen mutation. Mtime 01:23:42 er **min egen kvalitetsgate**, som regenererer prøverapporten; indholdet er byte-identisk med HEAD, derfor er `git status` ren. *Bemækningsvis* findes launchd-agenter (`com.mahope.ceo-check`, `com.mahope.hermes-ceo`, `com.mahope.oxloop-watchdog`) i `~/Library/LaunchAgents`, så et samtidigt loop kan røre arbejdstræet: tjek `git status` før du differ, og stol på **indhold** aldrig på mtime.
 - `LUKKET`: **`_expect_red`-familien.** `check_asset_delivery.py` (trin 25) havde "grøn selftest mens seks cases fejlede"; `check_analytics.py` er skrevet med `return`-sandhed og en kalder, der summerer selv, så samme fejlklasse kan ikke gentages der. Beviset er den negative case, der returnerer `False`.
 
@@ -3866,11 +3861,84 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 ### 91. Chrome Web Store-listen er den eneste konverteringsvej, der ikke findes
 
-- Status: `TODO` — målt 28/9: **0** `chromewebstore`/`addons.mozilla`-links i hele
-  det publicerede træ. `/extension/` siger ærligt, at den kommer, og zip'en er
-  målt gyldig (8 filer, `manifest_version 3`, `version 1.0.1`, ikoner 16/48/128).
-- **Ingen agent må udgive til Chrome Web Store** (kontrakten). Opgaven er derfor
-  at gøre den **forberedt** og at finde ud af, om den bærer reelle besøgende.
+- Status: `FÆRDIG (kode + måling)` på `ceo/chrome-store-klar`, kodecommit `4f5017a`,
+  merge `9240434` 2026-09-28 07:09 UTC, extension **1.0.2**. **Udgivelsen er
+  Mads'** — se ❓ nederst. Ny permanent port trin 30 `tools/check_store_ready.py`.
+- **Målt før rettelsen, i hele det publicerede træ: 4 fund.** (1) `alarms` var
+  erklæret i manifestet og `chrome.alarms` findes **0 gange** i `background.js` og
+  `popup.js` — det er den permission butikken afviser reviews for, og den modsiger
+  `/extension/`s egen tekst om at extensionen ikke sender andet ud end den scannede
+  URL. (2) `chrome-ext/README.md` pegede **to gange** på `icons/generate-icons.py`,
+  som ikke findes — og README'en ligger i zip'en, så det var en død reference
+  publiceret. (3) `/extension/` lovede en butiksliste: *"Installation guide (once
+  published) … (link will appear here)"*. (4) `/extension/` havde **ingen købsvej**:
+  kortet "Pro upgrade path" forklarede at licensen er til pluginen, men linkede ingen
+  steder. En Pro-tekst uden et købslink er ikke en vej.
+- **Efterprøvet som opgaven kræver:** porten er **rød med præcis de 4 fund** mod
+  `main` før rettelsen (kopieret ind i et worktree på `main` og kørt mod hele det
+  publicerede træ) og grøn på den nye. Ikke med en håndskrevet fixture.
+  `SELFTEST GRØN — alle 18 negative cases fanges`, inkl. den grønne case der skal
+  være **også** rød uden sit mærke. `GATE GRØN — alle 30 steps bestået` (`--no-network`).
+- **R5 er den regel, der gør det permanent: en permission skal bevises brugt af et
+  mønster i koden.** Ikke fordi "alarms" er død — fordi bevisformen overlever den
+  næste permission. `activeTab` er *deklarativt* ubrugt (ordet findes 0 gange) men
+  bruges reelt, fordi `chrome.tabs.query({ active: true })` er præcis den adgang den
+  køber. En regel der krævede strengen ville have fundet en falsk mangel og lært
+  næste agent at slette en nødvendig permission; en regel der bare sagde "alarms er
+  ikke brugt" ville være en håndskrevet undtagelse, der glemmer sig selv ved den
+  næste tilladelse. Sådan er den skrevet: `PERMISSION_PROOF` har et mønster pr.
+  permission, og en permission **uden** mønster er rød — den kan altså ikke føjes
+  ind på en bøtelogik.
+- **R7 dømmer versionsdrift** mellem manifest, side og zip, fordi stien lå
+  hårdkodet som `1.0.1` i `check_pro_claims.py` og skulle redigeres manuelt ved
+  hvert bump. Den følger nu manifestets egen version, så en ny zip og en gammel side
+  ikke kan begge være "rigtige" i hver sin fil.
+- **Målt mod butikkens egne tal** (ikke mine): navn ≤45, beskrivelse ≤132, ikoner
+  16/48/128 som **rigtige PNG'er** med målene læst ud af IHDR'en, ingen
+  `localhost`/`file://`/`.local`-vært, `host_permissions` og den origin koden kalder
+  skal være de samme i **begge** retninger. Alt med standardbiblioteket, så porten
+  ikke dør i CI på en manglende pip-afhængighed.
+- **R9 dømmer købsvejen i `<main>` alene.** Headerens `/pricing`-link er ikke den vej,
+  opgaven beder om — ellers ville porten have været grøn på det nav-link alene. Kræver
+  **præcis én**, og den skal findes i det publicerede træ, så en død `/store/`-sti
+  ikke kan tælle.
+- `/privacy/` nævner nu extensionen for første gang: hvad den sender (den scannede
+  URL, intet mere), at den gemmer sidste scan i local storage til badgen, og hvilke
+  **to** permissions den erklærer — med link til det offentlige manifest. Det er også
+  præcis det butiksrevieweren sammenligner sin data-usage-disclosure imod.
+- **Tre fejl i min egen port, alle tre fundet af selftesten.** (1) `\[?::1\]?` i R4
+  matcher den **tomme streng** foran hvert tegn, så porten ville fundet på al kode.
+  (2) `.local` som fritekst matcher `chrome.storage.local`, som er lovlig kode —
+  nu matcher den kun en `.local`-vært **inde i en URL**. (3) `HOSTISH.sub('', host)`
+  fjernede hele origin'en i stedet for stien, så R6's "bruges aldrig"-regel efterprøvede
+  intet; og i første version lå manifesten i kodekorpuset, så den erklærede sig selv
+  brugt — en død tilladelse kunne ikke findes. R6 læser nu kun JS og HTML.
+- **Baseline for effekten:** `/extension/` **0 reelle besøgende** (Plausible,
+  gentaget 2026-09-28: 1 besøgende, bounce 100 %, besøgstid 0 s, Direct/None).
+  Kan ikke måles i trafik. Det denne diff gør er at fjerne fire løfter, der ikke holdt,
+  og gøre det umuligt at indføre den næste ubrugte permission.
+- **Kendte lavprioritets-rester i denne opgave:** (a) extension-zip'en bygges stadig
+  manuelt med et inline-script — `tools/build_plugin_zip.py` gør det samme for
+  pluginen, så en `build_extension_zip.py` er den ædle løsning, men den er **ikke**
+  gjort i denne iteration, fordi den ikke er acceptkriterium her. (b) Chrome Web Store
+  kræver **mindst ét screenshot** (1280×800 eller 640×400) ved en ny udgivelse, og vi
+  har ingen. Jeg laver ikke et falsk screenshot; det er det ene asset, der mangler,
+  og det er Mads' (se ❓).
+- ❓ **Til Mads — skal den udgives nu, og på hvilken konto?** Alt andet er målt grønt
+  og ligger klar: `chrome-ext/` er butiksparat ifølge porten, zip'en
+  (`site/assets/eucomply-extension-1.0.2.zip`, 9 filer, byte-identisk med kilden),
+  og listerteksten står copy-ready i `chrome-ext/README.md`. **Du skal:** (1) have en
+  Chrome Web Store-udgiverkonto ($5 engangs, din konto — jeg må ikke oprette den i dit
+  navn), (2) uploade zip'en, (3) sætte **ét screenshot** på 1280×800 eller 640×400,
+  (4) erklære data-usage: "scanned URL only", (5) sætte privacy-URL til
+  `https://eucomplypro.com/privacy/`. **Spørgsmål:** er det den samme Google-konto som
+  din YouTube-kanal, eller en særskilt? Uden svar på det kan jeg ikke gøre mere, og
+  det er **grunden til at opgaven er `FÆRDIG (kode + måling)` og ikke `FÆRDIG`** —
+  det sidste led er en udgivelse, ikke en kodeopgave. **Bemærk:** når den er ude, er det
+  to ting i samme iteration: læg den rigtige butiks-URL på `/extension/` i stedet for
+  "Not in the Chrome Web Store yet", og så tager porten den automatiskt — R8 er rød
+  på en butiks-URL indtil da, så den kan ikke glemmes.
+
 - Begrundelse: rang 4 (synlighed) og rang 2 (konvertering) — extensionen er det
   eneste produkt, der kræver nul installation af brugerens eget website-miljø, og
   den eneste indgang, der ikke kræver `wrangler`-login.
