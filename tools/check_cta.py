@@ -256,6 +256,13 @@ PAGE_RULES: tuple[Rule, ...] = (
          "fejlsiden skal ikke sælge", "404.html"),
     Rule("nosale", ("pro/thank-you/index.html",),
          "kvitteringssiden kommer efter et køb", "pro/thank-you/index.html"),
+    # Donationssiden beder om en gave, ikke om et køb. Den har en
+    # Stripe-link, men et **donations**-link: at klassificere den som
+    # `pro` ville kræve en købsknap til kontraktprisen, og det ville være
+    # en løgn, fordi den ikke sælger Pro — den takker for penge ind.
+    Rule("nosale", ("support/index.html",),
+         "donationsside: den beder om en gave og sælger ikke Pro, så den skal "
+         "ikke have en købsknap", "support/index.html"),
     Rule("nosale", ("terms/index.html", "privacy/index.html"),
          "juridisk tekst skal fortælle sandheden, ikke sælge", "terms/index.html"),
     Rule("nosale", ("sample/index.html",),

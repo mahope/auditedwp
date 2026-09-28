@@ -704,6 +704,18 @@ hdr "skal skallen nå sit faste punkt i én kørsel"
 run "tools/check_shell_fixed_point.py" "$PY" tools/check_shell_fixed_point.py
 run "tools/check_shell_fixed_point.py --selftest" "$PY" tools/check_shell_fixed_point.py --selftest
 
+# Projektfasen (24/9) lover hvert site en `/support`-side med donationslinket.
+# Målt 29/9 svarede den **404**, og ingen fejl havde sagt det: ingen side
+# linkede til `/support/`, så link-tjekket havde intet at mærke ved. Det er
+# den fejl et link-tjek aldrig kan finde — den forudsætter en reference der
+# ikke findes. Porten dømmer derfor den modsatte retning: en side, hele
+# produktet lover, skal findes, uanset om noget peger på den. Selvporten
+# sikrer at den kan dømme et fejltræ; dødskontrollen er målt ved at flytte
+# `site/support/` væk og se porten blive rød med exit 1.
+hdr "skal de lovede sider findes, også uden indgående link"
+run "tools/check_support_page.py" "$PY" tools/check_support_page.py
+run "tools/check_support_page.py --selftest" "$PY" tools/check_support_page.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

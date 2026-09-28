@@ -90,6 +90,7 @@ PUBLIC_DIRS = (
     "search",
     "shared",
     "store",
+    "support",
     "template",
     "terms",
     "terms-of-service-generator",

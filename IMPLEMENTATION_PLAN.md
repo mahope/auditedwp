@@ -1,3 +1,120 @@
+Opdateret: 2026-09-29 (iteration 117) — **deploy-noterne fra 115 og 116 er
+lukket på indhold, og køens fire poster viste sig døde ved måling. Den nye
+opgave er den første reelle i to iterationer: `/support/` svarede 404.**
+
+**Deploy-verificering, ét kald, ingen løkke.** `deploy-site`, `build-devnotify`
+og `pages build and deployment` er alle `success` for `f78a47e` (CI
+`36491324384`). Indhold, ikke exit-koder: live `/sitemap.xml` er
+**byte-identisk** med `HEAD:site/sitemap.xml` (38 323 B, **213** `<url>`),
+`/badge/` står `2026-09-28` og `/blog/bigcommerce-gdpr-compliance-guide/`
+`2026-09-27` — de to tal der flyttede i 115. CI's `kvalitetsgate` logger
+`fetch-depth: 0`, `R1 OK — 230 sider + 2 afledte filer, 0 ændret` og
+`GATE GRØN — alle 40 steps bestået`. **Dødskontrollen fra 116 er
+genmålt** i en `git clone --depth 1`: både `check_shell_fixed_point.py` og
+`apply_shell.py` giver exit **1** med *egen besked* og **ingen traceback**.
+
+**Fire kø-poster var døde. Målt, ikke antaget.**
+
+| Post | Påstand | Måling |
+|---|---|---|
+| 1 | CI skal tjekkes | gjort, grøn, noter lukket |
+| 2 | 36 forkerte `lastmod` | **0 afvigelser**: `git_dates()` og sitemapet er ens i alle 213 poster. Rettelsen lå i 116 |
+| 4 | `/cli/`s emoji-erklæring er tabt | `site/cli/index.html` har 9 emoji (166–195) — påstanden er fra en diff før de blev sat tilbage |
+| 5 | 26 gate-værktøjer mangler vagten | kun **2** læser git (`apply_shell.py`, `check_shell_fixed_point.py`), og den anden går gennem den førstes `process()`, så vagten dækker begge |
+
+Det er det **fjerde** eksempel i rækken på en kø-post der beskriver arbejde,
+der allerede er gjort. Mønstret fra 116 holder: **efterprøv en post mod
+`git log` og mod koden, før den arbejdes.**
+
+**Ny opgave: `/support/` var en 404, som intet opdagede.** Projektfasen
+(24/9) siger at hvert site skal have `/support` med donationslinket.
+Målt 29/9: `https://eucomplypro.com/support/` svarer **404**, og siden
+findes ikke i `site/`. Den faldt gennem **alle** 40 gamle steps, og
+årsagen er målt: **ingen side linkede til `/support/`**. Der var 0 af 207
+interne links døde — men de 207 er kun dem *nogen* peger på. Et link-tjek
+kan per definition ikke finde en side, der mangler, fordi det forudsætter
+en reference, der ikke findes. Den 404 stod der som en sandhed, alle
+40 steps var glade over.
+
+Rettelsen er derfor ikke linket — den er **porten**, der dømmer den modsatte
+retning: *en side, hele produktet lover, skal findes, uanset om noget peger
+på den.* `tools/check_support_page.py` (ny, 2 steps i gaten) kræver
+`/support/`, `/privacy/`, `/terms/`, `/pro/thank-you/`,
+`/pro/sample-report/` — hver med sin `<h1>`, og `/support/` også med
+donationen og en reel fejlrapporteringsvej — plus at donationen stadig
+ligger i `_partials/footer.html` og i `.github/FUNDING.yml`. Fund er pr.
+**krav**, ikke pr. fil, så en side der halter, tælles rigtigt.
+
+**Dødskontrol, målt:** `mv site/support /tmp` → `FUND — support/ findes
+ikke (lovet side, 404)`, exit 1; flyttet tilbage → grøn. Selvporten fanger
+både en manglende side og en side uden sit krav.
+
+**To ting porten afslørede, som jeg ikke havde set.** Siden var hverken
+publiceret eller klassificeret, og CTA-gaten sagde begge dele med navn:
+`findes i site/ men er ikke i det publicerede træ` og `uklassificeret`.
+Begge rettet — `support` i `PUBLIC_DIRS`, og en **`nosale`**-regel i
+`PAGE_RULES`, ikke `pro`: siden beder om en gave, ikke om et køb, så en
+`pro`-regel ville have krævet en købsknap til kontraktprisen, og det ville
+have været en løgn. Efter `build_public_tree.py`: **0 døde regler**.
+
+**Målt / accept.** Lokalt: `R1 OK — 231 sider + 2 afledte filer, 0 ændret af
+én kørsel af den rigtige kæde`; `CTA-gate grøn: 52 content 15 free 19
+nosale 6 own 47 pro 2 template … 0 døde interne referencer`;
+`SUPPORT-PORT GRØN — 5 lovede sider`; `GATE GRØN — alle 41 steps bestået`.
+Sitemapet går 213 → **214**, søgeindekset har `/support/`, siden har h1,
+titel, description og canonical, 375 ord, 0 billeder uden alt-tekst.
+**Missionens gate-trin 3 (`../hermes-passiv`) kunne ikke køres her**:
+mappen er uden for det tilladte workspace, samme blokering som 116.
+
+**Rørt:** `site/support/index.html` (ny), `site/sitemap.xml`,
+`site/search-index.json`, `tools/build_public_tree.py`,
+`tools/check_cta.py`, `tools/quality_gate.sh`,
+`tools/check_support_page.py` (ny), denne plan. **Ingen plugin-version,
+ingen `update.json`, ingen ny zip, ingen Stripe-pris, ingen worker.**
+
+**GATE-DEFINITION (noteret her, som kontrakten beder om).** Ét kanonisk
+script: `bash tools/quality_gate.sh` (eller `--no-network` lokalt), kørt
+identisk i CI af `.github/workflows/verify.yml` (`run: bash
+tools/quality_gate.sh`). Grøn = `GATE GRØN — alle N steps bestået`, exit 0.
+Nu **41** steps (40 før denne iteration). **Kør den med `python3.13`** —
+maskinens `python3` er 3.9, og `apply_shell.py` bruger `str | None`, så
+gaten dør ved indlæsning under 3.10. Ingen PHP ændret i denne iteration,
+så `php -l` var ikke påkrævet.
+
+> `VERIFICÉR DEPLOY: /support/ findes nu, og porten dømmer lovede sider
+> uden indgående link (iteration 117) ceo/support-side 2026-09-29` — rører
+> `site/support/index.html` + `site/sitemap.xml` + `site/search-index.json`
+> + fire `tools/`-filer. Efter næste deploy-vindue skal **indhold**
+> verificeres: (1) `/support/` svarer **200** på
+> `https://eucomplypro.com/support/?cb=…` (var 404) og viser h1'en
+> "Support EUComply" og donationsknappen; (2) `/sitemap.xml` har **214**
+> `<url>` og indeholder `eucomplypro.com/support/`; (3) `/robots.txt` og
+> `_headers` er uændrede, så siden arver samme cache-politik som resten;
+> (4) CI for committen er `success` på alle tre jobs. (4) kræver loggen,
+> (1)–(3) er indhold.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Deploy-noten ovenfor.** Ét kald til CI, ingen polling. Så indhold.
+2. **De 24 sider med `dateModified` er kun halvdelen.** 213 sider har
+   `lastmod` i sitemapet, men kun 24 har `dateModified` i JSON-LD. Mål om
+   det er korrekt (artikler har begge, landingssider kun ét) — og om Google
+   så ser en inkonsistent datering. Det er SEO, ikke ren gate-hygiejne.
+3. **Punkt 3 fra 116: Plausible-injektionen i `<!--shell:…-->`-blokken.**
+   Uafhængig vurdering, rører alle 233 sider. Lav først et mål: hvor mange
+   sider har injektionen *uden* for blokkene i dag?
+4. **Læs `/llms.txt` og `/llms-full.txt` mod den nye `/support/`.** De er
+   maskinlæste og burde kende donationssiden; ellers får en agent den gamle
+   404 fra et sted, der er lavet til at blive læst.
+5. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes.
+
+---
+
 Opdateret: 2026-09-28 (iteration 116) — **`main` var RØD, og det er derfor
 sitet ikke har deployet siden iteration 114. Ét kald, ingen løkke:
 `deploy-site` `36485230317` for `7bd3f60` er `failure`, og loggen viser
