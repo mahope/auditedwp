@@ -88,7 +88,7 @@ ingen Search Console-adgang, så det kan først ses af en med den.
 4. Root-LICENSE (spørgsmål 21) — uændret, kan ikke løses uden Mads.
 
 > `VERIFICER DEPLOY: /api/ i sitemap.xml + den nye sitemap-port (trin 36),
-> <MERGE_SHA>, 2026-09-28 ca. 15:05 CEST.` Verificér **indhold**: live
+> 9664bc2, 2026-09-28 ca. 15:05 CEST.` Verificér **indhold**: live
 > `sitemap.xml` skal indeholde `eucomplypro.com/api/`, og antallet af `<loc>`
 > skal være 210. HTTP 200 beviser intet.
 
