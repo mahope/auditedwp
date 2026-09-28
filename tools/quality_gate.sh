@@ -622,6 +622,20 @@ hdr "skal den publicerede extension-pakke kunne bygges igen, med licens i"
 run "tools/build_extension_zip.py --check" "$PY" tools/build_extension_zip.py --check
 run "tools/build_extension_zip.py --selftest" "$PY" tools/build_extension_zip.py --selftest
 
+# Opgave 106: otte vs/*-sider skrev andres priser som raa fakta. Da de blev
+# laest mod leverandoerens egen prisside 28/9, var syv af otte forkerte —
+# termly havde ingen "Pro"/"Business"-plan, complianz' EUR-pris var USD-
+# tallet, cookiebot havde ingen "Essential $9", iubenda var ~10x for lav, og
+# onetrust/osano fik hver et tal de ikke kan dokumentere. Rigtige priser er
+# hele vaerdien paa en sammenligningsside, og en forkeret et faar lederen til
+# at tvivle paa det rigtige. tools/competitor_facts.json er derfor nu den
+# eneste kilde: hvert tal skal kunne findes der, siden skal vise dato og
+# kilde, og R6 dræber enhver valuta paa en side der kun faar tilbud. Se
+# docs/konkurrentpriser.md.
+hdr "skal enhver konkurrent-pris kunne spores til en kilde og en dato"
+run "tools/check_competitor_facts.py" "$PY" tools/check_competitor_facts.py
+run "tools/check_competitor_facts.py --selftest" "$PY" tools/check_competitor_facts.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

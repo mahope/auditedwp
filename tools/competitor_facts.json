@@ -1,0 +1,115 @@
+{
+  "_comment": "Konkurrent-fakta for vs/*-siderne. Eneste kilde til hvad vi påstår om andres priser. Hvert tal på en vs/*-side skal kunne findes her, ellers er det opfundet. Verificeret ved at laese leverandorens egen prisside; de siger ingen ting, naar de aendrer det, saa 'checked' skal opdateres for hver diff paa en vs/*-side.",
+  "as_of": "2026-09-28",
+  "stale_after_days": 180,
+  "competitors": {
+    "termly": {
+      "name": "Termly",
+      "source": "https://www.termly.io/pricing/",
+      "source_label": "Termlys egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "USD, pr. website pr. maaned",
+      "claims": [
+        "Free $0 — 1 policy, 10,000 banner views/mo",
+        "Starter $10/mo billed annually, $14 month-to-month",
+        "Pro+ $15/mo billed annually, $20 month-to-month",
+        "Agency — custom quote from 10 websites"
+      ]
+    },
+    "complianz": {
+      "name": "Complianz",
+      "source": "https://complianz.io/pricing/",
+      "source_label": "Complianz' egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "Siden viser USD og EUR; aarlig fakturering",
+      "claims": [
+        "Free plugin",
+        "Personal $59/yr (1 website), €35/yr in EUR",
+        "Professional $179/yr (5 websites), €109/yr in EUR",
+        "Agency $399/yr (25 websites), €239/yr in EUR"
+      ]
+    },
+    "cookiebot": {
+      "name": "Cookiebot",
+      "source": "https://www.cookiebot.com/en/pricing/",
+      "source_label": "Cookiebots egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "EUR ekskl. moms, pr. domaene pr. maaned",
+      "claims": [
+        "Free — 1 domain, 50 subpages",
+        "Premium Lite €7/mo",
+        "Premium Small €15/mo, Medium €30/mo, Large €50/mo, XLarge €90/mo"
+      ]
+    },
+    "iubenda": {
+      "name": "iubenda",
+      "source": "https://www.iubenda.com/en/pricing",
+      "source_label": "iubendas egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "EUR pr. site pr. maaned; aarlig fakturering giver laveste pris",
+      "claims": [
+        "Free — 25,000 pageviews/mo",
+        "Essentials €4.99/mo per site billed yearly ($5.99)",
+        "Advanced €19.99/mo per site billed yearly ($24.99)",
+        "Ultimate €79.99/mo per site billed yearly ($99.99)"
+      ]
+    },
+    "usercentrics": {
+      "name": "Usercentrics",
+      "source": "https://usercentrics.com/pricing/",
+      "source_label": "Usercentrics' egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "EUR ekskl. moms, maanedlig fakturering; planerne goer op i sessions",
+      "claims": [
+        "Free — under 1,000 sessions/mo, 1 domain",
+        "Web CMP Essential €7/mo, Plus €15/mo, Pro €30/mo, Business €50/mo",
+        "Corporate — custom quote from 1M sessions"
+      ]
+    },
+    "enzuzo": {
+      "name": "Enzuzo",
+      "source": "https://www.enzuzo.com/pricing",
+      "source_label": "Enzuzos egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "USD; aarlig fakturering giver laveste pris",
+      "claims": [
+        "Free $0 — 1 domain, 5,000 visitors/mo",
+        "Starter $7/mo yearly ($9 month-to-month)",
+        "Growth $22/mo yearly ($29 month-to-month)",
+        "Pro $59/mo yearly ($79 month-to-month), Agency $99/mo yearly",
+        "Enterprise — custom quote"
+      ]
+    },
+    "onetrust": {
+      "name": "OneTrust",
+      "source": "https://www.onetrust.com/pricing/",
+      "source_label": "OneTrusts egen prisside",
+      "checked": "2026-09-28",
+      "public_prices": false,
+      "currency_note": "Ingen priser publiceres; OneTrust prissetter efter gennemsnitligt dagligt besogertal",
+      "claims": [
+        "No public prices — OneTrust only quotes",
+        "Pricing is set by average daily visitors, not by a plan name"
+      ]
+    },
+    "osano": {
+      "name": "Osano",
+      "source": "https://www.osano.com/plans/cookie-consent",
+      "source_label": "Osanos egen plan-side",
+      "checked": "2026-09-28",
+      "public_prices": true,
+      "currency_note": "USD pr. maaned for Cookie Consent; Basic Privacy og resten er tilbud",
+      "claims": [
+        "Free $0 — 1 user, 1 domain, 5,000 visitors/mo",
+        "Plus $199/mo — 2 users, 3 domains, 30,000 visitors/mo",
+        "Basic Privacy — custom quote"
+      ]
+    }
+  }
+}
