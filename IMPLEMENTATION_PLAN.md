@@ -183,9 +183,9 @@ Kodecommit `1f2f4cc`, merge `9a7b269` 2026-09-28 01:52 CEST.
 
 ---
 
-**Denne iteration.** Kodecommit `0351a01`, plugin **1.3.37**. Efter merge:
+**Denne iteration.** Kodecommit `0351a01`, merge `cd7b425`, plugin **1.3.37**, pushet 2026-09-28 ~02:45 CEST.
 `VERIFICÉR DEPLOY: EAA-erklæringens omfang og fritagelse, plugin 1.3.37,
-<merge-sha> 2026-09-28 <tid>`. Efter et batch-vindue: hent `/plugin/`,
+`cd7b425` 2026-09-28 02:45 CEST. Efter et batch-vindue: hent `/plugin/`,
 `/pro/` og `/store/eaa-statement/` og kræv at de **ikke** længere linker den
 gamle zip, at `/assets/eucomply-1.3.37.zip` svarer 200, og at
 `/assets/eucomply-1.3.36.zip` giver en **301** (ikke 404 — det har været en
