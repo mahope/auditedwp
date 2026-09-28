@@ -59,6 +59,16 @@ PASSED = re.compile(r'<span class="value">(\d+)/(\d+)</span>\s*<span class="labe
 ISSUES = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Items needing attention</span>')
 DAYS = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Days of history</span>')
 BARS = re.compile(r'title="([A-Z][a-z]{2} \d+): (\d+)%"')
+# Den delte tale-sætning. Før denne regel læste porten cirklen, "checks passed"
+# og "items needing attention" — men ikke denne linje, som er det eneste sted
+# på siden hvor det DELTE tal står. Den har derfor kunne miste sit `%` uden at
+# nogen port blev rød, og gjorde det: "62 of the 8 checks that apply (5 of 8)"
+# er ulæseligt og læses som "62 af 8". Mønstret kræver procenttegnet, så den
+# kan ikke findes i den version, der var publiceret.
+APPLIES = re.compile(
+    r'Not counted here: (\d+)/(\d+): ([^<]+?)\. '
+    r'(\d+)% of the (\d+) checks that apply \((\d+) of (\d+)\)\.'
+)
 BANDS = re.compile(r"\b(PASS|WARN|FAIL)\b")
 BAND_WORD = {"pass": "PASS", "warn": "WARN", "fail": "FAIL"}
 
@@ -165,6 +175,40 @@ def page_findings(keys, summary):
     if not issues or int(issues.group(1)) != summary["issues"]:
         found = issues.group(1) if issues else "ingen"
         findings.append(f"'items needing attention' er '{found}', datasættet siger {summary['issues']}")
+    # Den delte tale skal være LÆSELIG og rigtig. Først og fremmest skal den have
+    # sit procenttegn — uden det er den ulæselig, og det var netop fejlen der slap
+    # igennem, fordi porten aldrig læste linjen. Resten af tallene skal så være
+    # de fire fra datasættet, ikke nogen håndskrevne.
+    applies = APPLIES.search(block)
+    if summary["not_counted"]:
+        if not applies:
+            findings.append(
+                "prøverapporten mangler den delte tale-sætning "
+                "(«N% of the M checks that apply (P of M).» med procenttegn)"
+            )
+        else:
+            _names = applies.group(3)
+            not_n, not_of, pct, tot, passed_n, tot2 = (
+                int(applies.group(i)) for i in (1, 2, 4, 5, 6, 7)
+            )
+            want = (
+                summary["total"] - summary["applicable_total"],
+                summary["total"],
+                summary["score_applicable"],
+                summary["applicable_total"],
+                summary["passed_applicable"],
+                summary["applicable_total"],
+            )
+            got = (not_n, not_of, pct, tot, passed_n, tot2)
+            if got != want:
+                findings.append(
+                    f"den delte tale er {got}, datasættet siger {want}"
+                )
+    elif applies:
+        findings.append(
+            "prøverapporten har en delt tale-sætning, men datasættet har ingen "
+            "rækker der ikke gælder"
+        )
     days = DAYS.search(block)
     rows = builder.history_rows(json.loads(open(DATA, encoding="utf-8").read()), summary["score"])
     if not days or int(days.group(1)) != len(rows):
@@ -382,6 +426,24 @@ def self_test_cases():
         failures.append("self-test dip: en historik under dagens score gav ingen note")
     if builder.dip_note(builder.history_rows(data, 40)) is not None:
         failures.append("self-test dip: en historik over dagens score fik en dip-note")
+
+    # 9b. Den delte tale skal være ulæselig uden sit procenttegn. Det er præcis
+    # den mutation der slap igennem: porten læste cirklen og "checks passed",
+    # men aldrig denne sætning, så "62 of the 8 checks" var grøn. Case'en
+    # genskaber den publicerede fejl mod repoets egen fil.
+    with open(PAGE, encoding="utf-8") as handle:
+        page = handle.read()
+    broken = re.sub(r"(\d+)% of the (\d+) checks that apply", r"\1 of the \2 checks that apply", page, count=1)
+    if broken == page:
+        failures.append("self-test split: kunne ikke fjerne procenttegnet i den delte tale")
+    else:
+        with open(PAGE, "w", encoding="utf-8") as handle:
+            handle.write(broken)
+        try:
+            expect(run_checks(verify_bytes=False), "delte tale", "applicable % removed")
+        finally:
+            with open(PAGE, "w", encoding="utf-8") as handle:
+                handle.write(page)
 
     # 10. Den rigtige kørsel er grøn, og mutationer mod repoets egne filer er røde.
     expect_clean(run_checks(), "clean run")
