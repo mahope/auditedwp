@@ -1,3 +1,114 @@
+Opdateret: 2026-09-28 (iteration 116) — **`main` var RØD, og det er derfor
+sitet ikke har deployet siden iteration 114. Ét kald, ingen løkke:
+`deploy-site` `36485230317` for `7bd3f60` er `failure`, og loggen viser
+hvorfor: trin 40 (`check_shell_fixed_point.py`) faldt på `R1 sitemap.xml:
+linje 22`. `pages build and deployment` og `build-devnotify` var grønne, men
+de deployer ikke `site/` — kun `deploy` gør det, og det kræver grøn `verify`.
+Sitemapet fra iteration 115 ligger derfor stadig **ikke** live.**
+
+**Årsagen er ikke sitemapet. Den er at porten og CI målte to forskellige
+træer.** `git_dates()` i `tools/apply_shell.py` besvarer "hvornår blev denne
+side sidst redigeret?" **af git-historien** — det er dér `dateModified` og
+`lastmod` kommer fra. `actions/checkout` har `fetch-depth: 1` som standard, så
+CI-klonen indeholder **én** commit, og `git log` svarer på intet for alle de
+sider `7bd3f60` ikke rørte. De 230 sider faldt da alle på `TODAY`.
+
+**Målt, ikke formodet.** Reproduktionen er tre linjer og den er byte for
+byte lig CI's fejl:
+
+    $ git clone --depth 1 "file://$PWD" clone1 && cd clone1
+    $ git rev-parse --is-shallow-repository   # true
+    $ python3.13 tools/check_shell_fixed_point.py
+    R1 sitemap.xml: linje 22 — <lastmod>2026-09-27</lastmod> → <lastmod>2026-09-28</lastmod>
+
+Samme linje, samme tegn. Og omfanget var **meget** større end den ene linje:
+`lastmod` i det committede sitemap stod som 12× `2026-08-25`, 2× `08-27`,
+3× `09-07`, 1× `09-25`, 6× `09-26`, 151× `09-27`, 38× `09-28`; efter én kørsel
+af kæden i grundklonen stod **189** som `2026-09-28`. Så 175 rigtige datoer
+ville være forsvundet, hvis nogen havde "rettet" den røde gate ved at
+regenerere sitemapet i CI-klonen og committet resultatet.
+
+**Og R1's egen rapport underdrev omfanget.** Fundene er pr. fil, men
+overskriften sagde `FUND — 1 linjer` — én fil, 175 linjer. Et tal der gør en
+redaktionel fejl til en skrivefejl er ikke et tal, man kan prioritere på.
+Nu: `FUND — 1 filer, 175 linjer ændret`.
+
+**Rettelsen er tre dele, fordi en dyb klon er dyr og en tavs er falsk.**
+`verify.yml` beder om `fetch-depth: 0` i gate-jobbet (158 MiB pakke pr. kørsel
+— det er prisen for at `lastmod` er målt og ikke gættet; `deploy`-jobbet er
+ladt grund, fordi `build_public_tree.py` ikke læser git-datoer). `git_dates()`
+**afviser** nu en grund klon med en besked der siger hvad der skal til, i stedet
+for `TODAY` i stilhed. Og R1 tæller linjer.
+
+**Målt / accept.** Lokalt: `R1 OK — 230 sider + 2 afledte filer, 0 ændret af én
+kørsel af den rigtige kæde`, `R2`/`R3` uændret grønne,
+`GATE GRØN — alle 40 steps bestået`. Dødskontrol — samme grundklon som ovenfor,
+efter fixen: `FEJL: git-historien er grund (--depth 1). git_dates() kan ikke
+svare på hvornår en side blev redigeret …` og exit 1, **uden traceback**.
+Ingen fejltråd, fordi et værktøj der dør med sit eget filnavn i en stak ikke kan
+bruges som diagnose. **Missionens gate-trin 3 (`../hermes-passiv`) kunne ikke
+køres her**: mappen er uden for det tilladte workspace. Diffen rører ingen
+`site/**`-fil, og det er kun `site/` den kæde læser — så dens udfald er uændret,
+men det er ikke efterprøvet i denne iteration.
+
+**Rørt:** `.github/workflows/verify.yml` (`fetch-depth: 0`),
+`tools/apply_shell.py` (`_kræv_fuld_historie()` + kald i `git_dates()`),
+`tools/check_shell_fixed_point.py` (`_ændrede_linjer()`, `MÅLTE_LINJER`,
+fund-overskriften), `IMPLEMENTATION_PLAN.md`. **Ingen `site/**`-fil, ingen
+plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris, ingen
+worker.** Diffen ændrer intet publiceret ved sig selv — den **frigiver** bare
+iteration 115's sitemap, som ligger klar i træet og kun ventede på en grøn gate.
+
+> `VERIFICÉR DEPLOY: CI måler git-datoer i fuld historie, så main kan deploye
+> igen (iteration 116) ceo/ci-fuld-historie 2026-09-28` — rører
+> `.github/workflows/verify.yml` + to `tools/`-filer. Den åbne note fra
+> iteration 115 er **stadig åben** og låst bag denne: dens sitemap er ikke
+> live, fordi porten var rød. Efter næste kørsel skal **indhold** verificeres:
+> (1) CI for den nye commit er `success` på **alle tre** jobs — især
+> `deploy-site`, der var `failure`; (2) live `/sitemap.xml` er byte-identisk
+> med `HEAD:site/sitemap.xml` (mod Plausible-injektionen ved build, som kun
+> ligger i `<head>`); (3) `/badge/` står med `<lastmod>2026-09-28</lastmod>` og
+> `/blog/bigcommerce-gdpr-compliance-guide/` med `2026-09-27` — de to tal der
+> flyttede; (4) `/sitemap.xml` har stadig **213** `<url>`-elementer; (5) CI's
+> `kvalitetsgate` logger `GATE GRØN — alle 40 steps bestået` **og** at
+> `fetch-depth: 0` virker, altså at R1 stadig er grøn med fuld historie.
+> (4) og (5) kræver hhv. et værktøj og loggen; (1)–(3) er indhold.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Først: ét kald til CI for den nye commit på `main`.** Hvis `deploy-site`
+   stadig er rød, er årsagen en anden end den her, og det skal måles i loggen
+   før noget nyt startes. Intet polling.
+2. **Punkt 2 fra 114 er stadig åben: de 36 forkerte `lastmod`.** De er frosset
+   ind i sidernes `dateModified`, som `seo_head()` skrev da porten endnu troede
+   på filtallet. Mål først hvilke URL'er det er, og ret dem **i kilden** — de
+   kommer tilbage ved næste redaktionelle ændring ellers. Bemærk at den
+   sikre retning her er modsat punkt 3 fra 114: for `sitemap.xml` var den nye
+   dato *bedre* end den gamle, fordi siden virkelig var redigeret. Det skal
+   måles pr. side, ikke antaget.
+3. **Punkt 3 fra 114: skal Plausible-injektionen hegnes ind i en
+   `<!--shell:…-->`-blok?** Svaret er målt delvist nej: `65e2a40` rørte
+   `site/badge/index.html` med en prosaændring, fordi injektionen sker i
+   bygget, ikke i `site/`. Vurdering, ikke automatik — og den rører alle 230
+   sider.
+4. **Punkt 5 fra 114: `/cli/`s emoji-erklæring er stadig tabt.** ✅/⚠️/❌ blev
+   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
+   `<code>`, som `check_code_blocks.py` dækker. Lille, målbar, ingen risiko.
+5. **Punkt 6 fra 114: de 26 øvrige gate-værktøjer mangler vaggen.** Lavt
+   prioriteret. Bemærk at punkt 1 fra denne iteration er et eksempel på
+   modsat fejl: `git_dates()` døde nu med sin **egen besked** i stedet for med
+   filnavnet i en stak.
+6. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes. **Bemærk til punkt 1:** det
+er *kunsten af gaten* der holdt sitet nede, ikke et indhold — intet af det der
+er lavet i 114–116 mangler live, og det deployer så snart porten er grøn.
+
+---
+
 Opdateret: 2026-09-28 (iteration 115) — **punkt 1 fra 114 er besvaret, og
 svaret var: R1 kørte ikke den kæde den påstod at køre. `build_sitemap()` blev
 aldrig kaldt, så 148 `lastmod` i det publicerede sitemap var forældede, mens

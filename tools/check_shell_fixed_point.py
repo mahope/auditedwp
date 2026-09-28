@@ -96,6 +96,12 @@ def load_shell():
     return module
 
 
+# Hvor mange linjer hver fundet fil flytter sig. Fundene er pr. fil, så uden
+# dette sagde en diff på 175 `lastmod` i `sitemap.xml` "1 linjer" — et tal der
+# gjorde reparationen til en skrivefejl i stedet for en redaktionel fejl.
+MÅLTE_LINJER: list[int] = []
+
+
 def page_paths(tree: pathlib.Path) -> list[pathlib.Path]:
     return [p for p in sorted(tree.rglob("*.html")) if "_partials" not in p.parts]
 
@@ -106,6 +112,7 @@ def run_shell(shell, tree: pathlib.Path) -> list[str]:
     shell.PARTIALS = tree / "_partials"
     shell.catalogue()
     found: list[str] = []
+    MÅLTE_LINJER.clear()
     for path in page_paths(tree):
         before = path.read_bytes()
         shell.process(path)
@@ -113,6 +120,8 @@ def run_shell(shell, tree: pathlib.Path) -> list[str]:
         if before != after:
             delta = _first_delta(before.decode("utf-8", "replace"),
                                  after.decode("utf-8", "replace"))
+            MÅLTE_LINJER.append(_ændrede_linjer(
+                before.decode("utf-8", "replace"), after.decode("utf-8", "replace")))
             found.append(f"R1 {path.relative_to(tree).as_posix()}: {_short(delta)}")
     found.extend(run_derivatives(shell, tree))
     return found
@@ -143,6 +152,8 @@ def run_derivatives(shell, tree: pathlib.Path) -> list[str]:
         _kør_afledt(shell, navn)
         after = sti.read_bytes()
         if before != after:
+            MÅLTE_LINJER.append(_ændrede_linjer(
+                before.decode("utf-8", "replace"), after.decode("utf-8", "replace")))
             found.append(f"R1 {navn}: {_first_delta(before.decode('utf-8', 'replace'), after.decode('utf-8', 'replace'))}")
     return found
 
@@ -160,6 +171,19 @@ def _first_delta(a: str, b: str) -> str:
         if x != y:
             return f"linje {i + 1} — {x.strip()[:70]} → {y.strip()[:70]}"
     return f"{len(la)} → {len(lb)} linjer"
+
+
+def _ændrede_linjer(a: str, b: str) -> int:
+    """Hvor mange linjer der faktisk flytter sig, ikke hvor mange filer.
+
+    Fundene er pr. fil, så `FUND — 1 linjer` i en diff på `sitemap.xml` så
+    ud som én linje, mens det var 175 `lastmod`. Målt 28/9 i en klon på dybde 1:
+    189 af 213 `lastmod` stod som 2026-09-28 i stedet for 25 med forskellige
+    datoer. En fund-række der underdriver sit omfang, er en port der ikke kan
+    prioriteres — så tallet skal være det rigtige.
+    """
+    la, lb = a.splitlines(), b.splitlines()
+    return sum(1 for x, y in zip(la, lb) if x != y) + abs(len(la) - len(lb))
 
 
 def _short(s: str) -> str:
@@ -279,7 +303,8 @@ def main() -> int:
     for f in findings:
         print(f, file=sys.stderr)
     if findings:
-        print(f"FUND — {len(findings)} linjer", file=sys.stderr)
+        linjer = sum(MÅLTE_LINJER)
+        print(f"FUND — {len(findings)} filer, {linjer} linjer ændret", file=sys.stderr)
         return 1
     print("PORT GRØN")
     return 0

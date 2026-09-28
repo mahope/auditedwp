@@ -28,7 +28,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      # `fetch-depth: 0` er ikke en hastighedsindstilling, det er en
+      # forudsætning. Gaten måler `tools/apply_shell.py`s `git_dates()`, som
+      # besvarer "hvornår blev denne side sidst redigeret?" **af git-historien**,
+      # og skriver de svar videre i `site/sitemap.xml` og JSON-LD. Standarden er
+      # `fetch-depth: 1`, altså én commit — og så svarer `git log` på intet for
+      # 230 af 230 sider, så de falder på `TODAY`. Målt 28/9: CI `36485230317`
+      # blev rød på `R1 sitemap.xml: linje 22` fordi den dybe lokale klon og
+      # CI's klon på én commit gav to forskellige svar på det samme spørgsmål —
+      # dybt cloning af HEAD reproducerede fejlen byte for byte. Se mærkningen i
+      # `git_dates()`, der nu afviser en grund klon i stedet for at svare
+      # `TODAY` i stilhed.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v7
         with:

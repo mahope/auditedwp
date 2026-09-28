@@ -399,6 +399,35 @@ def _nøgle(rå: str) -> str:
     return rå[5:] if rå.startswith("site/") else rå
 
 
+def _kræv_fuld_historie() -> None:
+    """Svar på "hvornår?" kræver historien. En grund klon har ikke nogen.
+
+    `actions/checkout` har `fetch-depth: 1` som standard, altså **én** commit.
+    `git log` svarer da på intet for alle de sider, HEAD-committen ikke rører,
+    og `git_dates()` ville stille give dem `TODAY` — 175 `lastmod` i det
+    publicerede sitemap flyttet til i dag, i stilhed. Målt 28/9 (`7bd3f60`):
+    CI `36485230317` blev rød på `R1 sitemap.xml: linje 22`, fordi den dybe
+    lokale klon og CI's klon på én commit gav to forskellige svar på det
+    samme spørgsmål; `git clone --depth 1` af HEAD reproducerede fejlen byte
+    for byte.
+
+    Derfor er svaret på en grund klon **ingen**, og det siger hvorfor. En gate
+    der ikke kan måle, skal være rød og sige det — ikke grøn og tavs. En
+    undtagelse i stedet for `{}` er nødvendig: `{}` betyder "ingen datoer
+    kendt", hvilket også er sandt, men kalderen læser det som "ingen sider",
+    og så får alle 230 sider `TODAY` lige så stille.
+    """
+    dyb = subprocess.run(["git", "rev-parse", "--is-shallow-repository"],
+                         cwd=ROOT, capture_output=True, text=True)
+    if dyb.stdout.strip() == "true":
+        raise SystemExit(
+            "FEJL: git-historien er grund (--depth 1). `git_dates()` kan ikke "
+            "svare på hvornår en side blev redigeret, fordi historien ikke er "
+            "med, og den svarer ikke `TODAY` i stedet. Checkout med fuld "
+            "historie: actions/checkout@v7 med `fetch-depth: 0`."
+        )
+
+
 def git_dates() -> dict:
     """{relpath: (første commit-dato, sidste redaktionelle dato)} for `site/`.
 
@@ -431,6 +460,7 @@ def git_dates() -> dict:
     derinde, så den får sin oprettelsesdato — præcis som den gamle bulk-regel
     gjorde, og ærligt: siden er ikke ændret siden den blev lagt ind.
     """
+    _kræv_fuld_historie()
     oprettet, sidst = {}, {}
     try:
         log = subprocess.run(["git", "log", "--format=@%H %cs %P", "--name-only", "--", "site"],
