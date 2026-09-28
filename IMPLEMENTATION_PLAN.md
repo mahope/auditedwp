@@ -1,3 +1,75 @@
+Opdateret: 2026-09-28 (iteration 94)
+
+Sidste iteration: **portens egne fixtures indeholdt to adresser der ikke findes,
+og porten skrev dem op som om de var dokumenteret.** Det var køens eneste åbne
+post der ikke kræver Mads, så den blev lukket — og den afslørede en anden fiktion
+end den den var skrevet om.
+
+**Påstanden målt, ikke antaget.** Køen sagde at Hotjars `<noscript>`-fixture
+pegede på `static.hotjar.com/hjblockedpixels/banner.gif`, som svarer 404. Målt
+2026-09-28: **404 (19 B)** både med og uden opdigtet `hjid`, og leverandørens egen
+loader `static.hotjar.com/c/hotjar-<id>.js` (200, **16 934 B**) nævner hverken
+`banner.gif` eller `hjblockedpixels`. `help.hotjar.com` svarer **403** på sin egen
+installations-artikel, så den rigtige sti kan ikke læses herfra. Hotjar er derfor
+**registreret som uverificeret**, ikke fjernet: mekanismen er sand, stien er bare
+ikke målbar i dag, og det er to forskellige ting.
+
+**Den anden fiktion fandt den nye regel, ikke jeg.** Klaro-fixture'en pegede på
+`klaro@1.0.5/dist/klaro.css`, som svarer **404 (50 B)** — Klaro hed `0.7.21`, så
+**ingen 1.x-version har eksisteret**. Den rigtige sti svarer 200 (22 698 B), og
+fixture'en er rettet. Det er samme fejlklasse som de to fiktionsstrenge opgave 72
+del 7 fjernede fra `DAEKNING` — bare i portens egen fixture i stedet for i
+tabellen, og derfor usynlig for alle de 23 forrige steps.
+
+**R10 gør det umuligt at gentage det, i stedet for at lappe to strenge.** Hver af de
+16 mekanismer skal have **præcis én** af tre veje: `bevis: "daekning"` (markup'en
+findes i en installationstabel — **eftersprøgt** mod tabellen, ikke troet),
+`bevis: "…"` (portens egen måling, som skal nævne et år, ellers er den en påstand),
+eller `uverificeret: true` (registreret med begrundelse i `UVERIFICEREDE`).
+Ratchetten står på **én** og må kun sænkes, så en tredje ubevist fixture er rød i
+den kørsel CI ser. **Målt før rettelsen: 11 af 16 havde ingen målt streng i nogen
+tabel** — kun 5 var dækket af opgave 60-62/70/72s målinger. De elleve fik nu hver
+deres egen måling med tal og dato fra i dag.
+
+**Overskriften kan ikke læses som om alt er dokumenteret.** Porten skrev `16
+mekanismer`; den skriver nu `16 mekanismer, 15 af dem med målt bevis, 1 uverificeret
+(Hotjars noscript-sporing)`.
+
+**Fire negative cases + spejl.** (a) `bevis: "daekning"` på en mekanisme hvis
+markup ikke står i nogen tabel → rød pr. mekanisme, så løgnen fanges pr. sted;
+(b) uverificeret uden en måling i registret → rød; (c) et bevis uden årstal → rød;
+(d) to uverificerede over loftet på ét → rød. Spejlet kræver at de rigtige
+mekanismer og ratchetten er grønne, ellers er de fire grønne fordi porten altid er
+rød. `SELFTEST GRØN — alle negative cases fanges (94 af 94)`.
+
+**Fund i min egen port, samme klasse som trin 27 og opgave 52 fund 4.** Min første
+`contractBevis()` dømmede alle 16 i én kald og **standsede ved den første**, så
+målingen af de elleve huller krævede elleve kørseler. Den er delt i to funktioner,
+`contractBevis` pr. mekanisme og `contractUverificerede` for ratchetten — samme
+deling som de øvrige fixture-kontrakter i porten.
+
+**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`). Rørt:
+`tools/check_signature_prose.mjs` og denne plan. **Ingen `site/**`-fil, ingen
+`plugin/**`-fil, ingen plugin-version, ingen ny zip, intet `update.json`, ingen
+`_redirects`, ingen JS-motor, ingen worker.** Deployen skal derfor logge `Uploaded
+0 files (322 already uploaded)` — præcis som noterne for opgave 65/66/74/86. Den
+eneste forventede ændring i CI-loggen er `94 af 94` i stedet for `89 af 89`.
+
+**Deploy-noten fra opgave 86 er lukket på indhold.** Målt med cache-buster:
+`/update.json` svarer 200 med `"version": "1.3.38"` og changelog der starter `=
+1.3.38 (2026-09-28) =`; **42** poster i både `changelog` og `sections.changelog`, og
+de to felter er ens; `/assets/eucomply-1.1.0.zip` og `/assets/eucomply-1.0.0.zip`
+giver begge **301** → 1.3.38 (de to var aldrig i kæden); `/assets/eucomply-1.3.38.zip`
+svarer **200 `application/zip`** (66 988 B). CI `36373822976` grøn, loggen læst:
+`GATE GRØN — alle 29 steps bestået` og `SELFTEST GRØN — alle 18 negative cases
+fanges`.
+
+**Baseline for effekten: 0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at gøre portens egen opgørelse af dækning sand: to fixtures
+på adresser der ikke finder er rettet, og den elvte kan ikke skjules som den tolvte.
+
+❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede.
+
 Opdateret: 2026-09-28 (iteration 93)
 
 Sidste iteration: **de to changelog'er i leverancen har fortalt hver sin
