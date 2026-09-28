@@ -279,16 +279,39 @@ h2{font-size:21px}}</style>
     }
   });
 
+  // Tallet skal sige, hvad det tæller. Fire af de ni rækker gælder kun for
+  // bestemte sites (cookies, programmatisk annoncering, Google Ads, DORA), så
+  // de tælles ikke i et tal for et site de ikke gælder. Nævneren kommer fra
+  // motoren — `score.conditional` og `check.condition` — så siden kan ikke
+  // finde på sin egen liste. `tools/check_score_split.py` holder de to sammen.
+  var COND_LABELS = { cookies: 'cookies', tcf: 'IAB TCF', consent_mode_v2: 'Google Consent Mode v2', dora: 'DORA' };
+  function scoreSplit(d) {
+    var s = d.score || {};
+    // En ældre worker kender ikke de nye felter. Så vises det gamle tal uændret,
+    // frem for at gætte — en besøgende må aldrig få et tal, siden har fundet på.
+    return typeof s.pct_applicable === 'number' ? s : null;
+  }
+  function notCountedSentence(sp) {
+    if (!sp || !sp.conditional || !sp.conditional.length) return '';
+    var names = sp.conditional.map(function (k) { return COND_LABELS[k] || k; });
+    return ' ' + 'Zählt hier nicht:' + ' ' + sp.conditional.length + '/' + sp.total + ': ' + names.join(', ') + '.';
+  }
+  function conditionLine(c) {
+    return (c.applies === false && c.condition)
+      ? '<p><em>' + esc(c.condition) + '</em></p>'
+      : '';
+  }
   function render(d) {
     results.style.display = 'block';
-    var pct = d.score.pct;
+    var sp = scoreSplit(d);
+    var pct = sp ? sp.pct_applicable : d.score.pct;
     var cls = pct >= 80 ? 'good' : (pct >= 50 ? 'mid' : 'bad');
     var num = document.getElementById('score-num');
     num.innerHTML = '';
     num.appendChild(document.createTextNode(pct));
     num.className = 'scorebig ' + cls;
     num.insertAdjacentHTML('beforeend', '<small style="font-size:22px;color:var(--muted)">%</small>');
-    document.getElementById('score-for').textContent = 'für ' + d.url;
+    document.getElementById('score-for').textContent = 'für ' + d.url + notCountedSentence(sp);
     cardsEl.innerHTML = '';
     Object.keys(d.checks).forEach(function(k) {
       var c = d.checks[k];
@@ -298,7 +321,7 @@ h2{font-size:21px}}</style>
       card.innerHTML =
         '<span class="pill">' + pillText(c) + '</span>' +
         '<b>' + esc(c.label || k) + '</b>' +
-        '<p>' + esc(c.detail || '') + '</p>';
+        '<p>' + esc(c.detail || '') + '</p>' + conditionLine(c);
       cardsEl.appendChild(card);
     });
     results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

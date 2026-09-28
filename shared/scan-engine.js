@@ -456,6 +456,27 @@ export function json(data, status = 200) {
 }
 
 /** Max redirect hops we follow before giving up. */
+// ---------------------------------------------------------------------------
+// Betingede rækker. Et tjek der kun kan fejle, hvis sitet gør noget bestemt, kan
+// ikke være en mangel på et site der ikke gør det. Før dette var de fire
+// rækker talt med i tallet uden forudsætning, så et site uden annoncering,
+// cookies og finansielle forpligtelser scorede 56 % (5 af 9) — og båndet blev
+// grønt ved 80, altså et tal ingen kunne nå. Samme fejlklasse som EAA-omfanget
+// og opgave 45: dokumenteret betingelse, ubetinget dom i talform.
+//
+// Nøglerne og grunden er **motorens**, fordi motoren er det eneste sted der
+// ved hvilke fund der gør en række relevant. En side må ikke finde på sin egen
+// liste — det er præcis det, der får ni overflader til at fortælle ni
+// historier. `tools/check_score_split.py` læser listen her og kræver at de
+// publicerede sider nævner præcis de samme nøgler.
+export const CONDITIONAL_CHECKS = {
+  cookies: "Not counted here \u2014 this check only applies to a site that sets cookies or loads non-essential trackers.",
+  tcf: "Not counted here \u2014 IAB TCF only applies to a site that runs programmatic advertising in the EEA.",
+  consent_mode_v2: "Not counted here \u2014 Consent Mode v2 is only required of a site that runs Google Ads in the EEA.",
+  dora: "Not counted here \u2014 DORA applies to financial entities, and a public page scan cannot tell whether the operator is one. This scan is not a DORA assessment.",
+};
+export const CONDITIONAL_CHECK_KEYS = Object.keys(CONDITIONAL_CHECKS);
+
 export const MAX_REDIRECTS = 5;
 /** Hard cap on how much of a response body we read (bytes). */
 export const MAX_BODY_BYTES = 2_000_000;
@@ -993,16 +1014,48 @@ export async function runScan(url) {
   const generator = html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i);
   if (generator) platform = generator[1];
 
+  // Betingelserne beregnes på de samme fund, rækkerne selv er bygget af, så de
+  // kan ikke komme i utakt med det tjekket siger. `set-cookie` er et svar fra
+  // den side vi netop hentede — det er det eneste direkte bevis på cookies.
+  const setCookieHeader = (resp.headers.get("set-cookie") || "").length > 0;
+  const adSignals = /googleadservices|googletagservices|doubleclick|googlesyndication|adnxs|adsrv|criteo|taboola|outbrain|prebid|adsbygoogle|\/gpt\.js/i.test(teknisk);
+  checks.cookies.applies = consentMatches.length > 0 || trackerMatches.length > 0 || setCookieHeader;
+  checks.tcf.applies = adSignals;
+  checks.consent_mode_v2.applies = adSignals || /google_ads|gtag\(|AW-[0-9]|gtag\/js\//i.test(teknisk);
+  // DORA gælder finansielle enheder. En offentlig side kan ikke se om
+  // driftsselskabet er en bank — og rækkens egen `detail` siger allerede
+  // "This is not a DORA assessment". At tælle den ville gøre 100 % uopnåeligt
+  // for alle, også for et site der har gjort alt andet rigtigt.
+  checks.dora.applies = false;
+  for (const key of CONDITIONAL_CHECK_KEYS) {
+    checks[key].condition = CONDITIONAL_CHECKS[key];
+  }
+
   return {
     url: finalUrl,
     scannedAt: new Date().toISOString(),
     durationMs: Date.now() - started,
     platform,
     checks,
+    // To tal, fordi de ikke må læses i ét: `pct` er alle ni rækker (det tal
+    // kunder har set), `pct_applicable` er kun dem der gælder for sitet. Begge
+    // findes, så en gammel klient der kender det første tal fortsætter med at
+    // virke, og en ny får betingelsen ved siden af sit tal.
     score: (() => {
       const scored = Object.values(checks).filter(c => typeof c.pass === "boolean");
       const passed = scored.filter(c => c.pass).length;
-      return { passed, total: scored.length, pct: scored.length ? Math.round(100 * passed / scored.length) : 0 };
+      const applicable = scored.filter(c => c.applies !== false);
+      const passedApplicable = applicable.filter(c => c.pass).length;
+      return {
+        passed,
+        total: scored.length,
+        pct: scored.length ? Math.round(100 * passed / scored.length) : 0,
+        applicable_total: applicable.length,
+        passed_applicable: passedApplicable,
+        pct_applicable: applicable.length ? Math.round(100 * passedApplicable / applicable.length) : 0,
+        conditional: CONDITIONAL_CHECK_KEYS.filter(k => checks[k] && checks[k].applies === false),
+        conditional_applied: CONDITIONAL_CHECK_KEYS.filter(k => checks[k] && checks[k] && checks[k].applies !== false),
+      };
     })(),
     disclaimer: "Automated technical checks only — not legal advice. Full compliance review requires a qualified professional.",
   };
