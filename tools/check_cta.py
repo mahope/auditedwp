@@ -28,6 +28,7 @@ Brug:
 from __future__ import annotations
 
 import json
+import math
 import re
 import shutil
 import sys
@@ -74,12 +75,21 @@ CONTRACT_PATH = ROOT / "tools" / "stripe_products.json"
 CONTRACT = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
 PRODUCTS: tuple[dict, ...] = tuple(CONTRACT["products"])
 PRODUCT_BY_URL: dict[str, dict] = {p["url"]: p for p in PRODUCTS}
+PRODUCT_BY_KEY: dict[str, dict] = {p["product_key"]: p for p in PRODUCTS}
 if len(PRODUCT_BY_URL) != len(PRODUCTS):
     raise SystemExit(f"FEJL {CONTRACT_PATH.name}: to produkter deler samme payment link")
+if len(PRODUCT_BY_KEY) != len(PRODUCTS):
+    raise SystemExit(f"FEJL {CONTRACT_PATH.name}: to produkter deler samme product_key")
 
 
 def _product(url: str) -> dict | None:
     return PRODUCT_BY_URL.get(url)
+
+
+def _key_of(url: str) -> str | None:
+    """product_key for et payment link, eller None for en ukendt adresse."""
+    product = _product(url)
+    return product["product_key"] if product else None
 
 
 def price_of(url: str) -> int | None:
@@ -484,6 +494,317 @@ def check_price_claims() -> list[str]:
     return findings
 
 
+# ---------------------------------------------------------------------------
+# Opgave 90 — vores EGNE priser måles mod kontrakten, ikke kun købsknappen.
+# ---------------------------------------------------------------------------
+# `check_price_claims` læser **købsankeren**: `<a href="buy.stripe.com/…">… 59 …</a>`.
+# Alt uden for ankaret var bevidst undtaget, fordi `class="price"` også citerer
+# konkurrenter ($350+/mo, €30/domain, "Gratis"), så en regel der læste den
+# ville være rød på ærlige sider. Det er rigtigt — og det efterlader den
+# farligste fejl type åbent: en forældet pris i en **pris-tabel**, som missionens
+# første opgave handlede, kan komme tilbage uden at nogen port bliver rød,
+# fordi undtagelsen er skrevet som en undtagelse.
+#
+# Løsningen er derfor ikke en smartere gætning på tekst, men en **erklæring**:
+# vores egne priser mærkes `data-product="<product_key>"` (kommasepareret, når ét
+# kort dækker flere produkter), en "fra"-pris mærkes `data-from="<sti>"`, og en
+# konkurrentcitering skal **sige det** med `data-competitor="<navn>"`. Det er
+# målbart, det kan læses på én plads, og det er umuligt at glemme: en ny
+# pris-tabel uden mærke er rød, fordi porten spørger om hvert beløb i et
+# `class="price"`-element ligger i en markeret region.
+#
+# Bemærk at `class="price-box"` **ikke** er et pris-element: klassen matcher på
+# hele tokenet, så `-box` og `-grid` ikke regnes med. Det er derfor
+# `price-box` ikke får en pris-fund i sig selv.
+TAG_RE = re.compile(r"<(/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>")
+DATA_PRODUCT_RE = re.compile(r'data-product="([^"]*)"')
+DATA_FROM_RE = re.compile(r'data-from="([^"]*)"')
+DATA_COMPETITOR_RE = re.compile(r'data-competitor="([^"]*)"')
+DERIVED_RE = re.compile(r'data-derived="([^"]*)"')
+CONTRACT_PRICES = frozenset(
+    p["price_usd"] for p in PRODUCTS if p["price_usd"] is not None)
+# Decimaler er **nødvendige** her, selv om `USD_AMOUNT_RE` er heltal: vores egne
+# vs-sider skriver `~$6.58/month` som den månedlige ækvivalent af 79 USD/år, og
+# en heltal-måling læser den som **6 USD** — altså en pris der ikke findes, i
+# vores egen region. Samme fejlklasse som `\b` skrevet som bogstavet `b` i
+# opgave 72 del 3: et mønster der læser mindre end det påstår.
+USD_PRECISE_RE = re.compile(
+    r"(?:\$\s*([0-9][0-9,]*(?:\.[0-9]+)?)|([0-9][0-9,]*(?:\.[0-9]+)?)\s*(?:USD|US\$|\$))",
+    re.I)
+
+
+
+def _class_tokens(attrs: str) -> set[str]:
+    match = re.search(r'class="([^"]*)"', attrs)
+    return set(match.group(1).split()) if match else set()
+
+
+def _inner_text(text: str, start: int) -> tuple[str, int]:
+    """Teksten inden i det element hvis åbningstag starter ved `start`.
+
+    Går gennem tag-strømmen og tæller samme tagnavn op og ned, så et indlejret
+    `<div>` ikke afslutter regionen. Uden det ville `<div class="plan">` slå
+    ved det første `</div>` og miste priserne i de efterfølgende kort — samme
+    fejlklasse som porten i `check_signature_prose.mjs` havde, da `phpBlok`
+    tælte klammer i kommentarer (opgave 65 del 2).
+    """
+    open_match = TAG_RE.match(text, start)
+    if not open_match:
+        return "", start
+    name = open_match.group(2)
+    if open_match.group(3).rstrip().endswith("/"):
+        return "", open_match.end()
+    depth, pos = 1, open_match.end()
+    while depth and pos < len(text):
+        tag = TAG_RE.search(text, pos)
+        if not tag:
+            break
+        pos = tag.end()
+        if tag.group(2).lower() != name.lower():
+            continue
+        depth += -1 if tag.group(1) else 1
+    return text[open_match.end():pos], pos
+
+
+def marked_regions(text: str) -> list[tuple[int, int, str, list[str]]]:
+    """(start, slut, art, nøgler) for hver deklareret region i en side.
+
+    Arter: `product` (vores egen pris), `from` (vores laveste pris i et andet
+    produkt) og `competitor` (en pris vi citerer, ikke sælger).
+    """
+    regions = []
+    for tag in TAG_RE.finditer(text):
+        if tag.group(1):
+            continue
+        for kind, pattern in (("product", DATA_PRODUCT_RE),
+                              ("from", DATA_FROM_RE),
+                              ("competitor", DATA_COMPETITOR_RE)):
+            hit = pattern.search(tag.group(3))
+            if not hit:
+                continue
+            _, end = _inner_text(text, tag.start())
+            regions.append((tag.start(), end, kind,
+                            [k.strip() for k in hit.group(1).split(",") if k.strip()]))
+            break
+    return regions
+
+
+def price_elements(text: str) -> list[tuple[int, int, str]]:
+    """(start, slut, tekst) for hvert element med klassen `price`."""
+    found = []
+    for tag in TAG_RE.finditer(text):
+        if tag.group(1) or "price" not in _class_tokens(tag.group(3)):
+            continue
+        inner, end = _inner_text(text, tag.start())
+        found.append((tag.start(), end, re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", inner)).strip()))
+    return found
+
+
+def _usd(text: str) -> set[float]:
+    return {float((a or b).replace(",", "")) for a, b in USD_PRECISE_RE.findall(text)}
+
+
+def _monthly(price: int) -> set[float]:
+    """Den månedlige ækvivalent af en årlig pris, som sider skriver den.
+
+    79 USD/år står på vs-siderne som `~$6.58/month`. Tallet er **udregnet**
+    her, ikke undtaget: 79/12 = 6,5833, så både afrundet og afkortet til to
+    decimaler er tilladt. Uden denne afledning ville den mest solgte pris på
+    siden være ulæs for porten, fordi den ikke er en heltal-pris fra kontrakten.
+    """
+    return {round(price / 12, 2), math.floor(price * 100 / 12) / 100}
+
+
+def _derived_allowed(kind: str, keys: set[str], prices: set[int]) -> set[float]:
+    """Beløb der er **afledt** af kontrakten, så de kan stå i en pris-tabel.
+
+    `sum-of-others` er summen af alle skabeloners kontraktpriser minus den
+    blokken selv sælger. Butikken skriver "149 USD (vs 245 separately)", og 245
+    er 59+49+29+39+69 — sum af de fem enkeltprisers kontraktpriser. Tallet er
+    derfor **udregnet** af porten, ikke skrevet i markup'en, så det kan ikke
+    glide fra kontrakten. Uden denne undtagelse ville den ærlige sammenligning
+    være rød; med en håndskrevet undtagelsesliste ville den være grøn uden at
+    have kontrolleret noget.
+    """
+    if kind == "sum-of-others":
+        templates = [p for p in PRODUCTS if p["template"] and p["price_usd"] is not None]
+        return {float(sum(p["price_usd"] for p in templates
+                          if p["product_key"] not in keys))}
+    if kind == "per-year-12":
+        out: set[float] = set()
+        for price in prices:
+            out |= _monthly(price)
+        return out
+    return set()
+
+
+
+def check_marked_prices() -> list[str]:
+    """En pris i en kort-tabel skal være den pris kontrakten siger.
+
+    Fire regler, alle målbare og alle med en modsvar, porten kan fejle på:
+
+    R1  En `data-product`-nøgle skal findes i kontrakten. En tastefejl ville
+        ellers efterlade en pris ucheket — præcis den stumhed porten skal fjerne.
+    R2  Hvert USD-beløb i en deklareret region skal være **en** af de
+        deklarrede produkters kontraktpris (eller et afledt beløb). En
+        `data-from`-regions beløb skal være den laveste kontraktpris blandt de
+        produkter, den linkede side sælger — så "fra 29 USD" følger butikken
+        automatisk.
+    R3  Et produkt, hvis betalingslink står på siden, skal være deklareret
+        mindst en gang på den side. Det er reglen der fanger en **driftet**
+        pris: en ny værdi er ikke en kontraktpris, så R2 ville tie, men R3
+        ved at produktsiden stadig skal erklære sin pris.
+    R4  Hvert beløb i et `class="price"`-element skal ligge i en deklareret
+        region. En ny pris-tabel uden mærke er dermed rød, og en
+        konkurrentcitering skal sige `data-competitor` for at slippe forbi.
+
+    Kun sider klassificeret som `pro`, `template` eller `own` læses: de er
+    sider hvor **vi** sælger. `vs/*` er klassificeret som `pro` (de har en
+    Pro-CTA), så R4 gælder dem også — men kun beløb i et `price`-element, og
+    de skal erklære sig. Det er målt, ikke antaget: `vs/onetrust` citerer 350,
+    `vs/usercentrics` 34, `vs/cookiebot` 30 EUR.
+    """
+    findings: list[str] = []
+    pages = {p.relative_to(SITE).as_posix(): p for p in eucocomply_pages()}
+    by_stem = {_page_stem(rel): rel for rel in pages}
+
+    # Forlåbsrunde: hvilke produkter sælger hvilken side. Uden den ville
+    # `data-from="/store/"` på `/pricing/` være dømt mod butikkens
+    # `declared`-værdi, som først bliver sat da butikken selv behandles — og
+    # sorteringsrækkefølgen af en dict afgør så fundet. Det er præcis den
+    # fejlklasse porten skal være fri af: et fund der afhænger af rækkefølgen
+    # er ikke et fund, det er en mangel på porten.
+    declared: dict[str, set[str]] = {}
+    for rel, path in pages.items():
+        text = path.read_text(encoding="utf-8", errors="replace")
+        declared[rel] = {k for _, _, kind, keys in marked_regions(text)
+                         if kind == "product" for k in keys}
+
+    def prices_sold_on(stem: str) -> set[str]:
+        target = by_stem.get(stem)
+        return declared.get(target, set()) if target else set()
+
+    for rel, path in pages.items():
+        rule = classify(rel)
+        if not rule or rule.kind not in ("pro", "template", "own"):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        regions = marked_regions(text)
+        keys_here: set[str] = set(declared[rel])
+        for _, _, kind, keys in regions:
+            if kind == "product":
+                for key in keys:
+                    if key not in PRODUCT_BY_KEY:
+                        findings.append(
+                            f"{rel}: data-product=\"{key}\" findes ikke i "
+                            "kontrakten — prisen i denne region er ikke kontrolleret "
+                            "mod noget")
+
+        for start, end, kind, keys in regions:
+            if kind == "competitor":
+                continue
+            chunk = text[start:end]
+            if kind == "from":
+                target = _stem(keys[0])
+                if not prices_sold_on(target):
+                    findings.append(
+                        f"{rel}: data-from=\"{keys[0]}\" — siden sælger ingen "
+                        "markerede produkter, så \"fra\"-prisen er ikke bundet til "
+                        "noget")
+                    continue
+                wanted = {float(p["price_usd"]) for p in PRODUCTS
+                          if p["product_key"] in prices_sold_on(target)}
+                for amount in sorted(_usd(chunk)):
+                    if amount not in wanted:
+                        findings.append(
+                            f"{rel}: data-from=\"{keys[0]}\" lover {amount:g} USD, "
+                            f"men laveste pris blandt produkterne der er "
+                            f"{min(wanted):g} USD")
+                continue
+            prices = {price_of(p["url"]) for p in PRODUCTS
+                      if p["product_key"] in keys}
+            prices.discard(None)
+            derived: set[float] = set()
+            for kind in _derived_kinds(chunk):
+                derived |= _derived_allowed(kind, set(keys), prices)
+            for amount in sorted(_usd(chunk)):
+                if amount in prices or amount in derived:
+                    continue
+                if amount in {float(p) for p in CONTRACT_PRICES}:
+                    findings.append(
+                        f"{rel}: regionen data-product=\"{','.join(keys)}\" indeholder "
+                        f"{amount:g} USD, som er en pris fra kontrakten, men ikke fra "
+                        "et af de erklærede produkter")
+                else:
+                    findings.append(
+                        f"{rel}: regionen data-product=\"{','.join(keys)}\" lover "
+                        f"{amount:g} USD, som ikke er nogen pris i kontrakten")
+
+        # R3: en side der **viser priser** skal erklære hvert produkt den sælger.
+        # Donationen springes over med vilje: den har ingen kontraktpris, så der
+        # er ingen pris at erklære, og en regel der krævede en ville være rød på
+        # hver side med en `/support`-knap. Sider uden ét eneste `price`-element
+        # springes også over — de viser ingen pris-tabel, så der er intet at
+        # erklære. Det er målt: 24 af de 51 sider klassificeret som `pro`/`own`
+        # har ingen pris-element, og krævede man en erklæring af dem alle, ville
+        # porten bare lære agenten at sætte `data-product` på skjulte elementer.
+        if price_elements(text):
+            for link in set(STRIPE_RE.findall(text)):
+                key = _key_of(link)
+                if not key or price_of(link) is None:
+                    continue
+                if key not in keys_here:
+                    findings.append(
+                        f"{rel}: siden sælger {label_of(link)} ({price_of(link)} USD) "
+                        "men erklærer ingen pris for den — tilføj data-product")
+
+        # R4: hvert beløb i et price-element skal ligge i en deklareret region.
+        for start, end, label in price_elements(text):
+            inside = [r for r in regions if r[0] <= start and r[1] >= start]
+            if inside:
+                continue
+            for amount in sorted(_usd(label)):
+                if amount in {float(p) for p in CONTRACT_PRICES}:
+                    findings.append(
+                        f"{rel}: class=\"price\" viser {amount:g} USD uden at sige "
+                        "hvilket produkt det er (data-product) eller at det er en "
+                        f"konkurrent (data-competitor): \"{label}\"")
+
+        # R5: schema.org-prisen i `offers` skal være en af sidens egne priser.
+        for match in re.finditer(
+                r'<script type="application/ld\+json"[^>]*>(.*?)</script>', text, re.S):
+            for raw in re.findall(r'"price":\s*"?([0-9.]+)"?', match.group(1)):
+                amount = float(raw)
+                if amount and amount not in {float(price_of(p["url"])) for p in PRODUCTS
+                                             if p["product_key"] in keys_here}:
+                    findings.append(
+                        f"{rel}: schema.org offers.price er {amount:g} USD, som ikke er "
+                        "nogen af sidens erklærede priser — det er tallet Google viser")
+    return findings
+
+
+def _stem(href: str) -> str:
+    """/store/ -> store/, så data-from kan slås op i sidernes stier."""
+    return href.split("#", 1)[0].strip("/")
+
+
+def _page_stem(rel: str) -> str:
+    """store/index.html -> store/. Nøglen `data-from` peger på."""
+    return rel.replace("index.html", "").strip("/")
+
+
+def _derived_kinds(chunk: str) -> list[str]:
+    """Alle `data-derived`-erklæringer i en region.
+
+    Slås sammen frem for kun den første: en region må gerne indeholde både
+    "fra"-summen af enkeltpriser og en måneds-ækvivalent, og en port der kun
+    læser den første ville afvise den anden af to sande oplysninger.
+    """
+    return DERIVED_RE.findall(chunk)
+
+
+
 def unsold_products(base: Path | None = None) -> list[tuple[str, str]]:
     """Kontraktprodukter til EUComply-domænet uden én eneste side.
 
@@ -807,6 +1128,7 @@ def run(root: Path) -> list[str]:
         check_classification,
         check_checkout_contract,
         check_price_claims,
+        check_marked_prices,
         check_sales_cta,
         check_locale_parity,
         check_canonicals,
@@ -1150,6 +1472,71 @@ def selftest() -> int:
         print("selftest: samme link på en side er lovligt og fjerner fundet")
         blocks += 1
         blog.write_text(original_blog, encoding="utf-8")
+        publish(base)
+
+        # Opgave 90 — de to retninger R4/R2 skal dømme. Den første er den der
+        # er let at glemme: en pris i et kort uden købslink skal være **grøn**,
+        # fordi det er præcis den situation undtagelsen `class="price"` blev
+        # skrevet for. Bliver den rød, går porten fra ukontrolleret til
+        # ubrugelig, og næste agent løser det ved at slette `class="price"`.
+        #
+        # Beløbet er bevidst et beløb der **er** i kontrakten (59), så testen
+        # ikke kan bestås ved at talet tilfældigvis er sjældent: det er
+        # `data-competitor`, ikke tallet, der gør den grøn. Uden markøren er
+        # præcis samme markup rød — det er den mutation der følger med.
+        store = base / "site" / "store" / "index.html"
+        original_store = store.read_text(encoding="utf-8")
+        CITATION = ('<div class="price-box" data-competitor="Iubenda">'
+                    '<div class="price">$59</div></div>')
+        DRIFTED = ('<div class="price-box" data-product="eucomply-dpa">'
+                   '<div class="price">$39</div></div>')
+
+        def with_extra(markup: str) -> None:
+            store.write_text(original_store.replace("</body>", markup + "</body>"),
+                             encoding="utf-8")
+            publish(base)
+
+        with_extra(CITATION)
+        if [f for f in run(base) if "59" in f]:
+            print("SELFTEST FEJLED: en konkurrentcitering med data-competitor gav fund")
+            return 1
+        print("selftest: pris i et kort uden købslink er grøn, når den siger "
+              "at den er en konkurrent")
+        blocks += 1
+
+        # Samme markup uden markøren er rød — ellers er forrige linje grøn af
+        # en grund den ikke måtte være grøn af.
+        with_extra(CITATION.replace(' data-competitor="Iubenda"', ""))
+        if not [f for f in run(base) if "59" in f]:
+            print("SELFTEST FEJLED: samme pris uden data-competitor gav 0 fund — "
+                  "porten kan så ikke skelne vores fra en konkurrent")
+            return 1
+        print("selftest: samme pris uden data-competitor fanget")
+        blocks += 1
+
+        # Den anden retning: et kort der **erklærer** et produkt, men viser et
+        # beløb der ikke er det produkts pris. Før opgaven var den umulig at
+        # finde — den lå uden for købsankeren, som var det eneste
+        # `check_price_claims` læste. 39 er EAA-prisen, ikke DPA'ens 59.
+        with_extra(DRIFTED)
+        drift = [f for f in run(base) if "eucomply-dpa" in f]
+        if not drift:
+            print("SELFTEST FEJLED: en forældet pris i et deklareret kort fangedes ikke")
+            return 1
+        print("selftest: kort med købslink og forkert beløb fanget "
+              f"({drift[0].split(': ', 1)[-1]})")
+        blocks += 1
+
+        # Og en nøgle der ikke findes i kontrakten: en tastefejl må ikke give
+        # en uovervåget pris.
+        with_extra(DRIFTED.replace("eucomply-dpa", "eucomply-dpа"))  # cyrillisk а
+        if not [f for f in run(base) if "findes ikke i kontrakten" in f]:
+            print("SELFTEST FEJLED: en data-product-nøgle uden for kontrakten fangedes ikke")
+            return 1
+        print("selftest: data-product-nøgle uden for kontrakten fanget")
+        blocks += 1
+
+        store.write_text(original_store, encoding="utf-8")
         publish(base)
 
     print(f"SELFTEST GRØN — alle {len(cases) + blocks} negative cases fanges")
