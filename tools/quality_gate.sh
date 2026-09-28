@@ -192,6 +192,12 @@ run "tools/check_production_drift.py --selftest" "$PY" tools/check_production_dr
 # PDF. Den læser også site-dist, fordi det er den side der sælges.
 run "tools/check_sample_coverage.py" "$PY" tools/check_sample_coverage.py
 run "tools/check_sample_coverage.py --selftest" "$PY" tools/check_sample_coverage.py --selftest
+# Rådet i rapporten skal være prosa. Målt 28/9 i den serverede zip: en hel
+# <a href="/privacy/">Privacy Policy</a> lå inde i fix-strengen, og fordi
+# renderingen escaper korrekt, nåede den kunden som kildekode. Ingen af de 29
+# steps så den, fordi de læser kodestruktur og ikke rådets tekst.
+run "tools/check_advice_strings.py" "$PY" tools/check_advice_strings.py
+run "tools/check_advice_strings.py --selftest" "$PY" tools/check_advice_strings.py --selftest
 
 # --------------------------------------------- 6. publiceret træ (kontrol)
 # Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
