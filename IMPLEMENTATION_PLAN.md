@@ -1,5 +1,129 @@
-Opdateret: 2026-09-28 (iteration 99) — **opgave 91 lukket i kode og måling: en
-butiks-parat extension måles, den er målt, og `/extension/` har nu én købsvej**
+Opdateret: 2026-09-28 (iteration 100) — **to løfter der holdt ikke, fundet ved at
+gå købsvejen igennem som en fremmed: `/extension/` solgte en Pro-fordel som
+`/pro/` nægter i 400 pixels afstand, og prøverapporten endte i "62 of the 8
+checks"**
+
+Iteration 100. Deploy fra iteration 99 er **verificeret live på indhold** først:
+alle tre punkter i noten holder (se afsnittet nederst).
+
+Denne iteration: **to sider lovede hver deres ting, og de modsagde hinanden.**
+`/extension/` skrev at *"EUComply Pro re-checks your site daily, keeps per-check
+history, and reports to your client"* — 400 pixels længere nede på **samme side**
+skrev et kort *"Hosted daily monitoring is not included."* Den anden sætning er
+den sande: den daglige re-scan er pluginens (1.3.8), ikke den hosted services, og
+`/pro/` siger det samme i alle fire sprog. En køber der læste den første sætning
+og betalte $79 fik ikke det. Og på `/pro/sample-report/` — **det artefakt en
+prospect bruger til at afgøre om $79 er værd** — stod der *"Not counted here: 1/9:
+DORA page-signal markers. **62 of the 8 checks that apply** (5 of 8)."* Procent-
+tegnet var faldet ud.
+
+**Begge fejl var usynlige for portene, fordi ingen af dem læser det den anden
+læser.** `denial_findings()` fanger en side der *nægter* en Pro-fordel — men den
+daglige re-scan **er** leveret (1.3.8), så intet blev nægtet. Over-claim-porten
+springer en blok over der nævner "hosted", og upsell-sætningen gjorde ikke.
+`/extension/` er ikke en Pro-side, så `under_claim_findings()` så den aldrig. Og
+`check_sample_coverage.py` læste cirklen, "checks passed", "items needing
+attention" og historikken — men **ikke den delte tale-sætning**, som er det eneste
+sted på siden hvor det delte tal står. Den fejlslagne `%` kunne derfor ikke gøre
+nogen port rød.
+
+**Den nye regel dømmer uoverensstemmelsen, fordi den ikke kan ses fra én side.**
+`cross_page_claim_findings()` læser nægtelsen *på /pro/* og fejler enhver anden
+side, der sælger det samme uden den samme afgrænsning. Den genbruger de to mønstre
+der allerede svarede på spørgsmålet — `HOSTED_QUALIFIER` (dette kører i skyen) og
+`LOCAL_CADENCE_SCOPE` (dette kører i din WordPress) — i stedet for at skrive en
+tredje vokabulær til ét begreb, hvilket er hvordan denne fil først fik fire.
+`check_sample_coverage.py` læser nu den delte tale med et mønster der **kræver**
+procenttegnet, så den publicerede version ikke kan findes.
+
+**Fem fund i min egen regel under kalibreringen — 92 → 38 → 8 → 4 → 1 → 0 — og
+fire af dem var fejl i selve porten, ikke i teksten.** (1) `history.replaceState`
+i scannerens egen JavaScript læst som et løfte om scanningshistorik, fordi blokke
+også rummer script-strenge. (2) `/transmute/` fik fund for et **søskendeprodukts**
+historie-fane. (3) Min egen rettelse skrev "inside WordPress", som
+`LOCAL_CADENCE_SCOPE` genkender kun med *your/the* foran — jeg rettede **teksten**
+til "in your own WordPress" i stedet for at vokale mønsteret op. (4) Det sidste
+fund var en **dansk** mangel i selve mønsteret: `site/da/scan/` skriver "den
+ligger i din WordPress", og grenen krævede "egen". Det er den samme
+manglende-word-fejl som plandens otte tidligere fund i navnetabellerne, nu i et
+mønster der burde have kendt det. Og (5) vinduet omkring et fund var et
+**tegn-tal på 120**, der læste hen over en punktum-grænse og trak den anden
+sætnings påstand ind i den første. Nu er enheden **sætningen** — et løfte laves
+i en sætning — hvilket er den samme enhed `denial_findings()` allerede tænker i,
+så de to retninger ikke kan blive uenige om hvor et løfte slutter.
+
+**Efterprøvet begge veje, ikke antaget.** Mod `main`'s publicerede filer: den nye
+regel er **rød med præcis de to fund** på den gamle `/extension/`, og grøn på den
+nye — efter alle fem kalibreringer, ikke kun før dem. `check_sample_coverage.py`
+er rød med præcis det manglende `delte tale`-fund på den gamle side, grøn på den
+nye, og dens nye selftest-case genskaber mutationen mod repoets egen fil.
+**184 selftests grønne, `GATE GRØN — alle 30 steps bestået`.**
+
+**Ingen plugin-version, ingen `update.json`, ingen worker, ingen salgscopy uden
+de to rettelser.** Rørt: `site/extension/index.html`,
+`site/pro/sample-report/index.html`, `scripts/build_sample_report.py` (én tegn),
+`tools/check_pro_claims.py` (ny regel + 4 selftests), `tools/check_sample_coverage.py`.
+
+**Deploy fra iteration 99 er verificeret på indhold, alle tre punkter.** (1)
+`/extension/` har "Not in the Chrome Web Store yet" (1 forekomst), **0** af
+"link will appear here", **0** af "Installation guide (once published)",
+zip-linket er `eucomply-extension-1.0.2.zip`, og `<a href="/pro/">` står i
+downloadboksen. (2) `/assets/eucomply-extension-1.0.2.zip` svarer **200
+`application/zip`**, unzippes til 9 entries med `version 1.0.2` og
+`permissions: ["activeTab","storage"]`; den gamle **1.0.1** svarer **404**. (3)
+`/privacy/` har afsnittet "When you use the browser extension". `DEPLOY OK
+2026-09-28`.
+
+**Bemærk om den planlagte `NÆSTE`: den var død, og den vidste det ikke.** De to
+`NÆSTE`-poster om Hotjars `<noscript>`-fixture peger på
+`tools/check_signature_prose.mjs`, som **iteration 94 (`04f4eee`) allerede har
+rettet** — den ligger i `UVERIFICEREDE` med begrundelse, og `HOEJST_UVERIFICEREDE`
+er 1. Næste agent skal **ikke** starte den igen; den er det tredje eksempel i
+rækken på kø-poster der beskriver arbejde, der er gjort (opgave 48, 62, 57).
+
+Baseline for effekten: **0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflare's 5343 er bots — taggen er live og scriptet svarer 200
+på 6204 B, målt i denne iteration). Kan ikke måles i trafik. Det den gør er at
+fjerne to løfter, der ikke holdt, på de to sider en køber læser lige før han
+betaler.
+
+❓ **Til Mads.** Én ny, og den er konkret og **ikke ny**: skal extensionen
+udgives på Chrome Web Store nu, og på hvilken konto? Alt er målt grønt og ligger
+klar (opgave 91) — det mangler er din udgiverkonto ($5) og ét screenshot i
+1280×800. Spørgsmål 7, 9 og 18 uændrede. Næste post uden Mads er nederst.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+Fundet ved at gå hele købsvejen igennem som en fremmed. Rangordnet efter hvor
+mange penge de berører — ikke efter hvor lette de er.
+
+1. **Live-workeren er en gammel build, og scoren den giver er med vilje forkert.**
+   Malet: live `?url=shopify.com` → `{"passed":4,"total":9,"pct":44}`; den samme
+   motor i repoet giver `pct_applicable: 80` med 4 betingede rækker. **Siden er
+   skrevet til at vise det ærlige delte tal** og kan ikke, fordi den gamle worker
+   ikke sender `pct_applicable` — den viser 44 %, som er den forudindtagede
+   score. Det er tallet hele funnelsen og $79-upsellet står på. **Kan ikke
+   rettes af en agent**: kræver `wrangler deploy` = spørgsmål 9. *Skriv det under
+   ❓ hvis Mads vil have det løst før næste iteration.*
+2. **`/cli/`'s "Example output (real scan of webflow.com)" er ikke rigtig
+   output.** Viser 6 linjer i et `║ ║ ╚═══╗`-felt; den rigtige CLI skriver
+   `Score: 3/9 (33%)`, `❌ 1 tracker(s) with NO consent platform` og
+   `❌ No DORA-related page signals detected`. To af seks domme er forkerede, og
+   den mest alvorlige fund — tracker uden samtykkeplatform — mangler helt. Den
+   skal genereres fra motoren, ikke skrives i hånden.
+3. **Et betalt produkt kan ikke købes.** `eu-compliance-ebook-bundle` ($29,
+   `…MQ0b`) ligger i `tools/stripe_products.json` og linket svarer 200, men
+   dukker op på **0 af 209 sider**. En købsmulighed uden en købsvej.
+4. **"Free API" er solgt uden dokumentation.** `/vs/termly/` lover *"API access:
+   Free API + CLI"*; `/api/`, `/docs/`, `/developers/` giver alle **404** og er
+   ikke i sitemap'en. En udvikler henvist fra sammenligningssiden har ingen
+   vej.
+5. **Zip'en mangler LICENSE.** `/extension/` siger "Open source", footeren siger
+   "Scanner and CLI are MIT licensed", men den distribuerede zip har ingen
+   LICENSE-fil. Ret billedet eller ret teksten — ikke begge.
+6. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)". Lavest prioritet: skriv
+   konkurrentpriser ned som link + dato, eller fjern dem.
 
 Sidste iteration: **"den ser sun ud" viste sig at være fire løfter, der ikke
 holdt.** `chrome-ext/` var målt sund af en tidligere iteration — zip'en
@@ -76,6 +200,8 @@ læse porten som om Hotjar-installationen var verificeret.
 
 - 2026-09-28 (iteration 98, opgave 90) `DEPLOY OK 2026-09-28` — de tre sider verificeret på **indhold** med cache-buster: alle 18 markerede sider egner de deklarerede attributter, ingen synlig tekst ændret. Opgaven er lukket.
 - 2026-09-28 (iteration 99, opgave 91) `VERIFICER DEPLOY: extensionen målt butiksparat, én købsvej på /extension/, privacy nævner extensionen, extension 1.0.2` kodecommit `4f5017a`, merge `9240434` 2026-09-28 07:09 UTC — rører `site/extension/index.html`, `site/privacy/index.html`, `site/assets/eucomply-extension-1.0.2.zip` (1.0.1 fjernet), `chrome-ext/`, `tools/`. Efter næste deploy-vindue skal indhold verificeres med cache-buster på **tre** punkter: (1) `/extension/` — "Not in the Chrome Web Store yet" i stedet for "link will appear here", afsnittet "Installation guide (once published)" **er væk**, zip-linket er `/assets/eucomply-extension-1.0.2.zip`, og `<a href="/pro/">` står i downloadboksen; (2) `/assets/eucomply-extension-1.0.2.zip` svarer 200 **og** unzippes til 9 filer med `version 1.0.2` og `permissions: ["activeTab","storage"]` — den gamle 1.0.1 skal give **404**; (3) `/privacy/` har afsnittet "When you use the browser extension" med de to permissions. **Ingen plugin-version, ingen `update.json`** — pluginzip'en er urørt.
+- 2026-09-28 (iteration 100) `DEPLOY OK 2026-09-28` — **iteration 99s `VERIFICER DEPLOY` lukket på indhold**, alle tre punkter bestået med cache-buster: `/extension/` har "Not in the Chrome Web Store yet" ×1, **0** × "link will appear here", **0** × "Installation guide (once published)", zip-linket er 1.0.2 og `<a href="/pro/">` står i downloadboksen; `/assets/eucomply-extension-1.0.2.zip` svarer **200 `application/zip`** (8333 B) og unzippes til 9 entries med `version 1.0.2` og `permissions: ["activeTab","storage"]`, mens **1.0.1 svarer 404**; `/privacy/` har afsnittet "When you use the browser extension". Opgaven er lukket.
+- 2026-09-28 (iteration 100) `VERIFICER DEPLOY: /extension/ sælger Pro kun som den virker, prøverapportens delte tale er læselig` kodecommit `558cfe8` 2026-09-28 07:52 UTC — rører `site/extension/index.html`, `site/pro/sample-report/index.html`, `scripts/build_sample_report.py`, `tools/check_pro_claims.py`, `tools/check_sample_coverage.py`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **to** punkter: (1) `/extension/` — upsell-sætningen siger *"runs the same checks on a schedule in your own WordPress"* og *"The extension itself is free and stays free"*, og **0** forekomster af *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` — linjen siger **"62% of the 8 checks that apply (5 of 8)"** med procenttegn, og **0** forekomster af "62 of the 8 checks". **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt.
 
 
 
@@ -1464,13 +1590,14 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 - `FÆRDIG` (del 4 af 4): **72 — `dora`-tabellens fire ubeviste alternativer, 4 → 0** på `ceo/dora-tre-malte`, kodecommit bb5d08b, plugin **1.3.34**. `security[ _-]?incident` blev lukket ved læsning i NCSCs egen side (iteration 76); de tre her tog hver sin retning: `bcp[ _-]?plan` **fjernet** («bcp plan» 0 gange på den wikipedia-side der skriver *BCP* 23 gange), `multi[ _-]?az[ _-]?dns` **udvidet** til `multi[ _-]?az` («Multi-AZ» 62 gange i AWS' egen prosa, hele formen 0), og `redundan` **navngivet** i rækken, fordi Microsofts egen availability-zones-side skriver det 8 gange i **prosa** — ikke kun som linktekst, som den forrige måling så på en anden Microsoft-side. Guidens markørtabel rettet med, `78 af 78` negative cases, `69 installationstester`, `GATE GRØN — alle 24 steps bestået`.
 - `FÆRDIG` (del 5+6 af 6): **72 — `dora` 3 → 0 og `forms` 1 → 0, så alle fire tabeller står på 0** på `ceo/stripe-fiktion-borta`, kodecommit 57f6cb7, plugin **1.3.34** (kun del 5). Del 5: `bcp[ _-]?plan` **fjernet** («bcp plan» 0 gange på den wikipedia-side der skriver *BCP* 23 gange), `multi[ _-]?az[ _-]?dns` **udvidet** til `multi[ _-]?az` («Multi-AZ» 62 gange i AWS' egen prosa), `redundan` **navngivet** i rækken (Microsofts egen availability-zones-side: 8 gange i prosa). Del 6: `data-stripe-(key|publishable)` **fjernet** — 0 i fem målte kilder, og den opførte installationstest `data-stripe-key` var skrevet fra hukommelsen, så det var den **kun**, der holdt porten grøn; rækken hedder nu `Stripe`, fordi regel (g) kræver én streng pr. leverandør. `79 af 79` negative cases, `GATE GRØN — alle 24 steps bestået`. Spec "Fejl 16" og "Fejl 17".
 - `FÆRDIG` (del 7 af 7): **72 — tracker-tabellens fem sidste alternativer, 5 → 0, så ratchetten står på 0 i alle fire tabeller** på `ceo/trackers-sidste-huller`, plugin **1.3.35**. To døde værter væk ved måling (`static.tiktok.com` og `cdn.pinterest.com` har **ingen DNS**, `dig +short` svarer intet 2026-09-27). To leverandør-funktioner lukket ved at lægge den **målte indlejrede linje** ind som installationstest — `_linkedin_partner_id` og `ttq.`, målt i en rigtig sides markup (motionapp.com, 3 394 123 B). `hj(` **fjernet**: det er leverandørens egen globale i den fil dens script-URL peger på, og scanneren åbner aldrig et indlæst script. To installationstester var **fiktion**: Hotjars svarer 200 med **nul byte på ethvert id**, TikToks navngav en sti der 404'er på et opdigtet id. **Fejl i porten fundet og rettet:** `phpBlok` tællede klammer i kommentarer, så blokken læste 40 rækker i `trackers` i stedet for 12 og meldte OneTrust manglende en installationstest i en tabel den ikke står i; case 31m genskaber det og fandt samtidig en fejl i sig selv (den skrev 14). `57 signatur-prosatest` (51 → 57), `81 negative selftest-cases` (79 → 81), `70 installationstester` (68 → 70), `GATE GRØN — alle 24 steps bestået`.
-- `NÆSTE` (ny måling, billig): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes.** `tools/check_signature_prose.mjs` bruger `https://static.hotjar.com/hjblockedpixels/banner.gif`, og den svarer **404 (19 B)** 2026-09-27 — samme fejlklasse som de to fiktioner lukket i denne iteration, bare i portens egen fixture. Den rigtige sti kan ikke findes uden et rigtigt Hotjar-id, og 16 målte sites havde ingen Hotjar. Lad den ligge indtil den kan læses; den er **en fixture, ikke et krav kunden læser**, så den er ikke samme fare som de to andre.
+- `HISTORISK` (lukket i iteration 94, `04f4eee`): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes.** `tools/check_signature_prose.mjs` bruger `https://static.hotjar.com/hjblockedpixels/banner.gif`, og den svarer **404 (19 B)** 2026-09-27 — samme fejlklasse som de to fiktioner lukket i denne iteration, bare i portens egen fixture. Den rigtige sti kan ikke findes uden et rigtigt Hotjar-id, og 16 målte sites havde ingen Hotjar. Lad den ligge indtil den kan læses; den er **en fixture, ikke et krav kunden læser**, så den er ikke samme fare som de to andre.
 - `LUKKET` (målt 27/9, iteration 82): de to missionens `NÆSTE`-poster stod begge her i køen som åbne, men ingen af dem er åbne. **`deskuptime/`** er reduceret til **én fil**, `deskuptime/LEGACY.md`, som siger at kopien er slettet og peger på repoet `mahope/deskuptime` — det gjorde **opgave 40** (26/9). **`devnotify/src-tauri/src/lib.rs`** er målt og står i `tools/dead_provider_allowlist.json` med begrundelse, `owner: Mads` og et `remove_when`. Porten `check_dead_providers.py` (trin 13) læser begge hver kørsel. **De to linjer var desuden byte-identiske dubletter af hinanden** — samme fejltype som opgave 48/62/57, som iteration 79 lukkede, og som havde overlevet her fordi ingen måtte læse linje 259. Næste agent skal **ikke** starte dem igen.
 - `LUKKET` (målt 27/9, iteration 82): den afsluttende afsnitlinje i denne køsektion, der bad om at lukke "de 27 ubeviste alternativer" og opremsede dem — `cookie[_-]?notice`, `caldera[_-]?forms`, `fbq(`, `hj(`, `snaptr(`, `ttq.`, `_linkedin_partner_id`, `static.tiktok.com`, `ct.pinterest.com/v3/`, `multi[ _-]?az[ _-]?dns`, `security[ _-]?incident`, `bcp[ _-]?plan` — var **oprindelig tekst fra før opgave 72**. Den pegede på `HOEJST_UTILREGNET`, som den gang stod på 27; opgave 72 lukkede dem i syv dele, og **ratchetten står nu på 0 i alle fire tabeller** (`{ consent: 0, trackers: 0, forms: 0, dora: 0 }`). Hvert eneste alternativ på den liste er altså lukket, og en agent der læste den ville genbestille arbejde, der er gjort og udgivet i plugin 1.3.30–1.3.35.
 
 
 - `FÆRDIG`: **86 — 0 besøgende viste sig at være ærlige: taggen virker, og der kommer ingen** på `ceo/analytics-gate`, kodecommit `35badf7`, merge `375f106`. Ny port trin 27 `tools/check_analytics.py` + den adfærdsmålende `tools/analytics_probe.mjs` + optaget tracker i `tools/fixtures/`. Målt: tag på 225 af 225 sider, CSP tillader både `script-src` og `connect-src`, scriptet 200 (6204 B), og **ét pageview med `d: "eucomplypro.com"` i begge rækkefølger** i en stubbet DOM. `9 negative selftest-cases`, `GATE GRØN — alle 27 steps bestået`. To fejl i min egen kode (CSP læst fra kilden, baseline uden init-kald). **Ingen `site/**`-fil.** Se afsnittet øverst.
-- `NÆSTE` (opdateret 28/9, iteration 99): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en. **Bemærk:** denne post var tidligere skrevet som "den eneste køpost der ikke kræver Mads". Det er ikke længere sandt — den er **tredje** i rækken efter opgave 91 og denne. **Opgave 91 er nu lukket i kode og måling** (iteration 99, `ceo/chrome-store-klar`, extension 1.0.2): porten er grøn, `/extension/` har én købsvej, og det sidste led — selve uploaden — kræver Mads' udgiverkonto. **Denne Hotjar-post er derfor den næste opgave, og den kræver ingen beslutning.**
+- `LUKKET` (målt 2026-09-28, iteration 100): **`NÆSTE`-posten om Hotjars `<noscript>`-fixture var død, og den sagde det ikke.** Den bad om at mærke fixture'en som uverificeret — det er gjort i **iteration 94** (`04f4eee`, "Gør portens egne fixtures målbare: to fiktioner fundet og rettet"). `tools/check_signature_prose.mjs` har den i `UVERIFICEREDE` med fuld begrundelse, `HOEJST_UVERIFICEREDE` er **1**, og porten tæller den i sin overskrift ("…1 uverificeret"). Den hævdede i iteration 99 at være "den næste opgave, og den kræver ingen beslutning", fordi ingen havde læst `04f4eee` da den blev skrevet. **Næste agent skal ikke starte den igen.** Det er det **tredje** eksempel i rækken på en kø-post der beskriver arbejde der allerede er gjort og udgivet — sammen med opgave 48 (`I GANG (del 1 af 2)` hvis resten lå i opgave 49) og opgave 62/57 (`TODO` om `PRIVACY_LINK_SIGNATURE` og otte trackere, lukket af opgave 56 og 61-72). Mønstret: **en post i denne køsektion er aldrig alene**, og den skal efterprøves mod `git log` før den arbejdes.
+- `HISTORISK NÆSTE` (lukket i iteration 94, `04f4eee` — se forrige post): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en. **Bemærk:** denne post var tidligere skrevet som "den eneste køpost der ikke kræver Mads". Det er ikke længere sandt — den er **tredje** i rækken efter opgave 91 og denne. **Opgave 91 er nu lukket i kode og måling** (iteration 99, `ceo/chrome-store-klar`, extension 1.0.2): porten er grøn, `/extension/` har én købsvej, og det sidste led — selve uploaden — kræver Mads' udgiverkonto. **Denne Hotjar-post er derfor den næste opgave, og den kræver ingen beslutning.**
 - `LUKKET` (målt 01:24, samme iteration): **`site/pro/sample-report/index.html` så ud til at blive skrevet undervejs, mens `git status` var ren.** Jeg fik mistanke om en skjult mutation, fordi filens længde syntes at ændre sig (21622 → 21668). Forklaringen er triviel og må ikke koster den næste agent tid: **`wc -c` tæller bytes, `read_text()` tæller tegn**, og em-dashes og emoji gør de to tal forskellige (46 bytes) for præcis den fil. Der var ingen mutation. Mtime 01:23:42 er **min egen kvalitetsgate**, som regenererer prøverapporten; indholdet er byte-identisk med HEAD, derfor er `git status` ren. *Bemækningsvis* findes launchd-agenter (`com.mahope.ceo-check`, `com.mahope.hermes-ceo`, `com.mahope.oxloop-watchdog`) i `~/Library/LaunchAgents`, så et samtidigt loop kan røre arbejdstræet: tjek `git status` før du differ, og stol på **indhold** aldrig på mtime.
 - `LUKKET`: **`_expect_red`-familien.** `check_asset_delivery.py` (trin 25) havde "grøn selftest mens seks cases fejlede"; `check_analytics.py` er skrevet med `return`-sandhed og en kalder, der summerer selv, så samme fejlklasse kan ikke gentages der. Beviset er den negative case, der returnerer `False`.
 
