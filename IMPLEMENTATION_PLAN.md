@@ -61,7 +61,7 @@ Baseline for effekten: **0 reelle besøgende** (iteration 86). Kan ikke måles i
 trafik. Det den gør er at fjerne den ene linje i den betalte rapport, der ikke kan
 læses af den, rapporten er skrevet til.
 
-- 2026-09-28 (iteration 96) `INGEN DEPLOY NØDVENDIG: research-iteration —
+- 2026-09-28 (iteration 96) `INGEN DEPLOY NØDVENDIG: research-iteration — kodecommit `7c6efb7`, merge `40fca1e` 2026-09-28 05:2x UTC
   markup i rådgivning, pristabeller uden port, Chrome Web Store (opgave 89, 90,
   91)` — diffen rører **kun `IMPLEMENTATION_PLAN.md`**. Ingen `site/**`-fil,
   ingen `plugin/**`-fil, ingen `update.json`, ingen ny zip, ingen
