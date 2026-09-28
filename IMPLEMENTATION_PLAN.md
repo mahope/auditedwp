@@ -1,4 +1,80 @@
-Opdateret: 2026-09-28 (iteration 96) — **research-iteration**
+Opdateret: 2026-09-28 (iteration 97) — **opgave 89 lukket: rådet i rapporten
+er prosa, og en port måler det hver kørsel**
+
+Sidste iteration: **den eneste linje i hele den betalte rapport, der ikke kunne
+læses, er rettet og målt væk.** `forms`-tjekkets `fix` indeholdt en hel
+`<a href="/privacy/">Privacy Policy</a>` i data-strengen. Renderingen er
+korrekt — `plugin/eucomply.php:2034` gør `esc_html( $r['fix'] )` — og det er
+netop derfor eksemplet nåede kunden som **kildekode**: i den rapport et bureau
+sender videre under eget navn, og i mailen ved et check der skifter til
+`fail`. Målt i den **serverede** `site-dist/assets/eucomply-1.3.38.zip` før
+rettelsen, ikke i kilden.
+
+**Målt før → efter: 3 → 0** i de tre motorer (`shared/scan-engine.js`,
+`eucomply-scanner/engine/index.js`, `plugin/eucomply.php`), verificeret ved at
+køre den nye port mod `git show main:…` af alle tre — porten er **rød** på
+den gamle fil med præcis de tre fund, og grøn på den nye. Det er det
+acceptkriterium, der siger at porten ikke må være grøn uden at have set
+noget, og det er efterprøvet frem for antaget.
+
+**Porten læser hele sætningen, ikke det første literal.** Min egen målescript
+i iteration 96 læste **0** strenge i motorerne, fordi den søgte på den linje
+feltet blev tildelt, mens strengen stod på næste linje. Det er den fejlklasse
+planen har skrevet otte ganger ned, så den nye port går ikke — den balancerer
+klammer og strenge og dømmer hvert literal i udtrykket, også i den anden arm af
+en ternary og i en konkatenation. To negative cases dækker præcis de to huller
+(min egen gamle fejl og den konkrete konkatinationsfejl), og de fanges.
+**166 data-strenge læst** pr. kørsel (JS 58 + 58, PHP 38, datasæt 12), og
+tallet skrives ud hver gang, fordi "0 fund" der betyder "0 kontrolleret" er den
+vished porten skal fjerne — en kilde hvor 0 strenge læses er **rød**.
+
+**Escapingkoden er urørt, og det er hele pointen.** `esc_html( $r['fix'] )`
+står uændret, og `check_dom_xss.py` (trin 6) forbliver grøn. Det var *data*
+der var forkert, ikke koden der renderer den — samme princip som opgave 52/49:
+en etiket må ikke beskrive en mangel, en rettelse må ikke være markup.
+
+**Fire fejl undervejs, alle fire i min egen kode.** (1) Første regex læste kun
+bogstav-literalet lige efter `fix:`/`detail:`, så en ternarys anden arm og enhver
+konkatenation var usynlig — hovedparten af det, porten skulle dække. (2) Den
+første selftest-fixture brugte PHP-array-syntaks (`'fix' => …`), som
+feltmønstret ikke matcher, så "rent datasæt" var rød med 0 strenge — porten
+var grøn af en grund den ikke måtte være grøn af. (3) Undtagelsen for
+renderingskode søgte i hele sætningen, så et råd der siger *"strip tags from
+user input"* ville være **sprunget over** som om det var kode. (4) Den
+første port kørte kun det første quote-par på en linje. Alle fire er rettet og
+dækket af en case hver.
+
+**Release-kæden er lukket i samme diff:** plugin **1.3.39** i begge PHP-kopier
+(byte-identiske, `cmp`), `readme.txt` begge steder, begge `update.json`, 42
+redirects retargetet + den nye 1.3.38-regel, `/plugin/`-knappen, og den nye
+`site/assets/eucomply-1.3.39.zip` (1.3.38 fjernet af build-scriptet).
+Efterprøvet i den byggede zip: `Version: 1.3.39`, `Stable tag: 1.3.39`,
+`a href="/privacy/"` → **0**, og `eucomply.php` **byte-identisk** med
+`plugin/eucomply.php`.
+
+**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`), herunder
+`check_advice_strings.py` + `SELFTEST GRØN — alle 9 negative cases fanges`.
+Rørt: `tools/check_advice_strings.py` (ny), `tools/quality_gate.sh`, de tre
+motorer, plugin-kæden. **Ingen scanner-side-HTML, ingen salgscopy, ingen
+worker.**
+
+**Bemærk om rækkefølgen:** de to JS-motorer deployes **ikke** af CI — kun
+`plugin/**`, `site/**` og `update.json` går ud. Rettelsen i `shared/` og
+`eucomply-scanner/` når derfor ingen besøgende, før `worker-scan` er deployet
+(spørgsmål 9). Det er grunden til at plugin-delen blev taget først: den er den
+eneste af de tre, der kan udgives her.
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at fjerne den eneste linje i den betalte rapport, der
+ikke kan bruges af den den er skrevet til.
+
+❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede. **Men
+spørgsmål 9 er nu syv runder gammel**, og den blokerer nu ikke bare de to
+JS-motorer (fra fund 1 i iteration 96) men enhver rettelse i dem. Næste
+iteration bør derfor tage **opgave 90** (pris-tabeller mod kontrakten), som er
+helt i det publicerede træ og derfor kan leveres uden deploy.
+
+- 2026-09-28 (iteration 97, opgave 89) `VERIFICER DEPLOY: rådet i rapporten er prosa — 3 → 0 i tre motorer, plugin 1.3.39` kodecommit `53f17f9`, merge `866643f` 2026-09-28 ca. 07:5x UTC — rører `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (42 linjer retargetet + den nye 1.3.38-linje), `site/plugin/index.html`, `site/assets/eucomply-1.3.39.zip` (1.3.38 fjernet af build-scriptet), `tools/check_pro_claims.py` (`PLUGIN_VERSION`), den nye `tools/check_advice_strings.py`, `tools/quality_gate.sh` og denne plan. **Ingen `site/**`-side-HTML uden plugin-kæden, ingen salgscopy, ingen `update.json`-felt uden changelog, ingen worker.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.39.zip` svarer **200 `application/zip`**, unzippet: `Version: 1.3.39` i `eucomply.php`, `Stable tag: 1.3.39` i `readme.txt`, og **0** forekomster af `a href="/privacy/"`; (2) `/update.json` svarer 200 med `"version": "1.3.39"` og changelog der **starter** `= 1.3.39 (2026-09-28) =`; (3) `/assets/eucomply-1.3.38.zip` følger **301** → 1.3.39, og de øvrige 41 gør også; (4) `/plugin/` viser `↓ Download v1.3.39 (free)`; (5) CI-loggen viser `GATE GRØN — alle 29 steps bestået` og `SELFTEST GRØN — alle 9 negative cases fanges`. **Bemæk:** ingen JS-motor røres i publiceringen — `shared/scan-engine.js` og `eucomply-scanner/engine/index.js` deployes ikke af CI, så deres del af rettelsen er kilde-richtig men endnu ikke live (spørgsmål 9).
 
 Sidste iteration: **køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så
 denne iteration gennemgik trappen som en fremmed: hvad en besøgende skriver, hvad
@@ -1316,7 +1392,7 @@ Opgave 60 (uændret) — **GA4 var usynlig for alle tre produkter**, på `ceo/ga
 
 
 - `FÆRDIG`: **86 — 0 besøgende viste sig at være ærlige: taggen virker, og der kommer ingen** på `ceo/analytics-gate`, kodecommit `35badf7`, merge `375f106`. Ny port trin 27 `tools/check_analytics.py` + den adfærdsmålende `tools/analytics_probe.mjs` + optaget tracker i `tools/fixtures/`. Målt: tag på 225 af 225 sider, CSP tillader både `script-src` og `connect-src`, scriptet 200 (6204 B), og **ét pageview med `d: "eucomplypro.com"` i begge rækkefølger** i en stubbet DOM. `9 negative selftest-cases`, `GATE GRØN — alle 27 steps bestået`. To fejl i min egen kode (CSP læst fra kilden, baseline uden init-kald). **Ingen `site/**`-fil.** Se afsnittet øverst.
-- `NÆSTE` (ny, og den eneste køpost der ikke kræver Mads): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en.
+- `NÆSTE` (opdateret 28/9, iteration 97): **Hotjars `<noscript>`-fixture i porten peger på en adresse der ikke findes** — se `NÆSTE`-posten ovenfor, uændret siden 27/9. Den kan lukkes ved at porten **mærker** fixture'en som uverificeret i stedet for at behandle den som bevis, fordi den rigtige sti kræver et rigtigt Hotjar-id, og ingen af de 16 målte sider havde Hotjar. Det er en ærlighedsrettelse, ikke en funktion — den skal gøre det umuligt at læse porten som om Hotjar-installationen var verificeret. Alternativt: find en rigtig Hotjar-side og læs markup'en. **Bemærk:** denne post var tidligere skrevet som "den eneste køpost der ikke kræver Mads". Det er ikke længere sandt — den er **fjerde** i rækken efter opgave 90, 91 og denne.
 - `LUKKET` (målt 01:24, samme iteration): **`site/pro/sample-report/index.html` så ud til at blive skrevet undervejs, mens `git status` var ren.** Jeg fik mistanke om en skjult mutation, fordi filens længde syntes at ændre sig (21622 → 21668). Forklaringen er triviel og må ikke koster den næste agent tid: **`wc -c` tæller bytes, `read_text()` tæller tegn**, og em-dashes og emoji gør de to tal forskellige (46 bytes) for præcis den fil. Der var ingen mutation. Mtime 01:23:42 er **min egen kvalitetsgate**, som regenererer prøverapporten; indholdet er byte-identisk med HEAD, derfor er `git status` ren. *Bemækningsvis* findes launchd-agenter (`com.mahope.ceo-check`, `com.mahope.hermes-ceo`, `com.mahope.oxloop-watchdog`) i `~/Library/LaunchAgents`, så et samtidigt loop kan røre arbejdstræet: tjek `git status` før du differ, og stol på **indhold** aldrig på mtime.
 - `LUKKET`: **`_expect_red`-familien.** `check_asset_delivery.py` (trin 25) havde "grøn selftest mens seks cases fejlede"; `check_analytics.py` er skrevet med `return`-sandhed og en kalder, der summerer selv, så samme fejlklasse kan ikke gentages der. Beviset er den negative case, der returnerer `False`.
 
@@ -3602,10 +3678,13 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 ### 89. Rådgivningen i rapporten må ikke være markup — den flyder til kunden som kode
 
-- Status: `TODO` — målt 28/9 i den **serverede** `eucomply-1.3.38.zip`
-  (`eucomply/eucomply.php`, 1 forekomst) og i begge JS-motorer. Rettelsen kræver
-  en plugin-udgivelse, så den tages som én samlet release-kæde, ikke som en
-  los linje.
+- Status: `FÆRDIG` (lukket 28/9, iteration 97) på `ceo/raad-ikke-markup`,
+  plugin **1.3.39**, kodecommit `53f17f9`, merge `866643f`. Målt **3 → 0** i
+  de tre motorer, efterprøvet ved at køre porten mod `git show main:…` (den er
+  **rød** på den gamle fil). Ny port `tools/check_advice_strings.py` + trin i
+  gaten, `9 negative selftest-cases`, `GATE GRØN — alle 29 steps bestået`.
+  Se afsnittet øverst. **Del 1 (pluginen) er live-verificérbar; de to
+  JS-motorer er rettet i kilden men deployes ikke af CI** (spørgsmål 9).
 - Fejl: 1 streng i hver af tre motorer. Ikke en klasse — målt over alle
   `fix`/`detail`/`label`-strenge i `shared/scan-engine.js`,
   `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` og
@@ -3652,15 +3731,22 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   `tools/quality_gate.sh`; `tools/build_plugin_zip.py --sync-changelog`.
   Ingen scanner-side-HTML, ingen salgscopy, ingen worker.
 - Accept:
-  - ~~Ingen brugerrettet streng må indeholde markup.~~ Målt **1 → 0** i hver af de
-    tre motorer, og porten er grøn mod repoets egne filer.
-  - ~~Porten må ikke springe sin egen kontrol over.~~ Bevis med `git show
-    main:…` før rettelsen: porten skal være **rød** på den gamle fil.
-  - ~~Escapingkoden skal ikke røres.~~ `esc_html( $r['fix'] )` står uændret i
-    `plugin/eucomply.php`, og `check_dom_xss.py` (trin 6) forbliver grøn.
-  - ~~Ingen ny zip uden ny version og redirect.~~ `check_asset_delivery.py` kræver
-    præcis én zip i træet, at den er den aktuelle, og at 1.3.38 har en `301`.
-  - ~~Ingen JS-motor må glide fra hinanden.~~ `test_engine_parity.mjs` grøn.
+  - ~~Ingen brugerrettet streng må indeholde markup.~~ **Dækket.** Målt **1 → 0**
+    i hver af de tre motorer (**3 → 0** i alt), og porten er grøn mod repoets
+    egne filer.
+  - ~~Porten må ikke springe sin egen kontrol over.~~ **Dækket.** Efterprøvet:
+    porten kørt mod `git show main:…` af alle tre filer giver **3 fund** på den
+    gamle fil og **0** på den nye. Den læser desuden **hele sætningen**, så
+    markup i anden arm af en ternary eller i en konkatenation ikke kan gemme
+    sig — to negative cases dækker præcis de to huller.
+  - ~~Escapingkoden skal ikke røres.~~ **Dækket.** `esc_html( $r['fix'] )` står
+    uændret i `plugin/eucomply.php`, og `check_dom_xss.py` (trin 6) er grøn.
+  - ~~Ingen ny zip uden ny version og redirect.~~ **Dækket.**
+    `check_asset_delivery.py` kræver præcis én zip i træet, at den er den
+    aktuelle, og at 1.3.38 har en `301` — 42 redirects peger nu på 1.3.39.
+  - ~~Ingen JS-motor må glide fra hinanden.~~ **Dækket.**
+    `test_engine_parity.mjs` grøn, og porten kræver selv at de to motorers
+    `forms.fix` er ens (egen negativ case).
   - Efter merge verificeres på indhold: `/assets/eucomply-1.3.39.zip` svarer
     **200 `application/zip`** med `Version: 1.3.39` og **0** forekomster af
     `a href="/privacy/"` i den unzippede `eucomply.php`; `/update.json` svarer 200
