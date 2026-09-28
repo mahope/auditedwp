@@ -34,6 +34,45 @@ ASSETS = ROOT / "site" / "assets"
 # fixture or an internal note, and a WordPress install has no use for it.
 MEMBERS = ("eucomply.php", "readme.txt", "uninstall.php")
 
+CHANGELOG_HEAD_RE = re.compile(r"^=\s*\d+\.\d+\.\d+\s*\([^)]*\)\s*=\s*$", re.M)
+CHANGELOG_SPLIT_RE = re.compile(r"^=\s*(\d+\.\d+\.\d+)\s*\([^)]*\)\s*=\s*$", re.M)
+
+
+def readme_changelog():
+    """readme.txt's `== Changelog ==`-sektion, ordret.
+
+    Den er kilden. `update.json` rummer to changelog-felter — `changelog` til
+    gamle WordPress og `sections.changelog` til nye — og de har i 39 udgaver
+    fortalt hver sin historie, fordi de var håndskrevet hver for sig. Målt før
+    denne synkronisering: 33 mod 15 versioner, og den aktuelle version lå i
+    den ene og ikke i den anden.
+    """
+    text = (PLUGIN / "readme.txt").read_text(encoding="utf-8")
+    marker = text.find("== Changelog ==")
+    if marker < 0:
+        sys.exit("FEJL: plugin/readme.txt har ingen `== Changelog ==`")
+    body = text[marker:].lstrip("=\n ")
+    nxt = re.search(r"^== (?!Changelog)", body, re.M)
+    if nxt:
+        body = body[:nxt.start()]
+    if not CHANGELOG_HEAD_RE.search(body):
+        sys.exit("FEJL: plugin/readme.txt har en Changelog-sektion uden poster")
+    return body.rstrip() + "\n"
+
+
+def sync_changelog():
+    """Skriv readme.txt's changelog ind i begge felter i begge manifester."""
+    body = readme_changelog()
+    for rel in ("update.json", "site/update.json"):
+        path = ROOT / rel
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data.setdefault("sections", {})["changelog"] = body
+        data["changelog"] = body
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+                        encoding="utf-8")
+    print(f"OK: changelog'en i begge felter er nu {len(CHANGELOG_SPLIT_RE.findall(body))} "
+          "poster fra plugin/readme.txt")
+
 
 def plugin_version() -> str:
     text = (PLUGIN / "eucomply.php").read_text(encoding="utf-8")
@@ -54,7 +93,12 @@ def gate_version() -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", default="", help="fail unless this is the version in the plugin")
+    parser.add_argument("--sync-changelog", action="store_true",
+                        help="skriv plugin/readme.txt's changelog ind i begge update.json")
     args = parser.parse_args()
+
+    if args.sync_changelog:
+        sync_changelog()
 
     version = plugin_version()
     if args.version and args.version != version:

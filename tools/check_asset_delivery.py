@@ -61,7 +61,39 @@ PLUGIN_PAGE = os.path.join("site", "plugin", "index.html")
 
 VERSION_RE = re.compile(r"\d+\.\d+\.\d+")
 CHANGELOG_RE = re.compile(r"=\s*(\d+\.\d+\.\d+)\s*\(")
+CHANGELOG_SPLIT_RE = re.compile(r"^=\s*(\d+\.\d+\.\d+)\s*\([^)]*\)\s*=\s*$", re.M)
 ZIP_RE = re.compile(r"^(/assets/eucomply-[\d.]+\.zip)\s+(\S+)(?:\s+(\d+))?\s*$")
+
+PLUGIN_README = os.path.join("plugin", "readme.txt")
+
+
+def changelog_entries(text):
+    """{version: body} for en changelog. Kun kroppen, aldrig datoen.
+
+    Datoen er den eneste del de to filer med rimelighed kan have forskellig:
+    manifestet skrives samme dag som udgivelsen, og readme.txt kan have været
+    skrevet dagen før. Alt andet skal være ens, og det er kroppen kunden læser.
+    """
+    out = {}
+    parts = CHANGELOG_SPLIT_RE.split(text)
+    for i in range(1, len(parts), 2):
+        out.setdefault(parts[i], parts[i + 1].strip())
+    return out
+
+
+def readme_changelog(root=ROOT):
+    path = os.path.join(root, PLUGIN_README)
+    if not os.path.isfile(path):
+        return None
+    text = read(path)
+    marker = text.find("== Changelog ==")
+    if marker < 0:
+        return None
+    body = text[marker:].lstrip("=\n ")
+    nxt = re.search(r"^== (?!Changelog)", body, re.M)
+    if nxt:
+        body = body[:nxt.start()]
+    return changelog_entries(body)
 
 
 def read(path):
@@ -263,6 +295,61 @@ def collect(root=ROOT):
     else:
         findings.append("%s findes ikke" % PLUGIN_PAGE)
 
+    # ---- 7: changelog'en skal have én kilde ----------------------------
+    #
+    # `readme.txt` er den changelog WordPress viser i pluginlisten,
+    # `update.json` den der vises i opdateringsvinduet. De er begge håndskrevet,
+    # og de har i 39 udgaver fortalt to forskellige historier. Målt: ni
+    # versioner manglede helt i manifestet (1.3.21, 1.3.25–1.3.28, 1.3.30–1.3.32
+    # og den aktuelle), og 1.3.22 holdt 1.3.21's rettelse i stedet for sin egen.
+    # En kunde der læser manifestet tror da, at en rettelse kom i en udgave den
+    # ikke kom i, og den udgave den faktisk kom i, står slet ikke.
+    entries = {}
+    for section in (update.get("sections") or {}).values():
+        if isinstance(section, str):
+            entries.update(changelog_entries(section))
+    top = changelog_entries(update["changelog"]) if isinstance(update.get("changelog"), str) else {}
+    if not entries:
+        findings.append(
+            "%s: ingen changelog at læse. Uden den får en kunde ingen "
+            "beskrivelse af, hvad der ændrede sig." % UPDATE_JSON[0])
+    else:
+        facts["changelog_entries"] = len(entries)
+        if current not in entries:
+            findings.append(
+                "%s: den aktuelle version %s står ikke i changelog'en. En kunde "
+                "læser den tekst, der forteller hvad den udgave rettede, og den "
+                "findes ikke." % (UPDATE_JSON[0], current))
+        readme = readme_changelog(root)
+        if readme is None:
+            findings.append(
+                "%s findes ikke eller har ingen `== Changelog ==`. Den er den "
+                "anden halvdel af den samme besked, og uden den kan de to ikke "
+                "måles mod hinanden." % PLUGIN_README)
+        else:
+            facts["readme_entries"] = len(readme)
+            for version in sorted(readme, key=version_key):
+                if version not in entries:
+                    findings.append(
+                        "%s: version %s står i %s, men ikke i changelog'en. "
+                        "WordPress læser manifestet i opdateringsvinduet."
+                        % (UPDATE_JSON[0], version, PLUGIN_README))
+                elif entries[version] != readme[version]:
+                    findings.append(
+                        "%s: version %s har anden tekst i changelog'en end i %s. "
+                        "De to fortæller kunden to forskellige ting om samme "
+                        "udgave." % (UPDATE_JSON[0], version, PLUGIN_README))
+            if top and top != entries:
+                only_top = sorted(set(top) - set(entries), key=version_key)
+                findings.append(
+                    "%s: `changelog` og `sections.changelog` beskriver %d og %d "
+                    "versioner, og de er ikke ens%s. WordPress læser den ene på gamle "
+                    "installationer og den anden på nye, så samme opdatering får "
+                    "to forskellige historier."
+                    % (UPDATE_JSON[0], len(top), len(entries),
+                       (": %s findes kun i `changelog`" % ", ".join(only_top[:4]))
+                       if only_top else ""))
+
     return findings, facts
 
 
@@ -287,20 +374,34 @@ MINIMAL_REDIRECTS = """\
 /assets/eucomply-1.3.0.zip /assets/eucomply-1.3.1.zip 301
 """
 
+MINIMAL_README = """\
+=== EUComply ===
+Requires at least: 5.0
+Tested up to: 6.7
+Stable tag: 1.3.1
+
+== Changelog ==
+
+%s"""
+
 
 def make_tree(tmp, version="1.3.1", changelog=("1.3.1", "1.3.0")):
     """Byg et minimalt træ, der er grønt, så hver mutation kan prøves."""
     os.makedirs(os.path.join(tmp, "site", "assets"))
     os.makedirs(os.path.join(tmp, "site", "plugin"))
+    os.makedirs(os.path.join(tmp, "plugin"))
     write = lambda p, t: open(os.path.join(tmp, p), "w", encoding="utf-8").write(t)
     write(HEADERS, MINIMAL_HEADERS)
     write(REDIRECTS, MINIMAL_REDIRECTS)
     write("%s/eucomply-%s.zip" % (ASSETS, version), "zip")
     write(PLUGIN_PAGE, '<a href="/assets/eucomply-%s.zip">Download</a>' % version)
+    body = "".join("= %s (2026-09-27) =\n* x\n\n" % v for v in changelog)
+    write(PLUGIN_README, MINIMAL_README % body)
     data = {
         "version": version,
         "download_url": "https://example.test/assets/eucomply-%s.zip" % version,
-        "changelog": "".join("= %s (2026-09-27) =\n* x\n\n" % v for v in changelog),
+        "changelog": body,
+        "sections": {"changelog": body},
     }
     text = json.dumps(data, indent=2)
     write(UPDATE_JSON[0], text)
@@ -400,6 +501,23 @@ def _selftest():
         ("version der ikke er en x.y.z",
          lambda t: _patch_update(t, {"version": "seneste"}),
          "ikke en x.y.z"),
+        ("den aktuelle version står ikke i changelog'en",
+         lambda t: _set_changelog(t, "= 1.3.0 (2026-09-27) =\n* x\n\n"),
+         "står ikke i changelog'en"),
+        ("en version fra readme.txt mangler i changelog'en",
+         lambda t: _set_changelog(t, "= 1.3.1 (2026-09-27) =\n* x\n\n"),
+         "men ikke i changelog'en"),
+        ("samme version med to forskellige tekster",
+         lambda t: _set_changelog(t, "= 1.3.1 (2026-09-27) =\n* x\n\n"
+                                     "= 1.3.0 (2026-09-27) =\n* en anden tekst\n\n"),
+         "anden tekst i changelog'en"),
+        ("`changelog` og `sections.changelog` er ikke ens",
+         lambda t: _set_changelog(t, None, top="= 1.3.0 (2026-09-27) =\n* kun i top\n\n"),
+         "to forskellige historier"),
+        ("readme.txt mangler changelog-sektionen",
+         lambda t: open(os.path.join(t, PLUGIN_README), "w").write(
+             "=== EUComply ===\nStable tag: 1.3.1\n"),
+         "har ingen `== Changelog ==`"),
     ]
     for name, mutate, mention in cases:
         if not _expect_red(name, mutate, mention, extra):
@@ -410,6 +528,20 @@ def _selftest():
     else:
         print("SELFTEST RØD — se ovenfor")
     return ok
+
+
+def _set_changelog(tmp, sections, top=None):
+    """Skriv changelog'en i begge felter, medmindre casen vil se dem uoverens."""
+    for rel in UPDATE_JSON:
+        path = os.path.join(tmp, rel)
+        data = json.loads(read(path))
+        if top is not None:
+            data["changelog"] = top
+        if sections is not None:
+            data["sections"]["changelog"] = sections
+            if top is None:
+                data["changelog"] = sections
+        open(path, "w", encoding="utf-8").write(json.dumps(data, indent=2))
 
 
 def _patch_update(tmp, patch, only_second=False):
