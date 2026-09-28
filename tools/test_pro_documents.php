@@ -164,6 +164,38 @@ ok( '(e) the statement names the enforcement body contact', false !== strpos( $e
 ok( '(e) the statement points at the member state of the site', 1 === preg_match( '/member state/i', $eaa ) );
 ok( 'the statement keeps a review date', false !== strpos( $eaa, 'Last reviewed: September 2026' ) );
 
+// ── 3b. The statement must not assert an obligation that may not exist ─────────
+// Art. 4(5) of Directive (EU) 2019/882 exempts microenterprises *providing
+// services* from the service accessibility requirements, and Art. 2(23)
+// defines that as under 10 persons and turnover/balance sheet ≤ EUR 2 million.
+// The free EAA checklist on our own site states this. The paid statement did
+// not: it opened with "Accessibility is a legal obligation" and named an
+// enforcement body unconditionally, so an exempt microenterprise that pasted
+// it published a legal conclusion about itself that is simply wrong — and a
+// wrong legal document is the one thing a compliance product must never ship.
+//
+// This is also the cross-repo inconsistency the contract calls out: the free
+// page and the paid document gave opposite advice on the same question.
+ok( 'the statement does not assert an unconditional legal obligation', false === strpos( $eaa, 'Accessibility is a legal obligation' ) );
+ok( 'the statement names the microenterprise exemption', false !== strpos( $eaa, 'Article 4(5)' ) );
+ok( 'the statement gives the exemption threshold', false !== strpos( $eaa, 'fewer than 10 persons' ) && false !== strpos( $eaa, 'EUR 2 million' ) );
+ok( 'the statement asks whether the exemption applies', false !== strpos( $eaa, '[microenterprise exemption]' ) );
+ok( 'the statement says the directive is not universal', false !== strpos( $eaa, 'does not apply to every website' ) );
+ok( 'the statement gives every new placeholder a name under 60 chars', 0 === preg_match( '/\[[^\[\]\n]{61,}\]/', $eaa ) );
+ok( 'the statement names what it covers', false !== strpos( $eaa, '[pages and functions covered]' ) );
+// The scope section is only honest if it names the covered service, otherwise
+// "this statement covers ..." is a claim about the whole site.
+ok( 'the scope names the covered service', false !== strpos( $eaa, '[covered service]' ) );
+// The enforcement section must be conditional too: an exempt party has no
+// enforcement body to complain to.
+ok( 'the enforcement section is conditional on the exemption', 1 === preg_match( '/Where the requirements apply/', $eaa ) );
+ok( 'the enforcement section survives the exemption being removed', 1 === preg_match( '/exemption in Article 4\(5\) applies, this section does not apply/', $eaa ) );
+// Both new placeholders must be listed by the completion note, or the operator
+// never sees them and ships a half-filled legal document.
+$eaa_fields = completion_note( 'eaa', $eaa );
+ok( 'the completion note lists the covered-service field', false !== strpos( $eaa_fields, '[covered service]' ) );
+ok( 'the completion note lists the exemption field', false !== strpos( $eaa_fields, '[microenterprise exemption]' ) );
+
 // The other two documents must not lose their substance.
 ok( 'the DPA still cites Article 28', false !== strpos( doc( 'dpa' ), 'Article 28' ) );
 ok( 'the DPA still names the SCCs', false !== strpos( doc( 'dpa' ), '2021/914' ) );
@@ -371,6 +403,26 @@ if ( in_array( '--selftest', $argv, true ) ) {
     $cases['the scheduling block never calls the license server'] = ( '' !== $scheduling_block ) && ( 0 === preg_match( '/\$this->is_pro\s*\(/', $scheduling_block ) ) && ( false === strpos( $scheduling_block, 'wp_remote_' ) );
 
     $cases['a stale event name is flagged'] = ( 'eucomply_weekly_scan' !== 'eucomply_daily_scan' ) && ( 'eucomply_weekly_scan' === EUCOMPLY_SCAN_EVENT );
+
+    // (l) The EAA scope. The wrong behaviour is the shipped 1.3.36 text, quoted
+    // verbatim, because a property that cannot tell the real defect from a
+    // plausible correct document is not testing anything. It asserted a legal
+    // obligation on a document whose own site is exempt under Art. 4(5).
+    $old_eaa = '<h2>Enforcement</h2><p>Accessibility is a legal obligation, and the enforcement body is the one in the member state where Agency Client ApS is established.</p>';
+    $cases['the 1.3.36 unconditional obligation is flagged'] = ( false !== strpos( $old_eaa, 'Accessibility is a legal obligation' ) ) && ( false === stripos( doc( 'eaa' ), 'Accessibility is a legal obligation' ) );
+    $cases['a conditional enforcement section is not flagged'] = ( false !== strpos( doc( 'eaa' ), 'Where the requirements apply' ) );
+    // The exemption must be named with the threshold, not just alluded to: a
+    // reader who cannot tell whether they are exempt cannot act on it.
+    $vague_exemption = '<p>Article 4(5) exempts microenterprises providing services.</p>';
+    $cases['the exemption without a threshold is flagged'] = ( false !== strpos( $vague_exemption, 'Article 4(5)' ) )
+        && ( false === strpos( $vague_exemption, 'fewer than 10 persons' ) )
+        && ( false !== strpos( doc( 'eaa' ), 'fewer than 10 persons' ) )
+        && ( false !== strpos( doc( 'eaa' ), 'EUR 2 million' ) );
+    // A placeholder the completion note cannot list is worse than none: the
+    // operator believes the box is complete. This is the 60-char cap in
+    // completion_note() being reached by a real placeholder, not a synthetic one.
+    $long_placeholder = '<p>[state whether the microenterprise exemption applies, or that the organisation is above the threshold]</p>';
+    $cases['a placeholder too long for the field list is flagged'] = ( false === strpos( completion_note( 'eaa', $long_placeholder ), 'microenterprise exemption' ) ) && ( false !== strpos( completion_note( 'eaa', doc( 'eaa' ) ), '[microenterprise exemption]' ) );
 
     $bad = 0;
     foreach ( $cases as $label => $fired ) {

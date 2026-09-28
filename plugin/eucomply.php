@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.36
+ * Version:           1.3.37
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.36' );
+define( 'EUCOMPLY_VERSION', '1.3.37' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -2269,6 +2269,13 @@ class EUComply {
         <p><strong><?php echo esc_html( $site ); ?></strong> is committed to ensuring digital accessibility for people with disabilities. This statement describes the accessibility of this website, in line with Article 13 of Directive (EU) 2019/882 (the European Accessibility Act).</p>
         <h2>Conformance status</h2>
         <p>This website aims to conform with EN 301 549, referencing WCAG 2.1 Level AA. The assessment method is self-evaluation: automated checks plus manual review of the site's own most-used pages.</p>
+        <h2>Scope of this statement</h2>
+        <p>Directive (EU) 2019/882 applies to a defined set of products and services sold to consumers, including e-commerce, consumer banking, e-books, passenger-transport information and self-service terminals. It does not apply to every website. This statement covers
+        <strong>[pages and functions covered]</strong>
+        and is prepared on the basis that <strong>[covered service]</strong> falls within that scope.</p>
+        <p>Article 4(5) exempts microenterprises providing services — an enterprise employing fewer than 10 persons with an annual turnover or balance sheet total not exceeding EUR 2 million (Article 2(23)) — from the service accessibility requirements. If that exemption applies here, say so rather than leaving it out:
+        <strong>[microenterprise exemption]</strong>.
+        A statement that does not answer this is not wrong, but it leaves a reader with a legal conclusion the organisation has not actually established.</p>
         <h2>Measures</h2>
         <ul>
             <li>Accessibility is part of our design and review process.</li>
@@ -2288,8 +2295,11 @@ class EUComply {
             ships with a working address instead of a placeholder.</em></p>
         <?php endif; ?>
         <h2>Enforcement</h2>
-        <p>Accessibility is a legal obligation, and the enforcement body is the one in the member state where
-        <?php echo esc_html( $site ); ?> is established. If you are not satisfied with our response, you may complain to
+        <p>Where the requirements apply, enforcement is a matter for the member state in which
+        <?php echo esc_html( $site ); ?> is established, and in the member state of the consumer. If the
+        microenterprise exemption in Article 4(5) applies, this section does not apply either — remove it
+        in that case rather than naming an enforcement body that has no jurisdiction over you. Otherwise,
+        name it:
         <strong>[enforcement body and contact details for your member state]</strong>.</p>
         <p><em>Last reviewed: <?php echo esc_html( current_time( 'F Y' ) ); ?>.</em></p>
         <?php

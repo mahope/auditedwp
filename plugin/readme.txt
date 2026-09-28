@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.36
+Stable tag: 1.3.37
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -122,6 +122,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 * The LinkedIn Insight Tag row now also has a test for the line the shop itself writes. snap.licdn.com/li.lms-analytics/insight.min.js is the loader; the installation is the inline var _linkedin_partner_id = "..." line, which was in the pattern but in no test string, so a site carrying only the inline line had nothing to trace it to. The TikTok row got the same treatment for its inline loader.
 * The TikTok test data named analytics.tiktok.com/i18n/pixel/<id>.js, which answers 404 on a made-up id - its own evidence said so. The path a real site actually uses is analytics.tiktok.com/i18n/pixel/events.js.
 * If you scanned your site between 1.3.34 and now, run a new scan. No tracker lost its finding: three new tests cover the inline LinkedIn and TikTok lines and the Hotjar host, so the removals are provably not narrowing. One row can now report fewer findings: a page that mentioned Hotjar's hj( call in a code sample, without having Hotjar installed, was previously counted as a Hotjar site.
+
+= 1.3.37 (2026-09-28) =
+* Fix: the Pro accessibility statement told every site that accessibility is a legal obligation and named an enforcement body to complain to. Article 4(5) of Directive (EU) 2019/882 exempts microenterprises providing services from the service accessibility requirements, and Article 2(23) defines that as an enterprise employing fewer than 10 persons with an annual turnover or balance sheet total not exceeding EUR 2 million. A four-person agency that published the statement was asserting an obligation the directive does not place on it, and pointing at an authority that has no jurisdiction over it.
+* This was the repo contradicting itself. The free EAA checklist on eucomplypro.com has documented the exemption since it was written; only the paid document asserted the opposite.
+* The statement now has a "Scope of this statement" section naming the pages and functions it covers and the covered service, states that the directive does not apply to every website, and asks the operator to say whether the exemption applies. The enforcement section is now conditional on that answer instead of naming a body unconditionally. All three new fields appear in the automatic "complete before you send this document" list.
+* No check was removed. The statement still carries every element Article 13(2) asks for, and the 12 new regression checks are proven against the previous version, which failed 11 of them.
 
 = 1.3.36 (2026-09-27) =
 * Fix: the report named four consent platforms when the site runs one. The row was called 'Cookiebot / OneTrust / Usercentrics / ConsentManager' and a second one 'TarteAuCitron / Klaro / Osano / CookieConsent', and the row's name is printed in the report - the heading reads 'Consent platform: <name>' and the detail reads 'Detected: <names>'. A site running OneTrust was therefore told it ran Cookiebot, Usercentrics and ConsentManager as well.
