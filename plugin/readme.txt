@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.37
+Stable tag: 1.3.38
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.38 (2026-09-28) =
+* Fix: the report counted four checks that can only fail under a condition it did not state. A site with no advertising has no IAB TCF banner to install and no Google Consent Mode to set, and a public page scan cannot say whether the operator is a financial entity at all. Such a site was handed a report reading "9 of 11 checks passed, 2 failed", where the two failures were DORA and a cookie banner nobody needed. The report an agency forwards to its client under its own name repeated the free scanner's own mistake.
+* The report now shows two numbers, because they may not be read as one: the same headline count as before, and, beside it, how many of the checks that apply to this site passed, followed by which checks were not counted and why. Each check that does not apply carries the reason under its own row, so a check that is not applicable cannot be read as a failure the site can fix.
+* The condition list is the free scanner's own, not a second one. This plugin and the universal engine are held to the same four keys and the same four sentences by the build, so a client cannot read one statement about a check here and another there.
+* No check was removed and none was added. Every check still runs and still reports, and the headline count is unchanged - only what it counts has been stated. If your last report showed 9 of 11, it did not mean you had two faults to fix.
 = 1.3.35 (2026-09-27) =
 * Fix: three tracker markers in the test suite could not be traced to anything the report names, and two of them pointed at hosts that no longer exist. They are gone in this plugin, in the free scanner and in the published CLI engine.
 * Hotjar's hj( call is no longer part of the pattern. It is Hotjar's own global function, and it is defined in the file its script URL points at - the scanner reads a page's markup and never opens a loaded script, so that call cannot be found on a site that actually has Hotjar. The test data for the row was also written from memory: static.hotjar.com/c/hotjar-<id>.js answers 200 with an empty body for any id, so 'the host answered 200' proved nothing. The row keeps static.hotjar.com, Hotjar's own host, which answers 200 with a real file. Measured before the fix on 2026-09-27.
