@@ -23,7 +23,7 @@ const jsonOutput = args.includes('--json');
 
 if (!url || args.includes('--help') || args.includes('-h')) {
   console.log(`
-EUComply Scanner v1.0.0 — Universal website compliance checker
+EUComply Scanner v1.1.0 — Universal website compliance checker
 
 USAGE:
   eucomply-scanner [options] <url>

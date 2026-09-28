@@ -43,12 +43,16 @@ eucomply-scanner` fails with a 404 — use the scoped name above.
 ### As a library
 
 ```js
-import { runScan } from '@mahope/eucomply-scanner';
+import { runScan, renderReport } from '@mahope/eucomply-scanner';
 
 const report = await runScan('https://example.com');
-console.log(`Score: ${report.score.pct}%`);
-console.log(`Platform: ${report.platform}`);
+console.log(renderReport(report));           // exactly what the CLI prints
+console.log(`Not counted: ${report.score.conditional.join(', ') || 'none'}`);
 ```
+
+`report.score.pct` is all nine checks. For a number to show a customer, use
+`report.score.pct_applicable` — the checks that apply to the site. See
+[API](#api).
 
 ## What it checks
 
@@ -73,26 +77,53 @@ eucomply-scanner https://example.com
 
 # JSON output for scripting
 eucomply-scanner --json https://example.com
+
+# Shorter or longer request timeout (default 12000 ms)
+eucomply-scanner --timeout 25000 https://example.com
 ```
 
 ### Example output
 
-```
-🔍 EUComply Scan Report
-   URL:      https://example.com
-   Platform: WordPress
-   Duration: 843ms
-   Score:    5/8 (62%)
+The **full, real output** is in
+[`examples/sample-output.txt`](examples/sample-output.txt). It is generated —
+not written by hand — from a recorded capture of `https://webflow.com`
+(510 616 B, sha256 `21462fbb…`, recorded 2026-09-28) by the same
+`renderReport()` the CLI writes, so it cannot drift from what the tool
+actually prints. An excerpt, with every line verbatim from that file:
 
- ✅ Google Consent Mode v2 detected
- ✅ IAB TCF detected
- ✅ HTTPS + HSTS OK
- ⚠️ Cookie consent banner found: Cookiebot
-    Cookiebot detected — ensure it blocks trackers before consent.
- ❌ Security headers: 2 missing
-    Missing: Content-Security-Policy; X-Content-Type-Options
-    💡 Add security headers. See https://securityheaders.com for guidance.
 ```
+$ eucomply-scanner https://webflow.com
+
+🔍 EUComply Scan Report for https://webflow.com/
+   Platform: Webflow  |  Duration: 64ms
+   Score: 3/6 of the checks that apply to this site (50%)
+
+   All 9 checks: 3/9 (33%)
+
+ ❌ 1 tracker(s) with NO consent platform
+    Trackers found in page markup: Google Analytics / GTM. No consent management platform was found — these trackers likely fire before consent.
+    💡 EU ePrivacy rules and GDPR Art. 6 require consent BEFORE loading non-essential trackers. Install a CMP that blocks Google Analytics/Meta Pixel etc. until the visitor consents.
+
+ ⚠️ No consent banner detected
+    No known cookie-consent platform found in the HTML. If you set any non-essential cookies, EU ePrivacy rules require prior consent.
+    💡 Add a consent management platform (e.g. one of the open-source options: Klaro, Tarteaucitron).
+
+ ✅ HTTPS + HSTS OK
+    HSTS: max-age=31536000
+
+ ✅ 3 legal pages linked
+    Found on page: Privacy / GDPR, Cookie policy, Terms & Conditions.
+
+ ⚠️ 1 security header missing
+    Missing: X-Content-Type-Options: nosniff missing
+    💡 Add security headers. See https://securityheaders.com for guidance on each.
+```
+
+Two numbers, because they must not be read as one. **`3/6 (50%)`** counts only
+the checks that apply to this site; the three that do not are printed as
+`- not counted:` with the reason, not hidden. **`3/9 (33%)`** is all nine
+checks, including the three that do not apply — it is the lower, historical
+number, and it is the one to quote when comparing against an older version.
 
 ## API
 
@@ -102,15 +133,46 @@ Scans a public URL and returns a compliance report. The built-in request timeout
 
 **Parameters:**
 - `url` (string, required) — The URL to scan. Scheme defaults to `https://` if omitted.
+- `timeout` (number, optional) — Request timeout in milliseconds, default `12000`.
 
 **Returns:** A promise resolving to a report object with:
 - `url` — The final URL (after redirects)
 - `scannedAt` — ISO timestamp
 - `durationMs` — Scan duration in milliseconds
 - `platform` — Detected CMS/platform (or "Unknown")
-- `checks` — Object with individual check results (each: `{ pass, warn, label, detail, fix? }`)
-- `score` — `{ passed, total, pct }` summary
+- `checks` — Object with individual check results (each: `{ pass, warn, label, detail, fix?, applies?, condition? }`)
+- `score` — see below
 - `disclaimer` — Legal disclaimer
+
+**`score` has two numbers, on purpose** — they must not be read as one:
+
+| Field | Meaning |
+|-------|---------|
+| `passed` / `total` / `pct` | All checks the engine ran, including those that do not apply to this site. `pct` is the number earlier versions printed on their own. |
+| `passed_applicable` / `applicable_total` / `pct_applicable` | Only the checks that apply to this site. **Use this one for a compliance number.** |
+| `conditional` | Keys of the checks that were left out, so you can say which ones and why. |
+| `conditional_applied` | Keys of the conditional checks that *did* apply. |
+
+A conditional check is skipped when it cannot be judged from a public page —
+IAB TCF only matters if the site runs programmatic ads, Consent Mode v2 only
+if it runs Google Ads, DORA only for financial entities. A site with six
+applicable checks and three of them passing scores `pct_applicable: 50`, not
+`pct: 33`.
+
+### `renderReport(report)`
+
+Formats a report exactly as the CLI does, and returns the string. This is the
+only renderer in the package: `bin`, the engine's own `main()` and
+`examples/node.js` all call it. Use it instead of writing your own formatter —
+see `docs/npm-pakken-egne-renderinger.md` for what happens when a second one
+appears.
+
+```js
+import { runScan, renderReport } from '@mahope/eucomply-scanner';
+
+const report = await runScan('https://example.com');
+console.log(renderReport(report));
+```
 
 ### `normalizeUrl(raw)`
 
