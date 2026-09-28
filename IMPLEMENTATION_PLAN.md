@@ -1,3 +1,91 @@
+Opdateret: 2026-09-28 (iteration 108) — **`/api/` fandtes kun på engelsk,
+og målingen af hvor stort det er, viste at det er hele sprogfejlen.**
+`I GANG`, ikke færdig: porten er rød på tre fund, se bunden.
+
+**Målt først.** 191 indekserbare stier i det publicerede træ. **7** af dem på
+mere end ét sprog. Og **45 indekserbare sider — alle med en købsknap — kun på
+engelsk**: `/api/`, `/cli/`, `/plugin/`, `/store/*`, `/pro/vs-*`, `/vs/*`,
+`/gdpr-fine-calculator/`, `/nis2-checklist/`. Sprogvælgeren på `/api/` viste
+DA/DE/FR som slået fra, fordi `page_exists()` i `lang_switch()`
+(`tools/apply_shell.py:319`) er sandt — altså ikke en fejl i skallen, men en
+reelt manglende overflade der ser ud som et valg. `/api/` var første valg:
+fire dokumenterede endepunkter, to kodeeksempler, én købsknap.
+
+**Rettelsen er spejle af én kilde, ikke tre sider.** Opgave 106 målte otte
+`vs/*`-sider og syv af otte var forkerte, fordi de var skrevet i hånden.
+`tools/build_api_locales.py` (ny) tager `site/api/index.html` og genererer
+`site/{da,de,fr}/api/index.html` og kører `apply_shell.process()` på kun de tre
+filer, så header, footer, breadcrumb, TOC, hreflang, canonical, `og:locale` og
+JSON-LD kommer fra den ene kilde, der allerede skriver dem for 226 andre sider.
+`<pre>` (curl/Python/JSON) og inline `<code>` røres aldrig; `KEEP` er den
+eksplicitte liste over de strenge der er ens i alle sprog. Sitemap 210 → **213**
+`<loc>`, søgeindeks regenereret. 51 sætninger × 3 sprog, alle i `TRANSLATIONS`.
+
+**Porten (trin 37) dømmer begge retninger.** R1: `expected_files()` kopierer
+hele `site/` til en midlertidig mappe, skriver de tre filer fra `render()`,
+kører `apply_shell` på dem og sammenligner **byte for byte** med de
+committede. Det er nødvendigt: `apply_shell` afkorter selv meta-descriptionen
+ved en punktumgrænse og skriver `<style>`-blokken, så en sammenligning mod råt
+`render()`-output ville være rød hele tiden — altså en port der ikke kan være
+grøn. R2 dømmer modsat: ingen engelsk sætning fra originalen må stå tilbage.
+Selftesten (4/4 grøn) muterer repoets egne filer.
+
+**Baseline:** Plausible 28 d: 1 besøger, bounce 100 %, kun Direct — ikke et
+målepunkt. Det målbare er **7 → 10** spejlede indekserbare stier og tre nye
+`<loc>`. Repoet har ingen Search Console-adgang.
+
+**Rørt:** `tools/build_api_locales.py` (ny), `tools/quality_gate.sh` (trin 37),
+`site/{da,de,fr}/api/index.html` (ny), `site/sitemap.xml`, `site/search-index.json`,
+`docs/api-spejlesprog.md` (ny). **Ingen plugin-version, ingen `update.json`,
+ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+### Hvad der mangler (opgaven er `I GANG`)
+
+Gaten er **rød på præcis tre fund**, alle ægte:
+
+1. `check_cta.py`: `da|de|fr/api/index.html` er **uklassificeret** — ingen regel
+   i `PAGE_RULES` matcher, fordi de er nye stier. Skriv den samme regel som
+   `/api/` har, og lad porten dømme spejlingerne på de samme købsgates.
+2. `check_pro_claims.py`: `site/de|fr/api/index.html:248` —
+   *"daily monitoring or rescans"*. Sætningen er sand (daglig re-scan i **din
+   egen** WordPress) og skældes fordi `LOCAL_CADENCE_SCOPE` (linje 425) ikke kan
+   læse den franske og den tyske formulering. Samme fejlklasse som de to
+   kommentarer i den samme fil (Historie/Frankrige). **Ret porten, ikke siden.**
+3. `check_pro_claims.py`: `site/de|fr/api/index.html:238` —
+   *"shipped Pro feature denied on a sales page"*. Her er **siden** den
+   skyldige: EN skriver *"It keeps no history"*, og den sætning passer
+   `DENIAL` fordi engelsk `no` ikke står i den. DE skriver *"speichert keine
+   Historie"* og FR *"ne garde aucun historique"* — og netop dem tager
+   `DENIAL`s `kein\w*` / `aucun\w*`. Sætningen er sand (det er API'et, der
+   ikke har historik), så ret formuleringen, så den siger hvad den gælder
+   (API'et) frem for at benæfte en Pro-funktion.
+
+**Deploy-verificering af iteration 107 er lukket på indhold:** live
+`sitemap.xml` har **210** `<loc>` og indeholder `eucomplypro.com/api/`
+(`?cb=it108`). `DEPLOY OK 2026-09-28`. CI `36423938790` grøn.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Gør opgave 108 grøn** (de tre fund ovenfor) og merge. Køen er stoppet her,
+   indtil porten er grøn.
+2. **De 42 øvrige engelske købssider.** Målingen er skrevet ned: 45 sider med
+   købsknap kun på engelsk, `/api/` er de tre første. Skriv de næste som
+   spejle af én kilde i samme `build_*-locales`-form, ikke håndskrevet — eller
+   mål, hvilke der reelt sælger, før de skrives om.
+3. **Pris-overvågning** (uændret): et script Mads kan køre, ikke en agent.
+4. Root-LICENSE (spørgsmål 21) — uændret, kan ikke løses uden Mads.
+
+> `VERIFICER DEPLOY: /api/ på da, de og fr + sitemap-porten (trin 37), <sha>,
+> 2026-09-28 ca. 16:1x CEST.` Verificér **indhold**: live `sitemap.xml` skal have
+> **213** `<loc>` og `eucomplypro.com/da/api/`, `/de/api/` og `/fr/api/` skal
+> svare 200 med `<html lang="da|de|fr">`, hreflang til alle fire sprog, præcis
+> fire `data-endpoint`-markører i `<main>` og **én** købsanker til
+> `buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`. HTTP 200 beviser intet.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 står uændret.
+
+---
+
 Opdateret: 2026-09-28 (iteration 107) — **`/api/` var indekserbar, publiceret
 og aldrig meldt til nogen.** Målt, ikke læst: `site/sitemap.xml` havde **209**
 `<loc>`, og det publicerede træ har **223** sider. 14 sider var aldrig
