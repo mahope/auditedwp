@@ -202,6 +202,83 @@ og søg på `Scan failed:` og `ex.message` — de skal være **væk**, og
 træ med cache-buster: `Scan failed:` **0** og `ex.message` **0** i alle fem,
 `apiError(` **2** i alle fem. Ikke HTTP 200 — indholdet.
 
+---
+
+Opdateret: 2026-09-28 (iteration 89) — **research-iteration**
+
+Sidste iteration: **tallet i den gratis scanners resultat kan ikke nå sin egen
+grønne tilstand på nogen ordentlig hjemmeside.** Køen var tom (5, 6 og 7 er
+blokeret på spørgsmål 7 og 9), så denne iteration er en måling og en
+prioriteret opgave, ikke en diff — jf. kontraktens regel om research-iteration
+på en tom kø.
+
+**Først en åben deploy-note lukket.** EAA-noten fra cd7b425 er verificeret på
+indhold: `/assets/eucomply-1.3.37.zip` → **200 `application/zip`** (64 548 B),
+`/assets/eucomply-1.3.36.zip` → **301** → 1.3.37 (ikke 404 — den fejl har
+været gentagen i dette repo), `/update.json` → `"version": "1.3.37"` med
+`download_url` på 1.3.37, og `/plugin/`, `/pro/`, `/store/eaa-statement/`
+linker kun `eucomply-1.3.37.zip` (0 forekomster af 1.3.36).
+
+**Fundet, målt i motoren der ligger i repoet** (`shared/scan-engine.js`,
+kørt gennem `runScan` med stubbet fetch — ikke live-workeren, fordi
+`check_published_engine.mjs` kun portrer SSRF-guarden, så tallet her er om *den
+kode vi sælger*). En hjemmeside der gør **alt** det der kan gøres uden at
+køre annoncering: alle fem headere, HSTS, privatlivs- og imprint-link,
+en kontaktformular med privatlivslink, ingen trackere:
+
+    score { passed: 5, total: 9, pct: 56 }
+    consent_mode_v2  FAIL  No Google Consent Mode v2 detected
+    tcf              FAIL  No IAB TCF detected
+    cookies          WARN  No consent banner detected
+    dora             FAIL  No DORA-related page signals detected
+    trackers/ssl/forms/legal/headers  PASS
+
+**56 % er loftet for den slags site.** Siden `site/scan/index.html:233`farver
+tallet `pct >= 80 ? 'good' : pct >= 50 ? 'mid' : 'bad'`, kan den aldrig blive
+grøn — uanset hvor god siden er. Og de fire rækker, der ikke kan bestås, siger
+selv i deres egen `detail`, at de kun gælder under en forudsætning:
+
+| række | motorens egen tekst | hvem den gælder |
+|---|---|---|
+| `cookies` | "**If you set any non-essential cookies**, EU ePrivacy rules require prior consent." | sætter den slags cookies |
+| `tcf` | "**If you run programmatic ads in the EEA**, implement IAB TCF" | kører programmatiske annoncer |
+| `consent_mode_v2` | "Google requires Consent Mode v2 for ad personalization in the EEA" | bruger Google Ads |
+| `dora` | "DORA Art. 5-7 … **for financial entities**" | finansielle enheder og deres leverandører |
+
+**Hvorfor det er en reel fejl og ikke en smag.** Det er samme fejlklasse som
+EAA-iterationen ovenfor og som opgave 45: **produktet dokumenter betingelsen
+i sin egen tekst og viser alligevel et ubetinget dom i talform.** Den mest
+GDPR-omhyggelige site — den der *ikke* kører annoncer — straffes hardest og
+kan aldrig se sig selv blive god. Tallet er det første en besøgende læser,
+og det er præcis det tal et bureau videregiver til sin kunde.
+
+**Målt på rigtige sider, den udgivne worker 2026-09-28 01:00 UTC:**
+`example.com` 22 %, `wordpress.org` 22 %, `shopify.com` 44 %, `stripe.com`
+67 %, `github.com` 67 %, `ikea.com` 56 %. To meget forskellige sider får
+præcis samme 22 %.
+
+**Hvorfor den ikke er rettet i denne iteration.** Rettelsen kræver at *motoren*
+kender forskel på et tjek der gælder og et tjek der ikke gælder — ellers må
+hver side finde ud af det selv, og så har scanner-siden, plugin-rapporten,
+PDF'en, badgen og dashboardet fem forskellige sandheder (præcis den fejl
+opgave 4 undgik ved at dele historikmodellen). Det er fem overflader plus
+fire sprog plus en plugin-version, og det er **ikke** en halv iteration.
+Den er skrevet som opgave 85 med målbare acceptkriterier nedenfor.
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at fjerne et tal, der siger noget forkert om den
+kunde, der betaler for at få det undersøgt.
+
+❓ **Til Mads — ét spørgsmål om talet, fordi det er en produktafvægning.**
+Den ærlige variant er at **dele scoren**: ni tjek hvor fire er betingede, så
+tallet er "5 af 5 tjek der gælder for dig" i stedet for "5 af 9". Det er
+sandt, men det ændrer et tal, kunder og bureauer kan have set i en rapport.
+Alternativet er at **beholde 5/9 og skrive betingelsen ved siden af**, hvilket
+ikke ændrer tallet overhovedet. Jeg anbefaler den første — den gør tallet
+brugbart — men det er dit kald, fordi det rører et tal i en betalt vare.
+
+Se `### 85.` i køen.
+
 ❓ **Til Mads — motorens hale kan lukkes samme dag som spørgsmål 9.**
 `shared/scan-engine.js:754` skriver råt `HTTP ${resp.status}` ind i en
 fejl, og `worker-scan/index.js:149` pakker den som `Scan failed: …`. Med
@@ -3120,3 +3197,18 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - ~~Selftesten må ikke kunne sige grønt mens en case fejler.~~ **Dækket og efterprøvet.** Efterprøvet med en mutation der ikke kan finde noget: returnerer `False`, og en kørsel med den fejl ville exit 1.
   - ~~Ingen PHP- eller plugin-ændring i samme diff.~~ **Dækket.** Kun `site/_headers`, `site/_redirects`, `tools/quality_gate.sh` og den nye port.
   - Efter merge verificeres på indhold. **ÅBEN — `VERIFICÉR DEPLOY`-noten ovenfor.** Fire punkter, alle headere og kodede: css'en må ikke længere være `immutable`, zip'en skal være det, 1.3.32 skal give 301, og 1.3.36 skal stadig give 200.
+
+### 85. Tallet i resultatet skal sige, hvad det tæller
+
+- Status: `TODO — næste iteration` (skrevet i iteration 89 som research-resultat). Målingen står øverst i planen: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
+- Begrundelse: rang 1 og 2 i "hvad der tæller" på én gang. Det er det første en besøgende læser, og det er det tal et bureau videregiver til sin kunde. Fire af ni rækker siger selv i deres egen `detail`, at de kun gælder under en forudsætning (`cookies`, `tcf`, `consent_mode_v2`, `dora`), mens siden viser dem som et ubetinget pointtal. Det er samme fejlklasse som EAA-omfanget (iteration 88) og opgave 45: **dokumenteret betingelse, ubetinget dom i talform.**
+- **Beslutningen der låses først:** scoren skal **deles** — rapporten får ét tal for de tjek der gælder for sitet og ét for dem der ikke gør. Ikke "5 af 5" alene, fordi et tal uden nævneren fortsat er et tal uden betingelse; den fulde sætning skal kunne læses i rapporten. ❓-spørgsmålet øverst er, om det ændrer et tal kunder har set (min anbefaling: ja, del det).
+- Første skridt: `runScan` får **én** ny kilde til sandheden — hvert check bærer `applies: true|false` og en kort grund, og `score` får `{passed, total, pct, applicable_total, conditional[]}`. Ingen side må selv finde ud af hvilke tjek der er betingede; det er præcis det, der får fem overflader til at fortælle fem historier (samme grund som del 1 af opgave 5 og historikmodellen i opgave 4).
+- Scope: `shared/scan-engine.js` + den byte-identiske `eucomply-scanner/engine/index.js` (paritetsporten kræver ens); `plugin/eucomply.php` + `site/plugin/eucomply.php` (`run_checks()` og rapportteksten, ny version + ny zip + begge `update.json` + `_redirects` + `/plugin/`); de fem scanner-siders talrække i EN/DA/DE/FR; `shared/sample-report.json` og den deraf genererede sample-side + PDF; `site/pro/dashboard/`, `/badge/` og de fire `/pro/`-ruter hvis de viser et tal.
+- Accept:
+  - **Loftet er dokumenteret i koden, ikke i en kommentar.** Et site uden annoncering, CMP og resilienstekst kan ikke score under sit mængdetal; porten beregner det højst opnåelige tal fra `runScan` selv og hævder det.
+  - **Betingelsen står i rapporten ved siden af tallet** på alle fem scanner-sider, i plugin-rapporten, i HTML- og PDF-rapporten og i eksemplet — ellers er kun tallet rettet, og det er tallet kunden læser først.
+  - **Ingen overflade må finde på sin egen betingelsesliste.** Porten læser listen fra motoren og kræver at de publicerede sider og plugin-rapporten nævner præcis de samme nøgler; en nye betinget række i motoren uden en sideændring giver rød.
+  - **Farvebåndet på `pct` er væk eller begrundet.** `>= 80 ? 'good'` på et tal med et dokumenteret loft på 56 % er det samme som en ubrugelig farve; hvis tallet ikke deles, skal båndet følge det opnåelige maksimum, og det skal stå i porten.
+  - `test_engine_parity.mjs` og `test_plugin_engine_parity.mjs` grønne; `check_verdict_labels.mjs`, `check_pro_claims.py`, `check_dora_claims.py` og `check_sample_coverage.py` grønne uden nye undtagelser; `GATE GRØN` før merge.
+  - **Bemærk uden løsning i denne diff:** den udgivne web-scanner (`eucomply-scan.mahope-eeb.workers.dev`) kører den gamle motor og får tallet først ved worker-deploy (spørgsmål 9). Siderne må derfor ikke love den nye talform før workeren er live — samme rækkefølge som opgave 6 (worker før klient), og samme grund: ellers viser scanner-siden et tal pluginen ikke kan levere.
