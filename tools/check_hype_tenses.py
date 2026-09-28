@@ -42,8 +42,11 @@ eller en ny tabel-riktning ikke kan gense den samme fejl i samme stilhed.
 import html as htmllib
 import importlib.util
 import pathlib
+import pyreq
 import re
 import sys
+
+pyreq.require(__file__)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"

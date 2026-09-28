@@ -34,11 +34,14 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import pyreq
 import re
 import shutil
 import sys
 import tempfile
 from pathlib import Path
+
+pyreq.require(__file__)
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"

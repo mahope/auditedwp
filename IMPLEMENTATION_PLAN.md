@@ -1,3 +1,111 @@
+Opdateret: 2026-09-28 (iteration 113) — **main er grøn igen og sitet deployer,
+og et værktøj kan ikke længere lyve om hvorfor det ikke kørte.** Punkt 1 og 2 fra
+sidste iterations liste er begge lukket.
+
+**Deploy-verificering af iteration 112: `DEPLOY OK 2026-09-28`.** Ét kald, ingen
+løkke: `deploy-site` for `6899694` er `success` (den røde `cdab45c` er rettelsen
+selv). Dømt på **indhold**, ikke HTTP 200: live
+`/blog/shopify-gdpr-compliance-guide/` er **byte-identisk** med
+`HEAD:site/blog/shopify-gdpr-compliance-guide/index.html`, når man ignorerer den
+Plausible-injektion der tilføjes ved build (34.599 vs 34.882 byte, forskellen er
+præcis analytics-scriptet). Frosningen holder altså på det leverede træ:
+`<time datetime="2026-09-26">` uændret, ingen af de 99 bevægelige sider rører
+sig. `DEPLOY-MISSING` fra i går er lukket.
+
+**Punkt 2: en port skal sige hvilken python den kræver.** Fejlen fra i går var
+ikke at porten var rød. Den var at den **aldrig kørte**, og at den så ud til at
+være en måling. Gengivet på den rigtige maskine med system-`python3`:
+
+    $ python3 tools/check_shell_fixed_point.py          # exit 1
+    File "tools/apply_shell.py", line 413, in <module>
+      def vertical_only(decl: str) -> str | None:
+    TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+
+Den peger på **en fil brugeren aldrig kaldte**, med en fejl der nævner hverken
+python eller version. Det er præcis den form, der fik iteration 111 til at skrive
+`R1 OK — 230 sider` ind i planen fra et træ, der var kørt i forvejen.
+
+**Hvorfor kun fire værktøjer.** Jeg målte først, hvilke gate-værktøjer der over-
+hovedet kan få en *ulæselig* fejl: de der indlæser andre moduler dynamisk, så
+TypeError'en lander i den indlæste fil. `rg -l importlib tools/*.py` giver præcis
+fire — `check_shell_fixed_point`, `check_code_blocks`, `check_hype_tenses`,
+`build_api_locales` — og alle fire er entry points med `__main__`, så ingen af
+dem kan nå at definere en annotation på en gammel fortolkning. De øvrige 26
+gate-værktøjer dør med **deres eget** filnavn i traceback'en, hvilket allerede er
+nok til at finde årsagen. At lappe alle 30 ville være ~240 linjer identisk kode
+til ingen reel gevinst.
+
+**Rettelsen er to dele, fordi en vag uden en gate er en fromshed.**
+`tools/pyreq.py` holder **ét** krav (3.10+) og kaldes som `pyreq.require(__file__)`
+i toppen af de fire — *før* den dynamiske indlæsning, fordi `str | None` er en
+fejl ved modul-**exekvering**, så en vag længere nede når aldrig at køre. Og
+`check_runtime.py` fik `check_python_requirement()`, som holder to ting fast:
+gaten og `pyreq` skal kræve samme python (tallene lå hver for sig, og en agent
+der hæver den ene dør i porten med præcis den fejl `pyreq` findes på at forklare),
+og **hvert** gate-værktøj med dynamisk indlæsning skal have vaggen.
+
+**Målt / accept.** Før: `python3 tools/check_shell_fixed_point.py` → exit 1 med
+`TypeError`, 0 linjer der nævner kravet. Efter, på den samme 3.9.6:
+
+    check_shell_fixed_point.py kræver Python 3.10+, men den kører på 3.9.6.
+      Kør `bash tools/quality_gate.sh` — den binder en passende python én
+      gang og bruger den i alle trin.
+
+exit 1, **0 `TypeError`, 0 `Traceback`** i alle fire værktøjer. På 3.13.15 kører
+den rigtige kæde stadig: `R1 OK — 230 sider, 0 ændret af én kørsel af den rigtige
+kæde`, og R2 fanger stadig bevægelse (`uden art-meta på index.html så R1 1 sider
+flytte sig`). `check_runtime.py --selftest` er grøn med **34** negative cases mod
+31 før, og de tre nye fanges hver især: gaten på 3.11 mens `pyreq` siger 3.10,
+gaten uden nogen versions-probe, og dynamisk indlæsning uden vag. `GATE GRØN —
+alle 40 steps bestået`. 0 ændringer i `site/`.
+
+**Måle-noter til mig selv, fordi de kostede to fejl i denne iteration.** Min
+første måling af den gamle fejl sagde `EXIT=0`, fordi jeg havde pipet gennem
+`tail` og læste dens exit code. Og min optælling af værktøjer uden
+`from __future__` sagde "37 af 37", fordi jeg læste de første 20 linjer —
+`check_shell_fixed_point.py` har sit future-import på linje 47. Begge tal var
+mine egne målefejl, ikke fund. Den rigtige optælling er 21 filer uden
+future-import, og ingen af dem bruger `match`, så ingen kan dø i en
+parse-tids-`SyntaxError` som en vag ikke kan nå.
+
+**Rørt:** `tools/pyreq.py` (ny), `tools/check_runtime.py` (ny kontrol + 3
+selftest-cases + fixture), `tools/check_shell_fixed_point.py`,
+`tools/check_code_blocks.py`, `tools/check_hype_tenses.py`,
+`tools/build_api_locales.py` (vag hver), `IMPLEMENTATION_PLAN.md`. **Ingen
+`site/`-fil, ingen plugin-version, ingen `update.json`, ingen ny zip, ingen
+Stripe-pris, ingen worker, intet upload.**
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **De 26 øvrige gate-værktøjer mangler stadig vaggen** (fra 113). Lavt
+   prioriteret — de dør med eget filnavn i traceback'en — men
+   `check_python_requirement()` dømer dem *kun* hvis de indlæser dynamisk, så
+   udvid afgrænsningen bevidst, eller kør dem alle gennem `pyreq`.
+2. **Punkt 3 fra iteration 112: `git_dates()`s bulk-tærskel på 60 filer.** Den
+   styrer stadig `first`/`last` for nye sider og `lastmod_for()`s fallback.
+   Mål den, før den ændres — 51 filer i `cdab45c` var nok til at klassificere
+   alle artikler som bulk.
+3. **Punkt 4 fra 112: R2 måler kun én kæde.** Den fjerner én `art-meta` og ser én
+   side flytte sig. Den måler ikke `catalogue()`s sorteringsnøgle, som var den
+   anden del af bevægeligheden i opgave 111.
+4. **Punkt 5 fra 111/112: `/cli/`s emoji-erklæring er stadig tabt.** ✅/⚠️/❌ blev
+   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
+   `<code>`, som `check_code_blocks.py` dækker.
+5. Pris-overvågning og root-LICENSE (spørgsmål 21) — kan ikke løses uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): kodecommit på ceo/praev-eftersporgning,
+> 2026-09-28 21:31 CEST. Verificér **indhold**: hent
+> `https://eucomplypro.com/blog/shopify-gdpr-compliance-guide/` og kræv at den
+> stadig er byte-identisk med `HEAD:site/blog/shopify-gdpr-compliance-guide/index.html`
+> bortset fra Plausible-scriptet, og at `<time datetime="2026-09-26">` står
+> uændret. R1 skal samtidig være grøn i CI; bliver den rød igen, så holder
+> frosningen ikke på et frisk træ.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes.
+
+
 Opdateret: 2026-09-28 (iteration 112) — **main var rød, og sitet har ikke
 deployet siden i går aften. `R1 OK` i planen for i går var ikke sandt: porten
 var aldrig kørt.**

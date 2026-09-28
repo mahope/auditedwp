@@ -43,6 +43,12 @@ med 99 bevægelige sider, og sitet holdt op med at deploye. R1 var altså ikke
 død, den var aldrig kørt.
 
 Selftest: to negative cases.
+
+Krav: Python 3.10+. Det er ikke en bivirkning — `apply_shell.py` bruger
+`str | None` i annoteringer, og på en ældre fortolkning dør den TypeError
+ved indlæsningen, syv rammer under denne fils navn. `pyreq.require(__file__)`
+står derfor i toppen, så en gammel `python3` siger *kravet* frem for at
+efterlade en fejl der ligner en produktrelateret. Se `tools/pyreq.py`.
 """
 from __future__ import annotations
 
@@ -50,8 +56,11 @@ import importlib.util
 import pathlib
 import re
 import shutil
+import pyreq
 import sys
 import tempfile
+
+pyreq.require(__file__)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"

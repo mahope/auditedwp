@@ -32,6 +32,7 @@ Brug:
 from __future__ import annotations
 
 import json
+import pyreq
 import re
 import subprocess
 import sys
@@ -530,6 +531,94 @@ GATE_PYTHON_CALL_RE = re.compile(
     r"(?<![\w$-/])(?:python3(?:\.\d+)?|python)(?=\s+(?:tools|scripts)/)"
 )
 
+# De tre mønstre der holder python-kravet i overensstemmelse med gaten.
+#
+# `pick_python` skriver sit krav som en python-one-liner, så floor'en ligger i
+# `quality_gate.sh` som et tal i en streng. `MIN_PYTHON` ligger i `pyreq.py` som
+# et tuple. Skriver en nye agent kravet ét sted og gaten et andet, dør
+# værktøjet i porten med præcis den fejl `pyreq` findes på at fange — så de to
+# tal skal sammenlignes, ikke antages ens.
+GATE_PY_FLOOR_RE = re.compile(r"sys\.version_info\s*>=\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)")
+PYREQ_FLOOR_RE = re.compile(r"^MIN_PYTHON\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)", re.M)
+GUARD_CALL_RE = re.compile(r"pyreq\.require\s*\(")
+GATE_TOOL_RE = re.compile(r"tools/[A-Za-z0-9_]+\.py")
+
+
+def _gate_tool_paths(root: Path, body: str) -> list[Path]:
+    """De værktøjer gaten faktisk kalder, fundet i `quality_gate.sh`."""
+    seen, out = set(), []
+    for name in GATE_TOOL_RE.findall(body):
+        if name in seen:
+            continue
+        seen.add(name)
+        out.append(root / name)
+    return out
+
+
+def check_python_requirement(root: Path) -> list[str]:
+    """Gatens python-krav og værktøjernes skal være ét tal — og højt.
+
+    To fejl, samme familie. For det første: `pick_python` binder 3.10, og
+    `pyreq.MIN_PYTHON` siger 3.10, men intet holdt de to sammen. En agent
+    hæver gaten til 3.11 og glemmer `pyreq`, så dør porten med en TypeError fra
+    en annotering — præcis den fejl `pyreq` blev skrevet for at forklare.
+
+    For det andet: `pyreq.require()` er en vag, og en vag uden en gate er en
+    fromshed. Derfor skal hvert gatenaværktøj der indlæser andre moduler
+    dynamisk have den. Dynamisk indlæsning er afgrænsningen, fordi den er
+    det, der lavede fejlen ulæselig: `check_shell_fixed_point.py` kaldte
+    `apply_shell.py` gennem `importlib`, så en gammel fortolkning døde med en
+    TypeError syv rammer nede i en fil brugeren aldrig kaldte. Opgave 111 skrev
+    et portresultat ind i planen fra den slags kørsel, og R1 havde aldrig kørt.
+
+    `floor` er indsprøjt, så selftesten kan prøve en drift uden at ændre det
+    rigtige `pyreq.py`.
+    """
+    findings: list[str] = []
+    gate = root / "tools" / "quality_gate.sh"
+    if not gate.is_file():
+        return findings  # check_gate_interpreter siger det
+    body = COMMENT_RE.sub("", gate.read_text(encoding="utf-8", errors="replace"))
+
+    gate_floor = GATE_PY_FLOOR_RE.search(body)
+    declared = pyreq.MIN_PYTHON
+    if gate_floor is None:
+        findings.append(
+            "tools/quality_gate.sh tester ingen python-version i pick_python, så "
+            f"gaten og tools/pyreq.py ({declared[0]}.{declared[1]}+) kan ikke "
+            "sammenlignes — kravet skal stå ét sted"
+        )
+    else:
+        gate_pair = (int(gate_floor.group(1)), int(gate_floor.group(2)))
+        if gate_pair != declared:
+            findings.append(
+                f"gaten binder python {gate_pair[0]}.{gate_pair[1]}+ i pick_python, "
+                f"mens tools/pyreq.py kræver {declared[0]}.{declared[1]}+ — "
+                "værktøjerne skal kræve præcis den python gaten binder"
+            )
+
+    for path in _gate_tool_paths(root, body):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        # Kun værktøjer der indlæser moduler dynamisk: der er den TypeError fra
+        # en anden fil bliver ulæselig. Et værktøj der kun fejler i sin egen
+        # kode dør med sit eget filnavn i traceback'en, hvilket allerede er
+        # nok til at finde årsagen.
+        if "importlib" not in text:
+            continue
+        if GUARD_CALL_RE.search(text):
+            continue
+        rel = path.relative_to(root).as_posix()
+        findings.append(
+            f"{rel}: indlæser moduler dynamisk uden at kalde pyreq.require() — på "
+            f"python under {declared[0]}.{declared[1]} dør den med en TypeError fra "
+            "den indlæste fil, som siger intet om årsagen. Opgave 111 skrev et "
+            f"portresultat ind i planen fra den slags kørsel. Kald "
+            "`pyreq.require(__file__)` i toppen af filen"
+        )
+    return findings
+
 
 def check_gate_interpreter(root: Path) -> list[str]:
     """Gaten skal bruge den python den siger den bruger — alle steder.
@@ -736,6 +825,7 @@ def collect(root: Path, today: date | None = None, probe_node: bool = True) -> t
         found.extend(check_running_node(floor, _major_of_running_node()))
     found.extend(check_dependencies(packages))
     found.extend(check_gate_interpreter(root))
+    found.extend(check_python_requirement(root))
     return found, action_warnings + runner_warnings + check_eol_soon(packages, today)
 
 
@@ -759,7 +849,8 @@ def selftest() -> int:
                         second_floor=None, ci_comment_only=False, no_node_step=False,
                         extra_uses=None, action_ref=None, runner=RUNNER_IMAGE,
                         drop_runs_on=False, runner_comment_only=False,
-                        bind_py=True, hard_fail=True, one_named_call=False):
+                        bind_py=True, hard_fail=True, one_named_call=False,
+                        py_floor="3.10", pyreq_floor="3.10", pyreq_guard=True):
             for rel in EUCOMPLY_PACKAGES:
                 path = base / rel
                 data = json.loads(path.read_text(encoding="utf-8"))
@@ -832,13 +923,35 @@ def selftest() -> int:
             call = ("run \"tools/check_cta.py\" python3 tools/check_cta.py\n"
                     if one_named_call else
                     'run "tools/check_cta.py" "$PY" tools/check_cta.py\n')
+            # Probe'en skal ligne den rigtige gaten, ellers matcher
+            # `GATE_PY_FLOOR_RE` ikke og `check_python_requirement` melder
+            # "gaten tester ingen python-version" på det rene fixture.
+            probe = ('import sys' if py_floor is None
+                     else f"import sys; raise SystemExit(0 if sys.version_info >= ({py_floor.replace('.', ', ')}) else 1)")
+            # Et værktøj der indlæser moduler dynamisk — den egenskab, der gjorde
+            # `check_shell_fixed_point.py`s TypeError ulæselig. Uden den i
+            # fixture'en ville de nye cases teste ingenting.
+            (base / "tools" / "check_demo.py").write_text(
+                "import importlib.util\n"
+                "import pathlib\n"
+                "import pyreq\n"
+                "import sys\n"
+                "\n"
+                + ("pyreq.require(__file__)\n" if pyreq_guard else "")
+                + "\n"
+                "print('kørt på', sys.version_info)\n",
+                encoding="utf-8",
+            )
+            (base / "tools" / "pyreq.py").write_text(
+                f"MIN_PYTHON = ({pyreq_floor.replace('.', ', ')})\n", encoding="utf-8"
+            )
             (base / "tools" / "quality_gate.sh").write_text(
                 "#!/usr/bin/env bash\n"
                 "set -u\n"
                 "pick_python() {\n"
                 "  for candidate in python3.13 python3.12 python3.11 python3 python; do\n"
                 '    if command -v "$candidate" >/dev/null 2>&1; then\n'
-                "      if \"$candidate\" -c 'import sys' 2>/dev/null; then\n"
+                f"      if \"$candidate\" -c '{probe}' 2>/dev/null; then\n"
                 '        printf \'%s\' "$candidate"; return 0\n'
                 "      fi\n"
                 "    fi\n"
@@ -848,7 +961,8 @@ def selftest() -> int:
                 + binding
                 + guard
                 + call
-                + 'run "tools/seo_check.py" "$PY" tools/seo_check.py --verbose\n',
+                + 'run "tools/seo_check.py" "$PY" tools/seo_check.py --verbose\n'
+                + 'run "tools/check_demo.py" "$PY" tools/check_demo.py\n',
                 encoding="utf-8",
             )
 
@@ -928,6 +1042,17 @@ def selftest() -> int:
              lambda: write_state(bind_py=False, one_named_call=True)),
             ("gaten fejler ikke hårdt uden python", "fejler ikke hårdt",
              lambda: write_state(hard_fail=False, one_named_call=True)),
+            # Opgave 113: iteration 111 skrev et portresultat ind i planen fra
+            # en kørsel på system-`python3` (3.9), som døde med en TypeError fra
+            # `apply_shell.py` — en fil brugeren aldrig kaldte. Resultatet så ud
+            # som en måling af træet. `pyreq` siger kravet højt, og disse tre
+            # cases sikrer at vagen ikke kan forsvinde stille.
+            ("gaten og pyreq kræver hver sin python", "mens tools/pyreq.py kræver",
+             lambda: write_state(py_floor="3.11")),
+            ("gaten tester ingen python-version", "tester ingen python-version",
+             lambda: write_state(py_floor=None)),
+            ("dynamisk indlæsning uden pyreq-vag", "uden at kalde pyreq.require",
+             lambda: write_state(pyreq_guard=False)),
         ]
         for label, needle, mutate in cases:
             mutate()
