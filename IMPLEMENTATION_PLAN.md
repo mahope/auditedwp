@@ -65,7 +65,7 @@ kontrol, så det ikke kan glide.
 
 ❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede.
 
-- 2026-09-28 (iteration 95) `INGEN DEPLOY NØDVENDIG: kontrol 4 — døde ankre i det publicerede træ (opgave 88) <sha> / merge <merge-sha>` — rører **kun `tools/check_public_tree.py`, `tools/quality_gate.sh` og denne plan**. Intet publiceret ændrer sig. Deployen skal logge **`Uploaded 0 files (322 already uploaded)`**. Eneste evidens er CI-loggen: `GATE GRØN — alle 29 steps bestået`, `0 døde ankre — 2215 ankerlinks i 226 sider` og `SELFTEST GRØN — alle 8 negative cases fanges`.
+- 2026-09-28 (iteration 95) `INGEN DEPLOY NØDVENDIG: kontrol 4 — døde ankre i det publicerede træ (opgave 88) c139989 / merge 7eef0b6` — rører **kun `tools/check_public_tree.py`, `tools/quality_gate.sh` og denne plan**. Intet publiceret ændrer sig. Deployen skal logge **`Uploaded 0 files (322 already uploaded)`**. Eneste evidens er CI-loggen: `GATE GRØN — alle 29 steps bestået`, `0 døde ankre — 2215 ankerlinks i 226 sider` og `SELFTEST GRØN — alle 8 negative cases fanges`.
 
 Opdateret: 2026-09-28 (iteration 94)
 
