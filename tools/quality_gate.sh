@@ -596,6 +596,21 @@ hdr "skal bin skrive praecis motorens egen rapport"
 run "tools/cli_render_parity.mjs" node tools/cli_render_parity.mjs
 run "tools/cli_render_parity.mjs --selftest" node tools/cli_render_parity.mjs --selftest
 
+# Opgave 104: den gratis scan-API blev solgt uden en dør ind i den. Målt:
+# syv `vs/*`-sider skrev "Free API + CLI tool" i sammenligningstabellen, og
+# ingen af dem linkede nogen dokumentation — `/api/`, `/docs/` og
+# `/developers/` gav alle 404, så den eneste beskrivelse af overfladen lå i
+# tre filer i en npm-pakke. API'et virker faktisk (fire endepunkter, 200),
+# hvilket gør det værre: en læser der finder vejen hjem får et virkende
+# svar om en gratis tjeneste, og en læser der ikke gør, tror den er dyr.
+# R1 holder dokumenterede endepunkter mod workerens ruter, R2 kræver en dør
+# på enhver side der lover API-adgang, R3 fanger døde rute-grene (dåden var
+# `path === ""` med `|| "/"`, så live `GET /` svarede 404), R4 kræver at
+# siden publiceres. Se docs/api-dokumentation-uden-dor.md.
+hdr "skal den solgte API have en dokumentationsside"
+run "tools/check_api_docs.mjs" node tools/check_api_docs.mjs
+run "tools/check_api_docs.mjs --selftest" node tools/check_api_docs.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
