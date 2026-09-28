@@ -16,7 +16,10 @@ export default {
     }
 
     const reqUrl = new URL(request.url);
-    const path = reqUrl.pathname.replace(/\/+$/, "") || "/";
+    // Uden `|| "/"`: normaliseringen gjorde `path === ""` aldrig sandt, så
+    // informationsgrenen nedenfor var død kode og `GET /` svarede 404.
+    // `path` er "" for både `/` og `//`, og begge skal ramme den gren.
+    const path = reqUrl.pathname.replace(/\/+$/, "");
 
     // POST /subscribe — email capture from scan results
     if (request.method === "POST" && path === "/subscribe") {

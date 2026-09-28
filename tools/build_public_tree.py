@@ -48,6 +48,7 @@ PUBLIC_FILES = (
 PUBLIC_DIRS = (
     ".well-known",
     "_partials",
+    "api",
     "assets",
     "badge",
     "blog",

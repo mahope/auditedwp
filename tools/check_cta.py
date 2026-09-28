@@ -215,14 +215,15 @@ PAGE_RULES: tuple[Rule, ...] = (
          "konkurrentens, og har allerede hver præcis én købsanker",
          "vs/cookiebot/index.html"),
     Rule("pro", ("checklist/index.html", "badge/index.html", "cli/index.html",
+                 "api/index.html",
                  "compare/index.html", "how-it-works/index.html",
                  "check-eu-compliance/index.html", "gdpr-fine-calculator/index.html",
                  "gdpr-scanner-free/index.html", "gdpr-compliance-check/index.html",
                  "cookie-banner-check/index.html", "consent-mode-v2-check/index.html")
-         + _loc("cookie-banner-check/index.html"),
-         "frie værktøjer med dokumenteret købsintents; den tyske udgave af "
-         "cookie-banner-check lå uden for den håndskrevne liste",
-         "checklist/index.html"),
+          + _loc("cookie-banner-check/index.html"),
+          "frie værktøjer med dokumenteret købsintents; den tyske udgave af "
+          "cookie-banner-check lå uden for den håndskrevne liste",
+          "checklist/index.html"),
 
     # --- skabelonsider: de sælger deres eget produkt, ikke Pro --------------
     # En EAA-checkliste der sælger en WordPress-licens er forkerte
