@@ -1,3 +1,87 @@
+Opdateret: 2026-09-28 (iteration 106) — **syv af otte sammenligningssider
+havde en forkert pris på en konkurrent.** Køens anden post sagde "uden kilde og
+uden as of-dato". Målt mod leverandørernes egne prissider 28/9 viste det sig at
+være mildere end "ubeskyldt": **fejlene var reelle tal, ikke bare manglende
+kilde.** `termly` skrev planerne "Pro $10/mo" og "Business $25/mo" — de hedder
+**Starter** og **Pro+**, og gratis er 10.000 bannervisninger, ikke 1.000.
+`complianz` skrev "Personal €59/år", som er **dollar**-tallet; euro-prisen er
+€35. `cookiebot` skrev "Essential $9/mo" — planen hedder **Premium Lite** og
+koster **€7**. `iubenda` skrev "Essentials ~€27/år" — den er **€4,99 pr. måned**,
+altså ca. 10× for lavt, fordi månedsprisen var læst som årlig. `usercentrics`
+skrev $34/$56, det er **€30/€50**. `osano` sagde "priser er ikke offentlige",
+mens Plus står offentligt til **$199/md**. `onetrust` skrev "typisk $350+/mo"
+på en side hvor OneTrust slet **ikke publicerer priser**. Det er syv sider med
+en fejl, der falder i hver købsbane.
+
+**Sagen er derfor ikke juridisk alene — den er en konverteringsfejl.** På en
+`vs/*`-side er tabellen hele værdien, og læseren der tjekker Termlys egen side og
+ser at "Pro" ikke findes, har ground til at tro at resten også er opdigtet —
+også vores egen $79.
+
+**Rettelsen er én kilde + syv regler, ikke otte sider.** (1)
+`tools/competitor_facts.json` er nu den eneste kilde: prisside som `source`,
+`checked`-dato, `currency_note` (hvad valuta siden viser), `public_prices`-flag
+og de `claims` siden faktisk viser. (2) Hver side bærer `data-competitor="<slug>"`
+på cellen og pris-boksen — den markering fandtes i fire af dem, fire andre
+fik den, så porten dømmer præcis den del der handler om konkurrenten — plus en
+`data-fact-source`-note under tabellen med kilden som link og datoen som synlig
+tekst. (3) `tools/check_competitor_facts.py` er **trin 35**: R1 markering kendes,
+R2 ingen optegnelse uden side, R3 dato + kilde synlig, R4 **højst 180 dage gammel**
+(så en gammel optegnelse bliver rød af sig selv), R5 alle claims står i cellen,
+R6 **ingen valuta på en side der kun får tilbud**, R7 **ethvert tal i cellen skal
+findes i en claim**. R1–R6 dømmer fortiden; **R7 dømmer næste diff**, som ingen
+har skrevet endnu.
+
+**R6 så først vores egen `$79` og `$0` og erklærede OneTrust-siden for skyldig.**
+Fejlen lå i porten, ikke på siden: den skal dømme konkurrentens tal, ikke vores.
+`mask_own_prices()` læser derfor vores pris-bokse *fra siden* og maskerer de tal
+før den skænder — ingen pris er hardkodet, så den holder når Mads' pris ændrer
+sig. Fundet blev fundet, fordi reglen var skrevet til at være ubekvem.
+
+**Beviset er en provokation, ikke en grøn linje.** Jeg lagde de to fejl
+siderne faktisk havde ind igen: `Business $25/mo` i termly-cellen → **R7**
+fanges, `Usually $350+/mo` i onetrust-boksen → **R6** fanges. Selftesten gik
+**7/7** negative cases. `check_competitor_facts.py` er grøn på 8 sider og 8
+optegnelser.
+
+**Gaten:** `GATE GRØN — alle 35 steps bestået` (34 før). Sibling-kørslen i
+`../hermes-passiv` kunne **ikke** køres i denne session — adgang til mapper uden
+for workspace blev afvist — så repoets egne kontroller er evidensen, præcis som
+i iteration 104 og 105.
+
+**Rørt:** `tools/competitor_facts.json` (ny), `tools/check_competitor_facts.py`
+(ny), `tools/quality_gate.sh` (trin 35), otte `site/vs/*/index.html`,
+`docs/konkurrentpriser.md` (ny). **Ingen plugin-version, ingen `update.json`,
+ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflares 5390 er bots), `★0`, 14 d: 0 npm-visninger. Kan ikke
+måles i trafik. Det er ikke formålet: denne iteration fjerner en løgn der lå på
+de otte sider der sælger, og som ville være fundet af den første læser der
+klikkede videre — ikke af os.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Pris-overvågning er en reel mangel, og den er bevidst ikke bygget her.**
+   R4 gør optegnelser ældre end 180 dage røde, og de otte sider var skrevet før
+   i år. En automatisk overvåger kræver en kørende service, og en agent må ikke
+   oprette nye services — så den skal **skrives som et køselement Mads kan
+   køre** (et script der læser de otte kilder og skriver en diff), ikke som
+   en agent der selv overvåger. Lav den bare, ingen ny infra.
+2. **Root-LICENSE for `mahope/auditedwp`** — spørgsmål 21, uændret. Kan ikke
+   løses uden Mads, fordi `deliverables/` og `gumroad/` stadig er offentlige.
+3. **`/api/` findes kun på engelsk.** DA/DE/FR linker til `/pricing/` men ikke
+   til dokumentationen; `check_locale_parity` kræver kun symmetri for `index`,
+   `pro` og `pricing`, så porten er grøn — det er et reelt valg om tid.
+4. **Deploy-verificering af denne iteration** (de otte `vs/*`-sider) — ét kald
+   til CI i starten af næste iteration.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 står uændret.
+
+---
+
+---
+
 Opdateret: 2026-09-28 (iteration 105) — **zip'en sagde "Open source" og havde
 ingen licenstekst.** Køens første post var den billigste rettelse og den eneste
 der var ren juridisk risiko, så den er gjort først. Målt, ikke læst:
