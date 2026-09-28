@@ -45,6 +45,7 @@ END = "<!--/sample:report-->"
 # ingen navngiven eksport af nøglerne, så det er kilden, der læses — fra BEGGE
 # motorer, så en tjek kun findes i den ene, og det derfor er en fejl.
 CHECK_KEY = re.compile(r"^\s*checks\.([A-Za-z0-9_]+)\s*=\s*\{", re.M)
+CONDITIONAL = re.compile(r"^\s*([A-Za-z0-9_]+)\s*:\s*(\"(?:[^\"\\]|\\.)*\")\s*,?\s*$", re.M)
 STATUSES = ("pass", "warn", "fail")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
@@ -79,9 +80,38 @@ def engine_check_keys():
     return first
 
 
+def engine_conditions():
+    """Betingelsessætningen pr. nøgle, læst ud af motorens `CONDITIONAL_CHECKS`.
+
+    Prøverapporten må ikke skrive sin egen betingelsesliste — den ville kunne
+    glide fra motoren, og det er præcis den fejlklasse hele opgaven retter.
+    Sætningen kommer derfor herfra, og porten kræver at datasættets `applies`
+    kun kan være `false` for en nøgle, der står her.
+    """
+    with open(ENGINES[0], encoding="utf-8") as handle:
+        source = handle.read()
+    block = re.search(r"CONDITIONAL_CHECKS\s*=\s*\{(.*?)\n\};", source, re.S)
+    if not block:
+        raise SystemExit("CONDITIONAL_CHECKS blev ikke fundet i motoren")
+    return {key: json.loads(value) for key, value in CONDITIONAL.findall(block.group(1))}
+
+
 def load_data():
     with open(DATA, encoding="utf-8") as handle:
-        return json.load(handle)
+        data = json.load(handle)
+    # Betingelsen er motorens, ikke datasættets: den sættes på de rækker der
+    # ikke gælder, lige nu, så HTML og PDF læser den samme sætning.
+    conditions = engine_conditions()
+    for entry in data["checks"]:
+        if entry.get("applies") is not True:
+            key = entry.get("key")
+            if key not in conditions:
+                raise SystemExit(
+                    f"tjekket '{key}' er sat til applies:false, men motoren har ingen "
+                    "betingelse for det — så kan rapporten ikke forklare hvorfor"
+                )
+            entry["condition"] = conditions[key]
+    return data
 
 
 def coverage_findings(data):
@@ -101,6 +131,19 @@ def coverage_findings(data):
     seen = [key for key in listed if listed.count(key) > 1]
     for key in dict.fromkeys(seen):
         findings.append(f"tjekket '{key}' står mere end én gang i prøverapporten")
+    # `applies` er påkrævet på hver række, så ingen kan falde ud af det delte
+    # tal ved at mangle feltet, og en række må kun sættes til `false` hvis
+    # motoren faktisk har en betingelse for den. Uden dette kunne prøverapporten
+    # selv finde på, hvilke tjek der ikke gælder — den fejlklasse opgaven retter.
+    conditions = engine_conditions()
+    for entry in data.get("checks", []):
+        if "applies" not in entry:
+            findings.append(f"tjekket '{entry.get('key')}' mangler 'applies'")
+        elif entry["applies"] is not True and entry.get("key") not in conditions:
+            findings.append(
+                f"tjekket '{entry.get('key')}' er 'applies: false', men motoren har ingen "
+                "betingelse for det — rapporten kan så ikke forklare hvorfor"
+            )
     for entry in data.get("checks", []):
         if entry.get("status") not in STATUSES:
             findings.append(f"tjekket '{entry.get('key')}' har status '{entry.get('status')}'")
@@ -111,13 +154,38 @@ def coverage_findings(data):
 
 
 def summarize(data):
-    """Alle tal i rapporten, afledt af de ni tjek og af historikken."""
+    """Alle tal i rapporten, afledt af de ni tjek og af historikken.
+
+    Tallet skal sige, hvad det tæller. Fire af de ni rækker gælder kun under
+    en forudsætning (`cookies`, `tcf`, `consent_mode_v2`, `dora`), så de tælles
+    ikke i et tal for et site de ikke gælder — ellers får en shop uden
+    programmatisk annoncering et ubetinget pointtal for rækker, der aldrig
+    kunne have fejlet. Hvilke rækker der gælder, står i datasættet
+    (`applies`), og porten kræver at de er en delmængde af motorens egen
+    betingelsesliste, så prøverapporten ikke kan opfinde sin egen.
+    """
     checks = data["checks"]
     total = len(checks)
     passed = sum(1 for entry in checks if entry["status"] == "pass")
     issues = total - passed
     score = round(100 * passed / total) if total else 0
     failed = sum(1 for entry in checks if entry["status"] == "fail")
+
+    # Det delte tal. `applies` er påkrævet, så en række kan ikke falde ud af
+    # tællingen ved at mangle feltet.
+    applicable = [entry for entry in checks if entry.get("applies") is True]
+    not_applicable = [entry for entry in checks if entry.get("applies") is not True]
+    applicable_total = len(applicable)
+    passed_applicable = sum(1 for entry in applicable if entry["status"] == "pass")
+    score_applicable = round(100 * passed_applicable / applicable_total) if applicable_total else 0
+    if not_applicable:
+        not_counted = "Not counted here: {0}/{1}: {2}.".format(
+            len(not_applicable),
+            total,
+            ", ".join(entry["title"] for entry in not_applicable),
+        )
+    else:
+        not_counted = ""
     if issues == 0:
         headline = "Every automated check passed. No items need attention."
         badge = "Pass — no issues found"
@@ -132,6 +200,10 @@ def summarize(data):
         "issues": issues,
         "failed": failed,
         "score": score,
+        "applicable_total": applicable_total,
+        "passed_applicable": passed_applicable,
+        "score_applicable": score_applicable,
+        "not_counted": not_counted,
         "headline": headline,
         "badge": badge,
         "circle": "fail" if failed else ("warn" if issues else "pass"),
@@ -303,6 +375,13 @@ def report_block(data):
     add('  <div class="score-details">')
     add('    <h2>Overall EU Compliance Score</h2>')
     add('    <p>{0}</p>'.format(html.escape(summary["headline"])))
+    if summary["not_counted"]:
+        add('    <p>{0} {1} of the {2} checks that apply ({3} of {4}).</p>'.format(
+            html.escape(summary["not_counted"]),
+            summary["score_applicable"],
+            summary["applicable_total"],
+            summary["passed_applicable"],
+            summary["applicable_total"]))
     add('    <div class="status"> {0}</div>'.format(html.escape(summary["badge"])))
     add('  </div>')
     add('</div>')
@@ -317,6 +396,10 @@ def report_block(data):
     add('    <div class="summary-item">')
     add('      <span class="value">{0}/{1}</span>'.format(summary["passed"], summary["total"]))
     add('      <span class="label">Checks passed</span>')
+    add('    </div>')
+    add('    <div class="summary-item">')
+    add('      <span class="value">{0}/{1}</span>'.format(summary["passed_applicable"], summary["applicable_total"]))
+    add('      <span class="label">Passed, of the checks that apply</span>')
     add('    </div>')
     add('    <div class="summary-item">')
     add('      <span class="value">{0}</span>'.format(summary["issues"]))
@@ -339,6 +422,9 @@ def report_block(data):
             html.escape(entry["key"]), status, icon))
         add('      <span class="label">{0}</span>'.format(html.escape(entry["title"], quote=False)))
         add('      <span class="detail">{0}'.format(html.escape(entry["detail"], quote=False)))
+        if entry.get("applies") is not True and entry.get("condition"):
+            add('        <span class="condition">{0}</span>'.format(
+                html.escape(entry["condition"], quote=False)))
         if entry.get("fix"):
             add('        <span class="fix">→ {0}</span>'.format(html.escape(entry["fix"], quote=False)))
         add('      </span>')
@@ -438,10 +524,15 @@ def build_pdf(data, path=PDF):
     story.append(Spacer(1, 10))
 
     score_cell = ParagraphStyle("sc", fontName="Helvetica-Bold", alignment=1)
+    score_note = summary["headline"]
+    if summary["not_counted"]:
+        score_note += "<br/>{0} {1}% of the {2} checks that apply ({3} of {4}).".format(
+            xml_escape(summary["not_counted"]), summary["score_applicable"],
+            summary["applicable_total"], summary["passed_applicable"], summary["applicable_total"])
     score_tbl = Table([
         [Paragraph('<font size="22" color="#ffffff"><b>{0}%</b></font>'.format(summary["score"]), score_cell),
          Paragraph('<font size="12"><b>Overall EU Compliance Score</b></font><br/>'
-                   '<font size="9" color="#4a5a6a">{0}</font>'.format(xml_escape(summary["headline"])), body)],
+                   '<font size="9" color="#4a5a6a">{0}</font>'.format(xml_escape(score_note)), body)],
     ], colWidths=[38 * mm, 132 * mm])
     score_tbl.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, 0), fail if summary["failed"] else good),
@@ -459,10 +550,11 @@ def build_pdf(data, path=PDF):
     summary_tbl = Table([
         ["{0}%".format(summary["score"]),
          "{0}/{1}".format(summary["passed"], summary["total"]),
+         "{0}/{1}".format(summary["passed_applicable"], summary["applicable_total"]),
          "{0} {1}".format(summary["issues"], "item" if summary["issues"] == 1 else "items"),
          "{0} days".format(len(rows))],
-        ["Overall score", "Checks passed", "Need attention", "Of history"],
-    ], colWidths=[42.5 * mm] * 4)
+        ["Overall score", "Checks passed", "Of those that apply", "Need attention", "Of history"],
+    ], colWidths=[34 * mm] * 5)
     summary_tbl.setStyle(TableStyle([
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (-1, 0), 15),
         ("ALIGN", (0, 0), (-1, -1), "CENTER"), ("TEXTCOLOR", (0, 0), (-1, 0), ink),
@@ -478,6 +570,9 @@ def build_pdf(data, path=PDF):
         detail = xml_escape(entry["detail"])
         if entry.get("fix"):
             detail += '<br/><font size="8.5" color="#0b6e4f">→ {0}</font>'.format(xml_escape(entry["fix"]))
+        if entry.get("applies") is not True and entry.get("condition"):
+            detail += '<br/><font size="8.5" color="#4a5a6a"><i>{0}</i></font>'.format(
+                xml_escape(entry["condition"]))
         check_rows.append([
             Paragraph('<font color="{0}"><b>{1}</b></font>'.format(colour, xml_escape(label)), body),
             Paragraph("<b>{0}</b><br/><font size='8.5' color='#4a5a6a'>{1}</font>".format(
