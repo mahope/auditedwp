@@ -58,7 +58,10 @@ KEEP = {
     # Produktnavne og skelnemærker, der er ens i alle sprog. `CLI` er navnet på
     # værktøjet, og `Home` er den breadcrumb-label, apply_shell skriver på sit
     # eget sprog. De skal derfor stå ens, ellers dømmer porten sit eget output.
-    "CLI", "Home",
+    # `API` er det tredje: produktnavnet **og** breadcrumb-etiketten, som
+    # `SEG_LABELS["api"]` skriver som "API" i alle fire sprog. Uden den her ville
+    # hver spejling kræve en sætning til et ord der ikke er prosa.
+    "CLI", "Home", "API",
 }
 
 TITLE_EN = "EU compliance scan API — free, no API key"
@@ -147,8 +150,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "De ni tjek er tekniske signaler læst i det serverede HTML. DORA-tjekket læser efter offentlige markører i sidens tekst og er ikke en vurdering af noget som helst.",
         "Need history, scheduling and a report?": "Brug for historik, tidsplan og en rapport?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It unlocks the editable HTML document starters too.":
-            "API'et ovenfor forbliver gratis. Pro er en licens til WordPress-pluginet: daglige re-scans i din egen WordPress, de seneste 12 scanninger gemt, en mail når et tjek brydes, og en HTML-rapport fra den seneste scanning. Det låser også de redigerbare HTML-dokumentstartere op.",
+        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
+            "API'et ovenfor forbliver gratis. Pro er en licens til WordPress-pluginet: daglige re-scans i din egen WordPress, de seneste 12 scanninger gemt, en mail når et tjek brydes, og en HTML-rapport fra den seneste scanning. Det giver også adgang til de redigerbare HTML-dokumentstartere.",
         "Buy Pro — $79/year per website →": "Køb Pro — $79/år pr. website →",
     },
     "de": {
@@ -228,8 +231,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "Die neun Prüfungen sind technische Signale aus dem ausgelieferten HTML. Die DORA-Prüfung sucht öffentliche Textmarken und ist keine Bewertung von irgendetwas.",
         "Need history, scheduling and a report?": "Brauchen Sie Historie, Zeitplan und einen Bericht?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It unlocks the editable HTML document starters too.":
-            "Die API oben bleibt kostenlos. Pro ist eine Lizenz für das WordPress-Plugin: tägliche Re-Scans in Ihrem eigenen WordPress, die letzten 12 Scans gespeichert, eine E-Mail, wenn eine Prüfung bricht, und ein HTML-Bericht aus dem letzten Scan. Es schaltet außerdem die editierbaren HTML-Dokumentvorlagen frei.",
+        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
+            "Die API oben bleibt kostenlos. Pro ist eine Lizenz für das WordPress-Plugin: tägliche Re-Scans in Ihrem eigenen WordPress, die letzten 12 Scans gespeichert, eine E-Mail, wenn eine Prüfung bricht, und ein HTML-Bericht aus dem letzten Scan. Es gibt außerdem Zugriff auf die editierbaren HTML-Dokumentvorlagen.",
         "Buy Pro — $79/year per website →": "Pro kaufen — $79/Jahr pro Website →",
     },
     "fr": {
@@ -309,8 +312,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "Les neuf contrôles sont des signaux techniques lus dans le HTML servi. Le contrôle DORA cherche des marqueurs publics dans le texte de la page et n'est aucune évaluation.",
         "Need history, scheduling and a report?": "Besoin d'historique, de planification et d'un rapport ?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It unlocks the editable HTML document starters too.":
-            "L'API ci-dessus reste gratuite. Pro est une licence de l'extension WordPress : réanalyses quotidiennes dans votre propre WordPress, les 12 derniers scans conservés, un e-mail quand un contrôle casse, et un rapport HTML du dernier scan. Elle débloque aussi les modèles de documents HTML modifiables.",
+        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
+            "L'API ci-dessus reste gratuite. Pro est une licence de l'extension WordPress : réanalyses quotidiennes dans votre propre WordPress, les 12 derniers scans conservés, un e-mail quand un contrôle casse, et un rapport HTML du dernier scan. Elle donne aussi accès aux modèles de documents HTML modifiables.",
         "Buy Pro — $79/year per website →": "Acheter Pro — 79 $/an par site →",
     },
 }

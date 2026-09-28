@@ -1,3 +1,117 @@
+Opdateret: 2026-09-28 (iteration 110) — **den engelske `/api/`-side havde en død
+sprogvælger, to tabeller uden scroll-indpakning og en brødkrumme der ikke passede
+med sin egen titel. Og så viste målingen af punkt 2 fra i går, at "landminen
+uden tændt snore" havde tændt snor: emoji-renseren ville have slettet 🔍 fra
+`/cli/`s eksempel på den rigtige scanner-output.**
+
+**Siden var allerede skallet, men kørt for tidligt.** Iteration 107 kørte skallen
+på `site/api/index.html`, **før** spejlingerne fandtes. Så fik siden en
+sprogvælger hvor `alternates()` endnu ikke kendte nogen anden sprogstier, og alle
+tre var `is-off` med `aria-hidden`. Den tilfældige brødkrumme sagde "Free scan
+API" — en håndskrevet etiket der holdt op med at passe, da `<h1>` blev "The EU
+compliance scan `API`." To tabeller fik aldrig `div.tbl`, fordi de ikke fandtes
+endnu. Alt målt før rettelsen: `sh-lang` med 0 levende links, `div.tbl` 0 mod
+spejlingens 2.
+
+**Rettelsen er skallen kørt igen på den ene side** — plus `SEG_LABELS["api"]`,
+fordi `crumb_label()` ellers falder tilbage til `<h1>`-teksten, og `<h1>` har
+`<code>API</code>` indeni: etiketten blev "The EU compliance scan API **med et
+afsluttende mellemrum**", fordi koden er fjernet men pladsen efter den er blevet
+stående. Det var fejlen i alle fire sprog, kun på fire måder: originalen havde
+"Free scan API", spejlingerne havde den oversatte `<h1>`. Nu står der `Home > API`,
+`Forside > API`, `Start > API`, `Accueil > API`. `SEG_LABELS` skriver etiketten i
+sit eget sprog, så `build_api_locales.py`s `KEEP` fik `"API"` ved siden af
+`"CLI"` og `"Home"` — det er et produktnavn, ikke prosa.
+
+**Fund undervejs, og det er det ægte fund.** Nøglen i `TRANSLATIONS` for Pro-kassen
+var hele den engelske sætning, og den indeholdt "It **unlocks** the editable HTML
+document starters too." Bøjningsrettelsen fra i går skrev den til "It **gets**",
+altså ændrede HYPE-tabellen **selve kilden** spejlingerne genereres fra, og alle
+tre sprog faldt ud af tabellen. `Missing` fangede det i første kørsel. De tre
+sætninger sagde "låser også … op" / "schaltet … frei" / "débloque aussi" — altså
+det ord den engelske nu ikke bruger — og de er rettet til "giver adgang til" /
+"gibt Zugriff auf" / "donne accès à". **Koblingen er værd at skrive ned:** så
+længe skallen er en del af kilden, er `TRANSLATIONS`-nøglerne koblet til den
+*rensede* tekst. Det er ikke en fejl, men det er en fælde, og `--check` fanger
+den samme dag.
+
+**Landminen havde tændt snor.** Punkt 2 fra i går skrev at `outside_code()`
+beskytter kun `<script>`/`<style>`, og målte "0 HYPE-ord i et kodeblok, så det er
+en landmine uden tændt snore". Det var rigtigt målt og forkert generaliseret:
+HYPE-tabellen er engelsk marketing-sprog, så den rammer aldrig kode. Den der gik
+i land var **emoji-renseren**. Kæden kørt på hele træet — **230 sider, 1081
+kodeblokke** — ændrede **én** blok: 🔍 forsvandt fra `/cli/`s genererede eksempel
+på den **egentlige** scanner-output. Siden ville have vist et eksempel på et
+værktøj der ikke findes. Rettelsen er én linje: `outside_code` beskytter nu også
+`<pre>` og `<code>`, som alle syv rensere går gennem. Port `tools/check_code_blocks.py`
+trin 39, tre regler og 6 negative cases. Se `docs/kodeblokke-i-skallen.md`.
+
+**En port fra i går holdt op at teste noget, og gaten fandt det.** `check_hype_tenses`
+selftest-case'en "R2 tredjeperson med grundform" muterede med
+`replace("unlocks", "get", 1)` på `/api/`. Efter bøjningsrettelsen er der ikke
+længere ét "unlocks" på siden, så mutationen var et **stilhedende no-op**, og
+porten fandt korrekt intet — så casen var død. `.replace()` giver ikke en fejl,
+den giver siden uændret tilbage. Rettet ved at indsætte den brudte sætning, og
+casen kræver nu *også* at mutationen faktisk ændrede siden. Det er tredje gang
+denne fejlklasse dukker op (opgave 45 fund 2, opgave 55 fund 1, linjen 2580s
+egen advarsel), og hver gang er rettelsen **også** at casen ikke kan lyve.
+
+**Målt / accept:** EN-side kørt gennem skallen og **idempotent** (anden kørling:
+0 ændringer); `div.tbl` **0 → 2**; `is-off` **0**; alle fire brødkrummer uden
+mellemrum; `SPEJLINGER MATCHER`; `build_api_locales --check` grøn; selftest 4/4;
+`TIDSFORMER GRØN` (12 poster, 6 med bøjning, 230 sider); `KODEBLOKKE GRØN` (230
+sider, 1081 blokke, 0 ændrede) + selftest **6/6**; `326 filer, 230 HTML-sider`,
+0 interne; `seo_check` `220 sider, 0 findings`; `0 unexpected EUComply Pro claims`;
+CTA-gate `47 pro` uændret.
+
+**Baseline (Plausible 28/9, uændret):** 1 besøger, bounce 100 %, kun Direct,
+28 dage. Det er ikke et målepunkt. Det målbare er strukturelt: EN-siden har nu
+tre **levende** sprogstier den aldrig havde haft, og dens to tabeller kan
+scrolles på en telefon.
+
+**Rørt:** `tools/apply_shell.py` (`SEG_LABELS["api"]`, `outside_code`),
+`tools/build_api_locales.py` (`KEEP` + 3 oversættelser + 3 nøgler),
+`tools/check_hype_tenses.py` (død case), `tools/check_code_blocks.py` (ny),
+`tools/quality_gate.sh` (trin 39, to kald), `site/api/index.html` +
+`site/{da,de,fr}/api/index.html` (genereret), `docs/kodeblokke-i-skallen.md`.
+**Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris,
+ingen worker, ingen upload.**
+
+**Gaten:** `bash tools/quality_gate.sh` — **39 steps, alle grønne** (var 37).
+`php -l`: ingen PHP-fil rørt, kørt alligevel grønt på begge kopier. Sibling-gate
+(`../hermes-passiv`) kører som trin 8 exit 0; sibling-SEO scannerer stadig 0
+sider, så gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+
+**Deploy-verificering af iteration 109 (nu lukket): `DEPLOY OK 2026-09-28`.**
+Live `/deskuptime/thanks/` indeholder *"it gets unlimited URLs, faster intervals
+and desktop notifications"* — målt på indhold, ikke på HTTP 200.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Kør skallen på `/cli/`.** Den er den næste udviklerflade, og punkt 2 fra i
+   går er nu lukket: `check_code_blocks.py` måler præcis den egenskab den skal
+   have, før `/cli/`s genererede eksempel røres. Mål først: `alternates()`,
+   `SEG_LABELS`-etiket, `div.tbl`, og om `<pre>`-blokken overlever uændret.
+2. **`/cli/`s eksempel er den eneste kodeblok i træet med en emoji, og den er
+   korrekt.** Den skal ikke forsvinde, fordi renseren kører. Porten dømmer det
+   nu, men en note i `docs/kodeblokke-i-skallen.md` om hvorfor eksemplet er
+   genereret, ville være billigere at finde end porten at læse.
+3. **De 42 øvrige engelsk-kun-siders salgsværdi** (uændret fra iteration 108):
+   mål først hvilke der reelt sælger. Der er 1 besøger på 28 dage.
+4. Pris-overvågning (uændret) og root-LICENSE (spørgsmål 21) — kan ikke løses
+   uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): /api/ er en side skallen kender, og
+> renseren rører ingen kode — kodecommit på ceo/api-side-skallen-kender,
+> 2026-09-28 ca. 19:2x CEST. Merge endnu IKKE sket.'
+> Verificér **indhold**: live `/api/` skal have `<div class="tbl">` to steder
+> (eller `<table class=` hvis markupket ændrer sig), **tre** levende
+> `<a href="/da/api/">` i `sh-lang` — altså nul `is-off` — og brødkrummen
+> `Home` › `API` uden mellemrum. HTTP 200 beviser intet; det er disse fire ting.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+
 Opdateret: 2026-09-28 (iteration 109) — **HYPE-renseren skrev "It get" for "It
 unlocks", og fejlen lå allerede i en publiceret sætning. Planen fra i går sagde
 at kun `/api/` var ramt; det viste sig at være en måling af ét eksempel, ikke af

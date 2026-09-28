@@ -238,6 +238,15 @@ SEG_LABELS = {
     "tools": {"en": "Tools"}, "book": {"en": "Guide", "da": "Guide", "de": "Leitfaden", "fr": "Guide"},
     "scan": {"en": "Scan", "fr": "Scanner"}, "pricing": {"en": "Pricing", "da": "Priser", "de": "Preise", "fr": "Tarifs"},
     "search": {"en": "Search", "da": "Søg", "de": "Suche", "fr": "Recherche"},
+    # `/api/` er det tredje topsegment uden egen etiket. Uden denne faldt
+    # brødkrummen tilbage til `<h1>`-teksten, og `<h1>` har `<code>API</code>`
+    # indeni: etiketten blev "The EU compliance scan API " med et afsluttende
+    # mellemrum, fordi koden er fjernet men pladsen efter den er blevet stående.
+    # Samme fejl stod i alle fire sprog, kun på fire måder — spejlingerne fik
+    # deres etiket fra den oversatte `<h1>`, originalen fra en håndskrevet
+    # breadcrumb der sagde "Free scan API" og ikke længere passede med titlen.
+    # "API" er produktets navn og ens i alle sprog, som `CLI`.
+    "api": {"en": "API", "da": "API", "de": "API", "fr": "API"},
 }
 
 HEADER_TPL = (PARTIALS / "header.html").read_text(encoding="utf-8")
@@ -759,8 +768,20 @@ def product_ctas(html: str, url: str) -> str:
 
 
 def outside_code(html: str, fn):
-    """Apply fn to the parts of html that are not inside <script>/<style>."""
-    parts = re.split(r"(<(?:script|style)\b[^>]*>.*?</(?:script|style)>)", html, flags=re.S | re.I)
+    """Apply fn to the parts of html that are not inside <script>/<style>/<pre>/<code>.
+
+    `<pre>` og `<code>` blev beskyttet i iteration 110, og de skulle have været
+    det hele vejen. Målt over hele træet (230 sider, 1081 kodeblokke) ændrede
+    skallen **én** blok, og den var rigtig: emoji-renseren slettede 🔍 fra
+    `/cli/`s genererede eksempel på den **egentlige** scanner-output. Det er den
+    fejlklasse, der gør et dokumenteret eksempel til løgnen — samme som
+    `check_dom_xss.py` så i quick-check-widgeten. Renserne skal ændre prosa, og
+    et `<pre>` er ikke prosa.
+
+    Navnet passede aldrig helt; nu gør det.
+    """
+    parts = re.split(r"(<(?:script|style|pre|code)\b[^>]*>.*?</(?:script|style|pre|code)\s*>)", html,
+                     flags=re.S | re.I)
     for i in range(0, len(parts), 2):
         parts[i] = fn(parts[i])
     return "".join(parts)

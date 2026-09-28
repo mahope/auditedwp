@@ -676,6 +676,20 @@ hdr "skal HYPE-renseren bevare verbets bøjning"
 run "tools/check_hype_tenses.py" "$PY" tools/check_hype_tenses.py
 run "tools/check_hype_tenses.py --selftest" "$PY" tools/check_hype_tenses.py --selftest
 
+# Opgave 110: `outside_code()` beskyttede kun `<script>` og `<style>`, så
+# renserne skrev i `<pre>` og `<code>`. Planen målte 0 HYPE-ord i en kodeblok og
+# kaldte det "en landmine uden tændt snore" — det var målt på HYPE-tabellen alene.
+# Kæden kørt på hele træet (230 sider, 1081 kodeblokke) ændrede **én** blok, og
+# det var emoji-renseren: 🔍 forsvandt fra `/cli/`s genererede eksempel på den
+# rigtige scanner-output, så siden ville have vist noget `eucomply-scanner` ikke
+# længere gør. R1 kører den rigtige `process()` over en kopi af hele sitet og
+# kræver at hver blok kommer tilbage byte for byte; R2 genskaber den gamle
+# beskyttelse og kræver at R1 så præcis den blok, så porten ikke er grøn for
+# ingens skyld; R3 måler inline `<code>`. Se docs/kodeblokke-i-skallen.md.
+hdr "skal skalen lade kodeblokke være i fred"
+run "tools/check_code_blocks.py" "$PY" tools/check_code_blocks.py
+run "tools/check_code_blocks.py --selftest" "$PY" tools/check_code_blocks.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

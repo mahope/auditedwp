@@ -189,9 +189,24 @@ def selftest():
          hype=[(re.compile(r"\bunlock(s)?\b"), lambda m: "gets" if m.group(1) else "get")]
          + [(p_, r_) for p_, r_ in real_hype if "nlock" not in p_.pattern])
     # R2: den fejl der allerede la i den publicerede tekst.
-    case("R2 tredjeperson med grundform",
-         mutate=lambda p: {**p, "api/index.html": p["api/index.html"].replace(
-             "unlocks", "get", 1)})
+    #
+    # Mutationen var engang `replace("unlocks", "get", 1)` paa /api/. Da
+    # bøjningsrettelsen i iteration 109 skrev "unlocks" til "gets", holdt den
+    # op at virke **uden at gøre noget** — `.replace()` giver ikke en fejl,
+    # den giver det uændrede sætning tilbage, og porten fandt korrekt intet.
+    # Selftesten sagde så "blev ikke fanget" for en case der ikke længere
+    # testede noget. Derfor indsættes den brudte sætning nu, og case'en
+    # kræver *også* at mutationen faktisk ændrede siden: en no-op må aldrig
+    # kunne passere som en fanget fejl.
+    def break_third_person(p):
+        out = dict(p)
+        text = p["api/index.html"]
+        mutated = text.replace("<main", "<p>It get the starters.</p>\n<main", 1)
+        assert mutated != text, "mutationen ændrede ikke /api/ — casen tester ingenting"
+        out["api/index.html"] = mutated
+        return out
+
+    case("R2 tredjeperson med grundform", mutate=break_third_person)
     # R2b: "does it get" er korrekt engelsk og maa ikke give en find. Siden
     # med sætningen laeses fra repoet, ikke skrives i testen.
     correct = {k: v for k, v in real_pages.items() if "does it get" in prose_of(v)}
