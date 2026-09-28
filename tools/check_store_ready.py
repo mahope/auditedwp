@@ -50,6 +50,7 @@ import re
 import struct
 import sys
 import tempfile
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXT = os.path.join(ROOT, "chrome-ext")
@@ -83,6 +84,14 @@ DEAD_PROMISE = (
 
 PAID_SURFACES = ("/pro/", "/plugin/", "/pricing/", "/store/")
 
+# R11. En licens skal have et navn, der kan efterprøves, og en tekst der giver
+# rettighederne. `open source` er et juridisk begreb — det er en hensigtserklæring
+# om en tilladelse, ikke en tilladelse. Navnet er det, en læser kan slå op.
+LICENSE_NAME = "LICENSE"
+LICENSES = ("MIT", "Apache", "BSD", "GPL", "MPL", "Unlicense")
+LICENSE_PROMISE = ("open source", "open-source", "opensource", "free software", "source available")
+GRANT_PHRASE = "Permission is hereby granted"
+
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 CODE_SUFFIXES = (".js", ".html", ".json")
 HOSTISH = re.compile(r"https?://[a-z0-9.-]+", re.I)
@@ -109,6 +118,28 @@ def read_text(path, findings, label):
     except OSError as exc:
         findings.append(f"{label}: kan ikke læses ({exc})")
         return None
+
+
+def read_zip_names(path, findings, label):
+    """Medlemmerne i et arkiv. Kun filer — en mappe-sti tæller ikke som indhold."""
+    try:
+        with zipfile.ZipFile(path) as archive:
+            if archive.testzip() is not None:
+                findings.append(f"{label}: korrupt arkiv")
+                return None
+            return {name for name in archive.namelist() if not name.endswith("/")}
+    except (OSError, zipfile.BadZipFile) as exc:
+        findings.append(f"{label}: kan ikke læses ({exc})")
+        return None
+
+
+def archive_contains_license_text(path):
+    """Har arkivet en LICENSE, der faktisk er en licenstekst?"""
+    try:
+        with zipfile.ZipFile(path) as archive:
+            return GRANT_PHRASE in archive.read(LICENSE_NAME).decode("utf-8", "replace")
+    except (OSError, KeyError, zipfile.BadZipFile):
+        return False
 
 
 def png_size(path):
@@ -278,12 +309,54 @@ def collect(root=ROOT, ext=None, page=None, published=ROOT):
                 continue
             findings.append(f"chrome-ext/README.md: peger på {token!r}, som ikke findes")
 
+    # R11 — en licenspåstand skal have en licenstekst bag sig, i kilden **og**
+    # i den zip læseren henter. Målt 28/9: `chrome-ext/` havde ingen LICENSE,
+    # zip'en havde ni medlemmer og ingen af dem var en, og `/extension/` sagde
+    # "Open source" i ren tekst — et løfte uden rettigheder. To sider af samme
+    # mangel, så porten dømmer begge: teksten i kilden, og medlemmet i
+    # arkivet. Ordet "open source" er ikke nok, for det er et juridisk begreb
+    # og en hensigtserklæring; porten vil have licensens **navn**.
+    license_path = os.path.join(ext, LICENSE_NAME)
+    if not os.path.exists(license_path):
+        findings.append(
+            f"extension: {LICENSE_NAME} mangler i chrome-ext/ — en licenspåstand uden licenstekst "
+            "giver læseren ingen rettigheder"
+        )
+    else:
+        license_text = read_text(license_path, findings, f"chrome-ext/{LICENSE_NAME}") or ""
+        if GRANT_PHRASE not in license_text:
+            findings.append(f"chrome-ext/{LICENSE_NAME}: er ikke en licenstekst (ingen {GRANT_PHRASE!r})")
+
+    for found in zips:
+        archive = os.path.join(published, "site-dist", "assets", f"eucomply-extension-{found}.zip")
+        names = read_zip_names(archive, findings, f"site-dist/assets/eucomply-extension-{found}.zip")
+        if names is None:
+            continue
+        if LICENSE_NAME not in names:
+            findings.append(
+                f"site-dist/assets/eucomply-extension-{found}.zip: indeholder ikke {LICENSE_NAME} — "
+                "det er den fil læseren henter, så det er den der skal give rettighederne"
+            )
+            continue
+        if not archive_contains_license_text(archive):
+            findings.append(
+                f"site-dist/assets/eucomply-extension-{found}.zip: {LICENSE_NAME} er der, men er ikke en licenstekst"
+            )
+
+    named = [name for name in LICENSES if re.search(rf"\b{re.escape(name)}\b", page_html, re.I)]
+    gesturing = [phrase for phrase in LICENSE_PROMISE if phrase in lowered]
+    if gesturing and not named:
+        findings.append(
+            f"site-dist/extension: lover en licens med ordene {gesturing} uden at nævne hvilken — "
+            "en licens skal have et navn, der kan efterprøves"
+        )
+
     return findings
 
 
 def _fixture(root, manifest_extra=None, permissions=None, hosts=None, name=None, description=None,
              readme=None, page_body=None, version="1.0.2", write_icon=True, broken_icon=None,
-             code_extra=""):
+             code_extra="", license_source=True, license_zip=True, license_text=GRANT_PHRASE):
     """Skriv et minimalt, grønt extension-træ. Hvert argument bryder præcis én regel."""
     ext = os.path.join(root, "chrome-ext")
     os.makedirs(os.path.join(ext, "icons"), exist_ok=True)
@@ -324,9 +397,19 @@ def _fixture(root, manifest_extra=None, permissions=None, hosts=None, name=None,
         )
     with open(os.path.join(ext, "README.md"), "w", encoding="utf-8") as handle:
         handle.write(readme if readme is not None else "# EUComply\n\nFiles: `manifest.json`, `popup.js`.\n")
+    if license_source:
+        with open(os.path.join(ext, LICENSE_NAME), "w", encoding="utf-8") as handle:
+            handle.write(f"MIT License\n\n{license_text}\n")
 
     for paid in ("pro", "extension"):
         os.makedirs(os.path.join(root, "site-dist", paid), exist_ok=True)
+    os.makedirs(os.path.join(root, "site-dist", "assets"), exist_ok=True)
+    with zipfile.ZipFile(
+        os.path.join(root, "site-dist", "assets", f"eucomply-extension-{version}.zip"), "w"
+    ) as archive:
+        archive.writestr("manifest.json", json.dumps(manifest))
+        if license_zip:
+            archive.writestr(LICENSE_NAME, f"MIT License\n\n{license_text}\n")
     body = page_body if page_body is not None else (
         '<main><a href="/assets/eucomply-extension-{v}.zip">Download</a>'
         '<a href="/pro/" class="btn">See Pro</a></main>'
@@ -402,6 +485,13 @@ def _selftest():
         # R10
         expect_red("død reference i README", "som ikke findes",
                    readme="# EUComply\n\nKør `icons/generate-icons.py` forst.\n"),
+        # R11 — dagens fund: kilde, arkiv og påstand er tre sider af samme mangel
+        expect_red("ingen LICENSE i kilden", "mangler i chrome-ext", license_source=False),
+        expect_red("LICENSE uden for zip'en", "indeholder ikke LICENSE", license_zip=False),
+        expect_red("LICENSE der ikke er en licens", "ikke en licenstekst", license_text="Se vilkår."),
+        expect_red("licenspåstand uden navn", "uden at nævne hvilken",
+                   page_body='<main><p>Open source.</p>'
+                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a><a href="/pro/">Pro</a></main>'),
     ]
     broken = [message for message in (case() for case in cases) if message]
     if broken:
