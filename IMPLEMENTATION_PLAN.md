@@ -1,3 +1,110 @@
+Opdateret: 2026-09-28 (iteration 112) — **main var rød, og sitet har ikke
+deployet siden i går aften. `R1 OK` i planen for i går var ikke sandt: porten
+var aldrig kørt.**
+
+**Deploy-verificering af iteration 111: `DEPLOY-MISSING`, se nedenfor.** CI for
+`cdab45c` (deploy-site, kørsel 36459785976) sluttede i
+`FEJL tools/check_shell_fixed_point.py` med **99 bevægelige sider** i loggen og
+gaten rød, så udgivelsen stoppede. Det er første gang siden denne plan blev
+ført at en merge ikke nåede ud. Første ord i denne iteration var derfor at
+finde ud af hvorfor, ikke at vælge en opgave.
+
+**Årsagen er én linje, og den var dødfød fra det øjeblik den blev skrevet.**
+Opgave 111 lagde frysningen ind som `frozen = SHELL_TIME.search(content)` i
+`article_meta()`. Men `content` er ikke sidens rå HTML: `process()` har 30
+linjer ovenfor kørt `html = SHELL_FENCE.sub("", html)`, og `SHELL_FENCE` river
+præcis `<!--shell:meta-->…<!--/shell:meta-->` væk. Den `art-meta` der skulle
+læses, var altså allerede slettet, før søgningen kørte, og den ramte aldrig sit
+mål. Samme fejl i `seo_head()`: skalens eget `data-shell`-JSON-LD fjernes med
+regex 20 linjer ovenfor `Article`-grenen, så `dateModified` blev genskrevet
+hver gang — og `published = find_date(body)` læste den `art-meta` skalen lige
+havde skrevet, så `datePublished` faldt sammen med `dateModified`.
+
+Den anden selvkørende motor var `GIT_DATES`. `git_dates()` regner en commit der
+rører ≥60 filer som bulk og tæller den ikke som redaktionel — men
+`cdab45c` rørte **51** `site/`-filer, så git mente at hver eneste artikel var
+opdateret "i går", og `max(last, published)` skrev dagens dato. To fejl der
+peger samme vej: datoen er en **afledning af kørslen**, ikke en egenskab ved
+siden.
+
+**Rettelsen er, at datoen kun læses dér hvor skalen selv har skrevet den.**
+`shell_dates(html)` i `apply_shell.py` læser kun `<!--shell:meta-->`-blokken og
+`data-shell`-scriptet — altså skalens egne markerede blokke, ikke en
+håndskrevet `art-meta` eller et håndskrevet `Article`-LD, som er redaktørens
+og skal kunne flytte sig. Den kaldes i `process()` på den **rå** tekst, før
+fence-striberingen, og resultatet gives videre til både `article_meta()` og
+`seo_head()`. `find_date()`/`GIT_DATES` bruges fortsat, men kun på sider der
+aldrig har været gennem skalen; de får én dato og fryser den så.
+
+**Hvorfor målingen i går ikke fangede det.** System-`python3` på denne maskine
+er 3.9.6, og `apply_shell.py` bruger `str | None`-annoteringer, så porten
+dørde med `TypeError` før den kørte en eneste side. `quality_gate.sh` vælger
+selv `python3.13` (`pick_python()`), så **gaten** ville have været rød — men
+iteration 111 kørte porten i hånden, og resultatet `R1 OK — 230 sider` i
+planen kom fra et træ, der var kørt adskillige gange i forvejen. Læren er
+specifik: **en portresultat er kun et resultat, hvis det er læst fra en kørsel
+af den rigtige kode på det committede træ** — en fejlslaget `python3` er ikke
+et grønt resultat, det er intet resultat. R1 kalder selv `apply_shell.process()`
+og kræver byte-identitet på hele træet, så den er stærk nok; den skal bare
+køres.
+
+**Målt / accept:** fra HEAD før rettelsen: `R1 … 99 bevægelige sider` (dette er
+CI's tal, gengivet lokalt). Efter: `R1 OK — 230 sider, 0 ændret af én kørling af
+den rigtige kæde`. Selftest R2 grøn og den fanger stadig bevægelse
+(`uden art-meta på index.html så R1 1 sider flytte sig`). `GATE GRØN — alle 40
+steps bestået`. Sibling-gaten kørte `build_sites.py --only eucomplypro.com` og
+`seo_check.py` som en del af gaten og efterlod **0 ændringer i `site/`** — altså
+er det committede træ nu et fast punkt for både skallen *og* sitebygningen.
+`php -l` grøn på begge plugin-kopier (ingen PHP rørt). Dødt kode fjernet:
+`legacy_article_meta()` i porten blev ikke kaldt af nogen.
+
+**Baseline (Plausible 28/9, uændret):** 1 besøger, bounce 100 %, kun Direct,
+28 dage. Denne iteration flytter ingen tal — den får et site, der overhovedet
+kan deploye igen.
+
+**Rørt:** `tools/apply_shell.py` (ny `shell_dates()`, `article_meta()`,
+`process()`, `seo_head()`), `tools/check_shell_fixed_point.py` (død kode væk,
+dokstring rettet), `IMPLEMENTATION_PLAN.md`. **Ingen `site/`-fil, ingen
+plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris, ingen
+worker, ingen upload.**
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Verificér at denne merge faktisk deployer.** Iterationen begyndte med
+   `DEPLOY-MISSING` på main. Først når et batch-vindue er gået og sitet er
+   hentet og **indholdet** er dømt, må røde CI-runs regnes som løst. Tjek CI
+   ét kald ved starten, ikke i en løkke.
+2. **Gaten skal aldrig kunne lyve om sin egen evne til at køre.** `pick_python()`
+   vælger den første python der kan annoteringer, og sådan som det er nu er
+   det kun *gaten* der finder en for gammel python — porten i hånden gør det
+   ikke. Overvej at lade `check_shell_fixed_point.py` sige det højt i docstring
+   og fejle med en klar besked frem for en `TypeError` fra en bunden anden fil.
+3. **`git_dates()`s bulk-tærskel på 60 filer er en gæt, og den var forkert**
+   (51 filer i `cdab45c`). Frosningen gør den ligegyldig for datoer, men den
+   styrer stadig `first`/`last` for nye sider og `lastmod_for()`s fallback.
+   Mål den, før den ændres — en højere tærskel gør flere skalkommits til
+   "bulk" og kan slå en ægte redaktionel rettelse ihjel.
+4. **R2 måler stadig kun én kæde** (fra i går, uændret): den fjerner én
+   `art-meta` og ser én side flytte sig. Den måler ikke `catalogue()`s
+   sorteringsnøgle, som var den anden del af bevægeligheden i opgave 111.
+5. **`/cli/`s emoji-erklæring er stadig tabt** (fra 111, uændret): ✅/⚠️/❌ blev
+   fjernet fra prosa, så sætningen beskriver noget uden at sige hvad. Sæt dem i
+   `<code>`, som `check_code_blocks.py` dækker.
+6. Pris-overvågning og root-LICENSE (spørgsmål 21) — kan ikke løses uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): hovedgrenen var rød, så intet siden
+> `cdab45c` er live — kodecommit på ceo/skaldatoer-frosset, 2026-09-28 20:26
+> CEST. Verificér **indhold**, ikke HTTP 200: hent en artikelside, fx
+> `/blog/shopify-gdpr-compliance-guide/`, og kræv at `<time datetime="…">` er
+> uændret `2026-09-26` og at `dateModified` i `data-shell`-JSON-LD er det samme.
+> Kræv også at et *følgende* merge stadig går grønt i CI; hvis `R1` bliver rød
+> igen, er frosningen ikke et fast punkt, men kun en forskubbet fejl.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genstartes.
+
+
 Opdateret: 2026-09-28 (iteration 111) — **opgaven for i går ("kør skallen på
 `/cli/`") ville have lavet skade, og det var målingen af den der reddede den.
 Skallen er ikke et fast punkt: fra HEAD ændrede første kørsel 33 sider, den næste
@@ -43,9 +150,16 @@ Reglen er rigtig for `<p>\n  tekst` og forkert for en inline `span` med
 `style=`, som er sat med vilje for at aligninge. Reglen springer nu elementer med
 `style=` over.
 
-**Målt / accept:** fra HEAD kræver skallen nu 3 køringer (32 → 39 → 0) og så
+**Målt / accept:** ~~fra HEAD kræver skallen nu 3 køringer (32 → 39 → 0) og så
 stopper den; det **committede** træ kræver 1: `R1 OK — 230 sider, 0 ændret af én
-kørsel af den rigtige kæde`. 0 emoji i prosa i hele træet (230 sider);
+kørsel af den rigtige kæde`.~~ **FOUDFEJL — se iteration 112.** Denne måling
+holdt ikke, og resten af afsnittet skal læses med det for øje. `R1 OK` kom fra
+et lokalt træ, der var kørt adskillige gange i forvejen: system-`python3` er
+3.9.6, så porten dørde med `TypeError` før den kørte en eneste side, og
+kunsten blev læst som et grønt resultat. På en frisk udtjekning af HEAD var der
+99 bevægelige sider, CI blev rød, og sitet holdt op med at deploye. Frysningen
+her virkede aldrig, fordi `content` er strippet for `<!--shell:meta-->` 30
+linjer ovenfor før `article_meta()` læser den.
 `/cli/`s sætning læses "verdict, passed, needs a look, failed" med ét mellemrum;
 prøverapporten urørt; `SPEJLINGER MATCHER`; selftest R2 grøn; `GATE GRØN — alle 40
 steps bestået` (var 39). `php -l` grøn på begge plugin-kopier (ingen PHP rørt).

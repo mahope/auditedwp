@@ -1085,6 +1085,11 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
     ]
     head = re.sub(r'(<meta name="theme-color"[^>]*>)', lambda m: m.group(1) + "\n" + "\n".join(og), head, count=1)
 
+    # Skalens egen JSON-LD river væk med det samme, så dens datoer læses
+    # lige før. Uden dem skrev hver kørling dagens `dateModified`, fordi
+    # `find_date(body)` læser den `art-meta` skalen lige har skrevet, og
+    # `datePublished` så faldt sammen med `dateModified`.
+    frozen_ld = shell_dates(head + body)
     head = re.sub(r'\s*<script type="application/ld\+json" data-shell(-crumbs)?>.*?</script>', "", head, flags=re.S)
     types = existing_ld_types(head + body)
     blocks = []
@@ -1112,8 +1117,8 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
     elif is_article(url, body):
         if "Article" not in types and "BlogPosting" not in types and "TechArticle" not in types:
             first, last = GIT_DATES.get(rel, (TODAY, TODAY))
-            published = find_date(body) or first
-            modified = max(last, published)
+            published = frozen_ld.get("datePublished") or find_date(body) or first
+            modified = frozen_ld.get("dateModified") or max(last, published)
             h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
             blocks.append({"@context": "https://schema.org", "@type": "Article",
                            "headline": (text_of(h1.group(1)) if h1 else full_title)[:110],
@@ -1280,8 +1285,41 @@ def prev_next(url: str, lang: str) -> str:
 
 SHELL_TIME = re.compile(r'<time datetime="(\d{4}-\d{2}-\d{2})"[^>]*>([A-Za-z]+) \1</time>')
 
+# Kun skalens **egne** markerede blokke tæller. En `art-meta` eller et
+# `data-shell`-JSON-LD som en redaktør har skrevet i hånden, er ikke skalens
+# hukommelse, og den skal derfor ikke låse sin egen dato fast.
+SHELL_META_BLOCK = re.compile(r'<!--shell:meta-->(.*?)<!--/shell:meta-->', re.S)
+SHELL_LD_BLOCK = re.compile(
+    r'<script type="application/ld\+json" data-shell>(.*?)</script>', re.S)
 
-def article_meta(url: str, lang: str, rel: str, content: str) -> str:
+
+def shell_dates(html: str) -> dict[str, str]:
+    """Datoerne skalen selv skrev i sidste kørling, kun fra dens egne blokke.
+
+    Det er den eneste kilde, der er et fast punkt. `GIT_DATES` er ikke: sidste
+    skalkørsel-commit er større end portens bulk-tærskel på 60 filer, så git
+    mente siden var redaktionelt opdateret i går, og næste kørling skrev dagens
+    dato. Datoen er så læst tilbage fra `art-meta` som sidens *publicerings*
+    dato, hvilket gjorde `datePublished` til `dateModified` og fik `prev_next()`
+    til at sortere kæden om. Se `check_shell_fixed_point.py`.
+    """
+    out: dict[str, str] = {}
+    block = SHELL_META_BLOCK.search(html)
+    if block:
+        m = SHELL_TIME.search(block.group(1))
+        if m:
+            out["art"], out["label"] = m.group(1), m.group(2)
+    ld = SHELL_LD_BLOCK.search(html)
+    if ld:
+        for key in ("datePublished", "dateModified"):
+            m = re.search(rf'"{key}"\s*:\s*"(\d{{4}}-\d{{2}}-\d{{2}})"', ld.group(1))
+            if m:
+                out[key] = m.group(1)
+    return out
+
+
+def article_meta(url: str, lang: str, rel: str, content: str,
+                 frozen: dict | None = None) -> str:
     """Artiklens dato-linje. Den skal være et **fast punkt**, ikke en afledning.
 
     Datoen blev hver kørsel genberegnet som `max(git-seneste-commit, publiceret)`.
@@ -1301,9 +1339,8 @@ def article_meta(url: str, lang: str, rel: str, content: str) -> str:
     t = I18N[lang]
     words = len(text_of(content).split())
     minutes = max(1, round(words / 220))
-    frozen = SHELL_TIME.search(content)
-    if frozen:
-        date, label = frozen.group(1), frozen.group(2)
+    if frozen and frozen.get("art"):
+        date, label = frozen["art"], frozen["label"]
     else:
         first, last = GIT_DATES.get(rel, (TODAY, TODAY))
         published = find_date(content) or first
@@ -1323,6 +1360,11 @@ def process(path: Path) -> bool:
     lang = lang_of(url)
     html = path.read_text(encoding="utf-8")
     orig = html
+    # Læs **før** `SHELL_FENCE` river skalens egen blokke væk. Det var her
+    # opgave 111 satte læsningen, og da var den dødfød: `content` nederst i
+    # `process()` er `SHELL_FENCE.sub("", html)`, så den `art-meta` der skulle
+    # fryse datoen, var væk 30 linjer ovenfor. R1 målte 99 bevægelige sider.
+    frozen = shell_dates(html)
     is_devnotify = "/devnotify/" in url
     native = "pg-legacy" not in html and "data-dark-ok" in html[:400]  # pages written for the new shell
 
@@ -1409,7 +1451,7 @@ def process(path: Path) -> bool:
         if layout == "prose":
             content, toc = heading_ids(content)
             side, details = toc_markup(toc, lang)
-            art = article_meta(url, lang, rel, content) if is_article(url, content) else ""
+            art = article_meta(url, lang, rel, content, frozen) if is_article(url, content) else ""
             if art:
                 h1_end = content.lower().find("</h1>")
                 window_end = h1_end + 1500 if h1_end >= 0 else 3000

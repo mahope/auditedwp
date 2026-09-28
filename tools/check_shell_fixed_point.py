@@ -24,10 +24,23 @@ for byte. Porten kalder `apply_shell.process()` selv, så den måler kæden der
 faktisk kører — ikke en genkonstruktion.
 
 R2 dømmer den anden retning, og det er den der beviser at R1 ikke er tom: den
-genskaber den gamle selvkørende dato og kræver at R1 så præcis den fejl den er
-lavet til at se. R2 kræver desuden, som opgave 110 lærte, at mutationen
-*faktisk* ændrede en side — `.replace()` giver ingen fejl, den giver siden
-uændret tilbage, og så er casen død uden at se ud som død.
+tager det frosne træ, fjerner **én** artikelsides `art-meta` og kræver at R1 så
+præcis den bevægelse den er lavet til at se — den situation de 33 legacy-sider
+kom ind i. R2 kræver desuden, som opgave 110 lærte, at mutationen *faktisk*
+ændrede en side — `.replace()` giver ingen fejl, den giver siden uændret
+tilbage, og så er casen død uden at se ud som død.
+
+Iteration 112 fandt her en fejl, porten ikke havde. Opgave 111 lagde
+`frozen = SHELL_TIME.search(content)` ind i `article_meta()` for at genbruge
+datoen skalen selv skrev. Det virker ikke: `content` er `html` **efter**
+`SHELL_FENCE.sub("", html)`, så den `art-meta` der skulle læses, var allerede
+riveret væk, og søgningen ramte aldrig sit mål. R1 var grøn på papiret og
+`GATE GRØN` stod i planen — fordi porten dengang kun blev kørt lokalt med et
+system-`python3` der var for gammel til at starte (`TypeError` på `str | None`),
+så resultatet var fra et træ, der var kørt mange gange i forvejen. Først CI,
+på en frisk udtjekning af HEAD, sagde `FEJL tools/check_shell_fixed_point.py`
+med 99 bevægelige sider, og sitet holdt op med at deploye. R1 var altså ikke
+død, den var aldrig kørt.
 
 Selftest: to negative cases.
 """
@@ -84,28 +97,6 @@ def _first_delta(a: str, b: str) -> str:
 
 def _short(s: str) -> str:
     return s.replace("\n", " ")
-
-
-def legacy_article_meta(shell):
-    """Den selvkørende dato fra før opgave 111, til R2.
-
-    Datoen blev hver kørsel genberegnet som `max(git-seneste-commit, publiceret)`
-    i stedet for at genbruge den skalen selv havde skrevet. Det er præcis den
-    kæde der gjorde træet bevægeligt, så R2 genskaber den — ikke en opfundet
-    fejl, men den kode der var i filen.
-    """
-    def article_meta(url, lang, rel, content):
-        t = shell.I18N[lang]
-        minutes = max(1, round(len(shell.text_of(content).split()) / 220))
-        first, last = shell.GIT_DATES.get(rel, (shell.TODAY, shell.TODAY))
-        published = shell.find_date(content) or first
-        updated = max(last, published)
-        label = t["updated"] if updated != published else t["published"]
-        return (f'<p class="art-meta"><time datetime="{updated}">{label} {updated}</time>'
-                f'<span>{minutes} {t["min_read"]}</span>'
-                f'<button type="button" class="btn-ghost btn-sm share" data-copy-link>'
-                f'{t["share"]}</button></p>')
-    return article_meta
 
 
 def tree_findings() -> list[str]:
