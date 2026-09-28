@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.38
+ * Version:           1.3.39
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.38' );
+define( 'EUCOMPLY_VERSION', '1.3.39' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1541,7 +1541,7 @@ class EUComply {
                 ? 'Form markup is on the front page and the page does not link a privacy policy. A Privacy Policy page is assigned in Settings → Privacy, but the page that collects personal data does not point to it — EU law asks for the notice at the point of collection.'
                 : 'Form markup is on the front page and the page does not link a privacy policy, and no Privacy Policy page is assigned in Settings → Privacy.';
             $results['warnings'][] = 'A page that collects personal data has to link a privacy notice.';
-            $results['fix']        = 'Add a link to your privacy policy next to the form (e.g. <a href="/privacy/">Privacy Policy</a>), and assign a Privacy Policy page in Settings → Privacy. Include a consent checkbox where the law requires it.';
+            $results['fix']        = 'Add a link to your privacy policy next to the form, and assign a Privacy Policy page in Settings → Privacy. Include a consent checkbox where the law requires it.';
             return $results;
         }
 

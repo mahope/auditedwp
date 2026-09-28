@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.38
+Stable tag: 1.3.39
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,10 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 
 == Changelog ==
 
+= 1.3.39 (2026-09-28) =
+* Fix: the advice on the Forms check carried its own HTML example inside the text - "e.g. <a href="/privacy/">Privacy Policy</a>". The report renders that text safely, so the example reached the reader as source code instead of as an example. It was the one line in the whole report that could not be read, it sat in the field agencies read first, and it belonged to the finding this check most often reports: a form with no privacy-policy link.
+* The advice is now plain text in the plugin, in the free scanner and in the published CLI engine: "Add a link to your privacy policy next to each form submit button, and give the link text the name of your privacy policy page." Nothing else changed - the check still fails for the same reason, the fix is still to link a privacy policy next to every form that collects personal data, and the escaping is untouched.
+* The report can now be forwarded as it stands. If your last report showed this example as code, that was the only line in it that did not survive being copied.
 = 1.3.38 (2026-09-28) =
 * Fix: the report counted four checks that can only fail under a condition it did not state. A site with no advertising has no IAB TCF banner to install and no Google Consent Mode to set, and a public page scan cannot say whether the operator is a financial entity at all. Such a site was handed a report reading "9 of 11 checks passed, 2 failed", where the two failures were DORA and a cookie banner nobody needed. The report an agency forwards to its client under its own name repeated the free scanner's own mistake.
 * The report now shows two numbers, because they may not be read as one: the same headline count as before, and, beside it, how many of the checks that apply to this site passed, followed by which checks were not counted and why. Each check that does not apply carries the reason under its own row, so a check that is not applicable cannot be read as a failure the site can fix.

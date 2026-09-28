@@ -937,7 +937,7 @@ export async function runScan(url) {
   };
   if (hasLocalForm && !hasPrivLink) {
     checks.forms.fix =
-      'Add a link to your privacy policy (e.g. <a href="/privacy/">Privacy Policy</a>) next to each form submit button.';
+      'Add a link to your privacy policy next to each form submit button, and give the link text the name of your privacy policy page.';
   }
 
   // 4. Legal pages (privacy, imprint, terms, accessibility, cookie policy).
