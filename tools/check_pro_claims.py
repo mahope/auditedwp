@@ -1732,8 +1732,19 @@ def artifact_findings() -> List[str]:
                         findings.append(f"{plugin_zip.relative_to(ROOT)}: eucomply/{name} differs from source")
         except (OSError, zipfile.BadZipFile, RuntimeError) as error:
             findings.append(f"{plugin_zip.relative_to(ROOT)}: cannot inspect archive: {error}")
-    extension_zip = SITE / "assets/eucomply-extension-1.0.1.zip"
     extension_root = ROOT / "chrome-ext"
+    # Stien følger manifestets egen version. Den lå hårdkodet som `1.0.1` og
+    # skulle redigeres manuelt ved hvert bump, så en ny zip og en gammel side
+    # kunne begge være "rigtige" i hver sin fil. R7 i `check_store_ready.py`
+    # dømmer nu den afdrift, så her skal stien bare følge kilden.
+    ext_manifest = extension_root / "manifest.json"
+    try:
+        ext_version = json.loads(ext_manifest.read_text(encoding="utf-8")).get("version") or ""
+    except (OSError, ValueError, AttributeError):
+        ext_version = ""
+    if not ext_version:
+        findings.append("artifacts: chrome-ext/manifest.json mangler en læsbar version")
+    extension_zip = SITE / f"assets/eucomply-extension-{ext_version or 'uden-version'}.zip"
     extension_files = {
         path.relative_to(extension_root).as_posix(): path
         for path in extension_root.rglob("*")

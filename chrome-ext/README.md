@@ -20,11 +20,30 @@ One-click EU compliance scanning in your browser toolbar.
 
 ## How to publish to Chrome Web Store
 
-1. Create a Chrome Web Store developer account ($5 one-time fee, requires Mads)
-2. Zip the contents of this folder (not the parent folder)
-3. Upload to Chrome Web Store Dashboard
-4. Fill in the store listing (description, screenshots, promo images)
-5. Submit for review
+Nobody can do this from the repo — it needs a Chrome Web Store developer
+account ($5 one-time fee) and the OAuth credentials behind it. Everything the
+upload needs is already measured by `tools/check_store_ready.py`; run it
+before you upload:
+
+```bash
+python3 tools/check_store_ready.py          # the gate that must be green
+python3 tools/check_store_ready.py --selftest
+```
+
+The gate measures the manifest against the store's own limits (name ≤45,
+description ≤132, icons 16/48/128 as real PNGs, no local URLs), proves every
+declared permission is actually used, checks that `host_permissions` and the
+API the popup calls are the same origin, and that the published
+`/extension/` page links exactly one paid path.
+
+1. Create a Chrome Web Store developer account (needs Mads)
+2. Zip the **contents** of this folder (not the parent folder) — the repo
+   already ships a built copy at `site/assets/eucomply-extension-<version>.zip`
+3. Upload it to the Chrome Web Store Dashboard
+4. Fill in the store listing below, plus **at least one screenshot**
+   (1280×800 or 640×400) — that screenshot is the one asset still missing
+5. Declare the data usage: the extension sends the scanned URL to the API and
+   nothing else, and the privacy policy is at https://eucomplypro.com/privacy/
 
 ### Store listing text (copy-ready)
 
@@ -36,9 +55,10 @@ One-click EU compliance scanning in your browser toolbar.
 ## Local development
 
 ```bash
-# Regenerate icons if needed
-cd chrome-ext/icons && python3 generate-icons.py
-# Then reload in chrome://extensions/
+# Reload the unpacked extension at chrome://extensions/ after every change.
+# The icons are committed as PNG; regenerate them only if the mark changes,
+# and keep them at 16x16, 48x48 and 128x128 — the store gate reads the
+# dimensions out of the PNG header and fails on a wrong size.
 ```
 
 ## Files
@@ -50,7 +70,6 @@ cd chrome-ext/icons && python3 generate-icons.py
 | `popup.js` | Popup logic (calls the scanning API) |
 | `background.js` | Service worker for badge management |
 | `icons/` | 16x16, 48x48, 128x128 PNG icons |
-| `icons/generate-icons.py` | Script to regenerate icons |
 
 ## API
 

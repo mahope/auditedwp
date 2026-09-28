@@ -103,6 +103,12 @@ li{margin-bottom:6px}</style>
 <li>Scan results are returned to your browser and are not stored by the worker. A total scan counter and hostname-level aggregate counters are kept in Cloudflare KV for up to 365 days</li>
 <li>The scan page stores your six most recent hostnames, scores and timestamps in your browser's local storage so you can re-run or clear them. This history stays in your browser unless you clear it or your browser removes site data</li>
 </ul>
+<p><strong>When you use the browser extension:</strong></p>
+<ul>
+<li>The extension sends the URL of the tab you scan to the same public scan API as this website, and nothing else. It holds no account, sets no identifier and collects no telemetry or usage data.</li>
+<li>The extension stores the last scan's URL and score in your browser's local storage to draw the toolbar badge. That value never leaves your browser except as the URL of the next scan you start.</li>
+<li>Its declared browser permissions are the two it uses: <code>activeTab</code> to read the tab you chose to scan, and <code>storage</code> for that badge value. <code>manifest.json</code> is in the public <a href="https://github.com/mahope/auditedwp">source repository</a>, so what it asks for can be read before you install it.</li>
+</ul>
 <p><strong>When you visit the website:</strong></p>
 <ul>
 <li>Standard web server logs (IP address, browser user-agent, page requested, timestamp) are retained by Cloudflare Pages for up to 30 days</li>
