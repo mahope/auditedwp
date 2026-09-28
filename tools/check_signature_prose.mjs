@@ -703,11 +703,13 @@ const MEKANISME = [
   {
     navn: "GTM som eksternt script", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "vaert 404 paa et opdigtet id (1 581 B) 2026-09-28 - vaerten svarer altsaa paa præcis den sti snippeten loeser",
     html: side('<script src="https://www.googletagmanager.com/gtm.js?id=GTM-ABC"></script><p>Hej</p>'),
   },
   {
     navn: "gtag() inline i et script", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "ga4-loaderen denne inline-kald hører til svarer 200 (432 105 B) fra Googles egen vært 2026-09-28; config-kaldet er samme API",
     html: side("<script>gtag('config', 'G-1234');</script><p>Hej</p>"),
   },
   {
@@ -715,6 +717,7 @@ const MEKANISME = [
     // kode-del af siden — opgave 57s kodebeholder beholder den.
     navn: "GA's noscript-pixel", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "vaert 200 (35 B) 2026-09-28 paa præcis den /collect-sti pixelen peger paa",
     html: side('<noscript><img height="1" width="1" style="display:none" src="https://www.google-analytics.com/collect?v=2&amp;tid=UA-1&amp;cid=1"></noscript><p>Hej</p>'),
   },
   {
@@ -722,6 +725,7 @@ const MEKANISME = [
     // udbyder: `<noscript>` er bevis, prosa er ikke.
     navn: "Hotjars noscript-sporing", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Hotjar",
+    uverificeret: true,
     html: side('<noscript><a href="https://www.hotjar.com" target="_blank"><img src="https://static.hotjar.com/hjblockedpixels/banner.gif" border="0" alt=""></a></noscript><p>Hej</p>'),
   },
   {
@@ -732,6 +736,7 @@ const MEKANISME = [
     // sender et pixel. Målt før rettelsen: 0 fund i alle tre produkter.
     navn: "GTM's ns.html-fallback", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "vaert 400 uden id (1 555 B) og 404 paa et opdigtet id (1 582 B) 2026-09-28",
     html: side('<noscript><iframe height="0" width="0" style="display:none;visibility:hidden" src="https://www.googletagmanager.com/ns.html?id=GTM-ABC"></iframe></noscript><p>Hej</p>'),
   },
   {
@@ -744,6 +749,7 @@ const MEKANISME = [
     // Målt før rettelsen: 0 fund i alle tre produkter.
     navn: "GA4's gtag/js-script", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "daekning",
     html: side('<script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script><p>Hej</p>'),
   },
   {
@@ -753,6 +759,7 @@ const MEKANISME = [
     // ovenfor til at bestå og denne til at fejle — den skal kunne skelne de to.
     navn: "Google Ads-tag på gtag/js", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Analytics / GTM",
+    bevis: "samme vært som GA4-loaderen, 200 (432 105 B) 2026-09-28; kun id-præfikset er AW- i stedet for G-",
     html: side('<script async src="https://www.googletagmanager.com/gtag/js?id=AW-9876543"></script><p>Hej</p>'),
   },
   {
@@ -766,6 +773,7 @@ const MEKANISME = [
     // rettelsen: 0 fund i alle tre produkter.
     navn: "Pinterest-tagens loader", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Pinterest Tag",
+    bevis: "vaert 200 (2 282 B) 2026-09-28; stien er læst i Pinterests egen dokumentation 2026-09-27",
     html: side('<script async src="https://s.pinimg.com/ct/core.js"></script><p>Hej</p>'),
   },
   {
@@ -775,6 +783,7 @@ const MEKANISME = [
     // har allerede begge de andre to. Målt før rettelsen: 0 fund i alle tre.
     navn: "Pinterest-tagens noscript-pixel", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Pinterest Tag",
+    bevis: "vaert 200 (35 B) 2026-09-28 paa præcis den /v3/-sti fallbacken peger paa",
     html: side('<noscript><img height="1" width="1" style="display:none" alt="" src="https://ct.pinterest.com/v3/?tid=2612345678901&amp;event=init&amp;noscript=1"></noscript><p>Hej</p>'),
   },
   {
@@ -787,6 +796,7 @@ const MEKANISME = [
     // tracker. Målt før rettelsen: 0 fund i alle tre produkter.
     navn: "TikToks nuværende pixel-sti", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "TikTok Pixel",
+    bevis: "daekning",
     html: side('<script src="https://analytics.tiktok.com/i18n/pixel/events.js"></script><p>Hej</p>'),
   },
   {
@@ -798,6 +808,7 @@ const MEKANISME = [
     // indsnævring. Uden denne fixture ville fjernelsen se ud til at miste dækning.
     navn: "TikTok-pixelet i en sides inline-loader", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "TikTok Pixel",
+    bevis: "daekning",
     html: side("<script>ttq.load('C823P2LGL1ARI64QV9NG'); ttq.page();</script><p>Hej</p>"),
   },
   {
@@ -807,6 +818,7 @@ const MEKANISME = [
     // loaderen i tabellen, så `ttq`-ligheden holdt på det forkerte sted.
     navn: "LinkedIn-tagget i en sides inline-kode", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "LinkedIn Insight Tag",
+    bevis: "daekning",
     html: side('<script>var _linkedin_partner_id = "5119106"; window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script><p>Hej</p>'),
   },
   {
@@ -814,6 +826,7 @@ const MEKANISME = [
     // noscript-fixture er beviset på at rækken stadig finder leverandørens vært.
     navn: "Hotjars loader-vært alene", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Hotjar",
+    bevis: "daekning",
     html: side('<script src="https://static.hotjar.com/"></script><p>Hej</p>'),
   },
   {
@@ -827,6 +840,7 @@ const MEKANISME = [
     // annoncebibliotek og ikke AdSenses annoncebibliotek.
     navn: "Google tag (gpt.js)", gruppe: "trackers", phpGruppe: "trackers", liste: "trackers",
     forventet: "Google Ads remarketing",
+    bevis: "vaert 200 (127 497 B) fra Googles egen vært 2026-09-28",
     html: side('<script async src="https://www.googletagservices.com/tag/js/gpt.js"></script><p>Hej</p>'),
   },
   {
@@ -836,13 +850,20 @@ const MEKANISME = [
     // mest almindelige WordPress-formulardetektion.
     navn: "Contact Form 7 som attribut", gruppe: "forms", phpGruppe: "forms", liste: "forms",
     forventet: "Contact Form 7",
+    bevis: "attribut i markup'en, ikke en adresse: opgave 57 maalte 2026-09-26 at CF7 lever som div.wpcf7 og ikke som script",
     html: side('<div class="wpcf7"><p>Send en besked</p></div>'),
   },
   {
     // Klaro kommer som et stylesheet-link, altså igen en attribut og ikke kode.
+    // **Fixture'en var en fiktion, målt 2026-09-28:** den pegede på
+    // `klaro@1.0.5/dist/klaro.css`, og den svarer **404 (50 B)** — Klaro hed
+    // `0.7.21`, så ingen version 1.x har eksisteret. Det er samme fejlklasse som
+    // de to fiktionsstrenge opgave 72 del 7 fjernede, bare i portens egen fixture
+    // i stedet for i tabellen. Den rigtige sti svarer 200 (22 698 B).
     navn: "Klaro som stylesheet-link", gruppe: "cookies", phpGruppe: "trackers", liste: "consent",
     forventet: "Klaro",
-    html: side('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@1.0.5/dist/klaro.css">'
+    bevis: "vaert 200 (22 698 B) 2026-09-28 paa klaro@0.7.21/dist/klaro.css - opgave 72 del 3 brugte klaro@1.0.5, som 404er: Klaro hed 0.7.21",
+    html: side('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@0.7.21/dist/klaro.css">'
       + '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-ABC"></script><p>Hej</p>'),
   },
 ];
@@ -1668,6 +1689,112 @@ function contractULAEVNET(daekninger, register = ULAEVNET) {
   return Object.values(register).reduce((n, h) => n + Object.keys(h).length, 0);
 }
 
+/**
+ * R10. En mekanisme skal have et **målt** bevis, eller være registreret som
+ * uverificeret med en begrundelse.
+ *
+ * Baggrunden er en fejl porten selv lavede, målt 2026-09-28: Hotjars
+ * `<noscript>`-fixture brugte `static.hotjar.com/hjblockedpixels/banner.gif`, og
+ * den sti svarer **404 med 19 B** — samme måleform som de to fiktionsstrenge
+ * opgave 72 del 7 fjernede fra `DAEKNING`. Fixture'en lå i portens egen
+ * opgørelse ved siden af de 13 andre, ingen af dem mærket, og overskriften skrev
+ * `14 mekanismer` som om de alle var dokumenteret.
+ *
+ * Derfor tre veje, pr. mekanisme, og **præcis én** af dem:
+ *   - `bevis: "daekning"` — markup'en findes i en af de fire
+ *     installationstabeller, altså er den målt et andet sted i porten. R10
+ *     efterprøver det frem for at tro på flaget, så det er en påstand der
+ *     dømmes mod tabellen og ikke en egenskab.
+ *   - `bevis: "…"` — portens egen måling. Den skal være en måling, ikke en vilje,
+ *     så den skal nævne et år, samme regel som `ULAEVNET` kræver af sin
+ *     begrundelse.
+ *   - `uverificeret: true` — registreret i `UVERIFICEREDE` med begrundelsen
+ *     dér. Ellers forsvinder markeringen i en diff, og en diff der fjerner den
+ *     gør fixture'en til en påstand igen.
+ *
+ * Loftet er på **én**, og det er ikke et mål: færre er grønt, og det må kun
+ * sænkes når en mekanisme enten får sit bevis eller forsvinder. Uden et loft
+ * kunne næste agent tilføje en tredje ubevist fixture og være grøn.
+ */
+const HOEJST_UVERIFICEREDE = 1;
+
+/** Hver uverificeret mekanisme skal stå her, med navn — så den ikke glemmes. */
+const UVERIFICEREDE = {
+  "Hotjars noscript-sporing":
+    "static.hotjar.com/hjblockedpixels/banner.gif svarer 404 (19 B) både med og uden opdigtet "
+      + "hjid 2026-09-28, og leverandørens egen loader static.hotjar.com/c/hotjar-<id>.js "
+      + "(200, 16 934 B) nævner hverken banner.gif eller hjblockedpixels. help.hotjar.com svarer "
+      + "403 på sin egen installations-artikel, og ingen af de 16 målte sider havde Hotjar. Stien "
+      + "er historisk dokumenteret i indsatte snippets, men den kan ikke måles i dag.",
+};
+
+function contractBevis(m, daekninger, register = UVERIFICEREDE) {
+  const alleStrenge = Object.values(daekninger).flatMap((tabel) => Object.values(tabel)).flat();
+  const veje = [m.bevis, m.uverificeret].filter((v) => v !== undefined);
+  assert.ok(
+    veje.length === 1,
+    `mekanismen «${m.navn}» har ${veje.length} af de to bevisveje — den skal have præcis én: `
+      + "et målt bevis (i installationstabellen eller i portens egen måling) eller en "
+      + "registrering som uverificeret"
+  );
+  if (m.uverificeret) {
+    assert.ok(
+      register[m.navn],
+      `mekanismen «${m.navn}» er uverificeret, men «${m.navn}» står ikke i UVERIFICEREDE — `
+        + "en undtagelse på intet er en undtagelse, der læser som dækning"
+    );
+    assert.ok(
+      register[m.navn].length > 40,
+      `UVERIFICEREDE-begrundelsen for «${m.navn}» er ${register[m.navn].length} tegn — `
+        + "den skal være en måling, ikke en vilje. Skriv hvad der blev spurgt om, og hvad værten svarede."
+    );
+    return;
+  }
+  if (m.bevis === "daekning") {
+    // Eftersprøgt, ikke troet: flaget er en påstand, tabellen er beviset.
+    assert.ok(
+      alleStrenge.some(([, streng]) => streng && m.html.includes(streng)),
+      `mekanismen «${m.navn}» siger at dens markup er målt i installationstabellen, men den `
+        + "streng står i ingen af dem — markér den `uverificeret: true`, eller læg strengen ind"
+    );
+    return;
+  }
+  assert.ok(
+    typeof m.bevis === "string" && m.bevis.length > 20,
+    `mekanismen «${m.navn}» har bevis «${m.bevis}» — det skal være portens egen måling, `
+      + "ikke en etiket på en streng"
+  );
+  assert.ok(
+    /\b20\d{2}\b/.test(m.bevis),
+    `mekanismen «${m.navn}» har bevis «${m.bevis}», som ikke nævner hvornår det blev målt — `
+      + "en måling uden dato er en påstand. Samme krav som ULAEVNET stiller på sin begrundelse."
+  );
+  assert.ok(
+    !Object.prototype.hasOwnProperty.call(register, m.navn),
+    `mekanismen «${m.navn}» står både i UVERIFICEREDE og med et bevis — fjern den fra registret, `
+      + "ellers siger porten to ting om den samme fixture"
+  );
+}
+
+/** Ratchetten. Dømmes separat, så en ny ubevist fixture er rød på loftet. */
+function contractUverificerede(mekanismer, register = UVERIFICEREDE, hojest = HOEJST_UVERIFICEREDE) {
+  const ubeviste = mekanismer.filter((m) => m.uverificeret);
+  assert.ok(
+    ubeviste.length <= hojest,
+    `${ubeviste.length} mekanismer er uverificerede (${ubeviste.map((m) => m.navn).join(", ") || "ingen"}) `
+      + `af højst ${hojest} — mål strengen, læg den i installationstabellen, eller sænk loftet med en `
+      + "begrundelse"
+  );
+  for (const m of ubeviste) {
+    assert.ok(
+      register[m.navn],
+      `mekanismen «${m.navn}» er uverificeret uden at stå i UVERIFICEREDE — porten skal kunne `
+        + "finde den i registret, ellers er den en markering ingen læser"
+    );
+  }
+  return ubeviste.length;
+}
+
 /** Alle fundne signatur-navne i en doms tekst. */
 function fundneNavne(verdict, navne) {
   const tekst = `${(verdict && verdict.label) || ""} ${(verdict && verdict.detail) || ""}`;
@@ -1995,6 +2122,17 @@ await test("(i) hvert mønstalternativ spores til en leverandør (forms)", () =>
   contractAlternativer("forms", R5_FORMS, DAEKNING_FORMS, ALIASSER, HOEJST_UTILREGNET.forms));
 await test("(i) hvert mønstalternativ spores til en leverandør (dora)", () =>
   contractAlternativer("dora", R5_DORA, DAEKNING_DORA, ALIASSER, HOEJST_UTILREGNET.dora));
+// R10. Dømmes pr. mekanisme, som de øvrige fixture-kontrakter, så **alle** huller
+// måles i én kørling i stedet for at porten stopper ved det første. Ratchetten er
+// sin egen test, så en ny ubevist fixture er rød på loftet og ikke på navnet.
+const DAEKNINGER = [DAEKNING, DAEKNING_TRACKERE, DAEKNING_FORMS, DAEKNING_DORA];
+for (const m of MEKANISME) {
+  await test(`R10 bevis: ${m.navn}`, () => contractBevis(m, DAEKNINGER));
+}
+let UVERIFICEREDE_TAL = 0;
+await test("R10 højst én uverificeret mekanisme", () => {
+  UVERIFICEREDE_TAL = contractUverificerede(MEKANISME);
+});
 
 for (const fixture of FIXTURES) {
   const domme = [];
@@ -2013,7 +2151,9 @@ for (const fixture of FIXTURES) {
 
 console.log(
   `${passed} signatur-prosatest bestået — ${FIXTURES.length} fixtures i ${Object.keys(PROSA).length} sprog, `
-    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, 6 kontrakter, 3 produkter, `
+    + `${PROSA_FIXTURES.length} prosa-sprog målt, ${MEKANISME.length} mekanismer, `
+    + `${MEKANISME.length - UVERIFICEREDE_TAL} af dem med målt bevis, ${UVERIFICEREDE_TAL} uverificeret`
+    + `${UVERIFICEREDE_TAL ? ` (${Object.keys(UVERIFICEREDE).join(", ")})` : ""}, 6 kontrakter, 3 produkter, `
     + `${Object.keys(DAEKNING).length + Object.keys(DAEKNING_TRACKERE).length
       + Object.keys(DAEKNING_FORMS).length + Object.keys(DAEKNING_DORA).length} af 46 rækker med installationstest, `
     + `${LEVERANDOERER_I_TABELLERNE} installationstester for ${LEVERANDOERER_NAVNGIVNE} navngivne leverandører, `
@@ -2443,6 +2583,42 @@ if (process.argv.includes("--selftest")) {
   };
   expectRed("(g) (en læst leverandør taber sin streng, og ULAEVNET er tomt)", contractR5,
     R5_GRUPPER, udenOsano, MINDST.consent);
+
+  // 33. R10, opgave 87. Den mutation der gør `bevis: "daekning"` til en løgn:
+  //     den tager en mekanisme hvis markup **ikke** står i nogen
+  //     installationstabel og lader flaget stå. Uden den mutation er
+  //     `daekning`-vejen en ren etiket, fordi porten aldrig efterprøvede den.
+  const falskDaekning = MEKANISME.map((m) => (m.bevis === "daekning"
+    ? { ...m, bevis: "daekning", html: side("<p>Vi bruger gtag og gtm.js</p>") }
+    : m));
+  for (const m of falskDaekning.filter((x) => x.bevis === "daekning")) {
+    expectRed(`R10 (bevis: "daekning" på «${m.navn}» uden streng i tabellen)`, contractBevis, m, DAEKNINGER);
+  }
+
+  // 34. R10: en begrundelse der ikke er en måling. `ULAEVNET` kræver det samme,
+  //     og her er det den **første** regel der gør det, så en agent der skriver
+  //     "kunde bærer slet ikke Klaro" i stedet for et værtsvar bliver rød.
+  expectRed("R10 (uverificeret uden en måling i registret)", contractBevis,
+    { navn: "Opdigtet fixture", bevis: undefined, uverificeret: true }, DAEKNINGER, { "Opdigtet fixture": "kunden har den ikke" });
+
+  // 35. R10: en måling uden dato. Samme fejltype som nummer 34 en halv klasse
+  //     længere nede: strengen er lang nok til at læse som en måling, men den
+  //     fortæller ikke hvornår den blev taget, så den er lige så uforfærdig.
+  expectRed("R10 (et bevis uden årstal)", contractBevis,
+    { ...MEKANISME[0], bevis: "vaerten svarer 200, det er dokumenteret" }, DAEKNINGER);
+
+  // 36. R10: ratchetten. En **anden** uverificeret mekanisme skal være rød, for
+  //     ellers kunne næste agent tilføje en tredje ubevist fixture og være grøn
+  //     i den kørsel CI ser. Hotjar er den ene, så to er over loftet.
+  expectRed("R10 (to uverificerede mekanismer over loftet på én)", contractUverificerede,
+    [...MEKANISME, { navn: "Opdigtet fixture", uverificeret: true }],
+    { ...UVERIFICEREDE, "Opdigtet fixture": UVERIFICEREDE["Hotjars noscript-sporing"] });
+
+  // 37. Spejlet af 33-36: de rigtige tabeller skal være grønne, ellers er de fire
+  //     cases grønne fordi porten altid er rød. Hotjar er den eneste
+  //     uverificerede, og den er **registreret** — så den er ikke en fejl.
+  expectGreen("R10 (de rigtige mekanismer passerer)", contractBevis, MEKANISME[0], DAEKNINGER);
+  expectGreen("R10 (de rigtige tabeller passerer ratchetten)", contractUverificerede, MEKANISME);
 
   // 33. Spejlet af case 26: en agent der skriver en **ny** leverandør ind i et
   //     navn, uden at læse den, får rød. Det er det opgaven forbyder, og før
