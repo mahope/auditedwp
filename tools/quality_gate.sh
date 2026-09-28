@@ -562,6 +562,18 @@ hdr "tallet i et resultat skal sige, hvad det tæller"
 run "tools/check_score_split.py" "$PY" tools/check_score_split.py
 run "tools/check_score_split.py --selftest" "$PY" tools/check_score_split.py --selftest
 
+# Opgave 91: en butiks-parat extension måles, ikke antages. Målt 28/9 var den
+# "sun" — zip'en byte-identisk, ni rigtige elementer, host_permissions der
+# matchede det popup'en kaldte — og alligevel fire ting, ingen af dem synlige
+# ved at læse koden: `alarms` erklæret og aldrig brugt, to døde references i
+# den publicerede README, et "link will appear here" på /extension/ og **ingen
+# købsvej** på den side. R5 er reglen der gør det permanent: en permission skal
+# bevises brugt af et mønster i koden, så en ny tilladelse ikke kan komme ind
+# på en bøtelogik.
+hdr "extensionen skal være målt butiksparat, og /extension/ skal have én købsvej"
+run "tools/check_store_ready.py" "$PY" tools/check_store_ready.py
+run "tools/check_store_ready.py --selftest" "$PY" tools/check_store_ready.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
