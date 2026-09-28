@@ -1,116 +1,71 @@
-Opdateret: 2026-09-28 (iteration 91)
+Opdateret: 2026-09-28 (iteration 92)
 
-Sidste iteration: **opgave 85 del 2a — prøverapporten på `/pro/sample-report/`
-fik samme delte tal som de ni resultatsider fik i del 1.** Den viste 67 % (6/9)
-for `shopify.com`, et site hvor DORA ikke kan vurderes fra en offentlig scan.
-Nu viser den 67 % uændret og 63 % (5/8) af de tjek der gælder, med nævneren
-ved siden af — i HTML, i PDF'ens score-boks og i en egen kolonne i
-summary-tabellen.
+Sidste iteration: **opgave 85 del 2b — plugin-rapporten talte fire tjek med,
+som kun kan fejle under en forudsætning den ikke sagde.** Det er det
+dokument et bureau videregiver til sin kunde under eget navn, og det var det
+sidste tal uden nævner.
 
-Betingelsen læses fra motorens `CONDITIONAL_CHECKS`, ikke fra datasættet, så
-prøverapporten ikke kan finde på sin egen liste; porten gør en række rød hvis
-den sættes til `applies: false` uden at motoren kender nøglen, og en række
-uden `applies`-felt er også rød. Kun `dora` er `false` her, fordi de tre andre
-betingede rækker faktisk er fundet i datasættets egne fund.
+**Målt før rettelsen, ikke antaget.** `check_dora()` svarer `pass => false,
+warn => false` på enhver side under to DORA-markører, og `check_tcf()` /
+`check_consent_mode_v2()` gør det samme på en side uden programmatisk
+annonce. Et site uden annoncering fik derfor **"9 of 11 checks passed, 2
+failed"**, hvor de to fejl var DORA og en cookie-banner, ingen har brug for.
+Samme fejlklasse som del 1 og 2a — bare i det mest læste dokument.
 
-**Del 2b er åben og er næste iteration:** plugin-rapporten, `/pro/dashboard/`,
-`/badge/` og de fire `/pro/`-ruter. Plugin-rapporten er den vigtigste — den er
-den et bureau videregiver til sin kunde — men den kræver en versionkæde
-(1.3.37 → 1.3.38, ny zip, begge `update.json`, `_redirects`, `/plugin/`), som
-ikke nåede inden for denne iterations tid.
+**Rettelsen.** `conditional_checks()` i pluginen bærer præcis de fire nøgler
+og præcis de fire sætninger fra `CONDITIONAL_CHECKS` i den universelle motor.
+`mark_conditional()` sætter `applies` ud fra de fund de andre tjek allerede
+har lavet — consent-platformen, trackere, `set-cookie`, de to annonce-rækker
+i `trackers`-tabellen — så ingen ny liste opstår, og `dora.applies = false`
+er fast, ligesom i motoren. Rapporten viser nu begge tal: uændret
+overskriftstælling, og ved siden af den "Of the N checks that apply to this
+site, M passed. Not counted here: 1 of 11: DORA." Den betingede række bærer
+motorens sætning under sin egen række.
 
-Gate: `GATE GRØN — alle 29 steps bestået` (`--no-network`).
-Kode `9a0ad41`, merge `166b5d2`.
+**Målt begge veje i porten.** `test_plugin_engine_parity.mjs` udvidet med 5
+tests og 2 negative selftest-cases (14 → 18): PHPens nøgler skal være
+motorens i samme rækkefølge, hver sætning skal være tegn for tegn identisk,
+`dora` skal være `false` i begge, og på to fixtures skal de to motorer have
+præcis samme betingede rækker. Selvtesten muterer sætningen ét ord ("a public
+page scan" → "a scan") og tilføjer en femte nøgle — begge skal være røde.
 
-Deploy: `VERIFICÉR DEPLOY: prøverapportens delte tal (opgave 85 del 2a) 166b5d2 2026-09-28 ca. 02:55 UTC` — kun `site/pro/sample-report/index.html` og
-`site/downloads/eucomply-sample-report.pdf`. Efter næste deploy-vindue skal
-siden vise "63% of the 8 checks that apply" under 67 %, og PDF'en skal have
-den samme sætning. Sammen med del 1's åbne note.
+**De fire site-overflader viste ingen scoren overhovedet — målt, ikke antaget.**
+`/pro/dashboard/` viser `—` og er mærket `data-product-state="concept-demo"`,
+`/badge/` siger "illustrative" syv steder, og de fire `/pro/vs-*` har ingen
+procent overhovedet. De har altså ingen betingelsesliste at have. Det er
+grunden til at del 2b kun rørte pluginen.
 
-Sidste iteration: **resultatet sagde "22 %" om et site der ikke har en eneste
-ting forkert.** Køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så
-denne iteration gik ned i det tal en besøgende læser først, og som et bureau
-videregiver til sin kunde.
+**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`). Rørt:
+`plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`,
+`plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` +
+`site/update.json`, `site/_redirects` (39 linjer + den nye 1.3.37-linje),
+`site/plugin/index.html`, `tools/check_pro_claims.py` (PLUGIN_VERSION),
+`tools/plugin_probe.php` (kører betingelses-passagen, ellers ville porten teste
+en rapport, der aldrig skrives), `tools/test_plugin_engine_parity.mjs` og den
+nye `site/assets/eucomply-1.3.38.zip`. Ingen scanner-side, ingen JS-motor,
+ingen worker.
 
-**Målt i koden, ikke antaget.** `shared/scan-engine.js` scorede
-`Object.values(checks).filter(c => typeof c.pass === "boolean")` — alle ni
-rækker, hver især ubetinget. Fire af dem siger i deres egen `detail`, at de
-kun kan fejle under en forudsætning: `cookies` ("if you set any non-essential
-cookies"), `tcf` ("used by ad-tech platforms … in programmatic advertising"),
-`consent_mode_v2` ("Google requires Consent Mode v2 for ad personalization in
-the EEA") og `dora` ("This is not a DORA assessment"). Rækken sagde altså
-"dette mangler", og tallet sagde "56 % (5 af 9)" på et site uden annoncering,
-mens `site/scan/index.html:233` gav **grønt** ved 80. Et tal ingen kunne nå, i
-en farve der løfter.
+**To fejl fundet undervejs, begge i min egen diff.** (a) `plugin_probe.php`
+kalder hver tjek-metode direkte, ikke `run_checks()` — så `mark_conditional()`
+kørte aldrig, og porten ville have testet en rapport, der ikke skrives;
+(b) min redirect-omdøbning læste `src/dest/code` i den forkerte rækkefølge
+og lavede 38 linjer om til `1.3.37 301`, så de pegede ingen vegne. Begge
+fundet af porten, ikke af mig.
 
-Kørsel mod `https://example.com` før rettelsen: 2 af 9, 22 %. Samme site
-efter: 2 af **5** gældende, 40 % — og de fire ikke-gældende rækker står
-opskrevet med grunden ved siden af.
+Baseline for effekten: **0 reelle besøgende** (iteration 86). Kan ikke måles
+i trafik. Det den gør er at fjerne et ubrugeligt fejltal fra det ene
+dokument, der faktisk sendes videre til en kunde.
 
-**Rettelsen.** `CONDITIONAL_CHECKS` i motoren (eksporteret, og derfor den
-eneste sandhed): fire nøgler med en hel sætning hver. `runScan()` sætter
-`applies` på rækkerne ud fra de samme fund, rækkerne selv er bygget af
-(`set-cookie`-headeren, sporene efter programmatisk annoncering), og giver dem
-alle `condition`. `score` bæver **begge tal**: `pct`/`total` er uændret, fordi
-det er tallet kunder har set, og `pct_applicable` + `applicable_total` +
-`conditional` er det nye. `dora.applies = false` er fast — en offentlig
-sidescan kan ikke afgøre, om driftsselskabet er en bank, så at tælle den gjorde
-100 % uopnåeligt for alle.
+❓ **Til Mads.** Ingenting nyt i denne iteration — spørgsmål 7, 9 og 18 er
+uændrede, og de otte iterationer bag dem er ikke blevet færre.
 
-**Alle ni publicerede resultatsider** (EN/DA/DE/FR `/scan/`, `cookie-banner-check` ×2,
-`consent-mode-v2-check`, `gdpr-compliance-check`, `gdpr-scanner-free`) læser nu
-`pct_applicable`, skriver nævneren ved siden af tallet ("Tælles ikke med her:
-4/9: cookies, IAB TCF, Google Consent Mode v2, DORA.") og viser grunden i selve
-rækken. **Ingen side har sin egen liste** — nøglerne kommer fra
-`score.conditional`, og kun det korte oversatte navn står i siden. En ældre
-worker kender ikke de nye felter, så `scoreSplit()` returnerer `null` og siden
-viser det gamle tal uændret frem for at gætte.
+Deploy OK 2026-09-28 02:50 UTC — **de to åbne noter fra del 1 og 2a er lukket
+på indhold, ikke på HTTP 200.** `/scan/?cb=166b5d2` svarer 200 og indeholder
+den nye `scoreSplit()`, og `/downloads/eucomply-sample-report.pdf` læst med
+`build_sample_report.pdf_text` indeholder "of the 8 checks that apply", "67%"
+og "Not counted here". Deployen var kørsel `36369236374`, alle tre jobs
+`success`.
 
-**Port trin 29 — `tools/check_score_split.py` + 9 negative selftest-cases.** Den
-læser listen fra motoren og kræver at de ni sider bruger den, at **de to
-motorer har præcis samme nøgler** (ellers får CLI'en og workeren to tal for det
-samme website), at `dora` er fast betinget, at sætningen pr. nøgle er en hel
-sætning, og at ingen side scorer uden at nævne nævneren.
-
-**To fejl i min egen kode, fundet fordi portens selftest skulle være grøn:**
-(a) `check()` læste siderne fra disk med `read(path)` selvom den fik en tabel
-overblit — så alle fem side-mutationer blev læst væk af de rigtige filer, og
-porten var grøn fordi den læste noget andet end det den testede; (b) fem cases
-fandt intet, fordi mine kontroller greb et *nøgleord* (`pct_applicable` står
-også i `scoreSplit()`'s fallback) i stedet for det udtryk der afgør, hvilket
-tal der vises. Begge rettet; en port der læser et nøgleord i stedet for en
-værdi kan ikke se en fejl i den værdi.
-
-**Ikke færdigt, og bevidst:** plugin-rapporten, HTML-/PDF-rapporten,
-`shared/sample-report.json`, `/pro/dashboard/`, `/badge/` og de fire
-`/pro/`-ruter viser stadig det gamde ene tal, og de nævner ikke betingelsen.
-Det er **del 2** af opgave 85 og er skrevet op med sin egen acceptliste. Det er
-et åbent svigt, ikke en skjult fejl: en bureau der læser plugin-rapporten får
-stadig et ubetinget tal. Det skal gøres som næste iteration, ikke som en
-notat til denne.
-
-**Bemærk uden løsning i denne diff:** den udgivne web-scanner
-(`eucomply-scan.mahope-eeb.workers.dev`) kører den gamle motor og får den nye
-talform først ved worker-deploy (spørgsmål 9) — samme rækkefølge som opgave 6
-(worker før klient). Siderne er altså live med den nye kode fra næste deploy,
-men tallet ændrer sig først når workeren er deployet./npm-CLI'en får den nye
-form ved `npm publish` (samme spørgsmål).
-
-Baseline for effekten: **0 reelle besøgende** (iteration 86 målte taggen og
-fandt at de 0 er ærlige). Kan ikke måles i trafik. Det den gør er at fjerne et
-ubrugeligt farvebånd og et tal uden nævner fra det første en kunde læser.
-
-Deploy: `VERIFICÉR DEPLOY: de ni resultatsiders talform (opgave 85 del 1) 0785362 2026-09-28 ca. 01:35 UTC` — kun `site/**`, to JS-motorer (ikke publiceret af CI) og
-`tools/`. Efter næste deploy-vindue: `/scan/` i EN/DA/DE/FR skal vise
-nævneren under tallet, og de fire rækker skal have grunden i kortet. Før
-worker-deploy viser den gamle motor tallet, så **kræv at nævneren kun vises når
-den er der** — hvis den står med et gammelt tal, er workeren kørt.
-
-❓ **Til Mads.** (a) Skal tallet ændre sig for kunder der har set det gamle?
-Min anbefaling: ja, og skriv i changelog'en at et site uden annoncering nu kan
-score 100 % — ellers læser de "56 %" som et produkt, der blev dårligere.
-(b) Den udgivne worker skal deployes før tallet ændrer sig (spørgsmål 9) — det
-er den eneste måde den nye talform bliver synlig for en besøgende.
 
 Opdateret: 2026-09-28 (iteration 88)
 
@@ -3314,9 +3269,11 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - ~~Ingen PHP- eller plugin-ændring i samme diff.~~ **Dækket.** Kun `site/_headers`, `site/_redirects`, `tools/quality_gate.sh` og den nye port.
   - Efter merge verificeres på indhold. **ÅBEN — `VERIFICÉR DEPLOY`-noten ovenfor.** Fire punkter, alle headere og kodede: css'en må ikke længere være `immutable`, zip'en skal være det, 1.3.32 skal give 301, og 1.3.36 skal stadig give 200.
 
+- 2026-09-28 (iteration 92, opgave 85 del 2b) `VERIFICER DEPLOY: plugin-rapportens delte tal (opgave 85 del 2b) MERGE_SHA 2026-09-28 ca. 03:5x UTC` — rører `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`, `plugin/readme.txt` + `site/plugin/readme.txt`, `update.json` + `site/update.json`, `site/_redirects` (39 linjer retargetet + den nye 1.3.37-linje), `site/plugin/index.html`, `tools/check_pro_claims.py`, `tools/plugin_probe.php`, `tools/test_plugin_engine_parity.mjs` og den nye `site/assets/eucomply-1.3.38.zip` (1.3.37 fjernet af build-scriptet). **Ingen scanner-side, ingen JS-motor, ingen worker, ingen salgscopy, ingen købsknap.** Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/assets/eucomply-1.3.38.zip` svarer **200 `application/zip`**, unzippet: `Version: 1.3.38` i `eucomply.php`, `Stable tag: 1.3.38` i `readme.txt` og `conditional_checks()` med de fire nøgler; (2) `/update.json` svarer 200 med `"version": "1.3.38"`, `download_url` på 1.3.38 og changelog der **starter** `= 1.3.38 (2026-09-28) =` med de ærlige linjer; (3) `/assets/eucomply-1.3.37.zip` følger **301** → 1.3.38, og de 38 ældre redirects gør også; (4) `/plugin/` viser `↓ Download v1.3.38 (free)`; (5) CI-loggen viser `GATE GRØN — alle 29 steps bestået` og `18 plugin/motor-paritetstest bestået`. **Bemærk:** ingen JS-motor røres i denne diff, så `shared/scan-engine.js` deployes ikke af CI — uændret fra opgave 58/85.
+- 2026-09-28 (iteration 92) `DEPLOY OK 2026-09-28 02:50 UTC` — lukker del 1s og 2as åbne noter på **indhold**: `/scan/?cb=166b5d2` svarer 200 med den nye `scoreSplit()`, og `/downloads/eucomply-sample-report.pdf` læst med `build_sample_report.pdf_text` indeholder "of the 8 checks that apply", "67%" og "Not counted here". Deploy-kørsel `36369236374`, alle tre jobs `success`.
 ### 85. Tallet i resultatet skal sige, hvad det tæller
 
-- Status: `I GANG — del 1 og 2a færdig` (iteration 91, `ceo/proeverapport-betingelse`, `9a0ad41`, merge `166b5d2`). **Del 2b er åben: plugin-rapporten, `/pro/dashboard/`, `/badge/` og de fire `/pro/`-ruter.** Målingen fra del 1 står stadig: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
+- Status: `I GANG — del 1, 2a og 2b færdig` (iteration 92, `ceo/score-split-plugin-rapport`, `fa22b31` + `d8e798f`). **Del 2b viste efter måling, at de fire site-overflader ikke viser en scoren overhovedet** — dashboard `—` + `concept-demo`, badge `illustrative`, `vs-*` ingen procent — så del 2b reducerede sig til plugin-rapporten, som nu er gjort. **Opgaven er dermed lukket på alle de overflader den dækkede.**
 - **Del 2a (denne iteration) — prøverapporten.** `/pro/sample-report/` viste **67 % (6/9)** for `shopify.com`, et site hvor DORA overhovedet ikke kan vurderes. Nu viser den begge tal: 67 % (6/9) uændret — det er tallet kunder har set — og **63 % (5/8) af de tjek der gælder**, med nævneren ved siden af ("Not counted here: 1/9: DORA page-signal markers. 63% of the 8 checks that apply (5 of 8)."). Samme sætning står i PDF'ens score-boks og i summary-tabellens tredje kolonne ("Of those that apply"), og den eneste række der ikke gælder bærer motorens fulde betingelsessætning under sin egen række.
 - **Betingelsen kommer fra motoren, ikke fra datasættet.** `engine_conditions()` i `scripts/build_sample_report.py` læser `CONDITIONAL_CHECKS` ud af `shared/scan-engine.js` og sætter sætningen på de rækker der har `applies: false`. Datasættet rummer **kun** `applies` — ingen egen betingelsesliste, ingen egen sætning. `load_data()` afbryder med en fejl hvis en række sættes til `false` uden at motoren kender nøglen, og `coverage_findings()` gør det samme i gaten, så det ikke kan passere en gang og fejle senere. En række uden `applies`-felt er også rød: ingen kan falde ud af det delte tal ved at mangle feltet.
 - Hvorfor kun `dora` er `false` her, og ikke de fire: `cookies`, `tcf` og `consent_mode_v2` er alle fundet i datasættets egne `detail` ("Consent banner detected", "Consent Mode v2 default state found", "One TCF signal found"), så forudsætningen er opfyldt og rækkerne gælder. `dora` kan en offentlig sidescan aldrig afgøre. Det er motorens egen regel, anvendt på dens egne fund — ikke en håndvalgt liste.
