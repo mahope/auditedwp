@@ -611,6 +611,17 @@ hdr "skal den solgte API have en dokumentationsside"
 run "tools/check_api_docs.mjs" node tools/check_api_docs.mjs
 run "tools/check_api_docs.mjs --selftest" node tools/check_api_docs.mjs --selftest
 
+# Opgave 105: zip'en sagde "Open source" og havde ingen licenstekst. Målt 28/9:
+# ni medlemmer, ingen af dem `LICENSE`, `chrome-ext/` uden LICENSE, og repoet
+# selv er offentligt uden root-LICENSE (`licenseInfo: null`) — så påstanden var
+# en hensigtserklæring uden rettigheder bag sig. R11 i check_store_ready.py
+# dømmer nu alle tre sider (kilde, arkiv, påstand), og dette step gør zip'en
+# reproducerbar: samme kilde → samme bytes, så `--check` kan fejle på afdrift
+# uden at lære næste agent at ignorere den. Se docs/extensionens-licens.md.
+hdr "skal den publicerede extension-pakke kunne bygges igen, med licens i"
+run "tools/build_extension_zip.py --check" "$PY" tools/build_extension_zip.py --check
+run "tools/build_extension_zip.py --selftest" "$PY" tools/build_extension_zip.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

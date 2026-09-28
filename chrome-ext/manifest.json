@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "EUComply — Website Compliance Checker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "One-click scan for nine technical website signals: HTTPS, consent markers, trackers, legal links and security headers.",
   "author": "EUComply",
   "homepage_url": "https://eucomplypro.com",

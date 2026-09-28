@@ -37,9 +37,18 @@ API the popup calls are the same origin, and that the published
 `/extension/` page links exactly one paid path.
 
 1. Create a Chrome Web Store developer account (needs Mads)
-2. Zip the **contents** of this folder (not the parent folder) — the repo
-   already ships a built copy at `site/assets/eucomply-extension-<version>.zip`
-3. Upload it to the Chrome Web Store Dashboard
+2. Rebuild the published package first — do not zip this folder by hand:
+
+   ```bash
+   python3 tools/build_extension_zip.py --write
+   ```
+
+   It builds `site/assets/eucomply-extension-<version>.zip` from this folder
+   with sorted members and fixed timestamps, so the archive is reproducible and
+   `--check` can fail if the committed one drifts. The version in `manifest.json`
+   is the file name, so the archive, the download link and the store listing
+   cannot disagree.
+3. Upload `site/assets/eucomply-extension-<version>.zip` to the Chrome Web Store Dashboard
 4. Fill in the store listing below, plus **at least one screenshot**
    (1280×800 or 640×400) — that screenshot is the one asset still missing
 5. Declare the data usage: the extension sends the scanned URL to the API and
@@ -70,6 +79,20 @@ API the popup calls are the same origin, and that the published
 | `popup.js` | Popup logic (calls the scanning API) |
 | `background.js` | Service worker for badge management |
 | `icons/` | 16x16, 48x48, 128x128 PNG icons |
+| `LICENSE` | MIT — the terms the extension is actually offered under |
+
+## License
+
+MIT, the same terms as the scanner and the CLI. The full text is in
+`LICENSE` in this folder **and** inside the published ZIP, because a ZIP is
+what a reader downloads — a license that only lives in the repository is not
+a license the person holding the archive has seen.
+
+`/extension/` says "MIT licensed", not "open source", because "open source" is
+a legal term of art and a promise; a name for the license is a fact you can
+check. `tools/check_store_ready.py` holds both halves of that honest: the
+license text must exist in the source and in the ZIP, and the published page
+must name a license rather than gesture at one.
 
 ## API
 
