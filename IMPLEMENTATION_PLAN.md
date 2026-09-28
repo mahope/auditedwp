@@ -75,8 +75,9 @@ Gaten er **rød på præcis tre fund**, alle ægte:
 3. **Pris-overvågning** (uændret): et script Mads kan køre, ikke en agent.
 4. Root-LICENSE (spørgsmål 21) — uændret, kan ikke løses uden Mads.
 
-> `VERIFICER DEPLOY: /api/ på da, de og fr + sitemap-porten (trin 37), <sha>,
-> 2026-09-28 ca. 16:1x CEST.` Verificér **indhold**: live `sitemap.xml` skal have
+> `VERIFICER DEPLOY (kun efter merge): /api/ på da, de og fr,
+> kodecommit `00e9806` på ceo/api-spejlesprog, 2026-09-28 ca. 16:1x CEST —
+> merge endnu IKKE sket, gaten er rød på de tre fund ovenfor.` Verificér **indhold**: live `sitemap.xml` skal have
 > **213** `<loc>` og `eucomplypro.com/da/api/`, `/de/api/` og `/fr/api/` skal
 > svare 200 med `<html lang="da|de|fr">`, hreflang til alle fire sprog, præcis
 > fire `data-endpoint`-markører i `<main>` og **én** købsanker til
