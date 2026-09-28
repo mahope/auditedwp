@@ -1,3 +1,90 @@
+Opdateret: 2026-09-28 (iteration 90)
+
+Sidste iteration: **resultatet sagde "22 %" om et site der ikke har en eneste
+ting forkert.** Køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så
+denne iteration gik ned i det tal en besøgende læser først, og som et bureau
+videregiver til sin kunde.
+
+**Målt i koden, ikke antaget.** `shared/scan-engine.js` scorede
+`Object.values(checks).filter(c => typeof c.pass === "boolean")` — alle ni
+rækker, hver især ubetinget. Fire af dem siger i deres egen `detail`, at de
+kun kan fejle under en forudsætning: `cookies` ("if you set any non-essential
+cookies"), `tcf` ("used by ad-tech platforms … in programmatic advertising"),
+`consent_mode_v2` ("Google requires Consent Mode v2 for ad personalization in
+the EEA") og `dora` ("This is not a DORA assessment"). Rækken sagde altså
+"dette mangler", og tallet sagde "56 % (5 af 9)" på et site uden annoncering,
+mens `site/scan/index.html:233` gav **grønt** ved 80. Et tal ingen kunne nå, i
+en farve der løfter.
+
+Kørsel mod `https://example.com` før rettelsen: 2 af 9, 22 %. Samme site
+efter: 2 af **5** gældende, 40 % — og de fire ikke-gældende rækker står
+opskrevet med grunden ved siden af.
+
+**Rettelsen.** `CONDITIONAL_CHECKS` i motoren (eksporteret, og derfor den
+eneste sandhed): fire nøgler med en hel sætning hver. `runScan()` sætter
+`applies` på rækkerne ud fra de samme fund, rækkerne selv er bygget af
+(`set-cookie`-headeren, sporene efter programmatisk annoncering), og giver dem
+alle `condition`. `score` bæver **begge tal**: `pct`/`total` er uændret, fordi
+det er tallet kunder har set, og `pct_applicable` + `applicable_total` +
+`conditional` er det nye. `dora.applies = false` er fast — en offentlig
+sidescan kan ikke afgøre, om driftsselskabet er en bank, så at tælle den gjorde
+100 % uopnåeligt for alle.
+
+**Alle ni publicerede resultatsider** (EN/DA/DE/FR `/scan/`, `cookie-banner-check` ×2,
+`consent-mode-v2-check`, `gdpr-compliance-check`, `gdpr-scanner-free`) læser nu
+`pct_applicable`, skriver nævneren ved siden af tallet ("Tælles ikke med her:
+4/9: cookies, IAB TCF, Google Consent Mode v2, DORA.") og viser grunden i selve
+rækken. **Ingen side har sin egen liste** — nøglerne kommer fra
+`score.conditional`, og kun det korte oversatte navn står i siden. En ældre
+worker kender ikke de nye felter, så `scoreSplit()` returnerer `null` og siden
+viser det gamle tal uændret frem for at gætte.
+
+**Port trin 29 — `tools/check_score_split.py` + 9 negative selftest-cases.** Den
+læser listen fra motoren og kræver at de ni sider bruger den, at **de to
+motorer har præcis samme nøgler** (ellers får CLI'en og workeren to tal for det
+samme website), at `dora` er fast betinget, at sætningen pr. nøgle er en hel
+sætning, og at ingen side scorer uden at nævne nævneren.
+
+**To fejl i min egen kode, fundet fordi portens selftest skulle være grøn:**
+(a) `check()` læste siderne fra disk med `read(path)` selvom den fik en tabel
+overblit — så alle fem side-mutationer blev læst væk af de rigtige filer, og
+porten var grøn fordi den læste noget andet end det den testede; (b) fem cases
+fandt intet, fordi mine kontroller greb et *nøgleord* (`pct_applicable` står
+også i `scoreSplit()`'s fallback) i stedet for det udtryk der afgør, hvilket
+tal der vises. Begge rettet; en port der læser et nøgleord i stedet for en
+værdi kan ikke se en fejl i den værdi.
+
+**Ikke færdigt, og bevidst:** plugin-rapporten, HTML-/PDF-rapporten,
+`shared/sample-report.json`, `/pro/dashboard/`, `/badge/` og de fire
+`/pro/`-ruter viser stadig det gamde ene tal, og de nævner ikke betingelsen.
+Det er **del 2** af opgave 85 og er skrevet op med sin egen acceptliste. Det er
+et åbent svigt, ikke en skjult fejl: en bureau der læser plugin-rapporten får
+stadig et ubetinget tal. Det skal gøres som næste iteration, ikke som en
+notat til denne.
+
+**Bemærk uden løsning i denne diff:** den udgivne web-scanner
+(`eucomply-scan.mahope-eeb.workers.dev`) kører den gamle motor og får den nye
+talform først ved worker-deploy (spørgsmål 9) — samme rækkefølge som opgave 6
+(worker før klient). Siderne er altså live med den nye kode fra næste deploy,
+men tallet ændrer sig først når workeren er deployet./npm-CLI'en får den nye
+form ved `npm publish` (samme spørgsmål).
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86 målte taggen og
+fandt at de 0 er ærlige). Kan ikke måles i trafik. Det den gør er at fjerne et
+ubrugeligt farvebånd og et tal uden nævner fra det første en kunde læser.
+
+Deploy: `VERIFICÉR DEPLOY: de ni resultatsiders talform (opgave 85 del 1) 0785362 2026-09-28 ca. 01:35 UTC` — kun `site/**`, to JS-motorer (ikke publiceret af CI) og
+`tools/`. Efter næste deploy-vindue: `/scan/` i EN/DA/DE/FR skal vise
+nævneren under tallet, og de fire rækker skal have grunden i kortet. Før
+worker-deploy viser den gamle motor tallet, så **kræv at nævneren kun vises når
+den er der** — hvis den står med et gammelt tal, er workeren kørt.
+
+❓ **Til Mads.** (a) Skal tallet ændre sig for kunder der har set det gamle?
+Min anbefaling: ja, og skriv i changelog'en at et site uden annoncering nu kan
+score 100 % — ellers læser de "56 %" som et produkt, der blev dårligere.
+(b) Den udgivne worker skal deployes før tallet ændrer sig (spørgsmål 9) — det
+er den eneste måde den nye talform bliver synlig for en besøgende.
+
 Opdateret: 2026-09-28 (iteration 88)
 
 Sidste iteration: **den betalte EAA-erklæring sagde til ethvert site, at
@@ -3161,6 +3248,8 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 - 2026-09-27 (iteration 73, opgave 72 del 2) **Ingen deploy-note nødvendig.** Kun `tools/check_signature_prose.mjs` (regel-porten) og `docs/eucomply-signatur-prosa.md` + denne plan er rørt — **ingen `plugin/**`-fil, ingen `site/**`-fil, ingen ny version, ingen ny zip, intet `update.json`**. Den udgivne overflade er byte-identisk, så der er intet at verificere mod et batch-vindue. Ændringen er **kode, ikke live**: de to JS-motorer røres ikke, så de fiver heller ikke den udvidede dækning; de fås først ved `npm publish` eller worker-deploy (spørgsmål 9), uændret fra opgave 58.
 
+- 2026-09-28 (iteration 89) `DEPLOY OK 2026-09-28 01:05 UTC` + lukket — **opgave 84 (cache-politikken) og plugin 1.3.37 (iteration 88) er begge live-verificeret på indhold, ikke på exit-koden.** Målt med cache-buster: (1) `/update.json` svarer 200 med `"version": "1.3.37"` og `download_url` på 1.3.37; (2) `/plugin/` viser `↓ Download v1.3.37 (free)`; (3) `/assets/eucomply-1.3.37.zip` svarer **200 `application/zip`**, 64 548 B; (4) 1.3.32, 1.3.35 og 1.3.36 følger alle **301** → 1.3.37; (5) `/assets/site.css` har nu `cache-control: public, max-age=14400, must-revalidate` — altså **ikke** `immutable`, hvilket var hele pointen med opgave 84. CI `36364399156` (`build-devnotify`) og `36362851758` (`deploy-site`) grønne, læst i toppen af denne iteration.
+
 ### 84. En kunde skal hente den version, der er rettet
 
 - Status: `FÆRDIG` i repoet på `ceo/asset-cache-policy` — kodecommit `ed813db`, merge `5e255c3` 2026-09-27 23:54, `GATE GRØN — alle 25 steps bestået`. Deploy-noten åben.
@@ -3200,7 +3289,7 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
 
 ### 85. Tallet i resultatet skal sige, hvad det tæller
 
-- Status: `TODO — næste iteration` (skrevet i iteration 89 som research-resultat). Målingen står øverst i planen: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
+- Status: `I GANG — del 1 færdig` (iteration 90, `ceo/scoretal-og-betingelse`). Del 2: plugin-rapporten, HTML-/PDF-rapporten, `shared/sample-report.json`, `/pro/dashboard/`, `/badge/` og de fire `/pro/`-ruter. Målingen står øverst i planen: en site der gør alt uden annoncering scorer **56 % (5 af 9)**, og `site/scan/index.html:233` giver først grønt ved 80.
 - Begrundelse: rang 1 og 2 i "hvad der tæller" på én gang. Det er det første en besøgende læser, og det er det tal et bureau videregiver til sin kunde. Fire af ni rækker siger selv i deres egen `detail`, at de kun gælder under en forudsætning (`cookies`, `tcf`, `consent_mode_v2`, `dora`), mens siden viser dem som et ubetinget pointtal. Det er samme fejlklasse som EAA-omfanget (iteration 88) og opgave 45: **dokumenteret betingelse, ubetinget dom i talform.**
 - **Beslutningen der låses først:** scoren skal **deles** — rapporten får ét tal for de tjek der gælder for sitet og ét for dem der ikke gør. Ikke "5 af 5" alene, fordi et tal uden nævneren fortsat er et tal uden betingelse; den fulde sætning skal kunne læses i rapporten. ❓-spørgsmålet øverst er, om det ændrer et tal kunder har set (min anbefaling: ja, del det).
 - Første skridt: `runScan` får **én** ny kilde til sandheden — hvert check bærer `applies: true|false` og en kort grund, og `score` får `{passed, total, pct, applicable_total, conditional[]}`. Ingen side må selv finde ud af hvilke tjek der er betingede; det er præcis det, der får fem overflader til at fortælle fem historier (samme grund som del 1 af opgave 5 og historikmodellen i opgave 4).
