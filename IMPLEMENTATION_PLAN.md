@@ -1,3 +1,77 @@
+Opdateret: 2026-09-28 (iteration 96) — **research-iteration**
+
+Sidste iteration: **køen var tom (5, 6 og 7 er blokeret på spørgsmål 7 og 9), så
+denne iteration gennemgik trappen som en fremmed: hvad en besøgende skriver, hvad
+deres resultat siger, og hvad en kunde henter.** Den fandt én fejl i den levende
+udgivne pakke — og to steder, hvor portene bevidst **ikke** ser.
+
+**Fund 1 — råt HTML i den rådende tekst i den pakke kunder henter i dag.**
+`plugin/eucomply.php:1544` (1.3.38) skriver sit eget råd som markup:
+
+    Add a link to your privacy policy next to the form
+    (e.g. <a href="/privacy/">Privacy Policy</a>), and assign …
+
+Renderingen er korrekt — `plugin/eucomply.php:2034` gør
+`esc_html( $r['fix'] )` — så **alle** renderingssteder escaper, og det er derfor
+markup'en **når kunden som kildekode**: i den rapport han sender videre til sin
+egen kunde, og i mailen ved et check der skifter til `fail`. Beviset er hentet fra
+den **serverede** fil, ikke fra kilden: `site-dist/assets/eucomply-1.3.38.zip`
+→ `eucomply/eucomply.php` har **1** forekomst, og `EUCOMPLY_VERSION 1.3.38`.
+Samme streng findes i **alle tre** motorer: `shared/scan-engine.js:939` og den
+spejlende `eucomply-scanner/engine/index.js:981`. Den er det mest læste felt i
+hele rapporten, den rammer præcis det fund en GDPR-scanner oftest har (form uden
+privatlivslink), og den er den eneste linje i rapporten der ikke kan bruges.
+
+**Målt, ikke antaget, og begrænset til *data*.** En bred måling af alle
+`fix`/`detail`/`label`-strenge i de to motorer, pluginen og
+`shared/sample-report.json` giver **én** streng pr. motor og **én** i pluginen —
+ikke en klasse. Min egen målescript fandt først **0** i motorerne, fordi den
+søgte på den linje feltet blev **tildelt** på, mens strengen står på næste linje;
+det er præcis den fejlklasse planen har skrevet otte gange ned (en regel der læser
+mindre end den påstår), så porten skal tælle på **værdien**, ikke på
+tildelingslinjen.
+
+**Fund 2 — `class="price"` er bevidst undtaget fra priskontrollen, og det er
+rimeligt, men ingen port ser vores egne pris-tabeller.** `check_cta.py`'s
+`check_price_claims()` siger det selv: kun beløb i selve købsankeren tjekkes, fordi
+samme klasse bruges til at citere konkurrenter. Målt i dag i det publicerede
+træ: **alle** vores egne beløb er ens kontrakten — `79 USD` (Pro/år),
+`149 USD` (Lifetime), `29/39/49/59/69 USD` (skabeloner), `fra 29 USD` — på
+EN/DA/DE/FR og i metadata. **Det er et negativt resultat, og det er værd at have
+som målt:** den næste redigering af en pris-tabel har intet at blive målt imod.
+
+**Fund 3 — ingen købs- eller installationsvej peger på noget, der ikke findes.**
+Målt i hele det publicerede træ: **0** `chromewebstore`/`addons.mozilla`-links,
+og `/extension/` siger ærligt *"Also coming to the Chrome Web Store"* og tilbyder
+manuel installation. Zip'en er målt gyldig: 8 filer, `manifest_version 3`,
+`version 1.0.1` matchende filnavnet, ikoner 16/48/128 til stede. Den dyre
+klasse fejl (en knap der lover noget der ikke kan hentes) er **ikke** til stede
+her — den er bare ikke nået nogen, fordi den ikke er bygget.
+
+**Målt og bekræftet uændret:** den udgivne `eucomply-scan` giver stadig
+`github.com` fire oplyste samtykkeplatforme (pass) — den dyreste fejl i
+rapporten, uændret og lukket af spørgsmål 9.
+
+❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede. **Men
+spørgsmål 9 er nu seks runder gammel og blokerer fund 1 for de to JS-motorer:**
+selv en perfekt rettelse i `shared/scan-engine.js` når ingen besøgende, før
+`worker-scan` er deployet. Plugindelen kan derimod rettes og udgives her.
+
+Baseline for effekten: **0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at fjerne den ene linje i den betalte rapport, der ikke kan
+læses af den, rapporten er skrevet til.
+
+- 2026-09-28 (iteration 96) `INGEN DEPLOY NØDVENDIG: research-iteration —
+  markup i rådgivning, pristabeller uden port, Chrome Web Store (opgave 89, 90,
+  91)` — diffen rører **kun `IMPLEMENTATION_PLAN.md`**. Ingen `site/**`-fil,
+  ingen `plugin/**`-fil, ingen `update.json`, ingen ny zip, ingen
+  `shared/scan-engine.js`, ingen `eucomply-scanner/**`, ingen `tools/**`, ingen
+  plugin-version. Deployen skal logge **`Uploaded 0 files (322 already uploaded)`**;
+  et andet tal betyder at diffen gjorde noget den ikke skulle. **Der er intet at
+  verificere på sitets indhold.** Den eneste evidens er diffen selv og de målinger
+  den citerer (den serverede zip, de to motorer, `check_cta.py`s egen undtagelse,
+  extension-zip'ens manifest).
+
 Opdateret: 2026-09-28 (iteration 95)
 
 Sidste iteration: **porten målte om en fil findes, men ikke om et anker gør det.**
@@ -3525,3 +3599,110 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - ~~Selftesten må ikke kunne sige grønt mens en case fejler.~~ **Dækket** — alle fire nye cases fanges, 13 → 18.
   - Efter merge verificeres på indhold. **ÅBEN — noten ovenfor.**
 - 2026-09-28 (iteration 93, opgave 86) `VERIFICER DEPLOY: changelog'en er nu én kilde — 42 poster fra readme.txt i begge felter i begge manifests, 1.3.38 dokumenteret, 41 versioner i redirect-kæden` merge `ac42683` 2026-09-28 04:15 UTC — rører `update.json` + `site/update.json` (byte-identiske), `site/_redirects` (+2), `site/assets/eucomply-1.3.38.zip` (genbygget, kode uændret), `tools/build_plugin_zip.py`, `tools/check_asset_delivery.py` og denne plan. **Ingen `plugin/**`-fil** — især ikke `readme.txt`, der er kilden, og ikke `eucomply.php`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster: (1) `/update.json` svarer 200 med `"version": "1.3.38"` og **changelog der starter `= 1.3.38 (2026-09-28) =`**; (2) samme svar har **42** poster i både `changelog` og `sections.changelog`, og de to felter er ens; (3) `/assets/eucomply-1.1.0.zip` og `/assets/eucomply-1.0.0.zip` giver begge **301** → 1.3.38 — de to var aldrig i kæden; (4) `/assets/eucomply-1.3.38.zip` svarer stadig **200 `application/zip`**; (5) CI-loggen viser `GATE GRØN — alle 29 steps bestået` og `18 negative selftest-cases`. **Bemæk:** de to JS-motorer røres ikke, så intet ændrer sig for dem — uændret fra opgave 58.
+
+### 89. Rådgivningen i rapporten må ikke være markup — den flyder til kunden som kode
+
+- Status: `TODO` — målt 28/9 i den **serverede** `eucomply-1.3.38.zip`
+  (`eucomply/eucomply.php`, 1 forekomst) og i begge JS-motorer. Rettelsen kræver
+  en plugin-udgivelse, så den tages som én samlet release-kæde, ikke som en
+  los linje.
+- Fejl: 1 streng i hver af tre motorer. Ikke en klasse — målt over alle
+  `fix`/`detail`/`label`-strenge i `shared/scan-engine.js`,
+  `eucomply-scanner/engine/index.js`, `plugin/eucomply.php` og
+  `shared/sample-report.json`.
+- **Hvorfor den er dyrere end den ligner.** `plugin/eucomply.php:2034` gør
+  `esc_html( $r['fix'] )` — korrekt, og derfor *når markup'en kunden som
+  kildekode*. Den står i det mest læste felt i rapporten, i den rapport et bureau
+  sender videre under eget navn, og den rammer præcis det fund scanneren oftest
+  har: en form uden privatlivslink. Det er den eneste linje i hele produktet, der
+  ikke kan bruges.
+- **Rettelsen:** de tre strenge bliver ren prosa — beskriv hvad der skal indsættes,
+  uden at skrive en `<a>`-tag i en data-streng. Renderingkoden røres ikke: escaping
+  er korrekt, og det er *data* der er forkert (samme princip som opgave 52/49: en
+  etiket må ikke beskrive en mangel, en rettelse må ikke være markup).
+- **Port (ny kontrol i `tools/check_pro_claims.py` eller egen `tools/check_advice_strings.py`):**
+  1. **Ingen markup i brugerrettet data.** Alle `fix`/`detail`/`label`-strenge i de
+     to motorer, pluginen og sample-datasættet skal være frie for
+     `<\s*/?\s*(a|strong|em|br|code|p|span|div|ul|li|h[1-6]|script)\b`.
+     Tællingen skal ske på **værdien** (udtrukket streng), ikke på den linje
+     feltet tildeles — min egen målescript fandt 0 i motorerne, fordi den søgte på
+     tildelingslinjen, og det er den fejlklasse planen har skrevet otte gange ned.
+  2. **Renderingskode er ikke data.** Rækker med `esc_html(`, `htmlspecialchars(`,
+     `esc(` eller `nl2br(` i samme vindue skal springes over, ellers er porten rød
+     på korrekt kode (som i min egen første måling).
+  3. **Motorerne skal være ens** om strengen, så rettelsen ikke kan komme tilbage
+     i den ene — samme paritetskrav som `test_engine_parity.mjs`.
+  4. **Mindst én kontrol må køre mod en rigtig fil**, ikke kun fixtures: porten skal
+     finde strengen i `git show main:plugin/eucomply.php` **før** rettelsen, ellers
+     er den grøn uden at have set noget.
+- **Negative selftest-cases (mindst 5):** grønt baseline først; markup i en `fix`
+  i motoren; markup i `detail` i pluginen; markup i sample-datasættet; en
+  renderingslinje med `<p class="fix">` der **ikke** må være rød; en mutation der
+  ikke muterer, så selftesten beviser at den kan fejle.
+- Begrundelse: rang 1 i "hvad der tæller" — en fejl i den betalte vare, i det
+  mest læste felt, som kunden kan se. Rang 3 desuden: strengen lå i tre motorer,
+  og ingen af de 29 steps så den, fordi de alle læser *kode-struktur* (signaturer,
+  claims, links) og ikke *rådets tekst*.
+- Scope: `shared/scan-engine.js` + den spejlende `eucomply-scanner/engine/index.js`;
+  `plugin/eucomply.php` + den byte-identiske `site/plugin/eucomply.php`;
+  `plugin/readme.txt` + `site/plugin/readme.txt` (changelog-tekst); plugin
+  **1.3.39** med ny zip; `update.json` + `site/update.json`;
+  `site/_redirects` (+1 regel for 1.3.38); `site/plugin/index.html`;
+  `tools/check_pro_claims.py` (`PLUGIN_VERSION`); den nye port + trin i
+  `tools/quality_gate.sh`; `tools/build_plugin_zip.py --sync-changelog`.
+  Ingen scanner-side-HTML, ingen salgscopy, ingen worker.
+- Accept:
+  - ~~Ingen brugerrettet streng må indeholde markup.~~ Målt **1 → 0** i hver af de
+    tre motorer, og porten er grøn mod repoets egne filer.
+  - ~~Porten må ikke springe sin egen kontrol over.~~ Bevis med `git show
+    main:…` før rettelsen: porten skal være **rød** på den gamle fil.
+  - ~~Escapingkoden skal ikke røres.~~ `esc_html( $r['fix'] )` står uændret i
+    `plugin/eucomply.php`, og `check_dom_xss.py` (trin 6) forbliver grøn.
+  - ~~Ingen ny zip uden ny version og redirect.~~ `check_asset_delivery.py` kræver
+    præcis én zip i træet, at den er den aktuelle, og at 1.3.38 har en `301`.
+  - ~~Ingen JS-motor må glide fra hinanden.~~ `test_engine_parity.mjs` grøn.
+  - Efter merge verificeres på indhold: `/assets/eucomply-1.3.39.zip` svarer
+    **200 `application/zip`** med `Version: 1.3.39` og **0** forekomster af
+    `a href="/privacy/"` i den unzippede `eucomply.php`; `/update.json` svarer 200
+    med `"version": "1.3.39"` og changelog der **starter** `= 1.3.39`;
+    `/assets/eucomply-1.3.38.zip` følger **301** → 1.3.39.
+
+### 90. Vores egne pris-tabeller skal måles mod kontrakten — ikke kun købsknappen
+
+- Status: `TODO` — målt 28/9: **alle** vores beløb i det publicerede træ er ens
+  kontrakten (79 / 149 / 29 / 39 / 49 / 59 / 69 USD, EN+DA+DE+FR + metadata).
+  Negativt resultat, målt — ikke en undtagelse, der er taget.
+- Fejl: 0 fund. Opgaven er at gøre det til en egenskab ved filerne, fordi
+  `check_cta.py`'s `check_price_claims()` kun læser **købsknappen** — bevidst,
+  da `class="price"` også citerer konkurrenter ($350+/mo, €179/år, "Gratis").
+- Rettelsen skal derfor skelne: **vores** produktrækker (dem der står i samme kort
+  eller tabel som en af vores Stripe-links) skal have beløb = kontraten;
+  konkurrentrækker skal springes over. Skelningskriteriet skal være målbart (fx
+  en `data-product`-attribut eller et `id` på kortet), ikke et gæt på tekst.
+- Begrundelse: rang 1/2 — en forældet pris i tabellen er præcis den fejl missionens
+  første opgavehandlede, og den kan komme tilbage uden at nogen port bliver rød,
+  fordi undtagelsen er skrevet som en undtagelse.
+- Accept:
+  - Hver pris der står i et kort med en af vores købslinks skal være kontrakten.
+  - Konkurrentciteringer skal give **0** fund (bevis: de findes i dag, så en port
+    der skælder dem, er rød på ærlige sider).
+  - `check_cta.py --selftest` må have en case for "pris i et kort uden købslink"
+    (skal være grøn) og én for "kort med købslink og forkert beløb" (skal være rød).
+
+### 91. Chrome Web Store-listen er den eneste konverteringsvej, der ikke findes
+
+- Status: `TODO` — målt 28/9: **0** `chromewebstore`/`addons.mozilla`-links i hele
+  det publicerede træ. `/extension/` siger ærligt, at den kommer, og zip'en er
+  målt gyldig (8 filer, `manifest_version 3`, `version 1.0.1`, ikoner 16/48/128).
+- **Ingen agent må udgive til Chrome Web Store** (kontrakten). Opgaven er derfor
+  at gøre den **forberedt** og at finde ud af, om den bærer reelle besøgende.
+- Begrundelse: rang 4 (synlighed) og rang 2 (konvertering) — extensionen er det
+  eneste produkt, der kræver nul installation af brugerens eget website-miljø, og
+  den eneste indgang, der ikke kræver `wrangler`-login.
+- Accept:
+  - Manifestet er Chrome-Web-Store-klart målt (navn ≤45 tegn, beskrivelse ≤132,
+    ikoner, ingen `localhost`-stier, ingen ubrugte permissions) — resultatet skrives
+    i planen, uanset om listen kan udgives.
+  - `/extension/` har **én** købs- eller plus-vej, der virker i dag (f.eks. kundelink
+    til pluginen), så en besøgende der ikke kan bruge extensionen stadig har en vej.
+  - Under `❓`: skal Mads udgive den nu, og hvilken konto?
