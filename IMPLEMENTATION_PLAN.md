@@ -1,3 +1,114 @@
+Opdateret: 2026-09-28 (iteration 104) — **den gratis scan-API blev solgt på otte
+sider uden én dør ind i den.** Planen havde én (`/vs/termly/`); da porten målte
+træet, fandt den **syv** `vs/*`-sider mere med samme løfte i samme tabelrække:
+`complianz`, `cookiebot`, `enzuzo`, `iubenda`, `onetrust`, `usercentrics`.
+Ingen af dem linkede nogen sted, og `/api/`, `/docs/`, `/developers/` gav alle
+404 — den eneste beskrivelse af overfladen lå i tre filer i en npm-pakke, som
+ingen læser først går og finder.
+
+**Det værre var, at API'et virker.** Målt live 28/9 10:00 UTC: `GET /scan`,
+`GET /stats`, `GET /config` og `POST /subscribe` svarer alle `200
+application/json`, og en OPTIONS-preflight svarer `Access-Control-Allow-Origin:
+*`. Så en læser der finder vejen hjem får et virkende svar om en **gratis**
+tjeneste, og en læser der ikke gør, må formode at den er uafsluttet eller dyr.
+Begge fejl er dyrere end den reelle pris.
+
+**Rettelsen er `/api/` plus otte købsveje, ikke en ny blok.** Siden er skrevet
+udelukkende ud fra målinger: svartidsfeltet for `/scan`, de fem fejlkoder
+(`400`/`404`/`422`/`429`/`502`), CORS og ratelimit på 10/min pr. IP. Tre ting
+står der, fordi de er sande og ikke fordi de sælger:
+
+1. **`/stats` er ikke et brugerantal.** Tælleren trækker vores egne røgtests
+   med: målt 578 scans, hvoraf `192.0.2.1` stod for 196, `198.18.0.1` for 193
+   og én `.invalidtld`-vært for 50 — omkring tre fjerdedele fra automatiske
+   kørsler mod reserverede adresser. Siden siger det, fordi `AGENTS.md` siger
+   at et tal skal kunne forklare hvor det kommer fra.
+2. **JSON-scoren er det rå ni-tal**, ikke det delte, og fire af de ni checks
+   gælder kun bestemte sidetyper. `/cli/` er den build der fortæller hvilke
+   den ikke talte med, og siden peger derhen i stedet for at lade 44 % læses
+   som et fuldt mål.
+3. **Den udgivne worker er en ældre build end motoren i repoet**, derfor
+   mangler `pct_applicable`. Det står som en forskel, ikke som et løfte om en
+   næste version.
+
+**Fund under målingen, ikke ved læsning: `GET /` svarede 404.** Workerens
+`path` blev normaliseret med `|| "/"`, så `path === ""` aldrig var sandt og
+informationsgrenen var død kode. Rettelsen fjerner `|| "/"`; ruterne er nu
+målt mod normaliseringen direkte (`/`, `//`, `///` → info; `/scan`, `/scan/` →
+scan; `/stats` → tæller; alt andet → 404), og `test_worker_security.mjs`
+består de 47 checks uændret. **Dette deployes ikke her** — `worker-scan/`
+kræver `wrangler deploy` = spørgsmål 9 — og derfor dokumenterer `/api/` den
+ikke. Live `GET /` svarer 404 indtil et menneske deployer.
+
+**Fire regler i `tools/check_api_docs.mjs` (trin 33), 33 steps i alt.** R1:
+et `data-endpoint` i `<main>` på `/api/` skal være en rute i
+`worker-scan/index.js`. R2: enhver side der skriver "free api" / "api access"
+skal linke til `/api/` — det er den regel, der gør døren permanent for de otte
+sider *og* for den niende. R3: `path === ""` må ikke være død kode. R4:
+`/api/` skal stå i `PUBLIC_DIRS`. R1 læser endepunkterne fra
+`data-endpoint`-markører, ikke ved at gætte på prosa, og kun i `<main>`:
+sidefoden indeholder BugBottles eget
+`data-endpoint="https://mahope.tools/api/bugreport"`, som er et andet API.
+R2 ser på **løfteformen** — en regel der greb på ordet `api` ville være rød på
+`eucomplypro.com/api/` selv, altså på den side der er lavet for at fjerne
+fejlen. `SELFTEST GRØN — alle 5 negative cases fanges`, og den grønne case er
+rød, når hver regel brydes.
+
+**Gaten:** `GATE GRØN — alle 33 steps bestået`. `tools/seo_check.py` scannede
+**217 sider med 0 findings** (var 213 før denne diff), og CTA-gaten meldte
+**44 pro**-sider mod 43 — altså at `/api/` både er publiceret i
+`site-dist/` og er klassificeret, så den har canonical, én købsknap til
+kontrakten og nul døde referencer. Sibling-kørslen i `../hermes-passiv` scannede
+0 sider, hvilket er dens kendte udfald; repoets egen kontrol er evidensen.
+
+**Rørt:** `site/api/index.html` (ny), syv `site/vs/*/index.html` (én celle
+hver), `tools/check_api_docs.mjs` (ny), `tools/quality_gate.sh` (trin 33),
+`tools/build_public_tree.py` (`PUBLIC_DIRS`), `tools/check_cta.py` (én linje
+i den eksisterende `pro`-regel), `worker-scan/index.js` (én linje + forklaring),
+`docs/api-dokumentation-uden-dor.md` (ny). **Ingen plugin-version, ingen
+`update.json`, ingen ny zip, ingen Stripe-pris ændret.**
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflares 5390 er bots), `★0` stjerner, 14 d: 0
+npm-visninger, 14 kloninger (11 unikke). Kan ikke måles i trafik. Det den
+gør er at en læser, der lander på en af de otte `vs/*`-sider og læser
+"Free API", nu kan klikke på det og få sandheden — i stedet for at gætte på
+en pris, der er 0.
+
+**E-bog-bundlen er stadig spørgsmål 20 og stadig på Mads.** Den står ikke
+på listen herunder, fordi den er dokumenteret og uden ny handling: intet i
+repoet siger hvad køberen modtager, og opfindelse er missionens forbudte
+fejl. Den lever videre i `unsold_products()`-rapporten på hver gatkørsel,
+så den ikke kan blive glemt stille.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Zip'en mangler LICENSE.** `/extension/` siger "Open source", footeren
+   siger "Scanner and CLI are MIT licensed", men zip'en har ingen
+   LICENSE-fil. En licens påstand uden licenstekst er den billigste
+   rettelse i køen og den eneste der er ren juridisk risiko. Målbar:
+   `check_store_ready.py` kræver, at zip'en indeholder `LICENSE`, og
+   porten fejler på den gamle zip.
+2. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)". Samme klasse som denne
+   iteration: en påstand uden dækning. Syv andre `vs/*`-sider har samme
+   problem, så rettelsen er en `data-competitor`-måling, ikke én side.
+3. **`/api/` findes kun på engelsk.** DA/DE/FR-siderne linker til
+   `/pricing/` men ikke til dokumentationen. `check_locale_parity` kræver
+   kun symmetri for `index.html`, `pro/index.html` og `pricing/index.html`,
+   så porten er grøn — det er et reelt valg om tid, ikke en forglemme.
+4. **Deploy-verificering af iteration 101/102** (`/cli/`s eksempel og motorens
+   egen rapport) og denne iterations `/api/`. Ét kald til CI i starten af
+   næste iteration, ingen polling.
+
+❓ **Til Mads.** Uændret. Spørgsmål 20 (e-bog-bundlens indhold og placering)
+er eneste nye, og den er fra 26/9.
+
+
+---
+
+---
+
 Opdateret: 2026-09-28 (iteration 103) — **de to sidste håndskrevne gengivelser af
 rapporten lå i npm-pakken, ikke på sitet.** `examples/sample-output.txt` viste
 `Score: 2/9 (22%)` for wordpress.org og **seks af ni** rækker, `examples/node.js`
@@ -572,6 +683,7 @@ læse porten som om Hotjar-installationen var verificeret.
 - 2026-09-28 (iteration 100) `VERIFICER DEPLOY: /extension/ sælger Pro kun som den virker, prøverapportens delte tale er læselig` kodecommit `558cfe8`, merge `6c032ba` 2026-09-28 07:55 UTC — rører `site/extension/index.html`, `site/pro/sample-report/index.html`, `scripts/build_sample_report.py`, `tools/check_pro_claims.py`, `tools/check_sample_coverage.py`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **to** punkter: (1) `/extension/` — upsell-sætningen siger *"runs the same checks on a schedule in your own WordPress"* og *"The extension itself is free and stays free"*, og **0** forekomster af *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` — linjen siger **"62% of the 8 checks that apply (5 of 8)"** med procenttegn, og **0** forekomster af "62 of the 8 checks". **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **`DEPLOY OK 2026-09-28 08:13 UTC` + lukket på indhold** (iteration 101): begge punkter efterprøvet med cache-buster `?cb=it101` — (1) `/extension/` har *"runs the same checks on a schedule in your own WordPress"* ×1 og *"The extension itself is free and stays free"* ×1, og **0** × *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` siger **"62% of the 8 checks that apply (5 of 8)"** ×1 og **0** × "62 of the 8 checks". Opgaven er lukket.
 - 2026-09-28 (iteration 101) `VERIFICER DEPLOY: /cli/'s eksempel er motorens egen udskrift, og de to bullets der beskrev proxyen er rettet` kodecommit `f088284`, merge `729474c` 2026-09-28 08:19 UTC — rører `site/cli/index.html`, `tools/capture_cli_fixture.py`, `tools/cli_example_run.mjs`, `tools/build_cli_example.py`, `tools/fixtures/webflow.com.json`, `tools/quality_gate.sh` (trin 31). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **tre** punkter: (1) `/cli/` — eksempelblokken har **alle ni** domme (✅/⚠️/❌) og **0** forekomster af det gamle `║`-format eller af `"No DORA / resilience disclosures"`; linjen siger `"1 tracker(s) with NO consent platform"`; (2) `/cli/` — `"sub-second scans over a public API"` og `"PASS, FAIL or CHECK MANUALLY"` giver begge **0**, erstattet af "one request to the page (plus a DNS safety check…)" og "✅ passed, ⚠️ needs a look, ❌ failed"; (3) CI-loggen viser `GATE GRØN — alle 31 steps bestået` og `SELFTEST GRØN — alle negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker** — pluginzip'en er urørt.
 - 2026-09-28 (iteration 102) `VERIFICER DEPLOY: /cli/'s eksempel er nu motorens fulde rapport (47 linjer, delt score, 3 not-counted, 6 råd)` kodecommit `05f05f1`, merge `5c9928f` 2026-09-28 08:51 UTC — rører `site/cli/index.html` (genereret blok **28 → 47 linjer**), `eucomply-scanner/engine/index.js`, `eucomply-scanner/cli/eucomply.js`, `shared/scan-engine.js`, `tools/cli_render_parity.mjs` (ny), `tools/build_cli_example.py`, `tools/quality_gate.sh` (trin 32), `docs/eucomply-cli-egen-renderering.md`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/cli/` har linjen `   Score: 3/6 of the checks that apply to this site (50%)`; (2) `/cli/` har **tre** `   - not counted:`-linjer (`tcf`, `consent_mode_v2`, `dora`); (3) `/cli/` har **seks** `💡`-linjer og **ni** domme; (4) `/cli/` har linjen `   All 9 checks: 3/9 (33%)` og **0** forekomster af det gamle `   Score:    3/9 (33%)`. CI skal vise `GATE GRØN — alle 32 steps bestået`. **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **Bemærk:** de to motorer (`eucomply-scanner/engine/index.js`, `shared/scan-engine.js`) deployes **ikke** med sitet. De når først de live-workere ved `wrangler deploy` = spørgsmål 9, så live-workerens rapport er uændret indtil da. npm-pakken er uændret indtil publicering af 1.1.0 (spørgsmål 17).
+- 2026-09-28 (iteration 104) `VERIFICER DEPLOY: den solgte scan-API har en dør ind i den — /api/ er live, og otte vs-sider har en købsvej` kodecommit `980d118`, merge `df7ae9e` 2026-09-28 10:47 UTC — rører `site/api/index.html` (ny), `site/vs/{complianz,cookiebot,enzuzo,iubenda,onetrust,termly,usercentrics}/index.html` (én `td.check`-celle hver), `tools/check_api_docs.mjs` (ny), `tools/quality_gate.sh` (trin 33), `tools/build_public_tree.py`, `tools/check_cta.py`, `worker-scan/index.js` (én linje), `docs/api-dokumentation-uden-dor.md` (ny). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/api/` svarer **200** og har præcis **fire** `data-endpoint="..."`-markører i `<main>`: `/scan`, `/stats`, `/subscribe`, `/config`; (2) `/api/` har linjen `"score"` i svartidsfeltet og **null** forekomster af `pct_applicable` (den delte tale er ikke i API'en endnu); (3) `/api/` indeholder afsnittet om at `/stats` ikke er et brugerantal, og `/api/` har **én** købsanker til `https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`; (4) alle **syv** `vs/*`-sider har `<a href="/api/">Free API</a>` i deres `API`-tabelrække. CI skal vise `GATE GRØN — alle 33 steps bestået` og `SELFTEST GRØN — alle 5 negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip.** **Bemærk:** `worker-scan/index.js` deployes **ikke** af CI. Rettelsen af `GET /` (der svarer 404 live) er kilde-richtig, men kræver `wrangler deploy` = spørgsmål 9, og derfor dokumenterer `/api/` den ikke.
 
 
 
