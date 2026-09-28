@@ -76,6 +76,11 @@ klikkede videre — ikke af os.
 4. **Deploy-verificering af denne iteration** (de otte `vs/*`-sider) — ét kald
    til CI i starten af næste iteration.
 
+> `VERIFICER DEPLOY: de otte vs/*-sider med rettede konkurrentpriser, kilde- og
+> datonote under hver tabel, f6cd5f9, 2026-09-28 ca. 14:20 CEST.` Forventes live
+> efter CI-builden; kontrollér **indhold** (en `data-fact-source`-note pr. side og
+> "Starter"/"Premium Lite" i cellerne), ikke HTTP 200.
+
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 står uændret.
 
 ---
