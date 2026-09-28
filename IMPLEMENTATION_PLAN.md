@@ -1,3 +1,114 @@
+Opdateret: 2026-09-28 (iteration 105) — **zip'en sagde "Open source" og havde
+ingen licenstekst.** Køens første post var den billigste rettelse og den eneste
+der var ren juridisk risiko, så den er gjort først. Målt, ikke læst:
+`site/assets/eucomply-extension-1.0.2.zip` havde **ni** medlemmer og ingen af
+dem `LICENSE`; `chrome-ext/` havde ingen `LICENSE`; `mahope/auditedwp` er
+offentligt og `licenseInfo: null`, så der lå heller ingen root-tekst. Sidens
+kort "No tracking" sagde *"Open source."* i ren tekst. Det er ikke en
+beskrivelse af en fil, det er en vilkårsklasse — og den person, der unzipper
+pakken, havde ingen rettigheder at bruge.
+
+**Rettelsen er licens + reproducerbar byg + port, ikke en ny blok.** (1)
+`chrome-ext/LICENSE` er **byte-identisk** med `eucomply-scanner/LICENSE`
+(sha256 `306bcab8db4f…`) — én licenstekst i huset, ikke tre variationer. (2)
+`/extension/` siger **"MIT licensed"** og peger på, at teksten følger med i
+ZIP'en: et navn er en kendsgerning, "open source" er en hensigtserklæring. (3)
+Extensionen er **1.0.3** — ikke fordi adfærden ændrede sig, men fordi pakken
+gør det, og to forskellige pakker med samme navn er den måde en læser
+pådrager sig det. (4) `tools/build_extension_zip.py` er **ny** og gør pakken
+reproducerbar: den var genbygget i hånden to gange, og en zip ingen kan bygge
+igen driver lydløst. Medlemmer sorteret, fast tidsstempel, version fra
+manifestet som filnavn — målt som **to builds med samme sha256**
+(`a3a94d9f…`). Scriptet nægter desuden at bygde uden `LICENSE`.
+
+**R11 i `tools/check_store_ready.py` dømmer de tre sider hver for sig**, fordi
+de kan fejle uafhængigt: `LICENSE` skal findes i kilden og være en licenstekst
+(indeholde `Permission is hereby granted` — en fil med navnet LICENSE, der
+ikke er en licens, er stadig en mangel); den publicerede zip skal indeholde
+den, fordi det er den fil læseren henter; og sidens påstand skal **navngive**
+en licens, for `open source` / `open-source` / `opensource` / `free software` /
+`source available` uden et navn blandt MIT/Apache/BSD/GPL/MPL/Unlicense er
+rødt. Selftesten gik **18 → 22** negative cases, og de fire nye er dagens
+fund. Trin 34 kører `build_extension_zip.py --check` + `--selftest`;
+**`--check` fejlede på den gamle 1.0.2-pakke**, hvilket var
+acceptkriteriet.
+
+**Footeren på 203 sider blev bevidst ikke rørt.** "Scanner and CLI are MIT
+licensed" er sandt — begge har licenstekster, og de er byte-gode. Det var kun
+extensionen, der lå uden.
+
+**Gaten:** `GATE GRØN — alle 34 steps bestået` (33 før). `seo_check.py`
+scannede **217 sider med 0 findings** (uændret), `check_pro_claims.py` **184
+self-tests, 0 uventede claims**, `check_cta.py` **44 pro**-sider mod 43, og
+`check_public_tree.py` **0 døde referencer, 0 døde ankre** i 227 sider. Den
+publicerede zip er målt i det publicerede træ: 9 filer, `LICENSE` med, 9425 B.
+Sibling-kørslen i `../hermes-passiv` gav exit 0 og 0 sider, hvilket er dens
+kendte udfald; repoets egne kontroller er evidensen.
+
+**Rørt:** `chrome-ext/LICENSE` (ny), `chrome-ext/manifest.json` (1.0.3),
+`chrome-ext/README.md` (licensafsnit + byggetrinnene), `site/extension/
+index.html` (zip-link + "MIT licensed"), `site/assets/eucomply-extension-
+1.0.3.zip` (ny, 1.0.2 fjernet), `tools/build_extension_zip.py` (ny),
+`tools/check_store_ready.py` (R11 + 4 selftest-cases), `tools/quality_gate.sh`
+(trin 34), `site/_redirects` (**to nye linjer**), `docs/extensionens-licens.md`
+(ny). **Ingen plugin-version, ingen `update.json`, ingen Stripe-pris, ingen
+worker, ingen upload til Chrome Web Store.**
+
+**Fund under arbejdet, som næsten kostede en 404: sletningen af 1.0.2.** En
+pakke der forsvinder fra træet uden redirect giver læseren enten en 404 eller
+— værre, målt i `check_asset_delivery.py`s optegnelse — **den gamle pakke i
+kant-cachen i op til et år**, fordi `site/_headers` giver `/assets/*`
+`Cache-Control: immutable`. Det er sket tre gange i dette repo med pluginens
+zips, og `redirect_findings()` dækker kun pluginen. Derfor er
+`write_redirects()` nu en del af `build_extension_zip.py`: **fjernels en
+pakke, skriver maskinen redirect-linjen**, og `--check` dømmer en linje der
+peger på en version, der ikke ligger i træet. De to linjer (1.0.1 → 1.0.3,
+1.0.2 → 1.0.3) er skrevet af den kodevej, ikke af mig.
+
+**Deploy-verificering først, i ét kald:** de tre åbne `VERIFICER DEPLOY` fra
+iteration 101, 102 og 104 er lukket på **indhold** med cache-buster
+`?cb=it104` — se noterne i deploy-loggen. `/api/` svarer 200 med fire
+`data-endpoint` i `<main>`, syv `vs/*`-sider har hver én `Free API`-købsvej,
+og `/cli/` har motorens fulde rapport. CI `36408031696` grøn.
+
+**Baseline for effekten: 0 reelle besøgende** (Plausible 1, bounce 100 %, kun
+Direct / None; Cloudflares 5390 er bots), `★0` stjerner, 14 d: 0 npm-visninger,
+14 kloninger (11 unikke). Kan ikke måles i trafik, og det er ikke formålet:
+denne iteration fjerner en mangel, der aldrig ville have vist sig som trafik
+og som ville have vist sig som en refusion eller et krav fra den første
+person, der læste pakkens vilkår og fandt dem tomme.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Root-LICENSE for `mahope/auditedwp`** — spørgsmål 21 under `❓ Til Mads`.
+   Publiceret uden licenstekst i roden. Kan ikke løses uden Mads, fordi en
+   root-LICENSE dækker *alt* i træet inklusive `deliverables/` og `gumroad/`,
+   hvor betalt indhold ligger indtil det flyttes til `mahope/paid-products`.
+2. **`/vs/termly/` angiver konkurrentpriser som fakta** uden kilde og uden
+   "as of"-dato på en side der hedder "(2026)". Syv andre `vs/*`-sider har samme
+   problem, så rettelsen er en `data-competitor`-måling, ikke én side.
+3. **`/api/` findes kun på engelsk.** DA/DE/FR-siderne linker til
+   `/pricing/` men ikke til dokumentationen. `check_locale_parity` kræver kun
+   symmetri for `index.html`, `pro/index.html` og `pricing/index.html`, så
+   porten er grøn — det er et reelt valg om tid, ikke en forglemme.
+4. **Deploy-verificering af denne iteration** (extension 1.0.3, `LICENSE` i
+   pakken, "MIT licensed" på `/extension/`) plus `worker-scan/index.js`, hvis
+   Mads har deployet den. Ét kald til CI i starten af næste iteration.
+
+❓ **Til Mads.** Én ny. **Spørgsmål 21: skal `mahope/auditedwp` have en
+root-LICENSE, og hvilken?** Den er offentlig uden licenstekst i roden
+(`licenseInfo: null`), mens `eucomply-scanner/`, `cli/` og nu `chrome-ext/`
+har MIT hver for sig. De tre filer er bevidst stillet op af mig, fordi de er
+gratis værktøjer i en portefølje der er bygget som open source; resten af træet
+er ikke min at licensere, fordi `deliverables/` og `gumroad/` stadig indeholder
+offentligt tilgængeligt betalt indhold, der skal flyttes til et privat repo
+først. Mit forslag: **MIT i roden, når indholdet er flyttet** — ikke før, for
+en MIT-licens i roden er en ret til at videredistribuere også de filer.
+
+---
+
+---
+
 Opdateret: 2026-09-28 (iteration 104) — **den gratis scan-API blev solgt på otte
 sider uden én dør ind i den.** Planen havde én (`/vs/termly/`); da porten målte
 træet, fandt den **syv** `vs/*`-sider mere med samme løfte i samme tabelrække:
@@ -681,9 +792,10 @@ læse porten som om Hotjar-installationen var verificeret.
 - 2026-09-28 (iteration 99, opgave 91) `VERIFICER DEPLOY: extensionen målt butiksparat, én købsvej på /extension/, privacy nævner extensionen, extension 1.0.2` kodecommit `4f5017a`, merge `9240434` 2026-09-28 07:09 UTC — rører `site/extension/index.html`, `site/privacy/index.html`, `site/assets/eucomply-extension-1.0.2.zip` (1.0.1 fjernet), `chrome-ext/`, `tools/`. Efter næste deploy-vindue skal indhold verificeres med cache-buster på **tre** punkter: (1) `/extension/` — "Not in the Chrome Web Store yet" i stedet for "link will appear here", afsnittet "Installation guide (once published)" **er væk**, zip-linket er `/assets/eucomply-extension-1.0.2.zip`, og `<a href="/pro/">` står i downloadboksen; (2) `/assets/eucomply-extension-1.0.2.zip` svarer 200 **og** unzippes til 9 filer med `version 1.0.2` og `permissions: ["activeTab","storage"]` — den gamle 1.0.1 skal give **404**; (3) `/privacy/` har afsnittet "When you use the browser extension" med de to permissions. **Ingen plugin-version, ingen `update.json`** — pluginzip'en er urørt.
 - 2026-09-28 (iteration 100) `DEPLOY OK 2026-09-28` — **iteration 99s `VERIFICER DEPLOY` lukket på indhold**, alle tre punkter bestået med cache-buster: `/extension/` har "Not in the Chrome Web Store yet" ×1, **0** × "link will appear here", **0** × "Installation guide (once published)", zip-linket er 1.0.2 og `<a href="/pro/">` står i downloadboksen; `/assets/eucomply-extension-1.0.2.zip` svarer **200 `application/zip`** (8333 B) og unzippes til 9 entries med `version 1.0.2` og `permissions: ["activeTab","storage"]`, mens **1.0.1 svarer 404**; `/privacy/` har afsnittet "When you use the browser extension". Opgaven er lukket.
 - 2026-09-28 (iteration 100) `VERIFICER DEPLOY: /extension/ sælger Pro kun som den virker, prøverapportens delte tale er læselig` kodecommit `558cfe8`, merge `6c032ba` 2026-09-28 07:55 UTC — rører `site/extension/index.html`, `site/pro/sample-report/index.html`, `scripts/build_sample_report.py`, `tools/check_pro_claims.py`, `tools/check_sample_coverage.py`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **to** punkter: (1) `/extension/` — upsell-sætningen siger *"runs the same checks on a schedule in your own WordPress"* og *"The extension itself is free and stays free"*, og **0** forekomster af *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` — linjen siger **"62% of the 8 checks that apply (5 of 8)"** med procenttegn, og **0** forekomster af "62 of the 8 checks". **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **`DEPLOY OK 2026-09-28 08:13 UTC` + lukket på indhold** (iteration 101): begge punkter efterprøvet med cache-buster `?cb=it101` — (1) `/extension/` har *"runs the same checks on a schedule in your own WordPress"* ×1 og *"The extension itself is free and stays free"* ×1, og **0** × *"It is the same engine with a schedule"*; (2) `/pro/sample-report/` siger **"62% of the 8 checks that apply (5 of 8)"** ×1 og **0** × "62 of the 8 checks". Opgaven er lukket.
-- 2026-09-28 (iteration 101) `VERIFICER DEPLOY: /cli/'s eksempel er motorens egen udskrift, og de to bullets der beskrev proxyen er rettet` kodecommit `f088284`, merge `729474c` 2026-09-28 08:19 UTC — rører `site/cli/index.html`, `tools/capture_cli_fixture.py`, `tools/cli_example_run.mjs`, `tools/build_cli_example.py`, `tools/fixtures/webflow.com.json`, `tools/quality_gate.sh` (trin 31). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **tre** punkter: (1) `/cli/` — eksempelblokken har **alle ni** domme (✅/⚠️/❌) og **0** forekomster af det gamle `║`-format eller af `"No DORA / resilience disclosures"`; linjen siger `"1 tracker(s) with NO consent platform"`; (2) `/cli/` — `"sub-second scans over a public API"` og `"PASS, FAIL or CHECK MANUALLY"` giver begge **0**, erstattet af "one request to the page (plus a DNS safety check…)" og "✅ passed, ⚠️ needs a look, ❌ failed"; (3) CI-loggen viser `GATE GRØN — alle 31 steps bestået` og `SELFTEST GRØN — alle negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker** — pluginzip'en er urørt.
-- 2026-09-28 (iteration 102) `VERIFICER DEPLOY: /cli/'s eksempel er nu motorens fulde rapport (47 linjer, delt score, 3 not-counted, 6 råd)` kodecommit `05f05f1`, merge `5c9928f` 2026-09-28 08:51 UTC — rører `site/cli/index.html` (genereret blok **28 → 47 linjer**), `eucomply-scanner/engine/index.js`, `eucomply-scanner/cli/eucomply.js`, `shared/scan-engine.js`, `tools/cli_render_parity.mjs` (ny), `tools/build_cli_example.py`, `tools/quality_gate.sh` (trin 32), `docs/eucomply-cli-egen-renderering.md`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/cli/` har linjen `   Score: 3/6 of the checks that apply to this site (50%)`; (2) `/cli/` har **tre** `   - not counted:`-linjer (`tcf`, `consent_mode_v2`, `dora`); (3) `/cli/` har **seks** `💡`-linjer og **ni** domme; (4) `/cli/` har linjen `   All 9 checks: 3/9 (33%)` og **0** forekomster af det gamle `   Score:    3/9 (33%)`. CI skal vise `GATE GRØN — alle 32 steps bestået`. **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **Bemærk:** de to motorer (`eucomply-scanner/engine/index.js`, `shared/scan-engine.js`) deployes **ikke** med sitet. De når først de live-workere ved `wrangler deploy` = spørgsmål 9, så live-workerens rapport er uændret indtil da. npm-pakken er uændret indtil publicering af 1.1.0 (spørgsmål 17).
-- 2026-09-28 (iteration 104) `VERIFICER DEPLOY: den solgte scan-API har en dør ind i den — /api/ er live, og otte vs-sider har en købsvej` kodecommit `980d118`, merge `df7ae9e` 2026-09-28 10:47 UTC — rører `site/api/index.html` (ny), `site/vs/{complianz,cookiebot,enzuzo,iubenda,onetrust,termly,usercentrics}/index.html` (én `td.check`-celle hver), `tools/check_api_docs.mjs` (ny), `tools/quality_gate.sh` (trin 33), `tools/build_public_tree.py`, `tools/check_cta.py`, `worker-scan/index.js` (én linje), `docs/api-dokumentation-uden-dor.md` (ny). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/api/` svarer **200** og har præcis **fire** `data-endpoint="..."`-markører i `<main>`: `/scan`, `/stats`, `/subscribe`, `/config`; (2) `/api/` har linjen `"score"` i svartidsfeltet og **null** forekomster af `pct_applicable` (den delte tale er ikke i API'en endnu); (3) `/api/` indeholder afsnittet om at `/stats` ikke er et brugerantal, og `/api/` har **én** købsanker til `https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`; (4) alle **syv** `vs/*`-sider har `<a href="/api/">Free API</a>` i deres `API`-tabelrække. CI skal vise `GATE GRØN — alle 33 steps bestået` og `SELFTEST GRØN — alle 5 negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip.** **Bemærk:** `worker-scan/index.js` deployes **ikke** af CI. Rettelsen af `GET /` (der svarer 404 live) er kilde-richtig, men kræver `wrangler deploy` = spørgsmål 9, og derfor dokumenterer `/api/` den ikke.
+- 2026-09-28 (iteration 101) `VERIFICER DEPLOY: /cli/'s eksempel er motorens egen udskrift, og de to bullets der beskrev proxyen er rettet` kodecommit `f088284`, merge `729474c` 2026-09-28 08:19 UTC — rører `site/cli/index.html`, `tools/capture_cli_fixture.py`, `tools/cli_example_run.mjs`, `tools/build_cli_example.py`, `tools/fixtures/webflow.com.json`, `tools/quality_gate.sh` (trin 31). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **tre** punkter: (1) `/cli/` — eksempelblokken har **alle ni** domme (✅/⚠️/❌) og **0** forekomster af det gamle `║`-format eller af `"No DORA / resilience disclosures"`; linjen siger `"1 tracker(s) with NO consent platform"`; (2) `/cli/` — `"sub-second scans over a public API"` og `"PASS, FAIL or CHECK MANUALLY"` giver begge **0**, erstattet af "one request to the page (plus a DNS safety check…)" og "✅ passed, ⚠️ needs a look, ❌ failed"; (3) CI-loggen viser `GATE GRØN — alle 31 steps bestået` og `SELFTEST GRØN — alle negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip, ingen worker** — pluginzip'en er urørt. **`DEPLOY OK 2026-09-28 10:55 UTC` + lukket på indhold** (iteration 105, ét kald til CI `36408031696`, ingen polling): alle tre punkter efterprøvet med cache-buster `?cb=it104` — (1) `/cli/`s eksempelblok har **alle ni** domme og **0** forekomster af det gamle `║`-format og **0** af `"No DORA / resilience disclosures"`, og linjen siger `"1 tracker(s) with NO consent platform"`; (2) `"sub-second scans over a public API"` → **0** og `"PASS, FAIL or CHECK MANUALLY"` → **0**; (3) CI-loggen siger `GATE GRØN — alle 33 steps bestået` (33 var det da denne note blev skrevet).
+- 2026-09-28 (iteration 102) `VERIFICER DEPLOY: /cli/'s eksempel er nu motorens fulde rapport (47 linjer, delt score, 3 not-counted, 6 råd)` kodecommit `05f05f1`, merge `5c9928f` 2026-09-28 08:51 UTC — rører `site/cli/index.html` (genereret blok **28 → 47 linjer**), `eucomply-scanner/engine/index.js`, `eucomply-scanner/cli/eucomply.js`, `shared/scan-engine.js`, `tools/cli_render_parity.mjs` (ny), `tools/build_cli_example.py`, `tools/quality_gate.sh` (trin 32), `docs/eucomply-cli-egen-renderering.md`. Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/cli/` har linjen `   Score: 3/6 of the checks that apply to this site (50%)`; (2) `/cli/` har **tre** `   - not counted:`-linjer (`tcf`, `consent_mode_v2`, `dora`); (3) `/cli/` har **seks** `💡`-linjer og **ni** domme; (4) `/cli/` har linjen `   All 9 checks: 3/9 (33%)` og **0** forekomster af det gamle `   Score:    3/9 (33%)`. CI skal vise `GATE GRØN — alle 32 steps bestået`. **Ingen plugin-version, ingen `update.json`, ingen ny zip** — pluginzip'en er urørt. **Bemærk:** de to motorer (`eucomply-scanner/engine/index.js`, `shared/scan-engine.js`) deployes **ikke** med sitet. De når først de live-workere ved `wrangler deploy` = spørgsmål 9, så live-workerens rapport er uændret indtil da. npm-pakken er uændret indtil publicering af 1.1.0 (spørgsmål 17). **`DEPLOY OK 2026-09-28 10:55 UTC` + lukket på indhold** (iteration 105, samme CI-kørsel): alle fire punkter efterprøvet med cache-buster `?cb=it104` — (1) `   Score: 3/6 of the checks that apply to this site (50%)` findes; (2) **tre** `   - not counted:`-linjer (`tcf`, `consent_mode_v2`, `dora`); (3) **seks** `💡`-linjer og **ni** domme; (4) `   All 9 checks: 3/9 (33%)` findes og det gamle `   Score:    3/9 (33%)` giver **0**. Bemærkningen i noten står ved magt: de to motorer deployes ikke med sitet, så live-workerens rapport er uændret til `wrangler deploy` = spørgsmål 9.
+- 2026-09-28 (iteration 104) `VERIFICER DEPLOY: den solgte scan-API har en dør ind i den — /api/ er live, og otte vs-sider har en købsvej` kodecommit `980d118`, merge `df7ae9e` 2026-09-28 10:47 UTC — rører `site/api/index.html` (ny), `site/vs/{complianz,cookiebot,enzuzo,iubenda,onetrust,termly,usercentrics}/index.html` (én `td.check`-celle hver), `tools/check_api_docs.mjs` (ny), `tools/quality_gate.sh` (trin 33), `tools/build_public_tree.py`, `tools/check_cta.py`, `worker-scan/index.js` (én linje), `docs/api-dokumentation-uden-dor.md` (ny). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fire** punkter: (1) `/api/` svarer **200** og har præcis **fire** `data-endpoint="..."`-markører i `<main>`: `/scan`, `/stats`, `/subscribe`, `/config`; (2) `/api/` har linjen `"score"` i svartidsfeltet og **null** forekomster af `pct_applicable` (den delte tale er ikke i API'en endnu); (3) `/api/` indeholder afsnittet om at `/stats` ikke er et brugerantal, og `/api/` har **én** købsanker til `https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`; (4) alle **syv** `vs/*`-sider har `<a href="/api/">Free API</a>` i deres `API`-tabelrække. CI skal vise `GATE GRØN — alle 33 steps bestået` og `SELFTEST GRØN — alle 5 negative cases fanges`. **Ingen plugin-version, ingen `update.json`, ingen ny zip.** **Bemærk:** `worker-scan/index.js` deployes **ikke** af CI. Rettelsen af `GET /` (der svarer 404 live) er kilde-richtig, men kræver `wrangler deploy` = spørgsmål 9, og derfor dokumenterer `/api/` den ikke. **`DEPLOY OK 2026-09-28 10:56 UTC` + lukket på indhold** (iteration 105, samme CI-kørsel): alle fire punkter efterprøvet med cache-buster `?cb=it104` — (1) `/api/` svarer **200** og har præcis **fire** `data-endpoint`-markører i `<main>`: `/scan`, `/stats`, `/subscribe`, `/config` (den femte `data-endpoint` i dokumentet er BugBottles egen i footeren, som er et andet API); (2) `"score"` står i svartidsfeltet og `pct_applicable` giver **0**; (3) afsnittet siger *"Do not read this as a user count"* og *"It is a liveness check, not a popularity claim"*, og der er **én** købsanker til `https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`; (4) alle **syv** `vs/*`-sider svarer **200** og har **1** `<a href="/api/">Free API</a>` hver. CI: `tools/check_api_docs.mjs` OK, `SELFTEST GRØN — alle 5 negative cases fanges`, `GATE GRØN — alle 33 steps bestået`.
+- 2026-09-28 (iteration 105) `VERIFICER DEPLOY: extensionens pakke har en licenstekst, påstanden navngiver den, og pakken kan bygges igen` kodecommit `a8024a8`, merge `MERGE` 2026-09-28 11:1x UTC — rører `chrome-ext/LICENSE` (ny), `chrome-ext/manifest.json` (1.0.3), `chrome-ext/README.md`, `site/extension/index.html`, `site/assets/eucomply-extension-1.0.3.zip` (ny, 1.0.2 fjernet), `tools/build_extension_zip.py` (ny), `tools/check_store_ready.py` (R11), `tools/quality_gate.sh` (trin 34), `site/_redirects` (2 linjer), `docs/extensionens-licens.md` (ny). Efter næste deploy-vindue skal **indhold** verificeres med cache-buster på **fem** punkter: (1) `/extension/` har `<a href="/assets/eucomply-extension-1.0.3.zip">` i downloadsteget; (2) `/assets/eucomply-extension-1.0.3.zip` svarer **200 `application/zip`** og unzippes til **9 filer** hvoraf **én** er `LICENSE` med `Permission is hereby granted`, og `manifest.json` i pakken siger `"version": "1.0.3"`; (3) `/assets/eucomply-extension-1.0.2.zip` **og** 1.0.1 følger hver **301** → 1.0.3 med cache-buster — de to linjer er skrevet af `build_extension_zip.py`, ikke håndskrevet; (4) `/extension/`s kort "No tracking" siger **"MIT licensed"** og **0** forekomster af `Open source`; (5) CI-loggen viser `GATE GRØN — alle 34 steps bestået`, `SELFTEST GRØN — alle 22 negative cases fanges` (check_store_ready) og `SELFTEST GRØN — alle 4 negative cases fanges` (build_extension_zip). **Ingen plugin-version, ingen `update.json`, ingen Stripe-pris, ingen worker.** Intet er uploadet til Chrome Web Store — det gør Mads, når han har kontoen.
 
 
 
