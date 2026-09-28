@@ -1,3 +1,72 @@
+Opdateret: 2026-09-28 (iteration 95)
+
+Sidste iteration: **porten målte om en fil findes, men ikke om et anker gør det.**
+`_references()` i `tools/check_public_tree.py` splitter `#` fra stien, og rene
+ankerlinks springes over med vilje — de har jo ingen fil at slå op. Så **alle
+døde ankre var usynlige for gaten**, i et træ med 226 sider der alle har et
+skip-link til `#main`. AGENTS.md forbyder døde ankre; ingen port kunne se dem.
+
+**Målt før rettelsen, i det publicerede træ:** **2215** ankerlinks, **0 døde**.
+Træet er rent — og det er et tal, ingen før nu havde. Mit første målescript
+fandt 2168 og ét dødt anker i `_partials/header.html`; det var **min egen
+fejlklasse**: en partial bliver udvendt i den side der inkluderer den, så
+`#main` er levende på alle 225 sider og dødt som sit eget dokument. Derfor
+undtager porten `_partials/` og `shared/` — ellers giver den 1 rød fund på en
+fejl, der ikke findes, og en port der ryster på en fejl holdes oppe af alle.
+
+**Den nye kontrol 4 (`anchor_findings()`)** slår hvert `#anker` op i den side
+der linker til det, på tværs af filer og mapper, og tæller målingerne, så
+"0 fund" ikke kan være det samme som "0 kontrolleret". `<a name>` tæller som
+mål, `href="#"` ignoreres, og et anker i en fil der mangler springes over —
+selve filen melder link-kontrollen, så den skal ikke rapporteres to gange.
+
+**Selftesten fandt den fejl porten var bygget på.** første kørsel var
+`6/8`: `dødt anker på egen side` og `dødt anker på anden side` var **grønne**,
+fordi min `_anchors()` lånte `_references()` — som springer netop de links over
+den skulle tjekke. Resultatet var `0 døde ankre — 0 ankerlinks i 226 sider`:
+en port der springer sin egen kontrol over er grøn uden at have kontrolleret
+noget, præcis opgave 9's kanin-hul. `_anchors()` filtrerer nu selv.
+`SELFTEST GRØN — 8/8 negative cases fanges`.
+
+**Beviset er prøvet mod repoets eget træ, ikke kun mod fixtures.** `id="main"`
+fjernet fra `site-dist/index.html` → `dødt anker i index.html: #main`,
+`1 fund — intet uploades`; grøn igen efter restore, `git diff` tom.
+
+**Målte også det jeg troede var hullet, og fandt at gaten dækker det.** Alle 11
+eksterne Stripe-links i det publicerede træ (`rg -o`) er pr. pr. i
+`tools/stripe_products.json` = kontrakten, og `check_cta.py` håndhæver dem
+allerede mod `ALLOWED_CHECKOUTS`. De 227 donationer er `donate.stripe.com/…`
+fra kontrakten. Ingen fremmed eller forkeret betalingslink — det dyre
+scenarie (en kunde betaler for det forkerte produkt) er lukket, og det var
+målt, ikke antaget.
+
+**Gate: `GATE GRØN — alle 29 steps bestået`** (`--no-network`), herunder
+`0 døde ankre — 2215 ankerlinks i 226 sider` og `SELFTEST GRØN — 8/8`.
+Tallet 29 er uændret, og det er korrekt: `STEP` tæller `hdr`-sektioner, ikke
+`run`-linjer — den nye selftest er en ekstra kørsel i **sektion 6**, ikke en ny
+sektion. Rørt: `tools/check_public_tree.py` og `tools/quality_gate.sh`.
+**Ingen `site/**`-fil, ingen `plugin/**`-fil, ingen plugin-version, ingen ny
+zip, intet `update.json`, ingen scanner, ingen worker.** Deployen skal logge
+`Uploaded 0 files (322 already uploaded)`, og intet skal genverificeres live.
+
+**Den åbne deploy-note fra opgave 88 er lukket på indhold.** EAA-noten
+(`cd7b425`, plugin 1.3.37) krævede at 1.3.36 svarer 301 og ikke 404. Målt med
+cache-buster 06:4x: `/assets/eucomply-1.3.37.zip` → **301** → 1.3.38,
+`/assets/eucomply-1.3.36.zip` → **301** → 1.3.38 (ikke 404 — den fejl har været
+gentagen her), `/assets/eucomply-1.3.38.zip` → **200 `application/zip`**
+(66 988 B), `/update.json` → `1.3.38`, og `/plugin/`, `/pro/` og
+`/store/eaa-statement/` har **0** forekomster af 1.3.36 og 1.3.37.
+`DEPLOY OK 2026-09-28 06:45 CEST` — den er overhalet af 1.3.38, som er samme
+kæde forlænget.
+
+**Baseline for effekten: 0 reelle besøgende** (iteration 86). Kan ikke måles i
+trafik. Det den gør er at gøre "ingen døde ankre" fra en vished til en
+kontrol, så det ikke kan glide.
+
+❓ **Til Mads.** Ingenting nyt — spørgsmål 7, 9 og 18 er uændrede.
+
+- 2026-09-28 (iteration 95) `INGEN DEPLOY NØDVENDIG: kontrol 4 — døde ankre i det publicerede træ (opgave 88) <sha> / merge <merge-sha>` — rører **kun `tools/check_public_tree.py`, `tools/quality_gate.sh` og denne plan**. Intet publiceret ændrer sig. Deployen skal logge **`Uploaded 0 files (322 already uploaded)`**. Eneste evidens er CI-loggen: `GATE GRØN — alle 29 steps bestået`, `0 døde ankre — 2215 ankerlinks i 226 sider` og `SELFTEST GRØN — alle 8 negative cases fanges`.
+
 Opdateret: 2026-09-28 (iteration 94)
 
 Sidste iteration: **portens egne fixtures indeholdt to adresser der ikke findes,
