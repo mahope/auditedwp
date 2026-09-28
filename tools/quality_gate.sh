@@ -585,6 +585,17 @@ hdr "eksemplet paa /cli/ skal vaere motorens egen udskrift"
 run "tools/build_cli_example.py --check" "$PY" tools/build_cli_example.py --check
 run "tools/build_cli_example.py --selftest" "$PY" tools/build_cli_example.py --selftest
 
+# Opgave 102: pakken havde TO renderere af den samme rapport. `bin` — det
+# program folk faktisk kører — skrev det forudindtagede ni-tal, sagde ikke hvilke
+# rækker der ikke tæller, og havde 0 `💡`-råd, mens motorens egen `main()`
+# skrev det delte score, tre not-counted-linjer og råd på 6 af 9 rækker. R1 er
+# byte-identitet mellem bin's stdout og motorens `renderReport()` på samme
+# fixture; R2/R3 gør to renderer umulige; R4 holder den delte tale fast. Se
+# docs/eucomply-cli-egen-renderering.md.
+hdr "skal bin skrive praecis motorens egen rapport"
+run "tools/cli_render_parity.mjs" node tools/cli_render_parity.mjs
+run "tools/cli_render_parity.mjs --selftest" node tools/cli_render_parity.mjs --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then
