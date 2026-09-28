@@ -195,9 +195,11 @@ run "tools/check_sample_coverage.py --selftest" "$PY" tools/check_sample_coverag
 
 # --------------------------------------------- 6. publiceret træ (kontrol)
 # Træet er bygget i step 04, fordi check_cta.py klassificerer det. Her
-# kontrolleres det: ingen interne eller betalte filer, ingen døde referencer.
+# kontrolleres det: ingen interne eller betalte filer, ingen døde referencer,
+# ingen døde ankre.
 hdr "Publiceret træ (kontrol)"
 run "tools/check_public_tree.py" "$PY" tools/check_public_tree.py
+run "tools/check_public_tree.py --selftest" "$PY" tools/check_public_tree.py --selftest
 
 # ------------------------------------------------------------------- 7. SEO
 hdr "SEO"
