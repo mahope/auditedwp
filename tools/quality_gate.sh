@@ -648,6 +648,21 @@ hdr "skal hver indekserbar side være meldt i sitemap.xml"
 run "tools/check_sitemap.py" "$PY" tools/check_sitemap.py
 run "tools/check_sitemap.py --selftest" "$PY" tools/check_sitemap.py --selftest
 
+# Opgave 108: `/api/` var den eneste udviklerflade, der ikke findes på de tre
+# sprog — målt 191 indekserbare stier, kun **7** på mere end ét sprog, og 45 af
+# dem (alle med en købsknap) kun på engelsk. Sprogvælgeren på siden viste DA/DE/FR
+# som slået fra, fordi `page_exists()` er sandt. De tre spejlinger er derfor
+# **genereret** fra `site/api/index.html` (en kilde) i stedet for skrevet i hånden:
+# otte `vs/*`-sider i opgave 106 var håndskrevne, og de var alle sammen forkerte.
+# R1 er byte-identitet efter hele kæden — `render()` + `apply_shell` kørt i en
+# midlertidig kopi af sitet — så en originalændring uden regenerering, eller en
+# håndskrevet spejling, er rød. R2 dømmer den modsatte retning: ingen engelsk
+# sætning fra originalen må stå tilbage. Selftesten muterer repoets egne filer.
+# Se docs/api-spejlesprog.md.
+hdr "skal de tre sprog af /api/ være spejle af én kilde"
+run "tools/build_api_locales.py --check" "$PY" tools/build_api_locales.py --check
+run "tools/build_api_locales.py --selftest" "$PY" tools/build_api_locales.py --selftest
+
 # ------------------------------------------------------------------ udfald
 printf '\n'
 if [ "$FAILED" -ne 0 ]; then

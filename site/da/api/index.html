@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="da" data-dark-ok>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU-compliance-scan-API — gratis, ingen API-nøgle</title>
+<meta name="description" content="Scan ethvert website for tekniske huller i GDPR, NIS2, DORA og EAA over HTTP. Én GET-anmodning, ingen API-nøgle, ingen tilmelding, JSON-svar.">
+<link rel="canonical" href="https://eucomplypro.com/da/api/">
+<link rel="alternate" hreflang="en" href="https://eucomplypro.com/api/">
+<link rel="alternate" hreflang="da" href="https://eucomplypro.com/da/api/">
+<link rel="alternate" hreflang="de" href="https://eucomplypro.com/de/api/">
+<link rel="alternate" hreflang="fr" href="https://eucomplypro.com/fr/api/">
+<link rel="alternate" hreflang="x-default" href="https://eucomplypro.com/api/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b6e4f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EUComply">
+<meta property="og:locale" content="da_DK">
+<meta property="og:url" content="https://eucomplypro.com/da/api/">
+<meta property="og:title" content="Free EU compliance scan API — one request, no key">
+<meta property="og:description" content="Nine technical compliance checks for any website, over plain HTTP. No API key, no sign-up, JSON in and JSON out.">
+<meta property="og:image" content="https://eucomplypro.com/images/og/cli.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free EU compliance scan API — one request, no key">
+<meta name="twitter:description" content="Nine technical compliance checks for any website, over plain HTTP. No API key, no sign-up, JSON in and JSON out.">
+<meta name="twitter:image" content="https://eucomplypro.com/images/og/cli.png">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+.hero{padding:48px 0 24px}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.025em;max-width:720px;margin:0 0 12px 0}
+h1 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-size:.85em;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+.sub{font-size:17px;color:var(--muted);max-width:620px;margin:0 0 28px 0}
+.btn{display:inline-block;background:var(--accent);color:var(--panel);text-decoration:none;font-weight:600;padding:12px 26px;border-radius:8px;font-size:15px}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);margin-left:10px}
+section{padding:44px 0 44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
+.lede{color:var(--muted);max-width:640px;margin-bottom:24px;font-size:15px}
+pre{background:var(--accent-dark);color:var(--accent-soft);border-radius:10px;padding:20px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;overflow-x:auto;margin:16px 0}
+pre .c{color:var(--accent)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--soft)}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted)}
+.card .icon{font-size:28px;margin-bottom:6px}
+.checks{list-style:none;margin:14px 0}
+.checks li{padding:5px 0 5px 28px;position:relative;font-size:15px}
+.checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.badge{display:inline-block;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+.probox{border:2px solid var(--accent);border-radius:12px;padding:26px;text-align:center;background:var(--panel);margin-top:8px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.method{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--accent);margin-right:8px}
+.box{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:18px 22px;background:var(--panel);margin:20px 0}
+.box.warn{border-left-color:var(--warn)}
+.box h3{margin:0 0 8px 0;font-size:15px}
+.box p{font-size:14px;color:var(--muted);margin:8px 0 0 0}
+@media(max-width:700px){h1{font-size:25px}
+.grid3{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "EU compliance scan API",
+  "description": "Scan any website for GDPR, NIS2, DORA and EAA technical gaps over HTTP. One GET request, no API key, no sign-up, JSON response. Free and open source.",
+  "url": "https://eucomplypro.com/api/",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "proficiencyLevel": "Beginner",
+  "dependencies": "https://eucomplypro.com/cli/"
+}
+</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/da/api/","url":"https://eucomplypro.com/da/api/","name":"EU-compliance-scan-API — gratis, ingen API-nøgle","description":"Scan ethvert website for tekniske huller i GDPR, NIS2, DORA og EAA over HTTP. Én GET-anmodning, ingen API-nøgle, ingen tilmelding, JSON-svar.","inLanguage":"da","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<link rel="stylesheet" href="/assets/site.css?v=e700416a">
+<script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
+<script src="/assets/site.js?v=d23bc893" defer></script>
+<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://eucomplypro.com/da/"},{"@type":"ListItem","position":2,"name":"EU-compliance-scanneren API ","item":"https://eucomplypro.com/da/api/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Spring til indhold</a>
+<nav class="fam" aria-label="Mahope tools">
+  <div class="container">
+    <span class="fam-label">Mahope tools:</span>
+    <a href="https://eucomplypro.com/" aria-current="true">EUComply</a>
+    <a href="https://cleancopy.tools/">Clean Copy</a>
+    <a href="https://deskuptime.com/">DeskUptime</a>
+    <a href="https://transmute.run/">Transmute</a>
+    <a href="https://bugbottle.dev/">BugBottle</a>
+    <a class="fam-all" href="https://mahope.tools/">Alle værktøjer</a>
+  </div>
+</nav>
+<header class="sh">
+  <div class="container">
+    <a class="sh-brand" href="/da/"><svg class="sh-mark" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 11h7M9 16h6M9 21h7M20 11v7a3 3 0 0 0 6 0v-7" fill="none" stroke="var(--bg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>EUComply</a>
+    <div class="sh-menu" id="sh-menu">
+      <nav class="sh-nav" aria-label="Hovedmenu">
+        <a href="/da/scan/">Scan</a>
+        <a href="/da/book/">Guide</a>
+        <a href="/checklist/">Tjeklister</a>
+        <a href="/da/pricing/">Priser</a>
+        <a href="/blog/">Blog</a>
+      </nav>
+      <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
+    </div>
+    <div class="sh-tools">
+      <button class="sh-btn sh-search" type="button" aria-label="Søg på sitet" title="Søg på sitet (Ctrl+K)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="sh-search-txt">Søg</span><kbd aria-hidden="true">Ctrl K</kbd>
+      </button>
+      <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
+      <button class="sh-btn sh-theme" type="button" aria-label="Skift tema" title="Skift tema">
+        <svg class="ic ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ic ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ic ic-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="sh-btn sh-toggle" type="button" aria-expanded="false" aria-controls="sh-menu" aria-label="Menu">
+        <svg class="ic ic-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="ic ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<main class="container" id="main" data-shell>
+<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/da/">Forside</a></li><li><span aria-current="page">EU-compliance-scanneren API </span></li></ol></nav><!--/shell:crumbs-->
+<div class="pg-legacy">
+<div class="wrap hero">
+  <div class="badge"> Gratis · ingen API-nøgle · ingen tilmelding</div>
+  <h1>EU-compliance-scanneren <code>API</code>.</h1>
+  <p class="sub">Send én GET-anmodning med en URL, og få ni tekniske tjek for GDPR, NIS2, DORA og EAA tilbage som JSON. Ethvert CMS, enhver stack. Ingen nøgle, ingen kvota at købe, ingen konto.</p>
+  <a class="btn" href="#scan">Send en anmodning</a>
+  <a class="btn ghost" href="/scan/">Prøv det i browseren</a>
+</div>
+
+<section id="scan" data-endpoint="/scan">
+  <div class="wrap">
+    <h2>Ét kald scanner ét site</h2>
+    <p class="lede">Det er hele grænsefladen. URL'en er den eneste parameter, og den virker med eller uden skema.</p>
+<pre><span class="c"># One GET request. That is the entire API.</span>
+curl "https://eucomply-scan.mahope-eeb.workers.dev/scan?url=webflow.com"</pre>
+    <p class="lede">Foretrækker du at sende en body, eller skal din URL være længere end en query-streng? <code>POST</code> tager det samme <code>url</code> felt som JSON.</p>
+<pre>curl -X POST "https://eucomply-scan.mahope-eeb.workers.dev/scan" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://webflow.com"}'</pre>
+    <p class="lede">I Python, med intet ud over standardbiblioteket:</p>
+<pre>import json, urllib.parse, urllib.request
+
+API = "https://eucomply-scan.mahope-eeb.workers.dev"
+
+def scan(url):
+    qs = urllib.parse.urlencode({"url": url})
+    with urllib.request.urlopen(f"{API}/scan?{qs}") as response:
+        return json.load(response)
+
+report = scan("webflow.com")
+print(report["platform"], report["score"])
+for name, check in report["checks"].items():
+    print(("PASS" if check["pass"] else "FAIL"), name, "-", check["label"])</pre>
+    <p class="lede">CORS er åben, så det også virker direkte fra en browser — ingen proxy nødvendig. Verificeret: en preflight for <code>GET</code> returnerer <code>Access-Control-Allow-Origin: *</code>.</p>
+  </div>
+</section>
+
+<section id="response">
+  <div class="wrap">
+    <h2>Hvad der kommer tilbage</h2>
+    <p class="lede">Et 200-svar med ét JSON-objekt. Alle felter målt mod den kørende tjeneste den 28. september 2026:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Field</th><th>Type</th><th>Hvad det rummer</th></tr></thead>
+      <tbody>
+        <tr><td><code>url</code></td><td>string</td><td>URL'en som den blev fundet, efter redirects.</td></tr>
+        <tr><td><code>platform</code></td><td>string</td><td>Fundet platform, fx <code>Webflow</code>, <code>Shopify</code>, <code>WordPress</code>.</td></tr>
+        <tr><td><code>scannedAt</code></td><td>string</td><td>ISO 8601-tidsstempel for scanningen.</td></tr>
+        <tr><td><code>durationMs</code></td><td>number</td><td>Hvor længe scanningen tog.</td></tr>
+        <tr><td><code>score</code></td><td>object</td><td><code>passed</code>, <code>total</code>, <code>pct</code> over alle ni tjek.</td></tr>
+        <tr><td><code>checks</code></td><td>object</td><td>Ni poster, med tjek-id som nøgle. Hver har <code>pass</code>, <code>warn</code>, <code>label</code>, <code>detail</code>, <code>fix</code>.</td></tr>
+        <tr><td><code>disclaimer</code></td><td>string</td><td>Sendes med hvert svar. Lad den stå synlig — det er den linje, der hindrer dette i at blive læst som juridisk rådgivning.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="lede">Et tjek, der fejler, er den nyttige del, så her er ét ordret gengivet og trimmet til de første tre felter:</p>
+<pre>"consent_mode_v2": {
+  "pass": false,
+  "warn": false,
+  "label": "No Google Consent Mode v2 detected",
+  "detail": "No Consent Mode v2 signals found. Since March 2024, Google requires Consent Mode v2 for ad personalization in the EEA. Without it, Google Ads conversion tracking may be restricted.",</pre>
+    <div class="box">
+      <h3>En ærlig forskel fra CLI'en</h3>
+      <p>JSON'en <code>score</code> deler beståede tjek med <strong>alle ni</strong>, inklusive de fire, der kun gælder nogle sites — cookies, programmatisk annoncering, Google Ads, DORA. Et site, der har gjort alt rigtigt for sin type, kan stadig vise et middelmådigt tal.</p>
+      <p>Den <a href="/cli/">CLI</a> er den udgave, der deler den op, og den fortæller hvilke tjek den ikke talte med og hvorfor. Hvis tallet betyder mere end JSON-formen, så kør CLI'en. Dette API serveres i øjeblikket af en ældre udgave af den samme motor end den i repositoriet, så den returnerer endnu den deling.</p>
+    </div>
+  </div>
+</section>
+
+<section id="endpoints" data-endpoints="list">
+  <div class="wrap">
+    <h2>De tre andre endepunkter</h2>
+    <p class="lede">De er alle uden godkendelse og CORS-åbne, samme som <code>/scan</code>.</p>
+    <div class="grid3">
+      <div class="card">
+        <h3 data-endpoint="/stats"><span class="method">GET</span><code>/stats</code></h3>
+        <p>Returnerer <code>scans</code> og de tyve mest scannede værter. Vores egne smoke-test-domæner er ikke på listen.</p>
+        <p><strong>Læs ikke dette som et brugertal.</strong> Tælleren tælles både af vores egne automatiske testkørsler og af besøgende — målt 28. september 2026 kom cirka tre fjerdedele af det samlede fra automatiske kørsler mod reserverede IP-adresser. Det er en liveness-prøve, ikke et popularitetsbevis.</p>
+      </div>
+      <div class="card">
+        <h3 data-endpoint="/subscribe"><span class="method">POST</span><code>/subscribe</code></h3>
+        <p>Gemmer en mailadresse til compliance-opdateringer. Body: <code>email</code>, valgfrit <code>url</code>, <code>score</code>, <code>source</code>.</p>
+        <p>Returnerer 400 for en ugyldig adresse og 422 for en test- eller engangsadresse, så testkørsler aldrig havner på listen.</p>
+      </div>
+      <div class="card">
+        <h3 data-endpoint="/config"><span class="method">GET</span><code>/config</code></h3>
+        <p>Offentlig runtime-konfiguration. De checkout-URL'er, den indeholder, er tomme i produktion, og det er med vilje: sitet hardkoder kontraktlinks, og betalingssiderne styres ikke fra en worker-variabel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <h2>Grænser og fejl</h2>
+    <p class="lede">Ingen nøgle, ingen konto og én grænse der betyder noget: <strong>10 requests per minute per IP</strong>, talt serverside.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Status</th><th>Når du får den</th><th>Body</th></tr></thead>
+      <tbody>
+        <tr><td><code>400</code></td><td>Ingen brugbar <code>url</code> parameter</td><td><code>{"error": "Please provide a valid public http(s) URL, e.g. ?url=example.com"}</code></td></tr>
+        <tr><td><code>404</code></td><td>Enhver anden sti end de fire ovenfor</td><td><code>{"error": "Not found. Use GET /scan?url=example.com"}</code></td></tr>
+        <tr><td><code>422</code></td><td><code>/subscribe</code> med en testadresse</td><td><code>{"error": "Test address rejected."}</code></td></tr>
+        <tr><td><code>429</code></td><td>Mere end 10 anmodninger i minuttet fra én IP</td><td><code>{"error": "Rate limit reached. Try again in a few minutes."}</code></td></tr>
+        <tr><td><code>502</code></td><td>Det valgte site kunne ikke læses</td><td><code>{"error": "Scan failed: ..."}</code></td></tr>
+      </tbody>
+    </table></div>
+    <p class="lede">Et 502 betyder, at det site, du spurgte til, fejlede — ikke at API'et gjorde. Svaret bærer den underliggende besked, så læs den, før du prøver igen — en vært bag en bot-mur fejler hele tiden, og flere forsøg hjælper ikke.</p>
+    <div class="box warn">
+      <h3>Hvad dette API ikke gør</h3>
+      <p>Det er én anmodning om ét site på ét tidspunkt. Det gemmer ingen historik, kører intet på en tidsplan, sender ingen webhooks og tager ingen betaling. Har du brug for noget af det, er det betalte produkt i dag WordPress-pluginet: det scanner dit eget site én gang om dagen, gemmer de seneste 12 scanninger, sender dig en mail når et tjek brydes, og genererer en HTML-rapport, du kan sende til en kunde. Hosted overvågning er ikke en del af det.</p>
+      <p>De ni tjek er tekniske signaler læst i det serverede HTML. DORA-tjekket læser efter offentlige markører i sidens tekst og er ikke en vurdering af noget som helst.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="probox">
+      <h2 style="margin-bottom:6px">Brug for historik, tidsplan og en rapport?</h2>
+      <p class="lede" style="margin:0 0 18px 0">API'et ovenfor forbliver gratis. Pro er en licens til WordPress-pluginet: daglige re-scans i din egen WordPress, de seneste 12 scanninger gemt, en mail når et tjek brydes, og en HTML-rapport fra den seneste scanning. Det låser også de redigerbare HTML-dokumentstartere op.</p>
+      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Køb Pro — $79/år pr. website →</a>
+    </div>
+  </div>
+</section>
+</div><!--/pg-legacy-->
+</main>
+<footer class="sf">
+  <div class="container sf-grid">
+    <div>
+      <h2>EUComply</h2>
+      <p>En gratis scanner af de grundlæggende EU-krav til ethvert website, og guides til at rette det, den finder.</p>
+      <ul>
+        <li><a href="/da/scan/">Scan</a></li>
+        <li><a href="/cli/">CLI</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner">Scannerens kildekode på GitHub</a></li>
+        <li><a href="https://github.com/mahope/eucomply-scanner/releases">Udgivelser og changelog</a></li>
+        <li><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c" rel="noopener">Støt den gratis scanner</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Mahope tools</h2>
+      <ul>
+        <li><a href="https://eucomplypro.com/" aria-current="true">EUComply</a></li>
+        <li><a href="https://cleancopy.tools/">Clean Copy</a></li>
+        <li><a href="https://deskuptime.com/">DeskUptime</a></li>
+        <li><a href="https://transmute.run/">Transmute</a></li>
+        <li><a href="https://bugbottle.dev/">BugBottle</a></li>
+        <li><a href="https://mahope.tools/">Alle værktøjer</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Sitet</h2>
+      <ul>
+        <li><a href="/privacy/">Privatliv</a> · <a href="/terms/">Vilkår</a></li>
+        <li><a href="/.well-known/security.txt">Sikkerhed</a></li>
+        <li><a href="/llms.txt">llms.txt</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="/da/search/">Søg</a></li>
+        <li><button type="button" class="sf-bug">Meld en fejl</button></li>
+      </ul>
+      <a class="sf-badge" href="https://bugbottle.dev/"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6l1 4h-8zM8 7h8v9a4 4 0 0 1-8 0zM8 12H5M19 12h-3"/></svg>Feedback drevet af BugBottle</a>
+    </div>
+    <div>
+      <p class="sf-maker">Udviklet af <a href="https://mahoje.dk">Mads Holst Jensen · mahoje.dk</a> — udvikler og teknisk partner for små virksomheder, Odense.</p>
+      <p class="sf-note">Ingen cookies, ingen sporing på tværs af sites, ingen eksterne skrifttyper.</p>
+      <p class="sf-note">Alt her er teknisk vejledning, ikke juridisk rådgivning.</p>
+    </div>
+  </div>
+  <div class="container sf-bottom">
+    <span>© 2026 EUComply</span>
+    <span>Scanner og CLI er MIT-licenseret.</span>
+    <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
+  </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bugbottle@0.5.0/dist/bugbottle.js" data-endpoint="https://mahope.tools/api/bugreport" data-locale="da" data-primary="#0b6e4f" data-brand="EUComply" data-position="bottom-right" data-scrub defer></script>
+</body>
+</html>

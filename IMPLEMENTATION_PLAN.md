@@ -1,3 +1,111 @@
+Opdateret: 2026-09-28 (iteration 109) — **opgave 108 er grøn og mergeklar.
+Den viste fire fund, ikke tre, og den tredje var en fejl i planen — ikke på siden.**
+
+**Fund 1+2 var porten, som planen sagde.** `LOCAL_CADENCE_SCOPE` kunne ikke læse
+to formuleringer, og det var to forskellige fejl. DE skriver *"in **Ihrem** eigenen
+WordPress"* — dativ, mens mønsteret kun kendte genformen `Ihrer`. FR skriver
+*"dans votre **propre** WordPress"* — og grenen læste kun `dans wordpress` og
+`dans votre wordpress`; det er adjektivet i midten, der er hele forskellen. Begge
+er rettet, og begge ramte *to* regler hver (den lokale kadence- og
+krydstjek-reglen), så ét reelt problem gav fire røde linjer.
+
+**Fund 3 var planen fejl, og det er værd at skrive ned.** Planen sagde "ret porten,
+ikke siden" for punkt 2 og "her er siden den skyldige" for punkt 3, altså: DE og FR
+skriver *"speichert keine Historie"* / *"ne garde aucun historique"*, og det skulle
+rettes ved at omformulere sætningen. **Det er umuligt.** Porten læser en benægtelse
+i hele klausulen, så enhver tysk formulering med `keine` foran `Historie` er rød —
+også hvis sætningen siger *hvad* den gælder. EN er grøn kun fordi det blotte
+engelske `no` med vilje **ikke** står i `DENIAL`, hvor det er for almindeligt til at
+være bevis. Altså: siden siger sandt om et andet produkt, og porten kan ikke se det.
+Det er samme fejlklasse som de to foregående — én port, der læser ét sprog — så det
+er **porten** der blev rettet, ligesom de andre.
+
+Rettelsen er `API_SCOPE_HEADING` + en overskrift i konteksten. En boks med
+overskriften *"What this API does not do"* benægter ting om **API'et**: pluginen
+gemmer historik, endepunktet gør ikke. Subjektet er et pronomen i alle tre sprog
+(*"It"*, *"Sie"*, *"Elle"*), så overfladen står i overskriften og aldrig i sætningen
+— derfor kan den ikke læses i listeelementet, sådan som `HOSTED_QUALIFIER` gør det.
+`SiteParser` samler derfor nu `h1..h6` med linje, og `_scope_heading()` finder den
+overskrift et blok ligger under. **Vagten er sætningen, ikke overskriften:**
+`LICENSE_MENTION` (det blotte ord `Pro`) skal *mangle* i sætningen, ellers står
+under-claimet rød. Uden vagten kunne en boks om API'et rumme hvilket som helst
+Pro-løfte. Begge retninger er selftestede, og jeg har verificeret at de bider ved
+at slå hver mekanisme ihjel: død `API_SCOPE_HEADING` → DE/FR røde, død
+`LICENSE_MENTION` → begge guard-cases røde, død `_scope_heading` → alle scope-cases
+røde. EN scope-casen er svag (den er grøn uanset), fordi `no` ikke står i `DENIAL` —
+det er netop pointen.
+
+**Fund 4 lå uden for planens optælling, og var det ægte fund.** `seo_check.py`
+(rød, trin 7): `da|de|fr/api/` var *ikke-reciproke* — spejlingerne pegede på EN, og
+EN pegede på **ingen**, fordi `site/api/index.html` aldrig var kørt gennem
+`apply_shell`. Skallen skriver hreflang kun når `len(alternates()) >= 2`, og da
+spejlingerne opstod, havde EN allerede sin head skrevet. Rettelsen er de fem
+`<link rel="alternate">` i EN, lige efter canonical — i præcis den rækkefølge og
+på det sted skallen ville have skrevet dem, så det ikke er en afdriftskilde.
+
+**Næsten skrev jeg den fejl ind.** Mit første forsøg var at køre hele `apply_shell`
+på EN-siden, som en naturlig måde at få hreflang på. Den **forværrede** siden på to
+måder, og begge er fund værd at have:
+
+1. `HYPE`-renseren (`apply_shell.py:619`) skriver `unlocks` → **`get`**. EN-teksten
+   *"It unlocks the editable HTML document starters too."* blev til *"It **get** the
+   editable…"*. Mønsteret har ingen talsform, så det gælder ethvert "unlocks" på
+   enhver engelsk side. Kun `/api/` rammes lige nu, **fordi siden aldrig har været
+   gennem skallen** — de tre spejlinger er korrekte (*"Elle débloque aussi…"*), for
+   de er genereret med en egen sætning pr. sprog.
+2. Brødkrummerne faldt tilbage til branden: *"Free scan API"* → *"EUComply"*.
+   Spejlingerne har de rigtige oversættelser, fordi de får deres etiket fra
+   `TRANSLATIONS`. Titlen på `/api/` mangler i skallens tabel.
+
+Begge er derfor **ikke** rettet her — de rører den del af skallen som 226 sider
+går igennem, og de hører til en egen opgave (næste iteration, punkt 1). EN-siden er
+tilbagekaldt til sin oprindelige form plus de fem hreflang-linjer; diffet på siden
+er præcis fem linjer.
+
+**Baseline / målbart:** Plausible 28 d: 1 besøger, bounce 100 %, kun Direct — ikke
+et målepunkt. Repoet har ingen Search Console-adgang. Det målbare er som lovet:
+**7 → 10** spejlede indekserbare stier, sitemap **210 → 213** `<loc>`, og nu en
+fuldstændig hreflang-klynge i alle fire sprog. `seo_check.py`: 220 sider, 0 fund.
+
+**Rørt:** `tools/check_cta.py` (`_loc("api/index.html")` — de tre spejlinger var
+publiceret og **uklassificeret**, altså uden købsgates; pro-sider 47 → 52),
+`tools/check_pro_claims.py` (to mønstre + `API_SCOPE_HEADING`, `LICENSE_MENTION`,
+overskriftssporing i parseren, guard i `denial_findings`, 6 selftests),
+`site/api/index.html` (5 hreflang-linjer). **Ingen plugin-version, ingen
+`update.json`, ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+**Gaten:** `bash tools/quality_gate.sh` — **37 steps, alle grønne**. Definitionen
+er uændret fra iteration 108; de nye trin er de tre eksisterende selftests
+(`check_cta`, `check_pro_claims`, `build_api_locales`). `php -l`: ingen PHP-fil er
+rørt. Sibling-gate (`../hermes-passiv`) kører som trin 8.
+
+### Næste iteration (prioriteret, målt 2026-09-28)
+
+1. **Gør `/api/` til en side skallen kender** (det fund fra linjen ovenfor). Ret
+   `HYPE` så talsformen overlever (`unlocks` skal ikke blive `get`), og giv `/api/`
+   en rigtig breadcrumb-etiket. Derefter kan EN-siden køres gennem `apply_shell`
+   som de 226 andre, og de tre spejlinger regenereres. **Mål:** EN og spejlingerne
+   bliver byte-identiske i `<head>`; `seo_check` 0 fund; ingen "It get" nogen steder.
+2. **De 42 øvrige engelsk-kun-siders salgsværdi.** Målingen står: 45 sider med
+   købsknap kun på engelsk; `/api/` er de tre første. Skriv de næste som spejle af
+   én kilde i samme `build_*-locales`-form — **eller mål først hvilke der reelt
+   sælger.** Der er 1 besøger på 28 dage; at skrive 42 siders sprogstøtte uden at
+   vide at nogen læser dem er den dyreste måde at bruge en iteration.
+3. **Pris-overvågning** (uændret): et script Mads kan køre, ikke en agent.
+4. Root-LICENSE (spørgsmål 21) — uændret, kan ikke løses uden Mads.
+
+> `VERIFICER DEPLOY (kun efter merge): /api/ spejles på da, de og fr, de tre
+> spejlinger får købsgates, og EN får sin hreflang-klynge — kodecommit på
+> `ceo/api-spejlesprog-gate`, 2026-09-28 ca. 17:0x CEST. Merge endnu IKKE sket.`
+> Verificér **indhold**: live `sitemap.xml` skal have **213** `<loc>`, og
+> `eucomplypro.com/da|de|fr/api/` skal svare 200 med `<html lang="da|de|fr">`,
+> hreflang til alle fire sprog, præcis fire `data-endpoint`-markører i `<main>` og
+> **én** købsanker til `buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03`. HTTP 200 beviser
+> intet.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+
 Opdateret: 2026-09-28 (iteration 107) — **`/api/` var indekserbar, publiceret
 og aldrig meldt til nogen.** Målt, ikke læst: `site/sitemap.xml` havde **209**
 `<loc>`, og det publicerede træ har **223** sider. 14 sider var aldrig

@@ -220,7 +220,13 @@ PAGE_RULES: tuple[Rule, ...] = (
                  "check-eu-compliance/index.html", "gdpr-fine-calculator/index.html",
                  "gdpr-scanner-free/index.html", "gdpr-compliance-check/index.html",
                  "cookie-banner-check/index.html", "consent-mode-v2-check/index.html")
-          + _loc("cookie-banner-check/index.html"),
+          + _loc("cookie-banner-check/index.html")
+          # De tre sprogudgaver af /api/ er genereret fra én kilde (opgave 108),
+          # så de er spejle af en side der allerede stod i listen — ikke nye
+          # sider. Uden denne linje stod de publiceret og uklassificeret, altså
+          # uden købsgates, fordi ingen regel matcher en sti den porten ikke har
+          # set før.
+          + _loc("api/index.html"),
           "frie værktøjer med dokumenteret købsintents; den tyske udgave af "
           "cookie-banner-check lå uden for den håndskrevne liste",
           "checklist/index.html"),
