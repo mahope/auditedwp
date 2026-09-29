@@ -1,3 +1,124 @@
+Opdateret: 2026-09-29 (iteration 118) — **`site/llms-full.txt` nævnte to Pro-fordele
+som *ikke* er med, i den ene fil på sitet der er skrevet til at blive læst af en
+agent. Og porten kunne ikke se det, fordi den kun dømmer filer med endelsen
+`.html`.**
+
+**Deploy-verificering af iteration 117: `DEPLOY OK 2026-09-29`.** Ét kald, ingen
+løkke: `deploy-site`, `build-devnotify` og `pages build and deployment` er alle
+`success` for `b4580f9`. Dømt på **indhold**, ikke status: `/support/` svarer
+**200** med `<h1>Support EUComply` og donationslinket (var 404), og
+`/sitemap.xml` har **214** `<url>` med `eucomplypro.com/support/` i sig. Betingelse
+(3) og (4) fra noten er dermed opfyldt; (3) er uændret af denne diff.
+
+**Fundet, målt på den rigtige fil.** `site/llms-full.txt` linje 52 læste før
+rettelsen:
+
+    Hosted daily monitoring, per-check history, pass-to-fail email alerts,
+    runtime PDF reports, a live badge and a customer dashboard are planned,
+    not included today.
+
+Plugin'en har **per-check historik siden 1.3.4** og **pass-to-fail-mail siden
+1.3.10**, begge bag `is_pro()` (målt: 4 forekomster af
+`record_history`/`build_history_section`, 2 af `maybe_send_alert`). Det er præcis
+den falske påstand, iteration 28 og 29 fjernede fra **ti** sider i købsflowet —
+her stod den stadig, i den maskinlæste prisbeskrivelse. En agent der læser
+`llms-full.txt` og spørger "kommer historik og mailalarm med Pro?" svarer **nej**
+på en side, hvor `/pro/` og `/pricing/` siger **ja**. `llms.txt` gjorde det samme
+på den anden måde: denpositive liste var "editable HTML document starters plus an
+HTML report", altså **under-salg** af fire af de fem shippede fordele.
+
+**Årsagen er ikke teksten, og det er pointen.** `denial_findings()` — den retning
+der forbyder en salgsside at benægte en funktion licensen låser op — hang på
+`path.suffix.lower() in {".html", ".htm"}`. Den fil på sitet der er skrevet
+*til* at blive læst af en maskine, var altså den eneste fil porten ikke dømte i
+den retning. Samme fejlklasse som `/support/` i 117: en flade ingen peger på,
+så en port der kræver en reference får aldrig en. Ikke en tilfældighed — det er
+konsekvensen af at porten er bygget som en liste over filer, den *har* set.
+
+**Rettelsen er to dele, fordi en rettet tekst uden en port er en fromshed.**
+(1) Begge filers Pricing-afsnit er skrevet om til `/pro/`s ordlyd: de **nævner**
+daglig planlagt scanning, per-check historik, mail ved et tjek der går fra
+bestået til fejlet, read-only kundelink og HTML-startdokumenter — og nægter kun
+det der virkelig mangler: hostet daglig overvågning, historik i den hostede
+tjeneste, runtime-PDF, live-badge, kundepanel og multi-site. (2)
+`denial_findings()` **og** `under_claim_findings()` kører nu på begge filer.
+Det krævede en ny blokinddeling: `raw_blocks()` deler på **hver linje**, så en
+benægtelse viklet over to linjer lægger navnet i én blok og verbet i en anden, og
+ vinduet omkring navnet ser aldrig benægtelsen. `markdown_blocks()` deler på
+det en læser læser som én påstand — tom linje, overskrift, listepunkt — altså
+samme enhed som `claim_blocks()` giver HTML-siderne (`<p>`, `<li>`). **Prisen er
+også målt, ikke skjult:** én afsnit der både sælger og benægter er undtaget i begge
+retninger, så teksten er skrevet med én påstand pr. afsnit — præcis sådan som
+sitets egne sider er skrevet.
+
+**Målt / accept.** Før rettelsen: `check_pro_claims.py` **grøn** med 184
+selftests på et træ med en falsk benægtelse i. Efter: `184 self-tests passed` +
+`0 unexpected EUComply Pro claims`. Dødskontrol A — den gamle tekst lagt tilbage
+fra `git show HEAD:` giver **1** `shipped Pro feature denied` + **4**
+`no line on this page sells it`, alle med fil og linje. Dødskontrol B — en *flad*
+benægtelse viklet over to linjer giver **3** fund, og målt på begge
+granulariteter: `raw_blocks` 3, `markdown_blocks` 3, altså svækker den nye
+inddeling ikke benægtelsesretningen. **En mutation jeg først skrev var falsk:**
+en benægtelse *af den hostede tjeneste* slap igennem begge, og det er korrekt —
+den er sand. Første forføg på en mutation er ikke et fund. `GATE GRØN — alle 41
+steps bestået`. Ingen PHP rørt, så `php -l` var ikke påkrævet.
+
+**Baseline (Plausible 29/9, uændret):** 1 besøgende, bounce 100 %, kun Direct,
+28 dage. Denne iteration flytter ingen tal — den retter en **påstand** i den
+beskrivelse en agent læser, før den beslutter om produktet er værd at nævne.
+
+**En fejl jeg gjorde, som kostede en halv iteration.** Trin 40 rapporterede
+`cli/index.html` flytte sig to linjer, og `git status` viste filen ændret med
+`<h1>Compliance scanning in your <code>terminalIt unlocks the starters.\n</code>.</h1>`.
+Jeg skrev det først i planen som et fund med en mistænkt synder. **Det var min
+egen fejl**: jeg kørte `quality_gate.sh` to gange samtidig, én i baggrunden, og
+`check_code_blocks.py --selftest` muterer `site/cli/index.html` med vilje og
+gendanner den i en `finally` (`tools/check_code_blocks.py:225`). Den anden kørsel
+læste filen midt i mutationen. Bevis: efter `git checkout --` giver R1 på det
+rene træ `R1 OK — 231 sider + 2 afledte filer, 0 ændret`, og **én** kørsel
+efterfølgende ender `GATE GRØN — alle 41 steps bestået` med kun mine to filer
+ændret. Kontrakten siger det allerede — ingen baggrundskørsler som iterationen
+skal vente på — og det er præcis derfor. **Ingen selftest skriver i det rigtige
+træ**, så punkt 1 i køen nedenfor er fjernet.
+
+**Rørt:** `site/llms.txt`, `site/llms-full.txt`,
+`tools/check_pro_claims.py` (`MACHINE_READABLE_SURFACES`, `markdown_blocks()`,
+to nye grene i `main()`), `IMPLEMENTATION_PLAN.md`. **Ingen plugin-version, ingen
+`update.json`, ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+> `VERIFICÉR DEPLOY: llms.txt og llms-full.txt nævner de fem shippede Pro-fordele
+> og benægter kun de planlagte (iteration 118) ceo/llms-pro-naegnelse
+> 2026-09-29` — rører `site/llms.txt` + `site/llms-full.txt` +
+> `tools/check_pro_claims.py`. Efter næste deploy-vindue skal **indhold**
+> verificeres med cache-buster: (1) `https://eucomplypro.com/llms-full.txt`
+> skal **ikke** indeholde `pass-to-fail email alerts` eller `per-check history` i
+> nogen benægtelsesliste, og skal indeholde `an email alert when a check passes
+> and later fails` + `a read-only report link for a client` i den positive
+> sætning; (2) `/llms.txt` skal have `Planned, not included in the Pro license
+> today:` som sit **egen** afsnit og ikke `not part of it` i pricing-bulletten;
+> (3) ingen `site/**`-spejling, zip, `update.json` eller `_redirects` er rørt, så
+> de skal hverken genhentes eller genverificeres; (4) CI skal være `success` på
+> alle tre jobs. (1)–(3) er indhold.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **De 24 sider med `dateModified` er kun halvdelen** (punkt 2 fra 117, urørt):
+   213 sider har `lastmod`, kun 24 har `dateModified` i JSON-LD. Mål om det er
+   korrekt (artikler har begge, landingssider kun ét), før det rettes.
+3. **`/support/` er stadig ikke nævnt i `llms.txt`/`llms-full.txt`** — de to
+   filer denne iteration netop rettede. En agent der skal finde donationssiden
+   kan ikke. Lille, samme filer, samme port.
+4. **Punkt 3 fra 116/117: Plausible-injektionen i `<!--shell:…-->`-blokken.**
+   Uafhængig vurdering, rører alle 233 sider. Lav først et mål.
+5. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genrestartes.
+
+---
+
 Opdateret: 2026-09-29 (iteration 117) — **deploy-noterne fra 115 og 116 er
 lukket på indhold, og køens fire poster viste sig døde ved måling. Den nye
 opgave er den første reelle i to iterationer: `/support/` svarede 404.**

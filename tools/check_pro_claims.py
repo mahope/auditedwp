@@ -1185,6 +1185,14 @@ PRO_TRUTH_SURFACES = {
     "site/fr/pricing/index.html",
 }
 
+# The files a language model is pointed at instead of a page. They carry the
+# same product truth in the same English, and before 2026-09-29 nothing judged
+# them in that direction — see the denial branch in main().
+MACHINE_READABLE_SURFACES = {
+    "site/llms.txt",
+    "site/llms-full.txt",
+}
+
 # A cadence is not a noun, so it gets its own names. Each language writes its
 # own adverb, and the roadmap line on every /pro/ page contains the same word in
 # a sentence that is about the hosted service -- which is exactly the collision
@@ -1707,6 +1715,54 @@ def raw_claim_findings(relative: str, text: str) -> List[str]:
     if Path(relative).suffix.lower() in {".html", ".htm", ".svg"}:
         return text_findings(relative, text)
     return claim_findings_for_blocks(relative, raw_blocks(relative, text))
+
+
+def markdown_blocks(text: str) -> List[TextBlock]:
+    """Paragraph- and list-item-level blocks for a markdown/text surface.
+
+    raw_blocks() splits on every line, which is the wrong granularity for the
+    denial direction: a sentence wrapped over two lines puts the feature name on
+    one and "not included" on the next, so the ±window around the name never
+    sees the denial and the check passes on a false denial. That is the same
+    failure as a link check that cannot find a page nobody links to — the thing
+    it needs to see is on the far side of a boundary it chose itself.
+
+    A blank line, a heading and a list item each start a new block, so a block
+    is what a reader reads as one claim. That is the same unit claim_blocks()
+    gives the HTML pages (<p> and <li>), which is why the eight /pro/ and
+    /pricing/ rows pass the under-claim rule: each row is its own block, so a
+    row that names a feature is not disqualified by a different row's roadmap
+    line. The cost is stated rather than hidden: a single paragraph that both
+    sells a feature and denies one is exempt in both directions, so the honest
+    prose is one claim per paragraph — which is also how the site's own pages
+    are written.
+    """
+    blocks: List[TextBlock] = []
+    lines: List[str] = []
+    start = 0
+
+    def flush(end: int) -> None:
+        if not lines:
+            return
+        blocks.append(TextBlock(" ".join(lines), start, "text"))
+        lines.clear()
+
+    for number, line in enumerate(text.splitlines(), 1):
+        stripped = line.strip()
+        begins = (
+            not stripped
+            or stripped.startswith(("#", "-", "*", "+"))
+            or re.match(r"^\d+[.)]\s", stripped) is not None
+        )
+        if begins:
+            flush(number)
+            if not stripped:
+                continue
+        if not lines:
+            start = number
+        lines.append(stripped)
+    flush(len(text.splitlines()) + 1)
+    return blocks
 
 
 def product_truth_findings(relative: str, text: str) -> List[str]:
@@ -2875,6 +2931,19 @@ def main() -> int:
             # stays green, the page stays published, the feature stays unsold.
             document = parse_html(text)
             findings.extend(denial_findings(relative, document.claim_blocks(relative), headings=document.headings))
+        elif relative in MACHINE_READABLE_SURFACES and PRO_PAGE_CONTEXT.search(text):
+            # The same direction on the files a language model reads instead of
+            # a page. site/llms-full.txt said "per-check history, pass-to-fail
+            # email alerts ... are planned, not included today" for a year after
+            # 1.3.4 and 1.3.10 shipped both behind is_pro(), and the gate stayed
+            # green for the whole time: the check above is keyed on the .html
+            # suffix, so the one file on this site written to be read by an agent
+            # was the one file it could not judge. Same failure class as the
+            # /support/ 404 in iteration 117 — a surface nothing points at, so
+            # the check that needs a reference never gets one. raw_blocks()
+            # gives the same TextBlock shape denial_findings() reads, so the
+            # rule and its vocabulary are the same objects, not a second copy.
+            findings.extend(denial_findings(relative, markdown_blocks(text)))
         if path.suffix.lower() in {".html", ".htm"} and relative not in PRO_TRUTH_SURFACES:
             # The disagreement direction: this page sells something /pro/ denies.
             findings.extend(cross_page_claim_findings(relative, parse_html(text).claim_blocks(relative)))
@@ -2885,6 +2954,11 @@ def main() -> int:
             # And a number on those same pages, which no name pattern can see:
             # how many checks the Pro scan covers is parsed out of run_checks().
             findings.extend(plugin_check_count_findings(relative, text))
+        if relative in MACHINE_READABLE_SURFACES:
+            # The mirror on the two files an agent reads. A silent omission is
+            # the same money left on the table as on /pro/, and llms.txt named
+            # two of the five shipped Pro features before this.
+            findings.extend(under_claim_findings(relative, markdown_blocks(text)))
     expected_buying_pages = set(BUYING_PAGES)
     if buying_pages_checked != expected_buying_pages:
         missing = sorted(expected_buying_pages - buying_pages_checked)
