@@ -24,7 +24,7 @@ PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
 # køb). Den er den eneste anden checkout en købsside må have, og højst én gang,
 # så årsabonnementet stadig er den ene Pro-CTA siden måles på.
 PRO_LIFETIME_LINK = "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f"
-PLUGIN_VERSION = "1.3.40"
+PLUGIN_VERSION = "1.3.41"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",
@@ -1435,6 +1435,74 @@ def plugin_check_count_findings(
     return findings
 
 
+CHANGELOG_HEADING = "== Changelog =="
+
+
+def readme_body(text: str) -> str:
+    """The part of a plugin readme that describes the plugin as it is today.
+
+    The changelog is history, not a claim: 1.3.0 shipped five checks and wrote
+    so, and 1.3.40 wrote "counted four checks that can only fail under a
+    condition" about a bug the reader has long since fixed. Rewriting those to
+    match today's eleven would be a lie in the other direction, so the rule
+    below stops at the changelog and the changelog is left alone.
+    """
+    head = text.split(CHANGELOG_HEADING, 1)
+    return head[0] if len(head) == 2 else text
+
+
+def readme_check_count_findings(
+    relative: str, text: str, plugin_text: Optional[str] = None
+) -> List[str]:
+    """Check counts in the shipped readme, measured against run_checks().
+
+    The same comparison plugin_check_count_findings() makes on a Pro page, on
+    the file every customer actually reads: it ships inside the zip and it is
+    what wp.org renders on the plugin's own page. That file said "Compliance
+    scan dashboard (6 checks)" next to a description that said "Eleven checks",
+    for releases, while the gate stayed green -- because plugin_check_count_
+    findings() is wired to the HTML Pro pages only, and the readme is not one.
+
+    No subject word is required here, and that is the other half of why it
+    slipped: the stale row reads "Compliance scan dashboard (6 checks)" and
+    never says "plugin", because the whole file *is* the plugin. Every check
+    count in the readme's body is about this plugin's scan.
+    """
+    keys = plugin_check_keys(plugin_text)
+    if not keys:
+        return [
+            f"{relative}: run_checks() in the plugin could not be read, so no "
+            "check count in the shipped readme can be verified"
+        ]
+    real = len(keys)
+    findings: List[str] = []
+    for row in readme_rows(readme_body(text)):
+        for match in COUNTED_CHECKS.finditer(row):
+            word = match.group(1).lower()
+            stated = int(word) if word.isdigit() else NUMBER_WORDS.get(word, 0)
+            if stated and stated != real:
+                findings.append(
+                    f"{relative}: the shipped readme says the plugin covers "
+                    f"{stated} checks, but run_checks() writes {real} "
+                    f"({', '.join(keys)})"
+                )
+    return findings
+
+
+def readme_rows(body: str) -> List[str]:
+    """One stripped string per markdown table row and per prose line."""
+    rows: List[str] = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("|"):
+            rows.append(normalize(TAG.sub(" ", stripped.strip("|"))))
+        else:
+            rows.append(normalize(TAG.sub(" ", stripped)))
+    return [row for row in rows if row]
+
+
 def _scope_heading(ordered: Sequence[Tuple[int, str]], line: int) -> str:
     """The heading a block sits under: the last one that starts above it.
 
@@ -2808,7 +2876,7 @@ def denial_self_tests() -> List[str]:
 # The counted-checks gate. Every case below is a sentence the product either
 # requires or forbids, written as the four locales actually write it -- the
 # reason a vocabulary gap survives is a selftest written after the pattern.
-CHECK_COUNT_CHECKS = 13
+CHECK_COUNT_CHECKS = 17
 
 # The published history rows, with the count they must be allowed to state.
 # The number a history row has to state, in each language, built from the code
@@ -2941,6 +3009,49 @@ def check_count_self_tests() -> List[str]:
         stale = f"<li><b>Scan history</b><p>Every Pro scan records the state of each of the {number_word(count)} checks.</p></li>"
         if not plugin_check_count_findings("site/pro/index.html", stale, fewer):
             failures.append("self-test check count read: a count that matched the old plugin was accepted after a check was removed")
+    failures.extend(readme_count_self_tests(real, count))
+    return failures
+
+
+def readme_count_self_tests(real: str, count: int) -> List[str]:
+    """The readme rule, both directions, and the changelog it must leave alone.
+
+    The regression that produced this rule is a fixture here: a readme whose
+    table row says one number and whose description says another, which is
+    exactly what shipped. Every number is derived from run_checks(), so the
+    fixtures move with the product instead of rotting on the next release.
+    """
+    failures: List[str] = []
+    wrong = number_word(count - 1)
+    right = number_word(count)
+    stale = (
+        "== Description ==\n"
+        f"The plugin runs {number_word(count)} compliance criteria.\n\n"
+        "= Free vs Pro =\n\n"
+        f"| Feature | Free | Pro |\n|---|---|---|\n"
+        f"| Compliance scan dashboard ({wrong} checks) | yes | yes |\n\n"
+        "== Changelog ==\n"
+    )
+    found = readme_check_count_findings("plugin/readme.txt", stale, real)
+    if not any(f"run_checks() writes {count}" in finding for finding in found):
+        failures.append(f"self-test readme count: a wrong count in the shipped readme was allowed: {found}")
+    fixed = stale.replace(f"({wrong} checks)", f"({right} checks)")
+    if readme_check_count_findings("plugin/readme.txt", fixed, real):
+        failures.append("self-test readme count: the corrected readme was rejected")
+    # The changelog is history. A count that was true of an earlier release must
+    # not be rewritten to match today's plugin, and this rule must not ask for it.
+    historical = (
+        f"== Description ==\nThe plugin runs {right} compliance criteria.\n\n"
+        "== Changelog ==\n\n"
+        f"= 1.3.0 (2026-09-01) =\n"
+        f"* Five more checks were added, taken from the free universal scanner.\n"
+        f"* Fix: the report counted {number_word(4)} checks that can only fail under a condition.\n"
+    )
+    if readme_check_count_findings("plugin/readme.txt", historical, real):
+        failures.append("self-test readme count: a changelog entry about an older release was read as a claim about today's plugin")
+    # An unreadable plugin must be a finding, not a silent pass.
+    if not readme_check_count_findings("plugin/readme.txt", fixed, "<?php class X { function other() {} }"):
+        failures.append("self-test readme count unreadable: an unreadable run_checks() was not reported")
     return failures
 
 
@@ -3030,6 +3141,13 @@ def main() -> int:
     findings.extend(artifact_findings())
     findings.extend(structured_data_findings())
     findings.extend(og_image_findings())
+    # The plugin's own readme: shipped in the zip, rendered on wp.org. It is
+    # not a site page, so nothing above reaches it -- and it is where a stale
+    # "6 checks" survived while four locales were kept honest by the same rule.
+    for readme_relative in ("plugin/readme.txt", "site/plugin/readme.txt"):
+        readme = read_text(ROOT / readme_relative, f"claims: {readme_relative}", findings)
+        if readme is not None:
+            findings.extend(readme_check_count_findings(readme_relative, readme))
     findings = list(dict.fromkeys(findings))
     if findings:
         for finding in findings:

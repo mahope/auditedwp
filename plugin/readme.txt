@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.40
+Stable tag: 1.3.41
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,7 +36,7 @@ EUComply scans your WordPress installation against **eleven EU compliance criter
 
 | Feature | Free | Pro ($79/year per website) |
 |---|---|---|
-| Compliance scan dashboard (6 checks) | ✓ | ✓ |
+| Compliance scan dashboard (eleven checks) | ✓ | ✓ |
 | Pass/fail with fix guidance | ✓ | ✓ |
 | Automated re-scan, run by WP-Cron on your own server | once a week | every day |
 | GDPR Data Processing Agreement (Art. 28) | — | ✓ |
@@ -113,6 +113,11 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.41 (2026-09-29) =
+* The Free vs Pro table said "Compliance scan dashboard (6 checks)" while the description above it said eleven and the plugin ran eleven. The table had been left behind by the release that took the plugin from six checks to eleven, and it is the row a customer reads first when deciding between free and Pro. It now states eleven, like the description and like the code.
+* The number is no longer written by hand. The release gate reads run_checks() and compares it against every check count in this file, so the table cannot drift away from the plugin again without the build failing.
+* Nothing about the scan changed.
 
 = 1.3.40 (2026-09-29) =
 * The compliance report is now also a PDF. A bureau can download it from the dashboard, generate it from the settings page, or hand the client a link that ends in a file instead of a web page - the same report, the same numbers, in a format a client can keep, forward and print. Before this, the only deliverable was an HTML file, which opens in a browser and cannot be attached to a mail as a document.

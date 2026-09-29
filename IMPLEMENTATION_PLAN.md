@@ -1,3 +1,71 @@
+Opdateret: 2026-09-29 (iteration 127) — **Den betalte plugins egen readme
+sagde "6 checks" i den række, en kunde læser først. Alt indhold omkring den var
+korrekt, og ingen port så den.**
+
+**Først en lukket noten: `DEPLOY OK 2026-09-29` på 126.** Ét kald, `gh run list`:
+`deploy-site` = `success` på `107544b`. Det var hele betingelsen — diffen rørte kun
+porten, ikke `site/` — så intet siteindhold skulle genverificeres.
+
+**Fundet, målt, i filen der følger med zip'en.** `plugin/readme.txt` skrev i
+beskrivelsen *"Eleven checks: SSL/HSTS, cookies, …"*, og tre linjer længere nede i
+Free-vs-Pro-tabellen skrev **"Compliance scan dashboard (6 checks)"**. Begge tal var
+i samme readme. Kilden er målt i `run_checks()`: den skriver elleve
+`$results[…]`-tildelinger — `ssl, cookies, forms, backups, plugins, legal,
+consent_mode_v2, tcf, trackers, headers, dora` — så **11 er rigtigt** og 6 var
+ resterende fra den udgave, der tog pluginen fra seks til elleve.
+
+**Hvorfor porten var grøn i alle de udgaver.** `plugin_check_count_findings()` læser
+`run_checks()` og sammenligner med alle tællede tjek på Pro-siderne — fire sprog,
+hver især holdt i form. Den var kodet til HTML-siderne alene, og readme'en er
+ikke en side: den ligger uden for `site/`, og **den række har aldrig været læst af
+porten**. Dens række siger desuden ikke "plugin", fordi hele filen *er* pluginen —
+så selv en port, der læste den, ville have skullet vide det. Rettelsen er derfor
+ikke bare at læse endnu en fil: `readme_check_count_findings()` binder **hele
+filens krop** til pluginen og måler den med de samme to regexer, så de to porte er
+én regel i to overflader.
+
+**Målt begge veje, ikke mod fixtures alene.** Den nye port fangede den spejlede
+kopi `site/plugin/readme.txt` i samme kørsel, som rettelsen rettede — den lå stadig
+på 6, fordi spejlingen er en fil mere og ingen havde regenereret den. Fire nye
+selftests (13 → 17, `CHECK_COUNT_CHECKS`), som alle er bygget fra det tal
+`run_checks()` faktisk læser: **for mange** (rækken der rettede), **rigtigt**
+(den rettede række accepteres), **changelogen urørt** (et tællesprog om 1.3.0's
+fem tjek er historie, ikke et løfte, og må ikke omskrives) og **ulæselig kode**
+(rækles på sig). Resultat: `181 self-tests passed`, `0 unexpected EUComply Pro
+claims`, `GATE GRØN — alle 41 steps bestået`.
+
+**Udgivet som 1.3.41**, fordi `readme.txt` ligger i zip'en: uden bump ville
+downloads have serveret den gamle readme med det gamle tal. `site/_redirects` fik
+`1.3.40 → 1.3.41` så installationer på 1.3.40 ikke får en 404.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Samme blinde spot, samme klasse, andre overflader.** Porten læste i denne
+   iteration *én* fil uden for sit eget sæt. `claim_paths()` dækker `site/**` plus
+   nogle få `PRODUCT_FILES`; `plugin/readme.txt` var ikke blandt dem. Den næste
+   måling er den samme: hvilke andre filer **ligger i deploy-træet og beskriver
+   produktet, uden at nogen port læser dem** — `site/plugin/index.html` er den
+   næste kandidat, fordi den har sin egen downloadknap og sin egen versionsstreng.
+2. **Baseline for `/pro/` og `/pricing/`** (fra 124: 1 besøgende / 28 dage,
+   bounce 100 %). Denne diff deployer **én** ny zip og én downloadknap, så den
+   første konverteringsmåling efter den bør tælle mod 1.3.40 og ikke mod sidste
+   lokale måling.
+3. **De to `I GANG`** (kundeportal 2b, badge embed-script) er uændret blokeret
+   af spørgsmål 9.
+
+❓ **Til Mads.** Spørgsmål 9 og 21 står uændret.
+
+**VERIFICÉR DEPLOY: readme'en i zip'en siger elleve tjek, porten måler den ceo/plugin-readme-antal 11:26**
+
+Diffen rører `site/plugin/index.html`, `site/_redirects`, `site/assets/` og de
+to `update.json`, så **den deployer ved næste push**. Verificér **indhold** på
+`https://eucomplypro.com/plugin/` — at knappen siger v1.3.41 — og hent
+`https://eucomplypro.com/assets/eucomply-1.3.41.zip` og se at `eucomply/readme.txt`
+inde i den siger "eleven checks" og ikke "6 checks". Et 200 på zip'en er ikke
+bevis; det er arkivets indhold.
+
+---
+
 Opdateret: 2026-09-29 (iteration 126) — **125's diagnose var halv sand. Gaten
 var rød, ja — men den blev grøn, og så blev CI *stadig* rød. Den anden rødhed
 lå i et værktøj, der hedder "vent på at Pages deployer", og som ikke ventede.**
