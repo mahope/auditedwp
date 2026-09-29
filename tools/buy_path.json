@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "note": "Undtagelser for tools/check_buy_path.py. Hver linje skal have en begrundelse, der kan lukkes: naar den forsvinder, skal linjen slettes, og selftesten bekrefter at porten kan vaere groen igen. En undtagelse uden begrundelse er en tavs undtagelse.",
+  "closed_checkout": [],
+  "dead_in_sitemap": []
+}

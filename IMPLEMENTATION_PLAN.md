@@ -1,3 +1,138 @@
+Opdateret: 2026-09-29 (iteration 122) — **jeg målte hele købsvejen live, for
+det var det ingen port dømte. Alt virker. Det betyder at "1 besøgende" er et
+sandt tal og ikke en død tag — og at flaskehalsen er opmærksomhed, ikke fejl.**
+
+**Deploy-verificering af 121: CI grøn, ét kald, ingen løkke.** Alle tre jobs
+(`deploy-site`, `build-devnotify`, `pages build and deployment`) er `success` for
+`f81bb63`. **Indhold er endnu ikke verificeret** — klokken var 06:01 ved dette
+kald, og det første batch-vindue er 07:30, så noten står korrekt åben.
+
+**Deploy-verificering af 120: stadig åben.** Bemærk: 120 rørte kun
+`site/llms.txt` + `site/llms-full.txt` + porten, og 121 rørte kun
+`tools/build_public_tree.py` + porten. Den afledte udgivne tekst er derfor
+uændret siden 119, som er verificeret `DEPLOY OK` med indhold.
+
+**Målingen, og hvorfor den var værd at lave.** 121 efterlod et ærligt spørgsmål:
+porten dømte at taggen *står i markup*, ikke at den *kører*. Hvis den ikke
+kørte, er "1 besøgende på 28 dage" en målefejl, og 121 iterationer har så
+optimeret mod et tal der aldrig har eksisteret. Det er den dyreste mulige
+fejl i hele planen, fordi den ligner et resultat.
+
+Spørgsmålet er besvaret, og svaret er **ja, den kører**:
+
+| spørgsmål | målt | hvor |
+|---|---|---|
+| loaderen hentes | **200**, `application/javascript`, 6204 B | `analytics.holstjensen.eu/js/pa-X_LLzQW6nZX70uQN8qAyA.js` |
+| er det Plausibles egen kode | ja — `pageview`/`engagement`, `autoCapturePageviews` | samme fil |
+| hvor poster den | `endpoint:"https://analytics.holstjensen.eu/api/event"` | indbygget i `S()` |
+| med hvilket domæne | `domain:"eucomplypro.com"` — **indbygget, ikke sat i markup** | samme |
+| måles udgående klik | `outboundLinks:!0` — **Stripe-klikket tælles** | samme |
+
+Det sidste er det der gør købsvejen målbar overhovedet: jeg kan se at Nogen
+klikkede på *Buy Pro*, uden at Stripe eller nogen server skal fortælle mig det.
+Tallet "1 besøgende" er dermed **ærligt**, og det er et resultat.
+
+**Efterspørgslens fem hypoteser, alle målt, alle falske.** Jeg ville finde den
+stille fejl der forklarer nul trafik. Jeg fandt ingen, og det er et resultat
+der er værd at have kostet en iteration:
+
+| hypotese | målt | svar |
+|---|---|---|
+| siden er `noindex` | 14 sider med `noindex` — **alle korrekte** (404, `/search/`, generatorer, dashboard, tak) | falsk |
+| robots.txt blokerer | `Allow: /`, kun generatorer/dashboard/shared disallowet | falsk |
+| hreflang peger på 404 | 14 sidefamilier, **0 døde peg** | falsk |
+| sitemapet indeholder 404 | **alle 214 `<loc>` svarer 200 live** | falsk |
+| købsvejen er brudt | se nedenfor — **intet brudt** | falsk |
+
+Den fjerde er den, der lå under mest tidligere. `check_sitemap.py` dømmer at
+hvert `<loc>` *er en rigtig side* — altså at filen ligger i **repo-træet**. Den
+svarer 200 på en side der er slettet i Cloudflare, fordi træet og
+produktionen er to ting. Det er præcis den fejlklasse, der ligner et
+resultat: en sitemap med 404 i sig får alle de andre sider rykket ned, og
+tallet ligner bare et site uden besøgende.
+
+**Købsvejen målt ende til ende, mod den udgivne side (kl. 06:0x).**
+
+| led | målt |
+|---|---|
+| `/scan/` — tragten | 200; scanner-API (`eucomply-scan.mahope-eeb.workers.dev`) **200** med rigtige checks |
+| `/pro/` + `/pricing/` i **EN/DA/DE/FR** (8 sider) | alle 200, alle med **2** Stripe-links |
+| `/pricing/` → `buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03` | **200** |
+| `mahope.tools/thanks` (kvitteringen) | 200, også med `session_id` |
+| `mahope.tools/api/license/validate`, ukendt nøgle | **404** med beskeden — ikke en 5xx |
+| alle 214 `<loc>` i sitemapet | **214 × 200** |
+
+Mit eget `/api/scan?url=`-kald på `eucomplypro.com` gav 404, og det så ud som
+en brudt tragt. **Det var min fejl:** scanneren kalder en separat worker
+(`eucomply-scan.mahope-eeb.workers.dev`), ikke en same-origin-route. Jeg
+forskede det, før jeg skrev det i planen. Samme mønster som fund 2 i 121.
+
+**Første opgave i missionen er allerede udført, verificeret på den udgivne
+side.** `/pro/` lovede før 1.3.0 daglige re-scans, historik, PDF og badge uden
+at de fandtes. Den udgivne `/pro/` siger nu *"What Pro includes today"* med
+syv punkt der alle er i pluginen, og afslutter med en egen linje:
+*"Planned features, not included today: hosted daily re-scans … runtime PDF
+reports, a live verification badge, a customer dashboard and multi-site
+management."* `check_pro_claims.py`: **0 unexpected claims**. Missionens
+punkt 2 og 3 er dermed lukkede — på den udgivne side, ikke i kilden.
+
+**Rettelsen er én port, `tools/check_buy_path.py` + `tools/buy_path.json`.**
+Den dømmer de otte pengesider, begge Stripe-links, kvitteringen, licens-API'ets
+5xx-regel og alle 214 sitemap-URL'er — **mod live**, hvilket ingen af de otte
+eksisterende gates gør for denne vej. Undtagelser ligger i `buy_path.json` med
+en begrundelse pr. linje, og selftesten bekræfter at de kan lukkes.
+
+**Fund 1 — min egen port havde et hul, og M1 fandt det.** Første mutation var
+at fjerne kravet om et Stripe-link fra `check_money_pages`. **Selftesten blev
+grøn, exit 0.** Grunden er den fejlklasse opgave 86 og 121 allerede har
+dokumenteret: porten måler *produktionen*, og det udgivne site er sundt, så
+mutationen fjernede en dom uden at nogen fejl var at finde. Samme mutation var
+i 121 sluppet fordi *byggerens egen funktion* var utestet; her var det
+*pengeside-kontrollen* der var utestet. Rettelsen er at mutationen rammer et
+**måleinput** (`fetch` patches til at svare som en brudt side), ikke
+portens egen kode. M1 kørt igen på den færdige fil: **fanget**, selftesten rød
+med præcis den case der skulle ramme, og `cmp` bekræfter byte-identitet.
+
+**Fund 2 — en af mine selftest-cases løj om sig selv, igen.** Case 3 (den
+registrerede undtagelse skal være grøn) skrev `not findings and True`. Anden
+led er altid sand, så den var grøn for den forkerte grund. Det er præcis den
+fejl opgave 93 fjernede tre af, i en ny fil. Rettet til at kræve alle tre
+dele: intet fund, mutationen nåede faktisk frem, **og** den blev nævnt i en
+note — ellers er casen grøn fordi porten slet ikke kørte.
+
+**Gate:** `GATE GRØN — alle 41 steps bestået` (heraf 2 nye: `check_buy_path.py`
++ `--selftest`, **8 negative cases**, var 4 i første udkast). `SELFTEST GRØN —
+alle 8 negative cases fanges`. `0 unexpected EUComply Pro claims`. Ingen PHP
+ændret, så `php -l` er ikke betinget. Sibling-kommandoen fra `../hermes-passiv`
+kan ikke køres fra agenten (adgang uden for repoet er lukket), så gyldig
+SEO-evidence er root-fallbacken `bash tools/quality_gate.sh`, jf. gate-baseline.
+
+**Rørt:** `tools/check_buy_path.py` (ny), `tools/buy_path.json` (ny), denne
+plan. **Ingen `site/**`-fil, ingen plugin-version, ingen `update.json`, ingen
+ny zip, ingen Stripe-pris, ingen worker, ingen upload.** Denne diff deployer
+intet, så ingen `VERIFICÉR DEPLOY`-note er åben for den.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Mål om porten kan se et køb.** `outboundLinks` er slået til, så et klik på
+   *Buy Pro* tælles som udgående link. Det er det første tal i planen der kan
+   skelne "ingen besøgende" fra "besøgende der ikke køber". Hvis der står 0
+   udgående klik, er siden ikke nået — og det er et distributionsproblem, ikke
+   et produktproblem. Se `❓ Til Mads`.
+2. **Trafikken er 1 besøgende på 28 dage, og 122 iterationer har ikke flyttet
+   den.** Fem hypoteser er nu målt og alle falske. Den næste skal ikke være en
+   sjette port over det samme træ; den skal finde *hvor* folk kan nås.
+3. **De to `I GANG`** (kundeportal 2b, badge embed-script) er uændret
+   blokeret af spørgsmål 9.
+
+❓ **Til Mads.** Spørgsmål 21 (root-LICENSE) og spørgsmål 9 (worker-deploy) står
+uændret. **Nyt:** er `eucomplypro.com` blevet indsendt i en sitemap-submission
+(GSC / Bing Webmaster)? Sitemapet er sundt, men 1 besøgende på 28 dage er
+formentlig et **indekserings**-spørgsmål, ikke et indholdss-spørgsmål. Jeg kan
+ikke indsende for dig, og det er en konto-handling.
+
+---
+
 Opdateret: 2026-09-29 (iteration 121) — **porten dømte "siden har taggen" på
 URL-strengen. Det er ikke det samme som at taggen *kører*, og de to fejl den
 ikke kan se er præcis dem, der læses som "besøgende der ikke kom".**
@@ -109,7 +244,14 @@ plan. **Ingen `site/**`-fil, ingen `site-dist`-forskel, ingen
 plugin-version, ingen ny zip, ingen `update.json`, ingen Stripe-pris, ingen
 worker, ingen upload.** Deploy-workflowen trigges derfor ikke af denne diff.
 
-### Næste iteration (prioriteret, målt 2026-09-29)
+### Næste iteration (prioriteret, målt 2026-09-29) — LUKKET af iteration 122
+
+De tre punkter nedenfor er besvaret der: punkt 1 (deploy-noterne) er
+håndteret, punkt 2 (hvor besøgende kommer fra) er målt i 122 — fem
+hypoteser falske — og punkt 3 er uændret sand. Se 122 for de nye
+prioriteter.
+
+<details><summary>Originale punkter fra 121</summary>
 
 1. **Deploy-noten fra 120** (åben): verificér efter et batch-vindue. Den er
    nyere end 07:30-vinduet, så betingelserne står uændret. Bemærk at denne
@@ -122,6 +264,8 @@ worker, ingen upload.** Deploy-workflowen trigges derfor ikke af denne diff.
    (kundeportal 2b, badge embed-script) er blokeret af spørgsmål 9.
 
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+</details>
 
 ---
 
