@@ -1,3 +1,130 @@
+Opdateret: 2026-09-29 (iteration 121) — **porten dømte "siden har taggen" på
+URL-strengen. Det er ikke det samme som at taggen *kører*, og de to fejl den
+ikke kan se er præcis dem, der læses som "besøgende der ikke kom".**
+
+**Deploy-verificering af 120: CI grøn.** Ét kald, ingen løkke: alle tre jobs
+(`deploy-site`, `build-devnotify`, `pages build and deployment`) er `success`
+for `af0a997`. **Indhold er endnu ikke verificeret** — klokken var 04:46 ved
+dette kald, og det første batch-vindue er 07:30. Noten står derfor stadig
+åben, korrekt: den må først skrives `DEPLOY OK` efter et vindue.
+
+**Deploy-verificering af 119 og 118: lukket i 120, ingen nyt at hente.**
+
+**Målet fra iteration 120s punkt 2, og hvad svaret var.** Spørgsmålet var om
+Plausible-injektionen skal hegnes ind i en `<!--shell:…-->`-blok. Målt:
+
+| Måling | Resultat |
+|---|---|
+| HTML-sider i det publicerede træ | 233 |
+| Sider med taggen | **230** |
+| Heraf **inde** i en `<!--shell:…-->`-blok | **0** |
+| Heraf **uden for** blokkene | **230** |
+| Sider uden taggen | 3 — `_partials/header.html`, `_partials/footer.html`, `shared/live-check-widget.html`, alle tre fragmenter uden `<head>` |
+| Blok-navne i kilden | `crumbs` 225, `grid` 106, `meta` 98, `pn` 98, `grid-end` 106 |
+| Blokke der omslutter `</head>` | **0** |
+
+**Svaret på spørgsmålet er: nej, og det er ikke et valg.** Der er ingen blok
+at hegne den ind i. `crumbs`, `grid`, `meta`, `pn` og `grid-end` ligger i
+`<body>`; `</head>` er i nul af dem. Injektionen sker desuden i
+`build_public_tree.py` under selve publiceringen, ikke i `site/`, så den er
+ikke en del af skalens afledte blokke overhovedet. Punkt 2 fra 114, 116 og 118
+er dermed lukket som **besvaret**, ikke som en udsat opgave — og den skal
+ikke genåbnes. Det er det fjerde eksempel i rækken på en kø-post der
+beskriver en vurdering, der allerede er svaret.
+
+**Men målet fandt to huller, og de er værd at have kostet de tre gentagelser.**
+
+Før `runs_tag()` lød portens spørgsmål "er `PLAUSIBLE_SRC` i teksten?".
+`with_analytics()` havde *samme* betingelse som sin idempotens-vagt. Den ene
+sandt, den anden falsk, og de to fejl mellem dem døde stille:
+
+| Fejl | Hvad der sker | Hvad porten sagde |
+|---|---|---|
+| **Siden nævner scriptet i prosa eller et kodeblok** | `with_analytics()` ser URL'en, springer injektionen fra, siden får **ingen tag** | "tagget" — 230 af 230 |
+| **Loaderen er der, init-kallet mangler** | `plausible.q` fyldes og **afsendes aldrig** | "tagget" — 230 af 230 |
+
+Begge er målt som **0 i det publicerede træ lige nu**: alle 230 sider har hele
+taggen. Hullerne er latente, ikke aktive. De låses, fordi de er præcis den
+fejlklasse porten findes for — en besøgstælling der siger 0, fordi den døde,
+er det værste tal den kan vise, fordi det ligner et resultat.
+
+**Rettelsen er to filtre og én opdeling, ikke 233 filer.** `LOADER_RE` +
+`INIT_RE` i `build_public_tree.py`, `has_analytics()` som den fælles
+sandhed, og `PLAUSIBLE_INIT` udskilt fra `PLAUSIBLE_TAG` så en *halv* tag kan
+gøres komplet i stedet for springes over. Bevist byte-identisk: den nye
+`PLAUSIBLE_TAG` er tegn for tegn lig den gamle, så **det publicerede træ er
+uændret** — 221 sider, 0 findings, ingen grund til at regne den som en
+sidediff.
+
+**Porten ser nu de to klasser forskelligt,** fordi rettelserne er forskellige:
+`… har loaderen uden init-kaldet — taggen fylder plausible.q og afsender
+aldrig` mod `… nævner kun scriptet i tekst, uden at have taggen`. En tredje
+mutation — at slå injektionen helt fra — fanges stadig som før, med 231 fund.
+
+**Fund undervejs, alle tre rettet i samme iteration.**
+
+1. **M1 slap gennem porten, og det er det vigtigste fund her.** Mutationen
+   var at sætte `if not LOADER_RE.search(html):` tilbage til den bløde
+   `if PLAUSIBLE_SRC in html:` i byggerens egen fil. Selftesten blev **grøn**.
+   Grunden er den fejlklasse opgave 86 ikke så: porten måler det *publicerede*
+   træ, og ingen rigtig side nævner scriptet i prosa, så mutationen var
+   usynlig for den. **Byggerens egen funktion var utestet.** Ny kontrol
+   `_builder_injects_on_every_page()` kører `with_analytics()` på præcis de
+   tre sider der får den forkerte adfærd — prosa-nævnt, halv tag, tom side —
+   og kræver både at resultatet kører taggen **og** at en anden kørsel
+   ændrer intet. M1 fanges nu med beskeden om manglende idempotens.
+2. **Min egen mutationstest løj om sig selv.** Jeg lavede mutationerne med
+   `cp fil /tmp/sikkerhedskopi` og gendannede med `cp` — samme værktøjsfejl
+   som opgave 14, og den kostede den nye kontrol: backup'en var taget *før*
+   `_builder_injects_on_every_page()` blev skrevet, så gendannelsen slettede
+   den stille, og selftesten sagde 11 cases i stedet for 12. Rettet ved at
+   tage en ny backup efter hvert rettelsespunkt og altid verificere med
+   `cmp` på filniveau-`cp` bagefter. Alle tre mutationer er kørt igen på den
+   færdige fil: **3/3 fanget** med den rigtige besked, og `cmp` bekræfter at
+   filerne er byte-identiske bagefter.
+3. **Adfærdskontrollen forsvandt ikke, den flyttede opad.** Den gamle
+   selftest-case "taggen uden init-kald sender 0 pageviews" blev rød med en
+   *bedre* besked, fordi fejlen nu opdages statisk. Jeg opdaterede
+   assertionen i stedet for at slette casen. Det er en forskydning, ikke en
+   svækkelse: statisk dækning gælder alle 233 sider, adfærdsproben én.
+
+**Målt / accept.** Før: 230 sider "tagget" på en strengsøgning, 0 negative
+cases på de to fejlklasser, og byggerens `with_analytics()` hele utestet.
+Efter: **230 sider med kørende tag** (loader + init begge), `SELFTEST GRØN —
+alle 12 negative cases fanges` (var 9), og 3/3 mutationer mod repoets egne
+filer fanget. `GATE GRØN — alle 41 steps bestået`. Root-SEO `221 pages
+checked, 0 with findings`. Idempotens målt på byggetræets egen output: 0
+ændringer ved både 2. og 3. kørsel. Ingen PHP rørt, så `php -l` var ikke
+påkrævet. Sibling-kommandoen i `../hermes-passiv` kunne igen **ikke** køres:
+workspace-permissions nægter adgang, så missionskravet kan ikke dokumenteres;
+gyldig SEO-evidence er root-fallbacken, jf. gate-baseline.
+
+**Baseline (Plausible 29/9, uændret):** 1 besøgende, bounce 100 %, kun Direct,
+28 dage. Denne iteration flytter ingen tal — den gør at et 0 i Plausible
+fremover kan læses som **et** af to ting: ingen kom, eller taggen døde. Før
+kunne porten ikke skelne.
+
+**Rørt:** `tools/build_public_tree.py`, `tools/check_analytics.py`, denne
+plan. **Ingen `site/**`-fil, ingen `site-dist`-forskel, ingen
+plugin-version, ingen ny zip, ingen `update.json`, ingen Stripe-pris, ingen
+worker, ingen upload.** Deploy-workflowen trigges derfor ikke af denne diff.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Deploy-noten fra 120** (åben): verificér efter et batch-vindue. Den er
+   nyere end 07:30-vinduet, så betingelserne står uændret. Bemærk at denne
+   diff **ikke** deployer noget, så den note er stadig den eneste åbne.
+2. **Trafikken er 1 besøgende på 28 dage, og 120 iterationer har ikke flyttet
+   den.** Det er det mest informative tal i planen. Punktet ovenfor lukker
+   måle-apparatet; næste iteration bør gå på **hvor besøgende kommer fra**,
+   ikke på flere porter. Se `docs/` og spørgsmål 9/7.
+3. **Køens næste reelle opgave efter SEO/port-arbejdet.** De to `I GANG`
+   (kundeportal 2b, badge embed-script) er blokeret af spørgsmål 9.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret.
+
+---
+
 Opdateret: 2026-09-29 (iteration 120) — **de to åbne deploy-noter er lukket,
 og `/support/` er nu findelig for præcis den læser, den er skrevet til. Den
 fandtes, lå i sitemapet og var dømt grøn af porten — men ingen af de to
@@ -5992,6 +6119,20 @@ Alle tre jobs `success`. Dette er første gang den nye handlingskontrol kører i
   - **Farvebåndet på `pct` er væk eller begrundet.** `>= 80 ? 'good'` på et tal med et dokumenteret loft på 56 % er det samme som en ubrugelig farve; hvis tallet ikke deles, skal båndet følge det opnåelige maksimum, og det skal stå i porten.
   - `test_engine_parity.mjs` og `test_plugin_engine_parity.mjs` grønne; `check_verdict_labels.mjs`, `check_pro_claims.py`, `check_dora_claims.py` og `check_sample_coverage.py` grønne uden nye undtagelser; `GATE GRØN` før merge.
   - **Bemærk uden løsning i denne diff:** den udgivne web-scanner (`eucomply-scan.mahope-eeb.workers.dev`) kører den gamle motor og får tallet først ved worker-deploy (spørgsmål 9). Siderne må derfor ikke love den nye talform før workeren er live — samme rækkefølge som opgave 6 (worker før klient), og samme grund: ellers viser scanner-siden et tal pluginen ikke kan levere.
+### 87. Analytics-porten dømte "har taggen" på URL-strengen, ikke på om den kører
+
+- Status: `FÆRDIG` på `ceo/taggen-eksekveres` — `LOADER_RE` + `INIT_RE` + `has_analytics()` + `PLAUSIBLE_INIT` i `tools/build_public_tree.py`, `runs_tag()` og to forskellige fund-tekster i `tools/check_analytics.py`, ny kontrol `_builder_injects_on_every_page()`. `GATE GRØN — alle 41 steps bestået`. **Ingen `site/**`-fil** — den nye `PLAUSIBLE_TAG` er byte-identisk med den gamle, så det publicerede træ er uændret.
+- 2026-09-29: **Målet fra punkt 2 i 120 er besvaret: nej, og det er ikke et valg.** 230 af 233 sider har taggen, og **0** har den inde i en `<!--shell:…-->`-blok. Der er ingen blok at hegne den ind i: `crumbs`/`grid`/`meta`/`pn`/`grid-end` ligger i `<body>`, og `</head>` er i nul af dem. Injektionen sker i `build_public_tree.py` under publiceringen, ikke i `site/`. Punkt 2 fra 114, 116 og 118 er lukket som **besvaret** og må ikke genåbnes.
+- Målt før rettelsen — to huller, begge **latente** (0 i det publicerede træ, alle 230 sider har hele taggen): (1) en side der **nævner** scriptet i prosa eller et kodeblok får slet ingen tag, fordi `with_analytics()` brugte URL-strengen som idempotens-vagt; (2) en side med **loader uden init-kald** fylder `plausible.q` og afsender aldrig. Porten sagde "tagget" i begge tilfælde, fordi den spurgte om `PLAUSIBLE_SRC` stod i teksten. Det er præcis den fejlklasse porten findes for: et 0 i Plausible, der ligner et resultat.
+- **Fund 1 — M1 slap gennem porten, fordi byggerens egen funktion var utestet.** At sætte `if not LOADER_RE.search(html):` tilbage til den bløde `if PLAUSIBLE_SRC in html:` gav **grøn selftest**: porten måler det publicerede træ, og ingen rigtig side nævner scriptet i prosa, så mutationen var usynlig for den. Ny kontrol `_builder_injects_on_every_page()` kører `with_analytics()` på de tre sider der får den forkerte adfærd og kræver både kørende tag *og* idempotens. 3/3 mutationer (M1 blød betingelse, M2 `runs_tag` uden init-krav, M3 aldrig init-stub) fanget med den rigtige besked.
+- **Fund 2 — min egen mutationstest løj om sig selv.** `cp fil /tmp/sikkerhedskopi` var taget *før* den nye kontrol blev skrevet, så gendannelsen slettede den stille og selftesten sagde 11 i stedet for 12. Samme værktøjsfejl som opgave 14. Rettet: ny backup efter hvert rettelsespunkt, `cmp` på filniveau-`cp` bagefter.
+- Begrundelse: opgave 86 byggede porten, fordi 0 besøgende skulle være læsbare som et resultat. Den blev grøn på et tal, der kun var sandt fordi ingen side fejlede. Porten skal dømme **adfærd**, ikke tilstedeværelse af en streng — ellers er dens egen grønne tilstand en måde at få det forkerte svar bekræftet.
+- Accept:
+  - ~~Porten dømmer om taggen *kører*~~ **Dækket**: `runs_tag()` kræver loader **og** init; de to fejlklasser får hver sin besked, fordi rettelserne er forskellige.
+  - ~~Byggeren er idempotent på sin egen funktion~~ **Dækket og testet**: 0 ændringer ved 2. og 3. kørsel på byggetræets egen output; `_builder_injects_on_every_page()` kræver idempotens på alle tre syntetiske sider.
+  - ~~Det publicerede træ er uændret~~ **Dækket**: `PLAUSIBLE_TAG` byte-identisk med den gamle, `221 pages checked, 0 with findings`.
+  - ~~Selftesten kan fange en mutation i byggeren~~ **Dækket**: 3/3 mod repoets egne filer, revert verificeret med `cmp`.
+
 ### 86. Changelog'en i leverancen er to lister, og ingen port målte dem mod hinanden
 
 - Status: `FÆRDIG` på `ceo/changelog-en-kilde` — kontrol 7 i `tools/check_asset_delivery.py` (fire krav, fire nye negative cases, 13 → **18**), `tools/build_plugin_zip.py --sync-changelog`, `update.json` + `site/update.json` byte-identiske, `site/_redirects` +2. `GATE GRØN — alle 29 steps bestået`. **Ingen ny plugin-version** — 1.3.38 er uændret kode, den får bare den changelog den aldrig havde.

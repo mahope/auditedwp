@@ -83,6 +83,45 @@ def builder_src():
         return match.group(1) if match else None
 
 
+def _loader_re():
+    builder = _builder()
+    if builder is not None and hasattr(builder, "LOADER_RE"):
+        return builder.LOADER_RE
+    src = builder_src()
+    if not src:
+        return None
+    return re.compile(r"<script\b[^>]*\basync\b[^>]*\bsrc=[\"']" + re.escape(src) + r"[\"']", re.I)
+
+
+def _init_re():
+    return re.compile(r"plausible\.init\s*\(", re.I)
+
+
+def _loader_present(text: str) -> bool:
+    pattern = _loader_re()
+    return bool(pattern and pattern.search(text))
+
+
+def runs_tag(text: str) -> bool:
+    """True når siden faktisk **kører** taggen: loader *og* init-kald.
+
+    Matcher på hele taggen, ikke på URL-strengen. Det er den forskel, der
+    gør porten i stand til at se de to fejl, der ellers læses som
+    "besøgende der ikke blev talt":
+
+      - en artikel der bare **nævner** scriptet i prosa eller et kodeblok
+        har URL'en i teksten, men ingen tag. Før denne kontrol sagde porten
+        "tagget", og siden sendte intet.
+      - en side med **loaderen uden** init-kallet har taggen i teksten,
+        fylder `plausible.q` og afsender aldrig. Før denne kontrol sagde
+        porten "tagget" her også.
+
+    Begge er målt som 0 i det publicerede træ lige nu — porten låser dem,
+    fordi de er latente, ikke fordi de er løst.
+    """
+    return _loader_present(text) and bool(_init_re().search(text))
+
+
 def _sources(directive_text):
     """Kilder uden skema, så 'https://x' og 'x' kan sammenlignes.
 
@@ -155,7 +194,7 @@ def collect(tree=TREE):
     for page in pages:
         relative = os.path.relpath(page, tree)
         text = read(page)
-        if src not in text:
+        if not runs_tag(text):
             if "</head>" not in text.lower():
                 # Intet <head>: kun gyldigt for inkluderede fragmenter.
                 fragments.append(relative)
@@ -169,7 +208,21 @@ def collect(tree=TREE):
         else:
             tagged.append(relative)
     for relative in untagged:
-        findings.append(f"{relative} mangler analytics-tag — besøg på siden tælles ikke")
+        text = read(os.path.join(tree, relative))
+        # To forskellige fejl, to forskellige rettelser. Begge så "ud" som
+        # "mangler tag" før denne kontrol, men kun den ene mangler kode.
+        if _loader_present(text):
+            findings.append(
+                f"{relative} har loaderen uden init-kaldet — taggen fylder "
+                "plausible.q og afsender aldrig, så besøget tælles ikke"
+            )
+        elif src in text:
+            findings.append(
+                f"{relative} nævner kun scriptet i tekst, uden at have taggen — "
+                "besøg på siden tælles ikke, selv om URL'en står i siden"
+            )
+        else:
+            findings.append(f"{relative} mangler analytics-tag — besøg på siden tælles ikke")
     facts.update(pages=len(pages), tagget=len(tagged), fragmenter=len(fragments))
 
     if not tagged:
@@ -345,6 +398,28 @@ def _selftest():
         with open(path, "w", encoding="utf-8") as fh:
             fh.write("<div>fragment der slap igennem uden head</div>")
 
+    def loader_without_init(tree):
+        # Taggen er i siden, men init-kallet mangler: `plausible.q` fyldes
+        # og afsendes aldrig. Før `runs_tag()` sagde porten "tagget", fordi
+        # URL'en var i teksten.
+        page = os.path.join(tree, "index.html")
+        text = read(page)
+        init = _builder().PLAUSIBLE_INIT
+        with open(page, "w", encoding="utf-8") as fh:
+            fh.write(text.replace(init, ""))
+
+    def url_mentioned_without_tag(tree):
+        # En artikel der nævner scriptet i prosa. Før `runs_tag()` blev den
+        # talt som tagget, og byggeren sprang den, fordi URL'en var der.
+        path = os.path.join(tree, "blog", "analytics", "index.html")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(
+                "<html><head><title>Analytics</title>"
+                f"<!-- config: {builder_src()} --></head>"
+                f"<body><p>Sæt src={builder_src()} i head.</p></body></html>"
+            )
+
     def empty_tree(tree):
         for name in os.listdir(tree):
             if name != "_headers":
@@ -353,6 +428,8 @@ def _selftest():
 
     cases = [
         ("side uden tag", drop_tag, "mangler analytics-tag"),
+        ("loader uden init-kald", loader_without_init, "uden init-kaldet"),
+        ("URL nævnt uden tag", url_mentioned_without_tag, "nævner kun scriptet i tekst"),
         ("CSP uden connect-src", drop_connect_src, "connect-src"),
         ("CSP uden script-src", drop_script_src, "script-src"),
         ("fremmed script-id i træet", foreign_script_id, "ikke det byggeren sætter ind"),
@@ -365,6 +442,12 @@ def _selftest():
 
     # Adfærd: taggen skal sende ét pageview. Nås ikke længere
     # init-kaldet, dør taggen stille — det er den fejlklasse porten findes for.
+    #
+    # Før `runs_tag()` blev denne mutation fanget af adfærdsproben, fordi
+    # siden stadig blev regnet som tagget. Nu er den fanget **tidligere**, som
+    # en statisk mangel, så porten kan se den uden at køre node. Begge veje er
+    # ægte; statisk først, fordi den så også dækker de 232 sider, der ikke er
+    # valgt som probe.
     import tempfile
 
     tmp = tempfile.mkdtemp(prefix="analytics-")
@@ -383,15 +466,19 @@ def _selftest():
             "connect-src 'self' https://analytics.holstjensen.eu\n"
         ))
         findings, _ = collect(tree=tmp)
-        if not any("sender 0 pageviews" in f for f in findings):
-            print("  FEJL: taggen uden init-kald gav ikke 'sender 0 pageviews': "
+        if not any("uden init-kaldet" in f for f in findings):
+            print("  FEJL: taggen uden init-kald gav ikke 'uden init-kaldet': "
                   f"{findings[0] if findings else '(grøn)'}")
             ok = False
         else:
-            print("  adfærd: taggen uden init-kald sender 0 pageviews -> rød")
+            print("  adfærd: taggen uden init-kald er statisk dødt -> rød")
             extra[0] += 1
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+    # Byggerens egen kontrakt. Efter mutationen M1 — se funktionen.
+    if not _builder_injects_on_every_page(extra):
+        ok = False
 
     # Bevis på at selftesten kan fejle: en mutation der umuligt kan finde
     # noget skal give False, ellers er "grøn" her meningsløs.
@@ -404,6 +491,49 @@ def _selftest():
 
     if ok:
         print("SELFTEST GRØN — alle %d negative cases fanges" % extra[0])
+    return ok
+
+
+def _builder_injects_on_every_page(extra):
+    """Byggeren skal sætte en **kørende** tag ind på enhver side med <head>.
+
+    Uden denne kontrol døde porten stum, da M1 blev prøvet mod repoets egen
+    fil: at slå `if not LOADER_RE.search(html):` tilbage til den bløde
+    `if PLAUSIBLE_SRC in html:` gav **grøn selftest**. Grunden er, at porten
+    måler det *publicerede* træ, og ingen rigtig side nævner scriptet i prosa
+    — så mutationen var usynlig for den.
+
+    Kontraktet her er derfor på **byggerens egen funktion**, kørt på de to
+    sider der netop får den forkerte adfærd. Det er den egenskab, der skal
+    låses, ikke et tilfælde af det publicerede træ.
+    """
+    builder = _builder()
+    src = builder.PLAUSIBLE_SRC
+    cases = [
+        (
+            "URL nævnt i prosa",
+            f"<html><head><!-- config: {src} --></head><body>artikel</body></html>",
+        ),
+        (
+            "loader uden init-kald",
+            f'<html><head><script async src="{src}"></script></head><body>s</body></html>',
+        ),
+        ("helt uden tag", "<html><head><title>t</title></head><body>s</body></html>"),
+    ]
+    ok = True
+    for name, page in cases:
+        result = builder.with_analytics(page)
+        if not builder.has_analytics(result):
+            print(f"  FEJL: byggeren giver ingen kørende tag på en side med {name} "
+                  f"(loader={bool(builder.LOADER_RE.search(result))}, "
+                  f"init={bool(builder.INIT_RE.search(result))})")
+            ok = False
+        elif builder.with_analytics(result) != result:
+            print(f"  FEJL: byggeren er ikke idempotent på en side med {name}")
+            ok = False
+    if ok:
+        print("  byggeren: kørende tag på prosa-nævnt, halv tag og tom side; idempotent på alle tre")
+        extra[0] += 1
     return ok
 
 

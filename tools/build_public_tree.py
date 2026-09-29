@@ -130,19 +130,49 @@ REQUIRED = (
 # det automatisk, fordi alt HTML i det publicerede træ går igennem her.
 # CE-scriptet kræver init-kaldet ved siden af, ellers sendes intet.
 PLAUSIBLE_SRC = "https://analytics.holstjensen.eu/js/pa-X_LLzQW6nZX70uQN8qAyA.js"
-PLAUSIBLE_TAG = (
-    f'<script async src="{PLAUSIBLE_SRC}"></script>\n'
+PLAUSIBLE_INIT = (
     "<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},"
     "plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>\n"
 )
+PLAUSIBLE_TAG = f'<script async src="{PLAUSIBLE_SRC}"></script>\n' + PLAUSIBLE_INIT
 HEAD_END = re.compile(r"</head>", re.I)
+
+# Kun **kørende** kode tæller som tag. Adgangen måles på hele taggen —
+# loaderen *og* init-kallet — fordi hver af dem kan være der uden den anden,
+# og kun sammen sender de et pageview:
+#
+#   - loader uden init: `plausible.q` fyldes, men afsendes aldrig.
+#   - URL nævnt i prosa eller et kodeblok: slår *injektionen* fra, fordi
+#     betingelsen nedenfor så er sand. Siden får ingen tag, og læses som
+#     "besøgende der ikke blev talt" — præcis den læsning porten
+#     `check_analytics.py` findes for at forhindre.
+LOADER_RE = re.compile(
+    r"<script\b[^>]*\basync\b[^>]*\bsrc=[\"']" + re.escape(PLAUSIBLE_SRC) + r"[\"']",
+    re.I,
+)
+INIT_RE = re.compile(r"plausible\.init\s*\(", re.I)
+
+
+def has_analytics(html: str) -> bool:
+    """True når siden faktisk kører taggen — loader og init-kald begge."""
+    return bool(LOADER_RE.search(html)) and bool(INIT_RE.search(html))
 
 
 def with_analytics(html: str) -> str:
-    """Sæt Plausible ind lige før </head>. Sider uden <head> (partials) røres ikke."""
-    if PLAUSIBLE_SRC in html or not HEAD_END.search(html):
+    """Sæt Plausible ind lige før </head>. Sider uden <head> (partials) røres ikke.
+
+    Idempotent på den **kørende** tag, ikke på URL-strengen. Så en side der
+    nævner scriptet i en artikel om analytics stadig får sin egen tag, og en
+    side med en halv tag (loader uden init) får den manglende halv.
+    """
+    if not HEAD_END.search(html):
         return html
-    return HEAD_END.sub(lambda m: PLAUSIBLE_TAG + m.group(0), html, count=1)
+    if not LOADER_RE.search(html):
+        return HEAD_END.sub(lambda m: PLAUSIBLE_TAG + m.group(0), html, count=1)
+    if not INIT_RE.search(html):
+        head_end = HEAD_END.search(html)
+        return html[: head_end.start()] + PLAUSIBLE_INIT + html[head_end.start() :]
+    return html
 
 
 # Også inde i en godkendt mappe er der interne filer. Navnene her er nævnt
