@@ -166,6 +166,8 @@ run "tools/test_engine_parity.mjs" node tools/test_engine_parity.mjs
 run "tools/test_license_verdicts.php" php tools/test_license_verdicts.php
 run "tools/test_pro_documents.php" php tools/test_pro_documents.php
 run "tools/test_pro_documents.php --selftest" php tools/test_pro_documents.php --selftest
+run "tools/test_pdf_report.php" php tools/test_pdf_report.php
+run "tools/test_pdf_report.php --selftest" php tools/test_pdf_report.php --selftest
 run "tools/check_pro_claims.py" "$PY" tools/check_pro_claims.py
 run "tools/check_article_dates.py" "$PY" tools/check_article_dates.py
 run "tools/check_article_dates.py --selftest" "$PY" tools/check_article_dates.py --selftest

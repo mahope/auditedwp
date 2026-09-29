@@ -1,3 +1,146 @@
+Opdateret: 2026-09-29 (iteration 124) — **1.3.40 byggede PDF'en, og 40 sider
+på sitet sagde stadig den ikke fandtes. Porten vidste intet, fordi den spurgte
+om PDF'en som en *ulovet* sætning. Nu spørger den om koden.**
+
+**Første fund, målt, og det er større end planen sagde.** 123's handoff regnede
+med **seks** benægtelseslinjer. Der var **31**. Fordelingen:
+
+| overflade | fund |
+|---|---|
+| `/pro/`, `/pricing/` i EN/DA/DE/FR | 8 |
+| de 5 `vs-*`-sammenligningssider | 5 |
+| `/scan/` i EN/DA/DE/FR + `/checklist/` | 5 |
+| 8 blogartikler + `check-eu-compliance` + `how-it-works` + `/cli/` + forside | 12 |
+| `llms.txt` + `llms-full.txt` | 3 |
+
+De er alle den **samme** sætning i fire sprog, og de er alle skrevet af samme
+årsag: forfatteren vidste at 1.3.40 byggede PDF'en, og skrev den ind som
+"planned" fordi den ikke nåede at fjerne den. Det er den dyreste fejltype vi
+har — **den ligner et produkt**.
+
+**Den anden fejl var værre, fordi porten var grøn.** `runtime PDF reports` lå i
+`check_pro_claims.py`'s **u-understøttede**-liste: en liste over løfter der var
+forbudt, fordi koden ikke gjorde dem. 1.3.40 gjorde dem — og så ville porten have
+straffet **hver ærlig sætning** om PDF'en på alle otte sandhedssider, mens den
+forblev tavs om de 31 løfter den skulle have fanget. Listen er slettet, og det
+er den *samme* fejlklasse som de tre `a`-portene ovenfor: en regel der belønner
+stilhed.
+
+**Den tredje fejl var en vokabularisering af en rigtig løgn.** De fem `vs-*` sider
+skrev "pass-to-fail alerts … are planned, not included today" — 1.3.10 har
+sendt dem siden 27/9. `alert`-mønstret kendte ikke navnet *pass-to-fail*, så
+porten var tavs i **to** retninger samtidig. Rettet på alle 6 steder.
+
+**Hvad porten nu dømmer.** `plugin_ships_pdf()` i samme tracerstil som de fire
+søskende: `report_pdf_document()` skal kalde `pdf_assemble()` (**ikke** søge
+`%PDF-` i sig selv — headeren ligger i `pdf_assemble`, min første udkast led efter
+en streng der aldrig står dér og ville have været grøn af en forkert grund),
+`pdf_export_response()` skal teste `! $pro`, og `eucomply_doc=report_pdf` skal
+være et rigtigt kald. Navnemønstret er **ikke** et nøgne "PDF": alle otte sider
+tilbyder den gratis 24-siders guide "as a PDF", så et nøgne PDF-navn ville være
+opfyldt af det gratis produkt.
+
+**Målt:**
+
+| led | målt |
+|---|---|
+| `check_pro_claims.py` | **177 self-tests passed**, `0 unexpected EUComply Pro claims` |
+| nye negative cases | 4 sprog-cases + **3 mutationer** (`%PDF-`→`%NOT-A-PDF`, `\|\| ! $pro`→`""`, `report_pdf`→`report`) — alle 3 verificeret til at flippe predikatet |
+| mutationernes værdi | en strandet uden at fange alle tre ville være grøn fordi mutationen aldrig nåede frem — det er fund 2 i 122, gentaget her bevidst |
+| `apply_shell.py` | `pages: 231, changed: 1, sitemap urls: 214, search index: 214` |
+| `check_shell_fixed_point.py` | `R1 OK — 231 sider + 2 afledte filer, 0 ændret` |
+| hele gaten | **`GATE GRØN — alle 41 steps bestået`** |
+| `php -l` | ikke betinget, ingen `.php` rørt i denne iteration |
+
+**Fund undervejs.** Den danske regel `rapport\w* som PDF` matcher ikke fransk
+*rapport HTML et PDF* — fransk skriver PDF'en **sidst**, to ord senere. Mønstret
+blev `rapport\w*[^\n.!?]{0,16}\bpdf\b`. Det er den fjerde sprog-fejl i samme
+fil, og den fjerde gang et mønster er skrevet efter EN.
+
+**Rørt:** 43 `site/**`-filer + 2 afledte + `tools/check_pro_claims.py` + denne
+plan. Ingen PHP, ingen plugin-version, ingen ny zip, ingen worker, ingen Stripe-pris.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **De 31 rettelser er tekst, ikke funktion.** Ingen port dømmer at en rettet
+   linje *er* rettet; kun at den ikke længer fornægter. Den næste ærlige bevægelse
+   er at tælle **positive** nævnelser pr. overflade og lægge dem i planen som
+   baseline, så næste iterations reducering kan måles.
+2. **Købsvejen er målt hele vejen live og virker** (122). **Trafikken er 1
+   besøgende på 28 dage**, og 124 iterationer har ikke flyttet den. Fem
+   hypoteser er målt og falske. Den næste måling skal finde *hvor* folk kan nås,
+   ikke endnu en port over det samme træ.
+3. **De to `I GANG`** (kundeportal 2b, badge embed-script) er uændret blokeret
+   af spørgsmål 9.
+
+❓ **Til Mads.** Spørgsmål 9 og 21 står uændret. Fra 122 står desuden spørgsmålet
+om sitemap-submission i GSC/Bing — 1 besøgende på 28 dage på et sundt sitemap er
+mest sandsynligvis et **indekserings**-spørgsmål, og det er en konto-handling.
+
+**VERIFICÉR DEPLOY: 31 PDF-benægtelser rettet, plugin 1.3.40 ceo/pro-pdf-rapport 2026-09-29 08:19**
+
+Diffen rører `site/**` og de to afledte filer, så den deployer først efter et
+batch-vindue (07:30 / 12:30 / 17:30 / 21:30). Verificér **indhold** på
+`https://eucomplypro.com/pro/` og `https://eucomplypro.com/pricing/` — at siden
+svarer 200 er ikke bevis, fordi den kan servere gammel kode.
+
+---
+
+Opdateret: 2026-09-29 (iteration 123) — **Pro-PDF'en er bygget og testet i
+pluginen (1.3.40). Den er *ikke* merged endnu: sitet siger stadig "runtime PDF
+reports" er planlagt, og det er ikke længere sandt. Copy + port-predikat er det
+næste iterations arbejde, og det skal ske i samme diff som den her.**
+
+**Hvorfor dette er den opgave, de 122 forrige ikke tog.** Køen havde to `I GANG`
+begge blokeret af spørgsmål 9, og 10 iterationer var gået med porte, SEO og
+måleapparat. `/pro/` lovede dog præcis én Pro-fordel mere end pluginen havde:
+**runtime PDF-rapport**. Det er den eneste af de lovede funktioner der *kan*
+bygges uden en worker-deploy, og den er den bureauet faktisk bruger — filen der
+sendes videre til kunden.
+
+**Det der er bygget (målt, ikke antaget).**
+
+| led | målt |
+|---|---|
+| `tools/test_pdf_report.php` | **73 checks grønne**, `--selftest` **80** |
+| `tools/test_pro_documents.php` | 251 checks, uændret grøn |
+| `php -l` på begge træer | grøn, `cmp` bekræfter paritet |
+| `check_pro_claims.py` | `184 self-tests passed`, `0 unexpected EUComply Pro claims` |
+| PDF-struktur | `%PDF-` + `%%EOF`, **alle** xref-offsets peger på et objekt, hvert streams `Length` matcher de faktiske bytes |
+
+**Ingen ny afhængighed.** PDF'en skrives i pluginen med base-14-fonts
+(Helvetica), der findes i enhver læser — altså intet bibliotek og ingen font-fil,
+præcis som `docs/eucomply-pro-spec.md` §9 kræver. Indholdet er de samme tal som
+HTML-rapporten, og testen sammenligner de to frem for at tro på begge.
+
+**Fund undervejs, målt.** `pdf_ansi()` tabte alle ikke-ASCII-tegn i første
+udkast: masken for to-byte UTF-8 var `0xC2 === ($byte & 0xE0)` i stedet for
+`0xC0 === …`, så `Æblerød` blev `??bler??d`. Det er præcis den fejlklasse
+planen har jaget hele vejen: **den ligner et resultat** — filen er en gyldig PDF
+med alle de rigtige tal, og en bureau-sejr læser den som om den var færdig.
+
+### Næste iteration (dette er `I GANG`, fortsæt HER)
+
+1. **`plugin_ships_pdf()` i `tools/check_pro_claims.py`** — et *sporet* prædikat
+   i samme stil som `plugin_ships_report_file()`: `report_pdf_document()` skal
+   findes, `pdf_export_response()` skal teste `! $pro`, og `eucomply_doc=report_pdf`
+   skal være et rigtigt kald. Uden det dømmer porten intet, fordi den ikke ved at
+   PDF'en findes.
+2. **Copy-klargeringen, EN/DA/DE/FR + `llms.txt` + `llms-full.txt`.** Fjern
+   "runtime PDF reports" fra de **seks** benægtelseslinjer (4 pro-sider + 2
+   llms-filer) og *tilføj* den positive sætning på samme steder, ellers slår
+   under-claim-retningen til. Positive formuleringer er klar:
+   EN "downloads the report as a PDF as well as HTML", DA "rapporten som PDF og
+   som HTML", DE "den Bericht als PDF und als HTML", FR "le rapport au format PDF
+   et en HTML".
+3. **Kør hele gaten** (`bash tools/quality_gate.sh`) og squash-merge til `main`.
+   Denne iteration kørte kun de berørte steps — tidsbudgettet var brugt op.
+4. Deploy-noten skrives i squash-commits, med `ceo/pro-pdf-rapport`.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 9 og 21 står uændret.
+
+---
+
 Opdateret: 2026-09-29 (iteration 122) — **jeg målte hele købsvejen live, for
 det var det ingen port dømte. Alt virker. Det betyder at "1 besøgende" er et
 sandt tal og ikke en død tag — og at flaskehalsen er opmærksomhed, ikke fejl.**

@@ -35,7 +35,7 @@ Happy to answer questions about the detection heuristics or the false-positive t
 Website compliance scans for GDPR, DSA & EAA — any CMS
 
 **Description:**
-EUComply scans any public website for technical compliance signals: missing consent before tracking, absent Consent Mode v2 / TCF signals, weak security headers and missing legal pages. The free scanner works on every platform because it reads what browsers read — no plugin or server access. The current $79/year-per-website Pro license is for WordPress document tools; hosted monitoring and runtime PDF reports are not included today.
+EUComply scans any public website for technical compliance signals: missing consent before tracking, absent Consent Mode v2 / TCF signals, weak security headers and missing legal pages. The free scanner works on every platform because it reads what browsers read — no plugin or server access. The current $79/year-per-website Pro license is for WordPress document tools; hosted monitoring is not included today.
 
 **First comment (maker's):**
 We built the scanner for agencies and small teams that get asked "are we compliant?" and currently answer with a spreadsheet. Paste a URL and get a prioritised technical result in seconds. The core is open source (MIT), so you can self-host the scanner. The current Pro license is for editable WordPress document starters and an HTML report from the latest WordPress scan — not continuous hosted monitoring or client-ready PDFs.

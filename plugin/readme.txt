@@ -5,7 +5,7 @@ Tags: compliance, gdpr, nis2, eaa, dora, audit, security, privacy, cookies, ssl,
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.39
+Stable tag: 1.3.40
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ No. EUComply checks compliance posture, not security vulnerabilities. Use dedica
 3. Pro document generation table — DPA, NIS2, EAA, and HTML report from the latest scan.
 
 == Changelog ==
+
+= 1.3.40 (2026-09-29) =
+* The compliance report is now also a PDF. A bureau can download it from the dashboard, generate it from the settings page, or hand the client a link that ends in a file instead of a web page - the same report, the same numbers, in a format a client can keep, forward and print. Before this, the only deliverable was an HTML file, which opens in a browser and cannot be attached to a mail as a document.
+* The PDF is written by the plugin itself, with no new library and no font file. It uses the fonts every PDF reader already has built in, so it opens in Word, Preview, Chrome and Acrobat with nothing installed on your machine.
+* Nothing about the scan changed. The PDF carries the same eleven checks, the same verdicts, the same daily history and the same "a compliance aid, not legal advice" line as the HTML report, and the test suite compares the two so they cannot drift apart. A warning is still not counted as a pass in either.
+* Non-English text survives the round trip. A Danish, German or French site name, a curly quote and an em dash are all translated to the character set the PDF fonts are defined in, so the report does not arrive as a wall of replacement characters. Anything that cannot be represented becomes a question mark rather than a byte the reader has to guess at.
 
 = 1.3.39 (2026-09-28) =
 * Fix: the advice on the Forms check carried its own HTML example inside the text - "e.g. <a href="/privacy/">Privacy Policy</a>". The report renders that text safely, so the example reached the reader as source code instead of as an example. It was the one line in the whole report that could not be read, it sat in the field agencies read first, and it belonged to the finding this check most often reports: a form with no privacy-policy link.

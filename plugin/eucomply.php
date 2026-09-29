@@ -3,7 +3,7 @@
  * Plugin Name:       EUComply — EU Compliance Audit
  * Plugin URI:        https://eucomplypro.com
  * Description:       Runs eleven local checks: SSL/HSTS, cookies, forms, backups, plugin/core health, legal pages, Google Consent Mode v2, IAB TCF, trackers without consent, security headers and DORA page signals. Pro ($79/year per website): editable HTML document starters and an HTML report from the latest scan.
- * Version:           1.3.39
+ * Version:           1.3.40
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            EUComply
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EUCOMPLY_VERSION', '1.3.39' );
+define( 'EUCOMPLY_VERSION', '1.3.40' );
 define( 'EUCOMPLY_PRO_PRICE', 79 );
 define( 'EUCOMPLY_PRO_URL', 'https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03' );
 define( 'EUCOMPLY_UPDATE_URI', 'https://eucomplypro.com/update.json' );
@@ -1948,8 +1948,9 @@ class EUComply {
             <div id="eucomply-report-action" style="margin-top:20px"<?php echo $results ? '' : ' hidden'; ?>>
                 <?php if ( $is_pro ) : ?>
                     <a class="eucomply-btn" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>">↓ Download HTML compliance report</a>
+                    <a class="eucomply-btn" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report_pdf' ), 'eucomply_doc' ) ); ?>">↓ Download PDF compliance report</a>
                 <?php else : ?>
-                    <a class="eucomply-btn" href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Unlock the HTML compliance report</a>
+                    <a class="eucomply-btn" href="<?php echo esc_url( EUCOMPLY_PRO_URL ); ?>">Unlock the compliance report</a>
                 <?php endif; ?>
             </div>
 
@@ -1962,6 +1963,7 @@ class EUComply {
                     <tr><td>NIS2 / DORA Vendor Clause Set</td><td><?php echo esc_html( get_option( 'eucomply_pro_nis2_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=nis2' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                     <tr><td>EAA Accessibility Statement</td><td><?php echo esc_html( get_option( 'eucomply_pro_eaa_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=eaa' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                     <tr><td>HTML Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
+                    <tr><td>PDF Compliance Report</td><td><?php echo esc_html( get_option( 'eucomply_pro_report_date', 'Not yet' ) ); ?></td><td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eucomply-settings&eucomply_doc=report_pdf' ), 'eucomply_doc' ) ); ?>" class="eucomply-btn ghost" style="padding:6px 14px;font-size:12px">Generate</a></td></tr>
                 </table>
             </div>
             <?php $this->render_client_link_box(); ?>
@@ -2213,11 +2215,14 @@ class EUComply {
         // a client reads. It asks the three questions itself, because this is
         // the one document whose bytes are also served to somebody holding no
         // WordPress login at all — the export must not become the weak way in.
-        if ( 'report' === $doc ) {
+        if ( 'report' === $doc || 'report_pdf' === $doc ) {
             $raw_nonce  = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified on the next line
             $can_manage = current_user_can( EUCOMPLY_ADMIN_CAP );
             $nonce_ok   = (bool) wp_verify_nonce( $raw_nonce, 'eucomply_doc' );
-            $export     = $this->report_export_response( $can_manage, $nonce_ok, $this->is_pro() );
+            $is_pdf     = ( 'report_pdf' === $doc );
+            $export     = $is_pdf
+                ? $this->pdf_export_response( $can_manage, $nonce_ok, $this->is_pro() )
+                : $this->report_export_response( $can_manage, $nonce_ok, $this->is_pro() );
             if ( 200 !== $export[0] ) {
                 // The same two answers the other documents give, in the same
                 // order: an account that may not manage the site, or a request
@@ -2225,7 +2230,7 @@ class EUComply {
                 wp_die( ( $can_manage && $nonce_ok ) ? 'Pro license required.' : 'Not allowed' );
             }
             nocache_headers();
-            header( 'Content-Type: text/html; charset=utf-8' );
+            header( 'Content-Type: ' . ( $is_pdf ? 'application/pdf' : 'text/html; charset=utf-8' ) );
             $disposition = $this->client_report_disposition( $export[2] );
             if ( '' !== $disposition ) {
                 header( 'Content-Disposition: ' . $disposition, true );
@@ -2741,20 +2746,31 @@ class EUComply {
      *
      * @param string $raw_token Raw value from the query string.
      * @param bool   $as_file   Ask for the download instead of the page.
+     * @param bool   $as_pdf    Ask for the PDF rendering of the same report.
      * @return array{0:int,1:string,2:string} HTTP status, body, filename ('' unless $as_file).
      */
-    private function client_report_response( $raw_token, $as_file = false ) {
+    private function client_report_response( $raw_token, $as_file = false, $as_pdf = false ) {
         $token = is_string( $raw_token ) ? strtolower( trim( $raw_token ) ) : '';
         if ( ! $this->client_link_allows( $token ) ) {
             // Deliberately the same body for a malformed token, an unknown one,
             // a revoked one and an expired one. Anything else turns this page
             // into an oracle for which tokens exist. A download request gets it
             // too, and no Content-Disposition: a 404 that arrives as a file is
-            // a different observable from a 404 that arrives as a page.
+            // a different observable from a 404 that arrives as a page — and the
+            // PDF request is answered with that same HTML 404, never with an
+            // empty PDF, so "no such token" cannot be told from "wrong format".
             return array( 404, '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><p>No compliance report is available at this address.</p></body></html>', '' );
         }
-        $rec = $this->client_link_record();
-        return array( 200, $this->report_document( gmdate( 'Y-m-d', (int) $rec['expires'] ) ), $as_file ? $this->client_report_filename() : '' );
+        $rec      = $this->client_link_record();
+        $expires  = gmdate( 'Y-m-d', (int) $rec['expires'] );
+        if ( $as_pdf ) {
+            // The same report in the same numbers, rendered for a file the
+            // client can keep: the expiry notice is carried in the PDF exactly as
+            // it is carried on the page, because a link that dies quietly is
+            // worse than one that says when.
+            return array( 200, $this->report_pdf_document( $expires ), $as_file ? $this->report_pdf_filename() : '' );
+        }
+        return array( 200, $this->report_document( $expires ), $as_file ? $this->client_report_filename() : '' );
     }
 
     /**
@@ -2798,10 +2814,479 @@ class EUComply {
         // and not only in client_report_filename(). A filename that can carry
         // a quote or a newline splits a response, and the check that matters is
         // the one that is closest to the damage.
-        if ( ! is_string( $filename ) || ! preg_match( '/^eucomply-report-\d{4}-\d{2}-\d{2}\.html$/', $filename ) ) {
+        if ( ! is_string( $filename ) || ! preg_match( '/^eucomply-report-\d{4}-\d{2}-\d{2}\.(?:html|pdf)$/', $filename ) ) {
             return '';
         }
         return 'attachment; filename="' . $filename . '"';
+    }
+
+    /**
+     * The report as a PDF file name: eucomply-report-YYYY-MM-DD.pdf
+     *
+     * Same date and same stem as the HTML export on purpose. A bureau that sends
+     * the same report twice — once as HTML, once as PDF — gets two files that
+     * sort together in a download folder, and a client who finds the older one
+     * can tell which scan it came from.
+     *
+     * @return string
+     */
+    private function report_pdf_filename() {
+        return preg_replace( '/\.html$/', '.pdf', $this->client_report_filename() );
+    }
+
+    /**
+     * Translate one string of text to WinAnsiEncoding, the 8-bit encoding the
+     * base-14 fonts are defined in.
+     *
+     * A PDF string that carries UTF-8 bytes renders as mojibake in every reader,
+     * and the text in this report is exactly the text a site owner typed: Danish
+     * and German site names, curly quotes, and a dash copied from a Word
+     * document. Three families of character are mapped by hand — Latin letters
+     * with a stroke or a hook, the smart quotes and dashes, and the typographic
+     * characters WordPress installs replace on save — and anything still
+     * unencodable becomes '?' rather than a byte the reader has to guess at.
+     *
+     * @param string $text Any UTF-8 string.
+     * @return string WinAnsi bytes.
+     */
+    private static function pdf_ansi( $text ) {
+        $text = (string) $text;
+        // The manual map is applied with strtr first, because the identifier
+        // replacement is a loop: one character can unmask another.
+        $map = array(
+            "\xe2\x80\x9c" => '"', "\xe2\x80\x9d" => '"', "\xe2\x80\x98" => "'", "\xe2\x80\x99" => "'",
+            "\xe2\x80\x9a" => ',', "\xe2\x80\x9b" => "'", "\xe2\x80\x9e" => '"', "\xe2\x80\x9f" => '"',
+            "\xe2\x80\x93" => '-', "\xe2\x80\x94" => '-', "\xe2\x80\xa6" => '...',
+            "\xe2\x80\xa2" => '*', "\xe2\x80\xa0" => '*', "\xe2\x84\xa2" => 'TM',
+            "\xc2\xa0" => ' ', "\xe2\x80\xaf" => ' ',
+            "\xc2\xab" => '<<', "\xc2\xbb" => '>>', "\xc2\xbc" => '1/4', "\xc2\xbd" => '1/2',
+            "\xc2\xbe" => '3/4', "\xc2\xa3" => 'GBP', "\xc2\xa5" => 'JPY', "\xc2\xa2" => 'c',
+            "\xc2\xac" => 'EUR', "\xc2\xa9" => '(c)', "\xc2\xae" => '(R)', "\xc2\xae" => '(R)',
+            "\xe2\x89\xa4" => '<=', "\xe2\x89\xa5" => '>=',
+            "\xe2\x86\x92" => '->', "\xe2\x86\x93" => '->',
+        );
+        $text = strtr( $text, $map );
+        $out  = '';
+        $len  = strlen( $text );
+        for ( $i = 0; $i < $len; $i++ ) {
+            $byte = ord( $text[ $i ] );
+            if ( $byte < 0x80 ) {
+                $out .= $text[ $i ];
+                continue;
+            }
+            $rest = substr( $text, $i, 4 );
+            $cp   = 0;
+            if ( 0xC0 === ( $byte & 0xE0 ) ) {
+                $cp = $byte & 0x1F;
+                $n  = 1;
+            } elseif ( 0xE0 === ( $byte & 0xF0 ) ) {
+                $cp = $byte & 0x0F;
+                $n  = 2;
+            } elseif ( 0xF0 === ( $byte & 0xF8 ) ) {
+                $cp = $byte & 0x07;
+                $n  = 3;
+            } else {
+                $out .= '?';
+                continue;
+            }
+            $ok = true;
+            for ( $k = 1; $k <= $n; $k++ ) {
+                if ( $i + $k >= $len || 0x80 !== ( ord( $text[ $i + $k ] ) & 0xC0 ) ) {
+                    $ok = false;
+                    break;
+                }
+                $cp = ( $cp << 6 ) | ( ord( $text[ $i + $k ] ) & 0x3F );
+            }
+            $i += $n;
+            // Latin-1 supplement is identical to WinAnsi, so the code points a
+            // Danish, German or French site name uses are one step from correct.
+            if ( ! $ok ) {
+                $out .= '?';
+            } elseif ( $cp >= 0x20 && $cp <= 0xFF ) {
+                $out .= chr( $cp );
+            } else {
+                $out .= '?';
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * Character widths for Helvetica, in 1/1000 em, indexed from ASCII 32.
+     *
+     * The base-14 fonts are guaranteed to be present in every reader, which is
+     * why this file carries no font and no library — but their widths are not,
+     * so they are spelled out here. The numbers are the ones Adobe published for
+     * Helvetica, and the bold face is measured with the same table: it is up to
+     * 8 % wider, so a bold line can end a little earlier than the layout it was
+     * given. That is a ragged right edge in a heading, not a line that runs off
+     * the page, because the wrapper is given the margin to itself.
+     *
+     * @param string $char One character.
+     * @return int Width in 1/1000 em.
+     */
+    private static function pdf_char_width( $char ) {
+        static $widths = array(
+            278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278,
+            556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556,
+            1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778,
+            667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556,
+            333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556,
+            556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584,
+        );
+        $code = ord( $char );
+        if ( $code < 32 || $code > 126 ) {
+            // Everything outside ASCII: the accented Latin letters, and the
+            // handful of typographic marks the map above leaves behind. A little
+            // generous, because overestimating a character only shortens a line.
+            return 556;
+        }
+        return $widths[ $code - 32 ];
+    }
+
+    /**
+     * The width of a line of text at a given font size, in points.
+     *
+     * @param string $text WinAnsi text.
+     * @param float  $size Font size in points.
+     * @return float
+     */
+    private static function pdf_text_width( $text, $size ) {
+        $total = 0;
+        $len   = strlen( $text );
+        for ( $i = 0; $i < $len; $i++ ) {
+            $total += self::pdf_char_width( $text[ $i ] );
+        }
+        return ( $total * $size ) / 1000;
+    }
+
+    /**
+     * Break one paragraph into lines that fit the given width.
+     *
+     * Words are kept whole, because a report where "cookies" is split as
+     * "cooki/es" is a report a bureau cannot paste into an email. A single word
+     * wider than the column is broken by character instead of being allowed to
+     * run off the page, which is the one case where wrapping is not optional.
+     *
+     * @param string $text  WinAnsi text, newlines already split out.
+     * @param float  $width Column width in points.
+     * @param float  $size  Font size in points.
+     * @return string[] Lines.
+     */
+    private static function pdf_wrap( $text, $width, $size ) {
+        $words = preg_split( '/ +/', trim( (string) $text ) );
+        $words = array_values( array_filter( $words, 'strlen' ) );
+        if ( ! $words ) {
+            return array( '' );
+        }
+        $lines   = array();
+        $current = '';
+        foreach ( $words as $word ) {
+            while ( self::pdf_text_width( $word, $size ) > $width ) {
+                $cut    = strlen( $word );
+                $fitted = '';
+                for ( $k = 0; $k < strlen( $word ); $k++ ) {
+                    if ( self::pdf_text_width( $word, $k + 1, $size ) > $width ) {
+                        break;
+                    }
+                    $fitted = substr( $word, 0, $k + 1 );
+                }
+                if ( '' === $fitted ) {
+                    $cut = 1;
+                } else {
+                    $cut = strlen( $fitted );
+                }
+                if ( '' !== $current ) {
+                    $lines[] = $current;
+                    $current = '';
+                }
+                $lines[] = substr( $word, 0, $cut );
+                $word    = substr( $word, $cut );
+            }
+            if ( '' === $current ) {
+                $current = $word;
+            } elseif ( self::pdf_text_width( $current . ' ' . $word, $size ) <= $width ) {
+                $current .= ' ' . $word;
+            } else {
+                $lines[]   = $current;
+                $current = $word;
+            }
+        }
+        if ( '' !== $current ) {
+            $lines[] = $current;
+        }
+        return $lines ? $lines : array( '' );
+    }
+
+    /**
+     * Escape a string for a PDF literal string.
+     *
+     * @param string $text WinAnsi text.
+     * @return string
+     */
+    private static function pdf_escape( $text ) {
+        return str_replace( array( '\\', '(', ')', "\r" ), array( '\\\\', '\\(', '\\)', '' ), (string) $text );
+    }
+
+    /**
+     * The report's content as a list of blocks, independent of any layout.
+     *
+     * This is the single place the PDF reads the scan from. It is a list, not a
+     * document, because the PDF and the HTML are two renderings of the same
+     * numbers, and the test that keeps them honest compares them rather than
+     * trusting either one: every check label and verdict in the snapshot has to
+     * appear in both. That is why the labels, verdicts and the summary line are
+     * computed here from the same arrays build_report() walks.
+     *
+     * @param string $link_expires Y-m-d, or '' when no client link is involved.
+     * @return array[] Blocks: array( 'style', 'text' ), style is head|sub|head2|rule|gap.
+     */
+    private function report_pdf_blocks( $link_expires = '' ) {
+        $results = $this->scan_snapshot();
+        $blocks  = array(
+            array( 'head', 'Compliance report' ),
+            array( 'sub', get_bloginfo( 'name' ) . ' — ' . home_url() ),
+            array( 'sub', 'Last scan: ' . (string) get_option( 'eucomply_last_scan', '' ) ),
+            array( 'sub', 'Scheduled on this WordPress server: ' . $this->cadence_phrase() . '.' ),
+        );
+        if ( '' !== (string) $link_expires ) {
+            $blocks[] = array( 'sub', 'This link stops working on ' . $link_expires . '.' );
+        }
+        $blocks[] = array( 'rule', '' );
+        $blocks[] = array( 'head2', 'Summary of the latest automated compliance scan' );
+        if ( ! $results ) {
+            $blocks[] = array( 'sub', 'No scan has been run yet. Run a scan from the EUComply dashboard and re-generate this report.' );
+            return $blocks;
+        }
+        foreach ( $results as $r ) {
+            $status = ! empty( $r['pass'] ) ? 'PASS' : ( ! empty( $r['warn'] ) ? 'WARN' : 'FAIL' );
+            $text   = $status . '  ' . $r['label'] . ' — ' . $r['detail'];
+            if ( isset( $r['applies'] ) && false === $r['applies'] && ! empty( $r['condition'] ) ) {
+                $text .= '  (' . $r['condition'] . ')';
+            }
+            $blocks[] = array( 'sub', $text );
+        }
+        $blocks[] = array( 'gap', '' );
+        $blocks[] = array( 'head2', 'Recommendations' );
+        foreach ( $results as $r ) {
+            if ( empty( $r['pass'] ) && ! empty( $r['fix'] ) ) {
+                $blocks[] = array( 'sub', $r['label'] . ': ' . $r['fix'] );
+            }
+        }
+        $passed = $warned = $fails = 0;
+        foreach ( $results as $r ) {
+            if ( ! empty( $r['pass'] ) ) {
+                $passed++;
+            } elseif ( ! empty( $r['warn'] ) ) {
+                $warned++;
+            } else {
+                $fails++;
+            }
+        }
+        $summary = sprintf( '%d of %d checks passed', $passed, count( $results ) );
+        if ( $warned ) {
+            $summary .= sprintf( ', %d with warnings', $warned );
+        }
+        if ( $fails ) {
+            $summary .= sprintf( ', %d failed', $fails );
+        }
+        $blocks[] = array( 'sub', $summary . '. Warnings are not counted as passed.' );
+        foreach ( $this->pdf_history_blocks() as $block ) {
+            $blocks[] = $block;
+        }
+        $blocks[] = array( 'gap', '' );
+        $blocks[] = array( 'rule', '' );
+        $blocks[] = array( 'sub', "Read-only. This report cannot change anything on the website. "
+            . "Produced by EUComply Pro from the site's own scheduled scans. "
+            . 'A compliance aid, not legal advice.' );
+        return $blocks;
+    }
+
+    /**
+     * The history part of the PDF, from the same method build_report() uses.
+     *
+     * @return array[] Blocks.
+     */
+    private function pdf_history_blocks() {
+        $history = $this->history();
+        if ( empty( $history ) ) {
+            return array();
+        }
+        $blocks = array( array( 'gap', '' ), array( 'head2', 'Scan history' ) );
+        foreach ( array_slice( $history, -12, null, true ) as $date => $row ) {
+            $states = array();
+            if ( is_array( $row ) ) {
+                foreach ( $row as $key => $value ) {
+                    $states[] = $key . ': ' . ( is_scalar( $value ) ? (string) $value : '-' );
+                }
+            }
+            $blocks[] = array( 'sub', (string) $date . ' — ' . implode( ', ', $states ) );
+        }
+        $blocks[] = array( 'sub', 'One snapshot per day per check, kept for 52 days.' );
+        return $blocks;
+    }
+
+    /**
+     * Render the report as a PDF file.
+     *
+     * Written by hand rather than by a library, for the reason the spec gives:
+     * a dependency in a plugin is a dependency somebody has to audit, and this
+     * one would exist only to lay out text. The file is a plain PDF 1.4 with the
+     * base-14 fonts, which every reader has built in, so it opens in Word,
+     * Preview, Chrome and Acrobat with nothing installed on the customer's
+     * machine. The content is the same numbers as the HTML report — see
+     * report_pdf_blocks() — and tools/test_pdf_report.php compares the two.
+     *
+     * @param string $link_expires Y-m-d, or '' when no client link is involved.
+     * @return string Binary PDF.
+     */
+    private function report_pdf_document( $link_expires = '' ) {
+        $margin    = 56.0;
+        $page_w    = 595.28; // A4.
+        $page_h    = 841.89;
+        $column    = $page_w - ( 2 * $margin );
+        $leading   = 14.0;
+        $footer_gap = 30.0;
+        $pages     = array();
+        $ops       = array();
+        $y         = $page_h - $margin;
+        $new_page  = true;
+
+        foreach ( $this->report_pdf_blocks( $link_expires ) as $block ) {
+            list( $style, $text ) = $block;
+            if ( 'gap' === $style ) {
+                $y -= $leading * 0.6;
+                continue;
+            }
+            if ( 'rule' === $style ) {
+                if ( $y - 8 < $margin + $footer_gap ) {
+                    $pages[] = implode( "\n", $ops );
+                    $ops     = array();
+                    $y       = $page_h - $margin;
+                    $new_page = true;
+                }
+                $y -= 6;
+                $ops[] = '0.6 w 0.4 0.4 0.4 RG ' . self::pdf_num( $margin ) . ' ' . self::pdf_num( $y ) . ' m ' . self::pdf_num( $page_w - $margin ) . ' ' . self::pdf_num( $y ) . ' l S';
+                $y    -= 10;
+                continue;
+            }
+            if ( 'head' === $style ) {
+                $size = 18.0;
+                $font = 'F2';
+            } elseif ( 'head2' === $style ) {
+                $size = 12.0;
+                $font = 'F2';
+            } else {
+                $size = 9.5;
+                $font = 'F1';
+            }
+            foreach ( self::pdf_wrap( self::pdf_ansi( $text ), $column, $size ) as $line ) {
+                if ( $y - $leading < $margin + $footer_gap ) {
+                    $pages[]   = implode( "\n", $ops );
+                    $ops       = array();
+                    $y         = $page_h - $margin;
+                    $new_page  = true;
+                }
+                $ops[] = 'BT /' . $font . ' ' . self::pdf_num( $size ) . ' Tf '
+                    . self::pdf_num( $margin ) . ' ' . self::pdf_num( $y ) . ' Td ('
+                    . self::pdf_escape( $line ) . ') Tj ET';
+                $y    -= $leading;
+            }
+            if ( 'head' === $style ) {
+                $y -= 6;
+            }
+        }
+        if ( $ops || ! $pages ) {
+            $pages[] = implode( "\n", $ops );
+        }
+        unset( $new_page );
+
+        return $this->pdf_assemble( $pages, $margin, $page_h );
+    }
+
+    /**
+     * Format a number for a PDF operand: no locale, no exponent, fixed decimals.
+     *
+     * @param float $number Any number.
+     * @return string
+     */
+    private static function pdf_num( $number ) {
+        return rtrim( rtrim( number_format( (float) $number, 2, '.', '' ), '0' ), '.' ) ?: '0';
+    }
+
+    /**
+     * Put the page content streams into a PDF file with a real cross-reference
+     * table.
+     *
+     * The offsets are measured on the bytes as they are written, not guessed,
+     * because a wrong offset is the failure mode that makes a PDF open as a
+     * blank page in one reader and fine in another.
+     *
+     * @param string[] $pages One content stream per page.
+     * @param float    $margin Left margin, used for the crop-free page box.
+     * @param float    $page_h Page height in points.
+     * @return string Binary PDF.
+     */
+    private function pdf_assemble( array $pages, $margin, $page_h ) {
+        $objects = array();
+        $count   = count( $pages );
+        $first   = 5; // 1 catalog, 2 pages, 3 F1, 4 F2, 5 info, then page/content pairs.
+        $kids    = array();
+        for ( $i = 0; $i < $count; $i++ ) {
+            $kids[] = ( $first + ( 2 * $i ) ) . ' 0 R';
+        }
+
+        $objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+        $objects[2] = '<< /Type /Pages /Kids [' . implode( ' ', $kids ) . '] /Count ' . $count . ' >>';
+        $objects[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+        $objects[4] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+        $objects[5] = '<< /Title (EUComply compliance report) /Producer (EUComply Pro) /Creator (EUComply Pro) >>';
+
+        for ( $i = 0; $i < $count; $i++ ) {
+            $page_obj = $first + ( 2 * $i );
+            $content  = $pages[ $i ];
+            $objects[ $page_obj ] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 ' . self::pdf_num( $page_h ) . '] '
+                . '/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' . ( $page_obj + 1 ) . ' 0 R >>';
+            $objects[ $page_obj + 1 ] = "<< /Length " . strlen( $content ) . " >>\nstream\n" . $content . "\nendstream";
+        }
+
+        $pdf     = "%PDF-1.4\n%\xe2\xe3\xcf\xd3\n";
+        $offsets = array();
+        $size    = count( $objects );
+        for ( $id = 1; $id <= $size; $id++ ) {
+            $offsets[ $id ] = strlen( $pdf );
+            $pdf          .= $id . " 0 obj\n" . $objects[ $id ] . "\nendobj\n";
+        }
+        $xref_at = strlen( $pdf );
+        $pdf    .= 'xref' . "\n" . '0 ' . ( $size + 1 ) . "\n";
+        $pdf    .= "0000000000 65535 f \n";
+        for ( $id = 1; $id <= $size; $id++ ) {
+            $pdf .= sprintf( "%010d 00000 n \n", $offsets[ $id ] );
+        }
+        $pdf .= 'trailer' . "\n" . '<< /Size ' . ( $size + 1 ) . ' /Root 1 0 R /Info 5 0 R >>' . "\n";
+        $pdf .= 'startxref' . "\n" . $xref_at . "\n" . '%%EOF' . "\n";
+        unset( $margin );
+        return $pdf;
+    }
+
+    /**
+     * What a PDF report export from wp-admin is allowed to hand over.
+     *
+     * The same three questions as the HTML export, decided in the same order and
+     * for the same reasons: a refused export carries no bytes and no filename,
+     * so a caller who was refused the HTML report cannot read anything from the
+     * headers of the PDF one either.
+     *
+     * @param bool $can_manage current_user_can( EUCOMPLY_ADMIN_CAP ).
+     * @param bool $nonce_ok   Whether the nonce verified.
+     * @param bool $pro        Whether the Pro licence is active.
+     * @return array{0:int,1:string,2:string} Status, body, filename.
+     */
+    private function pdf_export_response( $can_manage, $nonce_ok, $pro ) {
+        if ( ! $can_manage || ! $nonce_ok || ! $pro ) {
+            return array( 403, '', '' );
+        }
+        return array( 200, $this->report_pdf_document(), $this->report_pdf_filename() );
     }
 
     /**
@@ -2812,19 +3297,26 @@ class EUComply {
      * page cannot be turned into an action.
      */
     public function maybe_render_client_report() {
+        $wants_pdf  = isset( $_GET['eucomply_report_pdf'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability-free, read-only link, verified by hash below
         $wants_file = isset( $_GET['eucomply_report_file'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a capability-free, read-only link, verified by hash below
-        if ( ( ! isset( $_GET['eucomply_report'] ) && ! $wants_file ) || is_admin() ) {
+        if ( ( ! isset( $_GET['eucomply_report'] ) && ! $wants_file && ! $wants_pdf ) || is_admin() ) {
             return;
         }
         $raw = isset( $_GET['eucomply_report'] ) ? $_GET['eucomply_report'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $raw = is_string( $raw ) ? wp_unslash( $raw ) : '';
-        list( $status, $body, $filename ) = $this->client_report_response( $raw, $wants_file );
+        // The PDF is only ever a download. Asking for it as a page would serve
+        // the same bytes with an HTML content type, which a browser renders as
+        // a broken document and a person forwards to a client as a broken one.
+        list( $status, $body, $filename ) = $this->client_report_response( $raw, $wants_file || $wants_pdf, $wants_pdf );
 
         status_header( $status );
         nocache_headers();
         header( 'X-Robots-Tag: noindex, nofollow', true );
         header( 'Referrer-Policy: no-referrer', true );
-        header( 'Content-Type: text/html; charset=utf-8' );
+        // A rejected token is answered with HTML even when PDF was asked for, so
+        // the content type is decided after the guard and not by the request.
+        $is_pdf = ( 200 === $status && $wants_pdf );
+        header( 'Content-Type: ' . ( $is_pdf ? 'application/pdf' : 'text/html; charset=utf-8' ) );
         // Only ever on a real report. A rejected token must not be able to
         // differ from the page version in its headers, or the two answers
         // become distinguishable.
@@ -2888,6 +3380,8 @@ class EUComply {
                     <p style="margin:10px 0 0">
                         <a class="eucomply-btn" style="padding:8px 16px;font-size:13px"
                            href="<?php echo esc_url( add_query_arg( 'eucomply_report_file', '1', $fresh ) ); ?>">↓ Download report (HTML)</a>
+                        <a class="eucomply-btn ghost" style="padding:8px 16px;font-size:13px"
+                           href="<?php echo esc_url( add_query_arg( 'eucomply_report_pdf', '1', $fresh ) ); ?>">↓ Download report (PDF)</a>
                     </p>
                     <p style="margin:10px 0 0;font-size:12.5px;color:#33503f">
                         The download is the same report as the page, in a file you can attach to an

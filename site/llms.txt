@@ -21,9 +21,9 @@ The nine checks: HTTPS and HSTS; a known cookie-consent platform; trackers (Goog
 
 ## Pricing
 
-- [Pricing](https://eucomplypro.com/pricing/): the scanner, the guide and the checklists are free. The current Pro license costs 79 USD per website per year and unlocks editable HTML document starters, an HTML report from the latest WordPress scan, a daily scheduled scan instead of a weekly one, a scan history with one snapshot per day per check, an email alert when a check passes and later fails, and a read-only report link for a client — all inside the customer's own WordPress. Full document templates are sold separately from 29 USD.
+- [Pricing](https://eucomplypro.com/pricing/): the scanner, the guide and the checklists are free. The current Pro license costs 79 USD per website per year and unlocks editable HTML document starters, an HTML report from the latest WordPress scan and the same report as a PDF, a daily scheduled scan instead of a weekly one, a scan history with one snapshot per day per check, an email alert when a check passes and later fails, and a read-only report link for a client — all inside the customer's own WordPress. Full document templates are sold separately from 29 USD.
 
-Planned, not included in the Pro license today: hosted daily monitoring, a scan history in the hosted service that can be read without WordPress, runtime PDF reports, a live verification badge, a customer dashboard and multi-site management.
+Planned, not included in the Pro license today: hosted daily monitoring, a scan history in the hosted service that can be read without WordPress, a live verification badge, a customer dashboard and multi-site management.
 
 ## Sister products by mahoje.dk
 

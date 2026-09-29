@@ -655,7 +655,7 @@ Compliance is not a one-time project. Regulations change, your site changes, and
 
 *For a free point-in-time compliance scan of your website, visit https://eucomplypro.com/scan/*
 
-*For the current WordPress Pro document tools, visit https://eucomplypro.com/pro/*. Hosted daily monitoring and runtime PDF reports are not included today.*
+*For the current WordPress Pro document tools, visit https://eucomplypro.com/pro/*. Hosted daily monitoring is not included today.*
 
 ---
 

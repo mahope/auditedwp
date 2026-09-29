@@ -24,7 +24,7 @@ PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
 # køb). Den er den eneste anden checkout en købsside må have, og højst én gang,
 # så årsabonnementet stadig er den ene Pro-CTA siden måles på.
 PRO_LIFETIME_LINK = "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f"
-PLUGIN_VERSION = "1.3.39"
+PLUGIN_VERSION = "1.3.40"
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
     "site/da/pro/index.html",
@@ -254,20 +254,12 @@ CLAIMS: Tuple[Tuple[str, Pattern[str]], ...] = (
             re.I,
         ),
     ),
-    (
-        "runtime PDF reports",
-        re.compile(
-            r"\b(?:runtime|downloadable|auditor[- ]ready|auditor\s+ready|client[- ]ready|printable)\s+(?:PDF\s+)?reports?\b|"
-            r"\bgenerated\s+(?:PDF|compliance|audit|client|auditor)\s+reports?\b|"
-            r"\bPDF\s+(?:compliance\s+|audit\s+|client\s+|auditor\s+)?reports?\b|"
-            r"\bPDF\s+exports?\b|"
-            r"\breports?\b[^\n.!?;]{0,50}\bas\s+(?:an?\s+)?PDF\b|"
-            r"\b(?:runtime|generated|downloadable)\b[^\n.!?;]{0,50}\bPDF\b|"
-            r"\bPDF-(?:Bericht\w*|rapport\w*)\b|"
-            r"\b(?:rapport\w*|bericht\w*)\b[^\n.!?;]{0,50}\b(?:als|comme|som|au\s+format)\s+(?:un\s+)?PDF\b",
-            re.I,
-        ),
-    ),
+    # "runtime PDF reports" used to sit here and was deleted in 1.3.40, the day
+    # the plugin learned to build one. Leaving it would have made every honest
+    # sentence about the PDF an over-claim, including the eight truth pages --
+    # a gate that punishes the truth and stays silent on the lie is worse than
+    # no gate, and the lie it was silent about was 1.3.40 itself. The shipped
+    # half of the check moved to plugin_ships_pdf() in the denial direction.
     (
         "live verification claims",
         re.compile(
@@ -951,6 +943,38 @@ def plugin_ships_report_file(text: Optional[str] = None) -> bool:
     return "eucomply_report_file" in source and "client_report_filename()" in response
 
 
+def plugin_ships_pdf(text: Optional[str] = None) -> bool:
+    """The report as a PDF, which 1.3.40 added and every /pro/ page still denied.
+
+    Traced on the same three legs as the predicates above, because a file format
+    is the leg most easily satisfied by a stray string: the PDF has to be *built*
+    (report_pdf_document() hands its pages to pdf_assemble(), and that is the
+    method that writes the %PDF- header and the xref table — neither one is in
+    the document builder, so searching only the builder's own body would look for
+    a string the code never puts there), it has to be a Pro decision
+    (pdf_export_response tests `! $pro`, the parameter is named $pro so the guard
+    is what is checked), and it has to be reachable from a real call rather than
+    defined and forgotten (eucomply_doc=report_pdf is a URL the settings page
+    actually renders).
+
+    Without this predicate the six "runtime PDF reports" denials would keep
+    shipping: 1.3.40 built the PDF and left the copy alone, which is the exact
+    shape of the failure this file exists to catch -- the feature is real and the
+    sales page says it is not.
+    """
+    source = _plugin_text(text)
+    if source is None:
+        return False
+    if "pdf_assemble(" not in php_method_body(source, "report_pdf_document"):
+        return False
+    if "%PDF-" not in php_method_body(source, "pdf_assemble"):
+        return False
+    export = php_method_body(source, "pdf_export_response")
+    if "! $pro" not in export or "report_pdf_document()" not in export:
+        return False
+    return "eucomply_doc=report_pdf" in strip_php_comments(source)
+
+
 # A denial is allowed to be about the *hosted* version of a feature, and it has
 # to be: the history ships in the customer's own WordPress, so "hosted scan
 # history is not included" is required honesty, not an under-claim.
@@ -1152,6 +1176,29 @@ def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
         ),
         ShippedFeature(
             label="shipped Pro feature denied on a sales page",
+            key="PDF report",
+            shipped=plugin_ships_pdf,
+            # Deliberately not a bare "PDF". Every one of the eight truth pages
+            # offers the free 24-page guide "as a PDF", so a bare PDF name would
+            # be satisfied by the free product: the denial gate would go quiet
+            # and the under-claim gate below would read a guide line as a sold
+            # Pro report. PDF has to sit against the word for report, in the
+            # word order each of the four locales actually uses.
+            name=re.compile(
+                r"\b(?:pdf[\s\-](?:compliance[\s\-])?(?:report|reports|bericht|berichte|"
+                r"rapport|rapports|rapporter)\b|"
+                r"\brapport\w*\s+som\s+pdf\b|"
+                r"\brapport\w*\b[^\n.!?]{0,16}\bpdf\b|"
+                r"\b(?:bericht|berichte)\s+als\s+pdf\b|"
+                r"\brapports?\s+au\s+format\s+pdf\b|"
+                r"\b(?:report|reports|bericht|berichte|rapport|rapports)\b"
+                r"[^\n.!?]{0,20}?\bas\s+(?:an?\s+|the\s+|le\s+)?pdf\b)",
+                re.I,
+            ),
+            denial=re.compile(DENIAL, re.I),
+        ),
+        ShippedFeature(
+            label="shipped Pro feature denied on a sales page",
             key="alert",
             shipped=plugin_ships_alert,
             # Not a bare "e-mail": the site sends ordinary mail about plenty of
@@ -1215,6 +1262,7 @@ def _under_claim_features() -> Tuple[Tuple[str, Callable[[], bool], Pattern[str]
     return (
         ("a scan history", plugin_ships_history, by_key["history"].name),
         ("a client report link", plugin_ships_client_link, by_key["client link"].name),
+        ("a PDF report", plugin_ships_pdf, by_key["PDF report"].name),
         ("an e-mail alert", plugin_ships_alert, by_key["alert"].name),
         ("daily re-scans", plugin_schedules_daily_scan, DAILY_CADENCE_NAME),
     )
@@ -2190,11 +2238,6 @@ def self_test_cases() -> List[Tuple[str, str, str, Optional[str]]]:
         ("pass DA", "pass-to-fail alerts", "Få en e-mail, når et tjek går fra bestående til fejlende."),
         ("pass DE", "pass-to-fail alerts", "Eine E-Mail, wenn eine Prüfung von bestanden zu fehlgeschlagen wechselt."),
         ("pass FR", "pass-to-fail alerts", "Recevez un e-mail quand un contrôle passe de réussi à échec."),
-        ("pdf EN", "runtime PDF reports", "EUComply Pro lets you download your report as a PDF."),
-        ("pdf DA", "runtime PDF reports", "Pro giver dig rapporten som PDF."),
-        ("pdf DE", "runtime PDF reports", "Pro erstellt PDF-Berichte zur Laufzeit."),
-        ("pdf FR", "runtime PDF reports", "Pro permet de télécharger le rapport au format PDF."),
-        ("PDF export", "runtime PDF reports", "EUComply Pro includes PDF exports."),
         ("live EN", "live verification claims", "EUComply Pro provides a real-time verification badge."),
         ("live DA", "live verification claims", "Pro tilbyder et badge med verificerbart live-resultat."),
         ("live DE", "live verification claims", "Pro bietet ein verifizierbares Compliance-Badge."),
@@ -2224,8 +2267,6 @@ def self_test_cases() -> List[Tuple[str, str, str, Optional[str]]]:
         ("mixed clause", "customer dashboard or account", "Planned monitoring is not included today, but your customer dashboard is available in Pro."),
         ("roadmap aside", "customer dashboard or account", "Planned features aside, EUComply Pro includes a customer dashboard today."),
         ("roadmap then claim", "customer dashboard or account", "A customer dashboard is planned. EUComply Pro includes a customer dashboard today."),
-        ("future lead-in", "runtime PDF reports", "PDF reports are planned. EUComply Pro includes PDF reports today."),
-        ("future German", "runtime PDF reports", "Zukünftig sind PDF-Berichte geplant. Pro bietet PDF-Berichte heute an."),
     )
     for name, label, text in positives:
         cases.append((name, "site/pro/index.html", text, label))
@@ -2441,8 +2482,8 @@ def local_cadence_self_tests() -> List[str]:
         failures.append("self-test local cadence: a plugin sentence without the local marker was not reached, so the hole is untested")
     # The hole is one label wide. A PDF claim that happens to sit in the same
     # sentence in the same file is a different promise and must stay red.
-    if not any("runtime PDF reports" in finding for finding in
-               text_findings("plugin/readme.txt", "EUComply Pro saves a daily PDF report on your own WordPress server.")):
+    if not any("priority support" in finding for finding in
+               text_findings("plugin/readme.txt", "EUComply Pro saves a daily report on your own WordPress server and includes priority support.")):
         failures.append("self-test local cadence: the hole leaked into a claim it has nothing to do with")
     without_daily = real.replace("? 'daily' : 'weekly'", "? 'hourly' : 'weekly'")
     if plugin_schedules_daily_scan(without_daily) or local_cadence_claim("plugin/readme.txt", LOCAL_DAILY, without_daily):
@@ -2538,30 +2579,35 @@ UNDER_CLAIM_SAMPLE = {
         "<li><b>Scan history: one snapshot per day, per check</b><p>52 days of history.</p></li>"
         "<li><b>Email alert when a check breaks</b><p>The plugin emails the owner.</p></li>"
         "<li><b>A read-only report link for your client</b><p>The client opens it without a login.</p></li>"
+        "<li><b>HTML and PDF report from the latest scan</b><p>Download it as either format.</p></li>"
     ),
     "site/da/pro/index.html": (
         "<li><b>Daglige automatiske scanninger</b><p>Scannes én gang om dagen.</p></li>"
         "<li><b>Scanningshistorik: ét snapshot om dagen</b><p>52 dages historik.</p></li>"
         "<li><b>Mailalarm, når et tjek bryder</b><p>Pluginen sender en mail.</p></li>"
         "<li><b>Et skrivebeskyttet rapportlink til din kunde</b><p>Kunden åbner det uden login.</p></li>"
+        "<li><b>HTML- og PDF-rapport fra den seneste scanning</b><p>Hent den i begge formater.</p></li>"
     ),
     "site/de/pro/index.html": (
         "<li><b>Tägliche automatische Scans</b><p>Wird einmal täglich gescannt.</p></li>"
         "<li><b>Scan-Verlauf: täglich ein Eintrag</b><p>52 Einträge Verlauf.</p></li>"
         "<li><b>E-Mail-Alarm, wenn eine Prüfung ausfällt</b><p>Das Plugin verschickt eine E-Mail.</p></li>"
         "<li><b>Ein schreibgeschützter Berichtslink für Ihren Kunden</b><p>Ohne Anmeldung.</p></li>"
+        "<li><b>HTML- und PDF-Bericht aus dem letzten Scan</b><p>In beiden Formaten herunterladbar.</p></li>"
     ),
     "site/fr/pro/index.html": (
         "<li><b>Scans automatiques quotidiens</b><p>Scanné une fois par jour.</p></li>"
         "<li><b>Historique de scan : une entrée par jour</b><p>52 relevés.</p></li>"
         "<li><b>Alerte e-mail quand un contrôle échoue</b><p>L\'extension envoie un e-mail.</p></li>"
         "<li><b>Un lien de rapport en lecture seule pour votre client</b><p>Sans connexion.</p></li>"
+        "<li><b>Rapport HTML et PDF du dernier scan</b><p>Téléchargeable dans les deux formats.</p></li>"
     ),
     "site/pricing/index.html": (
         "<tr><td>Daily scheduled WordPress scan</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
         "<tr><td>Scan history: one snapshot per day, per check</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
         "<tr><td>Email alert when a check passes and later fails</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
         "<tr><td>Read-only report link for a client</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
+        "<tr><td>HTML and PDF report from the latest WordPress scan</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
     ),
 }
 
@@ -2575,7 +2621,7 @@ def under_claim_self_tests() -> List[str]:
     """
     failures: List[str] = []
     for relative, markup in UNDER_CLAIM_SAMPLE.items():
-        for feature in ("a scan history", "a client report link", "an e-mail alert", "daily re-scans"):
+        for feature in ("a scan history", "a client report link", "an e-mail alert", "daily re-scans", "a PDF report"):
             if under_claim_findings(relative, parse_html(markup).claim_blocks(relative)):
                 failures.append(f"self-test under-claim {relative}: a complete Pro page was flagged")
     # The page as it read on 26/9: three features, the rest under "planned".
@@ -2738,6 +2784,24 @@ def denial_self_tests() -> List[str]:
         failures.append("self-test denial alert guard: a free-tier alert passed as a Pro-gated one")
     if plugin_ships_alert(real.replace("wp_mail(", "/* no mail */ not_mail(")):
         failures.append("self-test denial alert send: an alert that never mails read as shipped")
+    # The PDF cases, once per language, and the three mutations that would each
+    # leave forty-odd pages free to deny a format the plugin no longer builds.
+    if not plugin_ships_pdf(real):
+        failures.append("self-test denial pdf trace: the untouched plugin no longer reads as shipping a PDF report")
+    for name, text in (
+        ("pdf EN", "Runtime PDF reports are not included in the current Pro license."),
+        ("pdf DA", "PDF-rapporter er ikke inkluderet i den nuværende Pro-licens."),
+        ("pdf DE", "PDF-Berichte sind nicht in der aktuellen Pro-Lizenz enthalten."),
+        ("pdf FR", "Les rapports PDF ne sont pas inclus dans la licence Pro actuelle."),
+    ):
+        if not denied(text):
+            failures.append(f"self-test denial {name}: a page denying the Pro PDF report was allowed")
+    if plugin_ships_pdf(real.replace('"%PDF-1.4', '"%NOT-A-PDF')):
+        failures.append("self-test denial pdf header: a document builder that writes no PDF header read as shipping one")
+    if plugin_ships_pdf(real.replace("|| ! $pro )", "")):
+        failures.append("self-test denial pdf guard: the export's $pro parameter passed as a Pro gate that was deleted")
+    if plugin_ships_pdf(real.replace("eucomply_doc=report_pdf", "eucomply_doc=report")):
+        failures.append("self-test denial pdf reachable: a PDF nothing links to read as shipped")
     return failures
 
 
