@@ -1,3 +1,91 @@
+Opdateret: 2026-09-29 (iteration 120) — **de to åbne deploy-noter er lukket,
+og `/support/` er nu findelig for præcis den læser, den er skrevet til. Den
+fandtes, lå i sitemapet og var dømt grøn af porten — men ingen af de to
+maskinlæsbare indekser nævnte den.**
+
+**Deploy-verificering af 118 og 119: begge `DEPLOY OK 2026-09-29`.** Ét kald
+til CI, ingen løkke: alle tre jobs (`deploy-site`, `build-devnotify`, `pages
+build and deployment`) er `success` for både `84a76de` (118) og `2421d7a`
+(119). Dømt på **indhold** for begge:
+
+| Note | Betingelse | Målt |
+|---|---|---|
+| 118 | `llms-full.txt` har de to positive sætninger og ingen benægtelsesliste med dem | ✓ linje 50 og 54 har `an email alert when a check passes and later fails` + `a read-only report link for a client`; `pass-to-fail`/`per-check history` findes kun i den **positive** sætning, ikke i en benægtelse |
+| 118 | `llms.txt` har `Planned, not included…` som eget afsnit | ✓ linje 26, egen linje |
+| 119 | `/blog/pingdom-alternative-2026/` har begge datoer | ✓ `"datePublished": "2026-08-30"`, `"dateModified": "2026-09-27"` |
+| 119 | `/vs/termly/` har begge datoer | ✓ `"datePublished": "2026-08-25"`, `"dateModified": "2026-09-28"` |
+| 119 | sitemapet uændret | ✓ **214** `<url>` |
+| 119 | CI grøn på alle tre jobs | ✓ |
+
+**Fundet, målt før rettelsen.** `rg -c "eucomplypro.com/support/" site/llms.txt
+site/llms-full.txt` gav **0 fund i begge filer**. Det er den modsatte fejl af
+den porten `check_support_page.py` dømmer: den spørger "findes siden hele
+produktet lover?", og svaret var *ja* — siden fandtes, havde `<h1`,
+donationslinket og issue-trackeren, lå i `sitemap.xml` som post 918 og blev
+linket fra footeren på alle 231 sider. Alt var grønt. Og alligevel kunne en
+agent, der læser `llms.txt` — den fil, der findes fordi den er skrevet til
+agenten — ikke finde den. Porten var grøn, fordi den dømmer *findes*, ikke
+*findbar*.
+
+**Rettelsen er to linjer tekst og én regel.** `llms.txt` får support-siden
+som første post under `## Optional`; `llms-full.txt` får den i `## Contact and
+policies` med den præcise sætning, at donationen ikke er en betingelse for
+noget. Ingen af de to nævner nogen ny Pro-fordel, så `check_pro_claims.py`
+er urørt (målt: 184 self-tests, 0 uventede claims).
+
+**Porten fanger det samme nu.** `INDEKSER` + `indeks_fund()` i
+`check_support_page.py`: hver af de to indekser skal pege på den absolutte
+support-adresse. Kravet er den **absolutte** form, fordi begge filer ellers
+bruger absolutte adresser i hver eneste link. Selftest: 2 nye negative cases
+(indeks uden support-side fundet, de rigtige indekser **ikke** fundet som
+fejl) + den negative case på de rigtige filer, hvor `llms.txt`s adresse fik
+`https://` strippet → porten rød med exit 1, filen gendannet → grøn igen.
+
+**Målt / accept.** Før: 0 nævner support-siden i 2 filer. Efter: 2/2, og
+porten kan ikke slippe en tredje uden den. `GATE GRØN — alle 41 steps
+bestået` (heraf step 41 `skal de lovede sider findes, også uden indgående
+link` med de nye negative cases). Ingen PHP rørt, så `php -l` var ikke
+påkrævet.
+
+**Baseline (Plausible 29/9, uændret):** 1 besøgende, bounce 100 %, kun
+Direct, 28 dage. Denne iteration flytter ingen tal — den gør at
+donationssiden og issue-trackeren er fundbare for en agent, hvilket er det
+eneste sted de to filer har som læser.
+
+**Rørt:** `site/llms.txt`, `site/llms-full.txt`, `tools/check_support_page.py`,
+denne plan. **Ingen `site/**`-html, ingen plugin-version, ingen
+`update.json`, ingen ny zip, ingen Stripe-pris, ingen worker, ingen upload.**
+
+> `VERIFICÉR DEPLOY: de to maskinlæsbare indekser peger på /support/, og
+> > porten dømmer det (iteration 120) ceo/support-i-llms 2026-09-29` — rører
+> > `site/llms.txt` + `site/llms-full.txt` + `tools/check_support_page.py`.
+> > Efter næste deploy-vindue skal **indhold** verificeres: (1)
+> > `https://eucomplypro.com/llms.txt` skal have
+> > `https://eucomplypro.com/support/` som første post under `## Optional`;
+> > (2) `/llms-full.txt` skal have support-linjen under `## Contact and
+> > policies` med den absolutte adresse og frasen `not a condition for
+> > anything`; (3) ingen `site/**`-html, zip, `update.json`, plugin eller
+> > `_redirects` er rørt, så de skal hverken genhentes eller genverificeres;
+> > (4) CI skal være `success` på alle tre jobs. (1)–(2) er indhold.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Deploy-noten fra 120** (åben, nyere end det seneste vindue): verificér
+   først når et batch-vindue er gået. Betingelserne står i noten.
+2. **Plausible-injektionen i `<!--shell:…-->`-blokken** (punkt 3 fra 118,
+   urørt). Uafhængig vurdering, rører alle 231 sider. Lav først et mål.
+3. **Køens næste reelle opgave efter SEO/port-arbejdet.** Trafikken på
+   eucomplypro.com er 1 besøgende på 28 dage, så næste iteration bør
+   overveje at gå væk fra sitet: se `docs/`-listen og spørgsmål 9/7.
+4. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genrestartes.
+
+---
+
 Opdateret: 2026-09-29 (iteration 119) — **køens første opgave var at mål om
 `dateModified` var korrekt fordelt. Den var det ikke: 113 sider har en håndskrevet
 Article-JSON-LD uden datoer, så sitemapets `lastmod` og JSON-LD fortalte to
@@ -64,25 +152,21 @@ worker.**
 > > `/sitemap.xml` er uændret med 214 `<url>`; (4) CI for committen er
 > > `success` på alle tre jobs. (1)–(3) er indhold, (4) kræver loggen.
 
+> `LUKKET 2026-09-29 (iteration 120): DEPLOY OK.` Alle fire betingelser er
+> opfyldt, målt på indhold — se måletabellen øverst i iteration 120.
+
 ### Næste iteration (prioriteret, målt 2026-09-29)
 
-1. **Deploy-noten fra 118** (åben, nyere end det seneste vindue — verificér
-   først når et batch-vindue er gået): `llms-full.txt` skal indeholde
-   `an email alert when a check passes and later fails` + `a read-only report
-   link for a client` i den positive sætning og ikke `pass-to-fail email
-   alerts`/`per-check history` i benægtelseslister; `llms.txt` skal have
-   `Planned, not included in the Pro license today:` som eget afsnit.
-2. **`/support/` er stadig ikke nævnt i `llms.txt`/`llms-full.txt`** — de to
-   filer iteration 118 netop rettede. En agent der skal finde donationssiden
-   kan ikke. Lille, samme filer, samme port.
-3. **Plausible-injektionen i `<!--shell:…-->`-blokken** (punkt 4 fra 118).
-   Uafhængig vurdering, rører alle 233 sider. Lav først et mål.
-4. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
-   Mads. Skal ikke genbesøges uden svar.
+1. **Lukket i 120:** punkt 1 (deploy-noten fra 118) er verificeret og lukket,
+   punkt 2 (`/support/` i llms-filerne) er rettet og gjort permanent.
 
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
 `I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
 blokeret af spørgsmål 9 og skal ikke genrestartes.
+
+> `LUKKET 2026-09-29 (iteration 120): DEPLOY OK.` Alle fire betingelser er
+> opfyldt, målt på indhold og uden løkke — se måletabellen øverst i
+> iteration 120.
 
 ---
 
@@ -188,18 +272,15 @@ to nye grene i `main()`), `IMPLEMENTATION_PLAN.md`. **Ingen plugin-version, inge
 > de skal hverken genhentes eller genverificeres; (4) CI skal være `success` på
 > alle tre jobs. (1)–(3) er indhold.
 
+> `LUKKET 2026-09-29 (iteration 120): DEPLOY OK.` Betingelse (1)–(2) er
+> verificeret på indhold, (3) er uændret af denne diff, (4) er grøn. Se
+> måletabellen øverst i iteration 120.
+
 ### Næste iteration (prioriteret, målt 2026-09-29)
 
-1. **De 24 sider med `dateModified` er kun halvdelen** (punkt 2 fra 117, urørt):
-   213 sider har `lastmod`, kun 24 har `dateModified` i JSON-LD. Mål om det er
-   korrekt (artikler har begge, landingssider kun ét), før det rettes.
-3. **`/support/` er stadig ikke nævnt i `llms.txt`/`llms-full.txt`** — de to
-   filer denne iteration netop rettede. En agent der skal finde donationssiden
-   kan ikke. Lille, samme filer, samme port.
-4. **Punkt 3 fra 116/117: Plausible-injektionen i `<!--shell:…-->`-blokken.**
-   Uafhængig vurdering, rører alle 233 sider. Lav først et mål.
-5. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
-   Mads. Skal ikke genbesøges uden svar.
+*Lukket af iteration 119 og 120: punkt 1 (de 24 `dateModified`) blev målt og
+rettet i 119, punkt 3 (`/support/` i llms-filerne) blev rettet i 120. Punkt 4
+og 5 er hhv. Plausible-injektionen og spørgsmål 21 — de ligger i dagens kø.*
 
 ❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
 `I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge

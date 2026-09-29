@@ -34,6 +34,7 @@ Planned, not included in the Pro license today: hosted daily monitoring, a scan 
 
 ## Optional
 
+- [Support](https://eucomplypro.com/support/): how to report a problem, ask a question or support the project. It links the open issue tracker and the donation link.
 - [Full description for language models](https://eucomplypro.com/llms-full.txt)
 - [Sitemap](https://eucomplypro.com/sitemap.xml)
 - [Privacy](https://eucomplypro.com/privacy/) and [Terms](https://eucomplypro.com/terms/)

@@ -13,6 +13,10 @@ Denne port er derfor ikke et link-tjek. Den dømmer den modsatte retning:
 peger på den. Det er den fejl, et link-tjek aldrig kan finde, fordi den
 forudsætter en reference der ikke findes.
 
+Den dømmer den tredje retning med: **en side der findes skal kunne findes
+fra de maskinlæsbare indekser** (`INDEKSER`). Ellers er den kun til for
+mennesker, der kender den.
+
 Krav: Python 3.10+. Se `tools/pyreq.py`.
 """
 from __future__ import annotations
@@ -29,6 +33,17 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 
 DONATION = "https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c"
+SUPPORT = "https://eucomplypro.com/support/"
+
+# Den modsatte fejl: **en side der findes, men som ingen opdagelsesflade peger
+# på.** `llms.txt` og `llms-full.txt` er de to filer på sitet der er skrevet
+# til at blive læst af en agent, så en side der ikke står der findes ikke for
+# den. Målt 29/9: `support/index.html` fandtes, lå i sitemapet og blev
+# kontrolleret af R-toven her, men ingen af de to filer nævnte det — så
+# donationssiden og issue-trackeren var ubrugelige for præcis den læser, de
+# er skrevet til. Fodnote: kravet er den **absolutte** adresse, fordi begge
+# filer ellers bruger absolutte adresser i hver eneste link.
+INDEKSER: tuple[str, ...] = ("site/llms.txt", "site/llms-full.txt")
 
 # Sider hele produktet lover, med den tekst de skal kunne findes på. Hver
 # post er (sti, krav), fordi en tom side er heller ikke en side: titel,
@@ -45,6 +60,22 @@ KRAV: list[tuple[str, tuple[str, ...]]] = [
 
 def side(rel: str) -> pathlib.Path:
     return SITE / rel.strip("/") / "index.html"
+
+
+def indeks_fund(filer: dict[str, str] | None = None) -> list[str]:
+    """Manglende support-side i de maskinlæsbare indekser.
+
+    `filer` er injiceret i selftesten, så porten kan dømme et fejltræ uden at
+    røre de rigtige filer — samme greb som `side()` i `find()`.
+    """
+    if filer is None:
+        filer = {}
+        for rel in INDEKSER:
+            p = ROOT / rel
+            filer[rel] = (p.read_text(encoding="utf-8", errors="replace")
+                          if p.exists() else "")
+    return [f"{rel} nævner ikke support-siden {SUPPORT}"
+            for rel, tekst in sorted(filer.items()) if SUPPORT not in tekst]
 
 
 def find(kaver: list[tuple[str, tuple[str, ...]]] = KRAV) -> list[str]:
@@ -69,6 +100,7 @@ def find(kaver: list[tuple[str, tuple[str, ...]]] = KRAV) -> list[str]:
     funding = ROOT / ".github" / "FUNDING.yml"
     if not funding.exists() or DONATION not in funding.read_text(encoding="utf-8"):
         fund.append(f".github/FUNDING.yml mangler donationslinket {DONATION}")
+    fund.extend(indeks_fund())
     return fund
 
 
@@ -98,15 +130,24 @@ def _selftest() -> int:
             fejl += 1
     finally:
         globals()["side"] = rigtig_side
-    # 3. Det virkelige træ skal være grønt.
+    # 3. Et indeks uden support-siden skal findes. Det er den retning der
+    #    fejlede: siden fandtes, og porten var grøn.
+    if not indeks_fund({"site/llms.txt": "# EUComply\n- [Pricing](/pricing/)\n"}):
+        print("SELFTEST RØD — et indeks uden support-siden blev ikke fundet")
+        fejl += 1
+    if indeks_fund({rel: f"see {SUPPORT}\n" for rel in INDEKSER}):
+        print("SELFTEST RØD — de rigtige indekser blev fundet som fejl")
+        fejl += 1
+    # 4. Det virkelige træ skal være grønt.
     rigtige = find()
     if rigtige:
         print("SELFTEST RØD — det virkelige træ har fund:", *rigtige, sep="\n  ")
         fejl += 1
     if fejl:
         return 1
-    print("SELFTEST OK — porten finder både en manglende side og en side "
-          "uden sit krav, og det virkelige træ er grønt.")
+    print("SELFTEST OK — porten finder både en manglende side, en side "
+          "uden sit krav og et indeks uden support-siden, og det virkelige "
+          "træ er grønt.")
     return 0
 
 
@@ -120,7 +161,8 @@ def main() -> int:
             print(f"  {f}")
         return 1
     print(f"SUPPORT-PORT GRØN — {len(KRAV)} lovede sider findes med deres krav, "
-          "og donationen ligger i footeren og i FUNDING.yml.")
+          f"donationen ligger i footeren og i FUNDING.yml, og {len(INDEKSER)} "
+          "maskinlæsbare indekser peger på support-siden.")
     return 0
 
 

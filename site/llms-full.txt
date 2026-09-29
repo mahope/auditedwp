@@ -64,6 +64,7 @@ Planned, not included in the Pro license today: hosted daily monitoring, a scan 
 ## Contact and policies
 
 - Maker: Mads Holst Jensen, https://mahoje.dk, mads@mahoje.dk
+- Support (https://eucomplypro.com/support/): how to report a problem or ask a question, the open issue tracker for the scanner, and an optional donation link. The scanner is free and has no paid tier, so the donation is not a condition for anything.
 - Security reports: https://eucomplypro.com/.well-known/security.txt
 - Privacy: https://eucomplypro.com/privacy/ — Terms: https://eucomplypro.com/terms/
 - Sitemap: https://eucomplypro.com/sitemap.xml
