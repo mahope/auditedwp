@@ -39,6 +39,8 @@ import urllib.request
 
 BASE = "https://eucomplypro.com"
 MANIFEST_PATH = "/update.json"
+FINGERPRINT_PATH = "/sitemap.xml"
+DEFAULT_FINGERPRINT = "site/sitemap.xml"
 DEFAULT_ATTEMPTS = 12
 DEFAULT_WAIT = 10.0
 DEFAULT_TIMEOUT = 15.0
@@ -115,6 +117,52 @@ def read_manifest(url: str, timeout: float = DEFAULT_TIMEOUT, opener=None) -> st
     return value
 
 
+def read_fingerprint(url: str, timeout: float = DEFAULT_TIMEOUT, opener=None) -> str:
+    """Læs hele sitemapet som det afgørende fingeraftryk på *denne* udgivelse.
+
+    Målt 29/9, efter at CI `36535432755` blev rød på en korrekt udgivelse:
+    `update.json` pegede **allerede** på 1.3.40 da kørslen startede, fordi den
+    forrige commit havde udgivet den. `wait_for_manifest()` svarede derfor
+    grønt på **første** forsøg og ventede nul sekunder — og så ramte næste
+    kontrol en kant der endnu ikke havde rullet den nye udgivelse ud, og
+    `/assets/eucomply-1.3.40.zip` svarede 404. Det er præcis den race
+    opgave 47 skrev dette værktøj for at slå ihjel, og den var stadig dér:
+    værktøjet kan **kun** se en versionsbump og aldrig en almindelig
+    indholdsudgivelse.
+
+    Fingeraftrykket løser det, fordi `site/sitemap.xml` regenereres ved enhver
+    redaktionel ændring, og dets `lastmod` kommer fra *commit*-historikken
+    (`git_dates()`). Den committede fil er derfor et unikt mærke på netop
+    den commit der deployes. Målt på de to seneste commits: de afviger i
+    **16 `<lastmod>`-linjer** — altså nok til at skelne, selv om ingen af dem
+    rørte plugin-versionen.
+
+    Samme User-Agent som `read_manifest`, af den målte grund: Cloudflare
+    svarer 403 på pythons standardagent.
+    """
+    open_fn = opener or (lambda u: _request(u, timeout))
+    with open_fn(url) as response:
+        raw = response.read()
+    if isinstance(raw, bytes):
+        raw = raw.decode("utf-8", "replace")
+    # Det her skal være et sitemap, ikke en fejlside i HTML. Uden den prøve
+    # ville en kants 200 med en Cloudflare-fejlside give et fingeraftryk der
+    # bare aldrig matcher — grønt for alt andet end det rigtige, men rødt af
+    # en grund der ingenting siger om udgivelsen.
+    if "<urlset" not in raw:
+        raise ValueError("svaret er ikke et sitemap")
+    return raw
+
+
+def local_fingerprint(path: str = DEFAULT_FINGERPRINT) -> str:
+    """Det committede fingeraftryk for den commit der er på vej op."""
+    with open(path, "r", encoding="utf-8") as handle:
+        text = handle.read()
+    if "<urlset" not in text:
+        raise ValueError(f"{path} er ikke et sitemap")
+    return text
+
+
 def wait_for_manifest(
     url: str,
     expected: str,
@@ -157,6 +205,61 @@ def wait_for_manifest(
         if attempt < attempts:
             sleep(wait)
     return False, seen, attempts
+
+
+# --------------------------------------------------------------------------
+# Den samlede udgivelsesport: manifestet OG fingeraftrykket
+# --------------------------------------------------------------------------
+
+def wait_for_deploy(
+    manifest_url: str,
+    expected_url: str,
+    fingerprint_url: str,
+    expected_fingerprint: str,
+    attempts: int = DEFAULT_ATTEMPTS,
+    wait: float = DEFAULT_WAIT,
+    fetch_manifest=read_manifest,
+    fetch_fingerprint=read_fingerprint,
+    sleep=time.sleep,
+) -> tuple[bool, str, str, int]:
+    """Polle begge kilder i **én** løkke, og kræv dem begge.
+
+    Rækkefølgen er bevidst `og`, ikke `eller`: et grønt manifest uden et grønt
+    fingeraftryk er præcis den tilstand CI `36535432755` redde på, fordi
+    manifestet var gammelt. Og de to løkker er slået sammen, så loftet stadig
+    er ét tal for hele ventetiden — ellers ville en port der blot venter kunne
+    få dobbelt så lang tid til at blive grøn ved et uheld.
+
+    Returnerer `(ok, set_manifest, set_fingeraftryk, brugte_forsøg)`. `ok` er
+    False når loftet er brugt op, altså også når serveren aldrig svarer det
+    forventede — porten kan stadig fejle, som den skal.
+    """
+    if attempts < 1:
+        raise ValueError("attempts skal være mindst 1")
+    if not expected_url:
+        # Samme grund som i `wait_for_manifest`: en tom forventelse er grøn
+        # for ALT. Her er den værre, fordi den ville få *fingeraftrykket* til at
+        # være det eneste krav — så porten ville blive grøn for enhver udgivelse
+        # uden at sammenligne noget som helhed.
+        raise ValueError("expected må ikke være tom")
+    if not expected_fingerprint:
+        raise ValueError("fingerprint må ikke være tom")
+    seen_url = ""
+    seen_print = ""
+    for attempt in range(1, attempts + 1):
+        try:
+            seen_url = fetch_manifest(manifest_url)
+        except (urllib.error.URLError, OSError, ValueError, KeyError, TypeError) as exc:
+            seen_url = f"<{type(exc).__name__}: {exc}>"
+        try:
+            seen_print = fetch_fingerprint(fingerprint_url)
+        except (urllib.error.URLError, OSError, ValueError, KeyError, TypeError) as exc:
+            seen_print = f"<{type(exc).__name__}: {exc}>"
+        if seen_url == expected_url and seen_print == expected_fingerprint:
+            return True, seen_url, seen_print, attempt
+        if attempt < attempts:
+            sleep(wait)
+    return False, seen_url, seen_print, attempts
 
 
 # --------------------------------------------------------------------------
@@ -223,6 +326,17 @@ def workflow_findings(workflow_text: str, expected_asset: str = "") -> list[str]
     if not re.search(r"--expected-asset|--asset", job):
         findings.append("jobbet fortæller ikke hvilken asset der forventes")
 
+    # 29/9: porten var grøn fordi `--asset` alene var nok. Uden `--fingerprint`
+    # kan den ikke se en udgivelse der ikke bumper plugin-versionen — altså
+    # næsten alle, og netop dem der fik `36535432755` rød. Uden denne linje
+    # kunne fingeraftrykskravet fjernes fra workflowen og værktøjet fortsætte
+    # med at være grønt, præcis som `REQUIRED_CHECKS` sigter mod.
+    if not re.search(r"--fingerprint", job):
+        findings.append(
+            "jobbet kræver ikke --fingerprint, så porten kan ikke se "
+            "en udgivelse der ikke bumper plugin-versionen"
+        )
+
     for label, marker in REQUIRED_CHECKS:
         if marker not in job:
             findings.append(f"kontrolpunktet er væk fra jobbet: {label} ({marker!r})")
@@ -264,6 +378,30 @@ class _Slept:
 
     def __call__(self, seconds):
         self.calls.append(seconds)
+
+
+def _response_with(body: bytes):
+    """Et svar der ligner det en server faktisk sender."""
+
+    class _Response:
+        def read(self):
+            return body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    return _Response()
+
+
+def _xml_response(body: bytes):
+    return _response_with(body)
+
+
+def _html_response(body: bytes):
+    return _response_with(body)
 
 
 def _selftest() -> int:
@@ -394,10 +532,12 @@ jobs:
     name: tjek produktion
     timeout-minutes: 10
     steps:
-      - name: Vent på udgivelsen
-        run: |
-          python3 tools/wait_for_deploy.py --base https://eucomplypro.com \\
-              --asset /assets/eucomply-1.3.13.zip --attempts 12 --wait 10
+    - name: Vent på udgivelsen
+      run: |
+        python3 tools/wait_for_deploy.py --base https://eucomplypro.com \\
+            --asset /assets/eucomply-1.3.13.zip --fingerprint site/sitemap.xml \\
+            --attempts 12 --wait 10
+
           if [ "$code" != "200" ]; then
             echo "FEJL: $url gav status $code"
           fi
@@ -447,20 +587,30 @@ jobs:
     findings = workflow_findings(good_workflow.replace("tools/wait_for_deploy.py", "tools/andre.py"))
     case("værktøjet ikke kaldt → fund", any("kalder ikke tools/wait_for_deploy.py" in f for f in findings), repr(findings))
 
-    # 13. Loft kortere end jobbets timeout er korrekt; et loft der overstiger
+    # 13. `good_workflow` uden --fingerprint: værktøjet er der, og ser det
+    #     ud til at virke, men porten kan ikke se en udgivelse uden
+    #     versionsbump. Uden denne case kunne kravet slettes fra
+    #     `workflow_findings` og workflowen samtidig, og selftesten ville
+    #     stadig være grøn — to filer der hver især er grønne fordi de
+    #     kontrollerer hinanden uden at nogen af dem gør det.
+    findings = workflow_findings(good_workflow.replace(" --fingerprint site/sitemap.xml", ""))
+    case("en workflow uden --fingerprint → fund",
+         any("--fingerprint" in f for f in findings), repr(findings))
+
+    # 14. Loft kortere end jobbets timeout er korrekt; et loft der overstiger
     #     jobbets timeout dræber jobbet — altså fund.
     findings = workflow_findings(good_workflow.replace("--attempts 12 --wait 10", "--attempts 60 --wait 10"))
     case("et loft der overstiger jobbets timeout → fund", any("overstiger ikke den værste ventetid" in f for f in findings), repr(findings))
 
-    # 14. Et af de otte øvrige kontrolpunkter forsvundet → fund.
+    # 15. Et af de otte øvrige kontrolpunkter forsvundet → fund.
     findings = workflow_findings(good_workflow.replace('= "PK"', '= "XX"'))
     case("et øvrigt kontrolpunkt forsvundet → fund", any("kontrolpunktet er væk" in f for f in findings), repr(findings))
 
-    # 15. Uden timeout-minutes må vi ikke gætte jobbets afgrænsning.
+    # 16. Uden timeout-minutes må vi ikke gætte jobbets afgrænsning.
     findings = workflow_findings(good_workflow.replace("    timeout-minutes: 10\n", ""))
     case("uden timeout-minutes → fund", any("timeout-minutes" in f for f in findings), repr(findings))
 
-    # 16. En anden jobs tekst må ikke tælle som dækning. check-production
+    # 17. En anden jobs tekst må ikke tælle som dækning. check-production
     #     læser kun sit eget job, så en opgave i et andet job giver fund.
     other = """
 jobs:
@@ -480,6 +630,99 @@ jobs:
         repr(findings),
     )
 
+    # 18. FINGERPRINT. De otte cases ovenfor kan alle være grønne mens
+    #     værktøjet i virkeligheden ikke ser en udgivelse. Det er præcis hvad
+    #     der skete i CI 36535432755: manifestet var rigtigt fra første
+    #     læsning, så porten svarede grønt uden at vente, og næste kontrol
+    #     ramte en kant der ikke havde rullet ud. Case 16a er den målte fejl.
+    print_sitemap = '<?xml version="1.0"?><urlset><url><loc>/pro/</loc><lastmod>2026-09-29</lastmod></url></urlset>'
+    new_sitemap = '<?xml version="1.0"?><urlset><url><loc>/pro/</loc><lastmod>2026-09-30</lastmod></url></urlset>'
+
+    # 18a. Manifestet er rigtigt hele vejen, fingeraftrykket kommer først til
+    #      sidst. Det er den rigtige grøn, og den må IKKE komme på forsøg 1.
+    fetch_m, _ = _sequence([expected] * 3)
+    fetch_f, _ = _sequence([print_sitemap, print_sitemap, new_sitemap])
+    slept = _Slept()
+    ok, seen_url, seen_print, used = wait_for_deploy(
+        url, expected, url.replace("update.json", "sitemap.xml"), new_sitemap,
+        attempts=12, wait=10, fetch_manifest=fetch_m, fetch_fingerprint=fetch_f, sleep=slept,
+    )
+    case("manifestet rigtigt fra start, fingeraftrykket først til sidst → grønt på forsøg 3",
+         ok and used == 3, f"ok={ok} used={used}")
+    case("et gammelt fingeraftryk er ikke grønt, selv med rigtigt manifest",
+         used == 3 and seen_print == new_sitemap, seen_print[:60])
+
+    # 18b. DEN MÅLTE FEJL. Manifestet er rigtigt på **første** forsøg —
+    #      nøjagtig som det var live i 36535432755 — og fingeraftrykket er
+    #      aldrig det nye. Et værktøj uden fingerprint-kravet svarer grønt her.
+    fetch_m, state_m = _sequence([expected] * 12)
+    fetch_f, _ = _sequence([print_sitemap] * 12)
+    ok, _, _, used = wait_for_deploy(
+        url, expected, url.replace("update.json", "sitemap.xml"), new_sitemap,
+        attempts=12, wait=10, fetch_manifest=fetch_m, fetch_fingerprint=fetch_f, sleep=_Slept(),
+    )
+    case("manifestet alene er IKKE grønt, når fingeraftrykket aldrig kommer",
+         not ok, "porten ville have svaret grønt uden fingerprint-kravet")
+    case("den afventende port bruger hele loftet", used == 12, f"used={used}")
+
+    # 18c. Omvendt: nyt fingeraftryk uden nyt manifest må heller ikke være
+    #      grønt, ellers er det kun den ene halvdel af kravet der tæller.
+    fetch_m, _ = _sequence([old] * 12)
+    fetch_f, _ = _sequence([new_sitemap] * 12)
+    ok, _, _, _ = wait_for_deploy(
+        url, expected, url.replace("update.json", "sitemap.xml"), new_sitemap,
+        attempts=12, wait=10, fetch_manifest=fetch_m, fetch_fingerprint=fetch_f, sleep=_Slept(),
+    )
+    case("nyt fingeraftryk uden nyt manifest → rødt", not ok)
+
+    # 18d. Begge rigtige fra første læsning: grønt uden ventetid, fordi så
+    #      sket der intet at vente på. Loftet må ikke gøre en korrekt
+    #      udgivelse langsommere end nødvendigt.
+    fetch_m, _ = _sequence([expected])
+    fetch_f, _ = _sequence([new_sitemap])
+    slept = _Slept()
+    ok, _, _, used = wait_for_deploy(
+        url, expected, url.replace("update.json", "sitemap.xml"), new_sitemap,
+        attempts=12, wait=10, fetch_manifest=fetch_m, fetch_fingerprint=fetch_f, sleep=slept,
+    )
+    case("begge rigtige fra første læsning → grønt uden at vente",
+         ok and used == 1 and slept.calls == [], f"ok={ok} used={used} slept={slept.calls}")
+
+    # 18e. En fejlside i HTML er ikke et fingeraftryk. Uden prøven ville
+    #      kanten svare 200 med en Cloudflare-side, og porten ville rødde
+    #      på en grund der ingenting siger om udgivelsen.
+    try:
+        read_fingerprint("https://eucomplypro.com/sitemap.xml",
+                         opener=lambda u: _html_response(b"<html>error 1000</html>"))
+        case("en HTML-fejlside er ikke et fingeraftryk", False, "ingen undtagelse")
+    except ValueError:
+        case("en HTML-fejlside er ikke et fingeraftryk", True)
+
+    # 18f. Fingeraftrykket skal læses med vores egen User-Agent, af den målte
+    #      grund fra 26/9: Cloudflare svarer 403 på pythons standardagent.
+    sent_fp = {}
+
+    def _recording_fp(request, timeout=None):
+        sent_fp["headers"] = {k.lower(): v for k, v in request.headers.items()}
+        return _xml_response(b'<?xml version="1.0"?><urlset><url><loc>/pro/</loc></url></urlset>')
+
+    read_fingerprint("https://eucomplypro.com/sitemap.xml?cb=1",
+                     opener=lambda u: _request(u, 7, urlopen=_recording_fp))
+    case("fingeraftrykket læses med vores egen User-Agent",
+         "eucomply-deploy-check" in sent_fp.get("headers", {}).get("user-agent", ""),
+         repr(sent_fp.get("headers")))
+
+    # 18g. Et tomt fingerprint-krav er den værste fejl: det gør manifestet
+    #      alene afgørende, hvilket er præcis den målte fejl 16b.
+    fetch_m, _ = _sequence([expected])
+    fetch_f, _ = _sequence([new_sitemap])
+    try:
+        wait_for_deploy(url, expected, url, "", attempts=3, wait=10,
+                        fetch_manifest=fetch_m, fetch_fingerprint=fetch_f, sleep=_Slept())
+        case("et tomt fingerprint-krav hæver i stedet for at være grønt", False, "ingen undtagelse")
+    except ValueError:
+        case("et tomt fingerprint-krav hæver i stedet for at være grønt", True)
+
     print()
     if failures:
         print(f"SELFTEST RØD — {len(failures)} af {cases} cases fejlede:")
@@ -497,6 +740,12 @@ def main(argv: list[str] | None = None) -> int:
         "--asset",
         default=None,
         help="den asset /update.json skal pege på, fx /assets/eucomply-1.3.13.zip",
+    )
+    parser.add_argument(
+        "--fingerprint",
+        default=DEFAULT_FINGERPRINT,
+        help="den committede fil der identificerer netop denne udgivelse "
+             "(default " + DEFAULT_FINGERPRINT + ")",
     )
     parser.add_argument("--attempts", type=int, default=DEFAULT_ATTEMPTS)
     parser.add_argument("--wait", type=float, default=DEFAULT_WAIT)
@@ -539,18 +788,37 @@ def main(argv: list[str] | None = None) -> int:
         print("FEJL: --asset skal angive hvilken version der forventes")
         return 2
 
-    url = f"{args.base.rstrip('/')}{MANIFEST_PATH}?cb={int(time.time())}"
+    try:
+        expected_fingerprint = local_fingerprint(args.fingerprint)
+    except (OSError, ValueError) as exc:
+        # Uden det lokale fingeraftryk er der intet at sammenligne imod, og så
+        # ville porten uden denne fejl vente på en udgivelse den aldrig kan
+        # genkende — altså rød for alt andet end en rigtig udgivelse, eller
+        # grøn fordi kravet var tomt. Begge er værre end at stoppe her.
+        print(f"FEJL: {args.fingerprint} kan ikke bruges som fingeraftryk: {exc}")
+        return 2
+
+    stamp = int(time.time())
+    manifest_url = f"{args.base.rstrip('/')}{MANIFEST_PATH}?cb={stamp}"
+    fingerprint_url = f"{args.base.rstrip('/')}{FINGERPRINT_PATH}?cb={stamp}"
     expected = expected_download_url(args.base, args.asset)
 
-    ok, seen, used = wait_for_manifest(
-        url, expected, attempts=args.attempts, wait=args.wait,
-        fetch=lambda u: read_manifest(u, args.timeout),
+    ok, seen, seen_print, used = wait_for_deploy(
+        manifest_url, expected, fingerprint_url, expected_fingerprint,
+        attempts=args.attempts, wait=args.wait,
+        fetch_manifest=lambda u: read_manifest(u, args.timeout),
+        fetch_fingerprint=lambda u: read_fingerprint(u, args.timeout),
     )
     if ok:
-        print(f"OK: {url} peger på {expected} (forsøg {used} af {args.attempts})")
+        print(
+            f"OK: {manifest_url} peger på {expected} (forsøg {used} af {args.attempts}), "
+            f"og {FINGERPRINT_PATH} er byte-identisk med {args.fingerprint}"
+        )
         return 0
     print(
-        f"FEJL: {url} peger på '{seen}' efter {used} forsøg "
+        f"FEJL: {manifest_url} peger på '{seen}' og {FINGERPRINT_PATH} er "
+        f"{'byte-identisk med' if seen_print == expected_fingerprint else 'IKKE den nye'} "
+        f"({args.fingerprint}) efter {used} forsøg "
         f"({args.attempts} × {args.wait:g}s), forventede '{expected}'.\n"
         "Hvis udgivelsen lige er kørt, kan Cloudflare Pages endnu ikke have serveret den.\n"
         "Efterprøv selv med cache-buster, før du genkører workflowen."

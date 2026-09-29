@@ -1,3 +1,95 @@
+Opdateret: 2026-09-29 (iteration 126) — **125's diagnose var halv sand. Gaten
+var rød, ja — men den blev grøn, og så blev CI *stadig* rød. Den anden rødhed
+lå i et værktøj, der hedder "vent på at Pages deployer", og som ikke ventede.**
+
+**Først en lukket noten: `DEPLOY OK 2026-09-29` på 125.** Sitet kører
+`384d93a`s træ. Målt på **indhold**, ikke på HTTP: live `sitemap.xml` er
+**byte-identisk** med den committede (38 422 B begge steder), og live `/pro/`
+(13 440 B) siger *"The plugin can generate and download the report from the
+latest WordPress scan, as HTML or as PDF."* — 0 forekomster af
+`runtime PDF reports`. 125's 16 rettede `lastmod` er altså live, og dens
+positive sætning er live med dem. **Nedslaget: Cloudflare Pages deployede
+hele tiden.** Det er `pages-build-deployment` (Cloudflares eget workflow), som
+er uafhængig af vores port — kun vores *verificering* lå i vejen.
+
+**Fundet, målt, i ét kald.** `gh run list` viste `deploy-site` = `failure` på
+`384d93a`. `--log-failed` viste **ikke** gaten: den var grøn. Den faldt i
+`tjek produktion` med ét linje: `FEJL: /assets/eucomply-1.3.40.zip svarer
+404`. Klokken 07:16:33. Og zip'en lå **committed** i `d750ead` — den forrige
+commit.
+
+**Årsagen er den pinagtige slags, der ligner en målefejl.** Trin lige inden
+er *"Vent på at Pages serverer den nye version"*, som kalder
+`wait_for_deploy.py`. Det værktøj poller `/update.json` og kræver at
+`download_url` peger på den nye version. Målt i `d750ead`: den commit
+udgav **allerede** 1.3.40. Så da `384d93a` blev pushet, stod live
+`update.json` på `.../eucomply-1.3.40.zip` **før kørslen overhovedet
+startede** — porten svarede grønt på **første** forsøg og ventede **0
+sekunder**. Næste kontrol ramte så en kant, der endnu ikke havde rullet
+udgivelsen ud, og zip'en 404'ede.
+
+**Det er altså præcis den race opgave 47 skrev værktøjet for at slå ihjel —
+stadig dér.** Årsagen er ikke at porten var for langsom, men at den **kun kan
+se en versionsbump**. `update.json` er uændret for næsten ethvert commit, så
+for dem alle er porten en no-op, og netop de har ingen beskyttelse. Det er den
+farligste slags værktøj: et der *ser* ud til at vente, og i de fleste kørsler
+*ikke gør*.
+
+**Rettelsen er et fingeraftryk på selve udgivelsen.** `site/sitemap.xml`
+regenereres ved enhver redaktionel ændring, og dets `lastmod` kommer fra
+*commit*-historikken (`git_dates()`) — så den committede fil er et unikt
+mærke på netop den commit, der deployes. Målt på de to seneste commits:
+**16 `<lastmod>`-linjer** afviger, selv om ingen af dem rørte plugin-versionen.
+Det er den skelnen, der manglede. Nu kræver porten `og`-kravet: manifestet
+**og** fingeraftrykket, i én løkke, så loftet stadig er ét tal (12 × 10 s).
+
+**Målt, begge veje, mod live — ikke mod fixtures.**
+
+| kørsel | forventning | målt |
+|---|---|---|
+| A: rigtigt manifest + rigtigt fingeraftryk | grøn | `OK … forsøg 1 af 2` + `/sitemap.xml er byte-identisk` |
+| B: rigtigt manifest + **forældet** fingeraftryk (= 125's røde tilstand) | rød | `exit=1 … er IKKE den nye` — **det gamle værktøj sagde 0 her** |
+| `--check-workflow` mod den ændrede `deploy-site.yml` | grøn | `WORKFLOW GRØN` |
+
+**Porten kan ikke slides frabage.** `workflow_findings()` kræver nu at
+jobbet nævner `--fingerprint` — ellers fund, fordi ellers kunne kravet fjernes
+fra workflowen og værktøjet fortsætte med at være grønt, præcis som de otte
+`REQUIRED_CHECKS` sigter mod. Selftesten: **26 → 35 negative cases**, og
+case **18b** *er* den målte fejl (manifest rigtigt hele vejen, fingeraftryk
+aldrig det nye → rødt efter hele loftet). Case 18e fanger en kants 200 med en
+Cloudflare-fejlside i HTML — uden prøven ville den talt som et fingeraftryk der
+aldrig matcher, altså rød af en grund der ingenting siger om udgivelsen.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Rækkefølgen skal være en regel, ikke en note** (125 punkt 1, uændret).
+   Bemærk at målingen fra denne iteration nu er en *anden*: porten var grøn
+   **før** committen og rød **efter**, fordi den læste et adhoc-net. Den nye
+   port læser et fil-fingeraftryk der fysisk ikke kan være oppe før
+   Pages har rullet præcis den commit ud — så den egenskab er væk ved
+   konstruktion, ikke ved en note.
+2. **`sitemap.xml` er skrevet af `git log`** (125 punkt 2, uændret). Nu hvor
+   det er blevet *brugt* som deploy-fingeraftryk, er denne sammenhæng
+   skærpet: et sitemap-fingeraftryk er kun et unikt mærke for committen,
+   fordi `lastmod` ikke kan ljve. `cdab45c`-fundet (36 sider fik i dag uden at
+   være redigeret) er stadig advarslen.
+3. **Baseline for `/pro/` og `/pricing/`** (fra 124: 1 besøgende / 28 dage,
+   bounce 100 %). Nu målt mod et site der *endelig* kører ny kode.
+4. **De to `I GANG`** (kundeportal 2b, badge embed-script) er uændret
+   blokeret af spørgsmål 9.
+
+❓ **Til Mads.** Spørgsmål 9 og 21 står uændret.
+
+**VERIFICÉR DEPLOY: deploy-porten kan se en udgivelse uden versionsbump, så et gammelt fingeraftryk ikke læses som nyt ceo/deploy-vent-er-fingerprint 2026-09-29 10:4x**
+
+Diffen rører `tools/wait_for_deploy.py` og `.github/workflows/deploy-site.yml`,
+altså **kun porten** — ikke `site/`. Derfor deployer denne diff **intet nyt
+indhold**, og live-sitet er uændret korrekt. Det betyder: CI skal være grøn
+på denne commit, og det er det eneste at se efter. Bevis på grøn CI, ikke på
+siteindhold. Hvis CI bliver rød igen, står `_`/ikonet i morgenrapporten.
+
+---
+
 Opdateret: 2026-09-29 (iteration 125) — **CI har været rød siden 08:19,
 og derfor har sitet ikke deployet ét eneste ord siden. Alt arbejde i 124 lå
 på en server der kørte 122's kode.**
@@ -63,6 +155,15 @@ linje for linje.
 ❓ **Til Mads.** Spørgsmål 9 og 21 står uændret. Ny i denne iteration:
 **sitemap-submission** — se punkt 1 i 122 om GSC/Bing. Det er en konto-handling
 og den mest sandsynlige forklaring på 1 besøgende på 28 dage.
+
+> **LUKKET 2026-09-29 (iteration 126): `DEPLOY OK`.** Målt på indhold: live
+> `sitemap.xml` er byte-identisk med den committede (38 422 B), de 16 `lastmod`
+> er live, og live `/pro/` siger *"…as HTML or as PDF"* med 0 forekomster af
+> `runtime PDF reports`. **Bemærk den vigtigere følge:** Pages deployede hele
+> tiden — `pages-build-deployment` er Cloudflares eget workflow og afhænger
+> ikke af vores port. Det var kun *verificeringen* der lå i vejen, så de to
+> røde kørsler ikke betød "intet nåede brugerne". Næste agent skal ikke
+> genberegne dette.
 
 **VERIFICÉR DEPLOY: rød gate rettet, sitemap regenereret med 16 lastmod ceo/sitemap-fast-punkt 2026-09-29 09:5x**
 

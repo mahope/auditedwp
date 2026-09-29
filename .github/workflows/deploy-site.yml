@@ -130,6 +130,7 @@ jobs:
           python3 tools/wait_for_deploy.py \
             --base https://eucomplypro.com \
             --asset "${{ steps.plugin.outputs.asset }}" \
+            --fingerprint site/sitemap.xml \
             --attempts 12 --wait 10
       - name: Tjek indhold, ikke kun status
         run: |
