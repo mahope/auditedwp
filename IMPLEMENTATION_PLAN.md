@@ -1,3 +1,91 @@
+Opdateret: 2026-09-29 (iteration 119) — **køens første opgave var at mål om
+`dateModified` var korrekt fordelt. Den var det ikke: 113 sider har en håndskrevet
+Article-JSON-LD uden datoer, så sitemapets `lastmod` og JSON-LD fortalte to
+forskellige historier om samme side. Skallen injicerer nu de manglende datoer.**
+
+**Målt før rettelsen.** 213 sider har `lastmod` i sitemapet, kun 24 har
+`dateModified` i JSON-LD. Fordelingen er ikke "artikler vs landingssider" — den
+er **skrevet af skalen vs håndskrevet**:
+
+| Type | Antal | Datoer |
+|---|---|---|
+| Skalens egen Article-blok (`data-shell`) | 21 | begge ✓ |
+| Håndskrevet Article-blok | 113 | 3 med begge, 20 kun `datePublished`, 90 ingen |
+
+De 20 pub-only-sider er alle blog-indlæg og DevNotify-artikler. Målt mod
+sitemapet: **alle 20 har `lastmod: 2026-09-27`** (fra git: footer-tekst og
+forrige/næste-kæde blev ændret 65e2a40/cdab45c), men JSON-LD sagde kun
+`datePublished` i august. Google viser så den ældre dato i søgeresultatet.
+Yderligere 90 håndskrevet blokke — `/vs/*`, `/devnotify/guides/*`,
+`/transmute/guides/*`, `/api/` — havde **ingen datoer overhovedet**.
+
+**Rettelsen er i skallen, ikke i 113 filer.** `inject_article_dates()` i
+`apply_shell.py` sætter de manglende datoer ind i håndskrevne
+Article/BlogPosting/TechArticle-blokke — i `<head>` **og** i `<body>` (4 blokke
+står i body: `meta-pixel-gdpr-consent`, `wix-gdpr-compliance-guide`,
+`eaa-compliance-ecommerce`, `how-it-works`). Datoerne kommer fra de samme
+kilder som skalens egen blok: en dato skalen selv har skrevet, sidens synlige
+dato (`find_date`), eller git. Injektionen er idempotent, og `lastmod_for()`
+læser `"dateModified"` fra HTML først — så sitemapet og JSON-LD kan ikke glide
+fra hinanden. Målt: kæden ændrede **110 filer** (113 blokke minus 3 der
+allerede havde begge), anden kørsel **0 ændringer**, sitemapet uændret.
+
+**Porten gør den permanent.** `tools/check_article_dates.py` (2 steps i
+gaten): R1 hver Article-blok skal have begge datoer, gyldig JSON, og
+`dateModified >= datePublished`; R2 sitemapets `lastmod` skal matche sidens
+`dateModified`. Selftest **3/3** negative cases: fjernet `dateModified`,
+`dateModified` før `datePublished`, og sitemap `lastmod` der ikke passer.
+
+**Målt / accept.** Før: 24 filer med `dateModified`, 20 med
+sitemap/JSON-LD-modstrid. Efter: **134 Article-blokke, alle med begge datoer,
+0 ugyldig JSON, 0 mod<pub**, sitemapet uændret (214 `<url>`). `GATE GRØN —
+alle 41 steps bestået`. Sibling-gate (`../hermes-passiv`): `build_sites.py`
+0 ændringer, `seo_check.py` 0 sider (kendt udfald). Ingen PHP rørt, så
+`php -l` var ikke påkrævet.
+
+**Baseline (Plausible 29/9, uændret):** 1 besøgende, bounce 100 %, kun Direct,
+28 dage. Denne iteration flytter ingen tal — den gør at de 134 artikler Google
+ser får den samme dato i søgeresultatet som i sitemapet.
+
+**Rørt:** `tools/apply_shell.py` (`ARTICLE_LD_TYPES`, `inject_article_dates()`,
+dato-beregning flyttet op i `seo_head()`, kald før `return`),
+`tools/check_article_dates.py` (ny), `tools/quality_gate.sh` (2 steps),
+110 `site/**`-filer (én linje hver: datoinjektion), denne plan. **Ingen
+plugin-version, ingen `update.json`, ingen ny zip, ingen Stripe-pris, ingen
+worker.**
+
+> `VERIFICÉR DEPLOY: hver Article-JSON-LD har nu begge datoer, og sitemapet
+> > passer (iteration 119) ceo/datamodified-maal 2026-09-29` — rører 110
+> > `site/**`-filer + 3 `tools/`-filer. Efter næste deploy-vindue skal
+> > **indhold** verificeres: (1) `https://eucomplypro.com/blog/pingdom-
+> > alternative-2026/` skal i JSON-LD have både `"datePublished": "2026-08-30"`
+> > og `"dateModified": "2026-09-27"`; (2) `/vs/termly/` skal have
+> > `"datePublished": "2026-08-25"` og `"dateModified": "2026-09-28"`; (3)
+> > `/sitemap.xml` er uændret med 214 `<url>`; (4) CI for committen er
+> > `success` på alle tre jobs. (1)–(3) er indhold, (4) kræver loggen.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Deploy-noten fra 118** (åben, nyere end det seneste vindue — verificér
+   først når et batch-vindue er gået): `llms-full.txt` skal indeholde
+   `an email alert when a check passes and later fails` + `a read-only report
+   link for a client` i den positive sætning og ikke `pass-to-fail email
+   alerts`/`per-check history` i benægtelseslister; `llms.txt` skal have
+   `Planned, not included in the Pro license today:` som eget afsnit.
+2. **`/support/` er stadig ikke nævnt i `llms.txt`/`llms-full.txt`** — de to
+   filer iteration 118 netop rettede. En agent der skal finde donationssiden
+   kan ikke. Lille, samme filer, samme port.
+3. **Plausible-injektionen i `<!--shell:…-->`-blokken** (punkt 4 fra 118).
+   Uafhængig vurdering, rører alle 233 sider. Lav først et mål.
+4. **Pris-overvågning og root-LICENSE (spørgsmål 21)** — kan ikke løses uden
+   Mads. Skal ikke genbesøges uden svar.
+
+❓ **Til Mads.** Ingen ny. Spørgsmål 21 (root-LICENSE) står uændret. De to
+`I GANG`-opgaver i køen (kundeportal del 2b, badge embed-script) er begge
+blokeret af spørgsmål 9 og skal ikke genrestartes.
+
+---
+
 Opdateret: 2026-09-29 (iteration 118) — **`site/llms-full.txt` nævnte to Pro-fordele
 som *ikke* er med, i den ene fil på sitet der er skrevet til at blive læst af en
 agent. Og porten kunne ikke se det, fordi den kun dømmer filer med endelsen

@@ -1141,6 +1141,37 @@ def ld_script(obj: dict, marker: str = "data-shell") -> str:
     return f'<script type="application/ld+json" {marker}>' + json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/") + "</script>"
 
 
+ARTICLE_LD_TYPES = ("Article", "BlogPosting", "TechArticle")
+
+
+def inject_article_dates(html: str, published: str, modified: str) -> str:
+    """Sætter `datePublished`/`dateModified` ind i en håndskrevet Article-blok.
+
+    Skalen skriver sin egen Article-JSON-LD med begge datoer, men sider med en
+    håndskrevet blok får den ikke — så sitemapets `lastmod` (fra git) og
+    JSON-LD's `dateModified` fortæller to forskellige historier om samme side.
+    Datoerne kommer fra de samme kilder som skalens egen blok: en dato skalen
+    selv har skrevet, sidens synlige dato, eller git. Injektionen er idempotent:
+    en blok der allerede har begge datoer røres ikke.
+    """
+    def fix(m: re.Match) -> str:
+        if "data-shell" in m.group(0):
+            return m.group(0)
+        blk = m.group(1)
+        if not any(f'"@type": "{t}"' in blk or f'"@type":"{t}"' in blk for t in ARTICLE_LD_TYPES):
+            return m.group(0)
+        new = blk
+        if '"datePublished"' not in new:
+            new = re.sub(r'("@type"\s*:\s*"(?:Article|BlogPosting|TechArticle)")',
+                         rf'\1, "datePublished": "{published}"', new, count=1)
+        if '"dateModified"' not in new:
+            new = re.sub(r'("datePublished"\s*:\s*"\d{4}-\d{2}-\d{2}")',
+                         rf'\1, "dateModified": "{modified}"', new, count=1)
+        return m.group(0).replace(blk, new, 1)
+    return re.sub(r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>',
+                  fix, html, flags=re.S | re.I)
+
+
 def seo_head(html: str, url: str, lang: str, rel: str) -> str:
     """Normalise <head>: title, description, canonical, OG, Twitter, icons, JSON-LD."""
     hi = html.find("</head>")
@@ -1220,6 +1251,9 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
     types = existing_ld_types(head + body)
     blocks = []
     base = strip_lang(url)
+    first, last = GIT_DATES.get(rel, (TODAY, TODAY))
+    published = frozen_ld.get("datePublished") or find_date(body) or first
+    modified = frozen_ld.get("dateModified") or max(last, published)
     web_page = {"@type": "WebPage", "@id": canonical, "url": canonical, "name": title, "description": desc,
                 "inLanguage": lang, "isPartOf": {"@type": "WebSite", "@id": ORIGIN + "/#website"},
                 "author": AUTHOR}
@@ -1242,9 +1276,6 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
                            "author": AUTHOR, "publisher": ORG})
     elif is_article(url, body):
         if "Article" not in types and "BlogPosting" not in types and "TechArticle" not in types:
-            first, last = GIT_DATES.get(rel, (TODAY, TODAY))
-            published = frozen_ld.get("datePublished") or find_date(body) or first
-            modified = frozen_ld.get("dateModified") or max(last, published)
             h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
             blocks.append({"@context": "https://schema.org", "@type": "Article",
                            "headline": (text_of(h1.group(1)) if h1 else full_title)[:110],
@@ -1262,6 +1293,8 @@ def seo_head(html: str, url: str, lang: str, rel: str) -> str:
         head = head.rstrip() + "\n" + "\n".join(ld_script(b) for b in blocks) + "\n"
     if noindex:
         head = re.sub(r'\s*<meta\s+property="og:[^>]*>|\s*<meta\s+name="twitter:[^>]*>', "", head)
+    if any(t in types for t in ARTICLE_LD_TYPES):
+        return inject_article_dates(head + rest, published, modified)
     return head + rest
 
 
