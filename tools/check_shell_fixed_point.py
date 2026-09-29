@@ -113,6 +113,7 @@ def run_shell(shell, tree: pathlib.Path) -> list[str]:
     shell.catalogue()
     found: list[str] = []
     MÅLTE_LINJER.clear()
+    DRIFT.clear()
     for path in page_paths(tree):
         before = path.read_bytes()
         shell.process(path)
@@ -154,6 +155,8 @@ def run_derivatives(shell, tree: pathlib.Path) -> list[str]:
         if before != after:
             MÅLTE_LINJER.append(_ændrede_linjer(
                 before.decode("utf-8", "replace"), after.decode("utf-8", "replace")))
+            DRIFT[navn] = _klassificér(
+                before.decode("utf-8", "replace"), after.decode("utf-8", "replace"))
             found.append(f"R1 {navn}: {_first_delta(before.decode('utf-8', 'replace'), after.decode('utf-8', 'replace'))}")
     return found
 
@@ -163,6 +166,65 @@ def _kør_afledt(shell, navn: str) -> None:
         shell.build_sitemap()
     else:
         shell.build_search_index()
+
+
+LASTMOD_LINJE = re.compile(r"\s*<lastmod>\d{4}-\d{2}-\d{2}</lastmod>\s*$")
+
+# Hvilke af de flyttede linjer der er `lastmod`, og hvilke der er noget andet.
+# Uden den opdeling kan porten ikke skelne det ene brud fra det andet, og målet
+# bliver en regel den ikke må give: se `diagnose()`.
+DRIFT: dict[str, tuple[int, int]] = {}
+
+
+def _klassificér(a: str, b: str) -> tuple[int, int]:
+    """(linjer der er `lastmod`, linjer der er andet) i den flyttede del."""
+    la, lb = a.splitlines(), b.splitlines()
+    lastmod = andre = 0
+    for x, y in zip(la, lb):
+        if x == y:
+            continue
+        if LASTMOD_LINJE.match(x) and LASTMOD_LINJE.match(y):
+            lastmod += 1
+        else:
+            andre += 1
+    return lastmod, andre + abs(len(la) - len(lb))
+
+
+def diagnose(findings: list[str]) -> list[str]:
+    """Navngiv årsagen, når hele fundet er forældede `lastmod`.
+
+    Målt 29/9 (`d750ead`): CI-jobbet `kvalitetsgate` blev rødt på præcis
+    dette fund, og **sitet holdt op med at deploye** — `deploy` har
+    `needs: verify`, så en rød gade ingen vegne. Årsagen lå ikke i træet,
+    men i rækkefølgen: `git_dates()` læser kun committet historie, så en
+    `sitemap.xml` genereret *før* den commit der rettede en side kan ikke
+    vide, at sidste redaktionelle dato nu er i dag. Porten så rigtigt, men
+    den sagde hvad og ikke hvorfor, så bruddet læstes som et tilfældigt
+    skred i stedet for den regel der fjerner det: **kør kæden igen efter
+    committen findes**, og committér den regenererede fil.
+
+    Porten tier bevidst, medmindre fundet er *kun* `lastmod` i de afledte
+    filer. En diagnose der passer på alt, er ingen diagnose — så måles den
+    i `afledt_diagnose_selftest()` begge veje.
+    """
+    if not findings:
+        return []
+    if any(not f.startswith(("R1 sitemap.xml", "R1 search-index.json"))
+           for f in findings):
+        return []  # også en side flytter sig: årsagen er ikke alene datoerne
+    lastmod = sum(v[0] for v in DRIFT.values())
+    andre = sum(v[1] for v in DRIFT.values())
+    if andre or not lastmod:
+        return []
+    return [
+        f"ÅRSAG — de {lastmod} flyttede linjer er `lastmod`, og intet andet "
+        f"flyttede sig. `git_dates()` læser kun committet historie, så de "
+        f"afledte filer er genereret FØR den commit der rettede siderne.",
+        "     Rettelsen er rækkefølge, ikke indhold: kør `python3 tools/apply_shell.py` "
+        "igen NU og committér den regenererede fil.",
+        "     Det er 16 linjer i `sitemap.xml` på den målte fejl (29/9, `d750ead`) — "
+        "en dag efter at porten så den samme fejl med 175 linjer.",
+    ]
 
 
 def _first_delta(a: str, b: str) -> str:
@@ -245,7 +307,82 @@ def selftest_findings() -> list[str]:
             print(f"R2 OK — uden art-meta på {page.name} så R1 {len(moved)} sider flytte sig")
             print("     " + _short(moved[0]))
     found.extend(afledt_selftest())
+    found.extend(diagnose_selftest())
     return found
+
+
+def diagnose_selftest() -> list[str]:
+    """R4: diagnosen skal ramme *dette* brud og tie på et andet.
+
+    `diagnose()` er en regel, porten skriver ud til en logfil, som en agent
+    læser i en fart. Derfor må den ikke have to egenskaber, der begge er
+    usynlige i dens egen grønne udgang: den må ikke tie på det brud den er
+    skrevet til (fejlen fra `d750ead`), og den må ikke ramme et brud der
+    ligner helt andet — ellers læser næste agent en regel om datoer, mens
+    årsagen er en manglende `<loc>`.
+
+    Begge mutationer måles på den rigtige sitemap, og begge verificeres at
+    de faktisk ændrede noget: en `.replace()` der ikke rammer, giver samme
+    tekst tilbage og ville få casen til at grønne uden at teste noget.
+    """
+    found: list[str] = []
+    original = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+    kun_datoer = _erstat_n_urls(original, 3, flyt_dato=True)
+    if kun_datoer == original:
+        return ["R4: mutationen ændrede ingen `lastmod` — den er et "
+                "stilhedende no-op, så casen kan ikke lyve om diagnosen"]
+    DRIFT.clear()
+    DRIFT["sitemap.xml"] = _klassificér(original, kun_datoer)
+    if not diagnose(["R1 sitemap.xml: linje 5"]):
+        found.append("R4: et fund der kun er forældede `lastmod` fik ingen "
+                     "diagnose — så bruddet fra `d750ead` står igen som et "
+                     "tilfældigt skred")
+    else:
+        print("R4 OK — 3 forældede `lastmod` og intet andet så diagnosen ramme")
+        print("     " + _short(diagnose(["R1 sitemap.xml: linje 5"])[0]))
+
+    med_andet = _erstat_n_urls(original, 3, flyt_dato=True, bryd_ogsaa_loc=True)
+    if med_andet == original or med_andet == kun_datoer:
+        return found + ["R4: mutationen med den ødelagte `<loc>` ændrede intet "
+                        "eller kun de datoer — casen kan ikke lyve"]
+    DRIFT.clear()
+    DRIFT["sitemap.xml"] = _klassificér(original, med_andet)
+    if diagnose(["R1 sitemap.xml: linje 5"]):
+        found.append("R4: diagnosen ramte et fund der også flyttede andet end "
+                     "`lastmod` — en regel der passer på alt er ingen regel")
+    else:
+        print("R4 OK — samme måling plus en ødelagt `<loc>` så diagnosen tie")
+    DRIFT.clear()
+    return found
+
+
+def _erstat_n_urls(xml: str, n: int, *, flyt_dato: bool, bryd_ogsaa_loc: bool = False) -> str:
+    """Lav en sitemap der ligner den virkelige, men med nogle linjer flyttet.
+
+    Datoerne skal være **forskellige**, ellers rammer den samme `<lastmod` igen
+    på hver gentagelse, kun den første flytter sig, og R4 så ud som om den havde
+    testet tre linjer mens den testede én. Det er samme fejl som det fund fra
+    opgave 110, hvor `.replace()` gav siden uændret tilbage. Derfor tælles der
+    her linje for linje i stedet for at søge i hele teksten: et regex med
+    `count=1` rammer den **første** match hver gang, også den den lige har
+    skrevet.
+    """
+    ud = xml
+    if flyt_dato:
+        datoer = ("1999-01-01", "1998-01-01", "1997-01-01", "1996-01-01", "1995-01-01")
+        linjer, brugt = ud.splitlines(), 0
+        for i, l in enumerate(linjer):
+            if brugt >= n:
+                break
+            m = LASTMOD_LINJE.match(l)
+            if m and brugt < len(datoer):
+                linjer[i] = l.replace(m.group(0).strip(), f"<lastmod>{datoer[brugt]}</lastmod>")
+                brugt += 1
+        ud = "\n".join(linjer) + ("\n" if xml.endswith("\n") else "")
+    if bryd_ogsaa_loc:
+        ud = re.sub(r"(<loc>)https://eucomplypro\.com/pro/",
+                    r"\g<1>https://eucomplypro.com/typo/", ud, count=1)
+    return ud
 
 
 def afledt_selftest() -> list[str]:
@@ -305,6 +442,8 @@ def main() -> int:
     if findings:
         linjer = sum(MÅLTE_LINJER)
         print(f"FUND — {len(findings)} filer, {linjer} linjer ændret", file=sys.stderr)
+        for linje in diagnose(findings):
+            print(linje, file=sys.stderr)
         return 1
     print("PORT GRØN")
     return 0

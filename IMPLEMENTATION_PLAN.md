@@ -1,3 +1,79 @@
+Opdateret: 2026-09-29 (iteration 125) — **CI har været rød siden 08:19,
+og derfor har sitet ikke deployet ét eneste ord siden. Alt arbejde i 124 lå
+på en server der kørte 122's kode.**
+
+**Fundet kom fra ét kald ved iterationens start, ikke fra en port.** `gh run
+list` viste `deploy-site` = `failure` på `d750ead`, mens de to andre jobs var
+grønne. Det er det job, der deployer eucomplypro.com, og `deploy` har
+`needs: verify` — så en rød gade ingen vegne. Live `/pro/` svarede stadig
+"runtime PDF reports … planned", altså 122's tekst. **HTTP 200 var sandt, og
+den sagde intet om det, fordi den ikke kunne.**
+
+**Årsagen var rækkefølge, ikke indhold.** `git_dates()` læser kun *committet*
+historie. `sitemap.xml` var genereret før committen der rettede 16 sider, så
+sidste redaktionelle dato var 2026-09-28; da committen så fandtes, blev den
+2026-09-29, og de 16 `lastmod` i det committede sitemap var forældede. R1 så
+det rigtigt — `FUND — 1 filer, 16 linjer ændret` — men den sagde **hvad**, ikke
+**hvorfor**, så et deterministisk skred læstes som et tilfældigt. Samme
+fejlklasse som de tre `a`-porte: en regel, der belønner stilhed.
+
+| led | målt |
+|---|---|
+| `check_shell_fixed_point.py` mod det gamle sitemap | `FUND — 1 fil, 16 linjer` + **ny `ÅRSAG`-linje, der rammer de 16 ved navn** |
+| `apply_shell.py` | `pages: 231, changed: 0, sitemap urls: 214, search index: 214` |
+| `check_shell_fixed_point.py` (R1) | `R1 OK — 231 sider + 2 afledte filer, 0 ændret af én kørsel af den rigtige kæde` |
+| ny selftest **R4** | begge veje: 3 `lastmod` → diagnosen rammer; samme måling **+ ødelagt `<loc>`** → diagnosen tier |
+| hele gaten | **`GATE GRØN — alle 41 steps bestået`** |
+| `php -l` | ikke betinget, ingen `.php` rørt |
+
+**Fund undervejs, målt.** `build_api_locales.py --selftest` skriver en `FEJL`-linje
+som en del af en negativ case, så i CI-loggen læstes den som det andet brud.
+Den efterlader træet rent — målt, `git status` tom efter. Det er **kun** R1
+der fejlede, og kun i de afledte filer.
+
+**Fund undervejs, målt, i min egen mutation.** R4 skrev først *datoen* `1999-01-01`
+ind i `n` linjer med `re.sub(..., count=1)`. Mønstret rammer den samme linje
+igen, hver gang den er gyldig — så kun den første flyttede sig, og porten
+rapporterede "3 flyttede linjer" over én. Det er præcis det fund fra opgave 110
+(`.replace()` der giver siden uændret tilbage) i en ny forklædning: **en case
+der lyder som om den tester tre ting, mens den tester én.** Den tæller nu
+linje for linje.
+
+### Næste iteration (prioriteret, målt 2026-09-29)
+
+1. **Rækkefølgen skal være en regel, ikke en note.** Målt her: porten er
+   grøn *før* committen og rød *efter*. Den farlige egenskab er derfor ikke
+   porten, men at alle 124 iterationer har kørt gaten før `git commit`.
+   Overvej at binde færdiggørelsen til committen: generér på branchen **efter**
+   den første commit, og squash-mergeér så — branch-committen og main-committen
+   har samme dato, så tallene er ens. Det er en ændring i *kørslen*, ikke i
+   porten, og det er derfor den kun er en note indtil nogen måler den.
+2. **`sitemap.xml` er skrevet af `git log`.** Enhver redaktionel ændring på
+   en side gør de afledte filer forældede i samme øjeblik, den committes.
+   Overvej at lade `lastmod` komme fra en kilde der *kan* være sand før
+   committen (fx et felt i frontmatter) — **kun** hvis feltet så ikke kan
+   lyve; `cdab45c`-fundet (36 sider fik i dag uden at være redigeret) er
+   advarslen.
+3. **Baseline for `/pro/` og `/pricing/`** (fra 124: 1 besøgende / 28 dage,
+   bounce 100 %). Denne diff deployer 122's tekst, så første ændring i
+   indhold efter et deploy bør måles mod *det*, ikke mod sidste lokal måling.
+4. **De to `I GANG`** (kundeportal 2b, badge embed-script) er uændret
+   blokeret af spørgsmål 9.
+
+❓ **Til Mads.** Spørgsmål 9 og 21 står uændret. Ny i denne iteration:
+**sitemap-submission** — se punkt 1 i 122 om GSC/Bing. Det er en konto-handling
+og den mest sandsynlige forklaring på 1 besøgende på 28 dage.
+
+**VERIFICÉR DEPLOY: rød gate rettet, sitemap regenereret med 16 lastmod ceo/sitemap-fast-punkt 2026-09-29 09:5x**
+
+Diffen rører `site/sitemap.xml` og `tools/`, så **denne** diff deployer ved
+næste push. Verificér **indhold** på `https://eucomplypro.com/pro/` — at
+`runtime PDF reports` er væk fra "planned"-sætningen, og at siden svarer 200
+er ikke bevis. Hvis CI igen bliver rød, er `deploy` ikke kørt, og det er
+det første der skal stå i morgenrapporten.
+
+---
+
 Opdateret: 2026-09-29 (iteration 124) — **1.3.40 byggede PDF'en, og 40 sider
 på sitet sagde stadig den ikke fandtes. Porten vidste intet, fordi den spurgte
 om PDF'en som en *ulovet* sætning. Nu spørger den om koden.**
