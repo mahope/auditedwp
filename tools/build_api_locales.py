@@ -148,14 +148,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "A 502 means the site you asked about failed, not that the API did. It carries the underlying message, so read it before retrying — a host behind a bot wall will keep failing, and hammering it will not help.":
             "Et 502 betyder, at det site, du spurgte til, fejlede — ikke at API'et gjorde. Svaret bærer den underliggende besked, så læs den, før du prøver igen — en vært bag en bot-mur fejler hele tiden, og flere forsøg hjælper ikke.",
         "What this API does not do": "Hvad dette API ikke gør",
-        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment. If you need any of those, the current paid product is the WordPress plugin: it re-scans your own site once a day, keeps the last 12 scans, emails you when a check breaks, and generates an HTML report you can send to a client. Hosted monitoring is not part of it.":
-            "Det er én anmodning om ét site på ét tidspunkt. Det gemmer ingen historik, kører intet på en tidsplan, sender ingen webhooks og tager ingen betaling. Har du brug for noget af det, er det betalte produkt i dag WordPress-pluginet: det scanner dit eget site én gang om dagen, gemmer de seneste 12 scanninger, sender dig en mail når et tjek brydes, og genererer en HTML-rapport, du kan sende til en kunde. Hosted overvågning er ikke en del af det.",
+        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment.":
+            "Det er én anmodning om ét site på ét tidspunkt. Det gemmer ingen historik, kører intet på en tidsplan, sender ingen webhooks og tager ingen betaling.",
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "De ni tjek er tekniske signaler læst i det serverede HTML. DORA-tjekket læser efter offentlige markører i sidens tekst og er ikke en vurdering af noget som helst.",
-        "Need history, scheduling and a report?": "Brug for historik, tidsplan og en rapport?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
-            "API'et ovenfor forbliver gratis. Pro er en licens til WordPress-pluginet: daglige re-scans i din egen WordPress, de seneste 12 scanninger gemt, en mail når et tjek brydes, og en HTML-rapport fra den seneste scanning. Det giver også adgang til de redigerbare HTML-dokumentstartere.",
-        "Buy Pro — $79/year per website →": "Køb Pro — $79/år pr. website →",
     },
     "de": {
         "takes the same": "nimmt dasselbe",
@@ -229,14 +225,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "A 502 means the site you asked about failed, not that the API did. It carries the underlying message, so read it before retrying — a host behind a bot wall will keep failing, and hammering it will not help.":
             "Ein 502 heißt, dass die abgefragte Website fehlgeschlagen ist, nicht die API. Die Antwort enthält die eigentliche Meldung — lesen Sie sie, bevor Sie es erneut versuchen: Ein Host hinter einer Bot-Sperre scheitert dauerhaft, und mehr Versuche helfen nicht.",
         "What this API does not do": "Was diese API nicht tut",
-        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment. If you need any of those, the current paid product is the WordPress plugin: it re-scans your own site once a day, keeps the last 12 scans, emails you when a check breaks, and generates an HTML report you can send to a client. Hosted monitoring is not part of it.":
-            "Sie ist ein einzelner Request für eine einzelne Website in einem einzelnen Moment. Sie speichert keine Historie, läuft nicht nach Zeitplan, sendet keine Webhooks und nimmt keine Zahlung an. Brauchen Sie eines davon, ist das kostenpflichtige Produkt derzeit das WordPress-Plugin: Es prüft Ihre eigene Website einmal täglich, behält die letzten 12 Scans, meldet per E-Mail, wenn eine Prüfung bricht, und erzeugt einen HTML-Bericht, den Sie an einen Kunden schicken können. Überwachtes Hosting ist nicht Teil davon.",
+        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment.":
+            "Sie ist ein einzelner Request für eine einzelne Website in einem einzelnen Moment. Sie speichert keine Historie, läuft nicht nach Zeitplan, sendet keine Webhooks und nimmt keine Zahlung an.",
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "Die neun Prüfungen sind technische Signale aus dem ausgelieferten HTML. Die DORA-Prüfung sucht öffentliche Textmarken und ist keine Bewertung von irgendetwas.",
-        "Need history, scheduling and a report?": "Brauchen Sie Historie, Zeitplan und einen Bericht?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
-            "Die API oben bleibt kostenlos. Pro ist eine Lizenz für das WordPress-Plugin: tägliche Re-Scans in Ihrem eigenen WordPress, die letzten 12 Scans gespeichert, eine E-Mail, wenn eine Prüfung bricht, und ein HTML-Bericht aus dem letzten Scan. Es gibt außerdem Zugriff auf die editierbaren HTML-Dokumentvorlagen.",
-        "Buy Pro — $79/year per website →": "Pro kaufen — $79/Jahr pro Website →",
     },
     "fr": {
         "takes the same": "prend le même",
@@ -310,14 +302,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "A 502 means the site you asked about failed, not that the API did. It carries the underlying message, so read it before retrying — a host behind a bot wall will keep failing, and hammering it will not help.":
             "Un 502 signifie que le site interrogé a échoué, pas l'API. La réponse contient le message d'origine : lisez-le avant de réessayer — un hôte derrière un mur anti-bot échouera toujours, et insister n'aide pas.",
         "What this API does not do": "Ce que cette API ne fait pas",
-        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment. If you need any of those, the current paid product is the WordPress plugin: it re-scans your own site once a day, keeps the last 12 scans, emails you when a check breaks, and generates an HTML report you can send to a client. Hosted monitoring is not part of it.":
-            "C'est une seule requête pour un seul site à un seul instant. Elle ne garde aucun historique, ne s'exécute pas selon un calendrier, n'envoie aucun webhook et n'accepte aucun paiement. Si vous avez besoin de l'un de ces éléments, le produit payant actuel est l'extension WordPress : elle réanalyse votre propre site une fois par jour, conserve les 12 derniers scans, vous envoie un e-mail quand un contrôle casse, et génère un rapport HTML que vous pouvez envoyer à un client. La supervision hébergée n'en fait pas partie.",
+        "It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment.":
+            "C'est une seule requête pour un seul site à un seul instant. Elle ne garde aucun historique, ne s'exécute pas selon un calendrier, n'envoie aucun webhook et n'accepte aucun paiement.",
         "The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.":
             "Les neuf contrôles sont des signaux techniques lus dans le HTML servi. Le contrôle DORA cherche des marqueurs publics dans le texte de la page et n'est aucune évaluation.",
-        "Need history, scheduling and a report?": "Besoin d'historique, de planification et d'un rapport ?",
-        "The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.":
-            "L'API ci-dessus reste gratuite. Pro est une licence de l'extension WordPress : réanalyses quotidiennes dans votre propre WordPress, les 12 derniers scans conservés, un e-mail quand un contrôle casse, et un rapport HTML du dernier scan. Elle donne aussi accès aux modèles de documents HTML modifiables.",
-        "Buy Pro — $79/year per website →": "Acheter Pro — 79 $/an par site →",
     },
 }
 
@@ -619,7 +607,7 @@ def _expect_drift() -> None:
     keep = out_bytes(SITE / "da" / "api" / "index.html")
     try:
         p = SITE / "da" / "api" / "index.html"
-        p.write_text(p.read_text(encoding="utf-8").replace("Køb Pro", "Køb pro", 1), encoding="utf-8", newline="")
+        p.write_text(p.read_text(encoding="utf-8").replace("Hvad dette API ikke gør", "Hvad dette API ikke gor", 1), encoding="utf-8", newline="")
         if check() == 0:
             raise AssertionError("--check var grøn på en håndskrevet spejling")
     finally:
