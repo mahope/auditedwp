@@ -8,7 +8,7 @@ One-click EU compliance scanning in your browser toolbar.
 - Calls the same free scanning API as eucomplypro.com
 - Shows score + detailed results for nine technical URL signals
 - Badge icon shows the last scan score
-- Links to the current WordPress Pro document tools
+- Links to the full scan page and the free CLI
 
 ## How to install (unpacked)
 
@@ -59,7 +59,7 @@ API the popup calls are the same origin, and that the published
 **Title:** EUComply — Website Compliance Checker
 **Short description:** Free one-click EU compliance scan. Check HTTPS, cookies, privacy links & more on any URL.
 **Category:** Developer Tools
-**Price:** Free + optional Pro upgrade via eucomplypro.com
+**Price:** Free
 
 ## Local development
 

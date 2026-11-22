@@ -84,16 +84,16 @@ footer a{{color:var(--accent);text-decoration:none}}
 <div class="wrap">
 
 <h1>{h1}</h1>
-<p class="meta">📅 September 2026 · {read} min read · <a href="/transmute/">Try it in your browser →</a></p>
+<p class="meta">📅 September 2026 · {read} min read · <a href="https://transmute.run/#try-it">Try it in your browser →</a></p>
 
 {body}
 
 <div class="cta-box">
   <h3>Pipelines like this — without writing a script</h3>
   <p>The Transmute CLI is free (<code>npx github:mahope/transmute</code>). The Transmute desktop app is no longer sold.</p>
-  <a href="/transmute/" class="btn green">Try the live demo →</a>
+  <a href="https://transmute.run/#try-it" class="btn green">Try the live demo →</a>
   &nbsp;
-  <a href="/transmute/#pricing" class="btn">See pricing</a>
+  <a href="https://transmute.run/" class="btn">Free CLI and docs</a>
 </div>
 
 <div class="cta-box" style="background:#fff">
@@ -167,7 +167,7 @@ print(json.dumps(data, indent=2))</pre>
 <p><code>pip install xmltodict</code>. Solid, but it's another dependency to pin, and attributes get <code>@</code>-prefixed keys you often have to clean up afterwards.</p>
 
 <h2 id="browser">Option 3: In your browser</h2>
-<p>For a quick one-off, the <a href="/transmute/">live demo on the Transmute page</a> converts between formats entirely client-side — nothing is uploaded.</p>
+<p>For a quick one-off, the <a href="https://transmute.run/#try-it">live demo on transmute.run</a> converts between formats entirely client-side — nothing is uploaded.</p>
 
 <h2>Caveats worth knowing</h2>
 <ul>
