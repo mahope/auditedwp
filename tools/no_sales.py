@@ -134,7 +134,8 @@ def price_hits(text: str) -> List[str]:
 # dem har vi ingen grund til at fjerne: de står i en tabelcelle eller en sætning
 # der ikke nævner EUComply, Pro, DeskUptime, Transmute, skabeloner, e-bogen eller
 # en licens. Enheden er derfor tekstblokken (afsnit, listepunkt, tabelcelle,
-# metabeskrivelse, JSON-LD-streng), ikke hele siden.
+# metabeskrivelse, JSON-LD-streng), ikke hele siden, og inden for blokken skal
+# produktnavnet stå nær prisen (se PRICE_WINDOW_BEFORE).
 OUR_PRODUCT_RE = re.compile(
     r"EUComply|(?-i:\bPro\b)|DeskUptime|Transmute|Clean\s?Copy|\btemplates?\b|skabelon\w*|"
     r"vorlage\w*|mod[èe]les?\b|\bbundles?\b|e-?books?\b|e-?bog\w*",
@@ -143,15 +144,30 @@ OUR_PRODUCT_RE = re.compile(
 CLOSED_NINETEEN_RE = re.compile(r"DeskUptime|Transmute|Clean\s?Copy", re.I)
 
 
+# En pris hører til vores produkt, når produktnavnet står lige før den (op til 140
+# tegn, "DeskUptime at $19 one-time", "EUComply Pro, 12 months of updates, $79") eller
+# lige efter (op til 60, "$79/year for EUComply Pro"). Målt på sitet 22/11-2026: et
+# TL;DR-afsnit om Better Stack nævner "$29/responder/month" og, to sætninger senere,
+# "DeskUptime at $19 one-time". Med hele blokken som enhed blev $29 også regnet som en
+# DeskUptime-pris, og afsnittet kunne ikke renses uden at fjerne konkurrentens pris.
+# Nærheden er det, der skiller de to.
+PRICE_WINDOW_BEFORE = 140
+PRICE_WINDOW_AFTER = 60
+
+
+def _near(block: str, match: "re.Match[str]", product_re: "re.Pattern[str]") -> bool:
+    before = block[max(0, match.start() - PRICE_WINDOW_BEFORE):match.start()]
+    after = block[match.end():match.end() + PRICE_WINDOW_AFTER]
+    return bool(product_re.search(before) or product_re.search(after))
+
+
 def price_findings(rel: str, blocks: Iterable[str]) -> List[str]:
     findings: List[str] = []
     seen = set()
     for block in blocks:
         hits: List[str] = []
-        if OUR_PRODUCT_RE.search(block):
-            hits.extend(price_hits(block))
-        if CLOSED_NINETEEN_RE.search(block):
-            hits.extend(m.group(0).strip() for m in PRICE19_RE.finditer(block))
+        hits.extend(m.group(0).strip() for m in PRICE_RE.finditer(block) if _near(block, m, OUR_PRODUCT_RE))
+        hits.extend(m.group(0).strip() for m in PRICE19_RE.finditer(block) if _near(block, m, CLOSED_NINETEEN_RE))
         for hit in hits:
             if hit not in seen:
                 seen.add(hit)
@@ -771,6 +787,11 @@ def selftest() -> int:
         ("pris i DeskUptime-tekst", "<p>DeskUptime costs $29 once.</p>", "pris"),
         ("DeskUptimes 19 USD", "<p>DeskUptime at $19 one-time.</p>", "pris"),
         ("Transmute Desktops 19 USD", "<p>Transmute Desktop: 19 USD.</p>", "pris"),
+        ("vores pris står i næste sætning efter navnet", "<p>EUComply Pro adds editable documents. $79 per site.</p>", "pris"),
+        ("vores pris bag en konkurrents pris i samme afsnit", (
+            "<p>Better Stack costs $29/responder/month and extra monitors come in packs of 50 for "
+            "about $25 a month, with heartbeats and status pages sold apart, so a solo developer "
+            "lands at $400 a year. DeskUptime at $19 one-time answers that.</p>"), "$19"),
     ):
         root = fixture()
         put(root, "scan/index.html", f"<html><head></head><body><main>{text}</main></body></html>")
@@ -781,6 +802,15 @@ def selftest() -> int:
         ("konkurrentpris i tabelcelle", "<table><tr><td>Cookiebot</td><td>€59/month</td></tr></table>"),
         ("konkurrent med bundled og licens", "<p>Status pages bundled in; the Cookiebot licence is €59.</p>"),
         ("19 USD uden et lukket produkt (DevNotify)", "<p>The DevNotify licence is $19.</p>"),
+        # Målt på sitet 22/11-2026: konkurrentens pris står i samme afsnit som vores
+        # produktnavn, men langt fra det. Når vores egen pris er fjernet, skal afsnittet
+        # være grønt uden at konkurrentens $29 og €49 også skal væk.
+        ("konkurrentpris langt fra vores produktnavn", (
+            "<p>Better Stack makes beautiful monitoring and incident-management software, but its "
+            "modular pricing adds up fast: a paid seat costs $29/responder/month and extra monitors "
+            "come in packs of 50 for about $25 a month. A solo developer can easily land at "
+            "$400 a year. If your need is simply \"are my sites up\", then UptimeRobot's free tier "
+            "or DeskUptime answers that.</p>")),
     ):
         root = fixture()
         put(root, "scan/index.html", f"<html><head></head><body><main>{text}</main></body></html>")
