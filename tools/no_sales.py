@@ -539,8 +539,10 @@ def repo_file_findings(root: Path) -> List[str]:
 # ---------------------------------------------------------------------------
 SCANNED = {".html": "html", ".txt": "text", ".xml": "text", ".json": "text",
            ".svg": "text", ".webmanifest": "text", ".js": "js"}
+# `_partials` er med: header og footer bærer navigationen, og et "Pricing"-link
+# dér ender på hver eneste side.
 INTERNAL_PARTS = frozenset({"POSTS", "ops", "deliverables", "gumroad", "__pycache__",
-                            "node_modules", ".deploy-staging", "_partials"})
+                            "node_modules", ".deploy-staging"})
 # Kildekopier af pluginet. De er byte-identiske med plugin/ og må ikke ændres
 # uden en plugin-udgivelse (versionsbump, zip, paritetskontrol), så de er
 # undtaget med vilje. Alt andet i træet er ikke.
@@ -594,8 +596,7 @@ def _home(language: str, extra: str = "", notice: Optional[str] = None) -> str:
     text = notice if notice is not None else (
         NOTICE_EN if language == "en" else f"EUComply er frosset ({language}) som gratis open source pr. 22/11-2026.")
     return (
-        '<!doctype html><html><head><title>EUComply</title>'
-        '<link rel="canonical" href="https://eucomplypro.com/"></head><body><main>'
+        '<!doctype html><html><head><title>EUComply</title></head><body><main>'
         f'<div id="frozen-notice"><p>{text}</p></div>'
         f"<p>Free scanner.</p>{extra}</main></body></html>"
     )
