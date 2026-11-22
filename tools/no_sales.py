@@ -104,18 +104,87 @@ def checkout_links(text: str) -> List[str]:
 # 6.58 er 79/12, den månedlige omregning kontrakten brugte, og 14.99 var den
 # gamle e-bogspris. Begge var en pris på siden og er det ikke længere.
 PRICE_NUMBERS = ("149", "79", "69", "59", "49", "39", "29", "14.99", "6.58")
-_NUM = "(?:" + "|".join(re.escape(n) for n in PRICE_NUMBERS) + ")"
+# DeskUptime, Transmute Desktop og Clean Copy kostede 19 USD. Det tal er også
+# prisen på DevNotify og Page Profile Pro, som IKKE er lukket, så 19 tæller kun
+# i en tekst der nævner et af de tre lukkede produkter (CLOSED_NINETEEN_RE).
+CLOSED_NINETEEN = ("19",)
 _CUR_BEFORE = r"(?:US\$|\$|USD\s?|EUR\s?|€|DKK\s?|kr\.?\s?)"
 _CUR_AFTER = r"(?:\s?(?:USD|US\$|\$|dollars?|EUR|€|DKK|kr\b\.?))"
-PRICE_RE = re.compile(
-    rf"(?<![\w.,/])(?:{_CUR_BEFORE}\s?{_NUM}(?![\d])(?![.,]\d)(?:[.,]00)?"
-    rf"|{_NUM}(?:[.,]00)?{_CUR_AFTER}(?![\w]))",
-    re.I,
-)
+
+
+def _price_re(numbers: Tuple[str, ...]) -> "re.Pattern[str]":
+    num = "(?:" + "|".join(re.escape(n) for n in numbers) + ")"
+    return re.compile(
+        rf"(?<![\w.,/])(?:{_CUR_BEFORE}\s?{num}(?![\d])(?![.,]\d)(?:[.,]00)?"
+        rf"|{num}(?:[.,]00)?{_CUR_AFTER}(?![\w]))",
+        re.I,
+    )
+
+
+PRICE_RE = _price_re(PRICE_NUMBERS)
+PRICE19_RE = _price_re(CLOSED_NINETEEN)
 
 
 def price_hits(text: str) -> List[str]:
     return [m.group(0).strip() for m in PRICE_RE.finditer(text)]
+
+
+# En pris tæller kun når teksten den står i handler om vores egne produkter. De
+# samme tal er konkurrenters priser ("Better Stack $29/md", "Oh Dear €49"), og
+# dem har vi ingen grund til at fjerne: de står i en tabelcelle eller en sætning
+# der ikke nævner EUComply, Pro, DeskUptime, Transmute, skabeloner, e-bogen eller
+# en licens. Enheden er derfor tekstblokken (afsnit, listepunkt, tabelcelle,
+# metabeskrivelse, JSON-LD-streng), ikke hele siden.
+OUR_PRODUCT_RE = re.compile(
+    r"EUComply|(?-i:\bPro\b)|DeskUptime|Transmute|Clean\s?Copy|\btemplates?\b|skabelon\w*|"
+    r"vorlage\w*|mod[èe]les?\b|\bbundles?\b|e-?books?\b|e-?bog\w*",
+    re.I,
+)
+CLOSED_NINETEEN_RE = re.compile(r"DeskUptime|Transmute|Clean\s?Copy", re.I)
+
+
+def price_findings(rel: str, blocks: Iterable[str]) -> List[str]:
+    findings: List[str] = []
+    seen = set()
+    for block in blocks:
+        hits: List[str] = []
+        if OUR_PRODUCT_RE.search(block):
+            hits.extend(price_hits(block))
+        if CLOSED_NINETEEN_RE.search(block):
+            hits.extend(m.group(0).strip() for m in PRICE19_RE.finditer(block))
+        for hit in hits:
+            if hit not in seen:
+                seen.add(hit)
+                findings.append(f"{rel}: pris {hit!r} — Pro, skabeloner, e-bog-bundle, DeskUptime og Transmute har ingen pris mere: {block[:80]}")
+    return findings
+
+
+def _json_strings(text: str) -> List[str]:
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return [line for line in text.splitlines() if line.strip()]
+    strings: List[str] = []
+
+    def walk(node: object) -> None:
+        if isinstance(node, str):
+            strings.append(node)
+        elif isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(data)
+    return strings
+
+
+def _ld_strings(text: str) -> List[str]:
+    strings: List[str] = []
+    for raw in LDJSON_RE.findall(text):
+        strings.extend(_json_strings(html.unescape(raw)))
+    return strings
 
 
 # ---------------------------------------------------------------------------
@@ -290,6 +359,10 @@ SELL_RE = re.compile(
     r"acheter|achat\w*|prix|tarif\w*|annuel\w*)\b|/\s*year|/\s*år",
     re.I,
 )
+META_TEXT_NAMES = frozenset({
+    "description", "og:description", "twitter:description",
+    "og:title", "twitter:title", "keywords",
+})
 _VOID = frozenset("area base br col embed hr img input link meta param source track wbr".split())
 _SKIP = frozenset({"script", "style", "noscript", "template"})
 _BLOCK = frozenset(
@@ -305,6 +378,7 @@ class _Collector(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.blocks: List[str] = []
+        self.meta: List[str] = []
         self.ids: Dict[str, str] = {}
         self._buffer: List[str] = []
         self._skip = 0
@@ -317,6 +391,12 @@ class _Collector(HTMLParser):
         self._buffer = []
 
     def handle_starttag(self, tag, attrs):
+        if tag == "meta":
+            values = dict(attrs)
+            name = (values.get("name") or values.get("property") or "").lower()
+            if name in META_TEXT_NAMES and values.get("content"):
+                self.meta.append(re.sub(r"\s+", " ", values["content"]).strip())
+            return
         if tag in _SKIP:
             self._skip += 1
             return
@@ -378,10 +458,6 @@ def pro_findings(rel: str, blocks: List[str]) -> List[str]:
 # ---------------------------------------------------------------------------
 # Én fil
 # ---------------------------------------------------------------------------
-_NON_LD_SCRIPT_RE = re.compile(
-    r"<script\b(?![^>]*application/ld\+json)[^>]*>.*?</script>|<style\b[^>]*>.*?</style>",
-    re.I | re.S,
-)
 
 
 # DevNotify er et søskendeprodukt, der ikke er omfattet af frysningen: ejeren
@@ -407,18 +483,22 @@ def scan_text(rel: str, text: str, kind: str) -> List[str]:
         findings.append(f"{rel}: link til den lukkede side {link}")
     if kind == "js" or is_open_sibling(rel):
         return findings
-    priced = _NON_LD_SCRIPT_RE.sub(" ", text) if kind == "html" else text
-    for hit in sorted(set(price_hits(priced))):
-        findings.append(f"{rel}: pris {hit!r} — Pro, skabeloner og e-bog-bundle har ingen pris mere")
     if kind == "html":
+        collector = parse_blocks(text)
+        blocks = collector.blocks + collector.meta + _ld_strings(text)
+        findings.extend(price_findings(rel, blocks))
         findings.extend(offers_findings(rel, text))
         for label in buy_buttons(text):
             findings.append(f"{rel}: købsknap {label!r}")
-        findings.extend(pro_findings(rel, parse_blocks(text).blocks))
+        findings.extend(pro_findings(rel, blocks))
     elif kind == "text":
-        lines = [line for line in text.splitlines() if line.strip()]
-        if rel.endswith(".txt"):
-            findings.extend(pro_findings(rel, lines))
+        if rel.endswith(".json"):
+            blocks = _json_strings(text)
+            findings.extend(price_findings(rel, blocks))
+        elif rel.endswith(".txt"):
+            blocks = [line for line in text.splitlines() if line.strip()]
+            findings.extend(price_findings(rel, blocks))
+            findings.extend(pro_findings(rel, blocks))
     return findings
 
 
@@ -680,17 +760,31 @@ def selftest() -> int:
     expect_green("donation og Page Profile Pro må stå", root)
 
     for name, text, needle in (
-        ("pris i dollar-tegn", "<p>$79 a year.</p>", "pris"),
-        ("pris i USD", "<p>79 USD per website.</p>", "pris"),
-        ("lifetime-pris", "<p>One payment of 149 USD.</p>", "pris"),
+        ("pris i dollar-tegn", "<p>Pro is $79 a year.</p>", "pris"),
+        ("pris i USD", "<p>EUComply Pro: 79 USD per website.</p>", "pris"),
+        ("lifetime-pris", "<p>EUComply lifetime licence: one payment of 149 USD.</p>", "pris"),
         ("skabelonpris", "<p>The DPA template costs $59.</p>", "pris"),
         ("e-bog-bundle-pris", "<p>The e-book bundle is $29.</p>", "pris"),
         ("pris i metabeskrivelse", '<meta name="description" content="Pro from $49 a year">', "pris"),
-        ("pris i euro", "<p>Only €79.</p>", "pris"),
+        ("pris i euro", "<p>EUComply Pro, only €79.</p>", "pris"),
+        ("pris i tabelcelle med Pro", "<table><tr><td>Pro licence $79</td></tr></table>", "pris"),
+        ("pris i DeskUptime-tekst", "<p>DeskUptime costs $29 once.</p>", "pris"),
+        ("DeskUptimes 19 USD", "<p>DeskUptime at $19 one-time.</p>", "pris"),
+        ("Transmute Desktops 19 USD", "<p>Transmute Desktop: 19 USD.</p>", "pris"),
     ):
         root = fixture()
         put(root, "scan/index.html", f"<html><head></head><body><main>{text}</main></body></html>")
         expect(name, root, needle)
+
+    for name, text in (
+        ("konkurrentpris i afsnit", "<p>Better Stack costs $29 a month and Oh Dear €49.</p>"),
+        ("konkurrentpris i tabelcelle", "<table><tr><td>Cookiebot</td><td>€59/month</td></tr></table>"),
+        ("konkurrent med bundled og licens", "<p>Status pages bundled in; the Cookiebot licence is €59.</p>"),
+        ("19 USD uden et lukket produkt (DevNotify)", "<p>The DevNotify licence is $19.</p>"),
+    ):
+        root = fixture()
+        put(root, "scan/index.html", f"<html><head></head><body><main>{text}</main></body></html>")
+        expect_green(name + " er ikke vores pris", root)
 
     root = fixture()
     put(root, "scan/index.html", "<main><p>Fines reach 4% of turnover or €20 million, 79 pages, $790.</p></main>")

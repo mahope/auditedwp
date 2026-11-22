@@ -1,52 +1,65 @@
 #!/usr/bin/env python3
+"""Gate for hvad sitet siger om EUComply Pro, efter at salget er lukket.
+
+Ejeren besluttede 22/11-2026 at fryse EUComply som gratis open source. Pro,
+skabelonerne og e-bog-bundlet sælges ikke længere, og Stripe-linkene er
+deaktiveret; eksisterende licenser virker fortsat via licens-API'et.
+
+Før den dag dømte denne gate at salgssiderne var SANDE: præcis ét Pro-link pr.
+side, prisen 79 USD i fire sprog, de fem leverede Pro-funktioner nævnt på
+forside og prissider, og at ingen anden side solgte noget /pro/ benægtede. Det er
+vendt. Gaten kræver nu at sitet IKKE sælger Pro (betalingslink, pris, købsknap,
+link til /pricing/ og /pro/, JSON-LD offers over 0, de lukkede sider væk og
+301-redirectet), og den holder stadig hvad der er tilbage af produktsandhed:
+ingen overdrevne løfter om scanneren og pluginet, ingen sætning der benægter
+en Pro-funktion pluginet leverer, og pluginets egen tjek-optælling mod koden.
+
+Slettet fordi det krævede en købsvej: Pro-linkskontrollen (præcis ét link),
+prisformerne på fire sprog, canonical/hreflang for de otte salgssider,
+OG-billederne til salgssiderne, "en side må ikke sælge hvad /pro/ benægter"
+(den læste sin sandhed fra /pro/, som er slettet) og "salgssiderne skal nævne
+de leverede Pro-funktioner" (den krævede salgstekst).
+
+Fælles definition af et købsspor: `tools/no_sales.py`.
+"""
 from __future__ import annotations
 
 import bisect
 import html
 import json
 import re
-import struct
 import sys
 import unicodedata
 import zipfile
-import zlib
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Pattern, Sequence, Set, Tuple
 from unittest import mock
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import no_sales  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 ORIGIN = "https://eucomplypro.com"
-PRO_LINK = "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"
-# Lifetime-udgaven af samme Pro-licens (engangskøb, founding-pris, første 100
-# køb). Den er den eneste anden checkout en købsside må have, og højst én gang,
-# så årsabonnementet stadig er den ene Pro-CTA siden måles på.
-PRO_LIFETIME_LINK = "https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f"
 PLUGIN_VERSION = "1.3.41"
+# Fixture-stier. Siderne findes ikke længere (slettet 22/11-2026), men
+# over-claim-reglerne skal stadig bevises ved at brænde af på en Pro-side, og
+# `is_pro_page` er den der gør en sti til "Pro-scope". En sti her er derfor et
+# testbevis, ikke en side; en rigtig side på stien ville desuden være rød i
+# no_sales.removed_page_findings.
 FORCED_PRO_PAGES = {
     "site/pro/index.html",
-    "site/da/pro/index.html",
-    "site/de/pro/index.html",
-    "site/fr/pro/index.html",
-    "site/pro/dashboard/index.html",
-    "site/pro/thank-you/index.html",
-    "site/pro/vs-cookiebot/index.html",
-    "site/pro/vs-iubenda/index.html",
-    "site/pro/vs-onetrust/index.html",
-    "site/pro/vs-osano/index.html",
-    "site/pro/vs-termly/index.html",
+    "site/pro/sample-report/index.html",
 }
-BUYING_PAGES = {
-    "pro/index.html": ("en", "https://eucomplypro.com/pro/"),
-    "da/pro/index.html": ("da", "https://eucomplypro.com/da/pro/"),
-    "de/pro/index.html": ("de", "https://eucomplypro.com/de/pro/"),
-    "fr/pro/index.html": ("fr", "https://eucomplypro.com/fr/pro/"),
-    "pricing/index.html": ("en", "https://eucomplypro.com/pricing/"),
-    "da/pricing/index.html": ("da", "https://eucomplypro.com/da/pricing/"),
-    "de/pricing/index.html": ("de", "https://eucomplypro.com/de/pricing/"),
-    "fr/pricing/index.html": ("fr", "https://eucomplypro.com/fr/pricing/"),
+# Pluginets egen side på fire sprog: den eneste der stadig taler om pluginets
+# tjek, og derfor den eneste hvor et optalt antal tjek skal passe til koden.
+PLUGIN_COUNT_PAGES = {
+    "site/plugin/index.html",
+    "site/da/plugin/index.html",
+    "site/de/plugin/index.html",
+    "site/fr/plugin/index.html",
 }
 MONITORING_PAGES = {
     "site/scan/index.html",
@@ -55,7 +68,6 @@ MONITORING_PAGES = {
     "site/fr/scan/index.html",
 }
 PRODUCT_FILES = {
-    "index.html",
     "update.json",
     "plugin/eucomply.php",
     "plugin/readme.txt",
@@ -79,7 +91,6 @@ PRODUCT_FILES = {
     "worker-watch/index.js",
 }
 FREE_LIMIT_PAGES = {
-    "index.html",
     "site/index.html",
     "site/da/index.html",
     "site/de/index.html",
@@ -93,25 +104,12 @@ FREE_LIMIT_PAGES = {
     "site/blog/shopify-gdpr-compliance-guide/index.html",
     "site/blog/woocommerce-gdpr-compliance-guide/index.html",
     "site/blog/wix-gdpr-compliance-guide/index.html",
-    "site/pricing/index.html",
-    "site/da/pricing/index.html",
-    "site/de/pricing/index.html",
-    "site/fr/pricing/index.html",
     "site/how-it-works/index.html",
     "site/gdpr-scanner-free/index.html",
     "site/blog/cookiebot-alternative-2026/index.html",
     "site/blog/best-free-gdpr-compliance-checkers-2026/index.html",
-    "site/vs/complianz/index.html",
-    "site/vs/cookiebot/index.html",
-    "site/vs/enzuzo/index.html",
-    "site/vs/iubenda/index.html",
-    "site/vs/onetrust/index.html",
-    "site/vs/osano/index.html",
-    "site/vs/termly/index.html",
-    "site/vs/usercentrics/index.html",
 }
 PLUGIN_PARITY_PAGES = {
-    "index.html",
     "site/plugin/index.html",
     "site/check-eu-compliance/index.html",
 }
@@ -128,11 +126,6 @@ PLUGIN_TRUTH_PAGES = {
 PLUGIN_LOCAL_FILES = set(PLUGIN_TRUTH_PAGES)
 COMPARISON_TRUTH_PAGES = {
     "site/compare/index.html",
-    "site/pro/vs-cookiebot/index.html",
-    "site/pro/vs-iubenda/index.html",
-    "site/pro/vs-onetrust/index.html",
-    "site/pro/vs-osano/index.html",
-    "site/pro/vs-termly/index.html",
 }
 STATIC_SCAN_PAGES = {
     "site/cookie-banner-check/index.html",
@@ -142,14 +135,6 @@ STATIC_SCAN_PAGES = {
 DORA_TRUTH_PAGES = {
     "site/compare/index.html",
     "site/blog/webflow-gdpr-compliance-guide/index.html",
-    "site/vs/complianz/index.html",
-    "site/vs/cookiebot/index.html",
-    "site/vs/enzuzo/index.html",
-    "site/vs/iubenda/index.html",
-    "site/vs/onetrust/index.html",
-    "site/vs/osano/index.html",
-    "site/vs/termly/index.html",
-    "site/vs/usercentrics/index.html",
     "eucomply-scanner/README.md",
     "eucomply-scanner/engine/index.js",
     "shared/scan-engine.js",
@@ -178,37 +163,6 @@ STATIC_SCAN_TRUTH_RULES = (
 )
 DORA_TRUTH_RULES = (
     ("unsupported DNS/email-authentication check", re.compile(r"(?i)email authentication, failover|email authentication \(SPF, DKIM, DMARC\)|email-authentication \(SPF/DKIM/DMARC\)|resilience signals \(email auth, failover\)")),
-)
-OG_IMAGES = {
-    "site/pro/index.html": "site/images/og/pro.png",
-    "site/pricing/index.html": "site/images/og/pricing.png",
-    "site/da/pricing/index.html": "site/images/og/da-pricing.png",
-    "site/de/pricing/index.html": "site/images/og/de-pricing.png",
-    "site/fr/pricing/index.html": "site/images/og/fr-pricing.png",
-}
-PRICE_FORMS = {
-    "en": (
-        r"\b79\s+USD\s+per\s+website\s+per\s+year\b",
-        r"\b79\s+USD\s+a\s+year\s+per\s+website\b",
-    ),
-    "da": (
-        r"\b79\s+USD\s+pr\.?\s+web(?:sted|site)s?\s+pr\.?\s+år\b",
-        r"\b79\s+USD\s+om\s+året\s+pr\.?\s+websites?\b",
-    ),
-    "de": (
-        r"\b79\s+USD\s+pro\s+Website\s+pro\s+Jahr\b",
-        r"\b79\s+USD\s+pro\s+Jahr\s+und\s+Website\b",
-        r"\b79\s+USD\s+(?:je|pro)\s+Website\s+(?:und\s+)?pro\s+Jahr\b",
-    ),
-    "fr": (
-        r"\b79\s+USD\s+par\s+site(?:\s+web)?\s*,?\s+et\s+par\s+an\b",
-        r"\b79\s+USD\s+par\s+an\s+et\s+par\s+site(?:\s+web)?\b",
-    ),
-}
-CONTRADICTORY_PRICE = re.compile(
-    r"\b(?:EUComply\s+)?Pro\b[^\n.!?]{0,70}\b(?:costs?|priced at|price is)\s+(?:\$|USD\s*|EUR\s*|DKK\s*)?(?!79\b)\d+\b|"
-    r"\b(?:EUComply\s+)?Pro\b[^\n.!?]{0,50}\b(?:at|for)\s+(?:\$|USD\s*|EUR\s*|DKK\s*)(?!79\b)\d+\b",
-    re.I,
 )
 CLAIMS: Tuple[Tuple[str, Pattern[str]], ...] = (
     (
@@ -729,15 +683,6 @@ def target_header(value: str, relative: str) -> bool:
     text = normalize(value).lower()
     if "eucomply" in text:
         return True
-    buying = context_relative(relative) in BUYING_PAGES
-    if buying and (text == "pro" or re.match(r"^pro(?:\s|[-])", text)):
-        return True
-    # "Extension Pro", "Pro-Plugin", "Pro plugin": a translated header can lead
-    # with the product name. The French one did not match, so the whole French
-    # comparison column had never been read by a table claim -- neither by the
-    # over-claim rules nor by the new under-claim one.
-    if buying and re.search(r"(?:^|\s)pro$", text):
-        return True
     return False
 
 
@@ -1217,21 +1162,6 @@ def _shipped_pro_features() -> Tuple[ShippedFeature, ...]:
     )
 
 
-# The eight pages that decide what a buyer believes Pro is. Not every page that
-# mentions Pro, and not the vendor comparisons: this is the canonical truth
-# surface, in the four languages, and a feature the code ships has to be sold
-# somewhere a buyer actually compares plans.
-PRO_TRUTH_SURFACES = {
-    "site/pro/index.html",
-    "site/da/pro/index.html",
-    "site/de/pro/index.html",
-    "site/fr/pro/index.html",
-    "site/pricing/index.html",
-    "site/da/pricing/index.html",
-    "site/de/pricing/index.html",
-    "site/fr/pricing/index.html",
-}
-
 # The files a language model is pointed at instead of a page. They carry the
 # same product truth in the same English, and before 2026-09-29 nothing judged
 # them in that direction — see the denial branch in main().
@@ -1249,57 +1179,6 @@ DAILY_CADENCE_NAME = re.compile(
     r"daglig\w*|t\xe4glich\w*|t\xe4gliche\w*|quotidien\w*|chaque\s+jour)\b",
     re.I,
 )
-
-
-def _under_claim_features() -> Tuple[Tuple[str, Callable[[], bool], Pattern[str]], ...]:
-    """The shipped Pro features a canonical sales page has to name.
-
-    The name patterns are the *same objects* the denial direction uses, so the
-    two directions cannot drift apart into two vocabularies -- the failure mode
-    of every hand-kept list in this file so far.
-    """
-    by_key = {feature.key: feature for feature in _shipped_pro_features()}
-    return (
-        ("a scan history", plugin_ships_history, by_key["history"].name),
-        ("a client report link", plugin_ships_client_link, by_key["client link"].name),
-        ("a PDF report", plugin_ships_pdf, by_key["PDF report"].name),
-        ("an e-mail alert", plugin_ships_alert, by_key["alert"].name),
-        ("daily re-scans", plugin_schedules_daily_scan, DAILY_CADENCE_NAME),
-    )
-
-
-def under_claim_findings(relative: str, blocks: Sequence[TextBlock], text: Optional[str] = None) -> List[str]:
-    """Pages that sell Pro while sitting on a Pro feature the plugin ships.
-
-    The denial check above is the mirror image of this one, and neither is
-    optional. A page that denies history is a promise the product breaks; a page
-    that never mentions it is money left on the table, and it is how all eight
-    truth pages read on 26/9: 1.3.4 through 1.3.10 shipped history, a client
-    link, a report file, a daily cadence and pass-to-fail alerts, and /pro/ still
-    listed three features and put the rest under "planned".
-
-    A name only counts as *sold* when it is not scoped to the future or to the
-    hosted service. The product requires both of those denials, so a check that
-    could not tell them apart would push the site into over-claiming -- the same
-    trade the denial check makes in the other direction.
-    """
-    findings: List[str] = []
-    for label, shipped, name in _under_claim_features():
-        if not shipped():
-            continue
-        if any(
-            name.search(block.text)
-            and not ROADMAP.search(block.text)
-            and not ROADMAP_DISCLAIMER.search(block.text)
-            and not DENIED_VERB.search(block.text)
-            for block in blocks
-        ):
-            continue
-        findings.append(
-            f"{relative}: the plugin ships {label} behind the Pro licence, "
-            "but no line on this page sells it"
-        )
-    return findings
 
 
 # ---------------------------------------------------------------------------
@@ -1590,119 +1469,6 @@ def denial_findings(
     return findings
 
 
-def host_denied_features() -> Dict[str, re.Pattern]:
-    """The features /pro/ itself says are NOT in Pro, as patterns to look for.
-
-    Read from the canonical page rather than kept as a hand-written list, for
-    the same reason every other name in this file is: a list of promises is a
-    list that rots. /pro/ is the page a buyer believes, so if it denies a
-    feature, that denial is the truth this gate measures other pages against.
-
-    Only the hosted/daily-monitoring denials are collected. They are the ones a
-    non-/pro/ page can contradict by accident: /extension/ is written as an
-    upsell for a *different* product, so it reaches for the most attractive
-    sentence it can find, and the hosted daily re-scan is exactly that.
-    """
-    truth = ROOT / "site/pro/index.html"
-    if not truth.exists():
-        return {}
-    with truth.open(encoding="utf-8") as handle:
-        blocks = parse_html(handle.read()).claim_blocks("site/pro/index.html")
-    names = {feature.key: feature.name for feature in _shipped_pro_features()}
-    denied: Dict[str, re.Pattern] = {}
-    for block in blocks:
-        if not HOSTED_QUALIFIER.search(block.text):
-            continue
-        if not DENIED_VERB.search(block.text):
-            continue
-        if DAILY_CADENCE_NAME.search(block.text):
-            denied["hosted daily re-scan"] = DAILY_CADENCE_NAME
-        if names["history"].search(block.text):
-            denied["hosted scan history"] = names["history"]
-    return denied
-
-
-def cross_page_claim_findings(relative: str, blocks: Sequence[TextBlock]) -> List[str]:
-    """A page may not sell a Pro feature that /pro/ says is not in Pro.
-
-    This is the one direction neither existing gate covers, and it is how
-    /extension/ came to contradict itself: 400px apart it said "EUComply Pro
-    re-checks your site daily, keeps per-check history" and "Hosted daily
-    monitoring is not included". Both sentences were individually defensible to
-    the writer who typed them, and every gate was green, because:
-
-      * denial_findings() only fires when ONE page denies a feature the PLUGIN
-        ships — the daily re-scan *is* shipped (1.3.8), so nothing was denied;
-      * the over-claim gate skips a block that mentions "hosted", and the
-        upsell note did not;
-      * /extension/ is not a Pro page, so under_claim_findings() never saw it.
-
-    The defect is a *disagreement between two pages about the same product*,
-    which no single-page check can see. So this reads the denial off /pro/ and
-    fails any other page that sells the same thing without the hosted scope.
-
-    PRO_CONTEXT is required, and it is not decoration. Without it the rule read
-    `history.replaceState` in the scan page's own JavaScript as a claim about
-    scan history, and flagged the sibling product on /transmute/ because its
-    desktop app has a "history" tab — 92 findings, none of them about this
-    product. A page has to actually talk about the Pro licence before its
-    sentences count as claims about what Pro contains.
-    """
-    if not PRO_CONTEXT.search(" ".join(b.text for b in blocks)):
-        return []
-    denied = host_denied_features()
-    if not denied:
-        return []
-    findings: List[str] = []
-    for block in blocks:
-        # Prose only. A JavaScript string literal is not a promise a buyer
-        # reads: `history.replaceState` in the scan page's own URL handling
-        # matched the history pattern, and a monitor status string matched the
-        # cadence one. Same error class as reading a comment as copy — the
-        # sentence has to be one a person is shown.
-        if block.kind in ("image-metadata", "javascript"):
-            continue
-        if OTHER_PRODUCTS.search(block.text):
-            continue
-        # The sentence must be *about the Pro licence itself*. Scoping the check
-        # to the page was wrong: the homepage names Pro in its nav, so its
-        # privacy note about the free scanner's own daily monitoring read as a
-        # Pro claim. A promise is a promise when the sentence says what it is a
-        # promise about.
-        if not PRO_CONTEXT.search(block.text):
-            continue
-        for label, name in denied.items():
-            for match in name.finditer(block.text):
-                clause = _sentence(block.text, match)
-                # The sentence must be about the Pro licence itself. Deciding
-                # that per *block* was wrong in the same way the fixed window
-                # was: "The EUComply Pro CLI is free. The Transmute desktop app
-                # adds a history tab" is one block, and the Pro mention is in
-                # the other sentence. A promise is made in a sentence, so that
-                # is the unit the claim is judged on.
-                if not PRO_CONTEXT.search(clause):
-                    continue
-                if HOSTED_QUALIFIER.search(clause):
-                    continue
-                # …or scoped to where it actually runs. This is the mirror of
-                # HOSTED_QUALIFIER and it reuses LOCAL_CADENCE_SCOPE rather than
-                # a new list, because that is the same question asked by
-                # local_cadence_claim(): does the sentence say WHERE the daily
-                # scan happens? "a daily re-scan in your own WordPress" is true;
-                # "Pro re-checks your site daily" is the bug. Writing a third
-                # vocabulary for one concept is how this file ended up with four.
-                if LOCAL_CADENCE_SCOPE.search(clause):
-                    continue
-                if ROADMAP.search(clause) or ROADMAP_DISCLAIMER.search(clause):
-                    continue
-                findings.append(
-                    f"{relative}:{block.line}: sells {label} as part of Pro, but "
-                    "site/pro/index.html says hosted monitoring is not included — "
-                    f"scope it the same way, or drop it: {clause.strip()}"
-                )
-    return findings
-
-
 def _sentence(text: str, match: re.Match) -> str:
     """The sentence a match sits in, bounded by stops and the block's edges.
 
@@ -1727,7 +1493,6 @@ def _sentence(text: str, match: re.Match) -> str:
     ) if i != -1]
     end = min(stops) + 1 if stops else len(text)
     return text[start:end]
-
 
 
 def claim_exempt(segment: str, match: re.Match, relative: str = "", label: str = "") -> bool:
@@ -1918,144 +1683,6 @@ def product_truth_findings(relative: str, text: str) -> List[str]:
         for label, pattern in DORA_TRUTH_RULES:
             if pattern.search(text):
                 findings.append(f"{relative}: {label}")
-    if relative == "site/pro/sample-report/index.html":
-        if re.search(r"(?i)meets basic DORA|compliant with European Accessibility", text):
-            findings.append(f"{relative}: unsupported compliance determination in static sample")
-    return findings
-
-
-def price_findings(language: str, text: str) -> List[str]:
-    value = normalize(text)
-    if CONTRADICTORY_PRICE.search(value):
-        return [f"contradictory Pro price in {language}"]
-    if any(re.search(pattern, value, re.I) for pattern in PRICE_FORMS[language]):
-        return []
-    return [f"expected exact 79 USD per website per year entitlement in {language}"]
-
-
-def expected_alternates(relative: str) -> Dict[str, str]:
-    page = "pro" if "/pro/" in f"/{relative}" or relative.startswith("pro/") else "pricing"
-    paths = {"en": "", "da": "da/", "de": "de/", "fr": "fr/"}
-    result = {language: f"https://eucomplypro.com/{prefix}{page}/" for language, prefix in paths.items()}
-    result["x-default"] = result["en"]
-    return result
-
-
-def stripe_cta_findings(relative: str, text: str) -> List[str]:
-    document = parse_html(text)
-    anchors = [(attrs, line) for tag, attrs, line in document.links if tag == "a"]
-    purchase_links = [attrs.get("href", "") for attrs, _ in anchors if attrs.get("href") == PRO_LINK]
-    findings: List[str] = []
-    if len(purchase_links) != 1 or text.count(PRO_LINK) != 1:
-        findings.append(f"{relative}: expected exactly one Pro Stripe CTA")
-    if text.count(PRO_LIFETIME_LINK) > 1:
-        findings.append(f"{relative}: expected at most one Pro Lifetime Stripe CTA")
-    for url in set(re.findall(r"https?://[^\s\"'<>]+", html.unescape(text))):
-        normalized = url.rstrip(".,);")
-        if any(host in normalized.lower() for host in ("buy.stripe.com", "lemonsqueezy.com", "gumroad.com")) and normalized not in (PRO_LINK, PRO_LIFETIME_LINK):
-            findings.append(f"{relative}: unexpected checkout CTA {normalized}")
-    return findings
-
-
-def buying_page_findings(relative: str, text: str) -> List[str]:
-    language, canonical = BUYING_PAGES[relative]
-    document = parse_html(text)
-    findings: List[str] = []
-    findings.extend(stripe_cta_findings(relative, text))
-    canonical_links = [attrs.get("href", "") for tag, attrs, _ in document.links if tag == "link" and "canonical" in attrs.get("rel", "").lower().split()]
-    if canonical_links != [canonical]:
-        findings.append(f"{relative}: expected self-canonical {canonical}")
-    hreflangs = {
-        attrs.get("hreflang", ""): attrs.get("href", "")
-        for tag, attrs, _ in document.links
-        if tag == "link" and "alternate" in attrs.get("rel", "").lower().split() and attrs.get("hreflang")
-    }
-    expected = expected_alternates(relative)
-    if hreflangs != expected:
-        findings.append(f"{relative}: expected complete alternate map {expected}")
-    if hreflangs.get(language) != canonical:
-        findings.append(f"{relative}: incorrect self hreflang")
-    all_text = " ".join(block.text for block in document.blocks)
-    all_text += " " + " ".join(value for script in document.scripts for value in javascript_strings(script.content))
-    if "WordPress" not in all_text or "HTML" not in all_text:
-        findings.append(f"{relative}: missing current WordPress/HTML product truth")
-    findings.extend(price_findings(language, all_text))
-    return findings
-
-
-def png_text_metadata(data: bytes) -> Tuple[Dict[str, str], int, int]:
-    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
-        raise ValueError("invalid PNG signature")
-    offset = 8
-    metadata: Dict[str, str] = {}
-    width = 0
-    height = 0
-    while offset + 12 <= len(data):
-        length = struct.unpack(">I", data[offset:offset + 4])[0]
-        chunk_type = data[offset + 4:offset + 8]
-        end = offset + 12 + length
-        if end > len(data):
-            raise ValueError("truncated PNG chunk")
-        payload = data[offset + 8:offset + 8 + length]
-        if chunk_type == b"IHDR" and length >= 8:
-            width, height = struct.unpack(">II", payload[:8])
-        elif chunk_type == b"tEXt":
-            keyword, value = payload.split(b"\x00", 1)
-            metadata[keyword.decode("latin-1")] = value.decode("latin-1")
-        elif chunk_type == b"zTXt":
-            keyword, rest = payload.split(b"\x00", 1)
-            if not rest or rest[0] != 0:
-                raise ValueError("invalid zTXt chunk")
-            metadata[keyword.decode("latin-1")] = zlib.decompress(rest[1:]).decode("latin-1")
-        elif chunk_type == b"iTXt":
-            keyword, rest = payload.split(b"\x00", 1)
-            compression_flag = rest[0]
-            compression_method = rest[1]
-            rest = rest[2:]
-            _language, rest = rest.split(b"\x00", 1)
-            _translated, text = rest.split(b"\x00", 1)
-            if compression_flag:
-                if compression_method != 0:
-                    raise ValueError("invalid iTXt compression method")
-                text = zlib.decompress(text)
-            metadata[keyword.decode("latin-1")] = text.decode("utf-8")
-        elif chunk_type == b"IEND":
-            break
-        offset = end
-    return metadata, width, height
-
-
-def page_copy(relative: str) -> Tuple[str, str]:
-    path = ROOT / relative
-    document = parse_html(path.read_text(encoding="utf-8"))
-    return document.h1, html.unescape(document.meta.get("description", ""))
-
-
-def og_image_findings() -> List[str]:
-    findings: List[str] = []
-    for page_relative, image_relative in OG_IMAGES.items():
-        image_path = ROOT / image_relative
-        page_path = ROOT / page_relative
-        if not page_path.exists():
-            findings.append(f"{page_relative}: missing source page for social image")
-            continue
-        if not image_path.exists():
-            findings.append(f"{image_relative}: missing social image")
-            continue
-        try:
-            title, description = page_copy(page_relative)
-            metadata, width, height = png_text_metadata(image_path.read_bytes())
-        except (OSError, UnicodeError, ValueError, zlib.error) as error:
-            findings.append(f"{image_relative}: unreadable social image metadata: {error}")
-            continue
-        if (width, height) != (1200, 630):
-            findings.append(f"{image_relative}: expected 1200x630 PNG")
-        if metadata.get("Title") != title:
-            findings.append(f"{image_relative}: Title metadata does not match page H1")
-        if metadata.get("Description") != description:
-            findings.append(f"{image_relative}: Description metadata does not match page meta description")
-        for value in (metadata.get("Title", ""), metadata.get("Description", "")):
-            findings.extend(claim_findings_for_blocks(page_relative, [TextBlock(value, 1, "image-metadata")]))
     return findings
 
 
@@ -2375,6 +2002,64 @@ def self_test_cases() -> List[Tuple[str, str, str, Optional[str]]]:
     return cases
 
 
+SALES_KINDS = {".html": "html", ".htm": "html", ".txt": "text", ".json": "text",
+               ".svg": "text", ".xml": "text", ".js": "js"}
+
+
+def closed_sales_findings(relative: str, text: str) -> List[str]:
+    """Intet købsspor på en publiceret flade. Definitionen bor i no_sales.py.
+
+    Pluginets kildekopier og `update.json` er undtaget af no_sales (byte-
+    identiske med filerne i roden, ændres kun ved en plugin-udgivelse), og
+    interne mapper dømmes ikke, fordi de ikke publiceres.
+    """
+    if not relative.startswith("site/"):
+        return []
+    inner = relative[len("site/"):]
+    kind = SALES_KINDS.get(Path(relative).suffix.lower())
+    if kind is None or inner in no_sales.EXEMPT_FILES:
+        return []
+    if no_sales.INTERNAL_PARTS & set(inner.split("/")[:-1]):
+        return []
+    return [f"site/{finding}" for finding in no_sales.scan_text(inner, text, kind)]
+
+
+def closed_sales_cases() -> List[Tuple[str, str, str, Optional[str]]]:
+    """(navn, sti, tekst, forventet delstreng i et fund; None = skal være grøn)."""
+    page = "site/scan/index.html"
+    ld = '<script type="application/ld+json">{"@type":"Product","offers":{"@type":"Offer","price":"%s"}}</script>'
+    return [
+        ("checkout link", page, '<main><a href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03">Pay</a></main>', "betalingslink"),
+        ("lifetime link", page, "<main>https://buy.stripe.com/28E5kC3UDcf0btA2WjbMQ0f</main>", "betalingslink"),
+        ("price", page, "<main><p>Pro costs 79 USD per website per year.</p></main>", "pris"),
+        ("price in meta", page, '<meta name="description" content="Pro for $79 a year"><main></main>', "pris"),
+        ("pricing link", page, '<main><a href="/pricing/">Pricing</a></main>', "lukkede side"),
+        ("pro link", page, '<main><a href="/da/pro/">Pro</a></main>', "lukkede side"),
+        ("offers with price", page, "<main>" + ld % "79" + "</main>", "JSON-LD offers"),
+        ("buy button", page, '<main><a class="btn" href="/scan/">Buy Pro</a></main>', "købsknap"),
+        ("pro mentioned without closure", page, "<main><p>EUComply Pro adds a daily scan.</p></main>", "nævner Pro"),
+        ("pro sold in a closed page", page, "<main><p>EUComply Pro, upgrade now.</p><p>Pro is no longer sold.</p></main>", "sælger Pro"),
+        ("llms sells pro", "site/llms.txt", "# EUComply\nEUComply Pro is a paid upgrade.\n", "sælger Pro"),
+        ("pro described as closed", page, "<main><p>EUComply Pro is no longer sold; existing licences keep working.</p></main>", None),
+        ("offers with price zero", page, "<main>" + ld % "0" + "</main>", None),
+        ("donation link stays", page, '<main><a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c">Support</a></main>', None),
+        ("page profile pro link stays", page, '<main><a href="https://buy.stripe.com/9B6eVcgHp7YK69ggN9bMQ04">Page Profile Pro</a></main>', None),
+        ("plugin copy is exempt", "site/plugin/readme.txt", "Buy Pro $79 https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03\n", None),
+    ]
+
+
+def closed_sales_self_tests(cases: List[Tuple[str, str, str, Optional[str]]]) -> List[str]:
+    failures: List[str] = []
+    for name, relative, text, expected in cases:
+        found = closed_sales_findings(relative, text)
+        if expected is None:
+            if found:
+                failures.append(f"self-test closed sales {name}: should be green, got {found}")
+        elif not any(expected in finding for finding in found):
+            failures.append(f"self-test closed sales {name}: expected {expected!r}, got {found}")
+    return failures
+
+
 def run_self_tests() -> Tuple[int, List[str]]:
     failures: List[str] = []
     checks = 0
@@ -2387,44 +2072,6 @@ def run_self_tests() -> Tuple[int, List[str]]:
                 failures.append(f"self-test {name}: unexpected findings: {findings}")
         elif not any(expected in finding for finding in findings):
             failures.append(f"self-test {name}: expected {expected}, got {findings}")
-    price_cases = (
-        ("price EN", "en", "Pro costs 79 USD per website per year."),
-        ("price DA", "da", "Pro koster 79 USD pr. websted pr. år."),
-        ("price DA website", "da", "Pro koster 79 USD pr. website pr. år."),
-        ("price DE", "de", "Pro kostet 79 USD pro Website pro Jahr."),
-        ("price DE je", "de", "Pro kostet 79 USD je Website und pro Jahr."),
-        ("price FR", "fr", "Pro coûte 79 USD par site web et par an."),
-        ("price FR comma", "fr", "Pro coûte 79 USD par site, et par an."),
-    )
-    checks += len(price_cases)
-    for name, language, text in price_cases:
-        if price_findings(language, text):
-            failures.append(f"self-test {name}: valid localized price rejected")
-    for language, text in (
-        ("en", "Pro costs $79 per month."),
-        ("da", "Pro koster 79 USD pr. måned."),
-        ("de", "Pro kostet 79 USD pro Monat."),
-        ("fr", "Pro coûte 79 USD par mois."),
-    ):
-        checks += 1
-        if not price_findings(language, text):
-            failures.append(f"self-test price {language}: invalid price accepted")
-    for language, text in (
-        ("en", "EUComply Pro keeps its history for 30 days."),
-        ("da", "Pro gemmer historik for 30 dage."),
-        ("de", "Pro ist für 3 Märkte gedacht."),
-    ):
-        checks += 1
-        if CONTRADICTORY_PRICE.search(text):
-            failures.append(f"self-test price false positive {language}: {CONTRADICTORY_PRICE.search(text).group(0)}")
-    checks += 1
-    if not price_findings("en", "Pro costs $79 per website per month."):
-        failures.append("self-test contradictory Pro price accepted")
-    png = minimal_test_png({})
-    checks += 1
-    metadata, width, height = png_text_metadata(png)
-    if metadata or (width, height) != (1, 1):
-        failures.append("self-test png metadata: minimal PNG parse failed")
     # The replaced-version redirect, proved against a temp _redirects that has no
     # line for the version this release replaced — the exact state that shipped a
     # 404 to every install on 1.3.4, 1.3.5 and now 1.3.6.
@@ -2442,10 +2089,6 @@ def run_self_tests() -> Tuple[int, List[str]]:
             f"/assets/eucomply-{replaced}.zip /assets/eucomply-{PLUGIN_VERSION}.zip",
             f"/assets/eucomply-{replaced}.zip /assets/eucomply-0.0.1.zip"))):
         failures.append("self-test redirect: a redirect to the wrong package was not flagged")
-    metadata, width, height = png_text_metadata(minimal_test_png({"Title": "Pro", "Description": "Current"}))
-    checks += 1
-    if metadata != {"Title": "Pro", "Description": "Current"} or (width, height) != (1, 1):
-        failures.append("self-test png metadata: textual metadata parse failed")
     missing_findings: List[str] = []
     checks += 1
     if read_bytes(ROOT / "__missing_required_artifact__", "missing artifact", missing_findings) is not None or not missing_findings:
@@ -2456,40 +2099,18 @@ def run_self_tests() -> Tuple[int, List[str]]:
         malformed = load_json(Path("malformed.json"), "malformed artifact", malformed_findings)
     if malformed is not None or not any("invalid JSON" in finding for finding in malformed_findings):
         failures.append("self-test malformed artifact: clean failure not reported")
-    checks += 1
-    try:
-        png_text_metadata(b"not a png")
-    except ValueError:
-        pass
-    else:
-        failures.append("self-test malformed PNG: clean failure not reported")
-    stripe_cases = (
-        ("single Stripe CTA", f'<a href="{PRO_LINK}">Buy</a>', False),
-        ("duplicate Stripe CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LINK}">Buy again</a>', True),
-        ("yearly plus lifetime CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LIFETIME_LINK}">Lifetime</a>', False),
-        ("duplicate lifetime CTA", f'<a href="{PRO_LINK}">Buy</a><a href="{PRO_LIFETIME_LINK}">Lifetime</a><a href="{PRO_LIFETIME_LINK}">Again</a>', True),
-        ("lifetime without yearly CTA", f'<a href="{PRO_LIFETIME_LINK}">Lifetime</a>', True),
-        ("legacy Lemon CTA", f'<a href="https://example.lemonsqueezy.com/checkout">Buy</a>', True),
-        ("JavaScript Stripe CTA", f'<button onclick="location.href=\'{PRO_LINK}\'">Buy</button>', True),
-    )
-    for name, text, should_fail in stripe_cases:
-        checks += 1
-        findings = stripe_cta_findings("site/pro/index.html", text)
-        if should_fail != bool(findings):
-            failures.append(f"self-test {name}: unexpected stripe findings {findings}")
     truth_cases = (
         ("no-storage guard", "site/index.html", "No account, nothing stored.", "overbroad no-storage claim"),
-        ("free limit guard", "site/pricing/index.html", "Free — unlimited scans.", "unlimited free-scan claim"),
+        ("free limit guard", "site/scan/index.html", "Free — unlimited scans.", "unlimited free-scan claim"),
         ("plugin parity guard", "site/plugin/index.html", "The same checks plus WordPress-specific ones.", "plugin parity claim"),
         ("script blocking guard", "plugin/readme.txt", "GDPR-compliant script blocking?", "unsupported script-blocking verification"),
         ("comparison capability guard", "site/compare/index.html", "Free, shareable PNG scorecard.", "unsupported PDF scorecard"),
         ("legacy monitoring link guard", "worker-watch/index.js", "View history: https://auditedwp.pages.dev/pro/", "legacy Pro link in monitoring mail"),
         ("stale ebook price guard", "site/blog/index.html", "Get the ebook — $14.99", "stale paid ebook CTA"),
-        ("result-link guard", "site/pricing/index.html", "Shareable result link", "persisted-result overclaim"),
-        ("template-table guard", "site/pricing/index.html", "Guide and checklists</td><td>Yes</td><td>No</td><td>Yes</td>", "free guide marked as paid template"),
+        ("result-link guard", "site/scan/index.html", "Shareable result link", "persisted-result overclaim"),
+        ("template-table guard", "site/scan/index.html", "Guide and checklists</td><td>Yes</td><td>No</td><td>Yes</td>", "free guide marked as paid template"),
         ("static-scan guard", "site/cookie-banner-check/index.html", "Pre-consent tracking", "runtime tracking overclaim"),
         ("DORA DNS guard", "site/compare/index.html", "Email authentication, failover and incident-response signals", "unsupported DNS/email-authentication check"),
-        ("sample compliance guard", "site/pro/sample-report/index.html", "Compliant with European Accessibility Act requirements", "unsupported compliance determination"),
     )
     for name, relative, text, expected in truth_cases:
         checks += 1
@@ -2499,11 +2120,9 @@ def run_self_tests() -> Tuple[int, List[str]]:
     failures.extend(local_cadence_self_tests())
     checks += LOCAL_CADENCE_CHECKS
     checks += DENIAL_CHECKS
-    checks += UNDER_CLAIM_CHECKS
-    failures.extend(under_claim_self_tests())
-    checks += UNDER_CLAIM_CHECKS
-    checks += CROSS_PAGE_CHECKS
-    failures.extend(cross_page_self_tests())
+    closed_cases = closed_sales_cases()
+    checks += len(closed_cases)
+    failures.extend(closed_sales_self_tests(closed_cases))
     checks += CHECK_COUNT_CHECKS
     failures.extend(check_count_self_tests())
     failures.extend(denial_self_tests())
@@ -2562,160 +2181,6 @@ def local_cadence_self_tests() -> List[str]:
     # in one release and the claim in another, so the hole must not reach it.
     if local_cadence_claim("plugin/readme.txt", "on your own WordPress server. " + "Earlier release text. " * 40 + LOCAL_DAILY):
         failures.append("self-test local cadence: a wall of text was accepted as one local statement")
-    return failures
-
-
-# The denied-feature check, and the properties that keep it from being a blunt
-# "no negatives on sales pages" rule. Each negative case below is a sentence the
-# product REQUIRES — a hosted-only disclaimer, a roadmap box, a competitor
-# comparison — so a gate that simply forbade them would push the site into
-# over-claiming instead, which is the other half of the same problem.
-UNDER_CLAIM_CHECKS = 8
-
-# The cross-page rule: four truths, each a way the sentence can be wrong without
-# changing what it promises. Two are the bug that was published and two are the
-# shapes it must NOT flag, because a rule that fires on the fixed copy teaches
-# the next agent to leave the page out of the check instead.
-CROSS_PAGE_CHECKS = 4
-
-
-def cross_page_self_tests() -> List[str]:
-    """The disagreement direction, both ways.
-
-    The positive cases are the sentences that were actually published — a rule
-    that only works on a sentence nobody wrote is a rule that does not work.
-    The negative cases are the fixed copy and the two near-misses that made this
-    rule emit 92 findings before it was calibrated: `history.replaceState` in
-    the scan page's JavaScript, and a Pro sentence scoped to the customer's own
-    WordPress, which is true and must stay allowed.
-    """
-    failures: List[str] = []
-    page = "site/extension/index.html"
-
-    published = (
-        '<p class="note">Need the scan to keep running after you close the tab? '
-        '<a href="/pro/">EUComply Pro</a> re-checks your site daily, keeps per-check '
-        'history, and reports to your client. It is the same engine with a schedule.</p>'
-    )
-    if not cross_page_claim_findings(page, parse_html(published).claim_blocks(page)):
-        failures.append(
-            "self-test cross-page silent: the sentence that shipped on "
-            "/extension/ was not flagged"
-        )
-
-    unscoped_history = (
-        '<p><a href="/pro/">EUComply Pro</a> keeps a scan history and '
-        're-checks your site daily.</p>'
-    )
-    if not cross_page_claim_findings(page, parse_html(unscoped_history).claim_blocks(page)):
-        failures.append("self-test cross-page silent: an unscoped Pro sale was not flagged")
-
-    # The fixed copy: same three features, scoped to where they run. Green.
-    fixed = (
-        '<p class="note">Need the scan to keep running after you close the tab? '
-        '<a href="/pro/">EUComply Pro</a> runs the same checks on a schedule in your own '
-        "WordPress: a daily re-scan, per-check history you can read in wp-admin, and a "
-        "shareable report link for your client.</p>"
-    )
-    if cross_page_claim_findings(page, parse_html(fixed).claim_blocks(page)):
-        failures.append("self-test cross-page over-claim: a sentence scoped to WordPress was flagged")
-
-    # A JavaScript string literal is not a promise a buyer reads.
-    script = (
-        "<p>EUComply Pro licence</p>"
-        "<script>try { history.replaceState(null, '', '?url=' + host(d.url)); } catch (e) {}</script>"
-    )
-    if cross_page_claim_findings("site/scan/index.html", parse_html(script).claim_blocks("site/scan/index.html")):
-        failures.append("self-test cross-page over-claim: JavaScript was read as a Pro claim")
-
-    # The sibling product on another domain's page is not this product's claim.
-    sibling = (
-        '<p>The EUComply Pro CLI is free. The Transmute desktop app adds a history '
-        'tab and batch processing, and checks sites daily.</p>'
-    )
-    if cross_page_claim_findings("site/transmute/index.html", parse_html(sibling).claim_blocks("site/transmute/index.html")):
-        failures.append("self-test cross-page over-claim: another product's features were read as Pro's")
-    return failures
-
-# The eight truths the four published pages must reach. Written as the pages
-# actually read, because a selftest written after the pattern is the reason a
-# vocabulary gap survives: the EN/DE/FR words here were each absent from a name
-# pattern on the first run, which is how a whole language goes unread and green.
-UNDER_CLAIM_SAMPLE = {
-    "site/pro/index.html": (
-        "<li><b>Daily automatic re-scans</b><p>A Pro site is scanned once a day.</p></li>"
-        "<li><b>Scan history: one snapshot per day, per check</b><p>52 days of history.</p></li>"
-        "<li><b>Email alert when a check breaks</b><p>The plugin emails the owner.</p></li>"
-        "<li><b>A read-only report link for your client</b><p>The client opens it without a login.</p></li>"
-        "<li><b>HTML and PDF report from the latest scan</b><p>Download it as either format.</p></li>"
-    ),
-    "site/da/pro/index.html": (
-        "<li><b>Daglige automatiske scanninger</b><p>Scannes én gang om dagen.</p></li>"
-        "<li><b>Scanningshistorik: ét snapshot om dagen</b><p>52 dages historik.</p></li>"
-        "<li><b>Mailalarm, når et tjek bryder</b><p>Pluginen sender en mail.</p></li>"
-        "<li><b>Et skrivebeskyttet rapportlink til din kunde</b><p>Kunden åbner det uden login.</p></li>"
-        "<li><b>HTML- og PDF-rapport fra den seneste scanning</b><p>Hent den i begge formater.</p></li>"
-    ),
-    "site/de/pro/index.html": (
-        "<li><b>Tägliche automatische Scans</b><p>Wird einmal täglich gescannt.</p></li>"
-        "<li><b>Scan-Verlauf: täglich ein Eintrag</b><p>52 Einträge Verlauf.</p></li>"
-        "<li><b>E-Mail-Alarm, wenn eine Prüfung ausfällt</b><p>Das Plugin verschickt eine E-Mail.</p></li>"
-        "<li><b>Ein schreibgeschützter Berichtslink für Ihren Kunden</b><p>Ohne Anmeldung.</p></li>"
-        "<li><b>HTML- und PDF-Bericht aus dem letzten Scan</b><p>In beiden Formaten herunterladbar.</p></li>"
-    ),
-    "site/fr/pro/index.html": (
-        "<li><b>Scans automatiques quotidiens</b><p>Scanné une fois par jour.</p></li>"
-        "<li><b>Historique de scan : une entrée par jour</b><p>52 relevés.</p></li>"
-        "<li><b>Alerte e-mail quand un contrôle échoue</b><p>L\'extension envoie un e-mail.</p></li>"
-        "<li><b>Un lien de rapport en lecture seule pour votre client</b><p>Sans connexion.</p></li>"
-        "<li><b>Rapport HTML et PDF du dernier scan</b><p>Téléchargeable dans les deux formats.</p></li>"
-    ),
-    "site/pricing/index.html": (
-        "<tr><td>Daily scheduled WordPress scan</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
-        "<tr><td>Scan history: one snapshot per day, per check</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
-        "<tr><td>Email alert when a check passes and later fails</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
-        "<tr><td>Read-only report link for a client</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
-        "<tr><td>HTML and PDF report from the latest WordPress scan</td><td>\u2014</td><td>Yes, in the plugin</td></tr>"
-    ),
-}
-
-
-def under_claim_self_tests() -> List[str]:
-    """Both directions of the new check, and the real pages behind them.
-
-    The positive half is the part that matters: it reads the eight *published*
-    pages, so a vocabulary gap in a language is red here rather than a page that
-    ships three features and calls the rest planned.
-    """
-    failures: List[str] = []
-    for relative, markup in UNDER_CLAIM_SAMPLE.items():
-        for feature in ("a scan history", "a client report link", "an e-mail alert", "daily re-scans", "a PDF report"):
-            if under_claim_findings(relative, parse_html(markup).claim_blocks(relative)):
-                failures.append(f"self-test under-claim {relative}: a complete Pro page was flagged")
-    # The page as it read on 26/9: three features, the rest under "planned".
-    bare = "<ul><li><b>Pro license in WordPress</b><p>Validated in the plugin.</p></li></ul>"
-    findings = under_claim_findings("site/pro/index.html", parse_html(bare).claim_blocks("site/pro/index.html"))
-    for feature in ("a scan history", "an e-mail alert", "daily re-scans"):
-        if not any(feature in finding for finding in findings):
-            failures.append(f"self-test under-claim silent: a page that never mentions {feature} passed")
-    # A hosted roadmap line names the same words and sells nothing: it must not
-    # be able to satisfy the check, or the site could stay exactly as it is.
-    hosted = (
-        "<p class=\"status\">Planned features, not included today: hosted daily re-scans, "
-        "a scan history in the hosted service, runtime PDF reports and a live badge.</p>"
-    )
-    findings = under_claim_findings("site/pro/index.html", [TextBlock(re.sub(r"<[^>]+>", " ", hosted), 1)])
-    if len(findings) < 3:
-        failures.append("self-test under-claim roadmap: a hosted roadmap line was able to pass as a sale")
-    for relative in sorted(PRO_TRUTH_SURFACES):
-        path = ROOT / relative
-        if not path.exists():
-            continue
-        text = read_text(path, f"self-test under-claim: {relative}", [])
-        if text is None:
-            continue
-        if under_claim_findings(relative, parse_html(text).claim_blocks(relative)):
-            failures.append(f"self-test under-claim real page {relative}: the published page does not sell everything the plugin ships")
     return failures
 
 
@@ -3055,17 +2520,6 @@ def readme_count_self_tests(real: str, count: int) -> List[str]:
     return failures
 
 
-def minimal_test_png(metadata: Dict[str, str]) -> bytes:
-    def chunk(kind: bytes, payload: bytes) -> bytes:
-        return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind + payload) & 0xFFFFFFFF)
-    data = b"\x89PNG\r\n\x1a\n"
-    data += chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
-    for key, value in metadata.items():
-        data += chunk(b"iTXt", key.encode("latin-1") + b"\x00\x00\x00\x00\x00" + value.encode("utf-8"))
-    data += chunk(b"IEND", b"")
-    return data
-
-
 def claim_paths() -> Set[Path]:
     paths = set(SITE.rglob("*.html"))
     paths.update(SITE.glob("llms*.txt"))
@@ -3077,7 +2531,6 @@ def claim_paths() -> Set[Path]:
 
 def main() -> int:
     findings: List[str] = []
-    buying_pages_checked: Set[str] = set()
     self_test_count, self_test_failures = run_self_tests()
     findings.extend(self_test_failures)
     for path in sorted(claim_paths()):
@@ -3089,58 +2542,32 @@ def main() -> int:
         if text is None:
             continue
         findings.extend(product_truth_findings(relative, text))
-        if relative.startswith("site/") and context_relative(relative) in BUYING_PAGES:
-            buying_pages_checked.add(context_relative(relative))
-            findings.extend(buying_page_findings(context_relative(relative), text))
-        has_checkout = any(host in text.lower() for host in ("buy.stripe.com", "lemonsqueezy.com", "gumroad.com"))
-        has_pro_scope = is_pro_page(relative) or bool(re.search(r"\bEUComply\s+Pro\b", text, re.I))
-        if path.suffix.lower() in {".html", ".htm"} and has_checkout and has_pro_scope:
-            findings.extend(stripe_cta_findings(relative, text))
+        findings.extend(closed_sales_findings(relative, text))
         if path.suffix.lower() in {".html", ".htm", ".svg"}:
             findings.extend(text_findings(relative, text))
         else:
             findings.extend(raw_claim_findings(relative, text))
         if path.suffix.lower() in {".html", ".htm"} and PRO_PAGE_CONTEXT.search(text):
             # A page that talks about the Pro licence may not deny a feature that
-            # licence unlocks. This direction is otherwise unwatched: the gate
-            # stays green, the page stays published, the feature stays unsold.
+            # licence still unlocks for the people who hold one. The mirror of the
+            # closed shop: the site no longer SELLS Pro, but it may not misdescribe
+            # what an existing licence does.
             document = parse_html(text)
             findings.extend(denial_findings(relative, document.claim_blocks(relative), headings=document.headings))
         elif relative in MACHINE_READABLE_SURFACES and PRO_PAGE_CONTEXT.search(text):
             # The same direction on the files a language model reads instead of
-            # a page. site/llms-full.txt said "per-check history, pass-to-fail
-            # email alerts ... are planned, not included today" for a year after
-            # 1.3.4 and 1.3.10 shipped both behind is_pro(), and the gate stayed
-            # green for the whole time: the check above is keyed on the .html
-            # suffix, so the one file on this site written to be read by an agent
-            # was the one file it could not judge. Same failure class as the
-            # /support/ 404 in iteration 117 — a surface nothing points at, so
-            # the check that needs a reference never gets one. raw_blocks()
-            # gives the same TextBlock shape denial_findings() reads, so the
-            # rule and its vocabulary are the same objects, not a second copy.
+            # a page. raw_blocks() gives the same TextBlock shape denial_findings()
+            # reads, so the rule and its vocabulary are the same objects.
             findings.extend(denial_findings(relative, markdown_blocks(text)))
-        if path.suffix.lower() in {".html", ".htm"} and relative not in PRO_TRUTH_SURFACES:
-            # The disagreement direction: this page sells something /pro/ denies.
-            findings.extend(cross_page_claim_findings(relative, parse_html(text).claim_blocks(relative)))
-        if relative in PRO_TRUTH_SURFACES:
-            # The other direction, on the pages a buyer compares plans on: a
-            # shipped feature nobody names is a feature nobody pays extra for.
-            findings.extend(under_claim_findings(relative, parse_html(text).claim_blocks(relative)))
-            # And a number on those same pages, which no name pattern can see:
-            # how many checks the Pro scan covers is parsed out of run_checks().
+        if relative in PLUGIN_COUNT_PAGES:
+            # The one page left that counts the plugin's checks: the number is
+            # parsed out of run_checks(), so a page cannot be wrong about it.
             findings.extend(plugin_check_count_findings(relative, text))
-        if relative in MACHINE_READABLE_SURFACES:
-            # The mirror on the two files an agent reads. A silent omission is
-            # the same money left on the table as on /pro/, and llms.txt named
-            # two of the five shipped Pro features before this.
-            findings.extend(under_claim_findings(relative, markdown_blocks(text)))
-    expected_buying_pages = set(BUYING_PAGES)
-    if buying_pages_checked != expected_buying_pages:
-        missing = sorted(expected_buying_pages - buying_pages_checked)
-        findings.append(f"buying-page gate skipped: {missing}")
+    # The pages are gone and every path redirects with a 301 to a page that exists.
+    findings.extend(f"site/{finding}" for finding in no_sales.removed_page_findings(SITE))
+    findings.extend(f"site/{finding}" for finding in no_sales.frozen_notice_findings(SITE))
     findings.extend(artifact_findings())
     findings.extend(structured_data_findings())
-    findings.extend(og_image_findings())
     # The plugin's own readme: shipped in the zip, rendered on wp.org. It is
     # not a site page, so nothing above reaches it -- and it is where a stale
     # "6 checks" survived while four locales were kept honest by the same rule.
@@ -3155,7 +2582,7 @@ def main() -> int:
         print(f"\n{len(findings)} Pro product-truth findings")
         return 1
     print(f"{self_test_count} self-tests passed")
-    print("0 unexpected EUComply Pro claims")
+    print("0 sales traces and 0 unexpected EUComply Pro claims")
     return 0
 
 
