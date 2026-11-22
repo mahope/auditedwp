@@ -97,7 +97,7 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         {
           "@type": "Question",
           "name": "Is this bulk URL checker really free?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, no limits beyond 10 URLs per run. DeskUptime Pro ($19 one-time) adds scheduled monitoring and desktop alerts for the same URLs." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, no limits beyond 10 URLs per run." }
         }
       ]
     }
@@ -131,7 +131,6 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -202,7 +201,7 @@ https://httpbin.org/status/404"></textarea>
       </div>
       <div class="card">
         <h3>SaaS charges monthly for this</h3>
-        <p>Monitoring services charge $7–$15/month forever. DeskUptime is $19 once and runs on your machine.</p>
+        <p>Monitoring services charge $7–$15/month forever.</p>
       </div>
     </div>
     <div class="tbl"><table>
@@ -212,10 +211,9 @@ https://httpbin.org/status/404"></textarea>
         <tr><td>Runs on a schedule</td><td>✗ manual</td><td>✓</td><td>✓ your interval</td></tr>
         <tr><td>Desktop alerts</td><td>✗</td><td>Email/push</td><td>✓ native notifications</td></tr>
         <tr><td>URLs leave your machine</td><td>Checked server-side once</td><td>Always</td><td>No — checks run locally</td></tr>
-        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$0</td></tr>
       </tbody>
     </table></div>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 
@@ -287,7 +285,7 @@ https://httpbin.org/status/404"></textarea>
         +'<td>'+(d.redirected?esc(d.finalUrl||'yes'):'no')+'</td>'
         +'<td>'+ssl+'</td></tr>';
     }
-    html+='</tbody></table><p class="note">Want these checked every hour with alerts when something breaks? <a href="https://deskuptime.com/">DeskUptime does that — $19 once.</a></p>';
+    html+='</tbody></table>';
     box.innerHTML=html;
   };
   function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}

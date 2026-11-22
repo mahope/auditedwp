@@ -120,7 +120,6 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -213,11 +212,11 @@ jobs:
     <h2>Honest limitations</h2>
     <p class="lede">Where a CI-based monitor fits — and where it doesn't.</p>
     <div class="tbl"><table>
-      <tr><th></th><th>GitHub Action (free)</th><th>Dedicated SaaS ($7–15/mo)</th><th>DeskUptime desktop ($19 once)</th></tr>
+      <tr><th></th><th>GitHub Action (free)</th><th>Dedicated SaaS ($7–15/mo)</th><th>DeskUptime CLI (free)</th></tr>
       <tr><td>Check interval</td><td>~5 min granularity (cron minimum)</td><td>10–60 seconds</td><td>Continuous (while machine runs)</td></tr>
       <tr><td>Multi-region probes</td><td>— (single region)</td><td></td><td>— (your location)</td></tr>
-      <tr><td>Cost</td><td>$0</td><td>$84–180/year</td><td>$19 one-time</td></tr>
-      <tr><td>Setup</td><td>One YAML file</td><td>Account + dashboard</td><td>Install + license key</td></tr>
+      <tr><td>Cost</td><td>$0</td><td>$84–180/year</td><td>$0</td></tr>
+      <tr><td>Setup</td><td>One YAML file</td><td>Account + dashboard</td><td>Install the CLI</td></tr>
       <tr><td>Best for</td><td>Personal projects, APIs, repos</td><td>Teams with SLAs</td><td>Freelancers watching client sites</td></tr>
     </table></div>
     <p class="note">Scheduled workflows can be delayed or skipped during peak GitHub load, and cron schedules pause after 60 days of repository inactivity. For business-critical SLAs, use a purpose-built service.</p>

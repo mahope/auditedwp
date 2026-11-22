@@ -41,25 +41,18 @@ There is no public API key or rate-limit documentation; the workers are meant to
 - GDPR compliance checklist (https://eucomplypro.com/checklist/), NIS2 checklist (https://eucomplypro.com/nis2-checklist/), European Accessibility Act checklist (https://eucomplypro.com/eaa-checklist/): interactive self-assessments that keep state in the browser only.
 - GDPR fine calculator (https://eucomplypro.com/gdpr-fine-calculator/): the Article 83 maximum exposure from annual turnover.
 - Focused checks: cookie banner check (/cookie-banner-check/), Google Consent Mode v2 check (/consent-mode-v2-check/), GDPR compliance check (/gdpr-compliance-check/), all built on the same scanner.
-- Comparisons of consent-management platforms (/cmp-comparison/, /compare/) and of EUComply against other compliance tools (/vs/).
+- Comparisons of consent-management platforms and compliance tools (/cmp-comparison/, /compare/).
 - Blog (https://eucomplypro.com/blog/): practical articles on cookie consent patterns, Abmahnung risk for shops selling into Germany, DORA and EAA for e-commerce, HSTS preload, Meta Pixel and consent, platform guides for Shopify, WooCommerce and BigCommerce, and a series on uptime monitoring and alternatives to hosted monitoring services.
 - German-language articles under /de/ on Impressum obligations and cookie-banner fines.
 
-## Pricing
+## Status
 
-The scanner, the guide and every checklist are free and will stay free. The current Pro license costs 79 USD per website per year and unlocks editable HTML document starters, an HTML report from the latest WordPress scan, a daily scheduled scan instead of a weekly one, a scan history with one snapshot per day per check, an email alert when a check passes and later fails, and a read-only report link for a client. All of that runs inside the customer's own WordPress, not on a hosted service. Full document templates are sold separately.
-
-The WordPress plugin also builds the compliance report as a PDF, with the same checks and the same numbers as the HTML version, and hands it to a client through the report link.
-
-Planned, not included in the Pro license today: hosted daily monitoring, a scan history in the hosted service that can be read without WordPress, a live verification badge, a customer dashboard and multi-site management.
-
-- Pro: 79 USD per website per year. The current WordPress plugin license unlocks editable HTML starter documents, an HTML report from the latest scan and the same report as a PDF, a daily scheduled scan instead of a weekly one, a scan history with one snapshot per day per check, an email alert when a check passes and later fails, and a read-only report link for a client — all of it inside the customer's own WordPress. Hosted daily monitoring, a scan history in the hosted service that can be read without WordPress, a live verification badge, a customer dashboard and multi-site management are planned, not included today.
-- Document templates: from 29 USD one-off. Data processing agreement (GDPR Art. 28), NIS2 and DORA vendor clauses, accessibility statement (EAA), mutual NDA clause set, client compliance report kit. Written as starting points with comments on each clause; counsel should read the filled-in result before anything is signed.
+EUComply is frozen as free open source as of 22 November 2026. The scanner, the command-line tool (@mahope/eucomply-scanner), the guide, every checklist and the e-books are free. The EUComply Pro license, the document template packs and the e-book bundle are no longer sold. Licence keys issued earlier keep working in the WordPress plugin. The project is not actively maintained.
 
 ## Sister products from mahoje.dk
 
-- Deskuptime (https://deskuptime.com): a desktop website monitor for macOS and Windows with a one-time purchase instead of a monthly fee. Uptime, SSL expiry, security headers and redirect checks from your own machine. Pages on this site under /deskuptime/, with German, French and Spanish versions.
-- Transmute (https://transmute.run): a desktop data transformer for converting and reshaping structured files locally. Pages under /transmute/.
+- Deskuptime (https://deskuptime.com): website monitor. The desktop app is no longer sold; the command-line tool is free. Free check tools (SSL, response time, redirects, security headers) on this site under /deskuptime/.
+- Transmute (https://transmute.run): data transformer. The desktop app is no longer sold; the command-line tool is free. Guides under /transmute/guides/.
 - DevNotify (https://eucomplypro.com/devnotify/): GitHub notifications in the menu bar on macOS, Windows and Linux. Unread count at a glance, one click to any PR or issue, the token stays on the machine. 19 USD lifetime licence. Guides under /devnotify/guides/.
 - cleancopy.tools, bugbottle.dev and mahope.tools: smaller utilities by the same maker.
 

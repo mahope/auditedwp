@@ -103,7 +103,6 @@ td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li><a href="/da/api/" hreflang="da" lang="da">DA</a></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
@@ -235,18 +234,8 @@ for name, check in report["checks"].items():
     <p class="lede">A 502 means the site you asked about failed, not that the API did. It carries the underlying message, so read it before retrying — a host behind a bot wall will keep failing, and hammering it will not help.</p>
     <div class="box warn">
       <h3>What this API does not do</h3>
-      <p>It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment. If you need any of those, the current paid product is the WordPress plugin: it re-scans your own site once a day, keeps the last 12 scans, emails you when a check breaks, and generates an HTML report you can send to a client. Hosted monitoring is not part of it.</p>
+      <p>It is a single request for a single site at a single moment. It keeps no history, runs nothing on a schedule, sends no webhooks, and takes no payment.</p>
       <p>The nine checks are technical signals read from the served HTML. The DORA check looks for public page-text markers and is not an assessment of anything.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="probox">
-      <h2 style="margin-bottom:6px">Need history, scheduling and a report?</h2>
-      <p class="lede" style="margin:0 0 18px 0">The API above stays free. Pro is a WordPress plugin licence: daily re-scans in your own WordPress, the last 12 scans on record, an email when a check breaks, and an HTML report from the latest scan. It gets the editable HTML document starters too.</p>
-      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Buy Pro — $79/year per website →</a>
     </div>
   </div>
 </section>

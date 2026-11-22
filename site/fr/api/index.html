@@ -103,7 +103,6 @@ td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
         <a href="/fr/scan/">Scanner</a>
         <a href="/fr/book/">Guide</a>
         <a href="/checklist/">Check-lists</a>
-        <a href="/fr/pricing/">Tarifs</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><a href="/da/api/" hreflang="da" lang="da">DA</a></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><span aria-current="true" lang="fr">FR</span></li></ul>
@@ -235,18 +234,8 @@ for name, check in report["checks"].items():
     <p class="lede">Un 502 signifie que le site interrogé a échoué, pas l'API. La réponse contient le message d'origine : lisez-le avant de réessayer — un hôte derrière un mur anti-bot échouera toujours, et insister n'aide pas.</p>
     <div class="box warn">
       <h3>Ce que cette API ne fait pas</h3>
-      <p>C'est une seule requête pour un seul site à un seul instant. Elle ne garde aucun historique, ne s'exécute pas selon un calendrier, n'envoie aucun webhook et n'accepte aucun paiement. Si vous avez besoin de l'un de ces éléments, le produit payant actuel est l'extension WordPress : elle réanalyse votre propre site une fois par jour, conserve les 12 derniers scans, vous envoie un e-mail quand un contrôle casse, et génère un rapport HTML que vous pouvez envoyer à un client. La supervision hébergée n'en fait pas partie.</p>
+      <p>C'est une seule requête pour un seul site à un seul instant. Elle ne garde aucun historique, ne s'exécute pas selon un calendrier, n'envoie aucun webhook et n'accepte aucun paiement.</p>
       <p>Les neuf contrôles sont des signaux techniques lus dans le HTML servi. Le contrôle DORA cherche des marqueurs publics dans le texte de la page et n'est aucune évaluation.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="probox">
-      <h2 style="margin-bottom:6px">Besoin d'historique, de planification et d'un rapport ?</h2>
-      <p class="lede" style="margin:0 0 18px 0">L'API ci-dessus reste gratuite. Pro est une licence de l'extension WordPress : réanalyses quotidiennes dans votre propre WordPress, les 12 derniers scans conservés, un e-mail quand un contrôle casse, et un rapport HTML du dernier scan. Elle donne aussi accès aux modèles de documents HTML modifiables.</p>
-      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Acheter Pro — 79 $/an par site →</a>
     </div>
   </div>
 </section>

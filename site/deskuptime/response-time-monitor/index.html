@@ -75,8 +75,7 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
       "name": "DeskUptime",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Windows, Linux (CLI)",
-      "description": "Desktop website monitor with response-time tracking, uptime checks, SSL certificate alerts and content-change detection. One-time purchase, no subscription.",
-      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+      "description": "Desktop website monitor with response-time tracking, uptime checks, SSL certificate alerts and content-change detection. Free command-line tool, no subscription."
     },
     {
       "@type": "FAQPage",
@@ -104,7 +103,7 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         {
           "@type": "Question",
           "name": "How is this different from Pingdom or UptimeRobot?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Those charge $7–15/month for scheduled checks from their cloud. DeskUptime monitors from your own machine for a single $19 payment — unlimited URLs, intervals down to seconds, desktop notifications, and no monthly bill." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Those charge $7–15/month for scheduled checks from their cloud." }
         }
       ]
     }
@@ -138,7 +137,6 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -239,15 +237,13 @@ deskuptime watch https://example.com --interval 60</pre>
     <div class="tbl"><table>
       <thead><tr><th></th><th>SaaS monitors<br>(Pingdom, UptimeRobot…)</th><th>Self-hosted stacks</th><th>DeskUptime</th></tr></thead>
       <tbody>
-        <tr><td>Cost</td><td>$7–15/month</td><td>Free + a server to maintain</td><td>$19 once, then $0</td></tr>
+        <tr><td>Cost</td><td>$7–15/month</td><td>Free + a server to maintain</td><td>Free</td></tr>
         <tr><td>Check interval</td><td>Limited by plan</td><td>Your cron</td><td>Seconds — while your machine runs</td></tr>
         <tr><td>Alerts</td><td>Email/SMS per plan tier</td><td>You build it</td><td>Desktop notifications + webhook</td></tr>
         <tr><td>SSL &amp; content checks</td><td>Add-ons / separate products</td><td>You build it</td><td>Included</td></tr>
         <tr><td>Privacy</td><td>They see everything you watch</td><td>Yours</td><td>Yours — checks run locally</td></tr>
       </tbody>
     </table></div>
-    <p class="note">One $19 license covers unlimited URLs on up to 3 machines. No monthly fee, ever.</p>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 

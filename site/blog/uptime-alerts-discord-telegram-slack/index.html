@@ -84,7 +84,6 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/" aria-current="page">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -114,7 +113,7 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
 <div class="wrap">
 <article>
 <h1>Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide (2026)</h1>
-<!--shell:meta--><p class="art-meta"><time datetime="2026-09-07">Published 2026-09-07</time><span>4 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
+<!--shell:meta--><p class="art-meta"><time datetime="2026-09-07">Published 2026-09-07</time><span>3 min read</span><button type="button" class="btn-ghost btn-sm share" data-copy-link>Copy link</button></p><!--/shell:meta-->
 
 <p>Most uptime monitors want a monthly subscription before they'll send you a single notification. But if you already use Discord, Telegram or Slack, your team's alert channel is sitting right there — and getting downtime alerts into it costs exactly nothing.</p>
 <p>This guide shows three ways to do it, from zero-setup SaaS free tiers to a self-hosted approach that never phones home. By the end your sites will be reporting outages straight into the chat tool your team already has open.</p>
@@ -177,7 +176,7 @@ for url in $URLS; do
       -d "{\"content\":\" $url DOWN (HTTP $code)\"}" "$DISCORD_WEBHOOK_URL"
   fi
 done</code></pre>
-<p>It works, but note what it doesn't do: no recovery notifications ("back up again"), no alert deduplication (you'll get pinged every 5 minutes during an outage), and no history. Each of those is another 50 lines of bash — this is where most people decide a $19 tool beats maintaining a script.</p>
+<p>It works, but note what it doesn't do: no recovery notifications ("back up again"), no alert deduplication (you'll get pinged every 5 minutes during an outage), and no history.</p>
 
 <h2 id="deskuptime">Doing it without writing anything</h2>
 <p><a href="/deskuptime/">DeskUptime</a> is a desktop app built around exactly this pattern: it checks your URLs on an interval and posts to Discord, Telegram-compatible webhooks or any generic webhook endpoint when something breaks — including recovery notices, so you also get the  message when the site comes back.</p>

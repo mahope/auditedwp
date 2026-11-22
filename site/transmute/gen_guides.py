@@ -90,7 +90,7 @@ footer a{{color:var(--accent);text-decoration:none}}
 
 <div class="cta-box">
   <h3>Pipelines like this — without writing a script</h3>
-  <p>The Transmute CLI is free (<code>npx github:mahope/transmute</code>). The desktop app adds an interactive pipeline builder, live preview and batch processing — one-time $19, no subscription.</p>
+  <p>The Transmute CLI is free (<code>npx github:mahope/transmute</code>). The Transmute desktop app is no longer sold.</p>
   <a href="/transmute/" class="btn green">Try the live demo →</a>
   &nbsp;
   <a href="/transmute/#pricing" class="btn">See pricing</a>

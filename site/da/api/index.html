@@ -103,7 +103,6 @@ td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
         <a href="/da/scan/">Scan</a>
         <a href="/da/book/">Guide</a>
         <a href="/checklist/">Tjeklister</a>
-        <a href="/da/pricing/">Priser</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><span aria-current="true" lang="da">DA</span></li><li><a href="/de/api/" hreflang="de" lang="de">DE</a></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
@@ -235,18 +234,8 @@ for name, check in report["checks"].items():
     <p class="lede">Et 502 betyder, at det site, du spurgte til, fejlede — ikke at API'et gjorde. Svaret bærer den underliggende besked, så læs den, før du prøver igen — en vært bag en bot-mur fejler hele tiden, og flere forsøg hjælper ikke.</p>
     <div class="box warn">
       <h3>Hvad dette API ikke gør</h3>
-      <p>Det er én anmodning om ét site på ét tidspunkt. Det gemmer ingen historik, kører intet på en tidsplan, sender ingen webhooks og tager ingen betaling. Har du brug for noget af det, er det betalte produkt i dag WordPress-pluginet: det scanner dit eget site én gang om dagen, gemmer de seneste 12 scanninger, sender dig en mail når et tjek brydes, og genererer en HTML-rapport, du kan sende til en kunde. Hosted overvågning er ikke en del af det.</p>
+      <p>Det er én anmodning om ét site på ét tidspunkt. Det gemmer ingen historik, kører intet på en tidsplan, sender ingen webhooks og tager ingen betaling.</p>
       <p>De ni tjek er tekniske signaler læst i det serverede HTML. DORA-tjekket læser efter offentlige markører i sidens tekst og er ikke en vurdering af noget som helst.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="probox">
-      <h2 style="margin-bottom:6px">Brug for historik, tidsplan og en rapport?</h2>
-      <p class="lede" style="margin:0 0 18px 0">API'et ovenfor forbliver gratis. Pro er en licens til WordPress-pluginet: daglige re-scans i din egen WordPress, de seneste 12 scanninger gemt, en mail når et tjek brydes, og en HTML-rapport fra den seneste scanning. Det giver også adgang til de redigerbare HTML-dokumentstartere.</p>
-      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Køb Pro — $79/år pr. website →</a>
     </div>
   </div>
 </section>

@@ -41,7 +41,7 @@ pre .str{color:var(--ok)}
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
-<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://eucomplypro.com/"},{"@type":"ListItem","position":2,"name":"Transmute","item":"https://eucomplypro.com/transmute/"},{"@type":"ListItem","position":3,"name":"Guides"},{"@type":"ListItem","position":4,"name":"Convert CSV to SQL INSERT Statements","item":"https://eucomplypro.com/transmute/guides/csv-to-sql/"}]}</script>
+<script type="application/ld+json" data-shell-crumbs>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://eucomplypro.com/"},{"@type":"ListItem","position":2,"name":"Transmute"},{"@type":"ListItem","position":3,"name":"Guides"},{"@type":"ListItem","position":4,"name":"Convert CSV to SQL INSERT Statements","item":"https://eucomplypro.com/transmute/guides/csv-to-sql/"}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -64,7 +64,6 @@ pre .str{color:var(--ok)}
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -88,7 +87,7 @@ pre .str{color:var(--ok)}
   </div>
 </header>
 <main class="container layout-prose" id="main" data-shell>
-<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/transmute/">Transmute</a></li><li><span>Guides</span></li><li><span aria-current="page">Convert CSV to SQL INSERT Statements</span></li></ol></nav><!--/shell:crumbs-->
+<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span>Transmute</span></li><li><span>Guides</span></li><li><span aria-current="page">Convert CSV to SQL INSERT Statements</span></li></ol></nav><!--/shell:crumbs-->
 <!--shell:grid--><div class="prose-grid"><div class="prose"><details class="toc-details"><summary>Contents</summary><ol><li class="lvl2"><a href="#cli">Option 1: The Transmute CLI (free, works offline)</a></li><li class="lvl2"><a href="#postgres">PostgreSQL: faster alternative for big files</a></li><li class="lvl2"><a href="#sqlite">SQLite and MySQL notes</a></li><li class="lvl2"><a href="#json">Bonus: seed data from JSON</a></li><li class="lvl3"><a href="#any-format-to-sql-without-writing-a-script">Any format to SQL — without writing a script</a></li></ol></details><!--/shell:grid-->
 <div class="pg-legacy">
 <div class="wrap">
@@ -144,7 +143,7 @@ INSERT INTO "users" ("id", "name", "email") VALUES
 
 <div class="cta-box">
   <h3 id="any-format-to-sql-without-writing-a-script">Any format to SQL — without writing a script</h3>
-  <p>The Transmute CLI is free (<code>npx github:mahope/transmute</code>). The desktop app adds an interactive pipeline builder, live preview and batch processing — one-time $19, no subscription.</p>
+  <p>The Transmute CLI is free and open source under MIT (<code>npx github:mahope/transmute</code>). The Transmute desktop app is no longer sold.</p>
   <a href="/transmute/" class="btn">Try the live demo →</a>
   &nbsp;
   <a href="https://transmute.run/" class="btn">See pricing</a>

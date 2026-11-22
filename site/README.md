@@ -1,5 +1,7 @@
 # README — AuditedWP site
 
+> **Frozen as of 2026-11-22.** EUComply is frozen as free open source: not actively maintained, no paid versions sold. There is no store, pricing or Pro page any more.
+
 This directory is deployed to **Cloudflare Pages**.
 Live URL: https://mahope.github.io/auditedwp
 Custom domain (pending): auditedwp.com
@@ -10,8 +12,6 @@ Custom domain (pending): auditedwp.com
 - `de/index.html` — landing page DE (DACH market)
 - `sample/index.html` — sample audit trail preview
 - `template/index.html` — free NIS2 vendor-clause template
-- `store/index.html` — compliance document store (Stripe, betalte skabeloner)
-- Betalte skabeloner ligger i det private repo `mahope/paid-products` og leveres via Stripe.
 - `onboarding-manual.md` — operational manual for first client
 
 ## Deploy
