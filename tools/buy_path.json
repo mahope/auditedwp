@@ -1,6 +1,5 @@
 {
-  "version": 1,
-  "note": "Undtagelser for tools/check_buy_path.py. Hver linje skal have en begrundelse, der kan lukkes: naar den forsvinder, skal linjen slettes, og selftesten bekrefter at porten kan vaere groen igen. En undtagelse uden begrundelse er en tavs undtagelse.",
-  "closed_checkout": [],
+  "version": 2,
+  "note": "Undtagelser for tools/check_buy_path.py, som siden 22/11-2026 måler at der IKKE findes en købsvej. Hver linje skal have en begrundelse, der kan lukkes: når den forsvinder, skal linjen slettes, og selftesten bekræfter at porten kan være grøn igen. En undtagelse uden begrundelse er en tavs undtagelse. `closed_checkout` er slettet: der er ingen Stripe-links at undtage, og et Stripe-link på sitet er nu en fejl.",
   "dead_in_sitemap": []
 }
