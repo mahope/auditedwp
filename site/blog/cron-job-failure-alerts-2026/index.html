@@ -203,7 +203,7 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
     <tr><td><strong>Cronitor</strong></td><td>5 monitors</td><td>Yes</td><td>Purpose-built for cron, nice CLI. Paid plans from ~$20/mo.</td></tr>
     <tr><td><strong>UptimeRobot</strong></td><td>50 checks, 5-min interval</td><td>No (URL up/down only)</td><td>Good for websites, wrong shape for jobs.</td></tr>
     <tr><td><strong>Better Stack / Site24x7</strong></td><td>Limited</td><td>Yes</td><td>Bundled into larger observability suites.</td></tr>
-    <tr><td><strong>DeskUptime (desktop)</strong></td><td>Free CLI &amp; app</td><td>Polls any URL on a schedule</td><td>$19 one-time. Runs locally; good when you want URL checks without another SaaS subscription.</td></tr>
+    <tr><td><strong>DeskUptime (desktop)</strong></td><td>Free CLI &amp; app</td><td>Polls any URL on a schedule</td><td>Free CLI. Runs locally; good when you want URL checks without another SaaS subscription.</td></tr>
   </table></div>
 
   <h2 id="which-pattern-should-you-use">Which pattern should you use?</h2>
@@ -225,8 +225,7 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
   <p>For most teams the answer takes ten minutes: add <code>&amp;&amp; curl https://hc-ping.com/&lt;uuid&gt;</code>
   to critical jobs and let Healthchecks.io watch for missed pings. For checking that the <em>outputs</em> of
   those jobs stay healthy — URLs, APIs, certificates — pair it with scheduled URL checks. If monthly SaaS
-  fees for simple checks bother you, <a href="/deskuptime/">DeskUptime</a> runs those checks from your own
-  desktop for $19 once instead of $19 every month.</p>
+  fees for simple checks bother you, <a href="/deskuptime/">DeskUptime</a> runs those checks from your own machine for free instead of a monthly fee.</p>
 
   <hr>
 

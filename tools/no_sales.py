@@ -362,6 +362,7 @@ CLOSURE_RE = re.compile(
     r"|s[æe]lges\s+ikke\s+l[æe]ngere|ikke\s+l[æe]ngere\s+til\s+salg"
     r"|nicht\s+mehr\s+(?:verkauft|erh[äa]ltlich)|wird\s+nicht\s+mehr\s+verkauft"
     r"|n['’]est\s+plus\s+(?:vendu|commercialis[ée])|ne\s+se\s+vend\s+plus"
+    r"|ne\s+sont\s+plus\s+vendus?|fig[ée]e?\s+en\s+open\s+source"
     r"|ya\s+no\s+se\s+vende"
     r"|existing\s+licen[cs]es?|eksisterende\s+licenser|bestehende\s+Lizenzen"
     r"|licences?\s+existantes?"

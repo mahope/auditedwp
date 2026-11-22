@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Uptime Alerts to Discord, Telegram or Slack</title>
-<meta name="description" content="Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop.">
+<meta name="description" content="Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a local.">
 <link rel="canonical" href="https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -57,7 +57,7 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
   "publisher": {"@type": "Organization", "name": "DeskUptime"}
 }
 </script>
-<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","url":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","name":"Uptime Alerts to Discord, Telegram or Slack","description":"Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a $19 desktop.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
+<script type="application/ld+json" data-shell>{"@context":"https://schema.org","@type":"WebPage","@id":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","url":"https://eucomplypro.com/blog/uptime-alerts-discord-telegram-slack/","name":"Uptime Alerts to Discord, Telegram or Slack","description":"Send website downtime alerts to Discord, Telegram or Slack for free: webhook setup for each platform, a self-hosted checker script, and when a local.","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://eucomplypro.com/#website"},"author":{"@type":"Person","name":"Mads Holst Jensen","url":"https://mahoje.dk"}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=e700416a">
 <script data-boot>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t)}catch(e){}})()</script>
 <script src="/assets/site.js?v=d23bc893" defer></script>
@@ -108,7 +108,7 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
 </header>
 <main class="container layout-prose" id="main" data-shell>
 <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/blog/">Blog</a></li><li><span aria-current="page">Uptime Alerts to Discord, Telegram or Slack — Free Setup Guide (2026)</span></li></ol></nav><!--/shell:crumbs-->
-<!--shell:grid--><div class="prose-grid"><div class="prose"><details class="toc-details"><summary>Contents</summary><ol><li class="lvl2"><a href="#discord">Method 1: Discord webhooks</a></li><li class="lvl2"><a href="#telegram">Method 2: Telegram bots</a></li><li class="lvl2"><a href="#slack">Method 3: Slack incoming webhooks</a></li><li class="lvl2"><a href="#glue">The missing piece: something that detects the outage</a></li><li class="lvl2"><a href="#deskuptime">Doing it without writing anything</a></li><li class="lvl3"><a href="#skip-the-bash-script">Skip the bash script</a></li><li class="lvl2"><a href="#gotchas">Common gotchas</a></li><li class="lvl2"><a href="#faq">FAQ</a></li><li class="lvl3"><a href="#is-discord-really-free-for-uptime-alerts">Is Discord really free for uptime alerts?</a></li><li class="lvl3"><a href="#can-i-get-alerts-without-a-server">Can I get alerts without a server?</a></li><li class="lvl3"><a href="#why-pay-19-instead-of-using-a-free-saas">Why pay $19 instead of using a free SaaS?</a></li></ol></details><!--/shell:grid-->
+<!--shell:grid--><div class="prose-grid"><div class="prose"><details class="toc-details"><summary>Contents</summary><ol><li class="lvl2"><a href="#discord">Method 1: Discord webhooks</a></li><li class="lvl2"><a href="#telegram">Method 2: Telegram bots</a></li><li class="lvl2"><a href="#slack">Method 3: Slack incoming webhooks</a></li><li class="lvl2"><a href="#glue">The missing piece: something that detects the outage</a></li><li class="lvl2"><a href="#deskuptime">Doing it without writing anything</a></li><li class="lvl3"><a href="#skip-the-bash-script">Skip the bash script</a></li><li class="lvl2"><a href="#gotchas">Common gotchas</a></li><li class="lvl2"><a href="#faq">FAQ</a></li><li class="lvl3"><a href="#is-discord-really-free-for-uptime-alerts">Is Discord really free for uptime alerts?</a></li><li class="lvl3"><a href="#can-i-get-alerts-without-a-server">Can I get alerts without a server?</a></li><li class="lvl3"><a href="#why-a-local-checker-instead-of-a-free-saas">Why a local checker instead of a free SaaS?</a></li></ol></details><!--/shell:grid-->
 <div class="pg-legacy">
 <div class="wrap">
 <article>
@@ -163,7 +163,7 @@ th{background:var(--soft);font-weight:600;font-size:13px;text-transform:uppercas
 <tr><td>SaaS free tier (UptimeRobot etc.)</td><td>$0</td><td>5 min</td><td>5-min check interval, limited monitors, upsells</td></tr>
 <tr><td>cron + curl on your own machine/server</td><td>$0</td><td>20 min</td><td>You maintain the loop and state yourself</td></tr>
 <tr><td>GitHub Actions cron</td><td>$0</td><td>15 min</td><td>Cron is best-effort, can drift minutes</td></tr>
-<tr><td>Desktop app (DeskUptime)</td><td>$19 one-time</td><td>2 min</td><td>Your machine must be awake</td></tr>
+<tr><td>Desktop app (DeskUptime)</td><td>Free CLI</td><td>2 min</td><td>Your machine must be awake</td></tr>
 </table></div>
 
 <p>A minimal self-hosted loop looks like this:</p>
@@ -184,7 +184,7 @@ done</code></pre>
 <div class="cta-box">
 <h3 id="skip-the-bash-script">Skip the bash script</h3>
 <p>DeskUptime monitors unlimited URLs from your own machine. No subscription, no data leaves your network.</p>
-<a class="btn" href="/deskuptime/">Get DeskUptime — $19 once</a>
+<a class="btn" href="/deskuptime/">About the free DeskUptime CLI</a>
 <br>
 <a class="btn ghost" href="/blog/free-uptime-monitoring-tools-2026/">Or compare free tools first →</a>
 </div>
@@ -202,14 +202,14 @@ done</code></pre>
 <p>Yes. Webhooks are free with normal rate limits. The cost is that Discord doesn't check anything itself — you supply the checker.</p>
 <h3 id="can-i-get-alerts-without-a-server">Can I get alerts without a server?</h3>
 <p>Yes — either GitHub Actions cron jobs (free for public repos, generous limits privately) or a desktop app like DeskUptime that runs while your machine is on.</p>
-<h3 id="why-pay-19-instead-of-using-a-free-saas">Why pay $19 instead of using a free SaaS?</h3>
+<h3 id="why-a-local-checker-instead-of-a-free-saas">Why a local checker instead of a free SaaS?</h3>
 <p>Free tiers typically cap at 5-minute intervals and a handful of monitors, and they own your monitoring history. A one-time purchase removes the monthly decision entirely — the math favors it once you'd otherwise pay for two months of SaaS.</p>
 </article>
 
 </div>
 </div><!--/pg-legacy-->
 <!--shell:pn--><nav class="pn" aria-label="Newer / Older"><a class="prev" href="/blog/best-free-gdpr-compliance-checkers-2026/" rel="prev"><small>Newer</small><b>Best Free GDPR Compliance Checkers (2026)</b></a><a class="next" href="/blog/oh-dear-alternative-2026/" rel="next"><small>Older</small><b>Oh Dear Alternatives in 2026: Cheaper Ways to Monitor Uptime and SSL</b></a></nav><!--/shell:pn-->
-<!--shell:grid-end--></div><aside class="toc-side" aria-label="Contents"><h2>Contents</h2><ol><li class="lvl2"><a href="#discord">Method 1: Discord webhooks</a></li><li class="lvl2"><a href="#telegram">Method 2: Telegram bots</a></li><li class="lvl2"><a href="#slack">Method 3: Slack incoming webhooks</a></li><li class="lvl2"><a href="#glue">The missing piece: something that detects the outage</a></li><li class="lvl2"><a href="#deskuptime">Doing it without writing anything</a></li><li class="lvl3"><a href="#skip-the-bash-script">Skip the bash script</a></li><li class="lvl2"><a href="#gotchas">Common gotchas</a></li><li class="lvl2"><a href="#faq">FAQ</a></li><li class="lvl3"><a href="#is-discord-really-free-for-uptime-alerts">Is Discord really free for uptime alerts?</a></li><li class="lvl3"><a href="#can-i-get-alerts-without-a-server">Can I get alerts without a server?</a></li><li class="lvl3"><a href="#why-pay-19-instead-of-using-a-free-saas">Why pay $19 instead of using a free SaaS?</a></li></ol></aside></div><!--/shell:grid-end-->
+<!--shell:grid-end--></div><aside class="toc-side" aria-label="Contents"><h2>Contents</h2><ol><li class="lvl2"><a href="#discord">Method 1: Discord webhooks</a></li><li class="lvl2"><a href="#telegram">Method 2: Telegram bots</a></li><li class="lvl2"><a href="#slack">Method 3: Slack incoming webhooks</a></li><li class="lvl2"><a href="#glue">The missing piece: something that detects the outage</a></li><li class="lvl2"><a href="#deskuptime">Doing it without writing anything</a></li><li class="lvl3"><a href="#skip-the-bash-script">Skip the bash script</a></li><li class="lvl2"><a href="#gotchas">Common gotchas</a></li><li class="lvl2"><a href="#faq">FAQ</a></li><li class="lvl3"><a href="#is-discord-really-free-for-uptime-alerts">Is Discord really free for uptime alerts?</a></li><li class="lvl3"><a href="#can-i-get-alerts-without-a-server">Can I get alerts without a server?</a></li><li class="lvl3"><a href="#why-a-local-checker-instead-of-a-free-saas">Why a local checker instead of a free SaaS?</a></li></ol></aside></div><!--/shell:grid-end-->
 </main>
 <footer class="sf">
   <div class="container sf-grid">
