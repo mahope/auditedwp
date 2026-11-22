@@ -16,7 +16,7 @@
  * `main()` kører kun når motorfilen selv er `argv[1]`, altså aldrig for en
  * bruger der har `npm install`et pakken. Hele den gratis scanner printer altså
  * det forudindtagede ni-tal og dropper både rådet og forklaringen på hvorfor tre
- * rækker ikke tæller, mens `/scan/` og `/pro/sample-report/` bruger den delte
+ * rækker ikke tæller, mens `/scan/` (og den nu slettede `/pro/sample-report/`) bruger den delte
  * tale. To sprog i én pakke, og det dårligere stod i det program folk kører.
  *
  * Da `bin` var rettet, lå **to gengivelser mere** af samme rapport i pakken, og

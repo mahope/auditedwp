@@ -5,6 +5,10 @@
  *     node tools/check_api_docs.mjs
  *     node tools/check_api_docs.mjs --selftest
  *
+ * (22/11-2026: `/vs/*` er slettet sammen med salget. Reglerne herunder handler
+ * om enhver side der lover API-adgang og er uændrede; selvtestens fixture ligger
+ * nu på `/compare/` i stedet for `/vs/termly/`.)
+ *
  * Baggrund, målt 28/9. `/vs/termly/` lovede i sin sammenligningstabel
  * **"API access: Free API + CLI"** for den gratis udgave — og den eneste
  * dokumentation af overfladen var tre filer i en npm-pakke, som ingen
@@ -252,20 +256,20 @@ const PAGE_FIXTURE = `<!doctype html><html><body>
 
 const CLAIMING_PAGE = `<!doctype html><html><body><main>
   <table><tr><td>API access</td><td>Free API + CLI</td></tr></table>
-  <a href="/pricing/">Pricing</a>
+  <a href="/scan/">Scan</a>
 </main></body></html>`;
 
-const LINKED_CLAIM_PAGE = CLAIMING_PAGE.replace('<a href="/pricing/">', '<a href="/api/">Docs</a><a href="/pricing/">');
+const LINKED_CLAIM_PAGE = CLAIMING_PAGE.replace('<a href="/scan/">', '<a href="/api/">Docs</a><a href="/scan/">');
 
-function fixture({ worker = WORKER_FIXTURE, page = PAGE_FIXTURE, tree, vs = LINKED_CLAIM_PAGE } = {}) {
+function fixture({ worker = WORKER_FIXTURE, page = PAGE_FIXTURE, tree, claim = LINKED_CLAIM_PAGE } = {}) {
   const root = mkdtempSync(join(tmpdir(), "apidocs-"));
   mkdirSync(join(root, "site", "api"), { recursive: true });
-  mkdirSync(join(root, "site", "vs", "termly"), { recursive: true });
+  mkdirSync(join(root, "site", "compare"), { recursive: true });
   mkdirSync(join(root, "worker-scan"), { recursive: true });
   mkdirSync(join(root, "tools"), { recursive: true });
   writeFileSync(join(root, "worker-scan", "index.js"), worker, "utf8");
   writeFileSync(join(root, "site", "api", "index.html"), page, "utf8");
-  writeFileSync(join(root, "site", "vs", "termly", "index.html"), vs, "utf8");
+  writeFileSync(join(root, "site", "compare", "index.html"), claim, "utf8");
   writeFileSync(
     join(root, "tools", "build_public_tree.py"),
     tree ?? 'PUBLIC_DIRS = (\n    "api",\n    "assets",\n)\n',
@@ -307,7 +311,7 @@ function selftest() {
     page: "<!doctype html><html><body><main><h1>API</h1></main></body></html>",
   }));
   // R2 — en side der lover API-adgang uden dør.
-  cases.push(runCase("API-løfte uden dør", "linker ikke til /api/", { vs: CLAIMING_PAGE }));
+  cases.push(runCase("API-løfte uden dør", "linker ikke til /api/", { claim: CLAIMING_PAGE }));
   // R3 — den døde rute-gren.
   cases.push(runCase("død rute-gren", "død kode", {
     worker: WORKER_FIXTURE.replace('.replace(/\\/+$/, "")', '.replace(/\\/+$/, "") || "/"'),
