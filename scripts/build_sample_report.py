@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build the illustrative Pro sample report: the HTML block and the sample PDF.
+"""Build the illustrative sample report PDF (and the HTML block, if the page still exists).
+
+Since 22/11-2026 the Pro sample page is gone and the PDF is the only published artefact: an
+example of what the free scanner shows. The HTML block is only written when the page exists.
 
     python3 scripts/build_sample_report.py            # skriv begge artefakter
     python3 scripts/build_sample_report.py --check    # skriv intet, exit 1 hvis
@@ -431,7 +434,7 @@ def report_block(data):
         add('    </li>')
     add('  </ul>')
     add('  <p style="font-size:12px;color:var(--muted);margin-top:10px">This is the same set of checks the '
-        'free scanner runs on every site, so nothing here is held back for Pro.</p>')
+        'free scanner runs on every site, so nothing here is held back.</p>')
     add('</div>')
     add("")
     if fixes:
@@ -466,6 +469,8 @@ def report_block(data):
 
 def build_html(data):
     """Skriv den genererede blok ind i kildesiden mellem de to markører."""
+    if not os.path.exists(PAGE):
+        return False
     with open(PAGE, encoding="utf-8") as handle:
         page = handle.read()
     if START not in page or END not in page:
@@ -513,7 +518,7 @@ def build_pdf(data, path=PDF):
     # påstand uden dækning.
     doc = SimpleDocTemplate(path, pagesize=A4, topMargin=18 * mm, bottomMargin=18 * mm,
                             leftMargin=20 * mm, rightMargin=20 * mm, invariant=1,
-                            title="EUComply Pro — Sample Compliance Audit Report", author="EUComply")
+                            title="EUComply — Sample Compliance Audit Report", author="EUComply")
     story = [Paragraph("EU Compliance Audit Report", h1), Spacer(1, 2)]
     story.append(Paragraph(
         "<b>URL:</b> {0} &nbsp;·&nbsp; <b>Generated:</b> {1}<br/>"
@@ -542,8 +547,7 @@ def build_pdf(data, path=PDF):
     ]))
     story.append(score_tbl)
     story.append(Paragraph(
-        "CONCEPT SAMPLE — {0} The current Pro license generates an HTML report from the latest WordPress scan.".format(
-            xml_escape(data["disclaimer"])),
+        "CONCEPT SAMPLE — {0}".format(xml_escape(data["disclaimer"])),
         ParagraphStyle("note", parent=meta_style, textColor=warn, fontSize=8)))
 
     story.append(Paragraph("SCORE SUMMARY", sec))
@@ -625,7 +629,7 @@ def build_pdf(data, path=PDF):
     story.append(Spacer(1, 16))
     foot = ParagraphStyle("foot", parent=meta_style, fontSize=8, alignment=1)
     story.append(Paragraph(
-        "EUComply Pro · eucomplypro.com/pro · Automated technical checks only — not legal advice.<br/>"
+        "EUComply · eucomplypro.com · Automated technical checks only — not legal advice.<br/>"
         "This is a sample with illustrative data. Scan your own domain free at eucomplypro.com/scan", foot))
     doc.build(story)
     return path
@@ -645,15 +649,16 @@ def main():
         return 1
     if args.check:
         problems = []
-        with open(PAGE, encoding="utf-8") as handle:
-            page = handle.read()
-        if START not in page or END not in page:
-            problems.append(f"{os.path.relpath(PAGE, ROOT)} mangler markørerne")
-        else:
-            head, rest = page.split(START, 1)
-            block, tail = rest.split(END, 1)
-            if head + START + "\n" + report_block(data) + END + tail != page:
-                problems.append(f"{os.path.relpath(PAGE, ROOT)} afviger fra shared/sample-report.json — kør scripts/build_sample_report.py")
+        if os.path.exists(PAGE):
+            with open(PAGE, encoding="utf-8") as handle:
+                page = handle.read()
+            if START not in page or END not in page:
+                problems.append(f"{os.path.relpath(PAGE, ROOT)} mangler markørerne")
+            else:
+                head, rest = page.split(START, 1)
+                block, tail = rest.split(END, 1)
+                if head + START + "\n" + report_block(data) + END + tail != page:
+                    problems.append(f"{os.path.relpath(PAGE, ROOT)} afviger fra shared/sample-report.json — kør scripts/build_sample_report.py")
         import tempfile
         with tempfile.TemporaryDirectory() as folder:
             fresh = build_pdf(data, os.path.join(folder, "sample.pdf"))
@@ -665,7 +670,7 @@ def main():
         if problems:
             print("\n{0} prøverapport-fund".format(len(problems)))
             return 1
-        print("OK    prøverapportens HTML og PDF matcher shared/sample-report.json")
+        print("OK    prøverapportens PDF matcher shared/sample-report.json")
         return 0
     changed = build_html(data)
     build_pdf(data)

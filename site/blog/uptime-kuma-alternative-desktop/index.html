@@ -16,13 +16,13 @@
 <meta property="og:locale" content="en_GB">
 <meta property="og:url" content="https://eucomplypro.com/blog/uptime-kuma-alternative-desktop/">
 <meta property="og:title" content="Uptime Kuma Alternative: Desktop, No Monthly Fee">
-<meta property="og:description" content="Stop paying $10-50/mo for uptime monitoring. DeskUptime runs on your machine — $19 once.">
+<meta property="og:description" content="Stop paying $10-50/mo for uptime monitoring. DeskUptime runs on your machine — free CLI.">
 <meta property="og:image" content="https://eucomplypro.com/images/og/en.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Uptime Kuma Alternative: Desktop, No Monthly Fee">
-<meta name="twitter:description" content="Stop paying $10-50/mo for uptime monitoring. DeskUptime runs on your machine — $19 once.">
+<meta name="twitter:description" content="Stop paying $10-50/mo for uptime monitoring. DeskUptime runs on your machine — free CLI.">
 <meta name="twitter:image" content="https://eucomplypro.com/images/og/en.png">
 <style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:16px}
 article{padding:40px 0 60px 0}
@@ -74,7 +74,6 @@ pre{font-size:13px}}</style>
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/" aria-current="page">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -125,7 +124,7 @@ pre{font-size:13px}}</style>
   </form>
   <div id="du-result" style="display:none;margin-top:14px;font-size:13.5px;line-height:1.7;background:var(--panel);border:1px solid var(--soft);border-radius:8px;padding:14px" aria-live="polite"></div>
   <div style="margin-top:12px;font-size:13px;color:var(--accent)">Want an alert <em>before</em> it breaks?
-    <a href="/deskuptime/" style="color:var(--accent);font-weight:600;text-decoration:none">DeskUptime monitors it for you</a> — $19 once, no subscription.</div>
+    <a href="https://github.com/mahope/deskuptime" style="color:var(--accent);font-weight:600;text-decoration:none">The free DeskUptime CLI can watch it for you</a>.</div>
 </div>
 <script>
 (function(){
@@ -205,12 +204,12 @@ pre{font-size:13px}}</style>
   </tr>
   <tr>
     <td><strong>DeskUptime</strong></td>
-    <td><strong>$19 once</strong></td>
+    <td><strong>Free CLI</strong></td>
     <td><strong>Desktop</strong></td>
   </tr>
 </table></div>
 
-<p>That's <strong>$84–$360 per year</strong> for SaaS monitoring. DeskUptime is $19 — ever.</p>
+<p>That's <strong>$84–$360 per year</strong> for SaaS monitoring.</p>
 
 <h2 id="how-deskuptime-is-different">How DeskUptime Is Different</h2>
 
@@ -223,7 +222,7 @@ pre{font-size:13px}}</style>
 <p>Your URLs never leave your machine (except for the HTTP requests themselves). There's no central database of your monitoring targets, no third-party seeing your uptime history, no data collected about what you monitor.</p>
 
 <h3 id="no-monthly-bill">No Monthly Bill</h3>
-<p>$19 one-time. That's it. No tier upgrades, no per-check pricing, no "enterprise" upsell. Three months of Pingdom costs more.</p>
+<p>That's it. No tier upgrades, no per-check pricing, no "enterprise" upsell. Three months of Pingdom costs more.</p>
 
 <h3 id="cli-desktop-same-engine">CLI + Desktop — Same Engine</h3>
 <p>Use the terminal for quick checks (<code>npx github:mahope/deskuptime check https://example.com</code>) and the desktop app for continuous monitoring. Same engine, two interfaces.</p>
@@ -282,7 +281,7 @@ pre{font-size:13px}}</style>
   <tr>
     <td>Price</td>
     <td>Free (self-hosted)</td>
-    <td>$19 lifetime (Pro) / Free (CLI)</td>
+    <td>Free (CLI)</td>
   </tr>
   <tr>
     <td>Setup time</td>
@@ -313,7 +312,7 @@ pre{font-size:13px}}</style>
 </ul>
 
 <div class="highlight">
-  <strong>Real talk:</strong> If you have a server running anyway, Uptime Kuma is hard to beat on price (free). But if you value your time or don't want the operational overhead of self-hosting, the $19 for DeskUptime pays for itself the first time you don't have to debug a Docker compose file.
+  <strong>Real talk:</strong> If you have a server running anyway, Uptime Kuma is hard to beat on price (free). But if you value your time or don't want the operational overhead of self-hosting, DeskUptime pays off the first time you don't have to debug a Docker compose file.
 </div>
 
 <h2 id="what-deskuptime-can-check">What DeskUptime Can Check</h2>
@@ -333,7 +332,7 @@ pre{font-size:13px}}</style>
 <pre>npx github:mahope/deskuptime check https://your-site.com</pre>
 <p>No install, no account, no signup. Just run the command and see the results.</p>
 
-<p><strong>Desktop App (Pro, $19):</strong></p>
+<p><strong>Desktop App (no longer sold; existing licenses keep working):</strong></p>
 <ol>
   <li>Download the app for macOS (Intel or Apple Silicon) from <a href="https://github.com/mahope/deskuptime/releases">GitHub Releases</a></li>
   <li>Open it — it lives in your system tray</li>
@@ -352,7 +351,7 @@ pre{font-size:13px}}</style>
   <li><strong>UptimeRobot</strong> — 50 checks free, but limited features on free tier</li>
   <li><strong>Site24x7</strong> — Enterprise suite, ~$9/mo per monitor pack, more than most sites need (<a href="/blog/site24x7-alternative-2026/">alternatives compared</a>)</li>
   <li><strong>Checkly</strong> — Browser-level monitoring, $30/mo — great for complex flows, overkill for basic uptime</li>
-  <li><strong>DeskUptime</strong> — $19 once, desktop-native, privacy-first, content change detection</li>
+  <li><strong>DeskUptime</strong> — free CLI, desktop-native, privacy-first, content change detection</li>
 </ul>
 
 <p>The common thread: all the SaaS tools charge monthly. If you multiply by 12, a $10/mo tool costs more than DeskUptime in two months. After a year, you've paid 6–20× more.</p>

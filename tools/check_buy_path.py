@@ -1,65 +1,53 @@
 #!/usr/bin/env python3
-"""Mål den vej en betalende kunde går — fra forside til kvittering — mod LIVE.
+"""Mål at der ikke længere findes en købsvej — mod LIVE.
 
-## Hvilket problem den her løser
+## Hvad den målte før, og hvad den måler nu
 
-Port-arbejdet i de sidste 120 iterationer har dømt *indhold* i repoet:
-`sitemap.xml` mod træet, claims mod kilden, analytics-taggen mod markup.
-Ingen af dem spørger, om en kunde kan **betale**. Og det er den eneste
-fejlklasse der ødelægger omsætningen direkte.
+Før 22/11-2026 var det den eneste gate der gik fra et link på den publicerede
+side til det sted pengene endte. Den dømte at otte pengesider (`/pro/` og
+`/pricing/` i fire sprog) svarede 200 med to Stripe-links, at hvert Stripe-link
+svarede, at kvitteringen `mahope.tools/thanks` svarede, og at licens-API'et ikke
+svarede 5xx på en ukendt nøgle. Fordi nul trafik ellers ligner en død port, var
+det en LIVE-måling og ikke en dom over repoet.
 
-Der er fire gates der alle læser repoet (`check_sitemap.py`,
-`check_pro_claims.py`, `check_cta.py`, `check_analytics.py`) og to der læser
-en worker (`check_live_funnel.py`, `check_production_drift.py`). Ingen går
-fra et link på den publicerede side til det sted pengene ender.
+Ejeren besluttede at fryse EUComply som gratis open source. Pro, skabelonerne og
+e-bog-bundlet sælges ikke længere, og Stripe-linkene er deaktiveret. Gaten er
+vendt, og den er stadig en LIVE-måling, fordi det er det en besøgende møder der
+tæller, ikke det der ligger i træet:
 
-Målt 2026-09-29 06:0x CEST, mod den udgivne side:
+  1. LUKKEDE STIER giver 301 til en side der findes og svarer 200: `/pricing/`,
+     `/pro/`, `/store/`, `/vs/` og sprogversionerne, samt en underside pr.
+     splat-regel. En 200 betyder at siden lever, en 404 at et gammelt link og
+     en søgemaskine ingen vej har, og en 302 at lukningen ikke er permanent.
+  2. FORSIDER OG NØGLESIDER (`/`, `/da/`, `/de/`, `/fr/`, `/scan/`, `/plugin/`)
+     svarer 200, har ingen betalingslinks og ingen links til de lukkede stier,
+     og de fire forsider har `id="frozen-notice"`.
+  3. SITEMAPPET lister ingen lukket sti, og hver `<loc>` svarer 200. Det andet er
+     den gamle kontrol, som består: en sitemap med 404'er sænker hele siden.
+  4. LICENS-API'ET skal blive ved med at virke, for eksisterende licenser gælder
+     stadig: en ukendt nøgle SKAL give 404. 5xx låser kunder med en gyldig
+     licens ude.
 
-| led | målt |
-|---|---|
-| `/scan/` (tragten) | 200, scanner-API svarer 200 med rigtige checks |
-| `/pro/` + `/pricing/` i EN/DA/DE/FR (8 sider) | 200, **2** Stripe-links pr. side |
-| `/pricing/` → `buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03` | **HTTP 200** |
-| `mahope.tools/thanks` (kvitteringen) | 200, også med `session_id` |
-| `mahope.tools/api/license/validate` med en ukendt nøgle | **404** med beskeden, ikke en 500 |
-| alle 214 `<loc>` i sitemapet mod live | **214 × 200**, nul 404 |
+Slettet fordi den handlede om at man kan BETALE: kravet om et Stripe-link pr.
+pengeside, at hvert Stripe-link svarer, og at kvitteringen svarer. Der er intet at
+betale, og et Stripe-link der svarer 200 på forsiden er nu en fejl, ikke en vare.
 
-Sidste række er den der lå under mest tidligere. `check_sitemap.py` dømmer
-at hvert `<loc>` *er en rigtig side* — altså at filen findes i træet. Den
-svarer 200 på en `<loc>` der er slettet i Cloudflare, fordi træet og
-produktionen er to ting. Det er præcis den fejl der ligner et resultat:
-en sitemap med 404'er i sig får alle sider de liste rykket ned, og tallet
-ligner bare et site uden besøgende.
+## Hvornår den må være rød, og hvorfor den ikke står i PR-gaten
 
-## Hvad den her gate kan og ikke kan håndhæve
+Gaten måler det udgivne site. Før deployen er det udgivne site stadig det gamle,
+og en PR kan ikke fikse det, så den live-del ville gøre hver PR rød alene fordi
+dens egen ændring ikke er rullet ud. Derfor kører `quality_gate.sh` kun
+`--selftest` (fixture-baseret, ingen netværk), og live-delen kører i
+`deploy-site.yml` EFTER at Pages serverer den nye udgivelse. Den må aldrig køre
+på en PR mod det gamle site.
 
-Den dømmer **kun fejl der låser en betaling eller en kvittering**:
-
-1. En pengeside der ikke svarer 200.
-2. En pengeside uden ét enkelt Stripe-link — den er den konvertering, og
-   den skal kunne findes maskinelt.
-3. Et Stripe-link der ikke svarer (død, eller lukket af Stripe efter de
-   første 100 lifetime-køb).
-4. En kvitteringsside der ikke svarer — den er hvor kunden får nøglen.
-5. Et licens-endpoint der svarer 5xx på en *ukendt* nøgle. `404` er det
-   rigtige svar; `500`/`503` betyder at serveren er nede, og så låses
-   betalende kunder ude, hvilket kontrakten siger aldrig må ske.
-6. En `<loc>` i sitemapet der ikke svarer 200.
-
-Punkt 3 og 6 er **rapporter, ikke fund**, når de er forventede: de første
-100 lifetime-køb lukker et link med vilje (kontrakten, 27/9), og en
-sitemappege på en side der er på vej ned er ikke en fejl i koden. Derfor
-ligger de undtagelser i `tools/buy_path.json` med en begrundelse, der kan
-lukkes — samme stilling som `funnel_drift.json`.
-
-Det den IKKE dømmer, og hvorfor: om nogen køber. Det er Plausibles
-opgave (outbound-link-events på buy.stripe.com er slået til), og en port
-der kræver salg ville være rød hver eneste dag et nyt site har nul kunder.
+Undtagelser i `tools/buy_path.json` (`dead_in_sitemap`) skal have en begrundelse
+der kan lukkes, samme stilling som `funnel_drift.json`.
 
 Kør:
-    python3 tools/check_buy_path.py
-    python3 tools/check_buy_path.py --selftest
-    python3 tools/check_buy_path.py --offline   # spring live-kallene over
+    python3 tools/check_buy_path.py            # live, mod eucomplypro.com
+    python3 tools/check_buy_path.py --selftest # fixtures, intet netværk
+    python3 tools/check_buy_path.py --offline  # spring live-kaldene over
 """
 
 import json
@@ -67,37 +55,66 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import no_sales  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AGREEMENT = os.path.join(ROOT, "tools", "buy_path.json")
 SITE = "https://eucomplypro.com"
+LICENSE_API = "https://mahope.tools/api/license/validate"
 TIMEOUT = 20
 
-# Browser-UA. Uden den får nogle Payment Links et andet svar end en
-# rigtig køber, og en gate der måler en anden side er ikke en gate.
+# Browser-UA: nogle kanter svarer anderledes en rigtig besøgende end en
+# script-agent, og en gate der måler en anden side er ikke en gate.
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 
-STRIPE_RE = re.compile(r"https://buy\.stripe\.com/[A-Za-z0-9]+")
 LOC_RE = re.compile(r"<loc>([^<]+)</loc>")
 
+# Stier der skal være lukkede, og et par undersider som splat-reglerne dækker.
+CLOSED_PATHS = no_sales.REMOVED_TOP + ("/pro/dashboard/", "/store/dpa/", "/vs/termly/")
+KEY_PAGES = ("/", "/da/", "/de/", "/fr/", "/scan/", "/plugin/")
+HOME_PAGES = ("/", "/da/", "/de/", "/fr/")
 
-def fetch(url, method="GET", data=None):
-    """Returnér (status, krop, fejl). Netværksfejl skal give en note, ikke en fejl."""
-    headers = {"User-Agent": UA}
-    body = None
-    if data is not None:
-        headers["Content-Type"] = "application/json"
-        body = json.dumps(data).encode()
-    request = urllib.request.Request(url, data=body, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-            return response.status, response.read().decode("utf-8", "replace"), None
-    except urllib.error.HTTPError as exc:
-        return exc.code, exc.read().decode("utf-8", "replace"), None
-    except Exception as exc:  # noqa: BLE001 - netværk skal give en note, ikke en fejl
-        return None, "", str(exc)
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):  # noqa: D401 - 3xx skal ses, ikke følges
+        return None
+
+
+class Net:
+    """Netværket. Selvtesten erstatter den med `FakeNet`, så intet rammer et rigtigt site."""
+
+    def get(self, url, method="GET", data=None):
+        """Returnér (status, krop, fejl). Netværksfejl skal give en note, ikke en fejl."""
+        headers = {"User-Agent": UA}
+        body = None
+        if data is not None:
+            headers["Content-Type"] = "application/json"
+            body = json.dumps(data).encode()
+        request = urllib.request.Request(url, data=body, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+                return response.status, response.read().decode("utf-8", "replace"), None
+        except urllib.error.HTTPError as exc:
+            return exc.code, exc.read().decode("utf-8", "replace"), None
+        except Exception as exc:  # noqa: BLE001
+            return None, "", str(exc)
+
+    def probe(self, url):
+        """Returnér (status, Location, fejl) UDEN at følge en redirect."""
+        opener = urllib.request.build_opener(_NoRedirect)
+        request = urllib.request.Request(url, headers={"User-Agent": UA})
+        try:
+            with opener.open(request, timeout=TIMEOUT) as response:
+                return response.status, response.headers.get("Location"), None
+        except urllib.error.HTTPError as exc:
+            return exc.code, exc.headers.get("Location"), None
+        except Exception as exc:  # noqa: BLE001
+            return None, None, str(exc)
 
 
 def _read_agreement():
@@ -117,88 +134,72 @@ def _expected(agreement, kind):
             if isinstance(c, dict) and c.get("url")}
 
 
-def check_money_pages(live):
-    """Pengesiderne skal svare 200 og have præcis ét Stripe-link pr. side."""
+def check_closed_paths(net, live):
+    """Hver lukket sti skal give en 301 til en side der findes og svarer 200."""
     findings, notes, measured = [], [], 0
-    for rel in ("/pro/", "/pricing/",
-                "/da/pro/", "/de/pro/", "/fr/pro/",
-                "/da/pricing/", "/de/pricing/", "/fr/pricing/"):
-        url = SITE + rel
-        if not live:
+    if not live:
+        return findings, notes, measured
+    for rel in CLOSED_PATHS:
+        status, location, err = net.probe(SITE + rel)
+        if err:
+            notes.append("%s kunne ikke hentes: %s" % (rel, err))
             continue
-        status, body, err = fetch(url)
+        measured += 1
+        if status == 200:
+            findings.append("%s svarer 200 — salgssiden lever stadig" % rel)
+        elif status != 301:
+            findings.append("%s svarer %s, ikke 301 — et gammelt link eller en søgemaskine får ikke "
+                            "den permanente vej videre" % (rel, status))
+        elif not location:
+            findings.append("%s giver 301 uden Location" % rel)
+        else:
+            target = urllib.parse.urljoin(SITE + rel, location)
+            path = urllib.parse.urlparse(target).path
+            if no_sales.removed_links(path):
+                findings.append("%s peger på %s, en anden lukket side" % (rel, target))
+                continue
+            code, _body, terr = net.get(target)
+            if terr:
+                notes.append("%s -> %s kunne ikke hentes: %s" % (rel, target, terr))
+            elif code != 200:
+                findings.append("%s peger på %s, som svarer %s" % (rel, target, code))
+    return findings, notes, measured
+
+
+def check_key_pages(net, live):
+    """Nøglesiderne svarer 200 uden købsspor, og forsiderne siger at EUComply er frosset."""
+    findings, notes, measured = [], [], 0
+    if not live:
+        return findings, notes, measured
+    for rel in KEY_PAGES:
+        status, body, err = net.get(SITE + rel)
         if err:
             notes.append("%s kunne ikke hentes: %s" % (rel, err))
             continue
         measured += 1
         if status != 200:
-            findings.append("%s svarer %s — en kunde kan ikke nå købsknappen" % (rel, status))
+            findings.append("%s svarer %s" % (rel, status))
             continue
-        links = sorted(set(STRIPE_RE.findall(body)))
-        if not links:
-            findings.append("%s har intet Stripe-link — pengesiden uden en vej at betale" % rel)
-        elif len(links) < 2:
-            findings.append("%s har kun ét Stripe-link, så den livstids-udgave mangler" % rel)
+        for link in no_sales.checkout_links(body):
+            findings.append("%s har stadig et betalingslink: %s" % (rel, link))
+        for link in sorted(set(no_sales.removed_links(body))):
+            findings.append("%s linker stadig til den lukkede side %s" % (rel, link))
+        if rel in HOME_PAGES:
+            notice = no_sales.parse_blocks(body).ids.get("frozen-notice")
+            if notice is None:
+                findings.append('%s mangler id="frozen-notice" — forsiden siger ikke at EUComply er frosset' % rel)
+            elif rel == "/" and no_sales.FROZEN_PHRASE not in " ".join(notice.split()).lower():
+                findings.append('%s: frozen-notice siger ikke "%s"' % (rel, no_sales.FROZEN_PHRASE))
     return findings, notes, measured
 
 
-def check_checkout(live, agreement):
-    """Hvert Stripe-link skal svare. Et lukket lifetime-link er en note."""
-    findings, notes, measured = [], [], 0
-    closed = _expected(agreement, "closed_checkout")
-    seen = set()
-    for rel in ("/pro/", "/pricing/", "/da/pro/", "/de/pro/", "/fr/pro/",
-                "/da/pricing/", "/de/pricing/", "/fr/pricing/"):
-        if not live:
-            continue
-        status, body, err = fetch(SITE + rel)
-        if err or status != 200:
-            continue
-        for link in set(STRIPE_RE.findall(body)):
-            if link in seen:
-                continue
-            seen.add(link)
-            code, _b, err = fetch(link)
-            if err:
-                notes.append("Stripe-link kunne ikke hentes: %s (%s)" % (link, err))
-                continue
-            measured += 1
-            if code == 200:
-                continue
-            if link in closed:
-                notes.append("Stripe-link %s svarer %s — registreret undtagelse: %s"
-                             % (link, code, closed[link]))
-            else:
-                findings.append("Stripe-link %s svarer %s, ikke 200 — købet kan ikke gennemføres"
-                                % (link, code))
-    return findings, notes, measured
-
-
-def check_thanks(live):
-    """Kvitteringen skal svare, med og uden session_id."""
+def check_license_api(net, live):
+    """En ukendt nøgle SKAL give 404. 5xx låser kunder med en gyldig licens ude."""
     findings, notes, measured = [], [], 0
     if not live:
         return findings, notes, measured
-    for url in ("https://mahope.tools/thanks",
-                "https://mahope.tools/thanks?session_id=cs_test_gate"):
-        status, _b, err = fetch(url)
-        if err:
-            notes.append("%s kunne ikke hentes: %s" % (url, err))
-            continue
-        measured += 1
-        if status != 200:
-            findings.append("kvitteringssiden %s svarer %s — kunden får ingen licensnøgle"
-                            % (url, status))
-    return findings, notes, measured
-
-
-def check_license_api(live):
-    """En ukendt nøgle SKAL give 404. 5xx låser betalende kunder ude."""
-    findings, notes, measured = [], [], 0
-    if not live:
-        return findings, notes, measured
-    status, body, err = fetch(
-        "https://mahope.tools/api/license/validate", method="POST",
+    status, body, err = net.get(
+        LICENSE_API, method="POST",
         data={"license_key": "0" * 32, "device_id": "check-buy-path", "product": "eucomply-pro"},
     )
     if err:
@@ -206,20 +207,20 @@ def check_license_api(live):
         return findings, notes, measured
     measured += 1
     if status in (500, 502, 503, 504):
-        findings.append("licens-API svarer %s på en ukendt nøgle — en nede server låser "
-                        "betalende kunder ude (503 skal klienten klare blødt)" % status)
+        findings.append("licens-API svarer %s på en ukendt nøgle — en nede server låser kunder med "
+                        "en gyldig licens ude (503 skal klienten klare blødt)" % status)
     elif status != 404:
         findings.append("licens-API svarer %s på en ukendt nøgle; 404 er det forventede "
                         "og sikre svar, så svaret skal forstås: %s" % (status, body[:120]))
     return findings, notes, measured
 
 
-def check_sitemap(live, agreement):
-    """Hver <loc> skal svare 200. En 404-liste i sitemapet dræner alle sider i den."""
+def check_sitemap(net, live, agreement):
+    """Ingen lukket sti i sitemapet, og hver <loc> svarer 200."""
     findings, notes, measured = [], [], 0
     if not live:
         return findings, notes, measured
-    status, body, err = fetch(SITE + "/sitemap.xml")
+    status, body, err = net.get(SITE + "/sitemap.xml")
     if err:
         notes.append("sitemap.xml kunne ikke hentes: %s" % err)
         return findings, notes, measured
@@ -232,7 +233,10 @@ def check_sitemap(live, agreement):
         return findings, notes, measured
     dead_allowed = _expected(agreement, "dead_in_sitemap")
     for loc in locs:
-        code, _b, err = fetch(loc)
+        if no_sales.removed_links(loc):
+            findings.append("%s står i sitemapet, men siden er lukket — fjern den fra kortet" % loc)
+            continue
+        code, _b, err = net.get(loc)
         if err:
             notes.append("%s kunne ikke hentes: %s" % (loc, err))
             continue
@@ -248,209 +252,187 @@ def check_sitemap(live, agreement):
     return findings, notes, measured
 
 
-def collect(live=True, mutate=None):
-    """Alle kontroller. `mutate` er (kind, url) for selftesten."""
+def collect(net=None, live=True):
+    """Alle kontroller. Returnér (fund, noter, målte antal)."""
+    net = net or Net()
     agreement, err = _read_agreement()
+    facts = {"closed": 0, "pages": 0, "license": 0, "sitemap": 0}
     if err:
-        return [err], [], {"pages": 0, "checkout": 0, "thanks": 0, "license": 0, "sitemap": 0}
+        return [err], [], facts
     if not agreement.get("version"):
         return ["%s mangler 'version' — aftalen skal kunne lukkes"
-                % os.path.relpath(AGREEMENT, ROOT)], [], {}
+                % os.path.relpath(AGREEMENT, ROOT)], [], facts
 
-    findings, notes, facts = [], [], {}
-
-    def run(key, fn, *args):
-        f, n, m = fn(*args)
+    findings, notes = [], []
+    for key, check, args in (
+        ("closed", check_closed_paths, ()),
+        ("pages", check_key_pages, ()),
+        ("license", check_license_api, ()),
+        ("sitemap", check_sitemap, (agreement,)),
+    ):
+        f, n, m = check(net, live, *args)
         findings.extend(f)
         notes.extend(n)
         facts[key] = m
-
-    if mutate is None:
-        run("pages", check_money_pages, live)
-        run("checkout", check_checkout, live, agreement)
-        run("thanks", check_thanks, live)
-        run("license", check_license_api, live)
-        run("sitemap", check_sitemap, live, agreement)
-        return findings, notes, facts
-
-    # Selftest-gren: kun den ene kontrol, med mutationen indbygget.
-    #
-    # Mutationen skal ramme ET MÅLEINPUT, ikke portens egen kode. En mutation
-    # der fjerner en betingelse i porten kan ikke fanges ved et live-kald: det
-    # udgivne site er sundt, så porten har intet at finde, og mutationen ligner
-    # en grøn gade. Det blev målt i selftestens M1 (fjernet kravet om et
-    # Stripe-link -> porten stadig grøn, exit 0). Derfor patches `fetch`, så
-    # svaret ligner det en brudt side ville give.
-    kind, url = mutate
-    _orig_fetch = fetch
-    if kind == "sitemap":
-        def patched(target, *a, **kw):
-            if target == url:
-                return 404, "", None
-            return _orig_fetch(target, *a, **kw)
-    elif kind == "page_no_link":
-        # En pengeside der svarer 200, men hvor købsknappen er væk. Det er
-        # den fejl der låser salget helt, og den er umulig at frembringe i det
-        # udgivne site — derfor laves den her.
-        def patched(target, *a, **kw):
-            if target == url:
-                return 200, "<html><body><h1>Pro</h1></body></html>", None
-            return _orig_fetch(target, *a, **kw)
-    elif kind == "thanks_500":
-        def patched(target, *a, **kw):
-            if target == url:
-                return 500, "", None
-            return _orig_fetch(target, *a, **kw)
-    elif kind == "license_503":
-        def patched(target, *a, **kw):
-            if target == url:
-                return 503, "", None
-            return _orig_fetch(target, *a, **kw)
-    elif kind == "checkout_dead":
-        def patched(target, *a, **kw):
-            if target == url:
-                return 404, "", None
-            return _orig_fetch(target, *a, **kw)
-    else:
-        raise ValueError("ukendt mutation: %r" % (kind,))
-
-    globals()["fetch"] = patched
-    try:
-        if kind == "sitemap":
-            run("sitemap", check_sitemap, live, agreement)
-        elif kind == "page_no_link":
-            run("pages", check_money_pages, live)
-        elif kind == "thanks_500":
-            run("thanks", check_thanks, live)
-        elif kind == "license_503":
-            run("license", check_license_api, live)
-        elif kind == "checkout_dead":
-            run("checkout", check_checkout, live, agreement)
-    finally:
-        globals()["fetch"] = _orig_fetch
     return findings, notes, facts
 
 
-def _expect_red(name, mutate, must_mention):
-    """Kør porten med mutationen og kræv RØD med den forventede besked.
+# ---------------------------------------------------------------------------
+# Selvtest: et falsk, helt lukket site er grønt, og hver afvigelse gør det rødt.
+# ---------------------------------------------------------------------------
+NOTICE_EN = ('<div id="frozen-notice">EUComply is frozen as free open source as of 22 November 2026. '
+             "The free scanner stays; Pro is no longer sold; existing licences keep working.</div>")
+NOTICE_LOCAL = '<div id="frozen-notice">EUComply er frosset som gratis open source pr. 22. november 2026.</div>'
 
-    Vendt sandheden, ikke en lokal variabel — samme fejl som opgave 14 og som
-    `check_live_funnel.py` (_expect_red) dokumenterer: en mutationstest der
-    sætter en lokal bool False, men aldrig returnerer den, grønner sig selv.
-    """
-    findings, _notes, _facts = collect(live=True, mutate=mutate)
+
+class FakeNet:
+    """Et lukket site som fixtures: (status, krop/Location). Intet rammer netværket."""
+
+    def __init__(self):
+        self.pages = {SITE + "/": (200, "<main>%s</main>" % NOTICE_EN)}
+        for rel in ("/da/", "/de/", "/fr/"):
+            self.pages[SITE + rel] = (200, "<main>%s</main>" % NOTICE_LOCAL)
+        for rel in ("/scan/", "/plugin/"):
+            self.pages[SITE + rel] = (200, "<main><p>Free scan.</p></main>")
+        self.redirects = {SITE + rel: (301, "/scan/") for rel in CLOSED_PATHS}
+        locs = "".join("<url><loc>%s%s</loc></url>" % (SITE, rel) for rel in ("/", "/scan/", "/plugin/"))
+        self.pages[SITE + "/sitemap.xml"] = (200, "<urlset>%s</urlset>" % locs)
+        self.license = (404, '{"valid":false}')
+
+    def get(self, url, method="GET", data=None):
+        if url == LICENSE_API:
+            return self.license[0], self.license[1], None
+        if url in self.pages:
+            return self.pages[url][0], self.pages[url][1], None
+        if url in self.redirects:
+            return self.redirects[url][0], "", None
+        return 404, "", None
+
+    def probe(self, url):
+        if url in self.redirects:
+            return self.redirects[url][0], self.redirects[url][1], None
+        if url in self.pages:
+            return self.pages[url][0], None, None
+        return 404, None, None
+
+
+def _expect(name, mutate, must_mention):
+    """Kør porten mod et mutéret falsk site og kræv RØD med den forventede besked."""
+    net = FakeNet()
+    mutate(net)
+    findings, _notes, _facts = collect(net)
     if not findings:
         return (name, False, "%s blev GRØN — mutationen blev ikke fanget" % name)
     if must_mention and not any(must_mention in f for f in findings):
-        return (name, False, "%s blev rød med en anden besked end forventet: %s"
-                % (name, findings[0]))
+        return (name, False, "%s blev rød med en anden besked end forventet: %s" % (name, findings[0]))
     return (name, True, "%s fanget: %s" % (name, findings[0]))
 
 
 def _selftest():
-    """Negative cases. Hver muterer målingen og kræver rød med rette besked."""
     cases = []
 
-    # 1. Baseline: den rigtige udgivne side skal være grøn, ellers er de
-    #    øvrige cases meningsløse.
-    findings, _n, _f = collect(live=True)
-    cases.append(("baseline: den udgivne købsvej er grøn", not findings, str(findings[:2])))
+    net = FakeNet()
+    findings, _n, facts = collect(net)
+    cases.append(("baseline: det lukkede site er grønt og målt",
+                  not findings and facts["closed"] == len(CLOSED_PATHS) and facts["sitemap"] == 3,
+                  "fund %s, målt %s" % (findings[:2], facts)))
 
-    # 2. Død side i sitemapet skal fanges. Mutationen rammer målingen, så
-    #    den er gyldig for porten uanset hvad der ligger i aftalen.
-    cases.append(_expect_red(
-        "død side i sitemapet er rød",
-        ("sitemap", SITE + "/pro/sample-report/"),
-        "rangerer aldrig",
-    ))
+    def live_page(net):
+        net.redirects.pop(SITE + "/pricing/")
+        net.pages[SITE + "/pricing/"] = (200, "<main>Pricing</main>")
 
-    # 3. Undtagelsen skal kunne lukkes: samme mutation som 2, men med den
-    #    URL skrevet ind i aftalen, skal VÆRE grøn. Ellers er en
-    #    registreret undtagelse bare en måde at slå porten fra.
-    #
-    #    Første udkast skrev `not findings and True`. Anden led er altid
-    #    sand, så assertionen var en tilfældig streng — præcis den slags
-    #    grøn case opgave 93 ("tre selftest-cases der ikke var egenskaber")
-    #    ryddede væk. Nu kræves BEGGE dele: ingen fund, og mutationen skal
-    #    faktisk være nået frem (anden kontrol måles), ellers er casen
-    #    grøn fordi porten slet ikke kørte.
-    path = os.path.relpath(AGREEMENT, ROOT)
+    def moved_temporarily(net):
+        net.redirects[SITE + "/da/pro/"] = (302, "/da/")
+
+    def gone(net):
+        net.redirects.pop(SITE + "/store/")
+
+    def dead_target(net):
+        net.redirects[SITE + "/vs/"] = (301, "/findes-ikke/")
+
+    def to_closed(net):
+        net.redirects[SITE + "/store/"] = (301, "/pricing/")
+
+    def buy_link(net):
+        net.pages[SITE + "/"] = (200, "<main>%s<a href=\"https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03\">Buy</a></main>" % NOTICE_EN)
+
+    def pricing_link(net):
+        net.pages[SITE + "/scan/"] = (200, '<main><a href="/pricing/">Pricing</a></main>')
+
+    def no_notice(net):
+        net.pages[SITE + "/de/"] = (200, "<main>EUComply</main>")
+
+    def no_phrase(net):
+        net.pages[SITE + "/"] = (200, '<main><div id="frozen-notice">Welcome to our compliance scanner today.</div></main>')
+
+    def page_down(net):
+        net.pages[SITE + "/plugin/"] = (500, "")
+
+    def sitemap_lists_closed(net):
+        net.pages[SITE + "/sitemap.xml"] = (200, "<urlset><url><loc>%s/pro/</loc></url></urlset>" % SITE)
+
+    def sitemap_dead(net):
+        net.pages[SITE + "/sitemap.xml"] = (200, "<urlset><url><loc>%s/borte/</loc></url></urlset>" % SITE)
+
+    def license_503(net):
+        net.license = (503, "")
+
+    def license_200(net):
+        net.license = (200, '{"valid":true}')
+
+    for name, mutate, needle in (
+        ("en lukket side der lever er rød", live_page, "lever stadig"),
+        ("302 i stedet for 301 er rød", moved_temporarily, "ikke 301"),
+        ("en lukket sti uden redirect er rød", gone, "ikke 301"),
+        ("redirect til en side der ikke findes er rød", dead_target, "som svarer 404"),
+        ("redirect til en anden lukket side er rød", to_closed, "anden lukket side"),
+        ("betalingslink på forsiden er rødt", buy_link, "betalingslink"),
+        ("link til /pricing/ er rødt", pricing_link, "lukkede side"),
+        ("forside uden frozen-notice er rød", no_notice, "frozen-notice"),
+        ("engelsk frozen-notice uden frasen er rød", no_phrase, "frozen as free open source"),
+        ("nøgleside der er nede er rød", page_down, "svarer 500"),
+        ("lukket side i sitemapet er rød", sitemap_lists_closed, "siden er lukket"),
+        ("død side i sitemapet er rød", sitemap_dead, "rangerer aldrig"),
+        ("licens-API på 503 er rød", license_503, "gyldig licens"),
+        ("licens-API der svarer 200 på en ukendt nøgle er rød", license_200, "404 er det forventede"),
+    ):
+        cases.append(_expect(name, mutate, needle))
+
+    # Undtagelsen skal kunne lukkes: den samme døde sitemap-side er grøn og
+    # rapporteret som note, når aftalen registrerer den med en begrundelse.
     with open(AGREEMENT, encoding="utf-8") as fh:
         good = fh.read()
+    data = json.loads(good)
+    data.setdefault("dead_in_sitemap", []).append({"url": SITE + "/borte/", "reason": "selftest: midlertidigt nede"})
     with open(AGREEMENT, "w", encoding="utf-8") as fh:
-        data = json.loads(good)
-        data.setdefault("dead_in_sitemap", []).append(
-            {"url": SITE + "/pro/sample-report/", "reason": "selftest: midlertidigt nede"})
         fh.write(json.dumps(data, indent=2, ensure_ascii=False))
     try:
-        findings, notes, facts = collect(live=True,
-                                         mutate=("sitemap", SITE + "/pro/sample-report/"))
-        measured = facts.get("sitemap", 0)
-        mentioned = any(SITE + "/pro/sample-report/" in n for n in notes)
-        cases.append((
-            "registreret undtagelse er grøn, målt og rapporteret som note",
-            (not findings) and measured > 0 and mentioned,
-            "fandt: %s, målt: %d, nævnt i note: %s" % (findings[:1], measured, mentioned),
-        ))
+        net = FakeNet()
+        sitemap_dead(net)
+        findings, notes, facts = collect(net)
+        mentioned = any(SITE + "/borte/" in n for n in notes)
+        cases.append(("registreret undtagelse er grøn, målt og rapporteret som note",
+                      not findings and facts["sitemap"] > 0 and mentioned,
+                      "fund %s, målt %s, note %s" % (findings[:1], facts["sitemap"], mentioned)))
     finally:
         with open(AGREEMENT, "w", encoding="utf-8") as fh:
             fh.write(good)
 
-    # 4. Aftalen beskadiget -> rød, ellers måler porten ingenting.
+    # Aftalen beskadiget -> rød, ellers måler porten ingenting.
     with open(AGREEMENT, "w", encoding="utf-8") as fh:
         fh.write("{ ikke json")
     try:
-        findings, _n, _f = collect(live=True)
-        cases.append((
-            "beskadiget aftale er rød",
-            any("kunne ikke læses" in f for f in findings),
-            str(findings[:1]),
-        ))
+        findings, _n, _f = collect(FakeNet())
+        cases.append(("beskadiget aftale er rød", any("kunne ikke læses" in f for f in findings), str(findings[:1])))
     finally:
         with open(AGREEMENT, "w", encoding="utf-8") as fh:
             fh.write(good)
 
-    # 5. En pengeside uden købsknap. Uden denne case er `check_money_pages`
-    #    utestet: det udgivne site har et link på alle otte sider, så porten
-    #    er grøn af den rigtige grund og siger intet om sin egen dømmekraft.
-    #    Det blev målt som M1 i mutationstesten.
-    cases.append(_expect_red(
-        "pengeside uden Stripe-link er rød",
-        ("page_no_link", SITE + "/pricing/"),
-        "uden en vej at betale",
-    ))
-
-    # 6. Kvitteringen nede. Den er hvor kunden får nøglen, så en 500 her er
-    #    et betalt produkt der ikke leveres.
-    cases.append(_expect_red(
-        "kvitteringsside der svarer 500 er rød",
-        ("thanks_500", "https://mahope.tools/thanks"),
-        "ingen licensnøgle",
-    ))
-
-    # 7. Licensserveren svarer 503 på en ukendt nøgle. Det er den fejl der
-    #    låser betalende kunder ude, og den er nem at forveksle med en
-    #    korrekt 404 — derfor kræves beskeden.
-    cases.append(_expect_red(
-        "licens-API på 503 er rød",
-        ("license_503", "https://mahope.tools/api/license/validate"),
-        "låser betalende kunder ude",
-    ))
-
-    # 8. Et Stripe-link der ikke svarer. Uden den undtagelse skal det være
-    #    rød: det er købet der ikke kan gennemføres.
-    cases.append(_expect_red(
-        "dødt Stripe-link er rødt",
-        ("checkout_dead", "https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03"),
-        "købet kan ikke gennemføres",
-    ))
-
     ok = True
     for name, passed, detail in cases:
-        print("   %s  %s%s" % ("OK  " if passed else "FEJL", name,
-                               "" if passed else "  — %s" % detail))
+        print("   %s  %s%s" % ("OK  " if passed else "FEJL", name, "" if passed else "  — %s" % detail))
         ok = ok and passed
-    print("SELFTEST %s — %d negative cases" % ("GRØN" if ok else "RØD", len(cases)))
+    print("SELFTEST %s — %d cases (lukket site grønt, hver afvigelse rød)" % ("GRØN" if ok else "RØD", len(cases)))
     return ok
 
 
@@ -466,15 +448,14 @@ def main(argv):
         print("   FUND  %s" % f)
 
     if findings:
-        print("KØBSVEJ-GATE RØD — %d fund" % len(findings))
+        print("KØBSVEJ-GATE RØD — %d fund: sitet har stadig et købsspor, eller noget der skal virke er nede" % len(findings))
         return 1
     if not live:
         print("KØBSVEJ-GATE grå — offline, intet målt")
         return 0
-    print("KØBSVEJ-GATE GRØN — %d pengesider, %d Stripe-links, %d kvitteringskald, "
-          "%d licenskald, %d sitemap-URL'er, alle svarer som de skal"
-          % (facts.get("pages", 0), facts.get("checkout", 0), facts.get("thanks", 0),
-             facts.get("license", 0), facts.get("sitemap", 0)))
+    print("KØBSVEJ-GATE GRØN — %d lukkede stier 301'er, %d nøglesider uden købsspor, %d licenskald, "
+          "%d sitemap-URL'er, alle svarer som de skal"
+          % (facts.get("closed", 0), facts.get("pages", 0), facts.get("license", 0), facts.get("sitemap", 0)))
     return 0
 
 

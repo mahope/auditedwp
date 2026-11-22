@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate: er Chrome-extensionen målt klar til Chrome Web Store — og har /extension/ én købsvej?
+"""Gate: er Chrome-extensionen målt klar til Chrome Web Store — og har /extension/ INGEN købsvej?
 
     python3 tools/check_store_ready.py
     python3 tools/check_store_ready.py --selftest
@@ -23,9 +23,16 @@ koden:
    guide (once published) … (link will appear here)".
 4. **`/extension/` havde ingen købsvej.** Kortet "Pro upgrade path" forklarede
    godt at licensen er til WordPress-pluginen, men **linkede ingen steder**:
-   en Pro-tekst uden et købslink er ikke en købsvej. Popup'en har en
-   (`/pro/`), landingssiden havde ikke. Det er præcis acceptkriteriet i
-   opgave 91.
+   en Pro-tekst uden et købslink er ikke en købsvej. Popup'en havde en
+   (`/pro/`), landingssiden havde ikke. Det var acceptkriteriet i opgave 91.
+
+   **Vendt 22/11-2026.** Ejeren lukkede salget og frøs EUComply som gratis open
+   source, så kravet er blevet spejlvendt: R9 kræver nu at der IKKE er en
+   købsvej. `/extension/`, popup'en og READMEen (de to sidste ligger i zip'en)
+   må hverken have et betalingslink, et link til de slettede sider (`/pro/`,
+   `/pricing/`, `/store/`), en pris eller en sætning der sælger Pro. Dommen er
+   den fælles `tools/no_sales.py`. En lukket-sætning om Pro ("no longer
+   sold", "existing licences") og et link til den gratis plugin-side er lovlige.
 
 Derfor er denne port bygget som **en måling, ikke en rapport**. R5 er den
 interessante regel: en permission skal **bevises brugt**, og beviset er et
@@ -51,6 +58,9 @@ import struct
 import sys
 import tempfile
 import zipfile
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import no_sales  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXT = os.path.join(ROOT, "chrome-ext")
@@ -82,7 +92,9 @@ DEAD_PROMISE = (
     "todo:",
 )
 
-PAID_SURFACES = ("/pro/", "/plugin/", "/pricing/", "/store/")
+# Sider der blev slettet 22/11-2026 (salget lukket). /plugin/ er ikke med: det er
+# den gratis WordPress-plugin, og den findes stadig.
+CLOSED_SURFACES = ("/pro/", "/pricing/", "/store/")
 
 # R11. En licens skal have et navn, der kan efterprøves, og en tekst der giver
 # rettighederne. `open source` er et juridisk begreb — det er en hensigtserklæring
@@ -282,23 +294,37 @@ def collect(root=ROOT, ext=None, page=None, published=ROOT):
     for url in sorted(set(STORE_URL.findall(page_html))):
         findings.append(f"site-dist/extension: butiks-URL {url} — hvis der ikke er en udgivet liste, er den et dødt løfte")
 
-    # R9 — præcis én købsvej i sidens indhold, og den skal findes i det
-    # publicerede træ. Nav-linket i headeren tæller ikke med: en global
-    # `/pricing/` i navigationen er ikke den vej, opgaven beder om.
+    # R9 — ingen købsvej. Siden 22/11-2026 er salget lukket og extensionen
+    # gratis, så /extension/ må hverken linke til en betaling, til en lukket
+    # side (/pro/, /pricing/, /store/), vise en pris eller sælge Pro. Dommen er
+    # `tools/no_sales.py`, den samme som resten af gaten bruger. Nav-linket i
+    # headeren er med: et link til en slettet side er en død vej uanset hvor
+    # det står.
+    for finding in no_sales.scan_text("site-dist/extension/index.html", page_html, "html"):
+        findings.append(finding)
     body = main_content(page_html)
-    targets = []
     for href in HREF.findall(body):
         path = href.split("?")[0].split("#")[0]
-        if any(path.rstrip("/") == paid.rstrip("/") for paid in PAID_SURFACES):
-            if path not in targets:
-                targets.append(path)
-    if not targets:
-        findings.append("site-dist/extension: ingen købsvej i <main> — en Pro-tekst uden link er ikke en vej")
-    elif len(targets) > 1:
-        findings.append(f"site-dist/extension: {len(targets)} købsveje i <main> ({', '.join(targets)}) — opgaven vil have én")
-    for target in targets:
-        if not os.path.isdir(os.path.join(published, "site-dist", target.strip("/"))):
-            findings.append(f"site-dist/extension: købsvejen {target} findes ikke i det publicerede træ")
+        if any(path.rstrip("/") == closed.rstrip("/") for closed in CLOSED_SURFACES):
+            findings.append(f"site-dist/extension: <main> linker til {path}, der ikke findes mere")
+
+    # R9b — extensionens egen kilde (popup'en og READMEen ligger i zip'en, så
+    # det der står dér er publiceret) sælger heller ikke. En popup der siger
+    # "See Pro — $79/year" er en købsvej, også selv om siden er ren.
+    for name in sorted(os.listdir(ext)):
+        suffix = os.path.splitext(name)[1]
+        if suffix not in (".html", ".js", ".md"):
+            continue
+        text = read_text(os.path.join(ext, name), findings, f"chrome-ext/{name}")
+        if text is None:
+            continue
+        kind = "html" if suffix == ".html" else "js"
+        for finding in no_sales.scan_text(f"chrome-ext/{name}", text, kind):
+            findings.append(finding)
+        if suffix == ".md":
+            lines = [line for line in text.splitlines() if line.strip()]
+            findings.extend(no_sales.price_findings(f"chrome-ext/{name}", lines))
+            findings.extend(no_sales.pro_findings(f"chrome-ext/{name}", lines))
 
     # R10 — README'en må ikke pege på filer der ikke findes. Den ligger i
     # zip'en, så en død reference er publiceret.
@@ -356,7 +382,8 @@ def collect(root=ROOT, ext=None, page=None, published=ROOT):
 
 def _fixture(root, manifest_extra=None, permissions=None, hosts=None, name=None, description=None,
              readme=None, page_body=None, version="1.0.2", write_icon=True, broken_icon=None,
-             code_extra="", license_source=True, license_zip=True, license_text=GRANT_PHRASE):
+             code_extra="", license_source=True, license_zip=True, license_text=GRANT_PHRASE,
+             nav=None, popup=None):
     """Skriv et minimalt, grønt extension-træ. Hvert argument bryder præcis én regel."""
     ext = os.path.join(root, "chrome-ext")
     os.makedirs(os.path.join(ext, "icons"), exist_ok=True)
@@ -397,12 +424,15 @@ def _fixture(root, manifest_extra=None, permissions=None, hosts=None, name=None,
         )
     with open(os.path.join(ext, "README.md"), "w", encoding="utf-8") as handle:
         handle.write(readme if readme is not None else "# EUComply\n\nFiles: `manifest.json`, `popup.js`.\n")
+    with open(os.path.join(ext, "popup.html"), "w", encoding="utf-8") as handle:
+        handle.write(popup if popup is not None else
+                     "<!doctype html><html><body><main><p>Scan the current site for nine technical "
+                     "signals. Free.</p></main></body></html>")
     if license_source:
         with open(os.path.join(ext, LICENSE_NAME), "w", encoding="utf-8") as handle:
             handle.write(f"MIT License\n\n{license_text}\n")
 
-    for paid in ("pro", "extension"):
-        os.makedirs(os.path.join(root, "site-dist", paid), exist_ok=True)
+    os.makedirs(os.path.join(root, "site-dist", "extension"), exist_ok=True)
     os.makedirs(os.path.join(root, "site-dist", "assets"), exist_ok=True)
     with zipfile.ZipFile(
         os.path.join(root, "site-dist", "assets", f"eucomply-extension-{version}.zip"), "w"
@@ -412,12 +442,13 @@ def _fixture(root, manifest_extra=None, permissions=None, hosts=None, name=None,
             archive.writestr(LICENSE_NAME, f"MIT License\n\n{license_text}\n")
     body = page_body if page_body is not None else (
         '<main><a href="/assets/eucomply-extension-{v}.zip">Download</a>'
-        '<a href="/pro/" class="btn">See Pro</a></main>'
+        '<a href="/plugin/">The free WordPress plugin</a></main>'
     ).format(v=version)
     with open(os.path.join(root, "site-dist", "extension", "index.html"), "w", encoding="utf-8") as handle:
         handle.write(
             "<!doctype html><html><head><title>EUComply</title></head><body>"
-            "<nav><a href='/pricing/'>Pricing</a></nav>" + body + "</body></html>"
+            + (nav if nav is not None else "<nav><a href='/scan/'>Scan</a></nav>")
+            + body + "</body></html>"
         )
     return ext
 
@@ -446,6 +477,12 @@ def _selftest():
             return None if not findings else f"case {label!r}: rent træ gav {findings[0]}"
         return case
 
+    def expect_green_with(label, **kwargs):
+        def case():
+            findings = run(**kwargs)
+            return None if not findings else f"case {label!r}: skulle være grøn, gav {findings[0]}"
+        return case
+
     cases = [
         # Den grønne case skal være **rød** uden sin mærke, ellers er den
         # grøn af en grund den ikke måtte være grøn af.
@@ -468,20 +505,45 @@ def _selftest():
         expect_red("API-kald uden tilladelse", "ikke står i host_permissions", hosts=["https://andet.example.net/*"]),
         # R7
         expect_red("version-drift", "manifestet siger",
-                   page_body='<main><a href="/assets/eucomply-extension-1.0.1.zip">Download</a><a href="/pro/">Pro</a></main>'),
+                   page_body='<main><a href="/assets/eucomply-extension-1.0.1.zip">Download</a></main>'),
         # R8
         expect_red("pladsholder", "dødt løfte",
-                   page_body='<main><p>link will appear here</p><a href="/pro/">Pro</a></main>'),
+                   page_body='<main><p>link will appear here</p>'
+                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a></main>'),
         expect_red("butiks-URL", "dødt løfte",
                    page_body='<main><a href="https://chromewebstore.google.com/detail/x">Store</a>'
-                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a><a href="/pro/">Pro</a></main>'),
-        # R9
-        expect_red("ingen købsvej", "ikke en vej",
-                   page_body='<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a></main>'),
-        expect_red("to købsveje", "købsveje i <main>",
-                   page_body='<main><a href="/pro/">Pro</a><a href="/plugin/">Plugin</a></main>'),
-        expect_red("død købsvej", "ikke i det publicerede træ",
-                   page_body='<main><a href="/store/">Store</a></main>'),
+                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a></main>'),
+        # R9 — spejlbilledet af den gamle regel: der må IKKE være en købsvej
+        expect_red("betalingslink på siden", "betalingslink",
+                   page_body='<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+                             '<a href="https://buy.stripe.com/abc123">Buy Pro</a></main>'),
+        expect_red("link til /pro/ i <main>", "lukkede side",
+                   page_body='<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+                             '<a href="/pro/">Pro</a></main>'),
+        expect_red("link til /pricing/ i navigationen", "lukkede side",
+                   nav="<nav><a href='/pricing/'>Pricing</a></nav>"),
+        expect_red("pris på siden", "pris",
+                   page_body='<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+                             '<p>EUComply Pro costs $79/year per site.</p></main>'),
+        expect_red("Pro-opgradering uden lukke-sætning", "nævner Pro",
+                   page_body='<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+                             '<p>The EUComply Pro upgrade adds editable documents.</p></main>'),
+        # R9b — extensionens egen kilde ligger i zip'en
+        expect_red("popup'en sælger Pro", "chrome-ext/popup.html",
+                   popup='<main><p>Pro adds documents.</p>'
+                         '<a href="https://eucomplypro.com/pro/">See Pro — $79/year per site</a></main>'),
+        expect_red("popup med betalingslink", "betalingslink",
+                   popup='<main><a href="https://buy.stripe.com/abc123">Upgrade</a></main>'),
+        expect_red("README sælger Pro", "chrome-ext/README.md",
+                   readme="# EUComply\n\n**Price:** Free + optional EUComply Pro upgrade at $79/year\n"),
+        # Frysning: en lukket-sætning om Pro er lovlig, og /plugin/ er en side der findes
+        expect_green_with("lukket Pro må nævnes", page_body=(
+            '<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+            '<a href="/plugin/">The free WordPress plugin</a>'
+            '<p>EUComply Pro is no longer sold; existing licences keep working.</p></main>')),
+        expect_green_with("donationslinket må stå", page_body=(
+            '<main><a href="/assets/eucomply-extension-1.0.2.zip">Download</a>'
+            '<a href="https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c">Support the free scanner</a></main>')),
         # R10
         expect_red("død reference i README", "som ikke findes",
                    readme="# EUComply\n\nKør `icons/generate-icons.py` forst.\n"),
@@ -491,7 +553,7 @@ def _selftest():
         expect_red("LICENSE der ikke er en licens", "ikke en licenstekst", license_text="Se vilkår."),
         expect_red("licenspåstand uden navn", "uden at nævne hvilken",
                    page_body='<main><p>Open source.</p>'
-                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a><a href="/pro/">Pro</a></main>'),
+                             '<a href="/assets/eucomply-extension-1.0.2.zip">Download</a></main>'),
     ]
     broken = [message for message in (case() for case in cases) if message]
     if broken:
@@ -509,10 +571,10 @@ def main(argv):
     if findings:
         for finding in findings:
             print("FUND:", finding)
-        print(f"\n{len(findings)} fund — extensionen er ikke butiksparat, og /extension/ har ikke én købsvej.")
+        print(f"\n{len(findings)} fund — extensionen er ikke butiksparat, eller /extension/ og extensionens kilde har stadig en købsvej.")
         return 1
     print("Butiksparat: manifestet er målt mod Chrome Web Stores grænser, hver permission "
-          "er bevilget, og /extension/ har præcis én købsvej i det publicerede træ.")
+          "er bevilget, og hverken /extension/ eller extensionens kilde har en købsvej.")
     return 0
 
 

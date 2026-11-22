@@ -4,13 +4,17 @@
     python3 tools/check_public_tree.py                  # site-dist/
     python3 tools/check_public_tree.py --tree site      # kilden, kun til sammenligning
 
-Tjekker tre ting og fejler med exit 1 ved det første brud:
+Tjekker fire ting og fejler med exit 1 ved det første brud:
 
   1. Ingen interne eller betalte filer i træet — interne dokumenter,
      scripts, forskningsnoter, driftsfiler eller credentials.
   2. Alle offentlige nøglesider og assets findes.
   3. Enhver intern reference i HTML peger på en fil, der findes, så en
      udeladt fil ikke efterlader døde links.
+  4. De lukkede salgssider (`/pricing/`, `/pro/`, `/store/`, `/vs/`, alle
+     sprog) findes IKKE i træet, og hver sti har en 301 i `_redirects` til en
+     side der findes. Siden 22/11-2026 er EUComply frosset som gratis open
+     source; før den dag krævede punkt 2 at otte af siderne var med.
 
 Exit code er antallet af brud, som i øvrigt.
 """
@@ -19,6 +23,9 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import no_sales  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -44,14 +51,9 @@ FORBIDDEN_PARTS = (
 REQUIRED = (
     "index.html",
     "404.html",
-    "pro/index.html",
-    "pricing/index.html",
-    "da/pro/index.html",
-    "da/pricing/index.html",
-    "de/pro/index.html",
-    "de/pricing/index.html",
-    "fr/pro/index.html",
-    "fr/pricing/index.html",
+    "da/index.html",
+    "de/index.html",
+    "fr/index.html",
     "scan/index.html",
     "sample/index.html",
     "plugin/index.html",
@@ -117,6 +119,16 @@ def forbidden_findings(tree: Path):
 
 def required_findings(tree: Path):
     return [f"offentlig sti mangler i træet: {path}" for path in REQUIRED if not (tree / path).is_file()]
+
+
+def closed_findings(tree: Path):
+    """De lukkede sider er væk, og hver sti er en 301 til en side der findes.
+
+    Det er spejlbilledet af REQUIRED: en side der blev slettet må ikke komme
+    stille tilbage via PUBLIC_DIRS, og en slettet side uden redirect giver et
+    gammelt link eller en søgemaskine et 404.
+    """
+    return [f"lukket salgsside: {finding}" for finding in no_sales.removed_page_findings(tree)]
 
 
 def _references(html: str):
@@ -264,7 +276,7 @@ def main() -> int:
         print(f"FEJL: træet findes ikke: {tree} — kør tools/build_public_tree.py først")
         return 1
 
-    findings = forbidden_findings(tree) + required_findings(tree)
+    findings = forbidden_findings(tree) + required_findings(tree) + closed_findings(tree)
     links, pages = link_findings(tree)
     findings.extend(links)
     anchors, checked = anchor_findings(tree)
@@ -318,6 +330,20 @@ def selftest() -> int:
     def dead(body, extra=None):
         return anchor_findings(build(body, extra))[0]
 
+    def closed_tree(extra=None):
+        """Et træ med scan-siden og redirects for alle lukkede stier."""
+        tmp = Path(tempfile.mkdtemp())
+        (tmp / "scan").mkdir()
+        (tmp / "scan" / "index.html").write_text(PAGE.format(body="<main>scan</main>"), encoding="utf-8")
+        lines = [f"{p} /scan/ 301" for p in no_sales.REMOVED_TOP + tuple(p.rstrip("/") for p in no_sales.REMOVED_TOP)]
+        lines += ["/pro/* /scan/ 301", "/store/* /scan/ 301", "/vs/* /scan/ 301"]
+        (tmp / "_redirects").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        for name, content in (extra or {}).items():
+            path = tmp / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+        return tmp
+
     good = '<a href="#main">spring</a><main id="main">indhold</main>'
     cases = [
         # 1. grønt baseline-træ: et korrekt ankre må ikke være rødt.
@@ -327,12 +353,12 @@ def selftest() -> int:
         # 3. korrekt ankre på en anden side må ikke være rødt.
         (
             "korrekt ankre på anden side er grønt",
-            dead('<a href="/pricing/">priser</a>', {"pricing/index.html": '<main id="top"></main>', "index.html": '<a href="/pricing/#top">x</a>'}) == [],
+            dead('<a href="/scan/">scan</a>', {"scan/index.html": '<main id="top"></main>', "index.html": '<a href="/scan/#top">x</a>'}) == [],
         ),
         # 4. dødt ankre på en anden side skal være rødt.
         (
             "dødt anker på anden side er rødt",
-            dead('<a href="/pricing/#top">x</a>', {"pricing/index.html": '<main id="andet"></main>'}) != [],
+            dead('<a href="/scan/#top">x</a>', {"scan/index.html": '<main id="andet"></main>'}) != [],
         ),
         # 5. `<a name>` er et gyldigt mål.
         ("`<a name>` tæller som mål", dead('<a href="#legacy">x</a><a name="legacy"></a>') == []),
@@ -347,6 +373,12 @@ def selftest() -> int:
         # 8. En mutation uden forskel skal være grøn — ellers er de syv
         #    negative cases grønne, fordi porten ikke kører.
         ("mutation uden forskel er grøn", dead('<a href="#main">spring</a><main id="main">x</main>') == []),
+        # 9-12. De lukkede sider: et træ med redirects og uden de gamle sider er
+        #    grønt, og hvert brud på det er rødt.
+        ("lukket træ uden gamle sider er grønt", closed_findings(closed_tree()) == []),
+        ("en lukket side der kommer tilbage er rød", any("findes stadig" in f for f in closed_findings(closed_tree({"pricing/index.html": "<main>x</main>"})))),
+        ("en manglende 301 er rød", any("har ingen 301" in f for f in closed_findings(closed_tree({"_redirects": "/pricing/ /scan/ 301\n"})))),
+        ("et redirect til en side der ikke findes er rødt", any("ikke findes" in f for f in closed_findings(closed_tree({"_redirects": "\n".join(f"{p} /findes-ikke/ 301" for p in no_sales.REMOVED_TOP + tuple(p.rstrip("/") for p in no_sales.REMOVED_TOP)) + "\n/pro/* /findes-ikke/ 301\n/store/* /findes-ikke/ 301\n/vs/* /findes-ikke/ 301\n"})))),
     ]
 
     failed = 0

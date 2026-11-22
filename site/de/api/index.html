@@ -103,7 +103,6 @@ td code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
         <a href="/de/scan/">Scan</a>
         <a href="/de/book/">Leitfaden</a>
         <a href="/checklist/">Checklisten</a>
-        <a href="/de/pricing/">Preise</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><a href="/api/" hreflang="en" lang="en">EN</a></li><li><a href="/da/api/" hreflang="da" lang="da">DA</a></li><li><span aria-current="true" lang="de">DE</span></li><li><a href="/fr/api/" hreflang="fr" lang="fr">FR</a></li></ul>
@@ -235,18 +234,8 @@ for name, check in report["checks"].items():
     <p class="lede">Ein 502 heißt, dass die abgefragte Website fehlgeschlagen ist, nicht die API. Die Antwort enthält die eigentliche Meldung — lesen Sie sie, bevor Sie es erneut versuchen: Ein Host hinter einer Bot-Sperre scheitert dauerhaft, und mehr Versuche helfen nicht.</p>
     <div class="box warn">
       <h3>Was diese API nicht tut</h3>
-      <p>Sie ist ein einzelner Request für eine einzelne Website in einem einzelnen Moment. Sie speichert keine Historie, läuft nicht nach Zeitplan, sendet keine Webhooks und nimmt keine Zahlung an. Brauchen Sie eines davon, ist das kostenpflichtige Produkt derzeit das WordPress-Plugin: Es prüft Ihre eigene Website einmal täglich, behält die letzten 12 Scans, meldet per E-Mail, wenn eine Prüfung bricht, und erzeugt einen HTML-Bericht, den Sie an einen Kunden schicken können. Überwachtes Hosting ist nicht Teil davon.</p>
+      <p>Sie ist ein einzelner Request für eine einzelne Website in einem einzelnen Moment. Sie speichert keine Historie, läuft nicht nach Zeitplan, sendet keine Webhooks und nimmt keine Zahlung an.</p>
       <p>Die neun Prüfungen sind technische Signale aus dem ausgelieferten HTML. Die DORA-Prüfung sucht öffentliche Textmarken und ist keine Bewertung von irgendetwas.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="probox">
-      <h2 style="margin-bottom:6px">Brauchen Sie Historie, Zeitplan und einen Bericht?</h2>
-      <p class="lede" style="margin:0 0 18px 0">Die API oben bleibt kostenlos. Pro ist eine Lizenz für das WordPress-Plugin: tägliche Re-Scans in Ihrem eigenen WordPress, die letzten 12 Scans gespeichert, eine E-Mail, wenn eine Prüfung bricht, und ein HTML-Bericht aus dem letzten Scan. Es gibt außerdem Zugriff auf die editierbaren HTML-Dokumentvorlagen.</p>
-      <a class="btn" href="https://buy.stripe.com/eVq00i4YH6UG69g0ObbMQ03" data-keep rel="noopener">Pro kaufen — $79/Jahr pro Website →</a>
     </div>
   </div>
 </section>

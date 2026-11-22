@@ -8,6 +8,8 @@ Malt 28/9. `site/sitemap.xml` havde 209 `<loc>`, og det publicerede trae
 havde 223 sider. De 14 der manglede saa ikke alle ud som en fejl — 13 af dem
 er `noindex` og skal *da* ikke i sitemap: `/search/`, de tre locale-søgninger,
 `/pro/dashboard/`, `/pro/thank-you/`, `/tools/` og de fem generator-sider.
+(22/11-2026: `/pro/*` er slettet og redirectet, så de to sider er ikke længere
+noindex-undtagelser; de må slet ikke findes. R2 dømmer en `<loc>` der peger på dem.)
 Men **en** af dem var ikke noindex:
 
     /api/    ingen robots-meta overhovedet, altsaa indekserbar, publiceret

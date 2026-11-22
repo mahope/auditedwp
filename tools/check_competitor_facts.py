@@ -1,246 +1,190 @@
 #!/usr/bin/env python3
-"""Port: ingen vs/*-side maa paastae en konkurrent-pris uden optegnelse.
+"""Port: en side der nævner en konkurrents pris skal vise hvornår og hvorfra.
 
-Vi skriver om andres priser paa otte sider. Det er en sammenligningsside, saa
-det er hele vaerdien — og det er ogsaa det mest saarbare vi skriver, fordi
-tallet tilhører en anden og kan vaere forkert i morgen.
+Vi skriver om andres priser, og tallet tilhører en anden og kan være forkert i
+morgen. Fire af otte konkurrentsider havde en forkert påstand da de blev læst mod
+leverandørens egen prisside 28/9 (Termly "Pro $10/mo", Complianz "Personal EUR
+59/år", Cookiebot "Essential $9/mo", Osano "priser er ikke offentlige", ...).
+`tools/competitor_facts.json` er den eneste kilde til hvad vi påstår om andres
+priser: hver konkurrent har en kilde (leverandørens egen prisside), en
+`checked`-dato og om priserne overhovedet er offentlige.
 
-Tidligere stod tal bare i cellen. Fire af otte sider havde en forkeret
-paastand, da de blev laest mod leverandoerens egen prisside 28/9:
+Før 22/11-2026 dømte gaten de otte `vs/*`-sider celle for celle (R1-R7: hver
+`data-competitor`-celle mod JSON, hvert tal mod en optegnelse, ingen valutatal for
+en konkurrent uden offentlige priser). Siderne er slettet (salget er lukket, og
+de var salgssider), og de regler handlede kun om dem, så de er slettet med dem.
 
-  termly     "Pro $10/mo, Business $25/mo" -> planerne hedder Starter og Pro+,
-             gratis er 10.000 bannervisninger, ikke 1.000
-  complianz  "Personal EUR 59/aar"         -> EUR-prisen er 35; 59 er USD
-  cookiebot  "Essential $9/mo"             -> planen hedder Premium Lite og
-             koster EUR 7, ikke USD 9
-  iubenda    "Essentials ~EUR 27/aar"      -> EUR 4,99 pr. maaned, og der
-             findes ingen "Plus"-plan
-  usercentrics "Pro ~$34, Business ~$56"   -> EUR 30 og EUR 50
-  osano      "priser er ikke offentlige"   -> Plus er offentlig til $199/md
-  onetrust   "typisk $350+/mo"             -> OneTrust publicerer ingen
-             priser overhovedet
+Konkurrentpriserne på `/compare/` og `/cmp-comparison/` er det der er tilbage,
+og de stod aldrig under cellereglerne: ingen `data-competitor`-markering. Gaten
+kræver derfor det der kan kræves af en sammenligningsside uden markering:
 
-Sao kan det ikke bare sta i en celle. tools/competitor_facts.json er den
-eneste kilde, og denne port dommer siden mod den:
+  C1  En side der nævner en konkurrents pris (navn og valutatal i samme afsnit,
+      punkt eller tabelrække) skal vise `as_of`-datoen fra JSON (ISO-format),
+      så en læser kan se hvor gammelt tallet er.
+  C2  Den skal linke mindst to af de kilder (leverandørens prisside) JSON
+      kender, så tallet kan efterprøves.
+  C3  `as_of` og hver `checked` må ikke være ældre end `stale_after_days`, ellers
+      er optegnelsen for gammel til at tale om andres priser. Genlæs kilden.
+  C4  Hver kilde i JSON er en https-adresse, og hver konkurrent har dato og kilde.
 
-  R1  Hver data-competitor paa en vs/*-side skal findes i JSON.
-  R2  Hver konkurrent i JSON skal have en side, der baerer den.
-  R3  Siden skal vise JSON's checked-dato og linke til JSON's kilde.
-  R4  checked maa ligge inden for stale_after_days — ellers er siden for
-      gammel til at tale om andres priser.
-  R5  Alle JSON's claims skal staa i cellen paa siden.
-  R6  En konkurrent med public_prices:false maa ikke have et valutatall
-      nogen sted paa siden. Det er reglen, der dræbte "$350+/mo" og
-      "several hundred $/mo" for altid.
-  R7  Et tal i konkurrentcellen skal kunne findes i en claim. Det er
-      reglen mod en ny pris, der smugles ind uden optegnelse.
+Tal der ikke er en konkurrents pris (hvad en audit koster) kræver intet. Selvtesten
+beviser at hver regel kan gøre en fixture-side rød, og at en ren side er grøn.
 
-R7 er den der griber fremtiden. Alt i R1-R6 dømte fortiden; R7 dømmer den
-naeste diff, som ingen har skrevet endnu.
+Kør:
+    python3 tools/check_competitor_facts.py
+    python3 tools/check_competitor_facts.py --selftest
 """
 import json
 import pathlib
 import re
 import sys
+import tempfile
 from datetime import date, datetime
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import no_sales  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FACTS = ROOT / "tools" / "competitor_facts.json"
-VS = ROOT / "site" / "vs"
+PAGES = ("compare/index.html", "cmp-comparison/index.html")
 CURRENCY = re.compile(r"[$€£]\s?\d")
-NUMBER = re.compile(r"\d[\d.,]*")
+MIN_SOURCES = 2
 
 
-def strip_html(fragment):
-    fragment = re.sub(r"<br\s*/?>", "\n", fragment)
-    fragment = re.sub(r"<[^>]+>", " ", fragment)
-    return re.sub(r"[ \t]+", " ", fragment).strip()
-
-
-def page_text(html):
+def visible(html):
     body = re.search(r"<main[^>]*>(.*?)</main>", html, re.S)
     scope = body.group(1) if body else html
-    scope = re.sub(r"<script[^>]*>.*?</script>", " ", scope, flags=re.S)
-    return strip_html(scope)
+    scope = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", scope, flags=re.S)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", scope)).strip()
 
 
-def cell_for(html, slug):
-    """Cellen der baerer data-competitor="<slug>" — den skal rumme claimene."""
-    m = re.search(r"<td[^>]*data-competitor=\"" + re.escape(slug) + r"\"[^>]*>(.*?)</td>", html, re.S)
-    return strip_html(m.group(1)) if m else None
-
-
-def mask_own_prices(html, text):
-    """Vores egen produktspris fjernes, saa R6 kun dommer konkurrentens tal.
-
-    Vores pris er den enesteConcurrent-attraeret sandhed paa siden, og den
-    genstaar paa alle otte. Den laeses fra den egen boks
-    (data-product="eucomply-pro") i stedet for at vaere haardkodet her —
-    ellers ville porten blive roed, naar Mahope's pris aendrer sig.
-    """
-    own = set()
-    # Enhver pris-bok uden data-competitor er vores egen: EUComply Pro
-    # ($79/yr) og EUComply Free ($0). Kundes deres tal ved at laese dem
-    # fra kilden, ikke ved at haardkode dem her.
-    for block in html.split('<div class="price-box')[1:]:
-        block = block[:400]
-        if "data-competitor" in block.split(">", 1)[0]:
+def fact_findings(facts, today):
+    """C3 og C4: optegnelserne selv."""
+    findings = []
+    stale_after = int(facts.get("stale_after_days", 180))
+    dated = [("as_of", facts.get("as_of"))] + [
+        (f"{slug}.checked", fact.get("checked")) for slug, fact in facts.get("competitors", {}).items()
+    ]
+    for label, value in dated:
+        try:
+            age = (today - datetime.strptime(value, "%Y-%m-%d").date()).days
+        except (TypeError, ValueError):
+            findings.append(f"C3 competitor_facts.json: {label}={value!r} er ikke en ISO-dato")
             continue
-        for tok in re.findall(r"[$€£]?\s?\d[\d.,]*", block):
-            digits = tok.strip().lstrip("[$€£] ")
-            if tok.strip():
-                # "$0" skal maskeres selv om tallet kun er ét tegn — derfor
-                # gemmer vi hele valutatokenet, ikke kun cifrene.
-                own.add(tok.strip())
-            if len(digits) >= 2:
-                own.add(digits)
-    masked = text
-    for tok in sorted(own, key=len, reverse=True):
-        if len(tok) >= 2:
-            masked = masked.replace(tok, " " * len(tok))
-    return masked
+        if age > stale_after:
+            findings.append(f"C3 competitor_facts.json: {label} er {age} dage gammel (grænsen er {stale_after}) — genlæs kilden")
+    for slug, fact in facts.get("competitors", {}).items():
+        source = str(fact.get("source", ""))
+        if not source.startswith("https://") or not fact.get("checked"):
+            findings.append(f"C4 competitor_facts.json: {slug} mangler en https-kilde eller en checked-dato")
+    return findings
+
+
+ROW = re.compile(r"<tr\b[^>]*>(.*?)</tr>", re.I | re.S)
+
+
+def names_a_price(html, facts):
+    """Står en konkurrents navn og et valutatal i samme afsnit, punkt eller tabelrække?
+
+    Det er det der gør et tal til "en andens pris". `/compare/` har også tal der
+    ikke er det (hvad en audit koster), og dem skal siden ikke kilde.
+    """
+    names = [re.compile(r"\b" + re.escape(fact["name"]) + r"\b", re.I)
+             for fact in facts.get("competitors", {}).values() if fact.get("name")]
+    units = list(no_sales.parse_blocks(html).blocks)
+    units += [re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", row)) for row in ROW.findall(html)]
+    return any(CURRENCY.search(unit) and any(name.search(unit) for name in names) for unit in units)
+
+
+def page_findings(rel, html, facts):
+    """C1 og C2: en side med en konkurrents pris viser dato og kilde."""
+    text = visible(html)
+    if not names_a_price(html, facts):
+        return []
+    findings = []
+    as_of = facts.get("as_of", "")
+    if as_of not in text:
+        findings.append(f"C1 {rel}: siden nævner priser, men viser ikke datoen {as_of} de er læst fra leverandørernes egne sider")
+    linked = sum(1 for fact in facts.get("competitors", {}).values() if fact.get("source") and fact["source"] in html)
+    if linked < MIN_SOURCES:
+        findings.append(f"C2 {rel}: siden nævner priser, men linker kun {linked} af leverandørernes prissider (kræver {MIN_SOURCES})")
+    return findings
+
+
+def run(root, facts, today):
+    findings = fact_findings(facts, today)
+    pages = [root / rel for rel in PAGES if (root / rel).is_file()]
+    for path in pages:
+        findings.extend(page_findings(path.relative_to(root).as_posix(),
+                                      path.read_text(encoding="utf-8", errors="replace"), facts))
+    return findings, len(pages)
 
 
 def main():
     if not FACTS.exists():
         print(f"FEJL: {FACTS} mangler")
         return 1
-    facts = json.loads(FACTS.read_text())
-    competitors = facts["competitors"]
-    stale_after = int(facts.get("stale_after_days", 180))
-    today = date.today()
-    findings = []
-    pages = sorted(p for p in VS.glob("*/index.html"))
-    if not pages:
-        print("FEJL: ingen vs/*-sider fundet")
-        return 1
-
-    for path in pages:
-        slug = path.parent.name
-        html = path.read_text()
-        where = f"vs/{slug}"
-
-        # R1: hver markering skal kendes
-        for marked in set(re.findall(r'data-competitor="([^"]+)"', html)):
-            if marked not in competitors:
-                findings.append(f"R1 {where}: data-competitor={marked!r} staar ikke i competitor_facts.json")
-
-        # R2: ingen foraeldelsesgaaende optegnelser
-        if slug not in competitors:
-            findings.append(f"R2 {where}: siden har ingen optegnelse i competitor_facts.json")
-            continue
-        fact = competitors[slug]
-        text = page_text(html)
-
-        # R3: dato + kilde skal kunne ses
-        if fact["checked"] not in text:
-            findings.append(f"R3 {where}: siden viser ikke checked-datoen {fact['checked']}")
-        if f'data-fact-source="{slug}"' not in html:
-            findings.append(f"R3 {where}: der mangler en data-fact-source-note med kilden")
-        if fact["source"] not in html:
-            findings.append(f"R3 {where}: kilden {fact['source']} linkes ikke fra siden")
-        if fact["source_label"] not in text:
-            findings.append(f"R3 {where}: kildens navn {fact['source_label']!r} staar ikke i teksten")
-
-        # R4: optegnelsen maa ikke være gammel
-        try:
-            checked = datetime.strptime(fact["checked"], "%Y-%m-%d").date()
-        except ValueError:
-            findings.append(f"R4 {where}: checked={fact['checked']!r} er ikke en ISO-dato")
-        else:
-            age = (today - checked).days
-            if age > stale_after:
-                findings.append(f"R4 {where}: optegnelsen er {age} dage gammel (grænsen er {stale_after}) — genlaes kilden")
-
-        # R5: claimene skal staa paa siden
-        cell = cell_for(html, slug)
-        if cell is None:
-            findings.append(f"R5 {where}: ingen <td data-competitor=\"{slug}\"> at verificere mod")
-        else:
-            for claim in fact["claims"]:
-                if claim not in cell:
-                    findings.append(f"R5 {where}: claim mangler i cellen: {claim!r}")
-
-            # R6: ingen valutatall naar der ikke er offentlige priser.
-            # Kun tal der staar i den del af siden der handler om
-            # konkurrenten. Vores egen pris ($79, ~$6.58, $0) maasker
-            # forst — ellers dommer porten vores egen produktside
-            # fordi den ogsaa nævner et tal.
-            if not fact.get("public_prices"):
-                scanned = mask_own_prices(html, text)
-                for m in CURRENCY.finditer(scanned):
-                    ctx = scanned[max(0, m.start() - 40):m.end() + 40].replace("\n", " ")
-                    findings.append(f"R6 {where}: valutatall {m.group(0)!r} paa en side der siger {fact['name']} har ingen offentlige priser — {ctx!r}")
-
-            # R7: ethvert tal i cellen skal kunne findes i en optegnelse
-            if fact.get("public_prices"):
-                claims_blob = " ".join(fact["claims"])
-                for num in NUMBER.findall(cell):
-                    probe = num.replace(",", "")
-                    if probe in {c.replace(",", "") for c in NUMBER.findall(claims_blob)}:
-                        continue
-                    ctx = cell[max(0, cell.find(num) - 45):cell.find(num) + 45].replace("\n", " ")
-                    findings.append(f"R7 {where}: tallet {num!r} i cellen staar ikke i nogen optegnelse — {ctx!r}")
-
-    # R2 den anden vej: optegnelser uden side
-    have = {p.parent.name for p in pages}
-    for slug in competitors:
-        if slug not in have:
-            findings.append(f"R2 vs/{slug}: optegnelsen i competitor_facts.json har ingen side")
-
+    facts = json.loads(FACTS.read_text(encoding="utf-8"))
+    findings, pages = run(ROOT / "site", facts, date.today())
     if findings:
         print(f"KONKURRENTFAKTA: {len(findings)} fund")
-        for f in findings:
-            print(f"  {f}")
+        for finding in findings:
+            print(f"  {finding}")
         return 1
-    print(f"KONKURRENTFAKTA OK — {len(pages)} vs-sider, {len(competitors)} optegnelser, alle claims paa plads, ingen optegnelse aeldre end {stale_after} dage")
+    print(f"KONKURRENTFAKTA OK — {pages} sammenligningssider, {len(facts['competitors'])} optegnelser, datoen og kilderne står på siderne")
     return 0
 
 
 def selftest():
-    """Negative cases: hver regel skal kunne faa en side til at fejle."""
-    cases = [
-        ("R1 ukendt markering", 'data-competitor="nogen-ukendt"'),
-        ("R2 optegnelse uden side", None),
-        ("R3 dato fjernet", "2026-09-28"),
-        ("R4 foraeldet", None),
-        ("R5 claim fjernet fra cellen", "Personal $59/yr (1 website), €35/yr in EUR"),
-        ("R6 valuta paa quote-side", "$350+/mo"),
-        ("R7 tal uden optegnelse", "<td data-competitor=\"termly\">Pro $99/mo</td>"),
-    ]
-    real = json.loads(FACTS.read_text())
-    facts = real["competitors"]
-    termly = (VS / "termly" / "index.html").read_text()
-    passed = 0
+    """Hver regel skal kunne gøre en side rød, og en ren side skal være grøn."""
+    facts = json.loads(FACTS.read_text(encoding="utf-8"))
+    sources = [fact["source"] for fact in facts["competitors"].values()]
+    as_of = facts["as_of"]
+    today = date.today()
+    cases = 0
+    failures = []
 
-    def check(name, cond):
-        nonlocal passed
-        if cond:
-            passed += 1
-        else:
-            print(f"SELFTEST FEJLT: {name} blev ikke fanget")
+    def page(price="€59/yr", with_date=True, linked=2):
+        links = "".join(f'<a href="{src}">pris</a>' for src in sources[:linked])
+        note = f"Prices read from vendors' own pages {as_of}." if with_date else "Prices read from vendors' own pages."
+        return f"<html><body><main><p>Cookiebot {price}</p><p>{note} {links}</p></main></body></html>"
 
-    # R1
-    check(cases[0][0], "nogen-ukendt" not in facts and "data-competitor=\"nogen-ukendt\"" not in termly)
-    # R2
-    check(cases[1][0], (VS / "findes-ikke" / "index.html").parent.name not in {p.parent.name for p in VS.glob("*/index.html")})
-    # R3
-    check(cases[2][0], "2026-09-28" in termly and "checked-datoen" not in termly)
-    # R4: en optegnelse med gammel dato skal springe grænsen
-    old = dict(facts["termly"]); old["checked"] = "2019-01-01"
-    age = (date.today() - datetime.strptime(old["checked"], "%Y-%m-%d").date()).days
-    check(cases[3][0], age > real["stale_after_days"])
-    # R5
-    stripped = termly.replace("Personal $59/yr (1 website), €35/yr in EUR", "") if "Personal $59/yr (1 website), €35/yr in EUR" in termly else termly.replace("Starter $10/mo billed annually, $14 month-to-month", "")
-    check(cases[4][0], any(c not in stripped for c in facts["termly"]["claims"]))
-    # R6
-    check(cases[5][0], facts["onetrust"]["public_prices"] is False and "$350" not in (VS / "onetrust" / "index.html").read_text())
-    # R7
-    claims_blob = " ".join(facts["termly"]["claims"])
-    check(cases[6][0], "99" not in claims_blob)
+    def expect(name, html, needle, when=today, changed=None):
+        nonlocal cases
+        cases += 1
+        use = changed if changed is not None else facts
+        directory = pathlib.Path(tempfile.mkdtemp(prefix="competitor-"))
+        (directory / "compare").mkdir()
+        (directory / "compare" / "index.html").write_text(html, encoding="utf-8")
+        findings, _pages = run(directory, use, when)
+        if needle is None:
+            if findings:
+                failures.append(f"{name}: skulle være grøn, fik {findings[:2]}")
+        elif not any(needle in finding for finding in findings):
+            failures.append(f"{name}: forventede {needle!r}, fik {findings[:2]}")
 
-    print(f"SELFTEST {'GRØN' if passed == len(cases) else 'RØD'} — {passed}/{len(cases)} negative cases fanges")
-    return 0 if passed == len(cases) else 1
+    expect("en ren side er grøn", page(), None)
+    expect("C1 siden viser ikke datoen", page(with_date=False), "C1")
+    expect("C2 siden linker ingen kilder", page(linked=0), "C2")
+    expect("C2 siden linker for få kilder", page(linked=1), "C2")
+    expect("en side uden valutatal kræver intet", page(price="free", with_date=False, linked=0), None)
+    expect("et valutatal der ikke er en konkurrents pris kræver intet",
+           "<html><body><main><p>A manual audit costs $500 per site.</p></main></body></html>", None)
+    expect("en konkurrentpris i en tabelrække kræver dato og kilde",
+           "<html><body><main><table><tr><td>Cookiebot</td><td>$10/mo</td></tr></table></main></body></html>", "C1")
+    expect("C3 en gammel optegnelse", page(), "C3", when=date(2030, 1, 1))
+    broken = json.loads(json.dumps(facts))
+    broken["as_of"] = "ikke en dato"
+    expect("C3 en dato der ikke er en dato", page(), "C3", changed=broken)
+    broken = json.loads(json.dumps(facts))
+    first = next(iter(broken["competitors"]))
+    broken["competitors"][first]["source"] = "http://example.com"
+    expect("C4 en kilde uden https", page(), "C4", changed=broken)
+
+    for failure in failures:
+        print(f"SELFTEST FEJLT: {failure}")
+    print(f"SELFTEST {'GRØN' if not failures else 'RØD'} — {cases - len(failures)}/{cases} cases")
+    return 0 if not failures else 1
 
 
 if __name__ == "__main__":

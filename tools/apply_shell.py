@@ -77,7 +77,7 @@ ACCENT = "#0b6e4f"
 
 I18N = {
     "en": dict(nav_label="Main", menu_label="Menu", nav_scan="Scan", nav_guide="Guide", nav_checklists="Checklists",
-               nav_pricing="Pricing", nav_blog="Blog", built_by="Built by",
+               nav_blog="Blog", built_by="Built by",
                maker_desc="developer and technical partner for small businesses, Odense, Denmark.",
                source_on_github="Scanner source on GitHub", releases="Releases and changelog",
                product_line="A free scanner for the EU compliance basics of any website, plus the guides to fix what it finds.",
@@ -100,7 +100,7 @@ I18N = {
                gen_title="This generator has been taken down",
                ),
     "da": dict(nav_label="Hovedmenu", menu_label="Menu", nav_scan="Scan", nav_guide="Guide", nav_checklists="Tjeklister",
-               nav_pricing="Priser", nav_blog="Blog", built_by="Udviklet af",
+               nav_blog="Blog", built_by="Udviklet af",
                maker_desc="udvikler og teknisk partner for små virksomheder, Odense.",
                source_on_github="Scannerens kildekode på GitHub", releases="Udgivelser og changelog",
                product_line="En gratis scanner af de grundlæggende EU-krav til ethvert website, og guides til at rette det, den finder.",
@@ -123,7 +123,7 @@ I18N = {
                gen_title="Denne generator er taget ned",
                ),
     "de": dict(nav_label="Hauptmenü", menu_label="Menü", nav_scan="Scan", nav_guide="Leitfaden", nav_checklists="Checklisten",
-               nav_pricing="Preise", nav_blog="Blog", built_by="Entwickelt von",
+               nav_blog="Blog", built_by="Entwickelt von",
                maker_desc="Entwickler und technischer Partner für kleine Unternehmen, Odense, Dänemark.",
                source_on_github="Quellcode des Scanners auf GitHub", releases="Releases und Changelog",
                product_line="Ein kostenloser Scanner für die EU-Compliance-Grundlagen jeder Website, plus Leitfäden zum Beheben der Funde.",
@@ -146,7 +146,7 @@ I18N = {
                gen_title="Dieser Generator wurde abgeschaltet",
                ),
     "fr": dict(nav_label="Menu principal", menu_label="Menu", nav_scan="Scanner", nav_guide="Guide", nav_checklists="Check-lists",
-               nav_pricing="Tarifs", nav_blog="Blog", built_by="Développé par",
+               nav_blog="Blog", built_by="Développé par",
                maker_desc="développeur et partenaire technique des petites entreprises, Odense, Danemark.",
                source_on_github="Code source du scanner sur GitHub", releases="Versions et changelog",
                product_line="Un scanner gratuit des bases de conformité européenne de tout site web, et les guides pour corriger ce qu'il trouve.",
@@ -174,7 +174,7 @@ LANG_LABEL = {"en": "EN", "da": "DA", "de": "DE", "fr": "FR", "es": "ES"}
 OG_LOCALE = {"en": "en_GB", "da": "da_DK", "de": "de_DE", "fr": "fr_FR", "es": "es_ES"}
 
 # Pages whose localised versions live under /<lang>/ when they exist.
-CORE = {"", "scan/", "pricing/", "pro/", "book/", "search/"}
+CORE = {"", "scan/", "book/", "search/"}
 
 GENERATORS = ["impressum-generator", "privacy-policy-generator", "terms-of-service-generator",
               "refund-policy-generator", "cookie-policy-generator", "tools"]
@@ -191,10 +191,6 @@ TITLE_OVERRIDES = {
     "/de/": "EUComply — kostenloser Compliance-Scan für Websites",
     "/fr/": "EUComply — scan de conformité gratuit pour sites web",
     "/fr/scan/": "Scanner un site web : lacunes de conformité européenne",
-    "/pro/": "EUComply Pro — WordPress compliance document tools",
-    "/da/pro/": "EUComply Pro — dokumentværktøjer til WordPress",
-    "/de/pro/": "EUComply Pro — Dokumentwerkzeuge für WordPress",
-    "/fr/pro/": "EUComply Pro — outils documentaires WordPress",
     "/blog/dora-for-ecommerce-2026/": "DORA for E-Commerce: Does It Apply to Online Stores?",
     "/blog/hsts-preload-guide/": "HSTS Preload Guide 2026: Enable HSTS the Right Way",
     "/blog/meta-pixel-gdpr-consent/": "Meta Pixel and GDPR: When the Pixel Is Illegal in the EU",
@@ -214,14 +210,13 @@ TITLE_OVERRIDES = {
     "/guides/": "All Guides — EU Compliance, Conversion and GitHub",
     "/regex/": "Regex Tester — Test and Debug Regular Expressions",
     "/regex/examples/": "Regex Examples — 20 Practical Patterns",
-    "/vs/osano/": "EUComply vs Osano (2026): Scanner vs Consent Platform",
 }
 
 STOPWORDS = {"a", "an", "and", "or", "the", "in", "on", "to", "for", "of", "with", "vs", "your", "is",
              "after", "should", "at", "by", "from", "that", "this", "it", "as", "into", "und", "et", "für", "ohne"}
 
 # Layouts. Wide pages get --w-wide from 1480px up; prose pages get the article column + TOC.
-WIDE = re.compile(r"^/(scan/|compare/|cmp-comparison/|regex/|vs/|pro/(dashboard|sample-report)/|gdpr-fine-calculator/"
+WIDE = re.compile(r"^/(scan/|compare/|cmp-comparison/|regex/|gdpr-fine-calculator/"
                   r"|[a-z0-9-]*-check/|gdpr-scanner-free/|check-eu-compliance/|deskuptime/(vs/|[a-z0-9-]*-(checker|monitor)/))")
 PROSE_PAGES = {"/checklist/", "/nis2-checklist/", "/eaa-checklist/", "/privacy/", "/terms/",
                "/devnotify/privacy/", "/devnotify/terms/", "/how-it-works/"}
@@ -232,11 +227,11 @@ SEG_LABELS = {
     "blog": {"en": "Blog", "da": "Blog", "de": "Blog", "fr": "Blog"},
     "guides": {"en": "Guides", "da": "Guides", "de": "Leitfäden", "fr": "Guides"},
     "vs": {"en": "Comparisons", "da": "Sammenligninger", "de": "Vergleiche", "fr": "Comparatifs"},
-    "pro": {"en": "Pro", "da": "Pro", "de": "Pro", "fr": "Pro"}, "store": {"en": "Templates"}, "deskuptime": {"en": "DeskUptime"},
+    "deskuptime": {"en": "DeskUptime"},
     "devnotify": {"en": "DevNotify"}, "transmute": {"en": "Transmute"}, "regex": {"en": "Regex"},
     "checklist": {"en": "Checklists", "da": "Tjeklister", "de": "Checklisten", "fr": "Check-lists"},
     "tools": {"en": "Tools"}, "book": {"en": "Guide", "da": "Guide", "de": "Leitfaden", "fr": "Guide"},
-    "scan": {"en": "Scan", "fr": "Scanner"}, "pricing": {"en": "Pricing", "da": "Priser", "de": "Preise", "fr": "Tarifs"},
+    "scan": {"en": "Scan", "fr": "Scanner"},
     "search": {"en": "Search", "da": "Søg", "de": "Suche", "fr": "Recherche"},
     # `/api/` er det tredje topsegment uden egen etiket. Uden denne faldt
     # brødkrummen tilbage til `<h1>`-teksten, og `<h1>` har `<code>API</code>`
@@ -344,12 +339,11 @@ def render_shell(url: str, lang: str) -> tuple[str, str]:
     t["home"] = core_path(lang, "")
     t["p_scan"] = core_path(lang, "scan/")
     t["p_book"] = core_path(lang, "book/")
-    t["p_pricing"] = core_path(lang, "pricing/")
     t["p_search"] = core_path(lang, "search/")
     t["year"] = YEAR
     base = strip_lang(url)
     for key, pat in (("scan", "/scan/"), ("book", "/book/"), ("checklist", "/checklist/"),
-                     ("pricing", "/pricing/"), ("blog", "/blog/")):
+                     ("blog", "/blog/")):
         cur = base == pat or (key == "blog" and base.startswith("/blog/")) or (key == "checklist" and base.endswith("-checklist/"))
         t["cur_" + key] = ' aria-current="page"' if cur else ""
     t["langswitch"] = lang_switch(url, lang)
@@ -1069,8 +1063,6 @@ def site_name_for(url: str) -> str:
         return "Deskuptime"
     if base.startswith("/transmute/"):
         return "Transmute"
-    if base.startswith("/store/"):
-        return "ComplianceDocs by EUComply"
     return "EUComply"
 
 
@@ -1632,7 +1624,7 @@ def process(path: Path) -> bool:
 
     # --- cross-cutting clean-up
     html = html.replace("auditedwp.pages.dev", "eucomplypro.com")
-    sticky_col = strip_lang(url).startswith(("/vs/", "/compare/", "/cmp-comparison/", "/deskuptime/vs/", "/devnotify/vs/", "/pro/vs-"))
+    sticky_col = strip_lang(url).startswith(("/compare/", "/cmp-comparison/", "/deskuptime/vs/", "/devnotify/vs/"))
     html = outside_code(html, lambda s: wrap_tables(s, sticky_col))
     html = outside_code(html, add_missing_alt)
     html = outside_code(html, lazy_images)

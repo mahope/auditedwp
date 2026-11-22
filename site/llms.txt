@@ -19,16 +19,14 @@ The nine checks: HTTPS and HSTS; a known cookie-consent platform; trackers (Goog
 - [GDPR fine calculator](https://eucomplypro.com/gdpr-fine-calculator/): Article 83 maximum exposure from turnover.
 - [Blog](https://eucomplypro.com/blog/): articles on cookie consent, fines, security headers, platform-specific guides (Shopify, WooCommerce, BigCommerce), and uptime monitoring.
 
-## Pricing
+## Status
 
-- [Pricing](https://eucomplypro.com/pricing/): the scanner, the guide and the checklists are free. The current Pro license costs 79 USD per website per year and unlocks editable HTML document starters, an HTML report from the latest WordPress scan and the same report as a PDF, a daily scheduled scan instead of a weekly one, a scan history with one snapshot per day per check, an email alert when a check passes and later fails, and a read-only report link for a client — all inside the customer's own WordPress. Full document templates are sold separately from 29 USD.
-
-Planned, not included in the Pro license today: hosted daily monitoring, a scan history in the hosted service that can be read without WordPress, a live verification badge, a customer dashboard and multi-site management.
+- EUComply is frozen as free open source as of 22 November 2026. The scanner, the CLI (@mahope/eucomply-scanner), the guides and the e-books are free. EUComply Pro, the template packs and the e-book bundle are no longer sold; licence keys issued earlier keep working.
 
 ## Sister products by mahoje.dk
 
-- [Deskuptime](https://deskuptime.com): desktop website monitor, one-time purchase. Pages on this site under /deskuptime/.
-- [Transmute](https://transmute.run): desktop data transformer. Pages under /transmute/.
+- [Deskuptime](https://deskuptime.com): website monitor. The desktop app is no longer sold; the command-line tool is free. Free check tools on this site under /deskuptime/.
+- [Transmute](https://transmute.run): data transformer. The desktop app is no longer sold; the command-line tool is free. Guides under /transmute/guides/.
 - [DevNotify](https://eucomplypro.com/devnotify/): GitHub notifications in the menu bar for macOS, Windows and Linux.
 - [cleancopy.tools](https://cleancopy.tools), [bugbottle.dev](https://bugbottle.dev), [mahope.tools](https://mahope.tools).
 

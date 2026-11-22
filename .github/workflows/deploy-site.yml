@@ -78,7 +78,7 @@ jobs:
     # Samme pin som de to jobs ovenfor — kontrollen skal ikke køre på et
     # andet billede end den, der uploadede.
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       # 26/9: plugin-versionen var hardkodet til 1.3.2 i kontrolen nedenfor, så
       # den blev rød netop fordi den rettede version blev udgivet. Jobbet checkout'ede
@@ -174,9 +174,12 @@ jobs:
           done
 
           # Adgang til nøgle-sider efter et upload. HTTP 200 er ikke bevis, så
-          # indholdet kontrolleres: de fire pricing-ruter og Pro skal findes.
-          for route in / /pro/ /pricing/ /da/pricing/ /de/pricing/ /fr/pricing/ \
-                     /da/pro/ /de/pro/ /fr/pro/ /scan/ /plugin/ /privacy/ /sample/; do
+          # indholdet kontrolleres: forsiderne på alle sprog, scanneren, pluginen
+          # og de gratis sider skal findes. Siden 22/11-2026 er salget lukket, så
+          # pricing- og pro-ruterne er ikke med: de er redirectet, og at de er det
+          # måles af `tools/check_buy_path.py` i næste trin, ikke her.
+          for route in / /da/ /de/ /fr/ /scan/ /plugin/ /privacy/ /sample/ \
+                     /extension/ /support/; do
             code=$(curl -sS -o page.html -w '%{http_code}' "$url$route?cb=$GITHUB_RUN_ID" || echo 000)
             bytes=$(wc -c < page.html | tr -d ' ')
             if [ "$code" != "200" ] || [ "$bytes" -lt 1000 ]; then
@@ -207,3 +210,30 @@ jobs:
           # hvor længe vi venter, og ikke uden.
 
           exit $fail
+      - name: Tjek at salget er lukket
+        # 22/11-2026: Clean Copy, DeskUptime og Transmute er lukket, og EUComply
+        # er frosset som gratis open source. Dette er den ENESTE port der måler
+        # det mod det udgivne site: 301 på de slettede sider, ingen betalingslinks
+        # og ingen links til de lukkede stier på forsiderne, frozen-notice på de
+        # fire forsider, et sitemap uden lukkede stier, og licens-API'et lever
+        # (en ukendt nøgle giver 404, aldrig 5xx).
+        #
+        # Den står her og ikke i PR-gaten, fordi produktion er det GAMLE site indtil
+        # denne deploy er rullet ud. På en PR ville den være rød alene fordi
+        # ændringen endnu ikke er live. Her har wait_for_deploy.py allerede ventet
+        # på at Pages serverer det nye sitemap, men en enkelt kantenode kan stadig
+        # svare med det gamle, så den gives fire forsøg med 20 s imellem.
+        run: |
+          ok=0
+          for attempt in 1 2 3 4; do
+            if python3 tools/check_buy_path.py; then
+              ok=1
+              break
+            fi
+            echo "Forsøg $attempt: salget er ikke målt lukket endnu — venter 20s på kanten"
+            sleep 20
+          done
+          if [ "$ok" != "1" ]; then
+            echo "FEJL: salget er ikke lukket på eucomplypro.com (se målingen ovenfor)"
+            exit 1
+          fi

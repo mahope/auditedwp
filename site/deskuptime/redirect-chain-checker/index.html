@@ -93,7 +93,7 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         {
           "@type": "Question",
           "name": "Is this redirect checker free?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email. Nothing is logged or stored. DeskUptime Pro ($19 one-time) adds scheduled monitoring of your URLs with alerts when something breaks." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email. Nothing is logged or stored." }
         }
       ]
     }
@@ -127,7 +127,6 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -201,10 +200,9 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <tr><td>Per-hop trace + latency</td><td>✓ free</td><td>Paid tiers</td><td>✓ included</td></tr>
         <tr><td>Runs continuously</td><td>✗ manual</td><td>✓</td><td>✓ your interval</td></tr>
         <tr><td>Alerts when a chain changes</td><td>✗</td><td>Email/push</td><td>✓ native notifications</td></tr>
-        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$19 once</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$84–180/yr</td><td>$0</td></tr>
       </tbody>
     </table></div>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 
@@ -267,10 +265,9 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
       }
       html+='</tbody></table>';
       if(d.hopCount>2){
-        html+='<p class="note"><strong>'+d.hopCount+' hops is long.</strong> Point older URLs straight at their final destination — each extra hop costs load time and SEO signal. Want to know when a chain grows? <a href="https://deskuptime.com/">DeskUptime watches it for you — $19 once.</a></p>';
+        html+='<p class="note"><strong>'+d.hopCount+' hops is long.</strong> Point older URLs straight at their final destination — each extra hop costs load time and SEO signal.</p>';
       }else{
-        html+='<p class="note">Want these checks running on a schedule with alerts when something breaks? <a href="https://deskuptime.com/">DeskUptime does that — $19 once.</a></p>';
-      }
+              }
       box.innerHTML=html;
     }catch(e){
       box.removeAttribute('aria-busy');

@@ -9,7 +9,7 @@ Kæden, og hvor den kan knække:
     shared/scan-engine.js  →  shared/sample-report.json  →  HTML + PDF
 
 Hvert led er en håndhævet regel, så fejlen kan lokaliseres i stedet for at
-kunstige. Konkret fund bag gaten: `/pro/sample-report/` viste **7** rækker og
+kunstige. Konkret fund bag gaten: den gamle `/pro/sample-report/` viste **7** rækker og
 skrev selv `5/7`, "Two items need attention" og "2 Issues found", mens motoren
 kører **9** tjek. Den dækkede altså 5 af 9, og de tre den manglede —
 Google Consent Mode v2, IAB TCF og third-party trackers — er præcis dem, der
@@ -33,6 +33,19 @@ med en regenereret PDF kører stadig, men kun hvor reportlab findes, og siger
 det tydeligt når den springes over. Selftesten kører gaten i en subprocess hvor
 importen er blokeret, så "den kan køre i CI" er en egenskab der efterprøves
 og ikke en antagelse.
+
+Vendt 22/11-2026 (salget lukket, EUComply frosset som gratis open source).
+`/pro/sample-report/` er slettet og redirectet, så alle regler der kun handlede
+om HTML-siden er slettet med den: rækkerne, cirklen, "checks passed", den delte
+tale, historikbjælkerne, det publicerede træ og sammenligningen med builderens
+blok. Det der er tilbage er kæden motor → datasæt → PDF, for PDF'en
+(`site/downloads/eucomply-sample-report.pdf`) er stadig publiceret som et
+eksempel på hvad den gratis scanner viser.
+
+Ny regel, mærket `[salg]`: PDF'ens tekst må ikke sælge. Den må hverken henvise
+til de slettede sider (`eucomplypro.com/pro`, `/pricing`, `/store`), vise en pris
+eller et betalingslink, eller nævne Pro uden at sige at det ikke sælges længere.
+Reglerne er `tools/no_sales.py`'s, så de dømmer det samme som resten af gaten.
 """
 import datetime as dt
 import json
@@ -45,32 +58,21 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
-import build_sample_report as builder  # noqa: E402
+sys.path.insert(0, os.path.join(ROOT, "tools"))
 
-PAGE = builder.PAGE
-PUBLISHED = os.path.join(ROOT, "site-dist", "pro", "sample-report", "index.html")
+import build_sample_report as builder  # noqa: E402
+import no_sales  # noqa: E402
+
 PDF = builder.PDF
 DATA = builder.DATA
 
-ROW = re.compile(r'data-check="([^"]+)"')
-ICON = re.compile(r'<span class="icon (pass|warn|fail)">')
-CIRCLE = re.compile(r'<div class="score-circle (?:pass|warn|fail)">(\d+)%</div>')
-PASSED = re.compile(r'<span class="value">(\d+)/(\d+)</span>\s*<span class="label">Checks passed</span>')
-ISSUES = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Items needing attention</span>')
-DAYS = re.compile(r'<span class="value">(\d+)</span>\s*<span class="label">Days of history</span>')
-BARS = re.compile(r'title="([A-Z][a-z]{2} \d+): (\d+)%"')
-# Den delte tale-sætning. Før denne regel læste porten cirklen, "checks passed"
-# og "items needing attention" — men ikke denne linje, som er det eneste sted
-# på siden hvor det DELTE tal står. Den har derfor kunne miste sit `%` uden at
-# nogen port blev rød, og gjorde det: "62 of the 8 checks that apply (5 of 8)"
-# er ulæseligt og læses som "62 af 8". Mønstret kræver procenttegnet, så den
-# kan ikke findes i den version, der var publiceret.
-APPLIES = re.compile(
-    r'Not counted here: (\d+)/(\d+): ([^<]+?)\. '
-    r'(\d+)% of the (\d+) checks that apply \((\d+) of (\d+)\)\.'
-)
 BANDS = re.compile(r"\b(PASS|WARN|FAIL)\b")
 BAND_WORD = {"pass": "PASS", "warn": "WARN", "fail": "FAIL"}
+
+# PDF'en skriver adresser uden `https://`, så no_sales' linkregex rammer dem ikke.
+PDF_CLOSED_LINK = re.compile(
+    r"eucomplypro\.com/(?:(?:da|de|fr|es)/)?(?:pricing|pro|store|vs)\b", re.I)
+SALES_TAG = "[salg]"
 
 # Ting der IKKE skal være fund, men skal siges. `reportlab` bruges kun til at
 # GENERERE PDF'en; gaten læser den committede med stdlib, så den kører overalt.
@@ -85,7 +87,7 @@ def reportlab_missing():
     return False
 
 
-def pdf_findings(data, summary):
+def pdf_findings(data, summary, sales=True):
     """Den PDF købere henter skal sige præcis det datasættet siger.
 
     Indhold, ikke bytes. Det er den kontrol der kan køre i CI: byte-sammenligning
@@ -105,7 +107,7 @@ def pdf_findings(data, summary):
     if not text.strip():
         return ["site/downloads/eucomply-sample-report.pdf indeholder ingen tekst"]
 
-    findings = []
+    findings = pdf_sales_findings(text) if sales else []
     _, stamp, report_id = builder.generated_stamp(data)
     rows = builder.history_rows(data, summary["score"])
     noun = "item" if summary["issues"] == 1 else "items"
@@ -140,103 +142,21 @@ def pdf_findings(data, summary):
     return findings
 
 
-def page_findings(keys, summary):
-    """Læs den PUBLICEREDE side og kræv at den siger det datasættet siger."""
+def pdf_sales_findings(text, label="site/downloads/eucomply-sample-report.pdf"):
+    """PDF'en er et gratis eksempel; den må ikke sælge noget eller pege på en købsvej."""
+    lines = [re.sub(r"\s+", " ", line).strip() for line in text.splitlines() if line.strip()]
+    flat = " ".join(lines)
     findings = []
-    if not os.path.exists(PAGE):
-        return ["site/pro/sample-report/index.html mangler"]
-    with open(PAGE, encoding="utf-8") as handle:
-        page = handle.read()
-    if builder.START not in page or builder.END not in page:
-        return ["site/pro/sample-report/index.html mangler de genererede markører"]
-    head, rest = page.split(builder.START, 1)
-    block, _ = rest.split(builder.END, 1)
-    listed = ROW.findall(block)
-    for key in keys:
-        if key not in listed:
-            findings.append(f"prøverapporten viser ikke tjekket '{key}'")
-    for key in listed:
-        if key not in keys:
-            findings.append(f"prøverapporten viser '{key}', som motoren ikke kører")
-    if len(listed) != len(set(listed)):
-        findings.append("prøverapporten har en dublet-række")
-    icons = ICON.findall(block)
-    if len(icons) != len(keys):
-        findings.append(f"prøverapporten har {len(icons)} statusser til {len(keys)} tjek")
-    circle = CIRCLE.search(block)
-    if not circle or int(circle.group(1)) != summary["score"]:
-        found = circle.group(1) if circle else "ingen"
-        findings.append(f"scoren i cirklen er '{found}', datasættet siger {summary['score']}")
-    passed = PASSED.search(block)
-    if not passed or (int(passed.group(1)), int(passed.group(2))) != (summary["passed"], summary["total"]):
-        found = f"{passed.group(1)}/{passed.group(2)}" if passed else "ingen"
-        findings.append(f"'checks passed' er '{found}', datasættet siger {summary['passed']}/{summary['total']}")
-    issues = ISSUES.search(block)
-    if not issues or int(issues.group(1)) != summary["issues"]:
-        found = issues.group(1) if issues else "ingen"
-        findings.append(f"'items needing attention' er '{found}', datasættet siger {summary['issues']}")
-    # Den delte tale skal være LÆSELIG og rigtig. Først og fremmest skal den have
-    # sit procenttegn — uden det er den ulæselig, og det var netop fejlen der slap
-    # igennem, fordi porten aldrig læste linjen. Resten af tallene skal så være
-    # de fire fra datasættet, ikke nogen håndskrevne.
-    applies = APPLIES.search(block)
-    if summary["not_counted"]:
-        if not applies:
-            findings.append(
-                "prøverapporten mangler den delte tale-sætning "
-                "(«N% of the M checks that apply (P of M).» med procenttegn)"
-            )
-        else:
-            _names = applies.group(3)
-            not_n, not_of, pct, tot, passed_n, tot2 = (
-                int(applies.group(i)) for i in (1, 2, 4, 5, 6, 7)
-            )
-            want = (
-                summary["total"] - summary["applicable_total"],
-                summary["total"],
-                summary["score_applicable"],
-                summary["applicable_total"],
-                summary["passed_applicable"],
-                summary["applicable_total"],
-            )
-            got = (not_n, not_of, pct, tot, passed_n, tot2)
-            if got != want:
-                findings.append(
-                    f"den delte tale er {got}, datasættet siger {want}"
-                )
-    elif applies:
-        findings.append(
-            "prøverapporten har en delt tale-sætning, men datasættet har ingen "
-            "rækker der ikke gælder"
-        )
-    days = DAYS.search(block)
-    rows = builder.history_rows(json.loads(open(DATA, encoding="utf-8").read()), summary["score"])
-    if not days or int(days.group(1)) != len(rows):
-        found = days.group(1) if days else "ingen"
-        findings.append(f"'days of history' er '{found}', historikken har {len(rows)} dage")
-    bars = BARS.findall(block)
-    if len(bars) != len(rows):
-        findings.append(f"historikken har {len(bars)} bjærker til {len(rows)} dage")
-    for (label, value), row in zip(bars, rows):
-        if label != row["label"] or int(value) != row["value"]:
-            findings.append(f"historie-bjærken '{label}: {value}%' passer ikke til datasættets '{row['label']}: {row['value']}%'")
+    for link in sorted({match.group(0) for match in PDF_CLOSED_LINK.finditer(flat)}):
+        findings.append("{0} {1}: henviser til den lukkede side {2}".format(SALES_TAG, label, link))
+    for link in no_sales.checkout_links(flat):
+        findings.append("{0} {1}: betalingslink {2}".format(SALES_TAG, label, link))
+    findings.extend("{0} {1}".format(SALES_TAG, finding) for finding in no_sales.price_findings(label, lines))
+    findings.extend("{0} {1}".format(SALES_TAG, finding) for finding in no_sales.pro_findings(label, lines))
     return findings
 
 
-def published_findings(keys):
-    """Det publicerede træ skal have de samme rækker — ellers sælger vi en side, der ikke findes."""
-    if not os.path.isdir(os.path.dirname(PUBLISHED)):
-        return []  # endnu ikke bygget; step 04 i gaten bygger træet før step 05
-    with open(PUBLISHED, encoding="utf-8") as handle:
-        published = handle.read()
-    listed = ROW.findall(published)
-    if listed != keys:
-        return ["site-dist/pro/sample-report/index.html viser {0} checks {1}, motoren kører {2}".format(
-            len(listed), listed, keys)]
-    return []
-
-
-def run_checks(verify_bytes=True):
+def run_checks(verify_bytes=True, sales=True):
     """`verify_bytes=False` er den sti CI går ad, hvor reportlab mangler.
 
     Selftesten bruger den med vilje: ellers ville de negative cases for
@@ -247,16 +167,12 @@ def run_checks(verify_bytes=True):
     del NOTICES[:]
     findings = []
     data = builder.load_data()
-    keys = builder.engine_check_keys()
     findings.extend(builder.coverage_findings(data))
     summary = builder.summarize(data)
-    if not findings:
-        findings.extend(page_findings(keys, summary))
-    findings.extend(published_findings(keys))
     # Indholdschecket kører ALTID, med eller uden reportlab. Det er den
     # invariant CI kan holde, og det er den der fanger "datasættet blev ændret
     # men PDF'en ikke regenereret".
-    findings.extend(pdf_findings(data, summary))
+    findings.extend(pdf_findings(data, summary, sales=sales))
     # Byte-sammenligningen er en ekstra, kun hvor reportlab findes. Uden
     # `invariant=1` ville hver kørsel give et andet fil-id, og så ville den være
     # grøn af en fejl; og den afhænger af reportlab-versionen, så to maskiner
@@ -270,14 +186,6 @@ def run_checks(verify_bytes=True):
             with open(fresh, "rb") as new, open(PDF, "rb") as committed:
                 if new.read() != committed.read():
                     findings.append("site/downloads/eucomply-sample-report.pdf afviger fra datasættet")
-    expected = builder.report_block(data)
-    with open(PAGE, encoding="utf-8") as handle:
-        page = handle.read()
-    if builder.START in page and builder.END in page:
-        head, rest = page.split(builder.START, 1)
-        block, tail = rest.split(builder.END, 1)
-        if head + builder.START + "\n" + expected + builder.END + tail != page:
-            findings.append("site/pro/sample-report/index.html afviger fra datasættet")
     return findings
 
 
@@ -320,7 +228,12 @@ def _without_reportlab_cases():
     with tempfile.TemporaryDirectory() as folder:
         _block_reportlab(folder)
         clean = _gate_subprocess(folder)
-        if clean.returncode != 0:
+        # En `[salg]`-rest (PDF'en peger stadig på en lukket side) er en rigtig rød
+        # i gaten, men den siger intet om om gaten kan køre uden reportlab. Alt
+        # andet end den skal være grønt, og en traceback er aldrig tilladt.
+        other = [line for line in clean.stdout.splitlines()
+                 if line.startswith("ERROR ") and SALES_TAG not in line]
+        if clean.returncode not in (0, 1) or other or "Traceback" in clean.stderr:
             failures.append("self-test uden reportlab: det rene repo gav exit {0}: {1}".format(
                 clean.returncode, (clean.stdout + clean.stderr).strip()[-400:]))
         elif "sprunget over" not in clean.stdout:
@@ -427,42 +340,14 @@ def self_test_cases():
     if builder.dip_note(builder.history_rows(data, 40)) is not None:
         failures.append("self-test dip: en historik over dagens score fik en dip-note")
 
-    # 9b. Den delte tale skal være ulæselig uden sit procenttegn. Det er præcis
-    # den mutation der slap igennem: porten læste cirklen og "checks passed",
-    # men aldrig denne sætning, så "62 of the 8 checks" var grøn. Case'en
-    # genskaber den publicerede fejl mod repoets egen fil.
-    with open(PAGE, encoding="utf-8") as handle:
-        page = handle.read()
-    broken = re.sub(r"(\d+)% of the (\d+) checks that apply", r"\1 of the \2 checks that apply", page, count=1)
-    if broken == page:
-        failures.append("self-test split: kunne ikke fjerne procenttegnet i den delte tale")
-    else:
-        with open(PAGE, "w", encoding="utf-8") as handle:
-            handle.write(broken)
-        try:
-            expect(run_checks(verify_bytes=False), "delte tale", "applicable % removed")
-        finally:
-            with open(PAGE, "w", encoding="utf-8") as handle:
-                handle.write(page)
-
-    # 10. Den rigtige kørsel er grøn, og mutationer mod repoets egne filer er røde.
-    expect_clean(run_checks(), "clean run")
+    # 10. Mutationer mod repoets egne filer er røde, og en kørsel uden dem er
+    # grøn. `sales=False` fordi repoets PDF kan have en rest fra før frysningen
+    # (en fodlinje der peger på /pro); den regel prøves for sig i punkt 12, og
+    # her må en rest ikke gøre alle de andre cases røde.
+    expect_clean(run_checks(sales=False), "clean run")
     # Samme kørsel uden byte-sammenligning: den skal være grøn, fordi den er
     # den sti CI går ad.
-    expect_clean(run_checks(verify_bytes=False), "clean run without reportlab")
-    with open(PAGE, encoding="utf-8", ) as handle:
-        page = handle.read()
-    mutated = page.replace('data-check="trackers"', 'data-check="tracker"', 1)
-    if mutated == page:
-        failures.append("self-test mutation: kunne ikke fjerne rækken fra siden")
-    else:
-        with open(PAGE, "w", encoding="utf-8") as handle:
-            handle.write(mutated)
-        try:
-            expect(run_checks(), "tracker", "page row removed")
-        finally:
-            with open(PAGE, "w", encoding="utf-8") as handle:
-                handle.write(page)
+    expect_clean(run_checks(verify_bytes=False, sales=False), "clean run without reportlab")
     # 10b. Datasættet ændret, PDF'en ikke regenereret. Det er den mutation der
     # fanger "en ændret kunne ikke huske at bygge PDF'en", og den skal være rød
     # UDEN reportlab — ellers er CI's eneste PDF-kontrol en illusion.
@@ -475,7 +360,7 @@ def self_test_cases():
     try:
         # Naalen er "PDF'en viser ikke" og ikke filnavnet: kun `pdf_findings`
         # siger det, så casen kan ikke blive grøn af HTML-kontrollen.
-        expect(run_checks(verify_bytes=False), "PDF'en viser ikke",
+        expect(run_checks(verify_bytes=False, sales=False), "PDF'en viser ikke",
                "dataset changed, pdf not rebuilt (content path only)")
     finally:
         with open(DATA, "w", encoding="utf-8") as handle:
@@ -486,13 +371,33 @@ def self_test_cases():
     with open(PDF, "wb") as handle:
         handle.write(pdf[: len(pdf) // 2])
     try:
-        expect(run_checks(verify_bytes=False), "kunne ikke læses",
+        expect(run_checks(verify_bytes=False, sales=False), "kunne ikke læses",
                "pdf truncated (content path only)")
     finally:
         with open(PDF, "wb") as handle:
             handle.write(pdf)
-    if run_checks():
+    if run_checks(sales=False):
         failures.append("self-test revert: repoet er ikke grønt igen efter mutationerne")
+
+    # 12. PDF'en må ikke sælge. Hver regel skal kunne gøre en tekst rød, og en
+    # ren tekst skal være grøn, ellers er reglen grøn af en grund den ikke må.
+    clean_text = ("EUComply scan report\nThis is a sample with illustrative data. "
+                  "Scan your own domain free at eucomplypro.com/scan\n")
+    expect_clean(pdf_sales_findings(clean_text), "sales clean pdf text")
+    expect(pdf_sales_findings(clean_text + "EUComply Pro · eucomplypro.com/pro\n"),
+           "lukkede side eucomplypro.com/pro", "sales pdf footer links /pro")
+    expect(pdf_sales_findings(clean_text + "Pricing: eucomplypro.com/da/pricing\n"),
+           "lukkede side", "sales pdf links /da/pricing")
+    expect(pdf_sales_findings(clean_text + "EUComply Pro costs $79/year per site\n"),
+           "pris '$79", "sales pdf price")
+    expect(pdf_sales_findings(clean_text + "Buy: https://buy.stripe.com/abc123\n"),
+           "betalingslink", "sales pdf checkout link")
+    expect(pdf_sales_findings(clean_text + "The current Pro license generates an HTML report\n"),
+           "nævner Pro", "sales pdf Pro without closure")
+    expect_clean(pdf_sales_findings(clean_text + "EUComply Pro is no longer sold; existing licences keep working.\n"),
+                 "sales pdf closed Pro is allowed")
+    expect_clean(pdf_sales_findings(clean_text + "Support: https://donate.stripe.com/7sYeVcbn50wieFM8gDbMQ0c\n"),
+                 "sales pdf donation link is allowed")
 
     # 11. Gaten skal køre i det miljø den døde i. Se _without_reportlab_cases.
     # Køres ALTID og uden betingelse: subprocessen blokerer importen selv, så
@@ -523,7 +428,7 @@ def main() -> int:
         print(f"\n{len(findings)} prøverapport-fund")
         return 1
     print(f"OK: prøverapporten dækker de {len(builder.engine_check_keys())} checks motoren kører, "
-          "og HTML + PDF følger datasættet")
+          "PDF'en følger datasættet og sælger ikke")
     return 0
 
 

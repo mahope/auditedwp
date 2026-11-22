@@ -380,7 +380,7 @@ def _erstat_n_urls(xml: str, n: int, *, flyt_dato: bool, bryd_ogsaa_loc: bool = 
                 brugt += 1
         ud = "\n".join(linjer) + ("\n" if xml.endswith("\n") else "")
     if bryd_ogsaa_loc:
-        ud = re.sub(r"(<loc>)https://eucomplypro\.com/pro/",
+        ud = re.sub(r"(<loc>)https://eucomplypro\.com/scan/",
                     r"\g<1>https://eucomplypro.com/typo/", ud, count=1)
     return ud
 

@@ -102,7 +102,7 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         {
           "@type": "Question",
           "name": "Is this security headers check really free?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, nothing stored. DeskUptime Pro ($19 one-time) adds scheduled monitoring so you know when your site's status, latency or certificate changes." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. No account, no email, nothing stored." }
         }
       ]
     }
@@ -136,7 +136,6 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -214,10 +213,9 @@ code.inline{background:var(--soft);border:1px solid var(--line);padding:1px 6px;
         <tr><td>Header report + grade</td><td>✓ free</td><td>Part of paid audits</td><td>✓ checks each run</td></tr>
         <tr><td>Runs on a schedule</td><td>✗ manual</td><td>✓ expensive</td><td>✓ your interval</td></tr>
         <tr><td>Status + SSL + latency too</td><td>Separate tools</td><td>✓</td><td>✓ together</td></tr>
-        <tr><td>Ongoing cost</td><td>$0</td><td>$100s/yr</td><td>$19 once</td></tr>
+        <tr><td>Ongoing cost</td><td>$0</td><td>$100s/yr</td><td>$0</td></tr>
       </tbody>
     </table></div>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 
@@ -292,8 +290,7 @@ window.checkHeaders=async function(){
   if(d.score<4){
     html+='<p class="note">Missing several? Most hosts and CDNs can add these without code changes — see the FAQ below.</p>';
   }else{
-    html+='<p class="note"><a href="https://deskuptime.com/">DeskUptime re-checks status, SSL and latency on a schedule — $19 once.</a></p>';
-  }
+      }
   html+='</div>';
   box.innerHTML=html;
 };

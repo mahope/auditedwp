@@ -287,7 +287,7 @@ def collect(tree=TREE):
     return findings, facts
 
 
-def make_tree(tmp, pages=("index.html", "pro/index.html"), tag=True, src=None, csp=None):
+def make_tree(tmp, pages=("index.html", "scan/index.html"), tag=True, src=None, csp=None):
     """Byg et minimalt publiceret træ til selftesten.
 
     Taggen er byggerens **egne** `PLAUSIBLE_TAG`, ikke en håndskrevet
@@ -366,7 +366,7 @@ def _selftest():
         shutil.rmtree(tmp, ignore_errors=True)
 
     def drop_tag(tree):
-        page = os.path.join(tree, "pro", "index.html")
+        page = os.path.join(tree, "scan", "index.html")
         with open(page, "w", encoding="utf-8") as fh:
             fh.write("<html><head><title>t</title></head><body>side</body></html>")
 
@@ -456,7 +456,7 @@ def _selftest():
         # sender intet. Det er præcis den fejlklasse porten findes for.
         src = builder_src()
         body = '<html><head><script async src="%s"></script></head><body>side</body></html>'
-        for page in ("index.html", "pro/index.html"):
+        for page in ("index.html", "scan/index.html"):
             path = os.path.join(tmp, page)
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w", encoding="utf-8") as fh:

@@ -81,36 +81,31 @@ PUBLIC_DIRS = (
     "plugin",
     "privacy",
     "privacy-policy-generator",
-    "pricing",
-    "pro",
     "regex",
     "refund-policy-generator",
     "sample",
     "scan",
     "search",
     "shared",
-    "store",
     "support",
     "template",
     "terms",
     "terms-of-service-generator",
     "tools",
     "transmute",
-    "vs",
 )
+# `pricing`, `pro`, `store` og `vs` er med vilje IKKE på listen. Salget blev lukket
+# 22/11-2026, siderne er slettet, og hver sti er en 301 i `_redirects`. En side der
+# kommer tilbage under et af de navne bliver ikke publiceret, og
+# `check_public_tree.py` og `check_cta.py` er røde hvis den ligger i træet.
 
 # Stier der skal overleve uændret. Hvis en af dem mangler i kilden, stopper
 # scriptet, så en tabt side aldrig udgiver stilt.
 REQUIRED = (
     "index.html",
-    "pro/index.html",
-    "pricing/index.html",
-    "da/pricing/index.html",
-    "de/pricing/index.html",
-    "fr/pricing/index.html",
-    "da/pro/index.html",
-    "de/pro/index.html",
-    "fr/pro/index.html",
+    "da/index.html",
+    "de/index.html",
+    "fr/index.html",
     "scan/index.html",
     "plugin/index.html",
     "privacy/index.html",

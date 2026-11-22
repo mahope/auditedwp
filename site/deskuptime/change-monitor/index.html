@@ -72,8 +72,7 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
       "name": "DeskUptime",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Windows, Linux (CLI)",
-      "description": "Desktop website monitor with content-change detection, SSL certificate alerts, uptime checks and domain expiry tracking. One-time purchase, no subscription.",
-      "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+      "description": "Desktop website monitor with content-change detection, SSL certificate alerts, uptime checks and domain expiry tracking. Free command-line tool, no subscription."
     },
     {
       "@type": "FAQPage",
@@ -86,7 +85,7 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         {
           "@type": "Question",
           "name": "Why does my hash change even though nothing visible changed?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Raw HTML hashes are strict: CSRF tokens, session nonces, rotating ad slots or timestamps inside the HTML will change the hash without any visible difference. DeskUptime Pro lets you ignore parts of the page so you only get alerted about changes that matter." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Raw HTML hashes are strict: CSRF tokens, session nonces, rotating ad slots or timestamps inside the HTML will change the hash without any visible difference. The DeskUptime desktop app lets you ignore parts of the page so you only get alerted about changes that matter." }
         },
         {
           "@type": "Question",
@@ -101,7 +100,7 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         {
           "@type": "Question",
           "name": "How is this different from Visualping or changedetection.io?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Those are cloud services with monthly fees ($9–30/mo) that fetch pages on their servers. DeskUptime runs on your own machine — one $19 payment, no subscription, and the pages you watch are fetched from your network, not a third party's." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Those are cloud services with monthly fees ($9–30/mo) that fetch pages on their servers." }
         }
       ]
     }
@@ -135,7 +134,6 @@ details p{color:var(--muted);font-size:14px;margin-top:8px}
         <a href="/scan/">Scan</a>
         <a href="/book/">Guide</a>
         <a href="/checklist/">Checklists</a>
-        <a href="/pricing/">Pricing</a>
         <a href="/blog/">Blog</a>
       </nav>
       <ul class="sh-lang" aria-label="Language"><li><span aria-current="true" lang="en">EN</span></li><li class="is-off" aria-hidden="true"><span>DA</span></li><li class="is-off" aria-hidden="true"><span>DE</span></li><li class="is-off" aria-hidden="true"><span>FR</span></li></ul>
@@ -220,15 +218,13 @@ deskuptime watch https://example.com/pricing --interval 300</pre>
     <div class="tbl"><table>
       <thead><tr><th></th><th>Cloud monitors<br>(Visualping, Distill…)</th><th>Self-hosted diff tools</th><th>DeskUptime</th></tr></thead>
       <tbody>
-        <tr><td>Cost</td><td>$9–30/month</td><td>Free + your server time</td><td>$19 once, then $0</td></tr>
+        <tr><td>Cost</td><td>$9–30/month</td><td>Free + your server time</td><td>Free</td></tr>
         <tr><td>Who fetches the pages</td><td>Their servers (shared IPs)</td><td>Your server</td><td>Your own machine</td></tr>
         <tr><td>Setup</td><td>Account + plan limits</td><td>Docker/cron to maintain</td><td>Install, add URL, done</td></tr>
         <tr><td>Uptime &amp; SSL checks too</td><td>Separate products</td><td>You build it</td><td>Included</td></tr>
         <tr><td>Privacy</td><td>They see everything you watch</td><td>Yours</td><td>Yours — checks run locally</td></tr>
       </tbody>
     </table></div>
-    <p class="note">One $19 license covers unlimited URLs on up to 3 machines. No monthly fee, ever.</p>
-    <p style="text-align:center;margin-top:22px"><a class="btn" href="https://deskuptime.com/">Get DeskUptime — $19 once</a></p>
   </div>
 </section>
 

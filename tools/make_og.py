@@ -9,9 +9,13 @@ import argparse
 import html as htmlmod
 import re
 import shutil
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, PngImagePlugin
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import no_sales  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -23,12 +27,14 @@ MUTED = (91, 102, 96)
 LINE = (214, 219, 214)
 ACCENT = (11, 110, 79)
 
+# 22/11-2026: salget er lukket. /pricing/, /pro/ og /store/ er slettet og redirectet,
+# så de har ikke længere et OG-billede (se no_sales.REMOVED_OG_IMAGES), og
+# main() afviser at nogen lægger dem tilbage i listen.
 PAGES = ["/", "/da/", "/de/", "/fr/",
          "/scan/", "/da/scan/", "/de/scan/", "/fr/scan/",
-         "/pricing/", "/da/pricing/", "/de/pricing/", "/fr/pricing/",
          "/book/", "/da/book/", "/de/book/", "/fr/book/",
          "/checklist/", "/nis2-checklist/", "/eaa-checklist/", "/gdpr-fine-calculator/",
-         "/blog/", "/pro/", "/store/", "/deskuptime/", "/transmute/", "/badge/",
+         "/blog/", "/deskuptime/", "/transmute/", "/badge/",
          "/cookie-banner-check/", "/gdpr-compliance-check/", "/consent-mode-v2-check/",
          "/check-eu-compliance/", "/how-it-works/", "/compare/", "/cmp-comparison/", "/extension/", "/cli/", "/plugin/"]
 
@@ -157,7 +163,7 @@ def slug(url: str) -> str:
 
 def brand_for(url: str) -> str:
     base = re.sub(r"^/(da|de|fr|es)/", "/", url)
-    for k, v in (("/deskuptime/", "Deskuptime"), ("/transmute/", "Transmute"), ("/store/", "ComplianceDocs")):
+    for k, v in (("/deskuptime/", "Deskuptime"), ("/transmute/", "Transmute")):
         if base.startswith(k):
             return v
     return "EUComply"
@@ -168,6 +174,9 @@ def main(argv=None):
     parser.add_argument("urls", nargs="*")
     args = parser.parse_args(argv)
     urls = args.urls or PAGES
+    closed = [url for url in urls if no_sales.removed_links(url)]
+    if closed:
+        parser.error("closed pages (sales ended 2026-11-22) get no OG image: " + ", ".join(closed))
     unknown = [url for url in urls if url not in PAGES]
     if unknown:
         parser.error("unknown page URLs: " + ", ".join(unknown))
