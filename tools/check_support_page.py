@@ -25,6 +25,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import no_sales
 import pyreq
 
 pyreq.require(__file__)
@@ -53,9 +54,12 @@ KRAV: list[tuple[str, tuple[str, ...]]] = [
                   "eucomply-scanner/issues")),
     ("privacy/", ("<h1",)),
     ("terms/", ("<h1",)),
-    ("pro/thank-you/", ("<h1",)),
-    ("pro/sample-report/", ("<h1",)),
 ]
+# 22/11-2026: salget er lukket, så produktet lover ikke længere `pro/thank-you/`
+# (kvitteringen efter et køb) eller `pro/sample-report/` (en prøve til købere).
+# De to sider er slettet og redirectet, og de er taget ud af listen med vilje:
+# en lovet side der ikke findes er en fejl, men en slettet side er ikke lovet.
+# Selvtesten vogter at listen ikke får en lukket sti ind igen.
 
 
 def side(rel: str) -> pathlib.Path:
@@ -132,11 +136,18 @@ def _selftest() -> int:
         globals()["side"] = rigtig_side
     # 3. Et indeks uden support-siden skal findes. Det er den retning der
     #    fejlede: siden fandtes, og porten var grøn.
-    if not indeks_fund({"site/llms.txt": "# EUComply\n- [Pricing](/pricing/)\n"}):
+    if not indeks_fund({"site/llms.txt": "# EUComply\n- [Scan](https://eucomplypro.com/scan/)\n"}):
         print("SELFTEST RØD — et indeks uden support-siden blev ikke fundet")
         fejl += 1
     if indeks_fund({rel: f"see {SUPPORT}\n" for rel in INDEKSER}):
         print("SELFTEST RØD — de rigtige indekser blev fundet som fejl")
+        fejl += 1
+    # 3b. Listen over lovede sider må ikke love en side der er lukket. Ellers
+    #     ville porten kræve at en slettet salgsside kom tilbage.
+    lukkede = [rel for rel, _krav in KRAV
+               if rel.strip("/").split("/")[0] in no_sales.REMOVED_ROOTS]
+    if lukkede:
+        print("SELFTEST RØD — KRAV lover lukkede sider:", *lukkede)
         fejl += 1
     # 4. Det virkelige træ skal være grønt.
     rigtige = find()
