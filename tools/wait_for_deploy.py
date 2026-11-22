@@ -25,6 +25,14 @@ Bruges i workflowen som:
         --asset /assets/eucomply-1.3.13.zip --attempts 12 --wait 10
 
 Ingen ny afhængighed: kun standardbiblioteket, og ingen secrets læses.
+
+22/11-2026 (salget lukket): værktøjet venter som før på sitemap-fingeraftrykket,
+og det er netop det der gør det til det rigtige ventetrin for lukningen: sitemappet
+mister `/pro/`, `/pricing/` og `/store/`, så fingeraftrykket skifter først når Pages
+serverer det NYE site. Det der er ændret er kravene til workflowen. Nøglesiderne er nu
+forsiderne, scanneren og plugin-siden (ikke pricing-ruterne), jobbet skal kalde
+`tools/check_buy_path.py` (301 på de slettede sider, ingen betalingslinks), og en
+rute-løkke må ikke længere forvente at en slettet salgsside svarer 200.
 """
 
 from __future__ import annotations
@@ -59,12 +67,27 @@ MIN_JOB_TIMEOUT_MINUTES = 5
 REQUIRED_CHECKS = (
     ("de 12 interne stier", "/IMPLEMENTATION_PLAN.md"),
     ("cache-buster på de interne stier", "?cb=$GITHUB_RUN_ID"),
-    ("nøglesiderne efter upload", "/da/pricing/ /de/pricing/ /fr/pricing/"),
+    ("nøglesiderne efter upload", "/ /da/ /de/ /fr/ /scan/"),
     ("nøglesidernes minimumsstørrelse", '[ "$bytes" -lt 1000 ]'),
     ("zip'en hentes på den URL update.json peger på", "plug.zip"),
     ("zip'en er en zip-fil", '= "PK"'),
     ("Homepage har sin egen genindlæsning", 'grep -q "mahoje.dk" body.html'),
     ("opførslen samles i én fejlkode", "exit $fail"),
+)
+
+# 22/11-2026: salget er lukket. Jobbet skal måle det mod det udgivne site (301
+# på de slettede sider, ingen betalingslinks, frozen-notice, licens-API'et lever),
+# og det skal gøre det med `tools/check_buy_path.py`. Uden kravet kunne kaldet
+# fjernes fra workflowen og alle andre kontrolpunkter stadig være grønne.
+SALES_CLOSED_CHECKS = (
+    ("salget måles lukket live efter deploy", "tools/check_buy_path.py"),
+)
+
+# En rute-løkke der stadig forventer at en slettet salgsside svarer 200. Siderne
+# er redirectet, så den ville være rød på hver eneste udgivelse. Mønstret ser kun
+# på `for route in … ; do`-listen, så en kommentar der nævner en sti ikke tæller.
+CLOSED_ROUTE_IN_LOOP = re.compile(
+    r"for route in\s+(?:[^;]*?\s)?/(?:(?:da|de|fr|es)/)?(?:pricing|pro|store|vs)/"
 )
 
 # Den gamle inline-kontrol, som dette værktøj erstatter. Den slog fast ved
@@ -337,9 +360,14 @@ def workflow_findings(workflow_text: str, expected_asset: str = "") -> list[str]
             "en udgivelse der ikke bumper plugin-versionen"
         )
 
-    for label, marker in REQUIRED_CHECKS:
+    for label, marker in REQUIRED_CHECKS + SALES_CLOSED_CHECKS:
         if marker not in job:
             findings.append(f"kontrolpunktet er væk fra jobbet: {label} ({marker!r})")
+    if CLOSED_ROUTE_IN_LOOP.search(job):
+        findings.append(
+            "en rute-løkke forventer stadig at en lukket salgsside (/pricing/, /pro/, /store/, "
+            "/vs/) svarer 200 — de er redirectet siden 22/11-2026"
+        )
 
     if expected_asset and expected_asset not in job:
         findings.append(f"jobbet nævner ikke den forventede asset {expected_asset!r}")
@@ -547,8 +575,8 @@ jobs:
                      /IMPLEMENTATION_PLAN.md; do
             code=$(curl -sS -o leak.out -w '%{{http_code}}' "$url$route?cb=$GITHUB_RUN_ID" || echo 000)
           done
-          for route in / /pro/ /pricing/ /da/pricing/ /de/pricing/ /fr/pricing/ \\
-                     /da/pro/ /de/pro/ /fr/pro/ /scan/ /plugin/ /privacy/ /sample/; do
+          for route in / /da/ /de/ /fr/ /scan/ /plugin/ /privacy/ /sample/ \\
+                     /extension/ /support/; do
             bytes=$(wc -c < page.html | tr -d ' ')
             if [ "$code" != "200" ] || [ "$bytes" -lt 1000 ]; then
               fail=1
@@ -564,6 +592,9 @@ jobs:
             echo "OK: $url svarer 200 og indeholder mahoje.dk"
           fi
           exit $fail
+    - name: Tjek at salget er lukket
+      run: |
+        python3 tools/check_buy_path.py
 """
     case("en workflow der bruger værktøjet korrekt har ingen fund", workflow_findings(good_workflow) == [], repr(workflow_findings(good_workflow)))
 
@@ -606,6 +637,25 @@ jobs:
     findings = workflow_findings(good_workflow.replace('= "PK"', '= "XX"'))
     case("et øvrigt kontrolpunkt forsvundet → fund", any("kontrolpunktet er væk" in f for f in findings), repr(findings))
 
+    # 15b. 22/11-2026: salget måles lukket live. Uden kaldet kunne en workflow
+    #      stå grøn uden at nogen nogensinde målte at salget er lukket.
+    findings = workflow_findings(good_workflow.replace("tools/check_buy_path.py", "tools/andet.py"))
+    case("salget måles ikke lukket live → fund",
+         any("salget måles lukket live" in f for f in findings), repr(findings))
+
+    # 15c. En rute-løkke der stadig kræver en slettet salgsside som 200 er rød
+    #      på hver udgivelse. Prøvet både for rod- og sprogstier og for /store/.
+    for closed in ("/pricing/", "/pro/", "/da/pricing/", "/store/"):
+        findings = workflow_findings(good_workflow.replace(
+            "for route in / /da/ /de/", f"for route in {closed} / /da/ /de/"))
+        case(f"en rute-løkke der kræver {closed} som 200 → fund",
+             any("lukket salgsside" in f for f in findings), repr(findings))
+    # En kommentar der nævner stien er ikke en rute-løkke.
+    findings = workflow_findings(good_workflow.replace(
+        "          exit $fail",
+        "          # /pricing/ og /pro/ er redirectet; check_buy_path måler det.\n          exit $fail"))
+    case("en kommentar om /pricing/ er ikke en rute-løkke", findings == [], repr(findings))
+
     # 16. Uden timeout-minutes må vi ikke gætte jobbets afgrænsning.
     findings = workflow_findings(good_workflow.replace("    timeout-minutes: 10\n", ""))
     case("uden timeout-minutes → fund", any("timeout-minutes" in f for f in findings), repr(findings))
@@ -635,8 +685,8 @@ jobs:
     #     der skete i CI 36535432755: manifestet var rigtigt fra første
     #     læsning, så porten svarede grønt uden at vente, og næste kontrol
     #     ramte en kant der ikke havde rullet ud. Case 16a er den målte fejl.
-    print_sitemap = '<?xml version="1.0"?><urlset><url><loc>/pro/</loc><lastmod>2026-09-29</lastmod></url></urlset>'
-    new_sitemap = '<?xml version="1.0"?><urlset><url><loc>/pro/</loc><lastmod>2026-09-30</lastmod></url></urlset>'
+    print_sitemap = '<?xml version="1.0"?><urlset><url><loc>/scan/</loc><lastmod>2026-09-29</lastmod></url></urlset>'
+    new_sitemap = '<?xml version="1.0"?><urlset><url><loc>/scan/</loc><lastmod>2026-09-30</lastmod></url></urlset>'
 
     # 18a. Manifestet er rigtigt hele vejen, fingeraftrykket kommer først til
     #      sidst. Det er den rigtige grøn, og den må IKKE komme på forsøg 1.
@@ -704,7 +754,7 @@ jobs:
 
     def _recording_fp(request, timeout=None):
         sent_fp["headers"] = {k.lower(): v for k, v in request.headers.items()}
-        return _xml_response(b'<?xml version="1.0"?><urlset><url><loc>/pro/</loc></url></urlset>')
+        return _xml_response(b'<?xml version="1.0"?><urlset><url><loc>/scan/</loc></url></urlset>')
 
     read_fingerprint("https://eucomplypro.com/sitemap.xml?cb=1",
                      opener=lambda u: _request(u, 7, urlopen=_recording_fp))
@@ -778,7 +828,7 @@ def main(argv: list[str] | None = None) -> int:
             for finding in found:
                 print(f"  - {finding}")
             return 1
-        print(f"WORKFLOW GRØN: {args.workflow} bruger wait_for_deploy.py, og de otte øvrige kontrolpunkter er der")
+        print(f"WORKFLOW GRØN: {args.workflow} bruger wait_for_deploy.py, de otte øvrige kontrolpunkter er der, og salget måles lukket live")
         return 0
 
     if not args.asset:

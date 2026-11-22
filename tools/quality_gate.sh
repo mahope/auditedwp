@@ -173,6 +173,17 @@ run "tools/check_article_dates.py" "$PY" tools/check_article_dates.py
 run "tools/check_article_dates.py --selftest" "$PY" tools/check_article_dates.py --selftest
 run "tools/check_cta.py" "$PY" tools/check_cta.py
 run "tools/check_cta.py --selftest" "$PY" tools/check_cta.py --selftest
+# 22/11-2026: salget er lukket, og gaten måler at der IKKE findes et købsspor. Den
+# fælles definition (betalingslinks, priser, links til lukkede stier, købsknapper,
+# Pro som lukket, redirects, frozen-notice) er `no_sales.py`, som check_cta,
+# check_pro_claims, check_public_tree og check_store_ready alle dømmer med. Dens
+# selvtest står her for sig, så en regel kan ikke svækkes uden at gaten bliver rød.
+run "tools/no_sales.py --selftest" "$PY" tools/no_sales.py --selftest
+# Live-delen af check_buy_path.py står IKKE i denne gate: den måler det udgivne
+# site, og før deploy er det stadig det gamle, så hver PR ville være rød alene
+# fordi dens egen ændring ikke er live. Den kører i deploy-site.yml efter deploy.
+# Selvtesten er fixture-baseret (intet netværk), og den står her.
+run "tools/check_buy_path.py --selftest" "$PY" tools/check_buy_path.py --selftest
 run "tools/check_runtime.py" "$PY" tools/check_runtime.py
 run "tools/check_runtime.py --selftest" "$PY" tools/check_runtime.py --selftest
 run "tools/check_package_identity.py" "$PY" tools/check_package_identity.py

@@ -1,5 +1,6 @@
 {
   "_source": "business/planer Stripe-kontrakt 24/9-2026 ( Mahope.dk ). Kopieret maskinlæsbart, så ét datasæt kan læses af både tillidslisten og priskontrollen. Ingen nye produkter, priser eller links oprettes her.",
+  "_closed": "22/11-2026: salget er lukket. Ejeren lukkede Clean Copy, DeskUptime og Transmute og frøs EUComply og BugBottle som gratis open source; alle payment links nedenfor er deaktiveret i Stripe, undtagen donationslinket og Page Profile Pro (9B6eVcgHp7YK69ggN9bMQ04). Der har aldrig været et abonnement eller en betaling. Filen læses ikke længere af nogen kontrol (check_cta.py brugte den som tillidsliste og priskontrol); tools/no_sales.py er nu den fælles dom, og et betalingslink i det publicerede træ er en fejl. Filen er bevaret som historik over hvad der blev solgt og til hvilken pris, så en gammel plan eller et gammelt link kan slås op. Tilføj aldrig et produkt her igen.",
   "_fields": {
     "product_key": "Stripe product_key fra kontrakten",
     "url": "payment link",
